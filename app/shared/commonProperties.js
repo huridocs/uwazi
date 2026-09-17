@@ -104,4 +104,5 @@ export default {
   allUniqueProperties,
   textFields,
   isOrInheritsSelect,
+  sameProperty,
 };

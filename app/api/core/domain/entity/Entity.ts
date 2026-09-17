@@ -18,7 +18,12 @@ import {
   EntityTranslationProps,
 } from '#api/core/domain/entity/EntityTranslation.js';
 import date from '#api/utils/date.js';
-import { EntityTranslationDoesNotExistError } from './errors.js';
+import {
+  EntityTranslationDoesNotExistError,
+  MissingTranslatedPropertyError,
+  PropertyNotTranslatableError,
+  RequiredTranslatedPropertyError,
+} from './errors.js';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 import { EntityDTO } from './EntityDTO.js';
 import { Thumbnail } from '../files/Thumbnail.js';
@@ -44,6 +49,12 @@ type Props = {
   sharedId?: string;
   icon?: Icon;
   generatedToc?: boolean;
+};
+
+type SetTranslatedPropertyAssignmentsParams = {
+  language: LanguageISO6391;
+  assignments: PropertyAssignment[];
+  partial?: boolean;
 };
 
 type UpdateProps = {
@@ -89,6 +100,79 @@ class Entity {
         [translation.language]: entityTranslation,
       };
     }, {});
+  }
+
+  validateRequiredProperties() {
+    this.validatePropertyAssignments();
+  }
+
+  /**
+   * Adds the installed languages the entity has no translation for yet (a language still being
+   * installed), copying every value from the source language like the language clone job does.
+   */
+  ensureTranslations(installedLanguages: LanguageISO6391[], sourceLanguage: LanguageISO6391) {
+    const source = this.getTranslation(sourceLanguage);
+
+    installedLanguages
+      .filter(language => !this.translations[language])
+      .forEach(language => {
+        this.translations[language] = source.copyForLanguage(language);
+      });
+  }
+
+  /**
+   * Sets translatable values of one translation. Unless `partial`, every translatable property of
+   * the template must be provided.
+   */
+  setTranslatedPropertyAssignments({
+    language,
+    assignments,
+    partial = false,
+  }: SetTranslatedPropertyAssignmentsParams) {
+    const translation = this.getTranslation(language);
+    this.validateTranslatedAssignments({ language, assignments, partial });
+    assignments.forEach(assignment => translation.setValue(assignment));
+  }
+
+  private validateTranslatedAssignments({
+    language,
+    assignments,
+    partial,
+  }: SetTranslatedPropertyAssignmentsParams) {
+    const notTranslatable = assignments.find(assignment => !assignment.isTranslatable);
+    if (notTranslatable) {
+      throw new PropertyNotTranslatableError(language, notTranslatable.name);
+    }
+
+    const missing =
+      !partial &&
+      this.template.translatableProperties.find(
+        property => !assignments.some(assignment => assignment.name === property.name)
+      );
+    if (missing) {
+      throw new MissingTranslatedPropertyError(language, missing.name);
+    }
+
+    const emptyRequired = assignments.find(
+      assignment => this.isRequired(assignment.name) && Entity.isEmpty(assignment)
+    );
+    if (emptyRequired) {
+      throw new RequiredTranslatedPropertyError(language, emptyRequired.name);
+    }
+  }
+
+  // The title has no required flag but every entity must have one.
+  private isRequired(propertyName: string) {
+    return (
+      propertyName === 'title' ||
+      this.template.allProperties.some(({ name, required }) => name === propertyName && required)
+    );
+  }
+
+  private static isEmpty({ value }: PropertyAssignment) {
+    return !value.some(
+      entry => entry.value !== undefined && entry.value !== null && entry.value !== ''
+    );
   }
 
   private validatePropertyAssignments() {
@@ -147,6 +231,36 @@ class Entity {
 
   get previousVersion() {
     return new Entity(this.props);
+  }
+
+  get changedLanguages(): LanguageISO6391[] {
+    const { translations: before, ...entityBefore } = this.previousVersion.asDTO;
+    const { translations: after, ...entityAfter } = this.asDTO;
+
+    if (stringify(entityBefore) !== stringify(entityAfter)) {
+      return this.languages;
+    }
+
+    const withoutEditDate = (translation?: EntityTranslationProps) => {
+      if (!translation) return undefined;
+      const { editDate: _editDate, ...metadata } = translation.metadata || {};
+      return stringify({ ...translation, metadata });
+    };
+
+    return after
+      .filter(
+        translation =>
+          withoutEditDate(translation) !==
+          withoutEditDate(before.find(previous => previous.language === translation.language))
+      )
+      .map(translation => translation.language);
+  }
+
+  /** Translations added since the entity was loaded; they have no stored row yet. */
+  get newLanguages(): LanguageISO6391[] {
+    return this.languages.filter(
+      language => !this.props.translations.some(translation => translation.language === language)
+    );
   }
 
   get translationsList() {
@@ -253,12 +367,19 @@ class Entity {
   }
 
   update(props: UpdateProps) {
-    if (props.icon !== this.icon || props.generatedToc !== this.generatedToc) {
+    const icon = 'icon' in props ? props.icon : this.icon;
+    const generatedToc = props.generatedToc ?? this.generatedToc;
+
+    if (!Entity.isSameIcon(icon, this.icon) || generatedToc !== this.generatedToc) {
       this.refreshEditDate();
     }
 
-    this.icon = 'icon' in props ? props.icon : this.icon;
-    this.generatedToc = props.generatedToc ?? this.generatedToc;
+    this.icon = icon;
+    this.generatedToc = generatedToc;
+  }
+
+  private static isSameIcon(a?: Icon, b?: Icon) {
+    return a?.id === b?.id && a?.label === b?.label && a?.type === b?.type;
   }
 
   createMetadataValuesFromRelationships(

@@ -1,5 +1,10 @@
 /* eslint-disable max-statements */
-import { CreateEntitySchema, UpdateEntitySchema } from '../Schemas.js';
+import {
+  CreateEntitySchema,
+  CreateEntityWithTranslationsSchema,
+  UpdateEntitySchema,
+  UpdateEntityWithTranslationsSchema,
+} from '../Schemas.js';
 
 describe('CreateEntitySchema', () => {
   it('should parse all property types correctly (happy path)', () => {
@@ -93,5 +98,53 @@ describe('UpdateEntitySchema', () => {
     const result = UpdateEntitySchema.parse(input);
 
     expect(result.propertySelections).toEqual(input.propertySelections);
+  });
+});
+
+describe('entity with translations schemas', () => {
+  const translations = {
+    pt: { title: [{ value: 'Título' }], summary: [{ value: 'Resumo' }] },
+    es: { title: [{ value: 'Título' }], summary: [] },
+  };
+  const createPayload = { title: 'Title', translations };
+  const updatePayload = {
+    _id: 'id',
+    sharedId: 'shared',
+    language: 'en',
+    title: 'Title',
+    translations,
+  };
+
+  it.each([
+    ['create', CreateEntityWithTranslationsSchema, createPayload],
+    ['update', UpdateEntityWithTranslationsSchema, updatePayload],
+  ] as const)('should parse translations on %s', (_name, schema, payload) => {
+    expect(schema.parse(payload).translations).toEqual(translations);
+  });
+
+  it.each([
+    ['create', CreateEntityWithTranslationsSchema, createPayload],
+    ['update', UpdateEntityWithTranslationsSchema, updatePayload],
+  ] as const)('should require translations on %s', (_name, schema, payload) => {
+    const { translations: _translations, ...withoutTranslations } = payload;
+    expect(schema.safeParse(withoutTranslations).success).toBe(false);
+  });
+
+  it('should reject language keys that are not two characters', () => {
+    const result = CreateEntityWithTranslationsSchema.safeParse({
+      ...createPayload,
+      translations: { portuguese: { title: [{ value: 'Título' }] } },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject attachment references inside translations', () => {
+    const result = CreateEntityWithTranslationsSchema.safeParse({
+      ...createPayload,
+      translations: { pt: { image: [{ value: '', attachment: 0 }] } },
+    });
+
+    expect(result.success).toBe(false);
   });
 });

@@ -72,8 +72,8 @@ const FacetRow = ({
   onExpand,
   reserveGutter = false,
 }: FacetRowProps) => (
-  <label
-    className={`flex cursor-pointer items-center rounded-sm py-1 pe-2 transition-colors hover:bg-warm ${
+  <div
+    className={`flex items-center rounded-sm py-1 pe-2 transition-colors hover:bg-warm ${
       child || expandable || reserveGutter ? 'ps-0' : 'ps-2'
     }`}
   >
@@ -82,10 +82,7 @@ const FacetRow = ({
         {expandable && (
           <button
             type="button"
-            onClick={event => {
-              event.preventDefault();
-              onExpand?.();
-            }}
+            onClick={onExpand}
             aria-label={expanded ? 'Collapse' : 'Expand'}
             className="flex cursor-pointer items-center justify-center rounded text-ink-tertiary hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30"
           >
@@ -96,22 +93,24 @@ const FacetRow = ({
         )}
       </span>
     )}
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onToggle}
-      className={checkboxInputClassName}
-    />
-    <span className="ms-2.5 flex min-w-0 flex-1 items-center gap-1.5">
-      {icon}
-      <span className="truncate text-sm text-ink">{label}</span>
-    </span>
-    <span
-      className={`shrink-0 text-sm tabular-nums ${bold ? 'font-bold text-ink' : 'font-normal text-ink-secondary'}`}
-    >
-      {count}
-    </span>
-  </label>
+    <label className="flex min-w-0 flex-1 cursor-pointer items-center">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        className={checkboxInputClassName}
+      />
+      <span className="ms-2.5 flex min-w-0 flex-1 items-center gap-1.5">
+        {icon}
+        <span className="truncate text-sm text-ink">{label}</span>
+      </span>
+      <span
+        className={`shrink-0 text-sm tabular-nums ${bold ? 'font-bold text-ink' : 'font-normal text-ink-secondary'}`}
+      >
+        {count}
+      </span>
+    </label>
+  </div>
 );
 
 type FacetTreeProps = {

@@ -19,7 +19,7 @@ const StoreShell = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const InteractiveCard = ({ layout, selected }: { layout: 'cards' | 'list'; selected: boolean }) => {
+const InteractiveCard = ({ selected }: { selected: boolean }) => {
   const [isSelected, setSelected] = useState(selected);
   return (
     <div className="tw-content max-w-sm p-4">
@@ -32,7 +32,6 @@ const InteractiveCard = ({ layout, selected }: { layout: 'cards' | 'list'; selec
           { id: 'language', label: 'Language', value: 'EN' },
         ]}
         thumbnailKind="document"
-        layout={layout}
         selected={isSelected}
         onSelect={() => setSelected(current => !current)}
         viewHref="/entityv2/abc"
@@ -56,22 +55,11 @@ const meta: Meta<typeof InteractiveCard> = {
 type Story = StoryObj<typeof InteractiveCard>;
 
 const Cards: Story = {
-  args: { layout: 'cards', selected: false },
+  args: { selected: false },
 };
 
 const CardsSelected: Story = {
-  args: { layout: 'cards', selected: true },
-};
-
-const List: Story = {
-  args: { layout: 'list', selected: false },
-  decorators: [
-    Story => (
-      <div className="max-w-3xl">
-        <Story />
-      </div>
-    ),
-  ],
+  args: { selected: true },
 };
 
 const WithoutThumbnail: Story = {
@@ -81,7 +69,6 @@ const WithoutThumbnail: Story = {
         title="Person without files"
         templateId="template2"
         fields={[{ id: 'country', label: 'Country', value: 'France' }]}
-        layout="cards"
         viewHref="/entityv2/person-1"
       />
     </div>
@@ -89,4 +76,4 @@ const WithoutThumbnail: Story = {
 };
 
 export default meta;
-export { Cards, CardsSelected, List, WithoutThumbnail };
+export { Cards, CardsSelected, WithoutThumbnail };

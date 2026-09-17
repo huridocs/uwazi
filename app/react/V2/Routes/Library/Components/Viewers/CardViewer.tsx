@@ -5,14 +5,12 @@ import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { BlankState } from '#V2/Components/UI/BlankState.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { EntityCard, type EntityCardLayout } from '../EntityCard.js';
+import { EntityCard } from '../EntityCard.js';
 import { metadataFieldsForCard, thumbnailFromEntity } from '../cardModel.js';
 import { LoadMore } from '../LoadMore.js';
 import type { LibraryViewerProps } from './types.js';
 
-type CardViewerProps = Omit<LibraryViewerProps, 'layout'> & {
-  layout?: EntityCardLayout;
-};
+type CardViewerProps = LibraryViewerProps;
 
 const CardViewer = ({
   rows,
@@ -23,7 +21,6 @@ const CardViewer = ({
   onLoadMore,
   showThumbnail,
   showMetadata,
-  layout = 'cards',
 }: CardViewerProps) => {
   const templates = useAtomValue(templatesAtom);
   const templateById = new Map(templates.map(template => [template._id, template]));
@@ -40,13 +37,7 @@ const CardViewer = ({
 
   return (
     <>
-      <div
-        className={
-          layout === 'list'
-            ? 'flex flex-col gap-1.5'
-            : 'grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3'
-        }
-      >
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {rows.map(entity => {
           const cardEntity = entity as Entity;
           const thumbnail = thumbnailFromEntity(cardEntity);
@@ -58,7 +49,6 @@ const CardViewer = ({
               fields={metadataFieldsForCard(cardEntity, templateById.get(entity.template))}
               thumbnailSrc={thumbnail.src}
               thumbnailKind={thumbnail.kind}
-              layout={layout}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
               selected={selectedId === entity.sharedId}
