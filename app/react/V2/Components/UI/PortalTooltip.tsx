@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 type PortalTooltipPlacement = 'top' | 'right' | 'bottom' | 'left';
 
 type PortalTooltipProps = {
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
   content: React.ReactNode;
   placement?: PortalTooltipPlacement;
   className?: string;

@@ -41,7 +41,7 @@ type MountedThesauriSettings = {
   services: V2Services;
   thesauri: TestingThesaurisService;
   router: DataRouter;
-  tree: React.ReactElement;
+  tree: React.ReactElement<any>;
 };
 
 const createThesauriSettingsTree = (

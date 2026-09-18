@@ -7,31 +7,54 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
   <div
     className="attachments-list-header"
   >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Translate>
-          Supporting files
-        </Translate>
-      </h2>
-    </Connect(NeedAuthorization)>
+    <h2>
+      <Translate>
+        Supporting files
+      </Translate>
+    </h2>
   </div>
   <div
     className="attachments-list"
-  />
+  >
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename2.ext",
+          "originalname": "A Human name 2",
+        }
+      }
+      isSourceDocument={false}
+      key="0"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={true}
+      storeKey="storeKey"
+    />
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename1.ext",
+          "originalname": "Human name 1",
+        }
+      }
+      isSourceDocument={false}
+      key="1"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={true}
+      storeKey="storeKey"
+    />
+  </div>
 </div>
 `;
 
@@ -42,27 +65,11 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
   <div
     className="attachments-list-header"
   >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Translate>
-          Supporting files
-        </Translate>
-      </h2>
-    </Connect(NeedAuthorization)>
+    <h2>
+      <Translate>
+        Supporting files
+      </Translate>
+    </h2>
     <Connect(NeedAuthorization)
       orWriteAccessTo={
         Array [
@@ -90,7 +97,46 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
   </div>
   <div
     className="attachments-list"
-  />
+  >
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename2.ext",
+          "originalname": "A Human name 2",
+        }
+      }
+      isSourceDocument={false}
+      key="0"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={false}
+      storeKey="storeKey"
+    />
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename1.ext",
+          "originalname": "Human name 1",
+        }
+      }
+      isSourceDocument={false}
+      key="1"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={false}
+      storeKey="storeKey"
+    />
+  </div>
 </div>
 `;
 
@@ -219,30 +265,53 @@ exports[`AttachmentsList when it is read only should not display the upload butt
   <div
     className="attachments-list-header"
   >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Translate>
-          Supporting files
-        </Translate>
-      </h2>
-    </Connect(NeedAuthorization)>
+    <h2>
+      <Translate>
+        Supporting files
+      </Translate>
+    </h2>
   </div>
   <div
     className="attachments-list"
-  />
+  >
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename2.ext",
+          "originalname": "A Human name 2",
+        }
+      }
+      isSourceDocument={false}
+      key="0"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={true}
+      storeKey="storeKey"
+    />
+    <Connect(Component)
+      entity={
+        Object {
+          "sharedId": "parentId",
+        }
+      }
+      file={
+        Object {
+          "filename": "filename1.ext",
+          "originalname": "Human name 1",
+        }
+      }
+      isSourceDocument={false}
+      key="1"
+      parentId="parentId"
+      parentSharedId="parentSharedId"
+      readOnly={true}
+      storeKey="storeKey"
+    />
+  </div>
 </div>
 `;

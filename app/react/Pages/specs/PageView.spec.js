@@ -35,7 +35,7 @@ describe('PageView', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<PageView />, { context }).dive();
+    component = shallow(<PageView store={context.store} />, { context }).dive();
     instance = component.instance();
     assetsUtilsSpy = spyOn(assetsUtils, 'getPageAssets').and.returnValue(
       Promise.resolve({
@@ -107,7 +107,7 @@ describe('PageView', () => {
       it('should render a fallback UI as error boundary', () => {
         const consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
         spyOn(console, 'error').and.callFake(consoleErrorSpy);
-        assetsUtilsSpy.and.returnValue(Promise.reject(new Error('error at rendering')));
+        assetsUtilsSpy.and.callFake(() => Promise.reject(new Error('error at rendering')));
         component = renderConnectedMount(PageView, { context }, {}, true);
         const errorMessage = component.find(ErrorFallback).find('.font-bold').at(0).text();
 

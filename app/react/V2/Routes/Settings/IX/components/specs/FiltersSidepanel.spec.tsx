@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import { FiltersSidepanel, FiltersSidepanelProps } from '../FiltersSidepanel.js';
 
@@ -195,7 +195,9 @@ describe('FiltersSidepanel', () => {
       );
     });
 
-    expect(screen.queryByText('Stats & Filters')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('Stats & Filters')).not.toBeInTheDocument();
+    });
   });
 
   // eslint-disable-next-line max-statements

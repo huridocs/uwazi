@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, Ref, useRef, useImperativeHandle } from 'react';
+import React, { CSSProperties, useEffect, useRef, useImperativeHandle } from 'react';
 import { Info } from 'luxon';
 //Module has no types
 //@ts-ignore
@@ -95,10 +95,15 @@ const DatePickerComponent = React.forwardRef(
       onChange,
       clearFieldAction = () => {},
     }: DatePickerProps,
-    forwardedRef: Ref<HTMLInputElement | null>
+    forwardedRef
   ) => {
-    const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-    useImperativeHandle(forwardedRef, () => ref.current);
+    const ref = useRef<HTMLInputElement>(null);
+    useImperativeHandle(forwardedRef, () => {
+      if (!ref.current) {
+        throw new Error('DatePicker input is not mounted');
+      }
+      return ref.current;
+    });
 
     const showError = Boolean(hasErrors || errorMessage);
     const fieldStyles = showError
@@ -226,25 +231,6 @@ const DatePickerComponent = React.forwardRef(
     );
   }
 );
-
-DatePickerComponent.defaultProps = {
-  id: uniqueID(),
-  label: '',
-  disabled: false,
-  hideLabel: true,
-  placeholder: 'Select a date',
-  hasErrors: false,
-  errorMessage: '',
-  value: undefined,
-  inputClassName: '',
-  className: '',
-  autoComplete: 'off',
-  name: 'datePicker',
-  dateFormat: undefined,
-  clearFieldAction: () => {},
-  onChange: undefined,
-  onBlur: undefined,
-};
 
 export type { DatePickerProps };
 export { DatePickerComponent, datePickerOptionsByLocale, validateLocale };

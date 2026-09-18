@@ -65,7 +65,12 @@ describe('RouteHandler', () => {
     RouteHandler.renderedFromServer = false;
 
     component = shallow(
-      <TestController params={routeParams} location={location} matches={[{ path: '' }]} />,
+      <TestController
+        params={routeParams}
+        location={location}
+        matches={[{ path: '' }]}
+        store={context.store}
+      />,
       { context }
     );
 
@@ -119,7 +124,7 @@ describe('RouteHandler', () => {
       it('should request the clientState', () => {
         jest.spyOn(instance, 'getClientState');
         component.setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
 
       it('should call emptyState', () => {
@@ -138,7 +143,7 @@ describe('RouteHandler', () => {
           matches: [{ path: '' }, { path: 'subpath' }],
         };
         component.setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
     });
 

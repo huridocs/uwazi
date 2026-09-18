@@ -85,7 +85,6 @@ describe('PDFView', () => {
   const render = () => {
     RouteHandler.renderedFromServer = true;
     component = renderConnectedMount(PDFView, state, props, true);
-    component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
   beforeEach(() => {
@@ -279,6 +278,7 @@ describe('PDFView', () => {
   const shallowComponent = searchParams =>
     shallow(
       <PDFViewComponent
+        store={context.store}
         searchParams={searchParams}
         location={{ pathname: 'pathname' }}
         entity={Immutable.fromJS({})}
@@ -292,7 +292,6 @@ describe('PDFView', () => {
       const searchParams = mapProperties({ raw: 'true', page: 15 });
       const wrapper = shallowComponent(searchParams);
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-      wrapper.instance().context = context;
       mockNavigate.mockClear();
       entitiesAPI.getRawPage.mockClear();
       searchParams.set('page', 16);

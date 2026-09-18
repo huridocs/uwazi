@@ -74,9 +74,10 @@ describe('ViewerRoute', () => {
             dispatch: () => {},
           },
         };
-        const component = shallow(<ViewerRoute routeParams={{ tabView: 'metadata' }} />, {
-          context,
-        });
+        const component = shallow(
+          <ViewerRoute store={context.store} routeParams={{ tabView: 'metadata' }} />,
+          { context }
+        );
         expect(component.find(ViewerComponent).length).toBe(1);
       });
     });

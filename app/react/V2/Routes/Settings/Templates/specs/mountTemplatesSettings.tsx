@@ -15,7 +15,7 @@ type MountedTemplatesSettings = {
   services: V2Services;
   templates: TestingTemplatesService;
   router: DataRouter;
-  tree: React.ReactElement;
+  tree: React.ReactElement<any>;
 };
 
 const createTemplatesSettingsTree = (

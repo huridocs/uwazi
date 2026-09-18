@@ -4,7 +4,7 @@ import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.j
 import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
-import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { renderConnected, enzymeEl } from '#app/utils/test/renderConnected.js';
 import * as api from '#app/Permissions/PermissionsAPI.js';
 import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField.js';
@@ -50,7 +50,7 @@ describe('ShareEntityModal', () => {
       level: AccessLevels.WRITE,
     };
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    expect(component.find(MembersList).get(0).props.members).toContainEqual(testMember);
+    expect(enzymeEl(component.find(MembersList).get(0)).props.members).toContainEqual(testMember);
   });
 
   it('should assign read permissions as default', () => {
@@ -60,7 +60,7 @@ describe('ShareEntityModal', () => {
       label: 'User',
     };
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    expect(component.find(MembersList).get(0).props.members).toContainEqual({
+    expect(enzymeEl(component.find(MembersList).get(0)).props.members).toContainEqual({
       ...testMember,
       level: AccessLevels.READ,
     });
@@ -75,10 +75,9 @@ describe('ShareEntityModal', () => {
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find(MembersList).simulate('change', []);
     expect(
-      component
-        .find(MembersList)
-        .get(0)
-        .props.members.filter((m: MemberWithPermission) => !!m.refId)
+      (enzymeEl(component.find(MembersList).get(0)).props.members as MemberWithPermission[]).filter(
+        (m: MemberWithPermission) => !!m.refId
+      )
     ).toEqual([]);
   });
 
@@ -124,7 +123,7 @@ describe('ShareEntityModal', () => {
     ];
 
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    await component.find('.btn-success').get(0).props.onClick();
+    await (enzymeEl(component.find('.btn-success').get(0)).props.onClick as () => Promise<void>)();
     expect(saveEntitiesPermissions).toHaveBeenCalledWith(
       {
         ids: ['entityId1', 'entityId2'],
@@ -142,9 +141,15 @@ describe('ShareEntityModal', () => {
       label: 'User',
       level: AccessLevels.WRITE,
     };
-    expect(component.find('Footer').get(0).props.children.type).toBe('button');
+    const footerChildren = enzymeEl(component.find('Footer').get(0)).props.children as {
+      type: unknown;
+      length?: number;
+    };
+    expect(footerChildren.type).toBe('button');
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    expect(component.find('Footer').get(0).props.children.length).toBe(2);
+    expect(
+      (enzymeEl(component.find('Footer').get(0)).props.children as { length: number }).length
+    ).toBe(2);
   });
 
   it('should call onClose when clicking done', () => {
@@ -161,7 +166,9 @@ describe('ShareEntityModal', () => {
     };
 
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    await component.find('.cancel-button').get(0).props.onClick();
+    await (
+      enzymeEl(component.find('.cancel-button').get(0)).props.onClick as () => Promise<void>
+    )();
     expect(saveEntitiesPermissions).not.toHaveBeenCalled();
     expect(defaultProps.onClose).toHaveBeenCalled();
   });

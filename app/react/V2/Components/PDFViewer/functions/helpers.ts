@@ -1,6 +1,6 @@
 import { scrollIntoView } from '#app/V2/helpers/scrollIntoView.js';
 
-const triggerScroll = (ref: React.RefObject<HTMLDivElement>, frameId: number): number => {
+const triggerScroll = (ref: React.RefObject<HTMLDivElement | null>, frameId: number): number => {
   let attempts = 0;
   let id = frameId;
 

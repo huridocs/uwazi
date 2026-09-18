@@ -6,7 +6,7 @@ import { Translate, t } from '#app/I18N/index.js';
 
 type Tip = {
   example: () => string;
-  prose: React.ReactElement;
+  prose: React.ReactElement<any>;
   wide?: boolean;
 };
 

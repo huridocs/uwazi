@@ -9,7 +9,7 @@ const TabLabel = ({
   dirty,
 }: {
   text: string;
-  icon?: React.ReactElement;
+  icon?: React.ReactElement<any>;
   count?: number;
   dirty?: boolean;
 }) => (

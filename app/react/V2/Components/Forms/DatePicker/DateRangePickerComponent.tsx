@@ -1,4 +1,4 @@
-import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -47,12 +47,17 @@ const DateRangePickerComponent = React.forwardRef(
       to,
       onClear = () => {},
     }: DateRangePickerProps,
-    forwardedRef: Ref<HTMLInputElement | null>
+    forwardedRef
   ) => {
-    const divRef = useRef(null);
+    const divRef = useRef<HTMLInputElement>(null);
     const fromRef = useRef<HTMLInputElement>(null);
     const toRef = useRef<HTMLInputElement>(null);
-    useImperativeHandle(forwardedRef, () => divRef.current);
+    useImperativeHandle(forwardedRef, () => {
+      if (!divRef.current) {
+        throw new Error('DateRangePicker is not mounted');
+      }
+      return divRef.current;
+    });
 
     const fieldStyles = inputClassName || '';
     const instance = useRef<DateRangePicker | null>(null);
@@ -235,17 +240,6 @@ const DateRangePickerComponent = React.forwardRef(
     );
   }
 );
-
-DateRangePickerComponent.defaultProps = {
-  placeholderStart: 'Select start',
-  placeholderEnd: 'Select end',
-  dateFormat: undefined,
-  onFromDateSelected: undefined,
-  onToDateSelected: undefined,
-  from: undefined,
-  to: undefined,
-  onClear: () => {},
-};
 
 export type { DateRangePickerProps };
 export { DateRangePickerComponent };

@@ -18,6 +18,7 @@ describe('AttachmentsList', () => {
 
     props = {
       files,
+      attachments: files.toJS(),
       parentId: 'parentId',
       parentSharedId: 'parentSharedId',
       isDocumentAttachments: false,
@@ -58,12 +59,14 @@ describe('AttachmentsList', () => {
   describe('when files is empty', () => {
     it('should render nothing if user not logged in', () => {
       props.files = Immutable.fromJS([]);
+      props.attachments = [];
       render();
       expect(component).toMatchSnapshot();
     });
 
     it('should add button in Downloads section', () => {
       props.files = Immutable.fromJS([]);
+      props.attachments = [];
       props.user = Immutable.fromJS({ _id: 'user' });
       render();
       expect(component).toMatchSnapshot();

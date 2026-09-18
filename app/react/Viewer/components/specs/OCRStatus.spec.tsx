@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import Immutable from 'immutable';
 import { FileType } from '#shared/types/fileType.js';
 import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';

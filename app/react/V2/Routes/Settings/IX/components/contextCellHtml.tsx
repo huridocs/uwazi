@@ -20,7 +20,7 @@ const elementClass = (node: React.ReactNode) =>
 
 const isClass = (node: React.ReactNode, className: string) => elementClass(node) === className;
 
-const recreate = (node: React.ReactElement, children: React.ReactNode, key?: number) => {
+const recreate = (node: React.ReactElement<any>, children: React.ReactNode, key?: number) => {
   const elementType = node.type === 'p' ? 'span' : node.type;
   return React.createElement(
     elementType,
@@ -68,7 +68,7 @@ const buildTruncatedMatch = ({
   ];
 };
 
-const truncateMatching = (matchingParagraph: React.ReactElement) => {
+const truncateMatching = (matchingParagraph: React.ReactElement<any>) => {
   const childrenArray = React.Children.toArray(matchingParagraph.props.children);
   const range = matchChildIndexes(childrenArray);
   if (!range) {
@@ -109,7 +109,7 @@ const truncateFirstNode = (nodes: React.ReactNode[]) => {
   return recreate(firstNode, truncatedText);
 };
 
-const truncateAdjacent = (node: React.ReactElement, index: number, maxContext: number) => {
+const truncateAdjacent = (node: React.ReactElement<any>, index: number, maxContext: number) => {
   const textContent = extractTextContent(node);
   const optimizedText = optimizeTextForDisplay(textContent);
   const maxAdjacentLength = Math.floor(maxContext * 0.5);
@@ -140,7 +140,7 @@ const adjacentOf = (nodes: React.ReactNode[], matchingIndex: number, after: bool
 };
 
 const matchingContextLength = (
-  matchingParagraph: React.ReactElement,
+  matchingParagraph: React.ReactElement<any>,
   beforeText: string,
   afterText: string
 ) => {
@@ -154,7 +154,7 @@ const matchingContextLength = (
 const truncateMatchedNodes = (
   nodes: React.ReactNode[],
   matchingIndex: number,
-  matchingParagraph: React.ReactElement
+  matchingParagraph: React.ReactElement<any>
 ) => {
   const adjacentBefore = adjacentOf(nodes, matchingIndex, false);
   const adjacentAfter = adjacentOf(nodes, matchingIndex, true);

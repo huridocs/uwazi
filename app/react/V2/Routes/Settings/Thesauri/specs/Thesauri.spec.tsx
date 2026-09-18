@@ -114,6 +114,21 @@ describe('Settings Thesauri', () => {
       });
     };
 
+    const clickFooter = (text: string) => {
+      fireEvent.click(
+        within(screen.getByTestId('settings-content-footer')).getByText(text).parentNode!
+      );
+    };
+
+    const overlayForm = (kind: 'value' | 'group') =>
+      renderResult.container.querySelector(
+        kind === 'value' ? '#value-thesauri-form' : '#group-thesauri-form'
+      ) as HTMLElement;
+
+    const clickFormSubmit = (form?: HTMLElement) => {
+      fireEvent.click(within(form ?? overlayForm('value')).getByTestId('thesaurus-form-submit'));
+    };
+
     beforeAll(async () => {
       renderResult = renderComponent();
       rows = await waitFor(() => screen.getAllByRole('row'));
@@ -184,14 +199,14 @@ describe('Settings Thesauri', () => {
     });
     const editRow = async (label: string, mainValue: string, secondValue: string) => {
       await act(async () => {
-        const newItemForm = renderResult.container.getElementsByTagName('form')[1];
+        const newItemForm = overlayForm(label === 'Name' ? 'group' : 'value');
         fireEvent.change(within(newItemForm).getByLabelText(label) as HTMLInputElement, {
           target: { value: mainValue },
         });
         fireEvent.change(within(newItemForm).getAllByRole('textbox')[1], {
           target: { value: secondValue },
         });
-        fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+        clickFormSubmit(newItemForm);
       });
     };
 
@@ -204,7 +219,7 @@ describe('Settings Thesauri', () => {
           target: { value: 'new thesaurus' },
         });
         await act(async () => {
-          fireEvent.click(screen.getByText('Add item').parentNode!);
+          clickFooter('Add item');
         });
         await editRow('Title', 'single value 1', 'single value 2');
         await act(async () => {
@@ -215,15 +230,15 @@ describe('Settings Thesauri', () => {
 
       it('should not add an empty group', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add group').parentNode!);
+          clickFooter('Add group');
         });
         let newItemForm: HTMLElement;
         await act(async () => {
-          [, newItemForm] = renderResult.container.getElementsByTagName('form');
+          newItemForm = overlayForm('group');
           fireEvent.change(within(newItemForm).getByLabelText('Name') as HTMLInputElement, {
             target: { value: 'Group 1' },
           });
-          fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+          clickFormSubmit(newItemForm);
         });
         await act(async () => {
           expect(screen.getByText('This field is required')).toBeInTheDocument();
@@ -233,7 +248,7 @@ describe('Settings Thesauri', () => {
 
       it('should add a group to thesaurus', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add group').parentNode!);
+          clickFooter('Add group');
         });
         await editRow('Name', 'Group 1', 'Child 1');
         await act(async () => {
@@ -245,7 +260,7 @@ describe('Settings Thesauri', () => {
       it('should not allow edit the group of an item', async () => {
         await clickOnAction(1, 4, 'button');
         await act(async () => {
-          const newItemForm = renderResult.container.getElementsByTagName('form')[1];
+          const newItemForm = overlayForm('value');
           expect(within(newItemForm).getByLabelText('Group')).toHaveAttribute('disabled');
           fireEvent.click(within(newItemForm).getByTestId('thesaurus-form-cancel'));
         });
@@ -253,10 +268,10 @@ describe('Settings Thesauri', () => {
 
       it('should not add a row if the item label is empty', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add item').parentNode!);
+          clickFooter('Add item');
         });
         await act(async () => {
-          fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+          clickFormSubmit();
         });
         await act(async () => {
           expect(rows.length).toBe(4);
@@ -265,12 +280,12 @@ describe('Settings Thesauri', () => {
 
       it('should require the name of the group', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add group').parentNode!);
+          clickFooter('Add group');
         });
         let newItemForm: HTMLElement;
         await act(async () => {
-          [, newItemForm] = renderResult.container.getElementsByTagName('form');
-          fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+          newItemForm = overlayForm('group');
+          clickFormSubmit(newItemForm);
         });
         await act(async () => {
           expect(screen.getAllByText('This field is required')).toHaveLength(2);
@@ -279,10 +294,10 @@ describe('Settings Thesauri', () => {
       });
       it('should add items into an existing group', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add item').parentNode!);
+          clickFooter('Add item');
         });
         await act(async () => {
-          const newItemForm = renderResult.container.getElementsByTagName('form')[1];
+          const newItemForm = overlayForm('value');
           fireEvent.change(within(newItemForm).getByLabelText('Title') as HTMLInputElement, {
             target: { value: 'new child 2' },
           });
@@ -294,7 +309,7 @@ describe('Settings Thesauri', () => {
               value: (screen.getAllByRole('option')[1] as HTMLInputElement).value,
             },
           });
-          fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+          clickFormSubmit(overlayForm('value'));
         });
         await act(async () => {
           rows = await waitFor(() => screen.getAllByRole('row'));
@@ -303,7 +318,7 @@ describe('Settings Thesauri', () => {
       });
 
       it('should prevent leaving without saving', async () => {
-        fireEvent.click(screen.getByText('Cancel').parentNode!);
+        clickFooter('Cancel');
         await act(async () => {
           expect(screen.getByText('Discard changes')).toBeInTheDocument();
           fireEvent.click(within(screen.getByTestId('modal')).getByText('Cancel').parentNode!);
@@ -341,7 +356,7 @@ describe('Settings Thesauri', () => {
         rows = await waitFor(() => screen.getAllByRole('row'));
         fireEvent.click(within(rows[1].children[4] as HTMLElement).getByRole('button'));
         await act(async () => {
-          const newItemForm = renderResult.container.getElementsByTagName('form')[1];
+          const newItemForm = overlayForm('value');
           fireEvent.change(within(newItemForm).getByLabelText('Title'), {
             target: { value: 'MODIFIED SINGLE VALUE' },
           });
@@ -375,7 +390,7 @@ describe('Settings Thesauri', () => {
         rows = await waitFor(() => screen.getAllByRole('row'));
         fireEvent.click(within(rows[3].children[4] as HTMLElement).getByRole('button'));
         await act(async () => {
-          const newItemForm = renderResult.container.getElementsByTagName('form')[1];
+          const newItemForm = overlayForm('group');
           fireEvent.change(within(newItemForm).getAllByRole('textbox')[0], {
             target: { value: 'CHANGED GROUP' },
           });
@@ -407,11 +422,11 @@ describe('Settings Thesauri', () => {
       });
       it('should add additional items', async () => {
         await act(async () => {
-          fireEvent.click(screen.getByText('Add item').parentNode!);
+          clickFooter('Add item');
         });
         let newItemForm: HTMLElement;
         await act(async () => {
-          [, newItemForm] = renderResult.container.getElementsByTagName('form');
+          newItemForm = overlayForm('value');
           fireEvent.change(within(newItemForm).getByLabelText('Title') as HTMLInputElement, {
             target: { value: 'X item' },
           });
@@ -427,7 +442,7 @@ describe('Settings Thesauri', () => {
           fireEvent.change(within(newItemForm).getAllByRole('textbox')[1], {
             target: { value: 'Additional item' },
           });
-          fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
+          clickFormSubmit(newItemForm);
         });
         expect(within(screen.getByRole('table')).getAllByText('Additional item').length).toBe(2);
         await checkRightSaving({

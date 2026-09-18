@@ -7,7 +7,7 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 interface CollectionOptionToggleProps {
   watch: UseFormWatch<ClientSettings>;
   setValue: UseFormSetValue<ClientSettings>;
-  label: React.ReactElement;
+  label: React.ReactElement<any>;
   valueKey: keyof ClientSettings;
   tip: React.ReactNode;
 }

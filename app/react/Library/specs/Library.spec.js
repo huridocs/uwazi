@@ -85,7 +85,7 @@ describe('Library', () => {
       },
     };
 
-    component = shallow(<LibraryRootComponent {...props} />, { context });
+    component = shallow(<LibraryRootComponent {...props} store={context.store} />, { context });
     instance = component.instance();
   });
 
@@ -119,7 +119,7 @@ describe('Library', () => {
 
   describe('cleanup', () => {
     beforeEach(() => {
-      component = shallow(<LibraryRootComponent {...props} />, { context });
+      component = shallow(<LibraryRootComponent {...props} store={context.store} />, { context });
       instance = component.instance();
       spyOn(instance, 'emptyState');
     });

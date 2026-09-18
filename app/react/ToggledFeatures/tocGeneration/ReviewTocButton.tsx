@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Icon } from '#UI/Icon/Icon.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
@@ -11,7 +11,7 @@ interface ReviewTocButtonProps {
   children: JSX.Element | string;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ onClick: tocGenerationActions.reviewToc }, dispatch);
 
 const connector = connect(null, mapDispatchToProps);

@@ -40,7 +40,7 @@ describe('Library', () => {
       },
     };
 
-    component = shallow(<LibraryCardsComponent {...props} />, { context });
+    component = shallow(<LibraryCardsComponent {...props} store={context.store} />, { context });
     instance = component.instance();
   });
 

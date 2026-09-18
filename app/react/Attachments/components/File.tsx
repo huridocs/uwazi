@@ -32,7 +32,7 @@ type FileState = {
   editing: boolean;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, 'library'));
 const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & FileOwnProps;

@@ -4,13 +4,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { UploadSupportingFile } from '#app/Attachments/components/UploadSupportingFile.js';
-import { Provider } from 'react-redux';
-import { fireEvent, screen, RenderResult } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { MockStoreEnhanced } from 'redux-mock-store';
 
 describe('UploadSupportingFile', () => {
-  let renderResult: RenderResult;
   let store: MockStoreEnhanced;
   let reduxStore: {};
 
@@ -19,7 +17,7 @@ describe('UploadSupportingFile', () => {
   }
   function renderComponent() {
     reduxStore = { ...defaultState, ...updateProgress() };
-    ({ renderResult, store } = renderConnectedContainer(
+    ({ store } = renderConnectedContainer(
       <UploadSupportingFile entitySharedId="entity1" storeKey="library" />,
       () => reduxStore
     ));
@@ -40,22 +38,17 @@ describe('UploadSupportingFile', () => {
       expect(uploadFromComputerTab).not.toBeUndefined();
     });
 
-    it('Should be closed when progress is equal to 100', () => {
+    it('Should be closed when progress is equal to 100', async () => {
       renderComponent();
       const addFileBtn: Element = screen.getByText('Add file').parentElement!;
       fireEvent.click(addFileBtn);
-      let uploadFromComputerTab = screen.queryByText('Upload from computer');
-      expect(uploadFromComputerTab).not.toBe(null);
+      expect(screen.queryByText('Upload from computer')).not.toBe(null);
 
       reduxStore = { ...defaultState, ...updateProgress(100) };
-      renderResult.rerender(
-        <Provider store={store}>
-          <UploadSupportingFile entitySharedId="entity1" storeKey="library" />
-        </Provider>
-      );
-
-      uploadFromComputerTab = screen.queryByText('Upload from computer');
-      expect(uploadFromComputerTab).toBe(null);
+      await waitFor(() => {
+        store.dispatch({ type: 'test/progress' });
+        expect(screen.queryByText('Upload from computer')).toBe(null);
+      });
     });
   });
 });

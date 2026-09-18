@@ -2,6 +2,7 @@
 
 exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
 <Provider
+  ref={null}
   store={
     Object {
       "clearActions": [Function],
@@ -15,11 +16,31 @@ exports[`Paginator should render a previous button and next button based on the 
 >
   <PaginatorWithPage
     baseUrl="url"
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
     totalPages={25}
   >
     <Paginator
       baseUrl="url"
       page={5}
+      store={
+        Object {
+          "clearActions": [Function],
+          "dispatch": [Function],
+          "getActions": [Function],
+          "getState": [Function],
+          "replaceReducer": [Function],
+          "subscribe": [Function],
+        }
+      }
       totalPages={25}
     >
       <div
@@ -104,6 +125,7 @@ exports[`Paginator should render a previous button and next button based on the 
 
 exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
 <Provider
+  ref={null}
   store={
     Object {
       "clearActions": [Function],
@@ -117,11 +139,31 @@ exports[`Paginator when base Url already has the query string "?" should add the
 >
   <PaginatorWithPage
     baseUrl="url?param=value"
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
     totalPages={25}
   >
     <Paginator
       baseUrl="url?param=value"
       page={3}
+      store={
+        Object {
+          "clearActions": [Function],
+          "dispatch": [Function],
+          "getActions": [Function],
+          "getState": [Function],
+          "replaceReducer": [Function],
+          "subscribe": [Function],
+        }
+      }
       totalPages={25}
     >
       <div
@@ -206,6 +248,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
 
 exports[`Paginator when on first page should disable the prev link 1`] = `
 <Provider
+  ref={null}
   store={
     Object {
       "clearActions": [Function],
@@ -219,11 +262,31 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
 >
   <PaginatorWithPage
     baseUrl="url"
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
     totalPages={25}
   >
     <Paginator
       baseUrl="url"
       page={1}
+      store={
+        Object {
+          "clearActions": [Function],
+          "dispatch": [Function],
+          "getActions": [Function],
+          "getState": [Function],
+          "replaceReducer": [Function],
+          "subscribe": [Function],
+        }
+      }
       totalPages={25}
     >
       <div
@@ -311,6 +374,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
 
 exports[`Paginator when on last page should disable the next link 1`] = `
 <Provider
+  ref={null}
   store={
     Object {
       "clearActions": [Function],
@@ -324,11 +388,31 @@ exports[`Paginator when on last page should disable the next link 1`] = `
 >
   <PaginatorWithPage
     baseUrl="url"
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
     totalPages={25}
   >
     <Paginator
       baseUrl="url"
       page={25}
+      store={
+        Object {
+          "clearActions": [Function],
+          "dispatch": [Function],
+          "getActions": [Function],
+          "getState": [Function],
+          "replaceReducer": [Function],
+          "subscribe": [Function],
+        }
+      }
       totalPages={25}
     >
       <div

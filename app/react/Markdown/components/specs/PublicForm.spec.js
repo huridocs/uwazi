@@ -3,6 +3,7 @@
  */
 /* eslint-disable max-statements */
 import Immutable from 'immutable';
+import { act } from 'react';
 import { LocalForm } from '#app/Forms/Form.js';
 import Dropzone from 'react-dropzone-esm';
 import { MetadataFormFields } from '#app/Metadata/index.js';
@@ -24,6 +25,14 @@ jest.mock('#app/utils/api', () => ({
   default: { get: () => mockApiGet() },
   get: () => mockApiGet(),
 }));
+
+jest.mock('#app/Metadata/components/MetadataFormFields.js', () => {
+  const actual = jest.requireActual('#app/Metadata/components/MetadataFormFields.js');
+  return {
+    ...actual,
+    MetadataFormFields: actual.MetadataFormFieldsView,
+  };
+});
 
 describe('PublicForm', () => {
   let props;
@@ -171,7 +180,9 @@ describe('PublicForm', () => {
     render();
 
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    await formSubmit({ title: 'test', metadata: { color: 'red', size: 42, date: 13442423 } });
+    await act(async () => {
+      await formSubmit({ title: 'test', metadata: { color: 'red', size: 42, date: 13442423 } });
+    });
 
     expect(props.submit).toHaveBeenCalledWith(
       {
@@ -188,9 +199,11 @@ describe('PublicForm', () => {
   it('should refresh the captcha and clear the form after submit', async () => {
     render();
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    await formSubmit({
-      title: 'test',
-      metadata: { image: { data: 'blob:http://localhost:3000/blob/file_id' } },
+    await act(async () => {
+      await formSubmit({
+        title: 'test',
+        metadata: { image: { data: 'blob:http://localhost:3000/blob/file_id' } },
+      });
     });
     expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:http://localhost:3000/blob/file_id');
     expect(instance.refreshCaptcha).toHaveBeenCalled();
@@ -201,22 +214,25 @@ describe('PublicForm', () => {
   });
 
   it('should refresh captcha and NOT clear the form on submission error', async () => {
-    request = new Promise(resolve => {
-      resolve({ promise: Promise.reject() });
-    });
+    const failedUpload = Promise.reject(new Error('submit failed'));
+    failedUpload.catch(() => undefined);
+    request = Promise.resolve({ promise: failedUpload });
     submit = jasmine.createSpy('submit').and.returnValue(request);
     render();
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    await formSubmit({ title: 'test' });
+    await act(async () => {
+      await formSubmit({ title: 'test' });
+    });
 
-    await request.then(uploadCompletePromise =>
-      uploadCompletePromise.promise
-        .then(() => fail('should throw error'))
-        .catch(() => {
-          expect(instance.formDispatch).not.toHaveBeenCalledWith();
-          expect(instance.refreshCaptcha).toHaveBeenCalled();
-        })
-    );
+    await request.then(async uploadCompletePromise => {
+      try {
+        await uploadCompletePromise.promise;
+        fail('should throw error');
+      } catch {
+        expect(instance.formDispatch).not.toHaveBeenCalledWith();
+        expect(instance.refreshCaptcha).toHaveBeenCalled();
+      }
+    });
   });
 
   it('should NOT clear the form attachments on submission error', async () => {
@@ -227,10 +243,12 @@ describe('PublicForm', () => {
     render({ attachments: true });
     expect(instance.state.files.length).toEqual(0);
     instance.state.files = [newFile];
-    request = new Promise(resolve => {
-      resolve({ promise: Promise.reject() });
+    const failedUpload = Promise.reject(new Error('submit failed'));
+    failedUpload.catch(() => undefined);
+    request = Promise.resolve({ promise: failedUpload });
+    await act(async () => {
+      await instance.handleSubmit({ title: 'test' });
     });
-    await instance.handleSubmit({ title: 'test' });
     expect(instance.state.files.length).toBe(1);
     expect(instance.state.files[0].name).toEqual('image.jpg');
     expect(instance.formDispatch).not.toHaveBeenCalledWith();

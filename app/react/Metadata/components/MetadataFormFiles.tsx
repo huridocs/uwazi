@@ -54,7 +54,7 @@ type EntityFilesProps = {
   model: string;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: EntityFilesProps) => {
+const mapDispatchToProps = (dispatch: Dispatch, ownProps: EntityFilesProps) => {
   const { model, type } = ownProps;
   const path = type === 'attachment' ? `${model}.attachments` : `${model}.documents`;
   return bindActionCreators(

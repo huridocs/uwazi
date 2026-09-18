@@ -53,7 +53,7 @@ const templatesMap = createSelector(
     )
 );
 
-function mapDispatchToProps(dispatch: Dispatch<{}>) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
       selectConnection: actions.selectConnection,

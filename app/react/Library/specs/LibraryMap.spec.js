@@ -15,7 +15,7 @@ describe('LibraryMap', () => {
     const props = { location: { query: { q: '(a:1)' } } };
     const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
-    component = shallow(<LibraryMapComponent {...props} />, { context });
+    component = shallow(<LibraryMapComponent {...props} store={context.store} />, { context });
   });
 
   it('should render the MapView', () => {

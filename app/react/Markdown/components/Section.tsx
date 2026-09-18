@@ -1,6 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import sift from 'sift';
 
+import type { JSX } from 'react';
+
 interface EntitySectionProps {
   showIf: any;
   children: JSX.Element;

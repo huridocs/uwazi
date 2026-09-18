@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { actions as formActions } from 'react-redux-form';
 
 import { actions } from '#app/BasicReducer/index.js';
@@ -11,27 +11,27 @@ import * as types from '#app/Pages/actions/actionTypes.js';
 import { PageType } from '#shared/types/pageType.js';
 
 export function loadPages() {
-  return async (dispatch: Dispatch<{}>) => {
+  return async (dispatch: AppDispatch) => {
     const pages = await api.get(new RequestParams());
     dispatch(actions.set('pages', pages));
   };
 }
 
 export function resetPage() {
-  return (dispatch: Dispatch<{}>) => {
+  return (dispatch: AppDispatch) => {
     dispatch(formActions.reset('page.data'));
     dispatch(formActions.setInitial('page.data'));
   };
 }
 
 export function updateValue(model: string, value: any) {
-  return (dispatch: Dispatch<{}>) => {
+  return (dispatch: AppDispatch) => {
     dispatch(formActions.change(`page.data${model}`, value));
   };
 }
 
 export function savePage(data: PageType, navigate: Function) {
-  return (dispatch: Dispatch<{}>) => {
+  return (dispatch: AppDispatch) => {
     dispatch({ type: types.SAVING_PAGE });
     return api
       .save(new RequestParams(data))
@@ -56,7 +56,7 @@ export function savePage(data: PageType, navigate: Function) {
 }
 
 export function deletePage(page: PageType) {
-  return (dispatch: Dispatch<{}>) =>
+  return (dispatch: AppDispatch) =>
     api.delete(new RequestParams({ sharedId: page.sharedId })).then(() => {
       dispatch(actions.remove('pages', page));
     });
