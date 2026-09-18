@@ -391,7 +391,6 @@ const testingEnvironment = {
         UwaziDispatcherFactory(
           tenant.name,
           ExecutionContext.mongoTransactionManager,
-          undefined,
           DefaultTestingQueueAdapter(ExecutionContext.mongoTransactionManager)
         ),
       idGenerator: IdGeneratorFactory.default,

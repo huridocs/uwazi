@@ -12,11 +12,7 @@ class AIAssistantFactory {
       pollScheduler: new AIAssistantJobScheduler({
         dispatcher: DefaultDispatcher(
           ExecutionContext.tenant.name,
-          ExecutionContext.mongoTransactionManager,
-          {
-            lockWindow: 10_000,
-            maxRetries: 60,
-          }
+          ExecutionContext.mongoTransactionManager
         ),
       }),
     });
@@ -28,11 +24,7 @@ class AIAssistantFactory {
       pollScheduler: new AIAssistantJobScheduler({
         dispatcher: DefaultDispatcher(
           ExecutionContext.tenant.name,
-          ExecutionContext.mongoTransactionManager,
-          {
-            lockWindow: 10_000,
-            maxRetries: 60,
-          }
+          ExecutionContext.mongoTransactionManager
         ),
       }),
     });

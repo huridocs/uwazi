@@ -11,14 +11,12 @@ import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispa
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
-const ONE_HOUR_MS = 60 * 60 * 1000;
-
 const createAddLanguageJobsDispatcher = (
   tenantName: string,
   transactionManager: MongoTransactionManager
 ): JobsDispatcher => {
   if (process.env.NODE_ENV !== 'test') {
-    return UwaziDispatcherFactory(tenantName, transactionManager, { lockWindow: ONE_HOUR_MS });
+    return UwaziDispatcherFactory(tenantName, transactionManager);
   }
 
   const innerDispatcher = new SyncDispatcherForTests({});

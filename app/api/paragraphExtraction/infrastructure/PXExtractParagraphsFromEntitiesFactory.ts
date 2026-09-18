@@ -29,9 +29,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
         mongoTransactionManager,
       });
 
-    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager, {
-      lockWindow: 1000 * 60,
-    });
+    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager);
 
     return new PXExtractParagraphsFromEntities({
       entitiesStatusDS,

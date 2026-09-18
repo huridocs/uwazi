@@ -12,10 +12,7 @@ export class AcceptSuggestionsFactory {
     const tName = tenantName || tenants.current().name;
     const dispatcher: JobsDispatcher = UwaziDispatcherFactory(
       tName,
-      TransactionManagerFactory.mongo(),
-      {
-        lockWindow: 1000 * 60 * 10,
-      }
+      TransactionManagerFactory.mongo()
     );
     const useCase = new AcceptSuggestionsUseCase();
     const job = new AcceptSuggestionsJob({ tenantName: tName, useCase, dispatcher, batchSize });

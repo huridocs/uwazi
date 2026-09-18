@@ -167,9 +167,7 @@ export function registerJobs(register: Register) {
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
-      lockWindow: 1000 * 60,
-    });
+    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default());
 
     return new CreateParagraphExtractionEntityStatusesJob(
       {

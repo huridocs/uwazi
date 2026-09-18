@@ -4,17 +4,16 @@ import {
   DispatchOptions,
   JobsDispatcher,
 } from '../application/contracts/JobsDispatcher.js';
+import { JobQueueOptions, queueOptionsOf } from '../application/QueueOptions.js';
 import { PushJobInput, QueueAdapter } from './QueueAdapter.js';
 
-interface QueueOptions {
-  lockWindow?: number;
-  maxRetries?: number;
-}
-
-const optionsDefaults: Required<QueueOptions> = {
+const optionsDefaults: Required<JobQueueOptions> = {
   lockWindow: 1000 * 60 * 10,
   maxRetries: 5,
 };
+
+const definedOnly = (options: JobQueueOptions): JobQueueOptions =>
+  Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined));
 
 export class NamespacedDispatcher implements JobsDispatcher {
   private namespace: string;
@@ -23,21 +22,10 @@ export class NamespacedDispatcher implements JobsDispatcher {
 
   private adapter: QueueAdapter;
 
-  private options: Required<QueueOptions>;
-
-  constructor(
-    namespace: string,
-    queueName: string,
-    adapter: QueueAdapter,
-    options: QueueOptions = {}
-  ) {
+  constructor(namespace: string, queueName: string, adapter: QueueAdapter) {
     this.namespace = namespace;
     this.queueName = queueName;
     this.adapter = adapter;
-    this.options = {
-      ...optionsDefaults,
-      ...options,
-    };
   }
 
   async deleteByParams<T extends Dispatchable>(
@@ -58,22 +46,40 @@ export class NamespacedDispatcher implements JobsDispatcher {
     return this.adapter.countByName(dispatchable.name, this.namespace);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private resolveOptions<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    options: DispatchOptions = {}
+  ): Required<JobQueueOptions> {
+    const { lockWindow, maxRetries } = options;
+    return {
+      ...optionsDefaults,
+      ...definedOnly(queueOptionsOf(dispatchable)),
+      ...definedOnly({ lockWindow, maxRetries }),
+    };
+  }
+
+  private buildJob<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Parameters<T['handleDispatch']>[1],
+    options?: DispatchOptions
+  ): PushJobInput {
+    return {
+      queue: this.queueName,
+      name: dispatchable.name,
+      params,
+      namespace: this.namespace,
+      options: this.resolveOptions(dispatchable, options),
+      ...(options?.lockedUntil !== undefined ? { lockedUntil: options.lockedUntil } : {}),
+    };
+  }
+
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],
     options?: DispatchOptions
   ): Promise<void> {
-    await this.adapter.pushJob({
-      queue: this.queueName,
-      name: dispatchable.name,
-      params,
-      namespace: this.namespace,
-      options: {
-        lockWindow: this.options.lockWindow,
-        maxRetries: this.options.maxRetries,
-      },
-      ...(options?.lockedUntil !== undefined ? { lockedUntil: options.lockedUntil } : {}),
-    });
+    await this.adapter.pushJob(this.buildJob(dispatchable, params, options));
   }
 
   async dispatchMany(
@@ -92,17 +98,7 @@ export class NamespacedDispatcher implements JobsDispatcher {
       params: Parameters<T['handleDispatch']>[1],
       options?: DispatchOptions
     ) => {
-      jobs.push({
-        queue: this.queueName,
-        name: dispatchable.name,
-        params,
-        namespace: this.namespace,
-        options: {
-          lockWindow: this.options.lockWindow,
-          maxRetries: this.options.maxRetries,
-        },
-        ...(options?.lockedUntil !== undefined ? { lockedUntil: options.lockedUntil } : {}),
-      });
+      jobs.push(this.buildJob(dispatchable, params, options));
     };
 
     await callback(dispatch);
@@ -112,5 +108,3 @@ export class NamespacedDispatcher implements JobsDispatcher {
     }
   }
 }
-
-export type { QueueOptions };

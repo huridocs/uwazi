@@ -854,9 +854,7 @@ class InformationExtraction {
       'processing_model'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo(), {
-      lockWindow: 1000 * 60 * 20,
-    });
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo());
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
@@ -978,9 +976,7 @@ class InformationExtraction {
       'processing_auto_accept'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo(), {
-      lockWindow: 1000 * 60 * 10,
-    });
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo());
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });

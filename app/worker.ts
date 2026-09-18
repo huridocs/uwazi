@@ -43,12 +43,8 @@ DB.connect(config.DBHOST, config.DBAUTH)
     const services: Record<string, any> = {
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
-      px_paragraphs_results: new PXParagraphsResultListener((tenant, queueOptions) =>
-        UwaziDispatcherFactory(
-          tenant,
-          TransactionManagerFactory.createForSharedDataBase(),
-          queueOptions
-        )
+      px_paragraphs_results: new PXParagraphsResultListener(tenant =>
+        UwaziDispatcherFactory(tenant, TransactionManagerFactory.createForSharedDataBase())
       ),
       information_extractor: new InformationExtraction(),
       preserve_integration: new DistributedLoop(

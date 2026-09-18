@@ -10,7 +10,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { JobsRouter } from '../infrastructure/JobsRouter.js';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
-import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
+import { NamespacedDispatcher } from '../infrastructure/NamespacedDispatcher.js';
 import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
 import { QueueAdapter } from '../infrastructure/QueueAdapter.js';
 
@@ -42,7 +42,6 @@ export function TestingRoundRobinQueueAdapter() {
 export function DefaultDispatcher(
   tenant: string,
   transactionManager: TransactionManager,
-  queueOptions?: QueueOptions,
   queueAdapter?: QueueAdapter
 ): JobsDispatcher {
   return new JobsRouter(
@@ -50,8 +49,7 @@ export function DefaultDispatcher(
       new NamespacedDispatcher(
         tenant,
         queueName,
-        queueAdapter || DefaultQueueAdapter(transactionManager),
-        queueOptions
+        queueAdapter || DefaultQueueAdapter(transactionManager)
       )
   );
 }

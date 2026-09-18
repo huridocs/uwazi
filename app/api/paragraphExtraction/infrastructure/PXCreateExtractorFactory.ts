@@ -17,9 +17,7 @@ export class PXCreateExtractorFactory {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.mongo();
 
-    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager, {
-      lockWindow: 1000 * 60,
-    });
+    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager);
     const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });
