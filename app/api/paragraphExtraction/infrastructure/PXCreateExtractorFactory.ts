@@ -1,25 +1,18 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
 
-interface PXCreateExtractorFactoryProps {
-  tenantName: string;
-}
-
 export class PXCreateExtractorFactory {
-  static async createDefault(props: PXCreateExtractorFactoryProps) {
+  static async createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
-
-    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager);
+    const { transactionManager, mongoTransactionManager } = ExecutionContext;
     const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     return new PXCreateExtractor({
@@ -30,10 +23,10 @@ export class PXCreateExtractorFactory {
       }),
       idGenerator: MongoIdHandler,
       templatesDS: TemplatesDataSourceFactory.default({
-        transactionManager: mongoTransactionManager,
+        transactionManager,
       }),
-      transactionManager: mongoTransactionManager,
-      dispatcher,
+      transactionManager,
+      dispatcher: ExecutionContext.jobsDispatcher,
     });
   }
 }

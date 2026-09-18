@@ -1,8 +1,6 @@
 /* eslint-disable max-statements */
 import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { DB } from '#api/odm/index.js';
@@ -43,9 +41,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
     const services: Record<string, any> = {
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
-      px_paragraphs_results: new PXParagraphsResultListener(tenant =>
-        UwaziDispatcherFactory(tenant, TransactionManagerFactory.createForSharedDataBase())
-      ),
+      px_paragraphs_results: new PXParagraphsResultListener(),
       information_extractor: new InformationExtraction(),
       preserve_integration: new DistributedLoop(
         'preserve_integration',

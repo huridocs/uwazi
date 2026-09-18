@@ -1,5 +1,4 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -7,14 +6,13 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 type FactoryOptions = {
   transactionManager?: TransactionManager;
@@ -31,7 +29,7 @@ class CsvCreateThesauriValuesJobFactory {
 
   // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     let mongoTransactionManager: MongoTransactionManager | undefined;
     const getMongoTransactionManager = () => {
       if (mongoTransactionManager) {
@@ -40,7 +38,7 @@ class CsvCreateThesauriValuesJobFactory {
       mongoTransactionManager =
         transactionManager instanceof MongoTransactionManager
           ? transactionManager
-          : TransactionManagerFactory.mongo();
+          : ExecutionContext.mongoTransactionManager;
       return mongoTransactionManager;
     };
     const csvImportsDS =
@@ -49,8 +47,7 @@ class CsvCreateThesauriValuesJobFactory {
     const thesauriValuesDS =
       options.thesauriValuesDS ??
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(getMongoTransactionManager());
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const thesauriDS =
       options.thesauriDS ??
       ThesauriDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });
@@ -61,7 +58,7 @@ class CsvCreateThesauriValuesJobFactory {
       transactionManager: getMongoTransactionManager(),
     });
     const thesauriService = new ThesauriService({
-      dispatcher: new DispatcherAdapter(jobsDispatcher),
+      dispatcher: DispatcherFactory.default(jobsDispatcher),
       thesauriDS,
       thesaurusTranslationService: new ThesaurusTranslationService({
         settingsDS,

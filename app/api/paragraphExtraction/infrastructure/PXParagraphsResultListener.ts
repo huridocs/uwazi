@@ -1,4 +1,6 @@
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { PXExtractionKey } from '../domain/PXExtractionKey.js';
@@ -23,9 +25,9 @@ export class PXParagraphsResultListener {
 
   private taskManager: TaskManager;
 
-  private buildDispatcher: (tenant: string) => JobsDispatcher;
+  private buildDispatcher: () => JobsDispatcher;
 
-  constructor(buildDispatcher: (tenant: string) => JobsDispatcher) {
+  constructor(buildDispatcher: () => JobsDispatcher = () => ExecutionContext.jobsDispatcher) {
     this.buildDispatcher = buildDispatcher;
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
@@ -36,17 +38,20 @@ export class PXParagraphsResultListener {
   private async processResults(results: ResultMessage) {
     const extractionKey = new PXExtractionKey(results.key);
 
-    const dispatcher = this.buildDispatcher(extractionKey.tenantName);
-
-    await dispatcher.dispatch(PXCreateParagraphsJob, {
-      results: {
-        success: results.success,
-        data_url: results.data_url,
-        error_message: results.error_message,
-      },
-      entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
-      userId: extractionKey.userId,
+    // TaskManager already runs this inside runInJobContext(message.tenant), but PX result messages
+    // carry no `tenant` field (the request only sends `key`), so that context is the default
+    // tenant's. The extraction's tenant is only known from the key.
+    await runInJobContext(extractionKey.tenantName, async () => {
+      await this.buildDispatcher().dispatch(PXCreateParagraphsJob, {
+        results: {
+          success: results.success,
+          data_url: results.data_url,
+          error_message: results.error_message,
+        },
+        entityStatusId: extractionKey.entityStatusId,
+        tenantName: extractionKey.tenantName,
+        userId: extractionKey.userId,
+      });
     });
   }
 

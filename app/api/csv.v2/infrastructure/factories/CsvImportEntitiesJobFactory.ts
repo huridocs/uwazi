@@ -1,12 +1,10 @@
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -14,11 +12,11 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
 import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 type FactoryOptions = {
   transactionManager?: TransactionManager;
@@ -76,7 +74,7 @@ const buildEntitiesService = (params: {
     settingsDS: params.settingsDS,
     templatesDS: params.templatesDS,
     entitiesDS: params.entitiesDS,
-    dispatcher: new DispatcherAdapter(params.jobsDispatcher),
+    dispatcher: DispatcherFactory.default(params.jobsDispatcher),
   });
 
 const buildEntityServices = (
@@ -120,10 +118,9 @@ class CsvImportEntitiesJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const dataSources = buildCsvDataSources(transactionManager);
     const services = buildEntityServices(transactionManager, fileStorage, jobsDispatcher);
     const mapper = new CsvEntitiesImportMapper(

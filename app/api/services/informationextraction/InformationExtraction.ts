@@ -7,7 +7,6 @@ import { ObjectId } from 'mongodb';
 import moment from 'moment';
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '#api/odm/index.js';
@@ -41,7 +40,6 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
 import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
@@ -58,6 +56,7 @@ import {
 import { ExtractionKey } from './ExtractionKey.js';
 import { IXTrainModelJob } from './TrainModelJob.js';
 import { IXServices } from './IXServices.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const defaultTrainingLanguage = 'en';
 
@@ -854,7 +853,7 @@ class InformationExtraction {
       'processing_model'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo());
+    const dispatcher = ExecutionContext.jobsDispatcher;
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
@@ -976,7 +975,7 @@ class InformationExtraction {
       'processing_auto_accept'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo());
+    const dispatcher = ExecutionContext.jobsDispatcher;
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });

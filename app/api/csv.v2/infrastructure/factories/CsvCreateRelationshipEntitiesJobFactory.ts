@@ -1,8 +1,6 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -22,15 +20,14 @@ class CsvCreateRelationshipEntitiesJobFactory {
 
   // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const relationshipValuesDS =
       CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
     const relationshipPendingValuesDS =
       CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
     const templatesDS = TemplatesDataSourceFactory.cached({ transactionManager });
     const entitiesService = EntitiesServiceFactory.default({

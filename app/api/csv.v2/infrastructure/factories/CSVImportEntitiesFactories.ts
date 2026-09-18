@@ -1,9 +1,8 @@
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -54,12 +53,11 @@ export class CSVImportEntitiesFactories {
   }
 
   static default() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
-    const tenant = tenants.current();
     const fileStorage = FileStorageFactory.default();
     const idGenerator = IdGeneratorFactory.default();
-    const jobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager);
+    const { jobsDispatcher } = ExecutionContext;
     return new CsvImportEntities({
       csvImportsDS,
       fileStorage,
@@ -70,13 +68,12 @@ export class CSVImportEntitiesFactories {
   }
 
   static CSVPreflightJobDefault() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const tenant = tenants.current();
-    const jobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager);
+    const { jobsDispatcher } = ExecutionContext;
     return new CsvPreflightJob({
       csvImportsDS,
       rowsDS: this.CSVImportRowsDSDefault(transactionManager),

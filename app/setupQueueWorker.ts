@@ -11,10 +11,7 @@ import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import {
-  DefaultDispatcher,
-  RoundRobinQueueAdapter,
-} from '#api/core/libs/queue/configuration/factories.js';
+import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
@@ -28,6 +25,7 @@ import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
@@ -75,8 +73,7 @@ function register<T extends Dispatchable>(
         tenant: tenants.current(),
         factories: {
           ...transactionManagerFactories(),
-          jobsDispatcher: () =>
-            DefaultDispatcher(namespace, ExecutionContext.mongoTransactionManager),
+          jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace),
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,

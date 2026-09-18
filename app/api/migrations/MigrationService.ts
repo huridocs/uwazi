@@ -16,7 +16,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructure/writers/MigrationHumanReadableWriter.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
@@ -81,7 +81,7 @@ type MigrationServiceDeps = {
 
 const createDefaultDispatcher: DispatcherFactory = async (options: { async: boolean }) => {
   if (options.async) {
-    return DefaultDispatcher('system', TransactionManagerFactory.createForSharedDataBase());
+    return JobsDispatcherFactory.system();
   }
 
   const registry: JobRegistry = {};

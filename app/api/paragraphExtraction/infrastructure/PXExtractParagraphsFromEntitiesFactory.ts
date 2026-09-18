@@ -1,8 +1,7 @@
 import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities.js';
@@ -20,7 +19,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
     const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
+      props.mongoTransactionManager ?? ExecutionContext.mongoTransactionManager;
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??
@@ -29,11 +28,9 @@ export class PXExtractParagraphsFromEntitiesFactory {
         mongoTransactionManager,
       });
 
-    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager);
-
     return new PXExtractParagraphsFromEntities({
       entitiesStatusDS,
-      dispatcher,
+      dispatcher: ExecutionContext.jobsDispatcher,
       tenantName: props.tenantName,
     });
   }

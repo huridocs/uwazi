@@ -17,6 +17,7 @@ jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'),
   DefaultQueueAdapter: jest.fn(),
   DefaultDispatcher: () => {
     const {
