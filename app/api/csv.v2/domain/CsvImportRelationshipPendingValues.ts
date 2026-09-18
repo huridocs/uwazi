@@ -1,4 +1,5 @@
 type CsvImportRelationshipPendingValuesProps = {
+  id: string;
   importId: string;
   templateId: string;
   titles: string[];
@@ -6,6 +7,7 @@ type CsvImportRelationshipPendingValuesProps = {
 };
 
 class CsvImportRelationshipPendingValues {
+  readonly id!: string;
   readonly importId!: string;
   readonly templateId!: string;
   readonly titles!: string[];
@@ -21,6 +23,7 @@ class CsvImportRelationshipPendingValues {
 
   toPersistence() {
     return {
+      id: this.id,
       importId: this.importId,
       templateId: this.templateId,
       titles: this.titles,

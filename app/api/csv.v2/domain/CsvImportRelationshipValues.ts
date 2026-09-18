@@ -4,6 +4,7 @@ type CsvImportRelationshipValue = {
 };
 
 type CsvImportRelationshipValuesProps = {
+  id: string;
   importId: string;
   templateId: string;
   values: CsvImportRelationshipValue[];
@@ -11,6 +12,8 @@ type CsvImportRelationshipValuesProps = {
 };
 
 class CsvImportRelationshipValues {
+  readonly id!: string;
+
   readonly importId!: string;
 
   readonly templateId!: string;
@@ -29,6 +32,7 @@ class CsvImportRelationshipValues {
 
   toPersistence() {
     return {
+      id: this.id,
       importId: this.importId,
       templateId: this.templateId,
       values: this.values,

@@ -42,6 +42,7 @@ const mongoSchema = new mongoose.Schema({
     featureFlagLibraryV2: Boolean,
     postgresCore: Boolean,
     postgresPages: Boolean,
+    postgresCsv: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
     translationService: Boolean,
