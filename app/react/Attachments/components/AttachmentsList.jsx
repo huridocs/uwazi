@@ -85,8 +85,4 @@ AttachmentsList.propTypes = {
   entity: PropTypes.object,
 };
 
-AttachmentsList.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 export { AttachmentsList };

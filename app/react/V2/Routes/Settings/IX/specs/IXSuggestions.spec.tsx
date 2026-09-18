@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import { api } from '#app/utils/api.js';
@@ -76,23 +76,26 @@ jest.mock('#V2/Components/PDFViewer', () => ({
   PDF: jest.fn(),
 }));
 
-const testCheckboxes = async (expectedSelected?: string) => {
-  thesauri[0].values.forEach(async value => {
-    const checkbox = await screen.findByLabelText(value.label);
-    if (value.label === expectedSelected) {
-      expect(checkbox).toBeChecked();
-    } else {
-      expect(checkbox).not.toBeChecked();
-    }
-  });
-};
-
 const findSidepanel = async () => {
   try {
     return await screen.findByRole('dialog');
   } catch (_) {
     return screen.findByRole('complementary');
   }
+};
+
+const testCheckboxes = async (expectedSelected?: string) => {
+  const sidepanel = await findSidepanel();
+  await waitFor(() => {
+    thesauri[0].values.forEach(value => {
+      const checkbox = within(sidepanel).getByLabelText(value.label);
+      if (value.label === expectedSelected) {
+        expect(checkbox).toBeChecked();
+      } else {
+        expect(checkbox).not.toBeChecked();
+      }
+    });
+  });
 };
 
 const openSuggestion = async (index: number, title: string) => {

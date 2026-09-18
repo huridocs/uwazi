@@ -7,6 +7,12 @@ import * as ReactDOM from 'react-dom';
 import { MessageChannel } from 'node:worker_threads';
 import { configureEnzymeReact19 } from './setUpEnzymeReact19.js';
 
+if (typeof Element !== 'undefined' && typeof Element.prototype.getAnimations !== 'function') {
+  Element.prototype.getAnimations = function getAnimations() {
+    return [];
+  };
+}
+
 const findDOMNode = component => {
   if (component == null) {
     return null;

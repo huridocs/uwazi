@@ -1,6 +1,8 @@
 import { act, cloneElement, isValidElement } from 'react';
 import Enzyme, { ReactWrapper, ShallowWrapper } from 'enzyme';
 
+global.currentlyValidatingElement = global.currentlyValidatingElement ?? null;
+
 const origShallow = Enzyme.shallow.bind(Enzyme);
 const origDive = ShallowWrapper.prototype.dive;
 

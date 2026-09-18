@@ -246,9 +246,11 @@ describe('CopyFromModal', () => {
     const region = screen.getByRole('checkbox', { name: /Region/i });
     const ratified = screen.getByRole('checkbox', { name: /Ratified ACHR/i });
     const accepts = screen.getByRole('checkbox', { name: /Accepts Court jurisdiction/i });
-    expect(region).toBeChecked();
-    expect(ratified).toBeChecked();
-    expect(accepts).toBeChecked();
+    await waitFor(() => {
+      expect(region).toBeChecked();
+      expect(ratified).toBeChecked();
+      expect(accepts).toBeChecked();
+    });
     expect(screen.getByText('North America')).toHaveClass('line-through');
     expect(screen.getByText('South America')).toBeInTheDocument();
     expect(screen.getByText('1981')).toHaveClass('line-through');

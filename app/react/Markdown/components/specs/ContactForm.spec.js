@@ -1,9 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { act } from 'react';
 import { shallow } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
 import { Captcha } from '#app/ReactReduxForms/index.js';
 import { api } from '#app/utils/api.js';
@@ -17,7 +16,7 @@ describe('ContactForm', () => {
   const formValues = { name: 'test', email: 'test@test.com', message: 'test' };
 
   const prepareMocks = () => {
-    instance = component.instance();
+    instance = component.find(ContactForm).instance();
     instance.refreshCaptcha = jest.fn();
     instance.formDispatch = jest.fn();
     component.find(LocalForm).props().getDispatch(instance.formDispatch);
