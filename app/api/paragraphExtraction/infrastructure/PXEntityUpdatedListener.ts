@@ -2,7 +2,7 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
@@ -27,47 +27,54 @@ type OnTemplateChangedProps = {
 };
 
 export class PXEntityUpdatedListener {
+  private dependencies!: Dependencies;
+
   private eventBus: EventsBus;
 
   constructor(eventBus: EventsBus) {
     this.eventBus = eventBus;
   }
 
-  /**
-   * Built per event, from the context of the tenant the event belongs to. Paragraph extraction
-   * stores are Mongo-only; files and settings follow the tenant's postgresCore flag.
-   */
-  private static buildDependencies(): Dependencies {
+  private setupDependencies() {
     const connection = getConnection();
-    const { mongoTransactionManager } = ExecutionContext;
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
-    return {
-      extractorsDS: PXExtractorsDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      }),
-      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      }),
-      filesDS: FilesDataSourceFactory.default(),
-      settingsDS: SettingsDataSourceFactory.default(),
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+
+    this.dependencies = {
+      entitiesStatusDS,
+      extractorsDS,
+      filesDS,
+      settingsDS,
     };
   }
 
-  private static async onTemplateChanged(
-    dependencies: Dependencies,
-    { newEntity, oldEntity }: OnTemplateChangedProps
-  ) {
-    await dependencies.entitiesStatusDS.deleteBySourceEntity(oldEntity.sharedId!);
+  private async onTemplateChanged({ newEntity, oldEntity }: OnTemplateChangedProps) {
+    await this.dependencies.entitiesStatusDS.deleteBySourceEntity(oldEntity.sharedId!);
 
-    const extractor = await dependencies.extractorsDS.getBySourceTemplate(
+    const extractor = await this.dependencies.extractorsDS.getBySourceTemplate(
       newEntity.template!.toString()
     );
 
-    const languages = (await dependencies.settingsDS.getInstalledLanguages()).map(l => l.ISO639_1!);
+    const languages = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
+      l => l.ISO639_1!
+    );
 
-    const documentsInInstalledLanguage = await dependencies.filesDS.getProcessedDocsForEntity(
+    const documentsInInstalledLanguage = await this.dependencies.filesDS.getProcessedDocsForEntity(
       newEntity.sharedId!,
       { languages }
     );
@@ -76,30 +83,29 @@ export class PXEntityUpdatedListener {
       return;
     }
 
-    await dependencies.entitiesStatusDS.createWithStatus({
+    await this.dependencies.entitiesStatusDS.createWithStatus({
       entitySharedId: newEntity.sharedId!,
       extractorId: extractor.id,
       status: EntityStatus.New,
     });
   }
 
-  private static async afterEntityUpdated({ before, after }: EntityUpdatedEvent['data']) {
+  private async afterEntityUpdated({ before, after }: EntityUpdatedEvent['data']) {
     const templateHasChanged = after[0].template?.toString() !== before[0].template?.toString();
 
     if (!templateHasChanged) {
       return;
     }
 
-    await PXEntityUpdatedListener.onTemplateChanged(PXEntityUpdatedListener.buildDependencies(), {
-      oldEntity: before[0],
-      newEntity: after[0],
-    });
+    this.setupDependencies();
+
+    await this.onTemplateChanged({ oldEntity: before[0], newEntity: after[0] });
   }
 
   start() {
     this.eventBus.on(
       EntityUpdatedEvent,
-      featureFlaggedHandler('paragraphExtraction', PXEntityUpdatedListener.afterEntityUpdated)
+      featureFlaggedHandler('paragraphExtraction', this.afterEntityUpdated.bind(this))
     );
   }
 }

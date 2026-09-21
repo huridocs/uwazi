@@ -6,7 +6,7 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
@@ -24,56 +24,56 @@ type Dependencies = {
 };
 
 export class PXFilesDeletedListener {
+  private dependencies!: Dependencies;
+
   private eventBus: EventsBus;
 
   constructor(eventBus: EventsBus) {
     this.eventBus = eventBus;
   }
 
-  /**
-   * Built per event, from the context of the tenant the event belongs to. Paragraph extraction
-   * stores are Mongo-only; files and settings follow the tenant's postgresCore flag.
-   */
-  private static buildDependencies(): Dependencies {
-    return {
-      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
-        connection: getConnection(),
-        mongoTransactionManager: ExecutionContext.mongoTransactionManager,
-      }),
-      filesDS: FilesDataSourceFactory.default(),
-      settingsDS: SettingsDataSourceFactory.default(),
-      fileStorage: FileStorageFactory.default(),
-    };
+  private setupDependencies() {
+    const connection = getConnection();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+    const fileStorage = FileStorageFactory.default();
+
+    this.dependencies = { entitiesStatusDS, filesDS, settingsDS, fileStorage };
   }
 
-  private static async getDocumentsInInstalledLanguages(
-    dependencies: Dependencies,
+  private async getDocumentsInInstalledLanguages(
     sharedId: string,
     installedLanguages: LanguageISO6391[]
   ) {
     const documentsInInstalledLanguages =
-      await dependencies.filesDS.getProcessedDocsForEntity(sharedId);
+      await this.dependencies.filesDS.getProcessedDocsForEntity(sharedId);
 
     return documentsInInstalledLanguages.filter(
       d => d.language !== undefined && installedLanguages.includes(d.language)
     );
   }
 
-  private static async getInitialData(dependencies: Dependencies, deletedDocuments: PDFDocument[]) {
-    const entityStatus = await dependencies.entitiesStatusDS.getExisting({
+  private async getInitialData(deletedDocuments: PDFDocument[]) {
+    const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
 
-    const installedLanguages = (await dependencies.settingsDS.getInstalledLanguages()).map(
+    const installedLanguages = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
       l => l.key
     );
 
-    const documentsInInstalledLanguages =
-      await PXFilesDeletedListener.getDocumentsInInstalledLanguages(
-        dependencies,
-        deletedDocuments[0].entity,
-        installedLanguages
-      );
+    const documentsInInstalledLanguages = await this.getDocumentsInInstalledLanguages(
+      deletedDocuments[0].entity,
+      installedLanguages
+    );
 
     return {
       entityStatus,
@@ -83,12 +83,9 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private static async onDocumentsDeleted(
-    dependencies: Dependencies,
-    deletedDocuments: PDFDocument[]
-  ) {
+  private async onDocumentsDeleted(deletedDocuments: PDFDocument[]) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
-      await PXFilesDeletedListener.getInitialData(dependencies, deletedDocuments);
+      await this.getInitialData(deletedDocuments);
 
     if (!entityStatus) {
       return;
@@ -129,20 +126,20 @@ export class PXFilesDeletedListener {
     }
 
     if (documentsInInstalledLanguages.length) {
-      await dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
+      await this.dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
     } else {
-      await dependencies.entitiesStatusDS.delete(entityStatus.id);
+      await this.dependencies.entitiesStatusDS.delete(entityStatus.id);
     }
   }
 
-  private static async afterFilesDeleted({ files }: FilesDeletedEvent['data']) {
-    const dependencies = PXFilesDeletedListener.buildDependencies();
+  private async afterFilesDeleted({ files }: FilesDeletedEvent['data']) {
+    this.setupDependencies();
 
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
         FileMappers.toModel(d as any, {
-          contentLoader: dependencies.fileStorage.getFile.bind(dependencies.fileStorage),
+          contentLoader: this.dependencies.fileStorage.getFile.bind(this.dependencies.fileStorage),
         })
       );
 
@@ -150,8 +147,7 @@ export class PXFilesDeletedListener {
       return;
     }
 
-    await PXFilesDeletedListener.onDocumentsDeleted(
-      dependencies,
+    await this.onDocumentsDeleted(
       deletedDocuments.filter((d): d is PDFDocument => d instanceof PDFDocument)
     );
   }
@@ -159,7 +155,7 @@ export class PXFilesDeletedListener {
   start() {
     this.eventBus.on(
       FilesDeletedEvent,
-      featureFlaggedHandler('paragraphExtraction', PXFilesDeletedListener.afterFilesDeleted)
+      featureFlaggedHandler('paragraphExtraction', this.afterFilesDeleted.bind(this))
     );
   }
 }

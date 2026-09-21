@@ -85,10 +85,6 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-/** Events are emitted inside a request or job context in production. */
-const emitInContext = async (bus: EventsBus, event: Parameters<EventsBus['emit']>[0]) =>
-  testingEnvironment.runWithContext(async () => bus.emit(event));
-
 describe('PXFilesDeletedListener', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(createFixtures(), { postgres: true });
@@ -116,7 +112,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentPt];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -144,7 +140,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentPt];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -167,7 +163,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentPt];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -193,7 +189,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentPt];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -218,7 +214,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentPt];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -235,7 +231,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [customFile];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -252,7 +248,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [documentEs, customFile];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -277,7 +273,7 @@ describe('PXFilesDeletedListener', () => {
       ];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
@@ -294,7 +290,7 @@ describe('PXFilesDeletedListener', () => {
       const files: FileType[] = [{ ...documentEn, entity: new ObjectId().toString() }];
 
       await testingEnvironment.runWithContext(async () => {
-        await emitInContext(eventBus, new FilesDeletedEvent({ files }));
+        await eventBus.emit(new FilesDeletedEvent({ files }));
       });
 
       const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(

@@ -98,10 +98,6 @@ const createSut = () => {
   };
 };
 
-/** Events are emitted inside a request or job context in production. */
-const emitInContext = async (bus: EventsBus, event: Parameters<EventsBus['emit']>[0]) =>
-  testingEnvironment.runWithContext(async () => bus.emit(event));
-
 describe('PXEntityUpdatedListener', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(createFixtures(), { postgres: true });
@@ -132,8 +128,7 @@ describe('PXEntityUpdatedListener', () => {
 
         const { eventsBus } = createSut();
 
-        await emitInContext(
-          eventsBus,
+        await eventsBus.emit(
           new EntityUpdatedEvent({
             before: entity1.map(e => ({ ...e, template: template._id })),
             after: entity1,
@@ -157,8 +152,7 @@ describe('PXEntityUpdatedListener', () => {
         const { eventsBus } = createSut();
 
         await testingEnvironment.runWithContext(async () => {
-          await emitInContext(
-            eventsBus,
+          await eventsBus.emit(
             new EntityUpdatedEvent({
               before: entity1.map(e => ({ ...e, template: template._id })),
               after: entity1,
@@ -190,8 +184,7 @@ describe('PXEntityUpdatedListener', () => {
         const { eventsBus } = createSut();
 
         await testingEnvironment.runWithContext(async () => {
-          await emitInContext(
-            eventsBus,
+          await eventsBus.emit(
             new EntityUpdatedEvent({
               before: entity1,
               after: entity1.map(e => ({ ...e, template: template._id })),
@@ -218,8 +211,7 @@ describe('PXEntityUpdatedListener', () => {
         const { eventsBus } = createSut();
 
         await testingEnvironment.runWithContext(async () => {
-          await emitInContext(
-            eventsBus,
+          await eventsBus.emit(
             new EntityUpdatedEvent({
               before: entity1,
               after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
@@ -254,8 +246,7 @@ describe('PXEntityUpdatedListener', () => {
 
         const { eventsBus } = createSut();
 
-        await emitInContext(
-          eventsBus,
+        await eventsBus.emit(
           new EntityUpdatedEvent({
             after: entity1,
             before: entity1.map(e => ({ ...e, template: new ObjectId(e.template?.toString()) })),

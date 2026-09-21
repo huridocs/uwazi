@@ -1,4 +1,3 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 /* eslint-disable max-statements */
 import mimetypes from 'mime-types';
 import path from 'path';
@@ -13,6 +12,7 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
@@ -106,11 +106,11 @@ const saveEvidence =
         null;
 
       // Set up V2 services
-      const { transactionManager } = ExecutionContext;
-      const entitiesDS = EntitiesDataSourceFactory.default();
-      const settingsDS = SettingsDataSourceFactory.default();
-      const thesauriDS = ThesauriDataSourceFactory.default();
-      const translationsDS = TranslationsDataSourceFactory.default();
+      const transactionManager = TransactionManagerFactory.mongo();
+      const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
       const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
         entitiesDS,
