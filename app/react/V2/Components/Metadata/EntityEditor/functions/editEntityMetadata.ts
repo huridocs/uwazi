@@ -134,12 +134,17 @@ type PlanSharedMetadataSyncOptions = {
   force?: boolean;
 };
 
-const planSharedMetadataSync = (
-  currentValues: EditEntityFormValues,
-  metadataProperties: FormMetadataProperty[],
-  entityMetadata?: Entity['metadata'],
-  options?: PlanSharedMetadataSyncOptions
-): SharedMetadataSync => {
+const planSharedMetadataSync = ({
+  currentValues,
+  metadataProperties,
+  entityMetadata,
+  options,
+}: {
+  currentValues: EditEntityFormValues;
+  metadataProperties: FormMetadataProperty[];
+  entityMetadata?: Entity['metadata'];
+  options?: PlanSharedMetadataSyncOptions;
+}): SharedMetadataSync => {
   const currentMetadata = currentValues.metadata ?? {};
   if (!options?.force && isSameMetadataShape(currentMetadata, metadataProperties)) {
     return { type: 'noop' };

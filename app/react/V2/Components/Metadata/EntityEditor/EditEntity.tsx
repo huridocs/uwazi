@@ -148,8 +148,11 @@ const EditEntity = ({
   useEffect(() => {
     const templateChanged = previousTemplateRef.current !== selectedTemplate;
     previousTemplateRef.current = selectedTemplate;
-    const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata, {
-      force: templateChanged,
+    const plan = planSharedMetadataSync({
+      currentValues: getValues(),
+      metadataProperties,
+      entityMetadata: entity?.metadata,
+      options: { force: templateChanged },
     });
     if (plan.type === 'noop') return;
     reset(plan.values, plan.options);

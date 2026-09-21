@@ -162,24 +162,34 @@ const getFirstEditEntityErrorPath = (
   return findFirstMetadataErrorPath(errors.metadata, metadataProperties);
 };
 
-const applyScalarEditEntityError = (
-  setError: UseFormSetError<EditEntityFormValues>,
-  path: 'title' | 'template',
-  message: string | undefined,
-  appliedPaths: Set<string>
-) => {
+const applyScalarEditEntityError = ({
+  setError,
+  path,
+  message,
+  appliedPaths,
+}: {
+  setError: UseFormSetError<EditEntityFormValues>;
+  path: 'title' | 'template';
+  message: string | undefined;
+  appliedPaths: Set<string>;
+}) => {
   if (!message) return;
 
   setError(path, { type: 'server', message });
   appliedPaths.add(path);
 };
 
-const applyMetadataEditEntityErrors = (
-  setError: UseFormSetError<EditEntityFormValues>,
-  metadataErrors: Record<string, string | undefined>,
-  metadataProperties: FormMetadataProperty[],
-  appliedPaths: Set<string>
-) => {
+const applyMetadataEditEntityErrors = ({
+  setError,
+  metadataErrors,
+  metadataProperties,
+  appliedPaths,
+}: {
+  setError: UseFormSetError<EditEntityFormValues>;
+  metadataErrors: Record<string, string | undefined>;
+  metadataProperties: FormMetadataProperty[];
+  appliedPaths: Set<string>;
+}) => {
   const relationshipPrimaryNames = buildRelationshipPrimaryNames(metadataProperties);
   const propertyByName = new Map(metadataProperties.map(property => [property.name, property]));
 
@@ -207,11 +217,21 @@ const applyEditEntityErrors = (
 
   const appliedPaths = new Set<string>();
 
-  applyScalarEditEntityError(setError, 'title', errors.title, appliedPaths);
-  applyScalarEditEntityError(setError, 'template', errors.template, appliedPaths);
+  applyScalarEditEntityError({ setError, path: 'title', message: errors.title, appliedPaths });
+  applyScalarEditEntityError({
+    setError,
+    path: 'template',
+    message: errors.template,
+    appliedPaths,
+  });
 
   if (errors.metadata) {
-    applyMetadataEditEntityErrors(setError, errors.metadata, metadataProperties, appliedPaths);
+    applyMetadataEditEntityErrors({
+      setError,
+      metadataErrors: errors.metadata,
+      metadataProperties,
+      appliedPaths,
+    });
   }
 };
 

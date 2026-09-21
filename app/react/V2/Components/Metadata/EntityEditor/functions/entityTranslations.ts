@@ -76,11 +76,10 @@ const rekeyEditEntityLanguage = ({
   };
 };
 
-const isMissingTranslation = (values?: MetadataObjectSchema[]) =>
-  values === undefined || values.length === 0;
+const isMissingTranslation = (values?: MetadataObjectSchema[]) => !values?.length;
 
 const isBlankTitle = (values?: MetadataObjectSchema[]) =>
-  isMissingTranslation(values) || (values.length === 1 && values[0]?.value === '');
+  isMissingTranslation(values) || (values?.length === 1 && values[0]?.value === '');
 
 const setTranslationTouched = ({
   touched,
@@ -105,10 +104,10 @@ const pickTranslationValue = ({
   fallback: MetadataObjectSchema[];
   touched: boolean;
   blankFallsBack: boolean;
-}) => {
+}): MetadataObjectSchema[] => {
   if (touched) return existing ?? textValues('');
-  if (blankFallsBack) return isBlankTitle(existing) ? fallback : existing;
-  return isMissingTranslation(existing) ? fallback : existing;
+  if (blankFallsBack) return isBlankTitle(existing) ? fallback : (existing ?? fallback);
+  return isMissingTranslation(existing) ? fallback : (existing ?? fallback);
 };
 
 const completeLanguageBucket = ({

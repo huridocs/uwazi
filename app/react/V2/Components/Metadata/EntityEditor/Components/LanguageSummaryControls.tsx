@@ -85,7 +85,7 @@ const LanguageSummaryControls = ({
       <button
         type="button"
         tabIndex={probe ? -1 : undefined}
-        onClick={probe || disabled ? undefined : onAutoTranslate}
+        onClick={probe || disabled || !canTranslate ? undefined : onAutoTranslate}
         aria-disabled={!canTranslate || undefined}
         aria-label={step === 3 ? t('System', 'Auto-translate', null, false) : undefined}
         title={probe ? undefined : translateTitle}
