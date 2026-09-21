@@ -5,7 +5,7 @@
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> [--force]
  *
  * Migrates the collections gated by the tenant's active Postgres feature flags
- * (postgresCore, postgresPages).
+ * (postgresCore, postgresPages, postgresCsv).
  *
  * By default a collection is skipped when its PostgreSQL table already contains
  * data for the tenant. Pass --force to migrate anyway (non-destructive: existing
@@ -41,6 +41,12 @@ import {
   IXModelsMigrationConfig,
   IXSuggestionsMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
+import { CsvImportsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportsMigrationConfig.js';
+import { CsvImportRowsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRowsMigrationConfig.js';
+import { CsvImportRowErrorsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRowErrorsMigrationConfig.js';
+import { CsvImportThesauriValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportThesauriValuesMigrationConfig.js';
+import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipPendingValuesMigrationConfig.js';
+import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
 
 const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
@@ -60,12 +66,18 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   // A page's locales are nested in the mongo document, so they are their own pass.
   page_locales: PageLocalesMigrationConfig,
   page_releases: PageReleaseMigrationConfig,
+  csv_imports: CsvImportsMigrationConfig,
+  csv_import_rows: CsvImportRowsMigrationConfig,
+  csv_import_row_errors: CsvImportRowErrorsMigrationConfig,
+  csv_import_thesauri_values: CsvImportThesauriValuesMigrationConfig,
+  csv_import_relationships_pending_values: CsvImportRelationshipPendingValuesMigrationConfig,
+  csv_import_relationships_values: CsvImportRelationshipValuesMigrationConfig,
 };
 
 // Collections grouped by the feature flag that gates their migration. A group is
 // migrated only when its flag is active on the tenant, in the order listed: a table
 // comes after the tables its foreign keys reference.
-const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
+const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', string[]> = {
   postgresCore: [
     'thesauri',
     'templates',
@@ -82,6 +94,14 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
     'settings',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
+  postgresCsv: [
+    'csv_imports',
+    'csv_import_rows',
+    'csv_import_row_errors',
+    'csv_import_thesauri_values',
+    'csv_import_relationships_pending_values',
+    'csv_import_relationships_values',
+  ],
 };
 
 function log(message: string) {
