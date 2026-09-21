@@ -74,7 +74,21 @@ describe('JobsDispatcherFactory', () => {
       { postgresCore: true, jobs: postgresJobs },
       { postgresCore: false, jobs: mongoJobs },
     ])(
-      'should not join the use case transaction (postgresCore: $postgresCore)',
+      'should commit the job with the use case transaction (postgresCore: $postgresCore)',
+      async ({ postgresCore, jobs }) => {
+        await inTenantContext(postgresCore, async () =>
+          ExecutionContext.transactionManager.run(dispatch)
+        );
+
+        expect(await jobs()).toHaveLength(1);
+      }
+    );
+
+    it.each([
+      { postgresCore: true, jobs: postgresJobs },
+      { postgresCore: false, jobs: mongoJobs },
+    ])(
+      'should roll the job back with the use case transaction (postgresCore: $postgresCore)',
       async ({ postgresCore, jobs }) => {
         await expect(
           inTenantContext(postgresCore, async () =>
@@ -85,7 +99,7 @@ describe('JobsDispatcherFactory', () => {
           )
         ).rejects.toThrow('rolled back');
 
-        expect(await jobs()).toHaveLength(1);
+        expect(await jobs()).toEqual([]);
       }
     );
   });

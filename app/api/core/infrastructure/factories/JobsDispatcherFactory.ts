@@ -4,32 +4,37 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import {
   DefaultDispatcher,
   DefaultPostgresQueueAdapter,
+  DefaultQueueAdapter,
 } from '#api/core/libs/queue/configuration/factories.js';
 import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { UwaziDispatcherFactory } from '../jobs/UwaziDispatcherFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 const SYSTEM_NAMESPACE = 'system';
 
-type MongoQueueAdapterFactory = () => QueueAdapter;
+type MongoQueueAdapterFactory = (transactionManager: MongoTransactionManager) => QueueAdapter;
 
 /**
  * Builds the one JobsDispatcher an ExecutionContext exposes. Wire it as the context's
  * `jobsDispatcher` factory; everything else reads ExecutionContext.jobsDispatcher.
  *
- * Inserting a job is not part of the use case's transaction: the queue adapters never get the
- * transaction manager the use case runs on, so every dispatch commits on its own.
+ * A dispatch joins the transaction the use case runs on: postgresCore tenants get the Postgres
+ * adapter on the context's Postgres manager, other tenants the Mongo adapter on its Mongo manager.
+ * Those are the instances ExecutionContext.transactionManager resolves to for the same flag.
  */
 class JobsDispatcherFactory {
   /** Dispatches into the current tenant's namespace, on the backend its postgresCore flag selects. */
-  static default(mongoQueueAdapter?: MongoQueueAdapterFactory): JobsDispatcher {
+  static default(
+    mongoQueueAdapter: MongoQueueAdapterFactory = DefaultQueueAdapter
+  ): JobsDispatcher {
     const queueAdapter = isPostgresCoreActive()
-      ? DefaultPostgresQueueAdapter()
-      : mongoQueueAdapter?.();
+      ? DefaultPostgresQueueAdapter(ExecutionContext.postgresTransactionManager)
+      : mongoQueueAdapter(ExecutionContext.mongoTransactionManager);
 
     return UwaziDispatcherFactory(
       ExecutionContext.currentTenant.name,
-      TransactionManagerFactory.createForSharedDataBase(),
+      ExecutionContext.transactionManager,
       queueAdapter
     );
   }

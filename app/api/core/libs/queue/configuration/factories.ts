@@ -22,7 +22,7 @@ export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(getSharedConnection(), transactionManager);
 }
 
-export function DefaultPostgresQueueAdapter(transactionManager?: PostgresTransactionManager) {
+export function DefaultPostgresQueueAdapter(transactionManager: PostgresTransactionManager) {
   return new PostgresQueueAdapter({
     workerKnex: PostgresDB.knex,
     transactionManager,
