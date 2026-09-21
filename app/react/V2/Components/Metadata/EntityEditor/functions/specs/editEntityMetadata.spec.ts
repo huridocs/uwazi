@@ -86,6 +86,8 @@ describe('buildEditEntitySaveInput', () => {
     showIcon: false,
     icon: { _id: 'icon-1', type: 'Icons', label: 'Icon' },
     metadata: { simple_text: [{ value: 'hello' }] },
+    translations: {},
+    touchedTranslations: {},
   };
 
   it('should format metadata and clear icon when showIcon is false', () => {
@@ -188,6 +190,35 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.propertySelections).toBeUndefined();
   });
+
+  it('includes complete translations for other installed languages', () => {
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values: {
+        ...values,
+        translations: {
+          es: {
+            title: [{ value: 'Actualizado' }],
+            simple_text: [{ value: 'hola' }],
+          },
+        },
+      },
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish' },
+        { key: 'fr', label: 'French', installing: true },
+      ],
+    });
+    expect(saved.translations).toEqual({
+      es: {
+        title: [{ value: 'Actualizado' }],
+        simple_text: [{ value: 'hola' }],
+      },
+    });
+  });
 });
 
 describe('isEntityEditorDirty', () => {
@@ -217,6 +248,8 @@ const baseValues = (metadata: EditEntityFormValues['metadata']): EditEntityFormV
   showIcon: false,
   icon: EMPTY_ICON,
   metadata,
+  translations: {},
+  touchedTranslations: {},
 });
 
 describe('mergeSharedFormMetadata', () => {

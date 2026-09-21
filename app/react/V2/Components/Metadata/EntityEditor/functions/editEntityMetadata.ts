@@ -1,11 +1,12 @@
 import type { ClientFile } from '#app/istore.js';
 import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
-import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import type { LanguagesListSchema, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
+import { buildTranslationsForSave } from './entityTranslations.js';
 import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
 import {
   groupRelationshipProperties,
@@ -19,6 +20,7 @@ type BuildEditEntitySaveInputArgs = {
   metadataProperties: FormMetadataProperty[];
   pendingAttachments: ClientFile[];
   mediaPropertyNames: Set<string>;
+  languages?: LanguagesListSchema;
   mainDocumentId?: string;
   draftPropertySelections?: PropertySelectionSchema[];
 };
@@ -61,10 +63,17 @@ const buildEditEntitySaveInput = ({
   metadataProperties,
   pendingAttachments,
   mediaPropertyNames,
+  languages = [],
   mainDocumentId,
   draftPropertySelections,
 }: BuildEditEntitySaveInputArgs): EntitySaveInput => {
   const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
+  const translations = buildTranslationsForSave({
+    values,
+    metadataProperties,
+    languages,
+    currentLanguage: entity.language,
+  });
   const saved: EntitySaveInput = {
     ...entity,
     title: values.title || entity.title,
@@ -79,6 +88,7 @@ const buildEditEntitySaveInput = ({
         mediaPropertyNames
       ),
     ],
+    ...(translations ? { translations } : {}),
   };
 
   if (mainDocumentId && draftPropertySelections && draftPropertySelections.length > 0) {

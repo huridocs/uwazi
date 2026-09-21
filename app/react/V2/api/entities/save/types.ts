@@ -3,6 +3,7 @@ import type { RequestContext } from '#shared/apiClient/index.js';
 import type { MediaPropertyContext } from '#shared/entitySave/types.js';
 import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { Entity, FileType } from '../types.js';
 
 type EntityFile = FileType;
@@ -13,6 +14,7 @@ type SaveWithFilesAttachment = ExistingAttachment | ClientFile;
 type SaveWithFilesEntity = Omit<EntityWithFilesSchema, 'documents' | 'attachments'> & {
   documents?: SaveWithFilesDocument[];
   attachments?: SaveWithFilesAttachment[];
+  translations?: EntityTranslationsDTO;
 };
 type SaveWithFilesResponse = {
   entity?: Entity;

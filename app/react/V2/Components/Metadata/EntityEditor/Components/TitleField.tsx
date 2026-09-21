@@ -1,9 +1,10 @@
 import React from 'react';
-import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
+import { FieldValues, Path, RegisterOptions, useFormContext, useWatch } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
-import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
+import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
 import { EntityPdfFillField } from './EntityPdfFillField.js';
+import { EntityTranslationField } from './EntityTranslationField.js';
 
 type TitleFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -21,8 +22,9 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
   disabled,
 }: TitleFieldProps<TFormValues>) => {
   const { register, setValue, getFieldState, formState } = useFormContext<TFormValues>();
-  const fieldState = getFieldState(field, formState);
+  const { showError, message } = getFieldErrorState(getFieldState(field, formState));
   const registration = register(field, registerOptions);
+  const currentValue = String(useWatch({ name: field }) ?? '');
 
   return (
     <EntityPdfFillField
@@ -33,27 +35,42 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
       pdfFill={{ name: 'title', coerceType: 'text' }}
     >
       {slot => (
-        <Textarea
-          id={field}
-          label={
-            <>
-              <Translate context={context}>{label}</Translate>
-              {registerOptions?.required && '*'}
-            </>
-          }
-          disabled={disabled}
-          hasErrors={fieldState.invalid}
-          errorMessage={getFieldErrorMessage(fieldState.error)}
-          rows={2}
-          resize="none"
-          overlay={slot?.overlay}
-          labelAccessory={slot?.labelAccessory}
-          latched={slot?.latched}
-          onClick={slot?.onClick}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...registration}
-          onFocus={() => slot?.onFocus()}
-        />
+        <>
+          <Textarea
+            id={field}
+            label={
+              <>
+                <Translate context={context}>{label}</Translate>
+                {registerOptions?.required && '*'}
+              </>
+            }
+            disabled={disabled}
+            hasErrors={showError}
+            rows={2}
+            resize="none"
+            overlay={slot?.overlay}
+            labelAccessory={slot?.labelAccessory}
+            latched={slot?.latched}
+            onClick={slot?.onClick}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...registration}
+            onFocus={() => slot?.onFocus()}
+          />
+          <EntityTranslationField
+            propertyName="title"
+            label={label}
+            idPrefix={String(field)}
+            currentValue={currentValue}
+            onCurrentChange={value =>
+              setValue(field, value as TFormValues[typeof field], {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            messageSlot={translationMessageSlot(showError, message)}
+            disabled={disabled}
+          />
+        </>
       )}
     </EntityPdfFillField>
   );

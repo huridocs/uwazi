@@ -1,3 +1,4 @@
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
@@ -9,6 +10,8 @@ type EditEntityFormValues = {
   showIcon: boolean;
   icon: EntityIcon;
   metadata: Record<string, MetadataValue[]>;
+  translations: EntityTranslationsDTO;
+  touchedTranslations: Record<string, Record<string, boolean>>;
 };
 
 type TemplatePropertyInput = {
@@ -56,6 +59,8 @@ const buildEditEntityDefaultValues = (
       ?.properties?.map(mapTemplateProperty) || [],
     entity?.metadata
   ),
+  translations: entity?.translations ?? {},
+  touchedTranslations: {},
 });
 
 export { buildEditEntityDefaultValues, mapTemplateProperty };

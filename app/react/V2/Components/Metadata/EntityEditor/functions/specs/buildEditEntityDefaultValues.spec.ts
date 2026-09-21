@@ -49,6 +49,8 @@ describe('buildEditEntityDefaultValues', () => {
     expect(values.template).toBe('t1');
     expect(values.showIcon).toBe(false);
     expect(values.metadata.text_prop).toEqual([{ value: 'hello' }]);
+    expect(values.translations).toEqual({});
+    expect(values.touchedTranslations).toEqual({});
   });
 
   it('returns empty defaults when entity is missing', () => {
@@ -59,6 +61,8 @@ describe('buildEditEntityDefaultValues', () => {
       showIcon: false,
       icon: { _id: null, type: 'Empty', label: '' },
       metadata: {},
+      translations: {},
+      touchedTranslations: {},
     });
   });
 });

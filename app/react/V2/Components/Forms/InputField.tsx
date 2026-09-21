@@ -170,7 +170,7 @@ const InputField = React.forwardRef(
           )}
           {overlay}
         </div>
-        {errorMessage && <InputError>{errorMessage}</InputError>}
+        {errorMessage ? <InputError>{errorMessage}</InputError> : null}
       </div>
     );
   }

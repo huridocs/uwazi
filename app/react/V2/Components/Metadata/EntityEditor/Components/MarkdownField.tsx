@@ -8,8 +8,10 @@ import {
   EntityFieldError,
   EntityFieldLabel,
   getFieldErrorState,
+  translationMessageSlot,
 } from '../functions/fieldErrorState.js';
 import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
+import { EntityTranslationField } from './EntityTranslationField.js';
 
 type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -18,6 +20,7 @@ type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   pdfFill?: PdfFillTarget;
+  translatableName?: string;
 };
 
 type MarkdownFieldMode = 'write' | 'preview';
@@ -34,6 +37,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   pdfFill,
+  translatableName,
 }: MarkdownFieldProps<TFormValues>) => {
   const { control, setValue } = useFormContext<TFormValues>();
   const [mode, setMode] = useState<MarkdownFieldMode>('write');
@@ -143,7 +147,20 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
                     </div>
                   )}
                 </div>
-                <EntityFieldError showError={showError} message={message} />
+                {translatableName ? (
+                  <EntityTranslationField
+                    propertyName={translatableName}
+                    label={label}
+                    idPrefix={String(field)}
+                    currentValue={value}
+                    onCurrentChange={next => fieldController.onChange(next)}
+                    multiline
+                    messageSlot={translationMessageSlot(showError, message)}
+                    disabled={disabled}
+                  />
+                ) : (
+                  <EntityFieldError showError={showError} message={message} />
+                )}
               </>
             );
           }}

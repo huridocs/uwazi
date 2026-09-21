@@ -5,6 +5,8 @@ import { t } from '#app/I18N/index.js';
 import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
+import { settingsAtom } from '#V2/atoms/index.js';
+import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
@@ -18,6 +20,7 @@ import {
   planSharedMetadataSync,
   isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
+import { rekeyEditEntityLanguage } from './functions/entityTranslations.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
@@ -52,6 +55,8 @@ const EditEntity = ({
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
+  const settings = useAtomValue(settingsAtom);
+  const { language } = useEntityLanguage();
   const { handleSubmit, control, getValues, setValue, reset, setError } = formContext;
   const { isDirty, dirtyFields } = useFormState({ control });
   const selectedTemplate = useWatch({ control, name: 'template' });
@@ -59,6 +64,7 @@ const EditEntity = ({
   const previousTemplateRef = useRef(selectedTemplate);
   const { draftPropertySelections } = usePdfFill();
   const hasDirtyFields = Object.keys(dirtyFields).length > 0;
+  const languageRef = useRef(language);
 
   useEffect(() => {
     onDirtyChange?.(isEntityEditorDirty(isDirty || hasDirtyFields, draftPropertySelections.length));
@@ -84,6 +90,21 @@ const EditEntity = ({
     () => activeTemplate?.properties?.map(mapTemplateProperty) || [],
     [activeTemplate]
   );
+
+  useEffect(() => {
+    const previous = languageRef.current;
+    if (previous === language) return;
+    languageRef.current = language;
+    reset(
+      rekeyEditEntityLanguage({
+        values: getValues(),
+        fromLanguage: previous,
+        toLanguage: language,
+        metadataProperties,
+      }),
+      { keepDirty: true }
+    );
+  }, [getValues, language, metadataProperties, reset]);
   const displayProperties = useMemo(
     () =>
       sortByTemplatePropertyOrder(
@@ -173,6 +194,7 @@ const EditEntity = ({
           metadataProperties,
           pendingAttachments,
           mediaPropertyNames,
+          languages: settings.languages ?? [],
           mainDocumentId,
           draftPropertySelections,
         })

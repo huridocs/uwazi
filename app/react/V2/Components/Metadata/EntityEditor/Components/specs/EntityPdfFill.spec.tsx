@@ -106,6 +106,8 @@ const Host = ({
         numeric_prop: [{ value: '' }],
         date_prop: [{ value: null }],
       },
+      translations: {},
+      touchedTranslations: {},
     },
   });
   return (

@@ -99,6 +99,7 @@ const EditEntityPropertyField = ({
         registerOptions={registerOptions}
         disabled={disabled}
         type={property.type === 'numeric' ? 'number' : 'text'}
+        translatableName={property.type === 'text' ? property.name : undefined}
         pdfFill={{
           name: property.name,
           propertyId: property._id,
@@ -277,6 +278,7 @@ const EditEntityPropertyField = ({
         field={field}
         registerOptions={registerOptions}
         disabled={disabled}
+        translatableName={property.name}
         pdfFill={{
           name: property.name,
           propertyId: property._id,

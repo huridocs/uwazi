@@ -1,6 +1,7 @@
 import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import type { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { FileType } from '#shared/types/fileType.js';
 import type { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -13,6 +14,7 @@ type EntitySaveAttachment = PersistedEntityFile | ClientFile;
 type EntitySaveInput = Omit<EntityWithFilesSchema, 'documents' | 'attachments'> & {
   documents?: EntitySaveDocument[];
   attachments?: EntitySaveAttachment[];
+  translations?: EntityTranslationsDTO;
 };
 
 type EntityReadOptions = ServiceRequestOptions & {
