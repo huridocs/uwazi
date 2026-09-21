@@ -123,7 +123,7 @@ class MutateEntityController extends AbstractController<Request> {
       })
     );
 
-    await this.respond(entity.sharedId, isMultipart);
+    await this.respond(entity.sharedId, isMultipart, parsed.language as LanguageISO6391);
     this.request.emitToSessionSocket('documentProcessed', entity.sharedId);
   }
 
@@ -168,7 +168,11 @@ class MutateEntityController extends AbstractController<Request> {
       })
     );
 
-    await this.respondWithTranslations(entity.sharedId, isMultipart);
+    await this.respondWithTranslations(
+      entity.sharedId,
+      isMultipart,
+      parsed.language as LanguageISO6391
+    );
     this.request.emitToSessionSocket('documentProcessed', entity.sharedId);
   }
 
@@ -206,7 +210,7 @@ class MutateEntityController extends AbstractController<Request> {
   private async respondWithTranslations(
     sharedId: string,
     isMultipart: boolean,
-    language: LanguageISO6391 = this.language
+    language: LanguageISO6391
   ) {
     const entity = await EntitiesQueryServiceFactory.default(this.user).getEntity({
       sharedId,
@@ -261,11 +265,7 @@ class MutateEntityController extends AbstractController<Request> {
     }
   }
 
-  private async respond(
-    sharedId: string,
-    isMultipart: boolean,
-    language: LanguageISO6391 = this.language
-  ) {
+  private async respond(sharedId: string, isMultipart: boolean, language: LanguageISO6391) {
     const [entity] = await EntitiesDAOFactory.default({ user: this.user }).find(
       { sharedId, language },
       { withFiles: true }
