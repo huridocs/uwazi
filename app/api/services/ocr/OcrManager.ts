@@ -1,3 +1,4 @@
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
@@ -7,7 +8,6 @@ import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -126,7 +126,7 @@ const saveResultFile = async (
   const fileId = IdGeneratorFactory.default().generate();
   const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
 
-  const transactionManager = TransactionManagerFactory.mongo();
+  const { transactionManager } = ExecutionContext;
   const filesService = FilesServiceFactory.default(
     {},
     {

@@ -4,6 +4,8 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { tenants } from '#api/tenants/index.js';
+import { DB } from '#api/odm/index.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
@@ -43,6 +45,10 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
+/** Events are emitted inside a request or job context in production. */
+const emitInContext = async (bus: EventsBus, event: Parameters<EventsBus['emit']>[0]) =>
+  testingEnvironment.runWithContext(async () => bus.emit(event));
+
 describe('PXEntityDeletedListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(createFixtures());
@@ -58,7 +64,7 @@ describe('PXEntityDeletedListener', () => {
     const eventBus = new EventsBus();
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    await emitInContext(eventBus, new EntityDeletedEvent({ entity: entities }));
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -71,7 +77,8 @@ describe('PXEntityDeletedListener', () => {
     const eventBus = new EventsBus();
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(
+    await emitInContext(
+      eventBus,
       new EntityDeletedEvent({
         entity: factory.entityInMultipleLanguages(['en', 'pt'], 'entity_not_processed'),
       })
@@ -84,12 +91,44 @@ describe('PXEntityDeletedListener', () => {
     expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
   });
 
+  it('should delete from the database of the tenant each event belongs to', async () => {
+    const eventBus = new EventsBus();
+    new PXEntityDeletedListener(eventBus).start();
+    const firstTenant = testingTenants.current();
+    const otherDbName = `${firstTenant.dbName.slice(0, 40)}_other_tenant`;
+    const otherDb = DB.mongodb_Db(otherDbName);
+    await otherDb.collection(mongoPXEntitiesStatusCollection).insertOne({ ...mongoEntityStatus });
+
+    await emitInContext(
+      eventBus,
+      new EntityDeletedEvent({
+        entity: factory.entityInMultipleLanguages(['en'], 'entity_not_processed'),
+      })
+    );
+
+    testingTenants.changeCurrentTenant({
+      name: 'other_tenant',
+      dbName: otherDbName,
+      featureFlags: { paragraphExtraction: true },
+    });
+    try {
+      await emitInContext(eventBus, new EntityDeletedEvent({ entity: entities }));
+
+      expect(await otherDb.collection(mongoPXEntitiesStatusCollection).find().toArray()).toEqual(
+        []
+      );
+    } finally {
+      testingTenants.mockCurrentTenant(firstTenant);
+      await otherDb.dropDatabase();
+    }
+  });
+
   it('should do nothing if feature flag not enabled', async () => {
     const eventBus = new EventsBus();
     tenants.current().featureFlags!.paragraphExtraction = false;
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    await emitInContext(eventBus, new EntityDeletedEvent({ entity: entities }));
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection

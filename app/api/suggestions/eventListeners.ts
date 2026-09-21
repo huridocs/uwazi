@@ -8,7 +8,6 @@ import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateD
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { Suggestions } from './suggestions.js';
@@ -25,9 +24,7 @@ const featureIsEnabled = async () =>
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.mongo(),
-    }),
+    settingsDS: SettingsDataSourceFactory.default(),
     logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(
       TemplatesDAOFactory.default()
@@ -70,9 +67,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.mongo(),
-    }),
+    settingsDS: SettingsDataSourceFactory.default(),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: LoggerFactory.default(),
   })).start();

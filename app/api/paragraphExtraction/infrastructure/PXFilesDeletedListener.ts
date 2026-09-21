@@ -6,7 +6,7 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
@@ -24,56 +24,56 @@ type Dependencies = {
 };
 
 export class PXFilesDeletedListener {
-  private dependencies!: Dependencies;
-
   private eventBus: EventsBus;
 
   constructor(eventBus: EventsBus) {
     this.eventBus = eventBus;
   }
 
-  private setupDependencies() {
-    const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
-    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-      connection,
-      mongoTransactionManager,
-    });
-
-    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
-    });
-    const fileStorage = FileStorageFactory.default();
-
-    this.dependencies = { entitiesStatusDS, filesDS, settingsDS, fileStorage };
+  /**
+   * Built per event, from the context of the tenant the event belongs to. Paragraph extraction
+   * stores are Mongo-only; files and settings follow the tenant's postgresCore flag.
+   */
+  private static buildDependencies(): Dependencies {
+    return {
+      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
+        connection: getConnection(),
+        mongoTransactionManager: ExecutionContext.mongoTransactionManager,
+      }),
+      filesDS: FilesDataSourceFactory.default(),
+      settingsDS: SettingsDataSourceFactory.default(),
+      fileStorage: FileStorageFactory.default(),
+    };
   }
 
-  private async getDocumentsInInstalledLanguages(
+  private static async getDocumentsInInstalledLanguages(
+    dependencies: Dependencies,
     sharedId: string,
     installedLanguages: LanguageISO6391[]
   ) {
     const documentsInInstalledLanguages =
-      await this.dependencies.filesDS.getProcessedDocsForEntity(sharedId);
+      await dependencies.filesDS.getProcessedDocsForEntity(sharedId);
 
     return documentsInInstalledLanguages.filter(
       d => d.language !== undefined && installedLanguages.includes(d.language)
     );
   }
 
-  private async getInitialData(deletedDocuments: PDFDocument[]) {
-    const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
+  private static async getInitialData(dependencies: Dependencies, deletedDocuments: PDFDocument[]) {
+    const entityStatus = await dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
 
-    const installedLanguages = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
+    const installedLanguages = (await dependencies.settingsDS.getInstalledLanguages()).map(
       l => l.key
     );
 
-    const documentsInInstalledLanguages = await this.getDocumentsInInstalledLanguages(
-      deletedDocuments[0].entity,
-      installedLanguages
-    );
+    const documentsInInstalledLanguages =
+      await PXFilesDeletedListener.getDocumentsInInstalledLanguages(
+        dependencies,
+        deletedDocuments[0].entity,
+        installedLanguages
+      );
 
     return {
       entityStatus,
@@ -83,9 +83,12 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: PDFDocument[]) {
+  private static async onDocumentsDeleted(
+    dependencies: Dependencies,
+    deletedDocuments: PDFDocument[]
+  ) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
-      await this.getInitialData(deletedDocuments);
+      await PXFilesDeletedListener.getInitialData(dependencies, deletedDocuments);
 
     if (!entityStatus) {
       return;
@@ -126,20 +129,20 @@ export class PXFilesDeletedListener {
     }
 
     if (documentsInInstalledLanguages.length) {
-      await this.dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
+      await dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
     } else {
-      await this.dependencies.entitiesStatusDS.delete(entityStatus.id);
+      await dependencies.entitiesStatusDS.delete(entityStatus.id);
     }
   }
 
-  private async afterFilesDeleted({ files }: FilesDeletedEvent['data']) {
-    this.setupDependencies();
+  private static async afterFilesDeleted({ files }: FilesDeletedEvent['data']) {
+    const dependencies = PXFilesDeletedListener.buildDependencies();
 
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
         FileMappers.toModel(d as any, {
-          contentLoader: this.dependencies.fileStorage.getFile.bind(this.dependencies.fileStorage),
+          contentLoader: dependencies.fileStorage.getFile.bind(dependencies.fileStorage),
         })
       );
 
@@ -147,7 +150,8 @@ export class PXFilesDeletedListener {
       return;
     }
 
-    await this.onDocumentsDeleted(
+    await PXFilesDeletedListener.onDocumentsDeleted(
+      dependencies,
       deletedDocuments.filter((d): d is PDFDocument => d instanceof PDFDocument)
     );
   }
@@ -155,7 +159,7 @@ export class PXFilesDeletedListener {
   start() {
     this.eventBus.on(
       FilesDeletedEvent,
-      featureFlaggedHandler('paragraphExtraction', this.afterFilesDeleted.bind(this))
+      featureFlaggedHandler('paragraphExtraction', PXFilesDeletedListener.afterFilesDeleted)
     );
   }
 }
