@@ -211,7 +211,7 @@ CSV import jobs are **not** in that feature. Confirmed: we do **not** wire `Sync
 |---------|-------|
 | Tenant flag | `postgresCsv` |
 | Local env | `FEATURE_FLAG_POSTGRES_CSV=true` (seeds the default tenant only; `config.ts` stays `false` unless that env is set) |
-| Wiring | `config.ts` `defaultTenant.featureFlags`, `tenantContext.ts`, `tenantsModel.ts`, CSV DS factories, `FLAG_GROUPS.postgresCsv` in `migrateToPostgres.ts` |
+| Wiring | `.env.example` `FEATURE_FLAG_POSTGRES_CSV`, `config.ts` `defaultTenant.featureFlags`, `tenantContext.ts`, `tenantsModel.ts`, CSV DS factories, `FLAG_GROUPS.postgresCsv` in `migrateToPostgres.ts` |
 | Default | `false` |
 
 Do not put CSV collections in `FLAG_GROUPS.postgresCore`. Do not require `postgresCore` in code. Assume it in production.
