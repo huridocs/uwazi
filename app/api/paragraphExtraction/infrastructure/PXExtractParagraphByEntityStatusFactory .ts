@@ -1,5 +1,5 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus.js';
@@ -12,7 +12,7 @@ type Props = {
 export class PXExtractParagraphsByEntityStatusFactory {
   static async createDefault({ tenantName }: Props) {
     const connection = getConnection();
-    const { mongoTransactionManager } = ExecutionContext;
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,

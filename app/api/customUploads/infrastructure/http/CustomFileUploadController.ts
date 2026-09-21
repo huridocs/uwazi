@@ -48,9 +48,12 @@ class CustomFileUploadController extends AbstractController {
   }
 
   private useCase() {
-    return CustomFileUploadFactory.default(
-      process.env.NODE_ENV === 'test' ? TransactionManagerFactory.fake() : undefined
-    );
+    const transactionManager =
+      process.env.NODE_ENV === 'test'
+        ? TransactionManagerFactory.fake()
+        : TransactionManagerFactory.mongo();
+
+    return CustomFileUploadFactory.default(transactionManager);
   }
 }
 

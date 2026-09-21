@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
@@ -17,7 +17,7 @@ type Props = {
 class PXCreateEntityStatusesFactory {
   static createDefault(props: Props) {
     const connection = props.connection || getConnection();
-    const transactionManager = props.transactionManager || ExecutionContext.mongoTransactionManager;
+    const transactionManager = props.transactionManager || TransactionManagerFactory.mongo();
 
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 

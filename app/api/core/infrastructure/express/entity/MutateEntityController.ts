@@ -232,7 +232,7 @@ class MutateEntityController extends AbstractController<Request> {
     if (!currentDoc) return { target: parsed, translations };
 
     const resolver = new ATConflictSolver(
-      AutomaticTranslationFactory.defaultATConfigDataSource(),
+      AutomaticTranslationFactory.defaultATConfigDataSource(ExecutionContext.transactionManager),
       ExecutionContext.logger
     );
     const target = await resolver.execute(currentDoc, parsed);

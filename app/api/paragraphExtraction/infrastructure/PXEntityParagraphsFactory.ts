@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
@@ -18,7 +18,7 @@ export class PXEntityParagraphsFactory {
   static createDefault(props?: Props) {
     const connection = props?.connection || getConnection();
     const mongoTransactionManager =
-      props?.mongoTransactionManager || ExecutionContext.mongoTransactionManager;
+      props?.mongoTransactionManager || TransactionManagerFactory.mongo();
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,

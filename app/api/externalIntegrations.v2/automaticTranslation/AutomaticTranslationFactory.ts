@@ -1,4 +1,4 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
@@ -20,15 +20,10 @@ import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig.js'
 import { TranslationResult, translationResultSchema } from './types/TranslationResult.js';
 
 const AutomaticTranslationFactory = {
-  /**
-   * AT config lives only in Mongo. Settings and templates take the Postgres manager from the
-   * context on postgresCore tenants, so the Mongo manager given here only reaches their Mongo side.
-   */
-  defaultATConfigDataSource(
-    transactionManager: TransactionManager = ExecutionContext.mongoTransactionManager
-  ) {
+  defaultATConfigDataSource(transactionManager: TransactionManager) {
+    const db = getConnection();
     return new MongoATConfigDataSource(
-      getConnection(),
+      db,
       transactionManager,
       SettingsDataSourceFactory.default({ transactionManager }),
       TemplatesDataSourceFactory.default({ transactionManager }),
@@ -37,31 +32,34 @@ const AutomaticTranslationFactory = {
   },
 
   defaultGenerateATConfig() {
+    const transactionManager = TransactionManagerFactory.mongo();
     return new GenerateAutomaticTranslationsCofig(
-      AutomaticTranslationFactory.defaultATConfigDataSource(),
-      TemplatesDataSourceFactory.default(),
+      AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
+      TemplatesDataSourceFactory.default({ transactionManager }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   },
 
   defaultSaveEntityTranslations() {
+    const transactionManager = TransactionManagerFactory.mongo();
     return new SaveEntityTranslations(
-      TemplatesDataSourceFactory.default(),
-      EntitiesDataSourceFactory.default(),
-      ExecutionContext.transactionManager,
+      TemplatesDataSourceFactory.default({ transactionManager }),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<TranslationResult>(translationResultSchema),
       LoggerFactory.default()
     );
   },
 
   defaultRequestEntityTranslation() {
+    const transactionManager = TransactionManagerFactory.mongo();
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
-      AutomaticTranslationFactory.defaultATConfigDataSource(),
-      EntitiesDataSourceFactory.default(),
-      ExecutionContext.transactionManager,
+      AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<EntityInputModel>(entityInputDataSchema),
       LoggerFactory.default()
     );
