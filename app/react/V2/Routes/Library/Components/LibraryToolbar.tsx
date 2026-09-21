@@ -11,6 +11,13 @@ import { SearchTipsContent } from '#V2/Routes/Entity/Components/search/index.js'
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import {
+  DEFAULT_THUMB_FIT,
+  DEFAULT_THUMB_FRAME,
+  type ThumbFit,
+  type ThumbFrame,
+} from './libraryCardDisplay.js';
+import { LibraryCardsDisplayOptions } from './LibraryCardsDisplayOptions.js';
+import {
   columnMatchKey,
   DEFAULT_LIBRARY_TABLE_DISPLAY,
   DEFAULT_VISIBLE_COLUMN_IDS,
@@ -35,6 +42,10 @@ type LibraryToolbarProps = {
   onShowThumbnailChange: (value: boolean) => void;
   showMetadata: boolean;
   onShowMetadataChange: (value: boolean) => void;
+  thumbFrame?: ThumbFrame;
+  onThumbFrameChange?: (value: ThumbFrame) => void;
+  thumbFit?: ThumbFit;
+  onThumbFitChange?: (value: ThumbFit) => void;
   tableColumns?: LibraryTableColumnDef[];
   tableColumnGroups?: LibraryTableColumnGroup[];
   tableDisplay?: LibraryTableDisplayState;
@@ -146,34 +157,6 @@ const LibraryTableDisplayOptions = ({
   );
 };
 
-const LibraryCardsDisplayOptions = ({
-  showThumbnail,
-  showMetadata,
-  onShowThumbnailChange,
-  onShowMetadataChange,
-}: {
-  showThumbnail: boolean;
-  showMetadata: boolean;
-  onShowThumbnailChange: (value: boolean) => void;
-  onShowMetadataChange: (value: boolean) => void;
-}) => (
-  <>
-    <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
-      <Translate>Show information</Translate>
-    </p>
-    <DisplayMenuCheckRow
-      label={<Translate>Thumbnail</Translate>}
-      checked={showThumbnail}
-      onToggle={() => onShowThumbnailChange(!showThumbnail)}
-    />
-    <DisplayMenuCheckRow
-      label={<Translate>Metadata</Translate>}
-      checked={showMetadata}
-      onToggle={() => onShowMetadataChange(!showMetadata)}
-    />
-  </>
-);
-
 const LibraryToolbar = ({
   search,
   onSearchChange,
@@ -188,6 +171,10 @@ const LibraryToolbar = ({
   onShowThumbnailChange,
   showMetadata,
   onShowMetadataChange,
+  thumbFrame = DEFAULT_THUMB_FRAME,
+  onThumbFrameChange,
+  thumbFit = DEFAULT_THUMB_FIT,
+  onThumbFitChange,
   tableColumns = [],
   tableColumnGroups,
   tableDisplay = DEFAULT_LIBRARY_TABLE_DISPLAY,
@@ -198,7 +185,9 @@ const LibraryToolbar = ({
   const displayModified =
     view === 'table'
       ? tableDisplayModified(tableColumns, tableDisplay)
-      : !showThumbnail || !showMetadata;
+      : !showThumbnail ||
+        !showMetadata ||
+        (showThumbnail && (thumbFrame !== DEFAULT_THUMB_FRAME || thumbFit !== DEFAULT_THUMB_FIT));
 
   return (
     <div className="flex shrink-0 items-center gap-2 border-b border-border bg-parchment px-3 py-2">
@@ -252,6 +241,10 @@ const LibraryToolbar = ({
             showMetadata={showMetadata}
             onShowThumbnailChange={onShowThumbnailChange}
             onShowMetadataChange={onShowMetadataChange}
+            thumbFrame={thumbFrame}
+            onThumbFrameChange={onThumbFrameChange}
+            thumbFit={thumbFit}
+            onThumbFitChange={onThumbFitChange}
           />
         )}
       </DisplayMenu>

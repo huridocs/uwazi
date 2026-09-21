@@ -2,14 +2,28 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
-import { EntityCard } from '../EntityCard.js';
+import { EntityCard, type EntityCardField } from '../EntityCard.js';
 
-const renderCard = (selected = false) =>
+const defaultFields: EntityCardField[] = [{ id: 'country', label: 'Country', value: 'Spain' }];
+
+const renderCard = ({
+  selected = false,
+  showThumbnail = true,
+  fields = defaultFields,
+  onSelect,
+  onFocusProperty,
+}: {
+  selected?: boolean;
+  showThumbnail?: boolean;
+  fields?: EntityCardField[];
+  onSelect?: () => void;
+  onFocusProperty?: (fieldKey: string) => void;
+} = {}) =>
   render(
     <MemoryRouter>
       <TestAtomStoreProvider
@@ -22,8 +36,11 @@ const renderCard = (selected = false) =>
         <EntityCard
           title="Case file"
           templateId="template1"
-          fields={[{ id: 'country', label: 'Country', value: 'Spain' }]}
+          fields={fields}
           selected={selected}
+          showThumbnail={showThumbnail}
+          onSelect={onSelect}
+          onFocusProperty={onFocusProperty}
           viewHref="/entityv2/abc"
         />
       </TestAtomStoreProvider>
@@ -40,7 +57,33 @@ describe('EntityCard', () => {
   });
 
   it('marks the card as selected', () => {
-    renderCard(true);
-    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
+    renderCard({ selected: true });
+    expect(screen.getByRole('button', { pressed: true })).toBeInTheDocument();
+  });
+
+  it('always reserves the thumbnail slot when thumbnails are on', () => {
+    renderCard();
+    expect(screen.getByTestId('entity-quiet-mark')).toBeInTheDocument();
+  });
+
+  it('hides the thumbnail slot when thumbnails are off', () => {
+    renderCard({ showThumbnail: false });
+    expect(screen.queryByTestId('entity-quiet-mark')).not.toBeInTheDocument();
+  });
+
+  it('opens a media field without selecting the card', () => {
+    const onSelect = jest.fn();
+    const onFocusProperty = jest.fn();
+    renderCard({
+      onSelect,
+      onFocusProperty,
+      fields: [
+        { id: 'recording', label: 'Recording', value: 'hearing.mp4', interactive: true },
+        { id: 'country', label: 'Country', value: 'Spain' },
+      ],
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'hearing.mp4' }));
+    expect(onFocusProperty).toHaveBeenCalledWith('recording');
+    expect(onSelect).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FolderIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { BlankState } from '#V2/Components/UI/BlankState.js';
+import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EntityCard } from '../EntityCard.js';
 import { metadataFieldsForCard, thumbnailFromEntity } from '../cardModel.js';
+import { DEFAULT_THUMB_FIT, DEFAULT_THUMB_FRAME } from '../libraryCardDisplay.js';
 import { LoadMore } from '../LoadMore.js';
 import type { LibraryViewerProps } from './types.js';
 
@@ -21,9 +23,16 @@ const CardViewer = ({
   onLoadMore,
   showThumbnail,
   showMetadata,
+  onFocusProperty,
+  thumbFit = DEFAULT_THUMB_FIT,
+  thumbFrame = DEFAULT_THUMB_FRAME,
 }: CardViewerProps) => {
   const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom) || 'en';
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   const templateById = new Map(templates.map(template => [template._id, template]));
+  const displayContext = useMemo(() => ({ ...metadataDisplayPresets.compact, locale }), [locale]);
 
   if (rows.length === 0) {
     return (
@@ -35,24 +44,39 @@ const CardViewer = ({
     );
   }
 
+  const cardGridCols =
+    thumbFrame === 'portrait' && showThumbnail
+      ? 'grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4'
+      : 'grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3';
+
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className={`grid ${cardGridCols}`}>
         {rows.map(entity => {
           const cardEntity = entity as Entity;
-          const thumbnail = thumbnailFromEntity(cardEntity);
+          const template = templateById.get(entity.template);
+          const thumbnail = thumbnailFromEntity(cardEntity, template, {
+            locale,
+            defaultLanguage,
+          });
           return (
             <EntityCard
               key={entity.sharedId}
               title={entity.title}
               templateId={entity.template}
-              fields={metadataFieldsForCard(cardEntity, templateById.get(entity.template))}
+              fields={metadataFieldsForCard(cardEntity, template, {
+                excludeProperty: thumbnail.propertyName,
+                context: displayContext,
+              })}
               thumbnailSrc={thumbnail.src}
               thumbnailKind={thumbnail.kind}
+              thumbFit={thumbFit}
+              thumbFrame={thumbFrame}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
               selected={selectedId === entity.sharedId}
               onSelect={() => onSelect(entity.sharedId)}
+              onFocusProperty={fieldKey => onFocusProperty?.(entity.sharedId, fieldKey)}
               viewHref={`${entityBasePath}/${entity.sharedId}`}
             />
           );

@@ -11,6 +11,7 @@ import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
+import { DEFAULT_THUMB_FIT, DEFAULT_THUMB_FRAME } from './libraryCardDisplay.js';
 import {
   visibleLibraryTableColumns,
   libraryTableColumnGroups,
@@ -118,6 +119,8 @@ const LibraryView = ({
 }: LibraryViewProps) => {
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [showMetadata, setShowMetadata] = useState(true);
+  const [thumbFrame, setThumbFrame] = useState(DEFAULT_THUMB_FRAME);
+  const [thumbFit, setThumbFit] = useState(DEFAULT_THUMB_FIT);
   const {
     tableColumns,
     tableColumnGroups,
@@ -153,6 +156,10 @@ const LibraryView = ({
               onShowThumbnailChange={setShowThumbnail}
               showMetadata={showMetadata}
               onShowMetadataChange={setShowMetadata}
+              thumbFrame={thumbFrame}
+              onThumbFrameChange={setThumbFrame}
+              thumbFit={thumbFit}
+              onThumbFitChange={setThumbFit}
               tableColumns={tableColumns}
               tableColumnGroups={tableColumnGroups}
               tableDisplay={tableDisplay}
@@ -178,6 +185,8 @@ const LibraryView = ({
                 onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
+                thumbFrame={thumbFrame}
+                thumbFit={thumbFit}
                 aggregations={aggregations}
                 sort={sort}
                 order={order}

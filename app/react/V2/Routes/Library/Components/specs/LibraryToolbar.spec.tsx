@@ -8,6 +8,7 @@ import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js'
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import { LibraryTableDisplayOptions, VIEW_OPTIONS } from '../LibraryToolbar.js';
+import { LibraryCardsDisplayOptions } from '../LibraryCardsDisplayOptions.js';
 import {
   DEFAULT_LIBRARY_TABLE_DISPLAY,
   libraryTableColumnGroups,
@@ -109,5 +110,50 @@ describe('LibraryTableDisplayOptions', () => {
     screen.getAllByRole('menuitemcheckbox', { name: 'Country' }).forEach(checkbox => {
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
     });
+  });
+});
+
+describe('LibraryCardsDisplayOptions', () => {
+  const renderCardsOptions = (showThumbnail = true) => {
+    const onThumbFrameChange = jest.fn();
+    const onThumbFitChange = jest.fn();
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [templatesAtom, templates],
+          [translationsAtom, translations],
+        ]}
+      >
+        <LibraryCardsDisplayOptions
+          showThumbnail={showThumbnail}
+          showMetadata
+          onShowThumbnailChange={() => undefined}
+          onShowMetadataChange={() => undefined}
+          thumbFrame="landscape"
+          onThumbFrameChange={onThumbFrameChange}
+          thumbFit="auto"
+          onThumbFitChange={onThumbFitChange}
+        />
+      </TestAtomStoreProvider>
+    );
+    return { onThumbFrameChange, onThumbFitChange };
+  };
+
+  it('offers landscape, portrait, auto, cover and contain while thumbnails are on', () => {
+    const { onThumbFrameChange, onThumbFitChange } = renderCardsOptions();
+    expect(screen.getByRole('menuitemcheckbox', { name: /Landscape/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /Portrait/ }));
+    expect(onThumbFrameChange).toHaveBeenCalledWith('portrait');
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /Cover/ }));
+    expect(onThumbFitChange).toHaveBeenCalledWith('cover');
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /Contain/ }));
+    expect(onThumbFitChange).toHaveBeenCalledWith('contain');
+  });
+
+  it('hides frame and fit when thumbnails are off', () => {
+    renderCardsOptions(false);
+    expect(screen.queryByRole('menuitemcheckbox', { name: /Landscape/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitemcheckbox', { name: /Cover/ })).not.toBeInTheDocument();
   });
 });
