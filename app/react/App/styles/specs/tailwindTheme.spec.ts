@@ -31,4 +31,24 @@ describe('tailwind @theme carbon', () => {
   it('keeps InputField carbon opacity rings', () => {
     expect(inputField).toContain('ring-carbon/20');
   });
+
+  it('does not pin Design utilities to light hex fallbacks', () => {
+    const body = (name: string) =>
+      theme.match(new RegExp(`@utility ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? '';
+    [
+      'bg-paper',
+      'bg-parchment',
+      'bg-warm',
+      'bg-vellum',
+      'bg-ink',
+      'bg-ink-70',
+      'bg-warm-30',
+      'text-ink',
+      'text-ink-secondary',
+      'text-ink-tertiary',
+      'text-ink-muted',
+      'border-border',
+      'border-border-40',
+    ].forEach(name => expect(body(name)).not.toMatch(/#[0-9a-fA-F]{3,8}/));
+  });
 });

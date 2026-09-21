@@ -56,11 +56,11 @@ describe('getScopedThemeVars merge contract', () => {
     expect(typeof scoped['--color-theme-button-embedded-white-bg']).toBe('string');
   });
 
-  it('adds emphasis solid pair derived from feedback danger', () => {
+  it('locks Design emphasis solid to prototype seal-fill and white text', () => {
     const resolved = baseResolved();
     const scoped = getScopedThemeVars('default', resolved);
-    expect(scoped[EMPHASIS_SOLID_BG].startsWith('#')).toBe(true);
-    expect(scoped[EMPHASIS_SOLID_FG].startsWith('#')).toBe(true);
+    expect(scoped[EMPHASIS_SOLID_BG]).toBe('#D53E27');
+    expect(scoped[EMPHASIS_SOLID_FG]).toBe('#FFFFFF');
     expect(scoped[EMPHASIS_LABEL]).toContain('color-mix');
   });
 
