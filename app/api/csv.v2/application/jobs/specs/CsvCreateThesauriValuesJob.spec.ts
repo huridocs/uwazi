@@ -1,6 +1,8 @@
-/* eslint-disable max-statements */
+/* eslint-disable max-statements, max-lines */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -10,6 +12,12 @@ import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValue
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
 import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
+import {
+  applyCsvJobBackendFlags,
+  clearCsvStores,
+  csvJobBackendConfigs,
+  itWithContext,
+} from '../../../specs/csvBackendTest.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -35,217 +43,270 @@ const createCallbacks = () => ({
   onError: jest.fn(),
 });
 
+const mapTranslationRow = ({
+  tenant_id: _tenantId,
+  context_id,
+  context_type,
+  context_label,
+  ...rest
+}: {
+  tenant_id: string;
+  context_id: string;
+  context_type: string;
+  context_label: string;
+  _id: string;
+  key: string;
+  language: string;
+  value: string;
+}) => ({
+  ...rest,
+  _id: new ObjectId(rest._id),
+  context: { id: context_id, type: context_type, label: context_label },
+});
+
+const loadTranslations = async (params: {
+  postgresCore: boolean;
+  contextId: string;
+  keys: string[];
+}) => {
+  if (params.postgresCore) {
+    const rows = await testingEnvironment.pg.getAllFrom<{
+      tenant_id: string;
+      context_id: string;
+      context_type: string;
+      context_label: string;
+      _id: string;
+      key: string;
+      language: string;
+      value: string;
+    }>('translations');
+    return rows
+      .filter(row => row.context_id === params.contextId && params.keys.includes(row.key))
+      .map(mapTranslationRow);
+  }
+  return testingEnvironment.db
+    .getCollection('translationsV2')!
+    .find({
+      'context.id': params.contextId,
+      key: { $in: params.keys },
+    })
+    .toArray();
+};
+
 describe('CsvCreateThesauriValuesJob (integration)', () => {
   const thesaurusId = fixtures.dictionaries[0]._id.toString();
   const templateId = fixtures.templates[0]._id.toString();
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, true);
-  });
-
-  afterEach(async () => {
-    jest.clearAllMocks();
-    await testingEnvironment.setFixtures(fixtures);
-    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
-    await Promise.all(
-      ['csv_imports', 'csv_import_thesauri_values', 'translations_v2'].map(async collectionName => {
-        const collection = testingEnvironment.db.getCollection(collectionName);
-        if (collection) {
-          await collection.deleteMany({});
-        }
-      })
-    );
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should append missing values, update translations, and persist stats', async () => {
-    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
-      dispatch: jest.fn().mockResolvedValue(undefined),
-      dispatchMany: jest.fn().mockResolvedValue(undefined),
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-    }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
-      () =>
-        CsvCreateThesauriValuesJobFactory.build({
-          jobsDispatcher,
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+    beforeEach(async () => {
+      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      jest.clearAllMocks();
+      await testingEnvironment.setFixtures(fixtures);
+      await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
+      await Promise.all(
+        ['translations_v2', 'translationsV2'].map(async collectionName => {
+          const collection = testingEnvironment.db.getCollection(collectionName);
+          if (collection) {
+            await collection.deleteMany({});
+          }
         })
-    );
-    const importId = fixturesFactory.idString('create-thesauri-import');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('create-thesauri-user');
-    const tenantName = tenants.current().name;
-
-    const csvImport = CsvImportDomain.withStorage(
-      CsvImportDomain.create({
-        id: importId,
-        templateId,
-        file: { originalName: 'file.csv', mimeType: 'text/csv', size: 10 },
-        createdBy: userId,
-      }),
-      `csv-imports/${importId}/original.csv`
-    );
-
-    await csvImportsDS.insert(csvImport);
-
-    const entry = new CsvThesauriPendingEntry({
-      propertyId: 'prop',
-      propertyName: 'Property',
-      thesaurusId,
-      type: 'select',
-    });
-    const root = entry.ensureRoot({
-      label: 'Country',
-      normalized: 'country',
-      languages: { en: 'Country', es: 'País' },
-    });
-    root.ensureChild({
-      label: 'Country::City',
-      normalized: 'country::city',
-      languages: { en: 'City', es: 'Ciudad' },
+      );
+      await testingPG.clear(['translations']);
+      await clearCsvStores();
     });
 
-    await thesauriValuesDS.replacePendingValues(importId, [
-      CsvImportThesauriValues.create({
-        importId,
-        thesaurusId,
-        createdAt: Date.now(),
-        entries: [entry],
-      }),
-    ]);
+    itWithContext(
+      'should append missing values, update translations, and persist stats',
+      async () => {
+        const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+          dispatch: jest.fn().mockResolvedValue(undefined),
+          dispatchMany: jest.fn().mockResolvedValue(undefined),
+          deleteByParams: jest.fn().mockResolvedValue(undefined),
+        }) as jest.Mocked<JobsDispatcher>;
+        const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build(
+          {
+            jobsDispatcher,
+          }
+        );
+        const importId = fixturesFactory.idString('create-thesauri-import');
+        createdImportIds.push(importId);
+        const userId = fixturesFactory.idString('create-thesauri-user');
+        const tenantName = tenants.current().name;
 
-    const callbacks = createCallbacks();
-    await testingEnvironment.runWithContext(async () =>
-      useCase.execute({
-        importId,
-        tenantName,
-        userId,
-        callbacks,
-      })
-    );
+        const csvImport = CsvImportDomain.withStorage(
+          CsvImportDomain.create({
+            id: importId,
+            templateId,
+            file: { originalName: 'file.csv', mimeType: 'text/csv', size: 10 },
+            createdBy: userId,
+          }),
+          `csv-imports/${importId}/original.csv`
+        );
 
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriCreateDone);
-    expect(updatedImport.stats).toEqual(
-      expect.objectContaining({
-        thesaurusValuesCreated: 2,
-        thesaurusValuesObserved: 2,
-        thesauriTouched: 1,
-      })
-    );
+        await csvImportsDS.insert(csvImport);
 
-    const updatedPendingDocs = await thesauriValuesDS.getByImport(importId);
-    expect(updatedPendingDocs).toHaveLength(1);
-    expect(updatedPendingDocs[0].appliedValues).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ label: 'Country', valueId: expect.any(String) }),
-        expect.objectContaining({
+        const entry = new CsvThesauriPendingEntry({
+          propertyId: 'prop',
+          propertyName: 'Property',
+          thesaurusId,
+          type: 'select',
+        });
+        const root = entry.ensureRoot({
+          label: 'Country',
+          normalized: 'country',
+          languages: { en: 'Country', es: 'País' },
+        });
+        root.ensureChild({
           label: 'Country::City',
-          parentLabel: 'Country',
-          valueId: expect.any(String),
-        }),
-      ])
-    );
-    expect(updatedPendingDocs[0].stats).toEqual(
-      expect.objectContaining({
-        valuesCreated: 2,
-        valuesObserved: 2,
-      })
-    );
-    const translations = await testingEnvironment.db
-      .getCollection('translationsV2')!
-      .find({
-        'context.id': thesaurusId,
-        key: { $in: ['Country', 'Country::City'] },
-      })
-      .toArray();
-    expect(translations).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ key: 'Country', language: 'en', value: 'Country' }),
-        expect.objectContaining({ key: 'Country', language: 'es', value: 'País' }),
-        expect.objectContaining({ key: 'Country::City', language: 'en', value: 'City' }),
-        expect.objectContaining({ key: 'Country::City', language: 'es', value: 'Ciudad' }),
-      ])
-    );
-    expect(translations).toHaveLength(4);
-    expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
-  });
+          normalized: 'country::city',
+          languages: { en: 'City', es: 'Ciudad' },
+        });
 
-  it('should fallback missing locale values to the default language label', async () => {
-    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
-      dispatch: jest.fn().mockResolvedValue(undefined),
-      dispatchMany: jest.fn().mockResolvedValue(undefined),
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-    }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
-      () =>
-        CsvCreateThesauriValuesJobFactory.build({
-          jobsDispatcher,
-        })
-    );
-    const importId = fixturesFactory.idString('create-thesauri-default-only-import');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('create-thesauri-default-only-user');
-    const tenantName = tenants.current().name;
+        await thesauriValuesDS.replacePendingValues(importId, [
+          CsvImportThesauriValues.create({
+            id: fixturesFactory.idString('thesauri-1'),
+            importId,
+            thesaurusId,
+            createdAt: Date.now(),
+            entries: [entry],
+          }),
+        ]);
 
-    const csvImport = CsvImportDomain.withStorage(
-      CsvImportDomain.create({
-        id: importId,
-        templateId,
-        file: { originalName: 'file.csv', mimeType: 'text/csv', size: 10 },
-        createdBy: userId,
-      }),
-      `csv-imports/${importId}/original.csv`
-    );
-    await csvImportsDS.insert(csvImport);
+        const callbacks = createCallbacks();
+        await useCase.execute({
+          importId,
+          tenantName,
+          userId,
+          callbacks,
+        });
 
-    const entry = new CsvThesauriPendingEntry({
-      propertyId: 'prop',
-      propertyName: 'Property',
-      thesaurusId,
-      type: 'select',
-    });
-    entry.ensureRoot({
-      label: 'Single Language Value',
-      normalized: 'single language value',
-      languages: { en: 'Single Language Value' },
-    });
+        const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+        expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriCreateDone);
+        expect(updatedImport.stats).toEqual(
+          expect.objectContaining({
+            thesaurusValuesCreated: 2,
+            thesaurusValuesObserved: 2,
+            thesauriTouched: 1,
+          })
+        );
 
-    await thesauriValuesDS.replacePendingValues(importId, [
-      CsvImportThesauriValues.create({
-        importId,
-        thesaurusId,
-        createdAt: Date.now(),
-        entries: [entry],
-      }),
-    ]);
-
-    await testingEnvironment.runWithContext(async () =>
-      useCase.execute({
-        importId,
-        tenantName,
-        userId,
-        callbacks: createCallbacks(),
-      })
+        const updatedPendingDocs = await thesauriValuesDS.getByImport(importId);
+        expect(updatedPendingDocs).toHaveLength(1);
+        expect(updatedPendingDocs[0].appliedValues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ label: 'Country', valueId: expect.any(String) }),
+            expect.objectContaining({
+              label: 'Country::City',
+              parentLabel: 'Country',
+              valueId: expect.any(String),
+            }),
+          ])
+        );
+        expect(updatedPendingDocs[0].stats).toEqual(
+          expect.objectContaining({
+            valuesCreated: 2,
+            valuesObserved: 2,
+          })
+        );
+        const translations = await loadTranslations({
+          postgresCore,
+          contextId: thesaurusId,
+          keys: ['Country', 'Country::City'],
+        });
+        expect(translations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ key: 'Country', language: 'en', value: 'Country' }),
+            expect.objectContaining({ key: 'Country', language: 'es', value: 'País' }),
+            expect.objectContaining({ key: 'Country::City', language: 'en', value: 'City' }),
+            expect.objectContaining({ key: 'Country::City', language: 'es', value: 'Ciudad' }),
+          ])
+        );
+        expect(translations).toHaveLength(4);
+        expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
+      }
     );
 
-    const translations = await testingEnvironment.db
-      .getCollection('translationsV2')!
-      .find({
-        'context.id': thesaurusId,
-        key: 'Single Language Value',
-      })
-      .toArray();
+    itWithContext(
+      'should fallback missing locale values to the default language label',
+      async () => {
+        const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+          dispatch: jest.fn().mockResolvedValue(undefined),
+          dispatchMany: jest.fn().mockResolvedValue(undefined),
+          deleteByParams: jest.fn().mockResolvedValue(undefined),
+        }) as jest.Mocked<JobsDispatcher>;
+        const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build(
+          {
+            jobsDispatcher,
+          }
+        );
+        const importId = fixturesFactory.idString('create-thesauri-default-only-import');
+        createdImportIds.push(importId);
+        const userId = fixturesFactory.idString('create-thesauri-default-only-user');
+        const tenantName = tenants.current().name;
 
-    expect(translations).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ language: 'en', value: 'Single Language Value' }),
-        expect.objectContaining({ language: 'es', value: 'Single Language Value' }),
-      ])
+        const csvImport = CsvImportDomain.withStorage(
+          CsvImportDomain.create({
+            id: importId,
+            templateId,
+            file: { originalName: 'file.csv', mimeType: 'text/csv', size: 10 },
+            createdBy: userId,
+          }),
+          `csv-imports/${importId}/original.csv`
+        );
+        await csvImportsDS.insert(csvImport);
+
+        const entry = new CsvThesauriPendingEntry({
+          propertyId: 'prop',
+          propertyName: 'Property',
+          thesaurusId,
+          type: 'select',
+        });
+        entry.ensureRoot({
+          label: 'Single Language Value',
+          normalized: 'single language value',
+          languages: { en: 'Single Language Value' },
+        });
+
+        await thesauriValuesDS.replacePendingValues(importId, [
+          CsvImportThesauriValues.create({
+            id: fixturesFactory.idString('thesauri-1'),
+            importId,
+            thesaurusId,
+            createdAt: Date.now(),
+            entries: [entry],
+          }),
+        ]);
+
+        await useCase.execute({
+          importId,
+          tenantName,
+          userId,
+          callbacks: createCallbacks(),
+        });
+
+        const translations = await loadTranslations({
+          postgresCore,
+          contextId: thesaurusId,
+          keys: ['Single Language Value'],
+        });
+
+        expect(translations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ language: 'en', value: 'Single Language Value' }),
+            expect.objectContaining({ language: 'es', value: 'Single Language Value' }),
+          ])
+        );
+        expect(translations).toHaveLength(2);
+      }
     );
-    expect(translations).toHaveLength(2);
   });
 });

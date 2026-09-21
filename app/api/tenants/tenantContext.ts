@@ -27,6 +27,7 @@ type Tenant = {
     featureFlagLibraryV2?: boolean;
     postgresCore?: boolean;
     postgresPages?: boolean;
+    postgresCsv?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     translationService?: boolean;

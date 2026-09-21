@@ -76,12 +76,14 @@ const createMixedErrorsScenario = () => {
 
   const rowErrorsDS = createRowErrorsDataSourceMock(2, [
     CsvImportRowError.create({
+      id: 'error-1',
       importId,
       rowIndex: 1,
       code: RowErrorCode.RowEmptyOrMalformed,
       message: 'Empty line.',
     }),
     CsvImportRowError.create({
+      id: 'error-1',
       importId,
       rowIndex: 3,
       code: RowErrorCode.RelationshipNotFound,
@@ -90,6 +92,7 @@ const createMixedErrorsScenario = () => {
   ]);
   const rowsDS = createRowsDataSourceMock([
     CsvImportRow.create({
+      id: 'row-3',
       importId,
       rowIndex: 3,
       headers: ['title', 'description'],
@@ -148,6 +151,7 @@ describe('CsvImportEntitiesErrorReporting', () => {
       countByImport: jest.fn().mockResolvedValue(1),
       getByImport: jest.fn().mockResolvedValue([
         CsvImportRowError.create({
+          id: 'error-empty',
           importId,
           rowIndex: 0,
           code: RowErrorCode.RowEmptyOrMalformed,
