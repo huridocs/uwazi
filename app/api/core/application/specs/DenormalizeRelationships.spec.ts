@@ -38,6 +38,32 @@ const fixtures: DBFixture = {
   ],
 };
 
+const twoHopFixtures: DBFixture = {
+  settings: [
+    {
+      languages: [
+        { default: true, key: 'en', label: 'English' },
+        { key: 'es', label: 'Spanish' },
+      ],
+    },
+  ],
+  relationtypes: [factory.relationType('rel1')],
+  templates: [
+    factory.template('templateX', [factory.property('text', 'text')]),
+    factory.template('templateA', [factory.relationshipProp('rel_to_X', 'templateX')]),
+    factory.template('templateB', [
+      factory.relationshipProp('rel_to_A', 'templateA', {
+        inherit: { property: factory.idString('rel_to_X'), type: 'relationship' },
+      }),
+    ]),
+  ],
+  entities: [
+    factory.entity('X1', 'templateX', { text: [{ value: 'text v2' }] }, { title: 'New Title X1' }),
+    factory.entity('A1', 'templateA', { rel_to_X: [factory.metadataValue('X1', 'stale label')] }),
+    factory.entity('B1', 'templateB', { rel_to_A: [factory.metadataValue('A1', 'stale label')] }),
+  ],
+};
+
 type TestConfig = {
   name: string;
   postgresCore: boolean;
@@ -157,6 +183,24 @@ describe('DenormalizeRelationships', () => {
 
       const stored = await testingEnvironment.db.getAllFrom('entities');
       expect(stored).toHaveLength(3);
+    });
+
+    it('should denormalize inherited relationship values from the same batch (two hops)', async () => {
+      await testingEnvironment.setFixtures(twoHopFixtures);
+      const sut = createSut(postgresCore);
+
+      await sut.execute({ sharedIds: ['A1', 'B1'] });
+
+      const stored = await getStored('B1', 'en');
+      expect(stored?.metadata.rel_to_A).toMatchObject([
+        {
+          type: 'entity',
+          value: 'A1',
+          label: 'A1',
+          inheritedType: 'relationship',
+          inheritedValue: [{ type: 'entity', value: 'X1', label: 'New Title X1' }],
+        },
+      ]);
     });
 
     it('should opt out of re-dispatching relationship denormalization', async () => {

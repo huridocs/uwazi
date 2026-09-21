@@ -4,21 +4,14 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '../factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
 import { DenormalizeRelationshipsUseCaseFactory } from '../factories/DenormalizeRelationshipsUseCaseFactory.js';
-import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import {
+  DenormalizeThesaurusEntitiesChunkParams,
+  DenormalizeRelationshipsParams,
+} from './DenormalizeEntitiesJobParams.js';
 
-type ThesaurusParams = {
-  kind: 'thesaurus';
-  thesaurusId: string;
-  sharedIds: string[];
-};
-
-type RelationshipsParams = {
-  kind: 'relationships';
-  sharedIds: string[];
-};
-
-type Params = (ThesaurusParams | RelationshipsParams) & UwaziJobParams;
+type Params = DenormalizeThesaurusEntitiesChunkParams | DenormalizeRelationshipsParams;
 
 type JobDependencies = {
   DenormalizeThesaurusEntitiesUseCaseFactory: typeof DenormalizeThesaurusEntitiesUseCaseFactory;

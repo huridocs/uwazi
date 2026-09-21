@@ -426,7 +426,9 @@ class Entity {
     return (assignment?.value as RelationshipEntry[] | undefined) ?? [];
   }
 
-  denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>) {
+  denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>): boolean {
+    let changed = false;
+
     this.template.getRelationshipProperties().forEach(property => {
       this.languages.forEach(language => {
         const current = this.getValue<RelationshipEntry>(property.name, language);
@@ -452,12 +454,18 @@ class Entity {
           };
         });
 
+        if (stringify(current.value) !== stringify(denormalizedItems)) {
+          changed = true;
+        }
+
         this.setValue(
           property.createPropertyAssignment({ value: denormalizedItems, language }),
           language
         );
       });
     });
+
+    return changed;
   }
 
   setPreview(thumbnails: Thumbnail[], defaultLanguage: LanguageISO6391): void {

@@ -6,21 +6,14 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { DenormalizeEntitiesChunkHandler } from './DenormalizeEntitiesChunkHandler.js';
-import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import {
+  DenormalizeThesaurusEntitiesParams,
+  DenormalizeRelationshipsParams,
+} from './DenormalizeEntitiesJobParams.js';
 
-type ThesaurusParams = {
-  kind: 'thesaurus';
-  thesaurusId: string;
-  valueIds: string[];
-};
-
-type RelationshipsParams = {
-  kind: 'relationships';
-  sharedIds: string[];
-};
-
-type Params = (ThesaurusParams | RelationshipsParams) & UwaziJobParams;
+type Params = DenormalizeThesaurusEntitiesParams | DenormalizeRelationshipsParams;
 
 type JobDependencies = {
   entitiesDS: EntitiesDataSource;
