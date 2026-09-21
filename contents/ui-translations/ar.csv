@@ -140,9 +140,11 @@ Attachment renamed,تم تغيير اسم المرفق
 Attachment uploaded,تم تحميل المرفق
 Attachments,المرفقات
 Authentication code,رمز المصادقة
+Auto,Auto
 auto created,تم إنشاؤه تلقائيًا
 Auto-accept suggestions,القبول التلقائي للاقتراحات
 auto-created,منشأ تلقائياً
+Auto-translate,Auto-translate
 Automatic Table of Contents,جدول محتويات تلقائي
 Automatically generated,منشأ تلقائياً
 Available default translation,الترجمة الافتراضية المتاحة
@@ -469,6 +471,7 @@ Error adding thesauri.,حدث خطأ أثناء إضافة قواميس المر
 Error loading your image,حدث خطأ أثناء تحميل صورتك
 Error saving template.,حدث خطأ أثناء حفظ القالب.
 Error updating thesauri.,حدث خطأ أثناء تحديث قوائم المرادفات.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,دليل
 exact phrase,العبارة بالضبط
 Expand all,توسيع كل العناصر
@@ -690,6 +693,7 @@ Longitude must be between -180 and 180,يجب أن يكون خط الطول بي
 Lookup help,مساعدة في البحث
 Lost connection to the server. Your changes may be lost,انقطع الاتصال بالخادم. قد تُفقد التغييرات التي أجريتها
 low,منخفض/ أدنى/ قليل/ صغير
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,إدارة أنواع العلاقات
 Manage site settings and configuration,إدارة إعدادات الموقع
 Manage types,إدارة الأنواع
@@ -1384,6 +1388,7 @@ Training,التدريب
 Training model,جارٍ تدريب النموذج
 Training sample,نموذج تدريبي
 Translate,ترجم
+Translating,Translating
 Translation,الترجمة
 Translations,الترجمات
 Translations imported.,تم استيراد الترجمات.
@@ -1477,7 +1482,7 @@ Validating file structure and headers.,التحقق من صحة بنية الم�
 Value,قيمة
 Value cannot be transformed to the correct type,لا يمكن تحويل القيمة إلى النوع الصحيح
 values,القيم
-"values are staged, not saved","القيم قيد التجهيز، لم تُحفظ بعد"
+"values are staged, not saved",القيم قيد التجهيز، لم تُحفظ بعد
 Verify,تحقق
 Verifying...,تحقق..
 via,عبر

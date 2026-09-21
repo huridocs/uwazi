@@ -140,9 +140,11 @@ Attachment renamed,Вкладення перейменовано
 Attachment uploaded,Завантажено вкладення
 Attachments,Вкладення
 Authentication code,Код автентифікації
+Auto,Auto
 auto created,автоматично створено
 Auto-accept suggestions,Автоматичне прийняття пропозицій
 auto-created,автоматично створено
+Auto-translate,Auto-translate
 Automatic Table of Contents,Автоматичний зміст
 Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
@@ -470,6 +472,7 @@ Error adding thesauri.,Помилка додавання тезаурусів.
 Error loading your image,Помилка завантаження зображення
 Error saving template.,Шаблон збереження помилок.
 Error updating thesauri.,Помилка оновлення тезаурусів.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,докази
 exact phrase,точна фраза
 Expand all,Розгорнути все
@@ -691,6 +694,7 @@ Longitude must be between -180 and 180,Довгота повинна бути в
 Lookup help,Довідка щодо пошуку
 Lost connection to the server. Your changes may be lost,Втрачено зв'язок з сервером. Ваші зміни можуть бути втрачені
 low,низький
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Управління типами зв’язків
 Manage site settings and configuration,Керування сайтом і конфігурація
 Manage types,Управління типами
@@ -1385,6 +1389,7 @@ Training,Навчання
 Training model,Модель навчання
 Training sample,Навчальна вибірка
 Translate,Перекласти
+Translating,Translating
 Translation,Переклад
 Translations,Переклади
 Translations imported.,Переклади імпортовані.

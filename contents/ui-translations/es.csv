@@ -140,9 +140,11 @@ Attachment renamed,Archivo adjunto renombrado
 Attachment uploaded,Archivo adjunto subido
 Attachments,Archivos adjuntos
 Authentication code,Código de autenticación
+Auto,Auto
 auto created,creado automáticamente
 Auto-accept suggestions,Aceptar automáticamente las sugerencias
 auto-created,autogenerado
+Auto-translate,Traducción-automática
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
@@ -468,6 +470,7 @@ Error adding thesauri.,Error al añadir tesauros.
 Error loading your image,Error al cargar la imagen
 Error saving template.,Error al guardar la plantilla.
 Error updating thesauri.,Error al actualizar los tesauros.
+Every language has a value — use the re-translate button on a row,Cada idioma tiene un valor — utiliza el botón de re-traducir en una fila
 evidence,evidencia
 exact phrase,frase exacta
 Expand all,Expandir todo
@@ -689,6 +692,7 @@ Longitude must be between -180 and 180,Longitud debe estar entre -180 y 180
 Lookup help,Ayuda para la búsqueda
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
+Machine translated — editing this row clears the marker,Traducción automática — editar esta fila borra el marcador
 Manage relationship types,Administrar tipos de relación
 Manage site settings and configuration,Administrar la configuración del sitio
 Manage types,Administrar tipos
@@ -1379,6 +1383,7 @@ Training,Entrenando
 Training model,Entrenando modelo
 Training sample,Muestra de formación
 Translate,Traducir
+Translating,Traduciendo
 Translation,Traducción
 Translations,Traducciones
 Translations imported.,Traducciones importadas.

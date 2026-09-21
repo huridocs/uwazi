@@ -140,9 +140,11 @@ Attachment renamed,Ekin adı değiştirildi
 Attachment uploaded,Ek yüklendi
 Attachments,Ekler
 Authentication code,Kimlik doğrulama kodu
+Auto,Auto
 auto created,otomatik olarak oluşturuldu
 Auto-accept suggestions,Önerileri otomatik olarak kabul et
 auto-created,otomatik oluşturulmuş
+Auto-translate,Auto-translate
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
 Available default translation,Mevcut varsayılan çeviri
@@ -470,6 +472,7 @@ Error adding thesauri.,Thesaurus eklenirken hata oluştu.
 Error loading your image,Resminiz yüklenirken hata oluştu
 Error saving template.,Şablonu kaydetme hatası.
 Error updating thesauri.,Thesaurus güncellenirken hata oluştu.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,kanıt
 exact phrase,tam ifade
 Expand all,Tümünü genişlet
@@ -691,6 +694,7 @@ Longitude must be between -180 and 180,"Boylam, -180 ile 180 arasında olmalıd�
 Lookup help,Arama yardımı
 Lost connection to the server. Your changes may be lost,Sunucuyla bağlantı kesildi. Yaptığınız değişiklikler kaybolabilir.
 low,düşük
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,İlişki türlerini yönetme
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
 Manage types,Türleri yönet
@@ -1384,6 +1388,7 @@ Training,Eğitim
 Training model,Model eğitiliyor
 Training sample,Eğitim örneği
 Translate,Çevir
+Translating,Translating
 Translation,Çeviri
 Translations,Çeviriler
 Translations imported.,Çeviriler içe aktarıldı.

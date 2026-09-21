@@ -140,9 +140,11 @@ Attachment renamed,첨부 파일 이름 변경
 Attachment uploaded,첨부 파일 업로드됨
 Attachments,첨부 파일
 Authentication code,인증 코드
+Auto,Auto
 auto created,자동 생성됨
 Auto-accept suggestions,제안 사항 자동 수락
 auto-created,자동 생성 완료
+Auto-translate,Auto-translate
 Automatic Table of Contents,자동 생성 목차
 Automatically generated,자동 생성됨
 Available default translation,사용 가능한 기본 번역
@@ -467,6 +469,7 @@ Error adding thesauri.,시소러스 추가 오류가 발생했습니다.
 Error loading your image,이미지 불러오는 중 오류가 발생했습니다.
 Error saving template.,템플릿 저장 중 오류가 발생했습니다.
 Error updating thesauri.,시소러스 업데이트 중 오류가 발생했습니다.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,증거
 exact phrase,정확한 문구
 Expand all,모두 펼치기
@@ -688,6 +691,7 @@ Longitude must be between -180 and 180,경도는 -180과 180 사이여야 합니
 Lookup help,검색 도움말
 Lost connection to the server. Your changes may be lost,서버와의 연결이 끊어졌습니다. 변경 내용이 손실될 수 있습니다.
 low,낮게
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,관계 유형 관리
 Manage site settings and configuration,사이트 설정 및 구성 관리
 Manage types,유형 관리
@@ -1377,6 +1381,7 @@ Training,훈련
 Training model,훈련 모델
 Training sample,훈련 데이터
 Translate,번역
+Translating,Translating
 Translation,번역
 Translations,번역
 Translations imported.,번역본을 가져왔습니다.

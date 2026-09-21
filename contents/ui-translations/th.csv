@@ -140,9 +140,11 @@ Attachment renamed,เปลี่ยนชื่อไฟล์แนบแล�
 Attachment uploaded,ไฟล์แนบได้อัปโหลดแล้ว
 Attachments,สิ่งที่แนบมา
 Authentication code,รหัสผ่าน
+Auto,Auto
 auto created,สร้างอัตโนมัติ
 Auto-accept suggestions,ยอมรับข้อเสนอแนะโดยอัตโนมัติ
 auto-created,สร้างขึ้นอัตโนมัติ
+Auto-translate,Auto-translate
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,การแปลตามค่าเริ่มต้นที่มีอยู่
@@ -470,6 +472,7 @@ Error adding thesauri.,เกิดข้อผิดพลาดขณะเพ
 Error loading your image,เกิดข้อผิดพลาดขณะโหลดภาพของคุณ
 Error saving template.,เกิดข้อผิดพลาดขณะบันทึกแม่แบบ
 Error updating thesauri.,เกิดข้อผิดพลาดในการอัปเดตพจนานุกรมคำพ้องความหมาย
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,หลักฐาน
 exact phrase,วลีที่ตรงกัน
 Expand all,แสดงทั้งหมด
@@ -691,6 +694,7 @@ Longitude must be between -180 and 180,เส้นลองจิจูดต�
 Lookup help,ดูวิธีใช้
 Lost connection to the server. Your changes may be lost,สูญเสียการเชื่อมต่อกับเซิร์ฟเวอร์ การเปลี่ยนแปลงของคุณอาจสูญหาย
 low,ต่ำ
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,จัดการประเภทความสัมพันธ์
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
 Manage types,จัดการประเภท
@@ -1385,6 +1389,7 @@ Training,การฝึกอบรม
 Training model,กำลังฝึกโมเดล
 Training sample,ตัวอย่างการฝึกอบรม
 Translate,แปลภาษา
+Translating,Translating
 Translation,การแปล
 Translations,การแปล
 Translations imported.,ได้นำเข้าการแปลแล้ว
