@@ -1,6 +1,9 @@
 import { config } from '#api/config.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
-import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DB } from '#api/odm/index.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
@@ -11,7 +14,7 @@ import { JobsDispatcherFactory } from '../JobsDispatcherFactory.js';
 
 class JobsDispatcherFactorySpecJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
-  async handleDispatch(): Promise<void> {
+  async handleDispatch(_heartbeat: HeartbeatCallback, _params: { aParam?: string }): Promise<void> {
     throw new Error('not implemented');
   }
 }

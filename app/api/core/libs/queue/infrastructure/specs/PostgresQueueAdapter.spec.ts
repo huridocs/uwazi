@@ -22,8 +22,8 @@ const pool = () => {
   return adminPool;
 };
 
-const insert = async (jobs: StoredJob[]) =>
-  Promise.all(
+const insert = async (jobs: StoredJob[]) => {
+  await Promise.all(
     jobs.map(async job =>
       pool().query(
         `INSERT INTO jobs
@@ -44,6 +44,7 @@ const insert = async (jobs: StoredJob[]) =>
       )
     )
   );
+};
 
 const stored = async (): Promise<StoredJob[]> => {
   const { rows } = await pool().query('SELECT * FROM jobs');

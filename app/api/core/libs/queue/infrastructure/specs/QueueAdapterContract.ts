@@ -1,5 +1,6 @@
 /* eslint-disable max-statements, max-lines */
 import { ObjectId } from 'mongodb';
+import { Params } from '../../application/contracts/Dispatchable.js';
 import { Job, PushJobInput, QueueAdapter } from '../QueueAdapter.js';
 
 type StoredJob = Job & { failed: boolean };
@@ -338,11 +339,14 @@ function describeQueueAdapterContract(name: string, setUp: () => Promise<QueueAd
           removed: 'arrayAndObject',
         },
         { case: 'name and params only', jobName: 'job2', params: { a: 1 }, removed: 'number' },
-      ] as const)('should delete the jobs matching $case', async ({ jobName, params, removed }) => {
-        await adapter.deleteByParams(jobName, params, 'tenant1');
+      ] as { case: string; jobName: string; params: Params; removed: keyof typeof jobs }[])(
+        'should delete the jobs matching $case',
+        async ({ jobName, params, removed }) => {
+          await adapter.deleteByParams(jobName, params, 'tenant1');
 
-        expect(await storedIds()).toEqual(idsWithout(jobs[removed]));
-      });
+          expect(await storedIds()).toEqual(idsWithout(jobs[removed]));
+        }
+      );
 
       it.each([
         { case: 'a param no job has', params: { nonExistent: 'value' } },
