@@ -1,3 +1,4 @@
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory.js';
@@ -17,7 +18,9 @@ export class ATEntityCreationListener {
 
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
-      const { active } = await this.ATFactory.defaultATConfigDataSource().get();
+      const { active } = await this.ATFactory.defaultATConfigDataSource(
+        TransactionManagerFactory.mongo()
+      ).get();
 
       if (active) {
         const entityFrom = event.entities.find(e => e.language === event.targetLanguageKey) || {};
