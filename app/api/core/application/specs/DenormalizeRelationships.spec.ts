@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -34,6 +35,101 @@ const fixtures: DBFixture = {
     factory.entity('A1', 'templateA', {
       relationship: [factory.metadataValue('B1', 'stale label')],
       relationship_inherited: [factory.metadataValue('B1', 'stale label')],
+    }),
+  ],
+};
+
+const threeHopTextFixtures: DBFixture = {
+  settings: [
+    {
+      languages: [
+        { default: true, key: 'en', label: 'English' },
+        { key: 'es', label: 'Spanish' },
+      ],
+    },
+  ],
+  relationtypes: [factory.relationType('rel1')],
+  templates: [
+    factory.template('templateD', [factory.property('text', 'text')]),
+    factory.template('templateC', [
+      factory.relationshipProp('rel_to_D', 'templateD', {
+        inherit: { property: factory.idString('text'), type: 'text' },
+      }),
+    ]),
+    factory.template('templateB', [
+      factory.relationshipProp('rel_to_C', 'templateC', {
+        inherit: { property: factory.idString('rel_to_D'), type: 'relationship' },
+      }),
+    ]),
+    factory.template('templateA', [
+      factory.relationshipProp('rel_to_B', 'templateB', {
+        inherit: { property: factory.idString('rel_to_C'), type: 'relationship' },
+      }),
+    ]),
+  ],
+  entities: [
+    factory.entity(
+      'D1',
+      'templateD',
+      { text: [{ value: 'initial changed' }] },
+      { title: 'D title' }
+    ),
+    factory.entity('C1', 'templateC', {
+      rel_to_D: [
+        {
+          type: 'entity',
+          value: 'D1',
+          label: 'D title',
+          inheritedType: 'text',
+          inheritedValue: [{ value: 'initial' }],
+        },
+      ],
+    }),
+    factory.entity('B1', 'templateB', {
+      rel_to_C: [
+        {
+          type: 'entity',
+          value: 'C1',
+          label: 'C1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              type: 'entity',
+              value: 'D1',
+              label: 'D title',
+              inheritedType: 'text',
+              inheritedValue: [{ value: 'initial' }],
+            },
+          ],
+        },
+      ],
+    }),
+    factory.entity('A1', 'templateA', {
+      rel_to_B: [
+        {
+          type: 'entity',
+          value: 'B1',
+          label: 'B1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              type: 'entity',
+              value: 'C1',
+              label: 'C1',
+              inheritedType: 'relationship',
+              inheritedValue: [
+                {
+                  type: 'entity',
+                  value: 'D1',
+                  label: 'D title',
+                  inheritedType: 'text',
+                  inheritedValue: [{ value: 'initial' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     }),
   ],
 };
@@ -104,15 +200,15 @@ describe('DenormalizeRelationships', () => {
     await testingEnvironment.tearDown();
   });
 
+  const getStored = async (sharedId: string, language: string) =>
+    (await testingEnvironment.db.getAllFrom('entities')).find(
+      doc => doc.sharedId === sharedId && doc.language === language
+    );
+
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
     });
-
-    const getStored = async (sharedId: string, language: string) =>
-      (await testingEnvironment.db.getAllFrom('entities')).find(
-        doc => doc.sharedId === sharedId && doc.language === language
-      );
 
     it('should denormalize label and icon on referencing entities', async () => {
       const sut = createSut(postgresCore);
@@ -199,6 +295,77 @@ describe('DenormalizeRelationships', () => {
           label: 'A1',
           inheritedType: 'relationship',
           inheritedValue: [{ type: 'entity', value: 'X1', label: 'New Title X1' }],
+        },
+      ]);
+    });
+
+    it('should denormalize inherited relationship values even when the referenced entity is stale', async () => {
+      await testingEnvironment.setFixtures(twoHopFixtures);
+      const sut = createSut(postgresCore);
+
+      // B1 alone, with A1 still storing the stale label (e.g. A1's chunk job
+      // has not committed yet in a parallel run).
+      await sut.execute({ sharedIds: ['B1'] });
+
+      const stored = await getStored('B1', 'en');
+      expect(stored?.metadata.rel_to_A).toMatchObject([
+        {
+          type: 'entity',
+          value: 'A1',
+          label: 'A1',
+          inheritedType: 'relationship',
+          inheritedValue: [{ type: 'entity', value: 'X1', label: 'New Title X1' }],
+        },
+      ]);
+    });
+
+    it('should denormalize a text leaf through two relationship hops', async () => {
+      await testingEnvironment.setFixtures(threeHopTextFixtures);
+      const sut = createSut(postgresCore);
+
+      await sut.execute({ sharedIds: ['B1'] });
+
+      const stored = await getStored('B1', 'en');
+      expect(stored?.metadata.rel_to_C).toMatchObject([
+        {
+          type: 'entity',
+          value: 'C1',
+          label: 'C1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              type: 'entity',
+              value: 'D1',
+              label: 'D title',
+              inheritedType: 'text',
+              inheritedValue: [{ value: 'initial changed' }],
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('should denormalize the full closure through two relationship hops', async () => {
+      await testingEnvironment.setFixtures(threeHopTextFixtures);
+      const sut = createSut(postgresCore);
+
+      // The orchestrator closure for D1 is [C1, B1, A1].
+      await sut.execute({ sharedIds: ['C1', 'B1', 'A1'] });
+
+      const b = await getStored('B1', 'en');
+      expect(b?.metadata.rel_to_C).toMatchObject([
+        {
+          type: 'entity',
+          value: 'C1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              type: 'entity',
+              value: 'D1',
+              inheritedType: 'text',
+              inheritedValue: [{ value: 'initial changed' }],
+            },
+          ],
         },
       ]);
     });

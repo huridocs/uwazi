@@ -1,6 +1,6 @@
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { IndexTypes } from '#shared/data_utils/objectIndex.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { EntitiesService } from './EntitiesService.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
@@ -17,28 +17,6 @@ type Deps = {
   settingsDS: SettingsDataSource;
 };
 
-type RelatedEntities = Record<IndexTypes, Entity | undefined>;
-
-function overlayBatchEntities(entities: Entity[], relatedEntities: RelatedEntities) {
-  // Prefer the in-memory batch over their stored copies.
-  entities.forEach(entity => {
-    relatedEntities[entity.sharedId] = entity;
-  });
-}
-
-function denormalizeUntilStable(entities: Entity[], relatedEntities: RelatedEntities) {
-  // Repeat until a full pass changes nothing; bounded against cyclic inherit.
-  for (let pass = 0; pass < entities.length; pass += 1) {
-    let changed = false;
-    entities.forEach(entity => {
-      if (entity.denormalizeRelationshipProps(relatedEntities)) {
-        changed = true;
-      }
-    });
-    if (!changed) return;
-  }
-}
-
 class DenormalizeRelationshipsUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const entities = await (
@@ -51,20 +29,10 @@ class DenormalizeRelationshipsUseCase extends AbstractUseCase<Input, Output, Dep
 
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
-    const referencedIds = new Set<string>();
-    entities.forEach(entity =>
-      entity
-        .getReferencedRelationshipEntitySharedIds(defaultLanguage)
-        .forEach(id => referencedIds.add(id))
-    );
-
-    const relatedEntities = await (
-      await this.deps.entitiesDS.getEntitiesBySharedIds([...referencedIds])
-    ).indexed(entity => entity.sharedId);
+    const relatedEntities = await this.loadReferencedEntities(entities, defaultLanguage);
 
     await this.transactionManager.run(async () => {
-      overlayBatchEntities(entities, relatedEntities);
-      denormalizeUntilStable(entities, relatedEntities);
+      entities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
 
       await this.deps.entitiesService.update(entities, {
         actorId: this.actorId,
@@ -74,6 +42,39 @@ class DenormalizeRelationshipsUseCase extends AbstractUseCase<Input, Output, Dep
         denormalizeRelationships: false,
       });
     });
+  }
+
+  private async loadReferencedEntities(
+    entities: Entity[],
+    language: LanguageISO6391
+  ): Promise<Record<string, Entity>> {
+    const index: Record<string, Entity> = {};
+    const seen = new Set<string>();
+    const queue = new Set<string>();
+
+    const enqueue = (id: string) => {
+      if (!seen.has(id)) {
+        seen.add(id);
+        queue.add(id);
+      }
+    };
+
+    entities.forEach(entity =>
+      entity.getReferencedRelationshipEntitySharedIds(language).forEach(enqueue)
+    );
+
+    while (queue.size > 0) {
+      // eslint-disable-next-line no-await-in-loop -- each BFS layer depends on the previous level's references
+      const fetched = await (await this.deps.entitiesDS.getEntitiesBySharedIds([...queue])).all();
+      queue.clear();
+
+      fetched.forEach(entity => {
+        index[entity.sharedId] = entity;
+        entity.getReferencedRelationshipEntitySharedIds(language).forEach(enqueue);
+      });
+    }
+
+    return index;
   }
 }
 
