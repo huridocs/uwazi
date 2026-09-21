@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"370a93c6d325478da1e139d5e377f71a","collectionName":"migrations","type":"collection"}
