@@ -1,10 +1,19 @@
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import {
+  DefaultDispatcher,
+  DefaultPostgresQueueAdapter,
+  DefaultQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
+import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { UwaziDispatcherFactory } from '../jobs/UwaziDispatcherFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 const SYSTEM_NAMESPACE = 'system';
+
+type MongoQueueAdapterFactory = (transactionManager: TransactionManager) => QueueAdapter;
 
 /**
  * Builds the one JobsDispatcher an ExecutionContext exposes. Wire it as the context's
@@ -12,19 +21,23 @@ const SYSTEM_NAMESPACE = 'system';
  */
 class JobsDispatcherFactory {
   /**
-   * Dispatches into the current tenant's namespace.
-   *
-   * Every tenant's jobs are still stored in Mongo, and a Mongo adapter can only join a Mongo
-   * session, so this stays on the Mongo transaction manager even for postgresCore tenants: handing
-   * it ExecutionContext.transactionManager would make the dispatch look transactional while the
-   * insert auto-commits. The adapter and the manager switch together, by the tenant's flag, once
-   * the Postgres queue adapter exists.
+   * Dispatches into the current tenant's namespace, joining the context's transaction manager —
+   * the one use cases run their transactions on, which the tenant's postgresCore flag selects. The
+   * queue adapter follows that manager, so a dispatch always writes to the backend whose
+   * transaction it joins.
    */
-  static default(): JobsDispatcher {
-    return UwaziDispatcherFactory(
-      ExecutionContext.currentTenant.name,
-      ExecutionContext.mongoTransactionManager
-    );
+  static default(
+    mongoQueueAdapter: MongoQueueAdapterFactory = DefaultQueueAdapter
+  ): JobsDispatcher {
+    const tenantName = ExecutionContext.currentTenant.name;
+    const { transactionManager } = ExecutionContext;
+
+    const queueAdapter =
+      transactionManager instanceof PostgresTransactionManager
+        ? DefaultPostgresQueueAdapter(transactionManager)
+        : mongoQueueAdapter(transactionManager);
+
+    return UwaziDispatcherFactory(tenantName, transactionManager, queueAdapter);
   }
 
   /** Dispatches into the 'system' namespace (migrations, scheduled maintenance jobs). */

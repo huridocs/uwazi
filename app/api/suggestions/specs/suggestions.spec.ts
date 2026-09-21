@@ -992,11 +992,13 @@ describe('suggestions', () => {
           ]);
           expect(allFiles).toEqual(relationshipFiles);
 
-          // The job queue is in Mongo whatever the tenant's store.
-          const relationshipSyncJob = await db.mongodb?.collection('jobs').findOne({
-            name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
-            'params.after.sharedId': 'entityWithRelationships_sId',
-          });
+          const relationshipSyncJob = (
+            await testingEnvironment.jobs.getAll({ postgresCore: usePostgres })
+          ).find(
+            job =>
+              job.name === 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener' &&
+              job.params?.after?.sharedId === 'entityWithRelationships_sId'
+          );
 
           expect(relationshipSyncJob).toMatchObject({
             name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',

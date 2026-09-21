@@ -522,7 +522,7 @@ describe('settings', () => {
             site_name: 'Broadcasted collection',
           })
         );
-        await expectSettingsChangedJob();
+        await expectSettingsChangedJob({ postgresCore });
       });
 
       it('should enqueue BroadcastSettingsChanged when the default language changes', async () => {
@@ -530,7 +530,7 @@ describe('settings', () => {
         await withRealEmitter(async () =>
           SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
         );
-        await expectSettingsChangedJob();
+        await expectSettingsChangedJob({ postgresCore });
       });
 
       it('should enqueue BroadcastSettingsChanged when a filter is renamed', async () => {
@@ -541,7 +541,7 @@ describe('settings', () => {
             SettingsServiceFactory.default().updateFilterName('123', 'The dark knight')
           )
         );
-        await expectSettingsChangedJob();
+        await expectSettingsChangedJob({ postgresCore });
       });
     });
 

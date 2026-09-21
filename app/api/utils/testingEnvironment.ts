@@ -5,7 +5,7 @@ import { copyFile } from 'fs/promises';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
@@ -29,7 +29,7 @@ import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -169,6 +169,8 @@ const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   ixmodels: 'ix_models',
   ixsuggestions: 'ix_suggestions',
 };
+
+type JobsBackend = { postgresCore: boolean; mongoDb?: Db };
 
 type SetUpOptions = {
   elasticIndex?: string | boolean;
@@ -387,12 +389,7 @@ const testingEnvironment = {
     const defaultFactories: ExecutionContextDeps['factories'] = {
       ...transactionManagerFactories(),
       eventEmitter: EventEmitterFactory.forTesting,
-      jobsDispatcher: () =>
-        UwaziDispatcherFactory(
-          tenant.name,
-          ExecutionContext.mongoTransactionManager,
-          DefaultTestingQueueAdapter(ExecutionContext.mongoTransactionManager)
-        ),
+      jobsDispatcher: () => JobsDispatcherFactory.default(DefaultTestingQueueAdapter),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
       telemetryCollector: () => new TelemetryCollector('test'),
@@ -449,6 +446,60 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  /**
+   * Dispatched jobs, in the backend a tenant's postgresCore flag sends them to: Postgres when it
+   * is on, Mongo otherwise. Reading only that backend makes a job dispatched to the wrong one fail
+   * the test. Pass `mongoDb` when the jobs went through the shared database (production
+   * dispatchers) instead of the testing adapter's tenant database.
+   */
+  jobs: {
+    async getAll({ postgresCore, mongoDb }: JobsBackend): Promise<any[]> {
+      if (postgresCore) {
+        if (!testingEnvironment.pgEnabled) {
+          throw new Error('Postgres jobs requested, but the spec did not set up Postgres');
+        }
+        return testingPG.getAllFrom('jobs');
+      }
+      const db = mongoDb ?? testingDB.mongodb;
+      if (!db) throw new Error('Testing mongodb not connected');
+      return db.collection('jobs').find().toArray();
+    },
+
+    /** Seeds jobs in that backend. Postgres rows take the Mongo `_id` as their `id`. */
+    async insert(jobs: Record<string, any>[], { postgresCore }: JobsBackend): Promise<void> {
+      if (!postgresCore) {
+        await testingDB.mongodb!.collection('jobs').insertMany(jobs);
+        return;
+      }
+      await Promise.all(
+        jobs.map(async ({ _id, params, options, ...job }) => {
+          const row: Record<string, unknown> = {
+            ...job,
+            id: String(_id),
+            params: JSON.stringify(params ?? {}),
+            options: JSON.stringify(options),
+          };
+          const columns = Object.keys(row);
+          await testingPG.pool!.query(
+            `INSERT INTO jobs (${columns.map(column => `"${column}"`).join(', ')})
+             VALUES (${columns.map((_column, index) => `$${index + 1}`).join(', ')})`,
+            Object.values(row)
+          );
+        })
+      );
+    },
+
+    /** Clears both backends, so nothing leaks between a suite's Mongo and Postgres variants. */
+    async clear(mongoDb?: Db): Promise<void> {
+      const db = mongoDb ?? testingDB.mongodb;
+      if (!db) throw new Error('Testing mongodb not connected');
+      await db.collection('jobs').deleteMany({});
+      if (testingEnvironment.pgEnabled) {
+        await testingPG.clear(['jobs']);
+      }
     },
   },
 

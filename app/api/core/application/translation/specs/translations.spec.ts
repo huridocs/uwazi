@@ -132,11 +132,11 @@ describe('translations', () => {
       addLanguage,
     } = createHelpers(postgresCore);
 
-    const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
+    const getJobs = async () => testingEnvironment.jobs.getAll({ postgresCore });
 
     beforeEach(async () => {
       jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-      await testingEnvironment.db.getCollection('jobs')!.deleteMany({});
+      await testingEnvironment.jobs.clear();
       await testingEnvironment.setFixtures(fixtures);
       if (postgresCore) {
         testingTenants.changeCurrentTenant({

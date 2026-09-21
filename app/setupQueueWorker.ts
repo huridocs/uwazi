@@ -11,7 +11,10 @@ import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import {
+  PostgresRoundRobinQueueAdapter,
+  RoundRobinQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
@@ -29,7 +32,7 @@ import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDi
 import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
 import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJobScheduler.js';
@@ -110,6 +113,9 @@ function register<T extends Dispatchable>(
   });
 }
 
+const queueAdapterFor = (backend: typeof config.queueBackend): QueueAdapter =>
+  backend === 'postgres' ? PostgresRoundRobinQueueAdapter() : RoundRobinQueueAdapter();
+
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
@@ -138,7 +144,8 @@ function setupQueueWorker(props?: Props) {
         setupWorkerSockets(redisClient);
       }
       logger.info('Connected to MongoDB');
-      const adapter = RoundRobinQueueAdapter();
+      const adapter = queueAdapterFor(config.queueBackend);
+      logger.info('Polling the job queue', { queueBackend: config.queueBackend });
       const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError);
 
       await tenants.setupTenants();
@@ -147,11 +154,14 @@ function setupQueueWorker(props?: Props) {
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
-      await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
-      logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
+      // 'system' jobs stay in Mongo until release 2, so only the Mongo worker schedules them.
+      if (config.queueBackend === 'mongo') {
+        await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
+        logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
 
-      await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
-      logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+        await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
+        logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+      }
 
       if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);
