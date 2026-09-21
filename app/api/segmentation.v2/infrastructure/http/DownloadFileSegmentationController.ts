@@ -1,8 +1,8 @@
 import { z } from 'zod';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSegmentationDataSource } from '../mongodb/MongoSegmentationDataSource.js';
 import { DownloadFileSegmentation } from '../../application/DownloadFileSegmentation.js';
@@ -19,11 +19,13 @@ class DownloadFileSegmentationController extends AbstractController {
       params: { id },
     } = requestSchema.parse(this.request);
 
-    const transactionManager = TransactionManagerFactory.mongo();
-    const segmentationDS = new MongoSegmentationDataSource(getConnection(), transactionManager);
+    const segmentationDS = new MongoSegmentationDataSource(
+      getConnection(),
+      ExecutionContext.mongoTransactionManager
+    );
     const useCase = new DownloadFileSegmentation({
-      filesDS: FilesDataSourceFactory.default({ transactionManager }),
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      filesDS: FilesDataSourceFactory.default(),
+      settingsDS: SettingsDataSourceFactory.default(),
       segmentationDS,
     });
     const segmentation = await useCase.execute({ fileId: id });

@@ -23,8 +23,10 @@ class CsvExtractUploadedZipJobFactory {
 
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const csvTransactionManager =
+      CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(csvTransactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(csvTransactionManager);
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
     const fileNormalizer = new CsvImportFileNormalizer({
       fileStorage,

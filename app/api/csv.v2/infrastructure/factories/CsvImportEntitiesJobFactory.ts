@@ -121,7 +121,9 @@ class CsvImportEntitiesJobFactory {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
     const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
-    const dataSources = buildCsvDataSources(transactionManager);
+    const dataSources = buildCsvDataSources(
+      CSVImportEntitiesFactories.csvTransactionManager(transactionManager)
+    );
     const services = buildEntityServices(transactionManager, fileStorage, jobsDispatcher);
     const mapper = new CsvEntitiesImportMapper(
       dataSources.thesauriValuesDS,

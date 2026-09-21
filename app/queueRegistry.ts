@@ -139,20 +139,20 @@ export function registerJobs(register: Register) {
   register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
-    const { transactionManager } = ExecutionContext;
+    const { mongoTransactionManager } = ExecutionContext;
     const connection = getConnection();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default();
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
       useCase: PXCreateParagraphsFactory.createDefault(),
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         connection,
-        transactionManager,
+        mongoTransactionManager,
         settingsDS,
         extractorsQueryService
       ),

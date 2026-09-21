@@ -21,11 +21,13 @@ class CsvCreateRelationshipEntitiesJobFactory {
   // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const csvTransactionManager =
+      CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(csvTransactionManager);
     const relationshipValuesDS =
-      CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
+      CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(csvTransactionManager);
     const relationshipPendingValuesDS =
-      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
+      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(csvTransactionManager);
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });

@@ -36,9 +36,7 @@ class CsvCreateThesauriValuesJobFactory {
         return mongoTransactionManager;
       }
       mongoTransactionManager =
-        transactionManager instanceof MongoTransactionManager
-          ? transactionManager
-          : ExecutionContext.mongoTransactionManager;
+        CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
       return mongoTransactionManager;
     };
     const csvImportsDS =

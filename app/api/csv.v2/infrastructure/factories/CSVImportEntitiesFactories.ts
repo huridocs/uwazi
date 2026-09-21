@@ -1,6 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -22,6 +22,16 @@ import { MongoCsvImportRelationshipValuesDataSource } from '../mongodb/MongoCsvI
 import { MongoCsvImportRelationshipPendingValuesDataSource } from '../mongodb/MongoCsvImportRelationshipPendingValuesDataSource.js';
 
 export class CSVImportEntitiesFactories {
+  /**
+   * The manager for the CSV import collections, which only exist in Mongo: the given one when it
+   * is a Mongo manager, the context's Mongo manager otherwise (postgresCore tenants).
+   */
+  static csvTransactionManager(transactionManager: TransactionManager): MongoTransactionManager {
+    return transactionManager instanceof MongoTransactionManager
+      ? transactionManager
+      : ExecutionContext.mongoTransactionManager;
+  }
+
   static CSVImportDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportsDataSource(db, transactionManager);
@@ -54,7 +64,7 @@ export class CSVImportEntitiesFactories {
 
   static default() {
     const { transactionManager } = ExecutionContext;
-    const csvImportsDS = this.CSVImportDSDefault(transactionManager);
+    const csvImportsDS = this.CSVImportDSDefault(this.csvTransactionManager(transactionManager));
     const fileStorage = FileStorageFactory.default();
     const idGenerator = IdGeneratorFactory.default();
     const { jobsDispatcher } = ExecutionContext;
@@ -69,27 +79,28 @@ export class CSVImportEntitiesFactories {
 
   static CSVPreflightJobDefault() {
     const { transactionManager } = ExecutionContext;
-    const csvImportsDS = this.CSVImportDSDefault(transactionManager);
+    const csvTransactionManager = this.csvTransactionManager(transactionManager);
+    const csvImportsDS = this.CSVImportDSDefault(csvTransactionManager);
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const { jobsDispatcher } = ExecutionContext;
     return new CsvPreflightJob({
       csvImportsDS,
-      rowsDS: this.CSVImportRowsDSDefault(transactionManager),
+      rowsDS: this.CSVImportRowsDSDefault(csvTransactionManager),
       templatesDS,
       settingsDS,
       thesauriDS,
-      thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(transactionManager),
+      thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(csvTransactionManager),
       relationshipPendingValuesDS:
-        this.CSVImportRelationshipPendingValuesDSDefault(transactionManager),
+        this.CSVImportRelationshipPendingValuesDSDefault(csvTransactionManager),
       jobsDispatcher,
       transactionManager,
     });
   }
 
   static listCsvImportEntitiesImportsUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = ExecutionContext.mongoTransactionManager;
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
 
     return new ListCsvImportEntitiesImportsUseCase({
@@ -98,7 +109,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static getCsvImportEntitiesImportUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = ExecutionContext.mongoTransactionManager;
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
     const rowErrorsDS = this.CSVImportRowErrorsDSDefault(transactionManager);
 
@@ -109,7 +120,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static cancelCsvImportEntitiesImportUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = ExecutionContext.mongoTransactionManager;
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
 
     return new CancelCsvImportEntitiesImportUseCase({
@@ -119,7 +130,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static downloadCsvImportFailedRowsCsvUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = ExecutionContext.mongoTransactionManager;
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
     const fileStorage = FileStorageFactory.default();
 

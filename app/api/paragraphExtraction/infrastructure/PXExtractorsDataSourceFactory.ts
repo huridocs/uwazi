@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
@@ -19,7 +19,7 @@ export class PXExtractorsDataSourceFactory {
   static createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
     const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
+      props.mongoTransactionManager ?? ExecutionContext.mongoTransactionManager;
 
     const extractorsQueryService =
       props.extractorsQueryService ??

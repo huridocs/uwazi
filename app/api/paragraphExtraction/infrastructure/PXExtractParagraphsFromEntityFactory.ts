@@ -1,7 +1,7 @@
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -20,7 +20,7 @@ import { User } from '#api/users.v2/model/User.js';
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { mongoTransactionManager } = ExecutionContext;
 
     const entitiesDS = EntitiesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,

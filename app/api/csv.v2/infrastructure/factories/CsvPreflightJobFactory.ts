@@ -33,10 +33,13 @@ class CsvPreflightJobFactory {
 
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
+    const csvTransactionManager = () =>
+      CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
     const csvImportsDS =
-      options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+      options.csvImportsDS ??
+      CSVImportEntitiesFactories.CSVImportDSDefault(csvTransactionManager());
     const rowsDS =
-      options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+      options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(csvTransactionManager());
     const templatesDS =
       options.templatesDS ?? TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS =
@@ -45,10 +48,12 @@ class CsvPreflightJobFactory {
       options.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
     const thesauriValuesDS =
       options.thesauriValuesDS ??
-      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(csvTransactionManager());
     const relationshipPendingValuesDS =
       options.relationshipPendingValuesDS ??
-      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
+      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(
+        csvTransactionManager()
+      );
     const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
     const useCase = new CsvPreflightJob({

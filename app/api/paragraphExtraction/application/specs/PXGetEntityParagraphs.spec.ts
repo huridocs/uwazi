@@ -9,11 +9,8 @@ import {
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
-const setupUseCase = () => {
-  const getEntityParagraphs = PXEntityParagraphsFactory.createDefault();
-
-  return getEntityParagraphs;
-};
+const setupUseCase = () =>
+  testingEnvironment.runWithContext(() => PXEntityParagraphsFactory.createDefault());
 
 describe('PXGetEntityParagraphs', () => {
   beforeEach(async () => {
