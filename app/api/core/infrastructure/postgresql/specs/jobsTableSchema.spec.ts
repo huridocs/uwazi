@@ -15,7 +15,7 @@ const insertJob = async (id: string, namespace: string) =>
     [id, namespace]
   );
 
-describe('020-create-jobs-table', () => {
+describe('021-create-jobs-table', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });

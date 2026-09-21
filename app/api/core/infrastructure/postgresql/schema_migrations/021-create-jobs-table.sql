@@ -1,4 +1,4 @@
--- Migration 020: create-jobs-table
+-- Migration 021: create-jobs-table
 -- Postgres job queue table
 --
 -- No row level security, unlike the tenant tables: queue workers pick jobs across every tenant,
