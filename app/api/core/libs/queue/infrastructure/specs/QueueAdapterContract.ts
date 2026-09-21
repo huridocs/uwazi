@@ -118,6 +118,15 @@ function describeQueueAdapterContract(name: string, setUp: () => Promise<QueueAd
         const stored = await harness.stored();
         expect(ids.map(id => stored.find(job => job.id === id)?.name)).toEqual(['first', 'second']);
       });
+
+      it('should store a batch too large for a single statement', async () => {
+        const jobs = Array.from({ length: 7000 }, (_, index) => pushInput({ params: { index } }));
+
+        const ids = await adapter.pushJobs(jobs);
+
+        expect(ids).toHaveLength(7000);
+        expect(await storedIds()).toEqual([otherQueueJob.id, ...ids].sort());
+      });
     });
 
     describe('pickJob', () => {

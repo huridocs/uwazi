@@ -123,6 +123,39 @@ describe('PostgresQueueAdapter', () => {
     expect(await stored()).toEqual([]);
   });
 
+  it('should roll back a batch too large for a single statement as a whole', async () => {
+    const manager = transactionManager();
+    const adapter = DefaultPostgresQueueAdapter(manager);
+
+    await expect(
+      manager.run(async () => {
+        await adapter.pushJobs(Array.from({ length: 7000 }, () => pushInput()));
+        throw new Error('rolled back');
+      })
+    ).rejects.toThrow('rolled back');
+
+    expect(await stored()).toEqual([]);
+  });
+
+  it.each([
+    {
+      case: 'on a transaction manager with no transaction running',
+      adapter: () => DefaultPostgresQueueAdapter(transactionManager()),
+    },
+    {
+      case: 'without a transaction manager',
+      adapter: () =>
+        new PostgresQueueAdapter({ workerKnex: PostgresDB.knex, logger: LoggerFactory.default() }),
+    },
+  ])('should store none of a batch when one of its chunks fails, $case', async ({ adapter }) => {
+    const jobs = Array.from({ length: 2500 }, () => pushInput());
+    jobs[1500] = pushInput({ name: null as unknown as string });
+
+    await expect(adapter().pushJobs(jobs)).rejects.toThrow('null value in column "name"');
+
+    expect(await stored()).toEqual([]);
+  });
+
   it('should commit a push right away when no transaction is running', async () => {
     const id = await DefaultPostgresQueueAdapter(transactionManager()).pushJob(pushInput());
 

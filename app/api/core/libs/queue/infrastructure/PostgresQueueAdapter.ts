@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { Params } from '../application/contracts/Dispatchable.js';
@@ -27,6 +28,12 @@ type Dependencies = {
 };
 
 const UNDEFINED_TABLE = '42P01';
+
+/**
+ * Rows per INSERT. A statement takes at most 65535 bind parameters and a job row uses 10, so a
+ * large dispatchMany batch is split into statements of this size.
+ */
+const INSERT_CHUNK_ROWS = 1000;
 
 const toJob = (row: JobRow): Job & { failed: boolean } => ({
   id: row.id,
@@ -86,7 +93,15 @@ export class PostgresQueueAdapter implements QueueAdapter {
 
     const now = Date.now();
     const rows = jobs.map(job => toRow(job, now));
-    await this.onDispatchConnection(async db => db('jobs').insert(rows));
+    const insertInChunks = async (db: Knex) =>
+      ArrayUtils.sequentialFor(ArrayUtils.splitInChunks(rows, INSERT_CHUNK_ROWS), async chunk =>
+        db('jobs').insert(chunk)
+      );
+
+    // All chunks or none: on a transaction already, or in one opened for them.
+    await this.onDispatchConnection(async db =>
+      db.isTransaction ? insertInChunks(db) : db.transaction(insertInChunks)
+    );
     return rows.map(row => row.id);
   }
 
