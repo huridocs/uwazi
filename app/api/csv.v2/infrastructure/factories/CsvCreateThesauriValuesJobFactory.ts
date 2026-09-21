@@ -5,8 +5,7 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
@@ -32,12 +31,7 @@ class CsvCreateThesauriValuesJobFactory {
     const csvImportsDS = options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault();
     const thesauriValuesDS =
       options.thesauriValuesDS ?? CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault();
-    const jobsDispatcher =
-      options.jobsDispatcher ??
-      UwaziDispatcherFactory(
-        ExecutionContext.tenant.name,
-        ExecutionContext.mongoTransactionManager
-      );
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const thesauriDS = options.thesauriDS ?? ThesauriDataSourceFactory.default();
     const thesauriService = new ThesauriService({
       dispatcher: DispatcherFactory.default(jobsDispatcher),

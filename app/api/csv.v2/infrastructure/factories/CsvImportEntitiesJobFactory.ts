@@ -4,8 +4,7 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -106,12 +105,7 @@ class CsvImportEntitiesJobFactory {
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
-    const jobsDispatcher =
-      options.jobsDispatcher ??
-      UwaziDispatcherFactory(
-        ExecutionContext.tenant.name,
-        ExecutionContext.mongoTransactionManager
-      );
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
     const dataSources = buildCsvDataSources();
     const services = buildEntityServices(fileStorage, jobsDispatcher);
     const mapper = new CsvEntitiesImportMapper(

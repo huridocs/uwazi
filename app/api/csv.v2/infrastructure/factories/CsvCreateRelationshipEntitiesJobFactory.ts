@@ -6,7 +6,6 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { CsvCreateRelationshipEntitiesJob } from '../../application/jobs/CsvCreateRelationshipEntitiesJob.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 
@@ -26,12 +25,7 @@ const csvRelationshipCore = (options: FactoryOptions) => {
   const entitiesDS = EntitiesDataSourceFactory.default();
   return {
     entitiesDS,
-    jobsDispatcher:
-      options.jobsDispatcher ??
-      UwaziDispatcherFactory(
-        ExecutionContext.tenant.name,
-        ExecutionContext.mongoTransactionManager
-      ),
+    jobsDispatcher: options.jobsDispatcher ?? ExecutionContext.jobsDispatcher,
     entitiesService: EntitiesServiceFactory.default({
       settingsDS: SettingsDataSourceFactory.cached(),
       templatesDS: TemplatesDataSourceFactory.cached(),

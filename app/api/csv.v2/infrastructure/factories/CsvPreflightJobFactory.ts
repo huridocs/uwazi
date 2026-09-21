@@ -3,7 +3,6 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -49,12 +48,7 @@ class CsvPreflightJobFactory {
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
     const dataSources = csvPreflightDataSources(options);
-    const jobsDispatcher =
-      options.jobsDispatcher ??
-      UwaziDispatcherFactory(
-        ExecutionContext.tenant.name,
-        ExecutionContext.mongoTransactionManager
-      );
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
     const useCase = new CsvPreflightJob({
       ...dataSources,
