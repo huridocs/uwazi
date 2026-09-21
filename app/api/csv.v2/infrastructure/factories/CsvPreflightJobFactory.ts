@@ -1,12 +1,11 @@
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
@@ -51,8 +50,7 @@ class CsvPreflightJobFactory {
     const relationshipPendingValuesDS =
       options.relationshipPendingValuesDS ??
       CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
     const useCase = new CsvPreflightJob({
       csvImportsDS,

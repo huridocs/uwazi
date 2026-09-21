@@ -1,11 +1,10 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager.js';
 import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer.js';
 import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob.js';
@@ -33,8 +32,7 @@ class CsvExtractUploadedZipJobFactory {
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options.batchSize });
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
