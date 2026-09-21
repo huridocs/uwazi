@@ -74,15 +74,10 @@ const labelFallback = (items: MetadataValue[]): string | undefined => {
   return parts.length > 0 ? parts.join(', ') : undefined;
 };
 
-const inheritedCellContent = (
-  values: unknown,
-  entityId: string,
-  options: InheritedCellContentOptions = {}
-): ReactNode => {
+const flattenedInherited = (values: unknown, entityId: string) => {
   const rows = readInheritedRows(values);
   const row = rows.find(value => String(value.value ?? '') === entityId);
   if (!row?.inheritedValue?.length) return undefined;
-
   const inheritedType =
     typeof row.inheritedType === 'string' && isPropertyType(row.inheritedType)
       ? row.inheritedType
@@ -92,17 +87,25 @@ const inheritedCellContent = (
     inheritedType
   );
   if (!flattened.values.length) return undefined;
+  return flattened;
+};
 
+const inheritedCellSortKey = (values: unknown, entityId: string): string =>
+  labelFallback(flattenedInherited(values, entityId)?.values ?? []) ?? '';
+
+const renderTypedInheritedCell = (
+  flattened: NonNullable<ReturnType<typeof flattenedInherited>>,
+  options: InheritedCellContentOptions
+): ReactNode => {
   if (flattened.inheritedType && flattened.inheritedType !== 'relationship') {
     const field = formatInheritedCellProperty(flattened.inheritedType, flattened.values);
     if (field) {
       const { density } = inheritedTypeLayout(flattened.inheritedType);
-      const content =
-        density !== undefined ? renderFieldContent(field, { density }) : renderFieldContent(field);
-      if (content) return content;
+      return density !== undefined
+        ? renderFieldContent(field, { density })
+        : renderFieldContent(field);
     }
   }
-
   if (flattened.inheritedType === 'relationship') {
     const pillValues = relationshipEntityValuesFromMetadata(flattened.values, {
       defaultTemplateId: options.inheritTargetTemplateId,
@@ -118,9 +121,18 @@ const inheritedCellContent = (
       );
     }
   }
-
-  return labelFallback(flattened.values);
+  return undefined;
 };
 
-export { inheritedCellContent };
+const inheritedCellContent = (
+  values: unknown,
+  entityId: string,
+  options: InheritedCellContentOptions = {}
+): ReactNode => {
+  const flattened = flattenedInherited(values, entityId);
+  if (!flattened) return undefined;
+  return renderTypedInheritedCell(flattened, options) ?? labelFallback(flattened.values);
+};
+
+export { inheritedCellContent, inheritedCellSortKey };
 export type { InheritedCellContentOptions };

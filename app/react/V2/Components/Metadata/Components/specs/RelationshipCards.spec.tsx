@@ -166,8 +166,8 @@ describe('RelationshipCards multi-inherit grouping', () => {
 
     expect(screen.getByText('People involved')).toBeInTheDocument();
     expect(screen.queryByText('Role field')).not.toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Country' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Role' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Role/ })).toBeInTheDocument();
     expect(screen.getByText(/inherits/)).toHaveTextContent('Country, Role');
     expect(screen.getByText('Kenya')).toBeInTheDocument();
     expect(screen.getByText('Witness')).toBeInTheDocument();
@@ -202,7 +202,7 @@ describe('RelationshipCards multi-inherit grouping', () => {
     );
 
     const card = screen.getByText('People involved').closest('div.overflow-hidden') as HTMLElement;
-    expect(within(card).getByRole('columnheader', { name: 'Country' })).toBeInTheDocument();
+    expect(within(card).getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
     expect(within(card).getAllByRole('columnheader')).toHaveLength(2);
     expect(within(card).getByText('Kenya')).toBeInTheDocument();
   });

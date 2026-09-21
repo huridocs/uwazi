@@ -38,7 +38,7 @@ const DatavizChartView = ({
       notMerge={!animateUpdates}
       replaceMerge={animateUpdates ? undefined : ['visualMap', 'series']}
       lazyUpdate={!animateUpdates}
-      opts={{ renderer: 'canvas' }}
+      opts={{ renderer: 'svg' }}
     />
   );
 };

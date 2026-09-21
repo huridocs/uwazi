@@ -3,6 +3,7 @@ import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import {
   inheritedCellContent,
+  inheritedCellSortKey,
   type InheritedCellContentOptions,
 } from './Components/inheritedCellContent.js';
 import type { OpenEntityTarget } from './Components/ConnectionPills.js';
@@ -28,6 +29,7 @@ type InheritColumn = {
   label: string;
   inheritedType?: PropertyTypeSchema;
   cellsByEntityId?: Record<string, ReactNode>;
+  sortKeyByEntityId?: Record<string, string>;
 };
 
 const inheritedPropertyOnTarget = (
@@ -73,10 +75,12 @@ const buildInheritColumns = (
         ...(inheritTargetTemplateId ? { inheritTargetTemplateId } : {}),
       };
       const cellsByEntityId: Record<string, ReactNode> = {};
+      const sortKeyByEntityId: Record<string, string> = {};
       (values ?? []).forEach(row => {
         const entityId = String(row.value ?? '');
         if (entityId) {
           cellsByEntityId[entityId] = inheritedCellContent([row], entityId, cellOptions);
+          sortKeyByEntityId[entityId] = inheritedCellSortKey([row], entityId);
         }
       });
       const inheritType = candidate.inherit?.type;
@@ -84,6 +88,7 @@ const buildInheritColumns = (
         label: inheritedTarget?.label ?? candidate.label,
         ...(inheritType && isPropertyType(inheritType) ? { inheritedType: inheritType } : {}),
         cellsByEntityId,
+        sortKeyByEntityId,
       };
     });
 
