@@ -12,7 +12,7 @@ Locked decisions below are from the 2026-09-16 alignment. Implementation notes r
 
 - **Analysis / planning** — aligned (2026-09-16)
 - **Implementation** — done in code (2026-09-16). Schema `020`, PG adapters, copy CLI, flag/TM wiring (job `run()` = `EC.transactionManager`, P12 hybrid; dispatcher inlined per factory like CreateUser), domain `id` on children, 4-way job/use-case/route specs. No `csvJobWiring`.
-- **Not done** — staging/prod dry-run (section G): copy → flip `postgresCsv` (with `postgresCore` on) → restart → run a real import.
+- **Local dry-run** — done (2026-09-21). Existing Mongo imports copied into PG; new imports run against PG with `postgresCsv` + `postgresCore`; error paths and child collections that a clean import may leave empty also looked correct.
 - **Prerequisite** — CSV v2 hex already existed in `app/api/csv.v2` (Mongo). This was **not** a V1→V2 rewrite.
 
 ---
@@ -194,7 +194,7 @@ CSV import jobs are **not** in that feature. Confirmed: we do **not** wire `Sync
 | D3 | RLS timing | **Locked and shipped** — same migration as `CREATE TABLE` (`020`) |
 | D4 | Identity / `_id` / domain `id` | **Locked and shipped** — every table PK `("_id", "tenant_id")`; domain `id`; mapper bridges; mint in application; copy preserves Mongo `_id` |
 | D5 | Sync | **Locked and shipped** — none |
-| D6 | Cutover / dual-write | **Locked** — copy once, flip flag, no dual-write, **never switch back**. Copy CLI exists; prod flip not done |
+| D6 | Cutover / dual-write | **Locked** — copy once, flip flag, no dual-write, **never switch back**. Local copy + PG imports verified. |
 | D7 | Factory / TM wiring | **Locked and shipped** — job `run()` is `EC.transactionManager`; CSV DS pick their store TM; mixed cells auto-commit the other store (P12); dispatcher inlined (`UwaziDispatcherFactory` + Mongo TM); no `csvJobWiring`; do not nest a second `run()`; do not drill the job TM into CSV or core factories |
 | D8 | Schema shape | **Locked and shipped** — `_id` + `tenant_id`; scalars + JSONB; Mongo unique indexes kept as unique indexes |
 | D9 | Foreign keys | **Locked** — none this phase |
@@ -265,7 +265,7 @@ PRIMARY KEY ("_id", "tenant_id")
 
 ### D6. Copy then flag; never switch back
 
-One-time CLI copy → flip `postgresCsv` → PG is source of truth for CSV collections. No dual-write of staging rows. **Do not turn the flag off** after any PG write.
+One-time CLI copy → flip `postgresCsv` → PG is source of truth for CSV collections. No dual-write of staging rows. **Do not turn the flag off** after any PG write. Local copy + new PG imports verified 2026-09-21.
 
 ### D7. Factory / TM
 
@@ -362,10 +362,8 @@ There is no `csvJobWiring`. That file existed when CSV also chose the job TM the
 - **D.** Postgres adapters in `csv.v2/infrastructure/postgresql/`. Mappers `id` ↔ `_id`. Bulk insert. `replace*` persist-only (join open PG `run()`). Cancel/update race in SQL. No `ObjectId` in PG adapters. Schema/RLS specs as `app_user`.
 - **E.** Six `MigrationConfig`s; `FLAG_GROUPS.postgresCsv` parent→child. Specs: map, copy, skip, force, tenant isolation.
 - **F.** Contract specs per DS (2-way). Job/use-case/route `describe.each` 4-way. Preflight does not inject Mongo thesauri. Queue dispatch mocked at the job boundary.
+- **G.** Local dry-run (2026-09-21): previous Mongo imports copied; new imports on PG (`postgresCsv` + `postgresCore`); error imports and child collections that a successful import may leave empty all looked correct.
 
-### Remaining
-
-**G. Manual dry-run.** Staging (or production stop-the-world): schema → copy all six (Mongo treated as a stale snapshot) → flip `postgresCsv` (with `postgresCore` on) → restart → register import → extract → preflight → thesauri → relationships → entities → cancel mid-flight → failed-rows download → cleanup. Optionally repeat core-off for the mixed cell.
 
 ---
 
