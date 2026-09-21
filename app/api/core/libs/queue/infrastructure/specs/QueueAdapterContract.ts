@@ -223,6 +223,31 @@ function describeQueueAdapterContract(name: string, setUp: () => Promise<QueueAd
         setNow(7000);
         expect(await adapter.pickJob('queue name')).toBe(null);
       });
+
+      it('should mark the queue jobs that reached maxRetries as failed once their lock expires', async () => {
+        mockNow(10);
+        const exhausted = storedJob({ name: 'exhausted job', retryCount: 3, lockedUntil: 5 });
+        const otherQueueExhausted = storedJob({
+          queue: 'other queue',
+          name: 'other queue exhausted job',
+          retryCount: 3,
+        });
+        await harness.insert([exhausted, otherQueueExhausted]);
+
+        await adapter.pickJob('queue name');
+
+        await expectStored([otherQueueJob, otherQueueExhausted, { ...exhausted, failed: true }]);
+      });
+
+      it('should not mark a job as failed while its last attempt is still locked', async () => {
+        mockNow(10);
+        const running = storedJob({ name: 'last attempt', retryCount: 3, lockedUntil: 20 });
+        await harness.insert([running]);
+
+        await adapter.pickJob('queue name');
+
+        await expectStored([otherQueueJob, running]);
+      });
     });
 
     describe('worker side updates', () => {

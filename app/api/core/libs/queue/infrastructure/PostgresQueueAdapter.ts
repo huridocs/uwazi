@@ -131,6 +131,20 @@ export class PostgresQueueAdapter implements QueueAdapter {
   }
 
   /**
+   * Jobs whose last attempt never reported back (the worker died) keep failed = false, so they would
+   * stay in the jobs_pick index forever. Once that attempt's lock expires they are failed, as the
+   * Mongo adapter does.
+   */
+  private async markExceededRetryJobsAsFailed(queueName: string, now: number): Promise<void> {
+    await this.deps
+      .workerKnex('jobs')
+      .where({ queue: queueName, failed: false })
+      .where('lockedUntil', '<', now)
+      .whereRaw('"retryCount" >= ("options"->>\'maxRetries\')::int')
+      .update({ failed: true });
+  }
+
+  /**
    * Locks and returns the oldest pickable job in one statement. SKIP LOCKED lets concurrent
    * workers pass over a row another one is taking instead of waiting for it.
    */
@@ -141,6 +155,8 @@ export class PostgresQueueAdapter implements QueueAdapter {
       : '';
 
     try {
+      await this.markExceededRetryJobsAsFailed(queueName, now);
+
       const { rows } = await this.deps.workerKnex.raw<{ rows: JobRow[] }>(
         `UPDATE jobs
          SET "lockedUntil" = ? + ("options"->>'lockWindow')::bigint,
