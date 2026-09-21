@@ -1,10 +1,12 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
@@ -32,14 +34,11 @@ class CsvPreflightJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
-    const csvTransactionManager = () =>
-      CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     const csvImportsDS =
-      options.csvImportsDS ??
-      CSVImportEntitiesFactories.CSVImportDSDefault(csvTransactionManager());
+      options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS =
-      options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(csvTransactionManager());
+      options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const templatesDS =
       options.templatesDS ?? TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS =
@@ -48,13 +47,12 @@ class CsvPreflightJobFactory {
       options.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
     const thesauriValuesDS =
       options.thesauriValuesDS ??
-      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(csvTransactionManager());
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
     const relationshipPendingValuesDS =
       options.relationshipPendingValuesDS ??
-      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(
-        csvTransactionManager()
-      );
-    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
+      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
+    const jobsDispatcher =
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
     const useCase = new CsvPreflightJob({
       csvImportsDS,

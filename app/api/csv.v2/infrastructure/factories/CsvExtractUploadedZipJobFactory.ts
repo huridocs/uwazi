@@ -1,9 +1,11 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager.js';
 import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer.js';
 import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob.js';
@@ -22,18 +24,17 @@ class CsvExtractUploadedZipJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
-    const csvTransactionManager =
-      CSVImportEntitiesFactories.csvTransactionManager(transactionManager);
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(csvTransactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(csvTransactionManager);
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
     const fileNormalizer = new CsvImportFileNormalizer({
       fileStorage,
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options.batchSize });
-    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
+    const jobsDispatcher =
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
