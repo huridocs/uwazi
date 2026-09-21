@@ -13,6 +13,7 @@ import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDF
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
@@ -139,7 +140,7 @@ export function registerJobs(register: Register) {
   register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
-    const { transactionManager } = ExecutionContext;
+    const transactionManager = TransactionManagerFactory.default();
     const connection = getConnection();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
@@ -302,9 +303,9 @@ export function registerJobs(register: Register) {
   );
 
   register(DenormalizeThesaurusEntitiesHandler, async () => {
-    const entitiesDS = EntitiesDataSourceFactory.default({
-      transactionManager: ExecutionContext.transactionManager,
-    });
+    const transactionManager = TransactionManagerFactory.default();
+
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
 
     return new DenormalizeThesaurusEntitiesHandler({
       entitiesDS,
@@ -318,7 +319,7 @@ export function registerJobs(register: Register) {
       new DenormalizeEntityUpdatedListener({
         denormalizeRelated,
         templatesDS: TemplatesDataSourceFactory.default({
-          transactionManager: ExecutionContext.transactionManager,
+          transactionManager: TransactionManagerFactory.default(),
         }),
       })
   );

@@ -1,7 +1,6 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DeleteFileUseCaseFactory } from '../../factories/DeleteFileUseCaseFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';

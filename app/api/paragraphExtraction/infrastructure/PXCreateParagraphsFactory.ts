@@ -1,4 +1,4 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -17,22 +17,22 @@ import { DispatcherFactory } from '#api/core/infrastructure/factories/Dispatcher
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
     const connection = getConnection();
-    const { transactionManager, mongoTransactionManager } = ExecutionContext;
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const settingsDS = SettingsDataSourceFactory.cached({
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
     const templatesDS = TemplatesDataSourceFactory.cached({
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
     const thesauriDS = ThesauriDataSourceFactory.default({
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
     const translationsDS = TranslationsDataSourceFactory.default({
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
     const entitiesDS = EntitiesDataSourceFactory.default({
-      transactionManager,
+      transactionManager: mongoTransactionManager,
     });
     const jobsDispatcher = DispatcherFactory.default();
 
@@ -48,7 +48,7 @@ export class PXCreateParagraphsFactory {
       entitiesDS,
       eventBus: applicationEventsBus,
       settingsDS,
-      transactionManager,
+      transactionManager: mongoTransactionManager,
       dispatcher: jobsDispatcher,
     });
 
@@ -69,7 +69,7 @@ export class PXCreateParagraphsFactory {
         entitiesStatusDS,
         entitiesService,
         propertyAssignmentStrategy,
-        transactionManager,
+        transactionManager: mongoTransactionManager,
       },
       batchSize
     );
