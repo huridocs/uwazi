@@ -1,0 +1,80 @@
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DenormalizeEntitiesChunkHandler } from './DenormalizeEntitiesChunkHandler.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+
+type ThesaurusParams = {
+  kind: 'thesaurus';
+  thesaurusId: string;
+  valueIds: string[];
+};
+
+type RelationshipsParams = {
+  kind: 'relationships';
+  sharedIds: string[];
+};
+
+type Params = (ThesaurusParams | RelationshipsParams) & UwaziJobParams;
+
+type JobDependencies = {
+  entitiesDS: EntitiesDataSource;
+  jobsDispatcher: JobsDispatcher;
+};
+
+function collectNew(ids: string[], seen: Set<string>): string[] {
+  const fresh = ids.filter(id => !seen.has(id));
+  fresh.forEach(id => seen.add(id));
+  return fresh;
+}
+
+async function computeReferencingClosure(
+  sharedIds: string[],
+  deps: {
+    getSharedIdsReferencing: (ids: string[]) => Promise<string[]>;
+    getSharedIdsInheritingRelationshipFrom: (ids: string[]) => Promise<string[]>;
+  }
+): Promise<string[]> {
+  const seen = new Set(sharedIds);
+  const closure: string[] = [];
+
+  let frontier = collectNew(await deps.getSharedIdsReferencing(sharedIds), seen);
+  closure.push(...frontier);
+
+  while (frontier.length > 0) {
+    // eslint-disable-next-line no-await-in-loop -- each BFS layer depends on the previous frontier
+    frontier = collectNew(await deps.getSharedIdsInheritingRelationshipFrom(frontier), seen);
+    closure.push(...frontier);
+  }
+
+  return closure;
+}
+
+@PrivilegedJob()
+class DenormalizeEntitiesHandler extends UwaziJobHandler<Params> {
+  public constructor(private deps: JobDependencies) {
+    super();
+  }
+
+  protected async handle(_heartbeat: HeartbeatCallback, params: Params, _jobInfo: JobInfo) {
+    const sharedIds =
+      params.kind === 'thesaurus'
+        ? await this.deps.entitiesDS.getSharedIdsUsingThesaurus(params.thesaurusId, params.valueIds)
+        : await computeReferencingClosure(params.sharedIds, this.deps.entitiesDS);
+
+    const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+
+    await this.deps.jobsDispatcher.dispatchMany(async dispatch =>
+      chunks.forEach(chunk =>
+        dispatch(DenormalizeEntitiesChunkHandler, { ...params, sharedIds: chunk })
+      )
+    );
+  }
+}
+
+export { DenormalizeEntitiesHandler, computeReferencingClosure };

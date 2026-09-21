@@ -5,7 +5,10 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
-import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler.js';
+import {
+  DenormalizeEntitiesHandler,
+  computeReferencingClosure,
+} from '../DenormalizeEntitiesHandler.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { getSharedConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
@@ -70,6 +73,14 @@ const fixtures: DBFixture = {
         relationType: 'any_id',
       }),
     ]),
+    factory.template('template_6', [
+      factory.relationshipProp('rel_inherit_relationship', 'template_3', {
+        inherit: {
+          property: factory.id('relationship_1').toString(),
+          type: 'relationship',
+        },
+      }),
+    ]),
   ],
 
   entities: [
@@ -117,6 +128,17 @@ const fixtures: DBFixture = {
         },
       ],
     }),
+
+    // Template 6
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_10', 'template_6', {
+      rel_inherit_relationship: [
+        {
+          value: 'entity_6',
+          inheritedType: 'relationship',
+          inheritedValue: [{ value: 'entity_1' }],
+        },
+      ],
+    }),
   ],
 
   dictionaries: [
@@ -158,12 +180,12 @@ const createSut = () => {
     EntitiesDataSourceFactory.default({ transactionManager })
   );
 
-  const sut = new DenormalizeThesaurusEntitiesHandler({ jobsDispatcher, entitiesDS });
+  const sut = new DenormalizeEntitiesHandler({ jobsDispatcher, entitiesDS });
 
   return { sut };
 };
 
-describe('DenormalizeThesaurusEntitiesHandler', () => {
+describe('DenormalizeEntitiesHandler', () => {
   const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();
 
   beforeAll(async () => {
@@ -188,6 +210,7 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
     await sut.handleDispatch(
       jest.fn(),
       {
+        kind: 'thesaurus',
         tenantName: tenants.current().name,
         userId,
         thesaurusId,
@@ -201,8 +224,9 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
     expect(jobs).toHaveLength(1);
     expect(jobs[0]).toMatchObject({
       queue: 'uwazi_jobs',
-      name: 'DenormalizeThesaurusEntitiesChunkHandler',
+      name: 'DenormalizeEntitiesChunkHandler',
       params: {
+        kind: 'thesaurus',
         tenantName: tenants.current().name,
         userId,
         thesaurusId,
@@ -210,6 +234,37 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
       namespace: tenants.current().name,
     });
     expect([...jobs[0].params.sharedIds].sort()).toEqual(['entity_1', 'entity_6', 'entity_9']);
+  });
+
+  it('should dispatch relationship denormalization jobs for referencing entities', async () => {
+    const { sut } = createSut();
+
+    const userId = new ObjectId().toHexString();
+    await sut.handleDispatch(
+      jest.fn(),
+      {
+        kind: 'relationships',
+        tenantName: tenants.current().name,
+        userId,
+        sharedIds: ['entity_1'],
+      },
+      { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
+    );
+
+    const jobs = await getJobs();
+
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]).toMatchObject({
+      queue: 'uwazi_jobs',
+      name: 'DenormalizeEntitiesChunkHandler',
+      params: {
+        kind: 'relationships',
+        tenantName: tenants.current().name,
+        userId,
+      },
+      namespace: tenants.current().name,
+    });
+    expect([...jobs[0].params.sharedIds].sort()).toEqual(['entity_10', 'entity_6', 'entity_9']);
   });
 
   it('should do nothing when there are no affected entities', async () => {
@@ -220,12 +275,120 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
     const userId = new ObjectId().toHexString();
     await sut.handleDispatch(
       jest.fn(),
-      { tenantName: tenants.current().name, userId, thesaurusId, valueIds: [] },
+      {
+        kind: 'thesaurus',
+        tenantName: tenants.current().name,
+        userId,
+        thesaurusId,
+        valueIds: [],
+      },
       { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
     );
 
     const jobs = await getJobs();
 
     expect(jobs).toMatchObject([]);
+  });
+
+  it('should split the relationships closure into chunks of 100', async () => {
+    const closure = Array.from({ length: 250 }, (_, i) => `entity-${i}`);
+    const entitiesDS = {
+      getSharedIdsUsingThesaurus: jest.fn(),
+      getSharedIdsReferencing: jest.fn().mockResolvedValue(closure),
+      getSharedIdsInheritingRelationshipFrom: jest.fn().mockResolvedValue([]),
+    };
+    const dispatched: Array<{ dispatchable: { name: string }; params: any }> = [];
+    const jobsDispatcher = {
+      dispatchMany: jest.fn(async (cb: any) =>
+        cb((dispatchable: any, params: any) => dispatched.push({ dispatchable, params }))
+      ),
+    };
+
+    const sut = new DenormalizeEntitiesHandler({
+      entitiesDS: entitiesDS as any,
+      jobsDispatcher: jobsDispatcher as any,
+    });
+
+    await sut.handleDispatch(
+      jest.fn(),
+      {
+        kind: 'relationships',
+        tenantName: tenants.current().name,
+        userId: 'user-1',
+        sharedIds: ['root'],
+      },
+      { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
+    );
+
+    expect(dispatched).toHaveLength(3);
+    expect(dispatched.map(d => d.dispatchable.name)).toEqual([
+      'DenormalizeEntitiesChunkHandler',
+      'DenormalizeEntitiesChunkHandler',
+      'DenormalizeEntitiesChunkHandler',
+    ]);
+    expect(dispatched[0].params.sharedIds).toHaveLength(100);
+    expect(dispatched[1].params.sharedIds).toHaveLength(100);
+    expect(dispatched[2].params.sharedIds).toHaveLength(50);
+  });
+});
+
+describe('computeReferencingClosure', () => {
+  it('returns direct referencers followed by transitive inherit-from-relationship referencers', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce(['b']);
+    const getSharedIdsInheritingRelationshipFrom = jest
+      .fn()
+      .mockResolvedValueOnce(['c'])
+      .mockResolvedValueOnce([]);
+
+    const result = await computeReferencingClosure(['a'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual(['b', 'c']);
+    expect(getSharedIdsReferencing).toHaveBeenCalledTimes(1);
+    expect(getSharedIdsReferencing).toHaveBeenCalledWith(['a']);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenNthCalledWith(1, ['b']);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenNthCalledWith(2, ['c']);
+  });
+
+  it('deduplicates across layers and never returns the roots', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce(['a', 'b']);
+    const getSharedIdsInheritingRelationshipFrom = jest
+      .fn()
+      .mockResolvedValueOnce(['a', 'c'])
+      .mockResolvedValueOnce(['b', 'c']);
+
+    const result = await computeReferencingClosure(['a'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual(['b', 'c']);
+  });
+
+  it('returns only direct referencers when there is no transitive propagation', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce(['b']);
+    const getSharedIdsInheritingRelationshipFrom = jest.fn().mockResolvedValueOnce([]);
+
+    const result = await computeReferencingClosure(['a'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual(['b']);
+  });
+
+  it('returns an empty array when there are no direct referencers', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce([]);
+    const getSharedIdsInheritingRelationshipFrom = jest.fn();
+
+    const result = await computeReferencingClosure(['a'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual([]);
+    expect(getSharedIdsInheritingRelationshipFrom).not.toHaveBeenCalled();
   });
 });

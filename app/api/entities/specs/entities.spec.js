@@ -7,9 +7,13 @@ import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { UserRole } from '#shared/types/userSchema.js';
 
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
+import { DenormalizeEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeEntitiesHandler.js';
+import { DenormalizeEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeEntitiesChunkHandler.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { DenormalizeRelationshipsUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeRelationshipsUseCaseFactory.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -19,11 +23,7 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import entities from '../entities.js';
-import {
-  denormalizeEntityV2Adapter,
-  saveEntityV2Adapter,
-  toActorFromUser,
-} from './saveEntityV2Adapter.js';
+import { saveEntityV2Adapter, toActorFromUser } from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
@@ -57,6 +57,16 @@ const saveEntityWithEventing = async (doc, options = {}) => {
       new RelationshipSyncJob({
         relationships,
       }),
+    [DenormalizeEntitiesHandler.name]: async () =>
+      new DenormalizeEntitiesHandler({
+        entitiesDS: EntitiesDataSourceFactory.default(),
+        jobsDispatcher,
+      }),
+    [DenormalizeEntitiesChunkHandler.name]: async () =>
+      new DenormalizeEntitiesChunkHandler({
+        DenormalizeThesaurusEntitiesUseCaseFactory,
+        DenormalizeRelationshipsUseCaseFactory,
+      }),
   });
   return saveEntityV2Adapter(doc, options, {
     factories: {
@@ -82,8 +92,6 @@ const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, us
     { actor }
   );
 };
-
-const denormalizeEntity = async (entity, options) => denormalizeEntityV2Adapter(entity, options);
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -965,52 +973,6 @@ describe('entities', () => {
         entities.getUnrestricted({ title: '' })
       );
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('denormalize', () => {
-    it('should denormalize entity with missing metadata labels', async () => {
-      userFactory.mock({
-        _id: 'user1',
-        username: 'collaborator',
-        role: UserRole.COLLABORATOR,
-      });
-      const entity = (
-        await testingEnvironment.runWithContext(async () =>
-          entities.get({ sharedId: 'shared', language: 'en' })
-        )
-      )[0];
-      entity.metadata.friends[0].label = '';
-      const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
-      expect(denormalized.metadata.friends[0].label).toBe('shared2title');
-    });
-
-    it('should denormalize inherited metadata', async () => {
-      const entity = (
-        await testingEnvironment.runWithContext(async () =>
-          entities.get({ sharedId: 'shared', language: 'en' })
-        )
-      )[0];
-
-      const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
-      expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
-        { value: 'something to be inherited' },
-      ]);
-      expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
-    });
-
-    it('should denormalize thesauri categories as parents', async () => {
-      const entity = {
-        template: templateId,
-        title: 'Thesauri categories test',
-        language: 'en',
-        metadata: {
-          select: [{ value: 'town1' }],
-          multiselect: [{ value: 'country_one' }, { value: 'town2' }],
-        },
-      };
-      const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
-      expect(denormalized.metadata.select[0].parent).toEqual({ value: 'towns', label: 'Towns' });
     });
   });
 
