@@ -3,6 +3,8 @@
 
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer utilities;
 
 .tw-content {
@@ -30,6 +32,9 @@
   --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary));
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
   --color-border: var(--color-theme-border-primary);
+  --color-paper: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
+  --color-ink-tertiary: var(--color-theme-text-tertiary);
+  --color-carbon: var(--color-theme-accent-supporting);
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
