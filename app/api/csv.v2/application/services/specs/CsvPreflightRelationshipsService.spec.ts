@@ -53,6 +53,7 @@ describe('CsvPreflightRelationshipsService', () => {
       entitiesDS,
       importId: 'import-id',
       chunkSize: 10,
+      generateId: () => 'rel-values-id',
       titlesByTemplate: new Map<string, Set<string>>([
         ['target-template', new Set(['Duplicate', 'Missing'])],
         [ANY_TEMPLATE_RELATIONSHIP_KEY, new Set(['FoundAny'])],
