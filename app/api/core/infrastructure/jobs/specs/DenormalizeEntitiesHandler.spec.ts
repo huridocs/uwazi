@@ -391,4 +391,20 @@ describe('computeReferencingClosure', () => {
     expect(result).toEqual([]);
     expect(getSharedIdsInheritingRelationshipFrom).not.toHaveBeenCalled();
   });
+
+  it('terminates on a cyclic inherit-from-relationship graph', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValue(['a']);
+    // a and b inherit from each other; without the seen guard this would never end.
+    const getSharedIdsInheritingRelationshipFrom = jest
+      .fn()
+      .mockImplementation(async (ids: string[]) => (ids.includes('a') ? ['b'] : ['a']));
+
+    const result = await computeReferencingClosure(['root'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual(['a', 'b']);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledTimes(2);
+  });
 });
