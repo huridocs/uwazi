@@ -22,6 +22,7 @@ const createZodValidationError = () => {
 describe('CsvRowImportErrorFactory', () => {
   it('maps missing file errors to FILE_NOT_FOUND with stable message/details', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 4,
       error: new CsvImportFileNotFoundError({
@@ -42,6 +43,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('maps relationship not-found errors to RELATIONSHIP_NOT_FOUND', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 5,
       error: new CsvImportRelationshipResolutionError({
@@ -76,6 +78,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('maps relationship ambiguous errors to RELATIONSHIP_AMBIGUOUS', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 5,
       error: new CsvImportRelationshipResolutionError({
@@ -99,6 +102,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('maps empty rows to ROW_EMPTY_OR_MALFORMED', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 2,
       error: new CsvImportRowEmptyError(),
@@ -111,6 +115,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('maps unknown ids to ID_NOT_FOUND_IN_TEMPLATE', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 8,
       error: new CsvImportEntityNotFoundInTemplateError({
@@ -128,6 +133,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('maps wrapped validation errors to VALUE_INVALID_FORMAT with context', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 3,
       error: new CsvImportPropertyValidationError({
@@ -152,6 +158,7 @@ describe('CsvRowImportErrorFactory', () => {
 
   it('sanitizes unknown errors to INTERNAL_ERROR', () => {
     const rowError = CsvRowImportErrorFactory.fromException({
+      generateId: () => 'error-id',
       importId: 'import-1',
       rowIndex: 9,
       error: new TypeError("Cannot read properties of undefined (reading 'foo')"),

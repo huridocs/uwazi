@@ -34,10 +34,11 @@ const UWAZI_DESIGN_LIGHT = {
   shadowLg: '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05)',
   shadowXl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
   cardShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+  accentSealFill: '#D53E27',
   radiusSm: '4px',
   radiusMd: '8px',
-  radiusLg: '8px',
-  radiusXl: '10px',
+  radiusLg: '12px',
+  radiusXl: '16px',
 } as const;
 
 const UWAZI_DESIGN_DARK = {
@@ -74,10 +75,11 @@ const UWAZI_DESIGN_DARK = {
   shadowLg: '0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2)',
   shadowXl: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.25)',
   cardShadow: '0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15)',
+  accentSealFill: '#D53E27',
   radiusSm: '4px',
   radiusMd: '8px',
-  radiusLg: '8px',
-  radiusXl: '10px',
+  radiusLg: '12px',
+  radiusXl: '16px',
 } as const;
 
 export { UWAZI_DESIGN_DARK, UWAZI_DESIGN_LIGHT };

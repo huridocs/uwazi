@@ -1,5 +1,5 @@
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { CsvCleanupImportFilesJob } from '../../application/jobs/CsvCleanupImportFilesJob.js';
@@ -16,8 +16,8 @@ class CsvCleanupImportFilesJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault();
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
 
     const useCase = new CsvCleanupImportFilesJob({

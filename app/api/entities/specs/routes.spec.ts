@@ -406,6 +406,28 @@ describe('entities routes', () => {
         });
       });
 
+      it('should respond with the updated language version, not the content-language one', async () => {
+        new UserInContextMockFactory().mock(user);
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', language: 'es', template: templateId.toString() })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            title: 'Pingüino',
+            language: 'es',
+            template: templateId.toString(),
+          })
+          .expect(200);
+
+        expect(response.body).toMatchObject({ language: 'es', title: 'Pingüino' });
+      });
+
       it('should preserve AI translated text when user edit has pending prefix (AT conflict)', async () => {
         new UserInContextMockFactory().mock(user);
 
@@ -646,6 +668,28 @@ describe('entities routes', () => {
           en: 'Penguin',
           pt: 'Pinguim',
         });
+      });
+
+      it('should respond with the updated language version, not the content-language one', async () => {
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', template: templateId.toString() })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            language: 'es',
+            title: 'Pingüino',
+            template: templateId.toString(),
+            translations: { en: translated('Penguin', 'text'), pt: translated('Pinguim', 'texto') },
+          })
+          .expect(200);
+
+        expect(response.body).toMatchObject({ language: 'es', title: 'Pingüino' });
       });
 
       it('should keep AI translations that the form still sends as pending', async () => {
