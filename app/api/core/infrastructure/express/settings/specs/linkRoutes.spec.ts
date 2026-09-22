@@ -162,7 +162,7 @@ describe('api/settings/links', () => {
 
         await request(app).post('/api/settings/links').send(newLinks).expect(200);
 
-        await expectSettingsChangedJob(getSharedConnection());
+        await expectSettingsChangedJob({ postgresCore, db: getSharedConnection() });
       });
 
       it.each([

@@ -2,10 +2,10 @@ import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { UpdateThesaurusUseCase } from '#api/core/application/UpdateThesaurus.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class UpdateThesaurusUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateThesaurusUseCase>[0]>) {
@@ -20,7 +20,7 @@ class UpdateThesaurusUseCaseFactory {
       translationsDS,
     });
 
-    const dispatcher = new DispatcherAdapter(ExecutionContext.jobsDispatcher);
+    const dispatcher = DispatcherFactory.default();
 
     const thesauriService = new ThesauriService({
       dispatcher,

@@ -8,6 +8,7 @@ import { PXExtractionService } from '../domain/PXExtractionService.js';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type PXCreateParagraphsJobParams = UwaziJobParams & {
   results: {
@@ -24,6 +25,7 @@ type Dependencies = {
   pxEntitiesStatusDS: MongoPXEntitiesStatusDataSource;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 })
 @PrivilegedJob()
 class PXCreateParagraphsJob extends UwaziJobHandler<PXCreateParagraphsJobParams> {
   public constructor(private dependencies: Dependencies) {

@@ -207,6 +207,39 @@ describe('entities routes', () => {
 
         expect(response.body.language).toBe('es');
       });
+
+      it.each([
+        ['JSON', { title: 'Not installed', language: 'xx' }, false],
+        ['multipart', { title: 'Not installed', language: 'xx' }, true],
+        [
+          'JSON with translations',
+          {
+            title: 'Not installed',
+            language: 'xx',
+            template: templateId.toString(),
+            translations: { es: { title: [{ value: 'No instalado' }] } },
+          },
+          false,
+        ],
+      ])(
+        'should respond 422 when the body language is not installed (%s)',
+        async (_case, body, multipart) => {
+          const post = request(app).post('/api/entities');
+          const response: SuperTestResponse = multipart
+            ? await post.field('entity', JSON.stringify(body))
+            : await post.send(body);
+
+          expect(response).toHaveStatus(422);
+          expect(response.body.validations).toEqual([
+            expect.objectContaining({ instancePath: '/language' }),
+          ]);
+          expect(
+            (await testingEnvironment.db.getAllFrom('entities')).filter(
+              entity => entity.title === 'Not installed'
+            )
+          ).toEqual([]);
+        }
+      );
     });
 
     describe('V2 entity creation with files (multipart with documents and attachments)', () => {

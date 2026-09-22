@@ -1,7 +1,7 @@
 # Sync worker: isolate failures so one tenant cannot stall the cluster
 
 Date: 2026-08-25
-Last updated: 2026-08-25
+Last updated: 2026-09-22
 Owner: Sync reliability (multi-tenant `sync_job`)
 
 ## Purpose
@@ -10,7 +10,7 @@ This document is the handoff for a production sync outage (2026-08-18) and the c
 
 **Slice 1 (done):** if a tenant or one of its sync configs throws, `runAllTenants()` logs and continues. That is the defect that turned a missing source file on **tenant A** into a global stall of every later tenant.
 
-The rest of the original plan (skip missing files, login/redirects) is **deferred**. If a particular error type keeps showing up after auto-disable, we deal with that type then — not by classifying errors up front.
+**Slice 3 (done, URL attachments only):** `synchronizer.syncData` still POSTs the files row when `url` is set, and does **not** `GetObject`/upload a blob. `{ skip: true }` is not used (that deletes on the destination). Generic missing-blob `FileNotFound` and login redirects stay deferred.
 
 **Slice 2 (done):** five consecutive failures on a config, no successful tick in between → set that config `active: false` and Mattermost-notify once with the reason.
 
@@ -21,7 +21,8 @@ The rest of the original plan (skip missing files, login/redirects) is **deferre
 | Incident mitigated in production | Yes (paused two broken targets, corrected one stale URL) |
 | Code: tenant/config isolation | **Done** (2026-08-25) — `app/api/sync/syncWorker.ts` |
 | Code: 5 consecutive failures → disable config + `notify: true` | **Done** (2026-08-25) — `consecutiveFailures` on `syncs`, threshold 5 |
-| Code: skip `FileNotFound` and advance `lastSyncs` | Deferred — only if that type keeps tripping disable |
+| Code: skip blob upload when files row has `url` | **Done** (2026-09-22) — POST metadata, do not `fileContents` |
+| Code: skip `FileNotFound` and advance `lastSyncs` | Deferred — only for real missing blobs, not URL attachments |
 | Code: POST login must not follow 301 as GET | Deferred — only if that type keeps tripping disable |
 | Code: errors include tenant, config name, URL | **Done as part of slice 1** (`reportSyncFailure`; disable notify is slice 2) |
 | Ops: restore or skip a missing object on tenant A | Underlying dest still broken. **Production check:** re-enable `config_public` after deploy; expect auto-disable + one Mattermost |
@@ -187,9 +188,15 @@ No error taxonomy. Login 401, missing blob, 5xx, redirect-404, invalid config: e
 - Five throws on one config → `active: false`, `consecutiveFailures === 5`, `notify: true` once; sibling config stays active; later tenants still run. A further tick does not notify again.
 - Two throws, then a successful tick → counter back to 0; not disabled.
 
-### Slice 3 — Missing files skip / login redirects — **deferred**
+### Slice 3 — URL attachments skip blob upload — **done**
 
-Not in the first follow-up. Revisit only if slice 2 shows a repeating type worth special-casing (skip one blob vs freeze the destination; POST login following 301 as GET).
+`syncData` POSTs `/api/sync` with the files document (including `url`). Upload/`storage.fileContents` runs only when `filename` is set **and** `url` is not. URL attachments are not `{ skip: true }` (that would delete on the destination).
+
+Generic missing blobs (no `url`) still throw `FileNotFound`. Login 301→GET still deferred.
+
+**Tests:** `synchronizer.spec.ts` — files without `url` still read storage and upload; files with `url` POST only.
+
+### Slice 3b — Missing files skip / login redirects — **deferred**
 
 ### Slice 4 — Logging — **done as part of slice 1**
 
@@ -209,7 +216,7 @@ Re-enable the two paused syncs **while the destinations are still broken**, to c
 
 ### A. Tenant A → `config_public` → `https://public.tenant-a.example`
 
-**Still needed for a lasting fix (after the Mattermost check):** restore the missing object-store object, **or** skip that files updatelog. Filename may be a document title (punctuation, spaces, non-ASCII), not a hashed storage name. Destination login is fine; do not rotate credentials.
+**Still needed after this skip:** re-enable `config_public` (and reset `consecutiveFailures` on that syncs doc). The files cursor should pass URL-attachment rows. Real missing blobs later in the queue can still disable the config.
 
 ### B. Tenant B → `config_site` → `https://public.tenant-b.example`
 

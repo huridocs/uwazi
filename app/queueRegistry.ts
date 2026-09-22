@@ -42,7 +42,6 @@ import {
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { CsvCreateThesauriValuesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
@@ -77,7 +76,6 @@ import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlan
 import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructure/jobHandlers/DatavizScheduledRefreshJobHandler.js';
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 import { SendWelcomeEmailFactory } from '#api/core/infrastructure/factories/SendWelcomeEmailFactory.js';
 import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.js';
@@ -161,19 +159,15 @@ export function registerJobs(register: Register) {
     });
   });
 
-  register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
+  register(CreateParagraphExtractionEntityStatusesJob, async () => {
     const batchSize = 50;
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
-      lockWindow: 1000 * 60,
-    });
-
     return new CreateParagraphExtractionEntityStatusesJob(
       {
         createEntityStatusesUseCase: useCase,
-        dispatcher,
+        dispatcher: ExecutionContext.jobsDispatcher,
       },
       batchSize
     );
@@ -314,9 +308,11 @@ export function registerJobs(register: Register) {
     const transactionManager = TransactionManagerFactory.default();
 
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const jobsDispatcher = UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
-    return new DenormalizeEntitiesHandler({ entitiesDS, jobsDispatcher });
+    return new DenormalizeEntitiesHandler({
+      entitiesDS,
+      jobsDispatcher: ExecutionContext.jobsDispatcher,
+    });
   });
 
   register(

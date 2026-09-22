@@ -6,6 +6,8 @@ import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/f
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
 
@@ -15,6 +17,22 @@ class TestJob implements Dispatchable {
     _heartbeat: HeartbeatCallback,
     _params: { data: { pieceOfData: string[] }; aNumber: number }
   ): Promise<void> {
+    throw new Error('not implemented');
+  }
+}
+
+@QueueOptions({ lockWindow: 1000, maxRetries: 2 })
+class JobWithOptions implements Dispatchable {
+  // eslint-disable-next-line class-methods-use-this
+  async handleDispatch(_heartbeat: HeartbeatCallback, _params: { aNumber: number }): Promise<void> {
+    throw new Error('not implemented');
+  }
+}
+
+@QueueOptions({ lockWindow: 3000 })
+class JobWithOtherOptions implements Dispatchable {
+  // eslint-disable-next-line class-methods-use-this
+  async handleDispatch(_heartbeat: HeartbeatCallback, _params: { aNumber: number }): Promise<void> {
     throw new Error('not implemented');
   }
 }
@@ -78,6 +96,78 @@ describe('dispatch', () => {
       params,
       namespace: 'namespace',
     });
+  });
+});
+
+describe('queue options', () => {
+  const pickAll = async (queue: string) => {
+    const first = await adapter.pickJob(queue);
+    const second = await adapter.pickJob(queue);
+    return [first, second];
+  };
+
+  it('should apply the default options when the job class declares none', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    await dispatcher.dispatch(TestJob, { data: { pieceOfData: [] }, aNumber: 1 });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 1000 * 60 * 10, maxRetries: 5 });
+  });
+
+  it('should apply the options declared on the job class', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    await dispatcher.dispatch(JobWithOptions, { aNumber: 1 });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 1000, maxRetries: 2 });
+  });
+
+  it('should fill the options the job class leaves out with the defaults', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    await dispatcher.dispatch(JobWithOtherOptions, { aNumber: 1 });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 3000, maxRetries: 5 });
+  });
+
+  it('should let per-dispatch options override the class ones, field by field', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    await dispatcher.dispatch(JobWithOptions, { aNumber: 1 }, { lockWindow: 5000 });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 5000, maxRetries: 2 });
+  });
+
+  it('should resolve the options of each job in a dispatchMany independently', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'batch-queue', adapter);
+
+    await dispatcher.dispatchMany(async dispatch => {
+      dispatch(JobWithOptions, { aNumber: 1 });
+      dispatch(JobWithOtherOptions, { aNumber: 2 }, { maxRetries: 9 });
+    });
+
+    expect(await pickAll('batch-queue')).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { name: JobWithOptions.name, options: { lockWindow: 1000, maxRetries: 2 } },
+        { name: JobWithOtherOptions.name, options: { lockWindow: 3000, maxRetries: 9 } },
+      ])
+    );
+  });
+
+  it('should keep the MigrationJob 1h lock window when it is dispatched by a plain dispatcher', async () => {
+    const dispatcher = new NamespacedDispatcher('system', 'queue name', adapter);
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindexTenants: [],
+      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+    });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 1000 * 60 * 60, maxRetries: 5 });
   });
 });
 

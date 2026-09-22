@@ -156,7 +156,7 @@ describe('Settings routes', () => {
           .send({ site_name: 'broadcasted name' })
           .expect(200);
 
-        await expectSettingsChangedJob(getSharedConnection());
+        await expectSettingsChangedJob({ postgresCore, db: getSharedConnection() });
       });
 
       describe('newNameGeneration', () => {

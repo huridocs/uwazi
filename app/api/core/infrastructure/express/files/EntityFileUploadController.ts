@@ -2,11 +2,9 @@ import type { Request, Response } from 'express';
 import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { FileUploadForEntityFactory } from '../../factories/FileUploadForEntityFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
@@ -14,6 +12,7 @@ import { PDFPostProcessJobFactory } from '../../factories/PDFPostProcessJobFacto
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { PDFPostProcessJobHandler } from '../../jobs/PDFPostProcessJobHandler.js';
 import { V1WebSocketsWrapper } from '../../services/V1WebSocketsWrapper.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class EntityFileUploadController extends AbstractController {
   private fileType: 'document' | 'attachment' = 'document';
@@ -81,12 +80,10 @@ class EntityFileUploadController extends AbstractController {
 
   private useCase() {
     let { transactionManager } = ExecutionContext;
-    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      UwaziDispatcherFactory(this.tenantName, ExecutionContext.mongoTransactionManager)
-    );
+    let jobsDispatcher: Dispatcher = DispatcherFactory.default();
     if (process.env.NODE_ENV === 'test') {
       transactionManager = TransactionManagerFactory.fake();
-      jobsDispatcher = new DispatcherAdapter(
+      jobsDispatcher = DispatcherFactory.default(
         new SyncDispatcherForTests({
           PDFPostProcessJobHandler: async () =>
             new PDFPostProcessJobHandler({

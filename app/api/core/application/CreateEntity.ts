@@ -26,6 +26,8 @@ type Deps = {
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
+    await this.deps.entitiesService.validateTargetLanguage(this.targetLanguage);
+
     if (input.translations) {
       await this.deps.entitiesService.validateTranslationLanguages({
         targetLanguage: this.targetLanguage,
