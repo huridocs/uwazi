@@ -150,6 +150,32 @@ class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
     return [...names];
   }
 
+  async findRelationshipPropertyNames(): Promise<string[]> {
+    const rows = await this.get();
+    const names = new Set<string>();
+    rows.forEach(row => {
+      (row.properties || []).forEach(p => {
+        if (p.type === 'relationship') {
+          names.add(p.name);
+        }
+      });
+    });
+    return [...names];
+  }
+
+  async findRelationshipPropertyNamesInheritingRelationship(): Promise<string[]> {
+    const rows = await this.get();
+    const names = new Set<string>();
+    rows.forEach(row => {
+      (row.properties || []).forEach(p => {
+        if (p.type === 'relationship' && p.inherit?.type === 'relationship') {
+          names.add(p.name);
+        }
+      });
+    });
+    return [...names];
+  }
+
   async findPropertyNamesUsingThesaurus(thesaurusId: string): Promise<{
     selectPropertyNames: string[];
     inheritedPropertyNames: string[];

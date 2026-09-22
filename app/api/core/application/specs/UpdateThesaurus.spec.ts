@@ -354,7 +354,7 @@ describe('UpdateThesaurusUseCase', () => {
       expect(jobs.length).toBe(1);
       expect(jobs).toMatchObject([
         {
-          name: 'DenormalizeThesaurusEntitiesHandler',
+          name: 'DenormalizeEntitiesHandler',
           params: {
             tenantName: tenants.current().name,
             thesaurusId: before._id.toString(),
@@ -387,7 +387,7 @@ describe('UpdateThesaurusUseCase', () => {
           {
             _id: factory.id('job_1'),
             namespace: tenants.current().name,
-            name: 'DenormalizeThesaurusEntitiesHandler',
+            name: 'DenormalizeEntitiesHandler',
             lockedUntil: Date.now() + 100000,
             params: {
               thesaurusId: factory.id('countries').toString(),
@@ -404,7 +404,7 @@ describe('UpdateThesaurusUseCase', () => {
           },
           {
             _id: factory.id('job_2'),
-            name: 'DenormalizeThesaurusEntitiesHandler',
+            name: 'DenormalizeEntitiesHandler',
             lockedUntil: 0,
             params: {
               thesaurusId: factory.id('countries').toString(),
@@ -423,7 +423,7 @@ describe('UpdateThesaurusUseCase', () => {
           {
             _id: factory.id('job_3'),
             namespace: 'tenant_1',
-            name: 'DenormalizeThesaurusEntitiesHandler',
+            name: 'DenormalizeEntitiesHandler',
             params: {
               thesaurusId: factory.id('countries').toString(),
               tenantName: 'tenant_1',
@@ -461,7 +461,7 @@ describe('UpdateThesaurusUseCase', () => {
       expect(jobs).toEqual(
         TestUtils.arrayIncludesObjects([
           {
-            name: 'DenormalizeThesaurusEntitiesHandler',
+            name: 'DenormalizeEntitiesHandler',
             params: expect.objectContaining({
               thesaurusId: factory.id('countries').toString(),
               tenantName: tenants.current().name,
