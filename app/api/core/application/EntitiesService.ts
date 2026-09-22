@@ -67,6 +67,7 @@ type UpsertContext = {
   actor: User;
   targetLanguage: LanguageISO6391;
   authorize?: boolean;
+  denormalizeRelationships?: boolean;
 };
 
 type DeleteContext = {
@@ -188,6 +189,12 @@ class EntitiesService {
         .filter(event => event !== null)
         .map(async event => this.deps.eventEmitter.emit(event))
     );
+
+    if (context.denormalizeRelationships !== false) {
+      await this.deps.dispatcher.denormalizeRelationships({
+        sharedIds: updatedSharedIds,
+      });
+    }
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(

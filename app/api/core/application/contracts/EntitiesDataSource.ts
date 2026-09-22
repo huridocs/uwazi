@@ -44,6 +44,8 @@ export interface EntitiesDataSource {
     titles: string[]
   ): Promise<Array<{ title: string; sharedId: string; templateId: string }>>;
   getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]): Promise<string[]>;
+  getSharedIdsReferencing(sharedIds: string[]): Promise<string[]>;
+  getSharedIdsInheritingRelationshipFrom(sharedIds: string[]): Promise<string[]>;
 
   create(entity: Entity): Promise<void>;
   bulkInsert(entities: Entity[]): Promise<void>;

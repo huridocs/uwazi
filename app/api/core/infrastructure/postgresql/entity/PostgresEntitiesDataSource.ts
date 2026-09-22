@@ -221,6 +221,63 @@ export class PostgresEntitiesDataSource
     return rows.map(r => r.sharedId);
   }
 
+  async getSharedIdsReferencing(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
+    const relationshipPropertyNames = await this.templatesDAO.findRelationshipPropertyNames();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  async getSharedIdsInheritingRelationshipFrom(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
+    const relationshipPropertyNames =
+      await this.templatesDAO.findRelationshipPropertyNamesInheritingRelationship();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  private async findSharedIdsByRelationshipValues({
+    defaultLanguage,
+    relationshipPropertyNames,
+    sharedIds,
+  }: {
+    defaultLanguage: string;
+    relationshipPropertyNames: string[];
+    sharedIds: string[];
+  }) {
+    const conditions = relationshipPropertyNames.flatMap(name =>
+      sharedIds.map(id => ({ [name]: [{ value: id }] }))
+    );
+
+    if (conditions.length === 0) {
+      return [];
+    }
+
+    const rows = await this.table
+      .where({ language: defaultLanguage })
+      .whereJsonSupersetOfAny('metadata', conditions)
+      .select(['sharedId'])
+      .all();
+
+    return rows.map(r => r.sharedId);
+  }
+
   async getSharedIdsByTemplateAndTitles(templateId: string, titles: string[]) {
     if (!titles.length) {
       return [];
