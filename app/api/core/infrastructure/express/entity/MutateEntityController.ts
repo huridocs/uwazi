@@ -21,6 +21,7 @@ import {
 import {
   MissingTranslationLanguageError,
   TargetLanguageInTranslationsError,
+  UnknownTargetLanguageError,
   UnknownTranslationLanguageError,
 } from '#api/core/application/errors.js';
 import { CreateEntityUseCaseFactory } from '../../factories/CreateEntityUseCaseFactory.js';
@@ -99,11 +100,13 @@ class MutateEntityController extends AbstractController<Request> {
       sessionId: this.sessionId,
     });
 
-    const entity = await useCase.execute(
-      ExpressEntityMapper.toEntityCreateInput({
-        dto: parsed,
-        inputFiles: this.request.inputFiles,
-      })
+    const entity = await MutateEntityController.withValidationPaths(async () =>
+      useCase.execute(
+        ExpressEntityMapper.toEntityCreateInput({
+          dto: parsed,
+          inputFiles: this.request.inputFiles,
+        })
+      )
     );
 
     await this.respond(entity.sharedId, isMultipart, targetLanguage);
@@ -135,7 +138,7 @@ class MutateEntityController extends AbstractController<Request> {
       sessionId: this.sessionId,
     });
 
-    const entity = await MutateEntityController.withTranslationErrorPaths(async () =>
+    const entity = await MutateEntityController.withValidationPaths(async () =>
       useCase.execute({
         ...ExpressEntityMapper.toEntityCreateInput({
           dto: parsed,
@@ -158,7 +161,7 @@ class MutateEntityController extends AbstractController<Request> {
       sentTranslations
     );
 
-    const entity = await MutateEntityController.withTranslationErrorPaths(async () =>
+    const entity = await MutateEntityController.withValidationPaths(async () =>
       useCase.execute({
         ...ExpressEntityMapper.toEntityUpdateInput({
           dto: parsed,
@@ -176,11 +179,11 @@ class MutateEntityController extends AbstractController<Request> {
     this.request.emitToSessionSocket('documentProcessed', entity.sharedId);
   }
 
-  private static async withTranslationErrorPaths<T>(execute: () => Promise<T>): Promise<T> {
+  private static async withValidationPaths<T>(execute: () => Promise<T>): Promise<T> {
     try {
       return await execute();
     } catch (error) {
-      const instancePath = MutateEntityController.translationErrorPath(error);
+      const instancePath = MutateEntityController.validationPath(error);
       if (!instancePath) throw error;
 
       throw new AJVValidationError([
@@ -189,7 +192,7 @@ class MutateEntityController extends AbstractController<Request> {
     }
   }
 
-  private static translationErrorPath(error: unknown) {
+  private static validationPath(error: unknown) {
     if (
       error instanceof PropertyNotTranslatableError ||
       error instanceof MissingTranslatedPropertyError ||
@@ -203,6 +206,9 @@ class MutateEntityController extends AbstractController<Request> {
       error instanceof MissingTranslationLanguageError
     ) {
       return `/translations/${error.language}`;
+    }
+    if (error instanceof UnknownTargetLanguageError) {
+      return '/language';
     }
     return undefined;
   }
