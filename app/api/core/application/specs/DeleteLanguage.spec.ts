@@ -162,7 +162,7 @@ describe('DeleteLanguage use case', () => {
             eventEmitter: EventEmitterFactory.default(),
           }).execute({ key: 'es' });
         });
-        await expectSettingsChangedJob();
+        await expectSettingsChangedJob({ postgresCore });
       });
 
       it('should emit a LanguageDeletedEvent for the language', async () => {

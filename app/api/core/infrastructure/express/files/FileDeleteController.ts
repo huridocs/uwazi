@@ -1,15 +1,13 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DeleteFileUseCaseFactory } from '../../factories/DeleteFileUseCaseFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
-import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -45,12 +43,9 @@ class FileDeleteController extends AbstractController {
   }
 
   private useCase() {
-    const { mongoTransactionManager } = ExecutionContext;
-    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      UwaziDispatcherFactory(this.tenantName, mongoTransactionManager)
-    );
+    let jobsDispatcher: Dispatcher = DispatcherFactory.default();
     if (process.env.NODE_ENV === 'test') {
-      jobsDispatcher = new DispatcherAdapter(
+      jobsDispatcher = DispatcherFactory.default(
         new SyncDispatcherForTests({
           DeleteFileFromStorageJobHandler: async () =>
             new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),

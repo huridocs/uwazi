@@ -1,9 +1,6 @@
 /* eslint-disable max-statements */
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-import { tenants } from '#api/tenants/index.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
@@ -11,6 +8,7 @@ import { ExtractorNotFound, Extractors } from '#api/services/informationextracti
 import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from './batchProcessing.js';
 import { CreateBlankStateSuggestionsJob } from './jobs/CreateBlankStateSuggestionsJob.js';
 import { CreateBlankSuggestionStrategy } from './useCases/createBlankSuggestionStrategy.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 // eslint-disable-next-line consistent-return
 async function createBlankStateSuggestionsBatch(
@@ -49,10 +47,7 @@ const createBlankSuggestionsForPartialExtractor = async (
     extractorTemplates.has(template.toString())
   );
 
-  const dispatcher = UwaziDispatcherFactory(
-    tenants.current().name,
-    TransactionManagerFactory.mongo()
-  );
+  const dispatcher = ExecutionContext.jobsDispatcher;
 
   await filteredTemplates.reduce(async (promise, template) => {
     await promise;

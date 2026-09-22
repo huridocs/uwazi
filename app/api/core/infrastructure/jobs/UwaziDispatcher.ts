@@ -3,10 +3,7 @@ import {
   DispatchableClass,
   DispatchOptions,
 } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import {
-  NamespacedDispatcher,
-  QueueOptions,
-} from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
 import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
 function enrichParams(params: any, defaultUserId?: string): any {
@@ -20,10 +17,9 @@ export class UwaziDispatcher extends NamespacedDispatcher {
     namespace: string,
     queueName: string,
     adapter: QueueAdapter,
-    options?: QueueOptions,
     private defaultUserId?: string
   ) {
-    super(namespace, queueName, adapter, options);
+    super(namespace, queueName, adapter);
   }
 
   async dispatch<T extends Dispatchable>(

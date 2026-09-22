@@ -24,6 +24,11 @@ const PostgresEnvSchema = z
 
 const pgEnv = PostgresEnvSchema.parse(process.env);
 
+const QueueBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
+
+/** Which job store this process's queue worker polls. Run one worker per backend. */
+const queueBackend = QueueBackendSchema.parse(process.env.QUEUE_BACKEND || undefined);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
@@ -197,6 +202,7 @@ export const config = {
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
+  queueBackend,
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,

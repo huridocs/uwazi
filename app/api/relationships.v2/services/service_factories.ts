@@ -16,7 +16,6 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/service_factories.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -42,6 +41,7 @@ import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrate
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
 import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -64,10 +64,7 @@ const userFromRequest = () => {
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
   async () => {
-    const transactionManager = TransactionManagerFactory.mongo();
-    return new QueuedRelationshipPropertyUpdateStrategy(
-      DefaultDispatcher(tenants.current().name, transactionManager)
-    );
+    return new QueuedRelationshipPropertyUpdateStrategy(ExecutionContext.jobsDispatcher);
   };
 
 const createUpdateStrategy = async (
@@ -253,7 +250,7 @@ const UpdateTemplateRelationshipPropertiesJob = async () => {
   const transactionManager = TransactionManagerFactory.mongo();
   return new GenericUpdateTemplateRelationshipPropertiesJob(
     DefaultDeprecatedEntitiesDataSource(transactionManager),
-    await DefaultDispatcher(tenants.current().name, transactionManager)
+    ExecutionContext.jobsDispatcher
   );
 };
 

@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
@@ -46,8 +46,7 @@ const dependenciesContextMiddleware = (
       correlationId,
       factories: {
         ...transactionManagerFactories(),
-        jobsDispatcher: () =>
-          UwaziDispatcherFactory(tenant.name, ExecutionContext.mongoTransactionManager),
+        jobsDispatcher: JobsDispatcherFactory.default,
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,

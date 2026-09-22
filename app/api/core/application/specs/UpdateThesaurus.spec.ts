@@ -78,7 +78,7 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   describe.each(testConfigs)('$name', ({ postgresCore, getThesauri, getTranslations }) => {
-    const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
+    const getJobs = async () => testingEnvironment.jobs.getAll({ postgresCore });
 
     const sortByLanguageAndKey = <T>(rows: T[]) =>
       [...rows].sort((left, right) => {
@@ -146,7 +146,7 @@ describe('UpdateThesaurusUseCase', () => {
 
     beforeEach(async () => {
       await testingEnvironment.setFixtures(fixtures);
-      await testingEnvironment.db.getCollection('jobs')!.deleteMany({});
+      await testingEnvironment.jobs.clear();
     });
 
     it('should update thesaurus', async () => {
@@ -354,7 +354,6 @@ describe('UpdateThesaurusUseCase', () => {
       expect(jobs.length).toBe(1);
       expect(jobs).toMatchObject([
         {
-          _id: expect.any(ObjectId),
           name: 'DenormalizeEntitiesHandler',
           params: {
             tenantName: tenants.current().name,
@@ -383,62 +382,65 @@ describe('UpdateThesaurusUseCase', () => {
     });
 
     it('should delete and re-dispatch denormalization jobs for the updated thesaurus', async () => {
-      await testingEnvironment.db.getCollection('jobs')!.insertMany([
-        {
-          _id: factory.id('job_1'),
-          namespace: tenants.current().name,
-          name: 'DenormalizeEntitiesHandler',
-          lockedUntil: Date.now() + 100000,
-          params: {
-            thesaurusId: factory.id('countries').toString(),
-            tenantName: tenants.current().name,
+      await testingEnvironment.jobs.insert(
+        [
+          {
+            _id: factory.id('job_1'),
+            namespace: tenants.current().name,
+            name: 'DenormalizeEntitiesHandler',
+            lockedUntil: Date.now() + 100000,
+            params: {
+              thesaurusId: factory.id('countries').toString(),
+              tenantName: tenants.current().name,
+            },
+            createdAt: Date.now(),
+            failed: false,
+            queue: 'default',
+            retryCount: 0,
+            options: {
+              lockWindow: 30000,
+              maxRetries: 2,
+            },
           },
-          createdAt: Date.now(),
-          failed: false,
-          queue: 'default',
-          retryCount: 0,
-          options: {
-            lockWindow: 30000,
-            maxRetries: 2,
+          {
+            _id: factory.id('job_2'),
+            name: 'DenormalizeEntitiesHandler',
+            lockedUntil: 0,
+            params: {
+              thesaurusId: factory.id('countries').toString(),
+              tenantName: tenants.current().name,
+            },
+            createdAt: Date.now(),
+            failed: false,
+            namespace: tenants.current().name,
+            queue: 'default',
+            retryCount: 0,
+            options: {
+              lockWindow: 30000,
+              maxRetries: 3,
+            },
           },
-        },
-        {
-          _id: factory.id('job_2'),
-          name: 'DenormalizeEntitiesHandler',
-          lockedUntil: 0,
-          params: {
-            thesaurusId: factory.id('countries').toString(),
-            tenantName: tenants.current().name,
+          {
+            _id: factory.id('job_3'),
+            namespace: 'tenant_1',
+            name: 'DenormalizeEntitiesHandler',
+            params: {
+              thesaurusId: factory.id('countries').toString(),
+              tenantName: 'tenant_1',
+            },
+            createdAt: Date.now(),
+            failed: false,
+            lockedUntil: 0,
+            queue: 'default',
+            retryCount: 0,
+            options: {
+              lockWindow: 30000,
+              maxRetries: 3,
+            },
           },
-          createdAt: Date.now(),
-          failed: false,
-          namespace: tenants.current().name,
-          queue: 'default',
-          retryCount: 0,
-          options: {
-            lockWindow: 30000,
-            maxRetries: 3,
-          },
-        },
-        {
-          _id: factory.id('job_3'),
-          namespace: 'tenant_1',
-          name: 'DenormalizeEntitiesHandler',
-          params: {
-            thesaurusId: factory.id('countries').toString(),
-            tenantName: 'tenant_1',
-          },
-          createdAt: Date.now(),
-          failed: false,
-          lockedUntil: 0,
-          queue: 'default',
-          retryCount: 0,
-          options: {
-            lockWindow: 30000,
-            maxRetries: 3,
-          },
-        },
-      ]);
+        ],
+        { postgresCore }
+      );
 
       const { sut } = createSut();
 
@@ -449,13 +451,15 @@ describe('UpdateThesaurusUseCase', () => {
       });
 
       const jobs = await getJobs();
+      const jobIds = jobs.map(job => String(job._id ?? job.id));
 
       expect(jobs).toHaveLength(3);
-
+      expect(jobIds).toEqual(
+        expect.arrayContaining([factory.id('job_1').toString(), factory.id('job_3').toString()])
+      );
+      expect(jobIds).not.toContain(factory.id('job_2').toString());
       expect(jobs).toEqual(
         TestUtils.arrayIncludesObjects([
-          { _id: factory.id('job_1') },
-          { _id: factory.id('job_3') },
           {
             name: 'DenormalizeEntitiesHandler',
             params: expect.objectContaining({

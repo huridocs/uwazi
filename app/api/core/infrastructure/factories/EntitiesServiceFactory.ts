@@ -10,8 +10,8 @@ import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
@@ -21,7 +21,7 @@ class EntitiesServiceFactory {
 
     return new EntitiesService({
       eventEmitter,
-      dispatcher: new DispatcherAdapter(jobsDispatcher),
+      dispatcher: DispatcherFactory.default(jobsDispatcher),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: applicationEventsBus,
@@ -41,7 +41,7 @@ class EntitiesServiceFactory {
     const deps: EntitiesServiceDeps = {
       eventEmitter: EventEmitterFactory.forTesting(),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
-      dispatcher: new DispatcherAdapter(
+      dispatcher: DispatcherFactory.default(
         DefaultDispatcher(tenants.current().name, transactionManager)
       ),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
