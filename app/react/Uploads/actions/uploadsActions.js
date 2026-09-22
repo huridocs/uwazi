@@ -9,6 +9,8 @@ import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
 import { UploadService } from '#V2/api/files/UploadService.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import { APIURL } from '../../config.js';
 import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
@@ -70,6 +72,7 @@ export function publicSubmit(data, remote = false) {
         .post(remote ? `${APIURL}remotepublic` : `${APIURL}public`)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
+        .set('Content-Language', getStore().get(localeAtom))
         .field('captcha', JSON.stringify(data.captcha));
 
       if (data.file) {
