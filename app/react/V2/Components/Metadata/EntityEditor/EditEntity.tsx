@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useFormState, useWatch } from 'react-hook-form';
 import { t } from '#app/I18N/index.js';
-import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
+import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import { settingsAtom } from '#V2/atoms/index.js';
@@ -131,16 +131,10 @@ const EditEntity = ({
   );
 
   const removePendingAttachmentIfUnused = (fileLocalID: string) => {
-    const formMetadata = getValues('metadata');
-    const formTranslations = getValues('translations') ?? {};
-    const sources = [formMetadata, ...Object.values(formTranslations)];
-    const stillReferenced = sources.some(source =>
-      [...mediaPropertyNames].some(name => {
-        const rawValue = source?.[name]?.[0]?.value;
-        return (
-          typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
-        );
-      })
+    const sources = [getValues('metadata'), ...Object.values(getValues('translations') ?? {})];
+    const stillReferenced = sources.some(
+      source =>
+        filterReferencedPendingAttachments([{ fileLocalID }], source, mediaPropertyNames).length > 0
     );
     if (!stillReferenced) removePendingAttachment(fileLocalID);
   };

@@ -84,19 +84,19 @@ describe('MediaField timelinks', () => {
 
   it('renders time inputs as number fields with step 1', () => {
     render(<Harness defaultValue={mediaWithTimelink} />);
-
-    const hours = screen.getByLabelText('Hours');
-    const minutes = screen.getByLabelText('Minutes');
-    const seconds = screen.getByLabelText('Seconds');
-
-    expect(hours).toHaveAttribute('type', 'number');
-    expect(hours).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('type', 'number');
-    expect(minutes).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('max', '59');
-    expect(seconds).toHaveAttribute('type', 'number');
-    expect(seconds).toHaveAttribute('step', '1');
-    expect(seconds).toHaveAttribute('max', '59');
+    const attrs = (label: string) => {
+      const el = screen.getByLabelText(label);
+      return {
+        type: el.getAttribute('type'),
+        step: el.getAttribute('step'),
+        max: el.getAttribute('max'),
+      };
+    };
+    expect([attrs('Hours'), attrs('Minutes'), attrs('Seconds')]).toEqual([
+      { type: 'number', step: '1', max: null },
+      { type: 'number', step: '1', max: '59' },
+      { type: 'number', step: '1', max: '59' },
+    ]);
   });
 
   it('adds a timelink from the player current time', () => {

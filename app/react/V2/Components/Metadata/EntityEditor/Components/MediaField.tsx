@@ -322,24 +322,6 @@ const MediaFieldPreview = ({
   );
 };
 
-const encodeMediaSelection = (mode: MediaPickerMode, url: string, timelinks: EditableTimelink[]) =>
-  mode === 'media' ? encodeTimelinksValue(url, timelinks) : url;
-
-const registerUploadedMedia = async ({
-  entitySharedId,
-  localFile,
-  onRegister,
-}: {
-  entitySharedId: string;
-  localFile: File;
-  onRegister: (attachment: ClientFile) => void;
-}) => {
-  const attachment = await registerMediaAttachment(entitySharedId, localFile);
-  if (!attachment.fileLocalID) return undefined;
-  onRegister(attachment);
-  return attachment.fileLocalID;
-};
-
 const releaseReplacedUpload = (
   previousUrl: string,
   nextValue: string,
@@ -370,11 +352,14 @@ const applyMediaSelection = async ({
   onChange: (value: string) => void;
   onRemove: (fileLocalID: string) => void;
 }) => {
-  const uploadedId = localFile
-    ? await registerUploadedMedia({ entitySharedId, localFile, onRegister })
-    : nextUrl;
-  if (uploadedId === undefined) return;
-  const nextValue = encodeMediaSelection(mode, uploadedId, nextTimelinks);
+  let url = nextUrl;
+  if (localFile) {
+    const attachment = await registerMediaAttachment(entitySharedId, localFile);
+    if (!attachment.fileLocalID) return;
+    onRegister(attachment);
+    url = attachment.fileLocalID;
+  }
+  const nextValue = mode === 'media' ? encodeTimelinksValue(url, nextTimelinks) : url;
   onChange(nextValue);
   releaseReplacedUpload(currentUrl, nextValue, onRemove);
 };
@@ -450,8 +435,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
-            const { url } = parseFieldValue(rawValue);
-            if (url) mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
+            if (currentUrl) mediaField.onChange(encodeTimelinksValue(currentUrl, nextTimelinks));
           };
 
           return (
@@ -498,7 +482,6 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                     />
                   ) : (
                     <MediaFieldPreview
-                      key={rawValue}
                       url={previewUrl}
                       timelinks={timelinks}
                       valueKey={rawValue}
