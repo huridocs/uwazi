@@ -75,6 +75,7 @@ const createMockDeps = () => ({
     cleanupEntities: jest.fn().mockResolvedValue(undefined),
     postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    denormalizeRelationships: jest.fn().mockResolvedValue(undefined),
     postProcessTemplateEntities: jest
       .fn()
       .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
@@ -976,6 +977,59 @@ describe('EntitiesService', () => {
             authorize: false,
           })
         ).rejects.toThrow('This operation must be called within a transaction');
+      });
+
+      it('should dispatch relationship denormalization for changed entities', async () => {
+        const { sut, dispatcher, transactionManager, actor } = createSut(undefined, postgresCore);
+        const [entity] = await loadEntities(['entity-1'], postgresCore);
+        entity.update({ icon: { id: 'icon-updated', type: 'image', label: 'Updated Icon' } });
+
+        await transactionManager.run(async () => {
+          await sut.update([entity], {
+            actorId: 'actorId',
+            actor: actor!,
+            targetLanguage: 'en',
+            authorize: false,
+          });
+        });
+
+        expect(dispatcher.denormalizeRelationships).toHaveBeenCalledWith({
+          sharedIds: ['entity-1'],
+        });
+      });
+
+      it('should not dispatch relationship denormalization when no entity changed', async () => {
+        const { sut, dispatcher, transactionManager, actor } = createSut(undefined, postgresCore);
+        const entities = await loadEntities(['entity-1'], postgresCore);
+
+        await transactionManager.run(async () => {
+          await sut.update(entities, {
+            actorId: 'actorId',
+            actor: actor!,
+            targetLanguage: 'en',
+            authorize: false,
+          });
+        });
+
+        expect(dispatcher.denormalizeRelationships).not.toHaveBeenCalled();
+      });
+
+      it('should not dispatch relationship denormalization when opted out', async () => {
+        const { sut, dispatcher, transactionManager, actor } = createSut(undefined, postgresCore);
+        const [entity] = await loadEntities(['entity-1'], postgresCore);
+        entity.update({ icon: { id: 'icon-updated', type: 'image', label: 'Updated Icon' } });
+
+        await transactionManager.run(async () => {
+          await sut.update([entity], {
+            actorId: 'actorId',
+            actor: actor!,
+            targetLanguage: 'en',
+            authorize: false,
+            denormalizeRelationships: false,
+          });
+        });
+
+        expect(dispatcher.denormalizeRelationships).not.toHaveBeenCalled();
       });
     });
   });

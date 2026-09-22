@@ -3,6 +3,8 @@
 
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer utilities;
 
 .tw-content {
@@ -30,6 +32,9 @@
   --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary));
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
   --color-border: var(--color-theme-border-primary);
+  --color-paper: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
+  --color-ink-tertiary: var(--color-theme-text-tertiary);
+  --color-carbon: var(--color-theme-accent-supporting);
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
@@ -267,7 +272,7 @@
 }
 
 @utility bg-paper {
-  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff));
+  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
 }
 
 @utility min-w-56 {
@@ -277,26 +282,26 @@
 @utility bg-parchment {
   background-color: var(
     --color-theme-surface-parchment,
-    var(--color-theme-surface-page, var(--color-theme-bg-primary, #f5f0e8))
+    var(--color-theme-surface-page, var(--color-theme-bg-primary))
   );
 }
 
 @utility bg-warm {
-  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
+  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
 }
 
 @utility bg-vellum {
-  background-color: var(--color-theme-surface-muted, var(--color-theme-bg-muted, #f5eed7));
+  background-color: var(--color-theme-surface-muted, var(--color-theme-bg-muted));
 }
 
 @utility bg-ink {
-  background-color: var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a));
+  background-color: var(--color-theme-action-primary, var(--color-theme-text-primary));
 }
 
 @utility bg-ink-70 {
   background-color: color-mix(
     in srgb,
-    var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a)) 70%,
+    var(--color-theme-action-primary, var(--color-theme-text-primary)) 70%,
     transparent
   );
 }
@@ -304,7 +309,7 @@
 @utility bg-warm-30 {
   background-color: color-mix(
     in srgb,
-    var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8)) 30%,
+    var(--color-theme-surface-warm, var(--color-theme-bg-warm)) 30%,
     transparent
   );
 }
@@ -388,24 +393,28 @@
   background-color: var(--color-theme-accent-emphasis-solid);
 }
 
+@utility bg-seal-fill {
+  background-color: var(--color-theme-accent-emphasis-solid);
+}
+
 @utility text-parchment {
   color: var(--color-theme-text-on-solid, var(--color-theme-bg-primary));
 }
 
 @utility text-ink {
-  color: var(--color-theme-text-primary, #1a1a1a);
+  color: var(--color-theme-text-primary);
 }
 
 @utility text-ink-secondary {
-  color: var(--color-theme-text-secondary, #333333);
+  color: var(--color-theme-text-secondary);
 }
 
 @utility text-ink-tertiary {
-  color: var(--color-theme-text-tertiary, #555555);
+  color: var(--color-theme-text-tertiary);
 }
 
 @utility text-ink-muted {
-  color: var(--color-theme-text-muted, #777777);
+  color: var(--color-theme-text-muted);
 }
 
 @utility text-supporting {
@@ -489,12 +498,12 @@
 }
 
 @utility border-border {
-  border-color: var(--color-theme-border-primary, #e0d9c8);
+  border-color: var(--color-theme-border-primary);
 }
 
 /* TW opacity modifiers cannot mix nested theme vars — explicit soft chrome for cards. */
 @utility border-border-40 {
-  border-color: color-mix(in srgb, var(--color-theme-border-primary, #e0d9c8) 40%, transparent);
+  border-color: color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent);
 }
 
 @utility border-border-soft {

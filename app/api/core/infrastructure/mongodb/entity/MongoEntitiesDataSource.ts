@@ -205,6 +205,74 @@ export class MongoEntitiesDataSource
     return entities.map(e => e.sharedId);
   }
 
+  async getSharedIdsReferencing(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.getDefaultLanguage();
+    const relationshipPropertyNames = await this.templatesDAO.findRelationshipPropertyNames();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  async getSharedIdsInheritingRelationshipFrom(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.getDefaultLanguage();
+    const relationshipPropertyNames =
+      await this.templatesDAO.findRelationshipPropertyNamesInheritingRelationship();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  private async getDefaultLanguage() {
+    const settings = await this.getCollection<SettingsType>('settings').findOne();
+    const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
+
+    if (!defaultLanguage) {
+      throw new Error(
+        'Default language not found in settings when trying to find referencing entities'
+      );
+    }
+
+    return defaultLanguage;
+  }
+
+  private async findSharedIdsByRelationshipValues({
+    defaultLanguage,
+    relationshipPropertyNames,
+    sharedIds,
+  }: {
+    defaultLanguage: string;
+    relationshipPropertyNames: string[];
+    sharedIds: string[];
+  }) {
+    const orConditions = relationshipPropertyNames.map(name => ({
+      [`metadata.${name}.value`]: { $in: sharedIds },
+    }));
+
+    if (orConditions.length === 0) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
+      .toArray();
+
+    return entities.map(e => e.sharedId);
+  }
+
   async getSharedIdsByTemplateAndTitles(templateId: string, titles: string[]) {
     if (!titles.length) {
       return [];

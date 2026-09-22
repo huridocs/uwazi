@@ -14,6 +14,7 @@ const modalBorderClass =
   'border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]';
 
 const modalSurfaceClass = 'bg-paper';
+const modalShellClass = `min-w-0 overflow-hidden rounded-lg shadow-sm ${modalSurfaceClass} text-ink`;
 
 interface ModalProps {
   children: string | React.ReactNode;
@@ -43,9 +44,7 @@ const Modal = ({ children, size, id, ariaLabel = 'Modal' }: ModalProps) => {
       id={id}
     >
       <div className={`mx-auto max-h-[min(100dvh,100vh)] min-h-0 w-full ${sizes[size]}`}>
-        <div className={`min-w-0 rounded-lg shadow-sm ${modalSurfaceClass} text-ink`}>
-          {children}
-        </div>
+        <div className={modalShellClass}>{children}</div>
       </div>
     </div>
   );
@@ -57,13 +56,18 @@ interface ModalChildrenProps {
 }
 
 const modalHeaderShell =
-  'flex min-w-0 items-start justify-between gap-3 rounded-t [&>*:first-child]:min-w-0 [&>*:first-child]:shrink [&>*:first-child]:pr-1';
+  'flex min-w-0 items-start justify-between gap-3 rounded-t-lg [&>*:first-child]:min-w-0 [&>*:first-child]:shrink [&>*:first-child]:pr-1';
 
 Modal.Header = ({ children, className }: ModalChildrenProps) => (
   <div
-    className={`${className} ${modalHeaderShell} ${
-      children ? 'border-b px-5 py-3' : 'p-2'
-    } ${modalBorderClass}`}
+    className={[
+      className,
+      modalHeaderShell,
+      children ? 'border-b px-5 py-3' : 'p-2',
+      modalBorderClass,
+    ]
+      .filter(Boolean)
+      .join(' ')}
   >
     {children}
   </div>
@@ -82,8 +86,8 @@ Modal.Footer = ({ children, className }: ModalChildrenProps) => (
   <div
     className={
       className
-        ? `rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass} ${className}`
-        : `flex justify-end gap-x-2 rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass}`
+        ? `rounded-b-lg border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass} ${className}`
+        : `flex justify-end gap-x-2 rounded-b-lg border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass}`
     }
   >
     {children}
@@ -108,7 +112,9 @@ Modal.CloseButton = ({
       'text-(--color-theme-text-secondary)',
       'enabled:hover:bg-(--color-theme-surface-muted)',
       'disabled:hover:bg-transparent',
-    ].join(' ')}
+    ]
+      .filter(Boolean)
+      .join(' ')}
     type="button"
     disabled={disabled}
   >
