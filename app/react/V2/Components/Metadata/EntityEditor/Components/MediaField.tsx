@@ -143,6 +143,23 @@ type MediaFieldPreviewProps = {
   onTimelinksChange: (timelinks: EditableTimelink[]) => void;
 };
 
+const useTimelinkList = (
+  timelinks: EditableTimelink[],
+  valueKey: string,
+  onTimelinksChange: (timelinks: EditableTimelink[]) => void
+) => {
+  const [localTimelinks, setLocalTimelinks] = useState(timelinks);
+  useEffect(() => {
+    setLocalTimelinks(timelinks);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from committed valueKey only
+  }, [valueKey]);
+  const commit = (next: EditableTimelink[]) => {
+    setLocalTimelinks(next);
+    onTimelinksChange(next);
+  };
+  return { localTimelinks, setLocalTimelinks, commit };
+};
+
 const MediaFieldPreview = ({
   url,
   timelinks,
@@ -151,18 +168,12 @@ const MediaFieldPreview = ({
   onTimelinksChange,
 }: MediaFieldPreviewProps) => {
   const playerRef = React.useRef<PlayerInstance>(null);
-  const [localTimelinks, setLocalTimelinks] = useState(timelinks);
   const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    setLocalTimelinks(timelinks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from committed valueKey only
-  }, [valueKey]);
-
-  const commitTimelinks = (next: EditableTimelink[]) => {
-    setLocalTimelinks(next);
-    onTimelinksChange(next);
-  };
+  const { localTimelinks, setLocalTimelinks, commit } = useTimelinkList(
+    timelinks,
+    valueKey,
+    onTimelinksChange
+  );
 
   const handlePlay = (timelink: EditableTimelink) => {
     playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
@@ -176,23 +187,11 @@ const MediaFieldPreview = ({
   };
 
   const commitTimePart = (index: number, part: 'hh' | 'mm' | 'ss') => {
-    const next = localTimelinks.map((item, itemIndex) =>
-      itemIndex === index ? { ...item, [part]: padTimePart(item[part] || '0') } : item
+    commit(
+      localTimelinks.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [part]: padTimePart(item[part] || '0') } : item
+      )
     );
-    commitTimelinks(next);
-  };
-
-  const commitLabel = () => {
-    commitTimelinks(localTimelinks);
-  };
-
-  const removeTimelink = (index: number) => {
-    commitTimelinks(localTimelinks.filter((_item, itemIndex) => itemIndex !== index));
-  };
-
-  const addTimelink = () => {
-    const currentTime = playerRef.current?.getCurrentTime() ?? 0;
-    commitTimelinks([...localTimelinks, secondsToTimelink(currentTime)]);
   };
 
   return (
@@ -219,7 +218,12 @@ const MediaFieldPreview = ({
             variant="secondary"
             disabled={disabled}
             className="inline-flex items-center gap-1.5 px-2 py-1.5"
-            onClick={addTimelink}
+            onClick={() =>
+              commit([
+                ...localTimelinks,
+                secondsToTimelink(playerRef.current?.getCurrentTime() ?? 0),
+              ])
+            }
           >
             <PlusIcon className="w-4 h-4" />
             <Translate>Add</Translate>
@@ -295,14 +299,16 @@ const MediaFieldPreview = ({
                   maxLength={TIMELINK_LABEL_MAX}
                   value={timelink.label}
                   onChange={event => updateLocalTimelink(index, { label: event.target.value })}
-                  onBlur={commitLabel}
+                  onBlur={() => commit(localTimelinks)}
                   placeholder="Label"
                   className="min-w-32 flex-1 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-sm"
                 />
                 <button
                   type="button"
                   disabled={disabled}
-                  onClick={() => removeTimelink(index)}
+                  onClick={() =>
+                    commit(localTimelinks.filter((_item, itemIndex) => itemIndex !== index))
+                  }
                   aria-label="Remove timelink"
                 >
                   <XMarkIcon className="w-4 h-4" />
@@ -314,6 +320,63 @@ const MediaFieldPreview = ({
       </div>
     </div>
   );
+};
+
+const encodeMediaSelection = (mode: MediaPickerMode, url: string, timelinks: EditableTimelink[]) =>
+  mode === 'media' ? encodeTimelinksValue(url, timelinks) : url;
+
+const registerUploadedMedia = async ({
+  entitySharedId,
+  localFile,
+  onRegister,
+}: {
+  entitySharedId: string;
+  localFile: File;
+  onRegister: (attachment: ClientFile) => void;
+}) => {
+  const attachment = await registerMediaAttachment(entitySharedId, localFile);
+  if (!attachment.fileLocalID) return undefined;
+  onRegister(attachment);
+  return attachment.fileLocalID;
+};
+
+const releaseReplacedUpload = (
+  previousUrl: string,
+  nextValue: string,
+  onRemove: (fileLocalID: string) => void
+) => {
+  if (!isUploadId(previousUrl)) return;
+  if (previousUrl !== parseFieldValue(nextValue).url) onRemove(previousUrl);
+};
+
+const applyMediaSelection = async ({
+  currentUrl,
+  nextUrl,
+  localFile,
+  mode,
+  nextTimelinks,
+  entitySharedId,
+  onRegister,
+  onChange,
+  onRemove,
+}: {
+  currentUrl: string;
+  nextUrl: string;
+  localFile?: File;
+  mode: MediaPickerMode;
+  nextTimelinks: EditableTimelink[];
+  entitySharedId: string;
+  onRegister: (attachment: ClientFile) => void;
+  onChange: (value: string) => void;
+  onRemove: (fileLocalID: string) => void;
+}) => {
+  const uploadedId = localFile
+    ? await registerUploadedMedia({ entitySharedId, localFile, onRegister })
+    : nextUrl;
+  if (uploadedId === undefined) return;
+  const nextValue = encodeMediaSelection(mode, uploadedId, nextTimelinks);
+  onChange(nextValue);
+  releaseReplacedUpload(currentUrl, nextValue, onRemove);
 };
 
 const MediaField = <TFormValues extends FieldValues = FieldValues>({
@@ -364,55 +427,31 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           const hasValue = rawValue.trim().length > 0;
           const { showError, message } = getFieldErrorState(fieldState);
 
-          const releaseUploadIfReplaced = (previousUrl: string, nextValue: string) => {
-            if (!isUploadId(previousUrl)) {
-              return;
-            }
-            const nextParsedUrl = parseFieldValue(nextValue).url;
-            if (previousUrl !== nextParsedUrl) {
-              onRemovePendingAttachment(previousUrl);
-            }
-          };
-
           const updateValue = async (
             nextUrl: string,
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
-          ) => {
-            const previousUrl = currentUrl;
-            if (localFile) {
-              const attachment = await registerMediaAttachment(entitySharedId, localFile);
-              const { fileLocalID } = attachment;
-              if (!fileLocalID) {
-                return;
-              }
-              onRegisterPendingAttachment(attachment);
-              const nextValue =
-                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID;
-              mediaField.onChange(nextValue);
-              releaseUploadIfReplaced(previousUrl, nextValue);
-              return;
-            }
-
-            const nextValue =
-              mode === 'media' ? encodeTimelinksValue(nextUrl, nextTimelinks) : nextUrl;
-            mediaField.onChange(nextValue);
-            releaseUploadIfReplaced(previousUrl, nextValue);
-          };
+          ) =>
+            applyMediaSelection({
+              currentUrl,
+              nextUrl,
+              localFile,
+              mode,
+              nextTimelinks,
+              entitySharedId,
+              onRegister: onRegisterPendingAttachment,
+              onChange: mediaField.onChange,
+              onRemove: onRemovePendingAttachment,
+            });
 
           const handleUnlink = () => {
-            const previousUrl = currentUrl;
             mediaField.onChange('');
-            releaseUploadIfReplaced(previousUrl, '');
+            releaseReplacedUpload(currentUrl, '', onRemovePendingAttachment);
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
             const { url } = parseFieldValue(rawValue);
-            if (!url) {
-              return;
-            }
-
-            mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
+            if (url) mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
           };
 
           return (
@@ -451,6 +490,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
                   {mode === 'image' ? (
                     <img
+                      key={previewUrl}
                       src={previewUrl}
                       alt={label}
                       className="max-w-full rounded-md max-h-96"
@@ -458,6 +498,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                     />
                   ) : (
                     <MediaFieldPreview
+                      key={rawValue}
                       url={previewUrl}
                       timelinks={timelinks}
                       valueKey={rawValue}

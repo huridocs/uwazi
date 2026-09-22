@@ -132,12 +132,16 @@ const EditEntity = ({
 
   const removePendingAttachmentIfUnused = (fileLocalID: string) => {
     const formMetadata = getValues('metadata');
-    const stillReferenced = [...mediaPropertyNames].some(name => {
-      const rawValue = formMetadata?.[name]?.[0]?.value;
-      return (
-        typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
-      );
-    });
+    const formTranslations = getValues('translations') ?? {};
+    const sources = [formMetadata, ...Object.values(formTranslations)];
+    const stillReferenced = sources.some(source =>
+      [...mediaPropertyNames].some(name => {
+        const rawValue = source?.[name]?.[0]?.value;
+        return (
+          typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
+        );
+      })
+    );
     if (!stillReferenced) removePendingAttachment(fileLocalID);
   };
 
