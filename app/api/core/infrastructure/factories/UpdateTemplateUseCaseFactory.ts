@@ -6,10 +6,10 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class UpdateTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateTemplateUseCase>[0]>) {
@@ -36,7 +36,7 @@ class UpdateTemplateUseCaseFactory {
         templateTranslationService,
         settingsDS,
         relationshipTypesDS,
-        dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
+        dispatcher: DispatcherFactory.default(),
         ...overrides,
       },
       { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }

@@ -1,6 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
@@ -66,8 +66,7 @@ const runWithV2Context = async (actor, callback) => {
       actor,
       factories: {
         ...transactionManagerFactories(),
-        jobsDispatcher: () =>
-          DefaultDispatcher(tenant.name, ExecutionContext.mongoTransactionManager),
+        jobsDispatcher: JobsDispatcherFactory.default,
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,

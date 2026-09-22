@@ -6,13 +6,29 @@ import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { IXSuggestionStateType } from '#shared/types/suggestionType.js';
-import { Extractors } from '../ixextractors.js';
+import { Extractors as ExtractorsModule } from '../ixextractors.js';
 import { IXValidationError } from '../IXValidationError.js';
 import { ixTestAccess } from './ixTestAccess.js';
 
 const fixtureFactory = getFixturesFactory();
 
+/** Runs every method inside the context, as a request or a job does. */
+const inContext = <T extends object>(target: T): T =>
+  new Proxy(target, {
+    get(object, property, receiver) {
+      const value = Reflect.get(object, property, receiver);
+      if (typeof value !== 'function' || jest.isMockFunction(value)) {
+        return value;
+      }
+      return (...args: unknown[]) =>
+        testingEnvironment.runWithContext(() => value.apply(object, args));
+    },
+  });
+
+const Extractors = inContext(ExtractorsModule);
+
 jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'),
   DefaultDispatcher: jest.fn().mockImplementation(() => {
     const {
       SyncDispatcherForTests,

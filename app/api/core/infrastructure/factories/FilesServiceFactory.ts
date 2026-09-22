@@ -13,9 +13,9 @@ import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1D
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { PDFService } from '../services/PDFService.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class FilesServiceFactory {
   static default(deps: Partial<FilesServiceDeps> = {}, context?: FilesServiceContext) {
@@ -36,7 +36,7 @@ class FilesServiceFactory {
         pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
         idGenerator: IdGeneratorFactory.default(),
         fileStorage: FileStorageFactory.default(),
-        jobsDispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
+        jobsDispatcher: DispatcherFactory.default(),
         pdfService: new PDFService(),
         filesIO: new FileContentsIO(),
         eventBus: applicationEventsBus,

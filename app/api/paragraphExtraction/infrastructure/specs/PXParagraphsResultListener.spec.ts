@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { appContext } from '#api/utils/AppContext.js';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob.js';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener.js';
 
@@ -28,13 +29,18 @@ const createSut = () => {
     dispatch: jest.fn(),
     dispatchMany: jest.fn(),
   });
+  const tenantsSeenByDispatcher: unknown[] = [];
 
-  const listener = new PXParagraphsResultListener(() => dispatcher);
+  const listener = new PXParagraphsResultListener(() => {
+    tenantsSeenByDispatcher.push(appContext.get('tenant'));
+    return dispatcher;
+  });
 
   return {
     listener,
     processResults: (listener as any).processResults.bind(listener),
     dispatcher,
+    tenantsSeenByDispatcher,
   };
 };
 
@@ -62,5 +68,13 @@ describe('PXParagraphsResultListener', () => {
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     });
+  });
+
+  it('should dispatch within the context of the tenant encoded in the extraction key', async () => {
+    const { processResults, tenantsSeenByDispatcher } = createSut();
+
+    await appContext.run(async () => processResults(resultMessage), { tenant: 'default' });
+
+    expect(tenantsSeenByDispatcher).toEqual([extractionKey.tenantName]);
   });
 });
