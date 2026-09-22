@@ -345,12 +345,12 @@ describe('DenormalizeRelationships', () => {
       ]);
     });
 
-    it('should denormalize the full closure through two relationship hops', async () => {
+    it('should denormalize a two-layer closure through two relationship hops', async () => {
       await testingEnvironment.setFixtures(threeHopTextFixtures);
       const sut = createSut(postgresCore);
 
-      // The orchestrator closure for D1 is [C1, B1, A1].
-      await sut.execute({ sharedIds: ['C1', 'B1', 'A1'] });
+      // The orchestrator closure for D1 is [C1, B1] (direct + one inherit layer).
+      await sut.execute({ sharedIds: ['C1', 'B1'] });
 
       const b = await getStored('B1', 'en');
       expect(b?.metadata.rel_to_C).toMatchObject([
@@ -367,6 +367,20 @@ describe('DenormalizeRelationships', () => {
             },
           ],
         },
+      ]);
+    });
+
+    it('should not fetch the leaf beyond two relationship hops', async () => {
+      await testingEnvironment.setFixtures(threeHopTextFixtures);
+      const sut = createSut(postgresCore);
+
+      // A1 is three hops from the text leaf D1 (A1 -> B1 -> C1 -> D1); with the
+      // fetch capped at two hops, D1's fresh text must not be re-derived.
+      await sut.execute({ sharedIds: ['A1'] });
+
+      const a = await getStored('A1', 'en');
+      expect(a?.metadata.rel_to_B[0].inheritedValue[0].inheritedValue[0].inheritedValue).toEqual([
+        { value: 'initial' },
       ]);
     });
 

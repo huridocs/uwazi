@@ -63,8 +63,8 @@ class DenormalizeRelationshipsUseCase extends AbstractUseCase<Input, Output, Dep
       entity.getReferencedRelationshipEntitySharedIds(language).forEach(enqueue)
     );
 
-    while (queue.size > 0) {
-      // eslint-disable-next-line no-await-in-loop -- each BFS layer depends on the previous level's references
+    for (let hop = 0; hop < 2 && queue.size > 0; hop += 1) {
+      // eslint-disable-next-line no-await-in-loop -- each hop depends on the previous hop's references
       const fetched = await (await this.deps.entitiesDS.getEntitiesBySharedIds([...queue])).all();
       queue.clear();
 

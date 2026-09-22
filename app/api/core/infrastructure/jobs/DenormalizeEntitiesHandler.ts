@@ -36,13 +36,15 @@ async function computeReferencingClosure(
   const seen = new Set(sharedIds);
   const closure: string[] = [];
 
-  let frontier = collectNew(await deps.getSharedIdsReferencing(sharedIds), seen);
-  closure.push(...frontier);
+  // Layer 1: entities that reference the updated entities directly.
+  const direct = collectNew(await deps.getSharedIdsReferencing(sharedIds), seen);
+  closure.push(...direct);
 
-  while (frontier.length > 0) {
-    // eslint-disable-next-line no-await-in-loop -- each BFS layer depends on the previous frontier
-    frontier = collectNew(await deps.getSharedIdsInheritingRelationshipFrom(frontier), seen);
-    closure.push(...frontier);
+  // Layer 2: entities that inherit a relationship from a direct referencer.
+  // We only denormalize two hops, so we stop here instead of chasing further.
+  if (direct.length > 0) {
+    const inheriting = collectNew(await deps.getSharedIdsInheritingRelationshipFrom(direct), seen);
+    closure.push(...inheriting);
   }
 
   return closure;

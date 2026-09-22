@@ -333,12 +333,9 @@ describe('DenormalizeEntitiesHandler', () => {
 });
 
 describe('computeReferencingClosure', () => {
-  it('returns direct referencers followed by transitive inherit-from-relationship referencers', async () => {
+  it('returns direct referencers followed by one level of inherit-from-relationship referencers', async () => {
     const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce(['b']);
-    const getSharedIdsInheritingRelationshipFrom = jest
-      .fn()
-      .mockResolvedValueOnce(['c'])
-      .mockResolvedValueOnce([]);
+    const getSharedIdsInheritingRelationshipFrom = jest.fn().mockResolvedValueOnce(['c']);
 
     const result = await computeReferencingClosure(['a'], {
       getSharedIdsReferencing,
@@ -348,8 +345,25 @@ describe('computeReferencingClosure', () => {
     expect(result).toEqual(['b', 'c']);
     expect(getSharedIdsReferencing).toHaveBeenCalledTimes(1);
     expect(getSharedIdsReferencing).toHaveBeenCalledWith(['a']);
-    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenNthCalledWith(1, ['b']);
-    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenNthCalledWith(2, ['c']);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledTimes(1);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledWith(['b']);
+  });
+
+  it('stops after two layers and does not chase deeper inherit chains', async () => {
+    const getSharedIdsReferencing = jest.fn().mockResolvedValueOnce(['b']);
+    const getSharedIdsInheritingRelationshipFrom = jest
+      .fn()
+      .mockResolvedValueOnce(['c'])
+      .mockResolvedValueOnce(['d'])
+      .mockResolvedValue([]);
+
+    const result = await computeReferencingClosure(['a'], {
+      getSharedIdsReferencing,
+      getSharedIdsInheritingRelationshipFrom,
+    });
+
+    expect(result).toEqual(['b', 'c']);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledTimes(1);
   });
 
   it('deduplicates across layers and never returns the roots', async () => {
@@ -392,9 +406,8 @@ describe('computeReferencingClosure', () => {
     expect(getSharedIdsInheritingRelationshipFrom).not.toHaveBeenCalled();
   });
 
-  it('terminates on a cyclic inherit-from-relationship graph', async () => {
+  it('stops after one inherit layer even when the inherit query cycles back', async () => {
     const getSharedIdsReferencing = jest.fn().mockResolvedValue(['a']);
-    // a and b inherit from each other; without the seen guard this would never end.
     const getSharedIdsInheritingRelationshipFrom = jest
       .fn()
       .mockImplementation(async (ids: string[]) => (ids.includes('a') ? ['b'] : ['a']));
@@ -405,6 +418,6 @@ describe('computeReferencingClosure', () => {
     });
 
     expect(result).toEqual(['a', 'b']);
-    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledTimes(2);
+    expect(getSharedIdsInheritingRelationshipFrom).toHaveBeenCalledTimes(1);
   });
 });
