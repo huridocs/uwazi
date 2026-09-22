@@ -15,7 +15,10 @@ import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
-import { TargetLanguageInTranslationsError } from '#api/core/application/errors.js';
+import {
+  TargetLanguageInTranslationsError,
+  UnknownTargetLanguageError,
+} from '#api/core/application/errors.js';
 
 const factory = getFixturesFactory();
 
@@ -543,6 +546,25 @@ describe('CreateEntityUseCase', () => {
           ],
         })
       ).rejects.toThrow('Text Property is required');
+    });
+
+    it.each`
+      case                 | translations
+      ${'translations'}    | ${{ es: [{ name: 'title', value: [{ value: 'Título ES' }] }] }}
+      ${'no translations'} | ${undefined}
+    `('should reject a target language that is not installed ($case)', async ({ translations }) => {
+      const { sut } = createSut({ targetLanguage: 'xx' as LanguageISO6391 }, postgresCore);
+      const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
+
+      await expect(
+        sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Title XX' }] }],
+          translations,
+        })
+      ).rejects.toThrow(new UnknownTargetLanguageError('xx'));
+
+      expect(await testingEnvironment.db.getAllFrom('entities')).toEqual(entitiesBefore);
     });
 
     describe('with translations', () => {
