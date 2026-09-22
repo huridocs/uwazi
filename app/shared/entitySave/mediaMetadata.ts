@@ -85,9 +85,11 @@ const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => 
   return isUploadId(rawValue) ? rawValue : undefined;
 };
 
+type MediaMetadataBag = Record<string, ReadonlyArray<{ value?: unknown }> | undefined> | undefined;
+
 const filterReferencedPendingAttachments = <T extends AttachmentLike>(
   pending: ReadonlyArray<T>,
-  metadata: EntityWithSaveMetadata['metadata'],
+  metadata: MediaMetadataBag,
   mediaPropertyNames: ReadonlySet<string>
 ): T[] => {
   const referenced = new Set<string>();
