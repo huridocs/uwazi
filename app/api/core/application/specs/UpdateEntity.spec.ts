@@ -113,8 +113,9 @@ describe('UpdateEntityUseCase', () => {
     return file ? { ...file, _id: file._id.toHexString() } : null;
   };
 
-  const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
-  const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
+  const getAllJobs = async (postgresCore: boolean) =>
+    testingEnvironment.jobs.getAll({ postgresCore, mongoDb: getConnection() });
+  const clearJobs = async () => testingEnvironment.jobs.clear(getConnection());
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -1047,7 +1048,7 @@ describe('UpdateEntityUseCase', () => {
         propertyAssignments: [{ name: 'title', value: [{ value: 'Entity Updated EN' }] }],
       });
 
-      const jobs = await getAllJobs();
+      const jobs = await getAllJobs(postgresCore);
 
       expect(jobs.length).toBeGreaterThanOrEqual(1);
 
@@ -1139,7 +1140,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('EntityUpdatedEvent changed languages', () => {
       const listenerJobsChangedLanguages = async () =>
-        (await getAllJobs())
+        (await getAllJobs(postgresCore))
           .filter(job => job.name === 'EntityUpdatedEvent:SampleListener')
           .map(job => job.params.changedLanguages);
 

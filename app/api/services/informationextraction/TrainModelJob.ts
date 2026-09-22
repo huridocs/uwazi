@@ -11,6 +11,7 @@ import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText.js
 import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './ixMaterials.js';
 import { IXWebSocketEvents } from './WebSocketEvents.js';
 import ixmodels from './ixmodels.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type CustomParams = UwaziJobParams & {
   extractorId: string;
@@ -29,6 +30,7 @@ type Props = {
   extractorsDS?: typeof Extractors;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 * 20 })
 @PrivilegedJob()
 export class IXTrainModelJob extends UwaziJobHandler<CustomParams> {
   private props: Required<Props>;

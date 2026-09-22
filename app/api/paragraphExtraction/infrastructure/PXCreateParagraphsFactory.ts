@@ -5,9 +5,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
@@ -15,12 +12,12 @@ import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.mongo();
-    const tenant = tenants.current();
 
     const settingsDS = SettingsDataSourceFactory.cached({
       transactionManager: mongoTransactionManager,
@@ -37,9 +34,7 @@ export class PXCreateParagraphsFactory {
     const entitiesDS = EntitiesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });
-    const jobsDispatcher = new DispatcherAdapter(
-      UwaziDispatcherFactory(tenant.name, mongoTransactionManager)
-    );
+    const jobsDispatcher = DispatcherFactory.default();
 
     const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
       entitiesDS,

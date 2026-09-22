@@ -16,6 +16,7 @@ import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Pair = {
   from: LanguageISO6391;
@@ -34,6 +35,7 @@ type JobDependencies = {
   settingsDS: SettingsDataSource;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 * 60 })
 @PrivilegedJob()
 class CloneLanguageEntitiesJob extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {

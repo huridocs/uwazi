@@ -1,5 +1,5 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -15,8 +15,7 @@ const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Pro
         tenant,
         factories: {
           ...transactionManagerFactories(),
-          jobsDispatcher: () =>
-            DefaultDispatcher(tenant.name, ExecutionContext.mongoTransactionManager),
+          jobsDispatcher: JobsDispatcherFactory.default,
           eventEmitter: () => EventEmitterFactory.default(),
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,

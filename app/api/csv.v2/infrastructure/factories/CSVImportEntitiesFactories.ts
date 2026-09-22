@@ -2,7 +2,6 @@ import { Db } from 'mongodb';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -119,10 +118,7 @@ export class CSVImportEntitiesFactories {
     const csvImportsDS = this.CSVImportDSDefault();
     const fileStorage = FileStorageFactory.default();
     const idGenerator = IdGeneratorFactory.default();
-    const jobsDispatcher = UwaziDispatcherFactory(
-      ExecutionContext.tenant.name,
-      ExecutionContext.mongoTransactionManager
-    );
+    const { jobsDispatcher } = ExecutionContext;
     return new CsvImportEntities({
       csvImportsDS,
       fileStorage,
@@ -142,10 +138,7 @@ export class CSVImportEntitiesFactories {
       thesauriDS: ThesauriDataSourceFactory.default(),
       thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(),
       relationshipPendingValuesDS: this.CSVImportRelationshipPendingValuesDSDefault(),
-      jobsDispatcher: UwaziDispatcherFactory(
-        ExecutionContext.tenant.name,
-        ExecutionContext.mongoTransactionManager
-      ),
+      jobsDispatcher: ExecutionContext.jobsDispatcher,
       transactionManager,
       idGenerator: IdGeneratorFactory.default(),
     });
