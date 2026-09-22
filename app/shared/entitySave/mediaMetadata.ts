@@ -16,29 +16,25 @@ const parseMediaSourceUrl = (value: string): string => {
 type AttachmentLike = {
   fileLocalID?: string;
   serializedFile?: string;
+  timeLinks?: string;
 };
 
 const isUploadedAttachment = (
   file: AttachmentLike
 ): file is AttachmentLike & { serializedFile: string } => typeof file.serializedFile === 'string';
 
-const findUploadedAttachmentIndex = (
-  attachments: ReadonlyArray<AttachmentLike>,
-  matches: (file: AttachmentLike) => boolean
-): number => attachments.filter(isUploadedAttachment).findIndex(matches);
+const pendingUploadAttachments = (attachments: ReadonlyArray<AttachmentLike>) => {
+  const uploaded = attachments.filter(isUploadedAttachment);
+  return uploaded.length > 0 ? uploaded : attachments.filter(file => Boolean(file.fileLocalID));
+};
 
-const findFileLocalIdAttachmentIndex = (
+const findPendingByFileLocalId = (
   attachments: ReadonlyArray<AttachmentLike>,
   fileLocalID: string
-): number =>
-  attachments
-    .filter(file => Boolean(file.fileLocalID))
-    .findIndex(file => file.fileLocalID === fileLocalID);
-
-const resolveMetadataAttachmentIndex = (
-  attachments: ReadonlyArray<AttachmentLike>,
-  fileLocalID: string
-): number => findUploadedAttachmentIndex(attachments, file => file.fileLocalID === fileLocalID);
+) => {
+  const pending = pendingUploadAttachments(attachments);
+  return { pending, index: pending.findIndex(file => file.fileLocalID === fileLocalID) };
+};
 
 const mapTimelinkValue = (
   rawValue: string,
@@ -55,18 +51,20 @@ const mapTimelinkValue = (
     return { value: rawValue };
   }
 
-  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, trimmedId);
-  return attachmentIndex >= 0
-    ? { value: '', attachment: attachmentIndex, timeLinks }
-    : { value: rawValue };
+  const { index } = findPendingByFileLocalId(attachments, trimmedId);
+  return index >= 0 ? { value: '', attachment: index, timeLinks } : { value: rawValue };
 };
 
 const mapUploadIdValue = (
   uploadId: string,
   attachments: ReadonlyArray<AttachmentLike>
 ): MetadataObjectSchema => {
-  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, uploadId);
-  return attachmentIndex >= 0 ? { value: '', attachment: attachmentIndex } : { value: uploadId };
+  const { pending, index } = findPendingByFileLocalId(attachments, uploadId);
+  if (index < 0) {
+    return { value: uploadId };
+  }
+  const timeLinks = pending[index]?.timeLinks;
+  return { value: '', attachment: index, ...(timeLinks ? { timeLinks } : {}) };
 };
 
 const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => {
@@ -87,22 +85,26 @@ const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => 
 
 type MediaMetadataBag = Record<string, ReadonlyArray<{ value?: unknown }> | undefined> | undefined;
 
+const currentAndTranslationMetadata = (
+  current: MediaMetadataBag,
+  translations?: Record<string, MediaMetadataBag>
+): MediaMetadataBag[] => [current, ...Object.values(translations ?? {})];
+
 const filterReferencedPendingAttachments = <T extends AttachmentLike>(
   pending: ReadonlyArray<T>,
-  metadata: MediaMetadataBag,
+  metadataBags: ReadonlyArray<MediaMetadataBag>,
   mediaPropertyNames: ReadonlySet<string>
 ): T[] => {
   const referenced = new Set<string>();
-  mediaPropertyNames.forEach(name => {
-    const rawValue = metadata?.[name]?.[0]?.value;
-    if (typeof rawValue !== 'string') {
-      return;
+  for (const metadata of metadataBags) {
+    for (const name of mediaPropertyNames) {
+      const rawValue = metadata?.[name]?.[0]?.value;
+      if (typeof rawValue === 'string') {
+        const uploadId = extractUploadIdFromMediaValue(rawValue);
+        if (uploadId) referenced.add(uploadId);
+      }
     }
-    const uploadId = extractUploadIdFromMediaValue(rawValue);
-    if (uploadId) {
-      referenced.add(uploadId);
-    }
-  });
+  }
   return pending.filter(
     (attachment): attachment is T & { fileLocalID: string } =>
       typeof attachment.fileLocalID === 'string' && referenced.has(attachment.fileLocalID)
@@ -142,7 +144,7 @@ const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
         return [name, values];
       }
       const propertyType = mediaPropertyTypes.get(name);
-      const existing = values[0];
+      const [existing] = values;
       const rawValue = existing?.value;
       if (!propertyType || typeof rawValue !== 'string') {
         return [name, values];
@@ -161,13 +163,11 @@ const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
 };
 
 export {
+  currentAndTranslationMetadata,
   extractUploadIdFromMediaValue,
   filterReferencedPendingAttachments,
-  findFileLocalIdAttachmentIndex,
-  findUploadedAttachmentIndex,
   isUploadId,
   mapMediaMetadataForSave,
   mapMediaValue,
   parseMediaSourceUrl,
-  resolveMetadataAttachmentIndex,
 };

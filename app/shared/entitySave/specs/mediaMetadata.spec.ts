@@ -10,6 +10,7 @@ type EntityWithMetadata = {
     type?: string;
     serializedFile?: string;
     fileLocalID?: string;
+    timeLinks?: string;
   }>;
   sharedId?: string;
   template?: string;
@@ -165,6 +166,36 @@ describe('mapMediaMetadataForSave', () => {
     expect(metadata(prepared).image).toEqual([{ value: 'missingUploadId' }]);
   });
 
+  it('copies timeLinks from fileLocalID-only pending attachments', () => {
+    const entity: EntityWithMetadata = {
+      sharedId: 'entity1',
+      template: 'template1',
+      title: 'Entity',
+      metadata: {
+        media: [{ value: 'clipId' }],
+      },
+      attachments: [
+        {
+          fileLocalID: 'clipId',
+          originalname: 'clip.mp4',
+          filename: 'clip.mp4',
+          type: 'attachment',
+          timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
+        },
+      ],
+    };
+
+    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+    expect(metadata(prepared).media).toEqual([
+      {
+        value: '',
+        attachment: 0,
+        timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
+      },
+    ]);
+  });
+
   it('does not remap upload ids that lack serializedFile attachments', () => {
     const entity: EntityWithMetadata = {
       sharedId: 'entity1',
@@ -227,10 +258,12 @@ describe('filterReferencedPendingAttachments', () => {
 
     const referenced = filterReferencedPendingAttachments(
       pending,
-      {
-        image: [{ value: 'keepMe' }],
-        media: [{ value: '(otherId, {"timelinks":{}})' }],
-      },
+      [
+        {
+          image: [{ value: 'keepMe' }],
+          media: [{ value: '(otherId, {"timelinks":{}})' }],
+        },
+      ],
       new Set(['image', 'media'])
     );
 
@@ -239,15 +272,23 @@ describe('filterReferencedPendingAttachments', () => {
 
   it('extracts upload ids from timelink media values', () => {
     const pending = [{ fileLocalID: 'clipId', serializedFile: 'data:video/mp4;base64,Y2xpcA==' }];
+    expect(
+      filterReferencedPendingAttachments(
+        pending,
+        [{ media: [{ value: '(clipId, {"timelinks":{"00:00:01":"intro"}})' }] }],
+        new Set(['media'])
+      )
+    ).toEqual(pending);
+  });
 
-    const referenced = filterReferencedPendingAttachments(
-      pending,
-      {
-        media: [{ value: '(clipId, {"timelinks":{"00:00:01":"intro"}})' }],
-      },
-      new Set(['media'])
-    );
-
-    expect(referenced).toEqual(pending);
+  it('unions upload ids across metadata bags', () => {
+    const pending = [{ fileLocalID: 'a' }, { fileLocalID: 'b' }, { fileLocalID: 'c' }];
+    expect(
+      filterReferencedPendingAttachments(
+        pending,
+        [{ image: [{ value: 'a' }] }, { image: [{ value: 'b' }] }],
+        new Set(['image'])
+      )
+    ).toEqual(pending.slice(0, 2));
   });
 });

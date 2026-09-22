@@ -41,13 +41,14 @@ describe('wrapEntityMetadata', () => {
           type: 'attachment',
           mimetype: 'image/jpeg',
           fileLocalID: 'k3rutmyxrdr',
+          serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
         },
       ],
     };
     const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual({
       title: 'A title',
-      metadata: { text: [{ value: 'Texto 1' }], image: [{ value: '', attachment: 1 }] },
+      metadata: { text: [{ value: 'Texto 1' }], image: [{ value: '', attachment: 0 }] },
       attachments: [
         {
           originalname: 'document.pdf',
@@ -61,6 +62,7 @@ describe('wrapEntityMetadata', () => {
           type: 'attachment',
           mimetype: 'image/jpeg',
           fileLocalID: 'k3rutmyxrdr',
+          serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
         },
       ],
     });
@@ -92,6 +94,7 @@ describe('wrapEntityMetadata', () => {
           originalname: 'image.jpeg',
           fileLocalID: 'k3rutmyxrdr',
           type: 'attachment',
+          serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
         },
       ],
     };
@@ -118,7 +121,7 @@ describe('wrapEntityMetadata', () => {
     });
   });
 
-  it('indexes by fileLocalID order, not serializedFile upload order', () => {
+  it('indexes new image uploads among serialized files only', () => {
     const entity = {
       title: 'A title',
       metadata: { image: 'both' },
@@ -138,7 +141,7 @@ describe('wrapEntityMetadata', () => {
     };
 
     expect(wrapEntityMetadata(entity, template).metadata).toEqual({
-      image: [{ value: '', attachment: 1 }],
+      image: [{ value: '', attachment: 0 }],
     });
   });
 

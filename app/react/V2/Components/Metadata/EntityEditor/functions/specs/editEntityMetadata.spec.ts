@@ -1,4 +1,6 @@
 import type { Entity } from '#V2/api/entities/types.js';
+import type { ClientFile } from '#app/istore.js';
+import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
 import {
   buildEditEntitySaveInput,
@@ -96,6 +98,7 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
     });
     expect(saved).toMatchObject({
       title: 'Updated',
@@ -112,6 +115,7 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
     });
     expect(saved.icon).toEqual(EMPTY_ICON);
   });
@@ -124,6 +128,7 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
     });
     expect(saved.icon).toEqual(icon);
   });
@@ -145,6 +150,7 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
       mainDocumentId: 'file-1',
       draftPropertySelections: draft,
     });
@@ -169,6 +175,7 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
       mainDocumentId: 'file-1',
       draftPropertySelections: draft,
     });
@@ -185,37 +192,61 @@ describe('buildEditEntitySaveInput', () => {
       metadataProperties: properties,
       pendingAttachments: [],
       mediaPropertyNames: new Set(),
+      currentLanguage: entity.language,
       draftPropertySelections: [{ name: 'simple_text', selection: { text: 'x' } }],
     });
     expect(saved.propertySelections).toBeUndefined();
   });
 
-  it('includes complete translations for other installed languages', () => {
-    const saved = buildEditEntitySaveInput({
-      entity,
-      values: {
-        ...values,
-        translations: {
-          es: {
-            title: [{ value: 'Actualizado' }],
-            simple_text: [{ value: 'hola' }],
+  describe('translations', () => {
+    const langs: LanguagesListSchema = [
+      { key: 'en', label: 'English', default: true },
+      { key: 'es', label: 'Spanish' },
+    ];
+    it('omits the UI language from translations even when it differs from entity.language', () => {
+      const saved = buildEditEntitySaveInput({
+        entity,
+        currentLanguage: 'es',
+        values: {
+          ...values,
+          title: 'Audiencia',
+          metadata: { simple_text: [{ value: 'hola' }] },
+          translations: {
+            en: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
           },
         },
-      },
-      metadataProperties: properties,
-      pendingAttachments: [],
-      mediaPropertyNames: new Set(),
-      languages: [
-        { key: 'en', label: 'English', default: true },
-        { key: 'es', label: 'Spanish' },
-        { key: 'fr', label: 'French', installing: true },
-      ],
+        metadataProperties: properties,
+        pendingAttachments: [],
+        mediaPropertyNames: new Set(),
+        languages: langs,
+      });
+      expect(saved.translations).toEqual({
+        en: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
+      });
     });
-    expect(saved.translations).toEqual({
-      es: {
-        title: [{ value: 'Actualizado' }],
-        simple_text: [{ value: 'hola' }],
-      },
+
+    it('keeps pending uploads referenced only by another language', () => {
+      const pending: ClientFile = {
+        _id: 'esPhoto',
+        fileLocalID: 'esPhoto',
+        originalname: 'es.png',
+        filename: 'es.png',
+        type: 'attachment',
+      };
+      const saved = buildEditEntitySaveInput({
+        entity,
+        currentLanguage: 'en',
+        values: {
+          ...values,
+          metadata: { photo: [{ value: '/en.jpg' }] },
+          translations: { es: { title: [{ value: 'Audiencia' }], photo: [{ value: 'esPhoto' }] } },
+        },
+        metadataProperties: [{ _id: 'p', type: 'image', name: 'photo', label: 'Photo' }],
+        pendingAttachments: [pending],
+        mediaPropertyNames: new Set(['photo']),
+        languages: langs,
+      });
+      expect(saved.attachments).toEqual([{ _id: 'a1', filename: 'existing.pdf' }, pending]);
     });
   });
 });
@@ -240,7 +271,6 @@ const textProp = (name: string, id = name): FormMetadataProperty => ({
   name,
   label: name,
 });
-
 describe('mergeSharedFormMetadata', () => {
   it('rebuilds shape while keeping existing dirty field values', () => {
     const properties = [textProp('a'), textProp('b'), textProp('c')];

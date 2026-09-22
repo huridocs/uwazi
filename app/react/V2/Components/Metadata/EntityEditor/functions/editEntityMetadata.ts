@@ -1,5 +1,8 @@
 import type { ClientFile } from '#app/istore.js';
-import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
+import {
+  currentAndTranslationMetadata,
+  filterReferencedPendingAttachments,
+} from '#shared/entitySave/mediaMetadata.js';
 import type { LanguagesListSchema, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -20,6 +23,7 @@ type BuildEditEntitySaveInputArgs = {
   metadataProperties: FormMetadataProperty[];
   pendingAttachments: ClientFile[];
   mediaPropertyNames: Set<string>;
+  currentLanguage: string;
   languages?: LanguagesListSchema;
   mainDocumentId?: string;
   draftPropertySelections?: PropertySelectionSchema[];
@@ -63,6 +67,7 @@ const buildEditEntitySaveInput = ({
   metadataProperties,
   pendingAttachments,
   mediaPropertyNames,
+  currentLanguage,
   languages = [],
   mainDocumentId,
   draftPropertySelections,
@@ -72,7 +77,7 @@ const buildEditEntitySaveInput = ({
     values,
     metadataProperties,
     languages,
-    currentLanguage: entity.language,
+    currentLanguage,
   });
   const saved: EntitySaveInput = {
     ...entity,
@@ -84,7 +89,7 @@ const buildEditEntitySaveInput = ({
       ...(entity.attachments ?? []),
       ...filterReferencedPendingAttachments(
         pendingAttachments,
-        formattedMetadata,
+        currentAndTranslationMetadata(formattedMetadata, translations),
         mediaPropertyNames
       ),
     ],

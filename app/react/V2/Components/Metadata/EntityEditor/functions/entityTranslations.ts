@@ -64,6 +64,8 @@ const rekeyEditEntityLanguage = ({
   const nextTranslations = { ...(values.translations ?? {}) };
   delete nextTranslations[toLanguage];
   nextTranslations[fromLanguage] = bucketFromCurrent(values, metadataProperties);
+  const nextTouched = { ...(values.touchedTranslations ?? {}) };
+  delete nextTouched[toLanguage];
   const nextMetadata = { ...values.metadata };
   translatableProperties(metadataProperties).forEach(property => {
     nextMetadata[property.name] = toFormMetadataValues(toBucket[property.name]);
@@ -73,6 +75,7 @@ const rekeyEditEntityLanguage = ({
     title: stringFromValues(toBucket.title),
     metadata: nextMetadata,
     translations: nextTranslations,
+    touchedTranslations: nextTouched,
   };
 };
 

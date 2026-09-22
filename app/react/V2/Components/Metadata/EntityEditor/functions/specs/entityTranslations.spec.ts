@@ -77,6 +77,19 @@ describe('rekeyEditEntityLanguage', () => {
       },
     });
   });
+
+  it('drops touched flags for the language that became current so missing values still fall back', () => {
+    const next = rekeyEditEntityLanguage({
+      values: values({
+        touchedTranslations: { es: { title: true, description: true }, fr: { title: true } },
+      }),
+      fromLanguage: 'en',
+      toLanguage: 'es',
+      metadataProperties: [textProp('description'), imageProp('photo'), dateProp('filed')],
+    });
+
+    expect(next.touchedTranslations).toEqual({ fr: { title: true } });
+  });
 });
 
 describe('buildTranslationsForSave', () => {
