@@ -1,10 +1,11 @@
 /* eslint-disable react/require-default-props */
-import React, { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { Translate } from '#app/I18N/index.js';
 import { TextCursorInputStrokeIcon } from '#V2/Components/CustomIcons/index.js';
+import { copyThemeScopeStyle } from '#V2/theme/copyThemeScopeStyle.js';
 import { getSelectionMenuPosition } from './getSelectionMenuPosition.js';
 import { placeSelectionMenu } from './placeSelectionMenu.js';
 
@@ -13,22 +14,6 @@ const actionClass =
 
 const mutedActionClass =
   'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/15 hover:text-parchment';
-
-const copyThemeScopeStyle = (from?: HTMLElement | null): CSSProperties => {
-  if (typeof document === 'undefined') return {};
-  const scope =
-    from?.closest<HTMLElement>('.tw-content') ||
-    document.querySelector<HTMLElement>('.tw-content[data-theme-mode]') ||
-    document.querySelector<HTMLElement>('.tw-content');
-  if (!scope) return {};
-  const copied: CSSProperties & Record<string, string> = {};
-  const { style } = scope;
-  for (let i = 0; i < style.length; i += 1) {
-    const name = style.item(i);
-    if (name.startsWith('--')) copied[name] = style.getPropertyValue(name);
-  }
-  return copied;
-};
 
 type DocumentSelectionFloatingMenuProps = {
   selection: TextSelection;

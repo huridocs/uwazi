@@ -200,7 +200,7 @@ describe('translations', () => {
         const jobs = await getJobs();
         expect(jobs).toMatchObject([
           {
-            name: 'DenormalizeThesaurusEntitiesHandler',
+            name: 'DenormalizeEntitiesHandler',
             params: {
               thesaurusId: dictionaryId.toString(),
               valueIds: ['1'],
@@ -262,7 +262,7 @@ describe('translations', () => {
           const jobs = await getJobs();
           expect(jobs).toMatchObject([
             {
-              name: 'DenormalizeThesaurusEntitiesHandler',
+              name: 'DenormalizeEntitiesHandler',
               params: {
                 thesaurusId: dictionaryId.toString(),
                 valueIds: ['age id'],

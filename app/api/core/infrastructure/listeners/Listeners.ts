@@ -1,4 +1,3 @@
-import './DenormalizeEntityUpdatedListener.js';
 import './ProcessRelationshipAfterEntityUpdatedListener.js';
 import './BroadcastSettingsChanged.js';
 import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';

@@ -5,6 +5,7 @@ import {
   PDFPostProcessParams,
   TemplatePostProcessParams,
   DenormalizeThesaurusParams,
+  DenormalizeRelationshipsParams,
   CloneLanguageEntitiesParams,
   DeleteLanguageEntitiesParams,
 } from '#api/core/application/contracts/Dispatcher.js';
@@ -13,7 +14,7 @@ import { BulkCleanupEntityJob } from './BulkCleanupEntityJob.js';
 import { CloneLanguageEntitiesJob } from './CloneLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJob } from './DeleteLanguageEntitiesJob.js';
 import { DeleteFileFromStorageJobHandler } from './DeleteFileFromStorageJobHandler.js';
-import { DenormalizeThesaurusEntitiesHandler } from './DenormalizeThesaurusEntitiesHandler.js';
+import { DenormalizeEntitiesHandler } from './DenormalizeEntitiesHandler.js';
 import { PDFPostProcessJobHandler } from './PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from './RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from './TemplatePostProcessEntitiesJob.js';
@@ -66,10 +67,20 @@ class DispatcherAdapter implements Dispatcher {
   }
 
   async denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void> {
-    await this.jobsDispatcher.deleteByParams(DenormalizeThesaurusEntitiesHandler, {
+    await this.jobsDispatcher.deleteByParams(DenormalizeEntitiesHandler, {
       thesaurusId: params.thesaurusId,
     });
-    await this.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, params);
+    await this.jobsDispatcher.dispatch(DenormalizeEntitiesHandler, {
+      ...params,
+      kind: 'thesaurus',
+    });
+  }
+
+  async denormalizeRelationships(params: DenormalizeRelationshipsParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(DenormalizeEntitiesHandler, {
+      ...params,
+      kind: 'relationships',
+    });
   }
 
   async cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void> {

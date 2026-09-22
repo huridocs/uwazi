@@ -198,6 +198,43 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return result.map((doc: any) => doc._id);
   }
 
+  async findRelationshipPropertyNames(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        { $match: { 'properties.type': 'relationship' } },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  async findRelationshipPropertyNamesInheritingRelationship(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': 'relationship',
+            'properties.inherit.type': 'relationship',
+          },
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
   async findPropertyNamesUsingThesaurus(thesaurusId: string): Promise<{
     selectPropertyNames: string[];
     inheritedPropertyNames: string[];

@@ -430,26 +430,9 @@ class Entity {
     this.template.getRelationshipProperties().forEach(property => {
       this.languages.forEach(language => {
         const current = this.getValue<RelationshipEntry>(property.name, language);
-        const denormalizedItems = current.value.map(item => {
-          const related = relatedEntities[item.value as string];
-          if (!related) return item;
-
-          const inheritedProp = related.template.properties.find(
-            p => p.id.toString() === property?.inheritedPropertyId
-          );
-
-          return {
-            type: 'entity',
-            value: item.value,
-            label: related.getTitle(language),
-            ...(related.icon ? { icon: related.icon } : {}),
-            ...(inheritedProp
-              ? {
-                  inheritedValue: related.getValue(inheritedProp.name, language).value,
-                  inheritedType: inheritedProp.type,
-                }
-              : {}),
-          };
+        const denormalizedItems = this.denormalizeRelationshipValue(property, current.value, {
+          language,
+          relatedEntities,
         });
 
         this.setValue(
@@ -457,6 +440,58 @@ class Entity {
           language
         );
       });
+    });
+  }
+
+  private denormalizeRelationshipValue(
+    property: V1RelationshipProperty,
+    value: RelationshipEntry[],
+    context: {
+      language: LanguageISO6391;
+      relatedEntities: Record<IndexTypes, Entity | undefined>;
+      seenSharedIds?: ReadonlySet<string>;
+    }
+  ): RelationshipEntry[] {
+    const { language, relatedEntities, seenSharedIds = new Set() } = context;
+
+    return value.map(item => {
+      const sharedId = item.value as string;
+      if (seenSharedIds.has(sharedId)) {
+        return item;
+      }
+
+      const related = relatedEntities[sharedId];
+      if (!related) {
+        return item;
+      }
+
+      const inheritedProp = related.template.properties.find(
+        p => p.id.toString() === property.inheritedPropertyId
+      );
+
+      return {
+        type: 'entity',
+        value: item.value,
+        label: related.getTitle(language),
+        ...(related.icon ? { icon: related.icon } : {}),
+        ...(inheritedProp
+          ? {
+              inheritedValue:
+                inheritedProp instanceof V1RelationshipProperty
+                  ? this.denormalizeRelationshipValue(
+                      inheritedProp,
+                      related.getValue<RelationshipEntry>(inheritedProp.name, language).value,
+                      {
+                        language,
+                        relatedEntities,
+                        seenSharedIds: new Set(seenSharedIds).add(sharedId),
+                      }
+                    )
+                  : related.getValue(inheritedProp.name, language).value,
+              inheritedType: inheritedProp.type,
+            }
+          : {}),
+      };
     });
   }
 

@@ -158,6 +158,131 @@ describe('MongoTemplatesDAO', () => {
     });
   });
 
+  describe('findRelationshipPropertyNames()', () => {
+    it('returns only relationship property names', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [
+            factory.property('text_prop', 'text'),
+            factory.property('select_prop', 'select'),
+            factory.property('multiselect_prop', 'multiselect'),
+            factory.relationshipProp('rel_prop'),
+          ]),
+        ],
+      });
+      const { sut } = createSut();
+
+      const result = await sut.findRelationshipPropertyNames();
+
+      expect(result).toEqual(['rel_prop']);
+    });
+
+    it('deduplicates property names shared across templates', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [factory.relationshipProp('rel_prop')]),
+          factory.template('template2', [factory.relationshipProp('rel_prop')]),
+        ],
+      });
+      const { sut } = createSut();
+
+      const result = await sut.findRelationshipPropertyNames();
+
+      expect(result).toEqual(['rel_prop']);
+    });
+
+    it('returns an empty array when no template has relationship properties', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [
+            factory.property('text_prop', 'text'),
+            factory.property('select_prop', 'select'),
+          ]),
+        ],
+      });
+      const { sut } = createSut();
+
+      expect(await sut.findRelationshipPropertyNames()).toEqual([]);
+    });
+
+    it('returns an empty array when there are no templates', async () => {
+      await testingEnvironment.setUp({ templates: [] });
+      const { sut } = createSut();
+
+      expect(await sut.findRelationshipPropertyNames()).toEqual([]);
+    });
+  });
+
+  describe('findRelationshipPropertyNamesInheritingRelationship()', () => {
+    it('returns only relationship property names that inherit a relationship', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [
+            factory.relationshipProp('rel_inherit', 'target', {
+              inherit: { property: 'rel_target_prop', type: 'relationship' },
+            }),
+            factory.relationshipProp('rel_plain'),
+            factory.relationshipProp('rel_text_inherit', 'target', {
+              inherit: { property: 'text_target_prop', type: 'text' },
+            }),
+            factory.property('text_prop', 'text'),
+            factory.property('select_prop', 'select'),
+          ]),
+        ],
+      });
+      const { sut } = createSut();
+
+      const result = await sut.findRelationshipPropertyNamesInheritingRelationship();
+
+      expect(result).toEqual(['rel_inherit']);
+    });
+
+    it('deduplicates property names shared across templates', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [
+            factory.relationshipProp('rel_inherit', 'target', {
+              inherit: { property: 'rel_target_prop', type: 'relationship' },
+            }),
+          ]),
+          factory.template('template2', [
+            factory.relationshipProp('rel_inherit', 'target', {
+              inherit: { property: 'rel_target_prop', type: 'relationship' },
+            }),
+          ]),
+        ],
+      });
+      const { sut } = createSut();
+
+      const result = await sut.findRelationshipPropertyNamesInheritingRelationship();
+
+      expect(result).toEqual(['rel_inherit']);
+    });
+
+    it('returns an empty array when no relationship property inherits a relationship', async () => {
+      await testingEnvironment.setUp({
+        templates: [
+          factory.template('template1', [
+            factory.relationshipProp('rel_plain'),
+            factory.relationshipProp('rel_text_inherit', 'target', {
+              inherit: { property: 'text_target_prop', type: 'text' },
+            }),
+          ]),
+        ],
+      });
+      const { sut } = createSut();
+
+      expect(await sut.findRelationshipPropertyNamesInheritingRelationship()).toEqual([]);
+    });
+
+    it('returns an empty array when there are no templates', async () => {
+      await testingEnvironment.setUp({ templates: [] });
+      const { sut } = createSut();
+
+      expect(await sut.findRelationshipPropertyNamesInheritingRelationship()).toEqual([]);
+    });
+  });
+
   describe('get()', () => {
     it('should return all templates when called without ids', async () => {
       const { sut } = createSut();
