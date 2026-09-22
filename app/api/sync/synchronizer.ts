@@ -49,7 +49,7 @@ export const synchronizer = {
       { cookie }
     );
 
-    if (change.namespace === 'files' && data.filename) {
+    if (change.namespace === 'files' && data.filename && !data.url) {
       await uploadFile(url, data.filename, cookie, data.type);
     }
   },
