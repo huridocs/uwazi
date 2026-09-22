@@ -26,6 +26,7 @@ import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/Prop
 import {
   MissingTranslationLanguageError,
   TargetLanguageInTranslationsError,
+  UnknownTargetLanguageError,
   UnknownTranslationLanguageError,
 } from './errors.js';
 
@@ -96,6 +97,13 @@ class EntitiesService {
       template,
       icon,
     });
+  }
+
+  async validateTargetLanguage(targetLanguage: LanguageISO6391): Promise<void> {
+    const installed = (await this.deps.settingsDS.readLanguages()) ?? [];
+    if (!installed.some(({ key }) => key === targetLanguage)) {
+      throw new UnknownTargetLanguageError(targetLanguage);
+    }
   }
 
   /**

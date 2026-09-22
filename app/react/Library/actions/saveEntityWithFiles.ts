@@ -7,6 +7,8 @@ import * as uploadsActionTypes from '#app/Uploads/actions/actionTypes.js';
 
 import { constructFile, readFileAsBase64 } from '#shared/fileUploadUtils.js';
 import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 
 const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
   const [attachments, supportingFiles] = entity.attachments
@@ -51,6 +53,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       .post('/api/entities')
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Content-Language', getStore().get(localeAtom))
       .field('entity', JSON.stringify(entityToSend));
 
     if (dispatch) {
