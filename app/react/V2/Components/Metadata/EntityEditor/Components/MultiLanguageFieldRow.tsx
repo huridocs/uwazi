@@ -118,9 +118,7 @@ const MultiLanguageFieldRow = ({
               {showRetranslate ? (
                 <button
                   type="button"
-                  onClick={
-                    !source || disabled ? undefined : () => onTranslate(language)
-                  }
+                  onClick={!source || disabled ? undefined : () => onTranslate(language)}
                   aria-disabled={!source || disabled || undefined}
                   title={
                     source
