@@ -42,6 +42,16 @@ export class UnknownTranslationLanguageError extends ValidationError {
   }
 }
 
+export class UnknownTargetLanguageError extends ValidationError {
+  constructor(readonly language: string) {
+    super(`Language "${language}" is not installed.`, 'entity.language.unknown_language_error');
+  }
+
+  asAJV(): AJVObject {
+    return { message: this.message, keyword: 'unknownTargetLanguage' };
+  }
+}
+
 export class TargetLanguageInTranslationsError extends ValidationError {
   constructor(readonly language: string) {
     super(
