@@ -12,6 +12,7 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 
 type CreateSutProps = {
   body?: CreateEntityFromPDFRequest;
+  language?: string;
 };
 
 const createPDFFile = () =>
@@ -35,7 +36,7 @@ const createSut = (props?: CreateSutProps) => {
   const request = TestUtils.mockClass<Request>({
     inputFile: props?.body?.file,
     body: props?.body,
-    language: 'en',
+    language: props?.language ?? 'en',
     get: jest.fn().mockReturnValue('connect.sid=create-from-pdf-session'),
   });
 
@@ -75,12 +76,23 @@ describe('CreateEntityFromPDFController', () => {
     await sut.handleAsync();
 
     expect(CreateEntityFromPDFUseCaseFactory.default).toHaveBeenCalledWith({
+      targetLanguage: 'en',
       sessionId: 'create-from-pdf-session',
     });
     expect(useCaseExecuteSpy).toHaveBeenCalledWith({
       templateId: 'template-123',
       inputFile: file,
     });
+  });
+
+  it('should create the entity in the request language', async () => {
+    const { sut } = createSut({ body: { file: createPDFFile() }, language: 'es' });
+
+    await sut.handleAsync();
+
+    expect(CreateEntityFromPDFUseCaseFactory.default).toHaveBeenCalledWith(
+      expect.objectContaining({ targetLanguage: 'es' })
+    );
   });
 
   it('should return 201 with created entity on success', async () => {
