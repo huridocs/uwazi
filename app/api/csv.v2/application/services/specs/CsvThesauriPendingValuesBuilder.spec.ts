@@ -49,6 +49,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
+        id: 'row-id',
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
@@ -82,6 +83,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
+        id: 'row-id',
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
@@ -108,6 +110,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
+        id: 'row-id',
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
@@ -136,6 +139,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
+        id: 'row-id',
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
@@ -161,6 +165,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const template = buildTemplate('multiselect');
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
+        id: 'row-id',
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,

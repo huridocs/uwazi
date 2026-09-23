@@ -7,15 +7,34 @@ import {
 } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { JobsRouter } from '../infrastructure/JobsRouter.js';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
-import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
+import { NamespacedDispatcher } from '../infrastructure/NamespacedDispatcher.js';
+import { PostgresQueueAdapter } from '../infrastructure/PostgresQueueAdapter.js';
 import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
+import { RoundRobinPostgresQueueAdapter } from '../infrastructure/RoundRobinPostgresQueueAdapter.js';
 import { QueueAdapter } from '../infrastructure/QueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(getSharedConnection(), transactionManager);
+}
+
+export function DefaultPostgresQueueAdapter(transactionManager: PostgresTransactionManager) {
+  return new PostgresQueueAdapter({
+    workerKnex: PostgresDB.knex,
+    transactionManager,
+    logger: LoggerFactory.systemLogger(),
+  });
+}
+
+export function PostgresRoundRobinQueueAdapter() {
+  return new RoundRobinPostgresQueueAdapter({
+    workerKnex: PostgresDB.knex,
+    logger: LoggerFactory.systemLogger(),
+  });
 }
 
 export function RoundRobinQueueAdapter() {
@@ -42,7 +61,6 @@ export function TestingRoundRobinQueueAdapter() {
 export function DefaultDispatcher(
   tenant: string,
   transactionManager: TransactionManager,
-  queueOptions?: QueueOptions,
   queueAdapter?: QueueAdapter
 ): JobsDispatcher {
   return new JobsRouter(
@@ -50,8 +68,7 @@ export function DefaultDispatcher(
       new NamespacedDispatcher(
         tenant,
         queueName,
-        queueAdapter || DefaultQueueAdapter(transactionManager),
-        queueOptions
+        queueAdapter || DefaultQueueAdapter(transactionManager)
       )
   );
 }

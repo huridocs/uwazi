@@ -1,12 +1,11 @@
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
@@ -28,51 +27,43 @@ type FactoryOptions = {
   relationshipPendingValuesDS?: CsvImportRelationshipPendingValuesDataSource;
 };
 
+const csvPreflightDataSources = (options: FactoryOptions) => ({
+  csvImportsDS: options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault(),
+  rowsDS: options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(),
+  templatesDS: options.templatesDS ?? TemplatesDataSourceFactory.default(),
+  settingsDS: options.settingsDS ?? SettingsDataSourceFactory.default(),
+  thesauriDS: options.thesauriDS ?? ThesauriDataSourceFactory.default(),
+  thesauriValuesDS:
+    options.thesauriValuesDS ?? CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(),
+  relationshipPendingValuesDS:
+    options.relationshipPendingValuesDS ??
+    CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(),
+});
+
 class CsvPreflightJobFactory {
   static default() {
     return this.build().useCase;
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
-    const csvImportsDS =
-      options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS =
-      options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
-    const templatesDS =
-      options.templatesDS ?? TemplatesDataSourceFactory.default({ transactionManager });
-    const settingsDS =
-      options.settingsDS ?? SettingsDataSourceFactory.default({ transactionManager });
-    const thesauriDS =
-      options.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
-    const thesauriValuesDS =
-      options.thesauriValuesDS ??
-      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
-    const relationshipPendingValuesDS =
-      options.relationshipPendingValuesDS ??
-      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
+    const dataSources = csvPreflightDataSources(options);
+    const jobsDispatcher = options.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
     const useCase = new CsvPreflightJob({
-      csvImportsDS,
-      rowsDS,
-      templatesDS,
-      settingsDS,
-      thesauriDS,
-      thesauriValuesDS,
-      relationshipPendingValuesDS,
+      ...dataSources,
       jobsDispatcher,
       transactionManager,
+      idGenerator: IdGeneratorFactory.default(),
     });
 
     return {
       useCase,
       transactionManager,
-      csvImportsDS,
-      rowsDS,
-      thesauriValuesDS,
-      relationshipPendingValuesDS,
+      csvImportsDS: dataSources.csvImportsDS,
+      rowsDS: dataSources.rowsDS,
+      thesauriValuesDS: dataSources.thesauriValuesDS,
+      relationshipPendingValuesDS: dataSources.relationshipPendingValuesDS,
     };
   }
 }

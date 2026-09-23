@@ -11,6 +11,13 @@ import { CsvImportDomain } from '../../../domain/CsvImport.js';
 import { CsvImportRelationshipPendingValues } from '../../../domain/CsvImportRelationshipPendingValues.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '../../../infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import {
+  applyCsvJobBackendFlags,
+  clearCsvStores,
+  csvJobBackendConfigs,
+  itWithContext,
+} from '../../../specs/csvBackendTest.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -45,83 +52,81 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv-create-relationship-entities-job');
-  });
-
-  afterEach(async () => {
-    jest.clearAllMocks();
-    await testingEnvironment.setFixtures(fixtures);
-    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
-    await Promise.all(
-      [
-        'csv_imports',
-        'csv_import_relationships_pending_values',
-        'csv_import_relationships_values',
-        'entities',
-        'files',
-      ].map(async collectionName => {
-        const collection = testingEnvironment.db.getCollection(collectionName);
-        if (collection) {
-          await collection.deleteMany({});
-        }
-      })
-    );
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('creates relationship entities with all UI languages', async () => {
-    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
-      dispatch: jest.fn().mockResolvedValue(undefined),
-      dispatchMany: jest.fn().mockResolvedValue(undefined),
-    }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, relationshipPendingValuesDS, entitiesDS } =
-      testingEnvironment.runWithContext(() =>
-        CsvCreateRelationshipEntitiesJobFactory.build({ jobsDispatcher })
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+    beforeEach(async () => {
+      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      jest.clearAllMocks();
+      await testingEnvironment.setFixtures(fixtures);
+      await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
+      await Promise.all(
+        ['entities', 'files'].map(async collectionName => {
+          const collection = testingEnvironment.db.getCollection(collectionName);
+          if (collection) {
+            await collection.deleteMany({});
+          }
+        })
       );
-    const importId = fixturesFactory.idString('relationship-import');
-    createdImportIds.push(importId);
-    const user = fixtures.users[0];
-    if (!user._id) {
-      throw new Error('Test user id is missing');
-    }
-    const userId = user._id.toString();
-    const tenantName = tenants.current().name;
-
-    permissionsContext.setUserInContext(user);
-
-    const csvImport = CsvImportDomain.withStorage(
-      CsvImportDomain.create({
-        id: importId,
-        templateId: importTemplateId,
-        createdBy: userId,
-        file: { originalName: 'import.csv', mimeType: 'text/csv', size: 10 },
-      }),
-      `csv-imports/${importId}/original.csv`
-    );
-    await csvImportsDS.insert(csvImport);
-
-    await relationshipPendingValuesDS.replacePendingValues(importId, [
-      CsvImportRelationshipPendingValues.create({
-        importId,
-        templateId: relatedTemplateId,
-        titles: ['New Target Entity'],
-        createdAt: Date.now(),
-      }),
-    ]);
-
-    await useCase.execute({
-      importId,
-      tenantName,
-      userId,
-      callbacks: createCallbacks(),
+      await testingPG.clear(['entities', 'files']);
+      await clearCsvStores();
     });
 
-    const entities = await entitiesDS.getEntitiesByTemplateId(relatedTemplateId);
-    const created = await entities.all();
-    expect(created).toHaveLength(1);
-    expect(created[0].languages).toEqual(expect.arrayContaining(['en', 'es']));
+    itWithContext('creates relationship entities with all UI languages', async () => {
+      const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+        dispatch: jest.fn().mockResolvedValue(undefined),
+        dispatchMany: jest.fn().mockResolvedValue(undefined),
+      }) as jest.Mocked<JobsDispatcher>;
+      const { useCase, csvImportsDS, relationshipPendingValuesDS, entitiesDS } =
+        CsvCreateRelationshipEntitiesJobFactory.build({ jobsDispatcher });
+      const importId = fixturesFactory.idString('relationship-import');
+      createdImportIds.push(importId);
+      const [user] = fixtures.users;
+      if (!user._id) {
+        throw new Error('Test user id is missing');
+      }
+      const userId = user._id.toString();
+      const tenantName = tenants.current().name;
+
+      permissionsContext.setUserInContext(user);
+
+      const csvImport = CsvImportDomain.withStorage(
+        CsvImportDomain.create({
+          id: importId,
+          templateId: importTemplateId,
+          createdBy: userId,
+          file: { originalName: 'import.csv', mimeType: 'text/csv', size: 10 },
+        }),
+        `csv-imports/${importId}/original.csv`
+      );
+      await csvImportsDS.insert(csvImport);
+
+      await relationshipPendingValuesDS.replacePendingValues(importId, [
+        CsvImportRelationshipPendingValues.create({
+          id: fixturesFactory.idString('rel-pending-1'),
+          importId,
+          templateId: relatedTemplateId,
+          titles: ['New Target Entity'],
+          createdAt: Date.now(),
+        }),
+      ]);
+
+      await useCase.execute({
+        importId,
+        tenantName,
+        userId,
+        callbacks: createCallbacks(),
+      });
+
+      const entities = await entitiesDS.getEntitiesByTemplateId(relatedTemplateId);
+      const created = await entities.all();
+      expect(created).toHaveLength(1);
+      expect(created[0].languages).toEqual(expect.arrayContaining(['en', 'es']));
+    });
   });
 });

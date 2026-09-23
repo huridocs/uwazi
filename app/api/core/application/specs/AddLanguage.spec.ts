@@ -253,7 +253,7 @@ describe('AddLanguage use case', () => {
             eventEmitter: EventEmitterFactory.default(),
           }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
         });
-        await expectSettingsChangedJob();
+        await expectSettingsChangedJob({ postgresCore });
       });
 
       it('should emit a LanguageAddedEvent for each new language', async () => {

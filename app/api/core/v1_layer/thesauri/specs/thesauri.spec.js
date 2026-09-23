@@ -132,7 +132,7 @@ describe('thesauri', () => {
         const jobsAfter = await testingEnvironment.db.getAllFrom('jobs');
         const newJobs = jobsAfter.filter(
           j =>
-            j.name === 'DenormalizeThesaurusEntitiesHandler' &&
+            j.name === 'DenormalizeEntitiesHandler' &&
             !jobsBefore.find(b => String(b._id) === String(j._id))
         );
 

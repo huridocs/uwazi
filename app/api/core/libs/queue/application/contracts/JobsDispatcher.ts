@@ -2,6 +2,10 @@ import { Dispatchable } from './Dispatchable.js';
 
 export type DispatchOptions = {
   lockedUntil?: number;
+  /** Overrides the job class's @QueueOptions for this dispatch only. */
+  lockWindow?: number;
+  /** Overrides the job class's @QueueOptions for this dispatch only. */
+  maxRetries?: number;
 };
 
 export interface DispatchableClass<T extends Dispatchable> {

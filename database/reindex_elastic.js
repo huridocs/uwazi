@@ -14,7 +14,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
@@ -143,8 +143,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
       {
         factories: {
           ...transactionManagerFactories(),
-          jobsDispatcher: () =>
-            DefaultDispatcher(tenants.current().name, ExecutionContext.mongoTransactionManager),
+          jobsDispatcher: JobsDispatcherFactory.default,
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,

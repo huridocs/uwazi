@@ -1,4 +1,6 @@
 import { getAccessibleColorPair } from '#shared/utils/contrast.js';
+import type { ThemePresetId } from '#V2/theme/tokens.js';
+import { UWAZI_DESIGN_LIGHT } from '#V2/theme/uwaziDesignTokens.js';
 import {
   EMPHASIS_LABEL,
   EMPHASIS_SOLID_BG,
@@ -23,14 +25,20 @@ const getDerivedThemeVars = (chrome: ThemeRoles['chrome']): Record<string, strin
   [THEME_ACTIVE_FG]: chrome.appBarFg,
 });
 
-const getActionThemeVars = (roles: ThemeRoles): Record<string, string> => {
-  const emphasis = getAccessibleColorPair(roles.feedback.danger);
+const getActionThemeVars = (presetId: ThemePresetId, roles: ThemeRoles): Record<string, string> => {
   const sealLabel =
     'color-mix(in srgb, var(--color-theme-accent-emphasis) 55%, var(--color-theme-text-primary))';
-
+  if (presetId === 'legacy') {
+    const emphasis = getAccessibleColorPair(roles.feedback.danger);
+    return {
+      [EMPHASIS_SOLID_BG]: emphasis.background,
+      [EMPHASIS_SOLID_FG]: emphasis.foreground,
+      [EMPHASIS_LABEL]: sealLabel,
+    };
+  }
   return {
-    [EMPHASIS_SOLID_BG]: emphasis.background,
-    [EMPHASIS_SOLID_FG]: emphasis.foreground,
+    [EMPHASIS_SOLID_BG]: UWAZI_DESIGN_LIGHT.accentSealFill,
+    [EMPHASIS_SOLID_FG]: '#FFFFFF',
     [EMPHASIS_LABEL]: sealLabel,
   };
 };

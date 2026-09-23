@@ -15,7 +15,6 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
-import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import {
   ixTestAccess,
@@ -233,12 +232,8 @@ describe('suggestions', () => {
     Suggestions.registerEventListeners(applicationEventsBus);
 
     const currentListeners = EventEmitterFactory.registry.getListeners(
-      DenormalizeEntityUpdatedListener.eventName
+      ProcessRelationshipAfterEntityUpdatedListener.eventName
     );
-
-    if (!hasRegisteredListener(currentListeners, DenormalizeEntityUpdatedListener)) {
-      EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
-    }
 
     if (!hasRegisteredListener(currentListeners, ProcessRelationshipAfterEntityUpdatedListener)) {
       EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
@@ -992,11 +987,13 @@ describe('suggestions', () => {
           ]);
           expect(allFiles).toEqual(relationshipFiles);
 
-          // The job queue is in Mongo whatever the tenant's store.
-          const relationshipSyncJob = await db.mongodb?.collection('jobs').findOne({
-            name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
-            'params.after.sharedId': 'entityWithRelationships_sId',
-          });
+          const relationshipSyncJob = (
+            await testingEnvironment.jobs.getAll({ postgresCore: usePostgres })
+          ).find(
+            job =>
+              job.name === 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener' &&
+              job.params?.after?.sharedId === 'entityWithRelationships_sId'
+          );
 
           expect(relationshipSyncJob).toMatchObject({
             name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',

@@ -1,18 +1,37 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { CsvCreateRelationshipEntitiesJob } from '../../application/jobs/CsvCreateRelationshipEntitiesJob.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 type FactoryOptions = {
   transactionManager?: TransactionManager;
   jobsDispatcher?: JobsDispatcher;
+};
+
+const csvRelationshipDataSources = () => ({
+  csvImportsDS: CSVImportEntitiesFactories.CSVImportDSDefault(),
+  relationshipValuesDS: CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(),
+  relationshipPendingValuesDS:
+    CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(),
+});
+
+const csvRelationshipCore = (options: FactoryOptions) => {
+  const entitiesDS = EntitiesDataSourceFactory.default();
+  return {
+    entitiesDS,
+    jobsDispatcher: options.jobsDispatcher ?? ExecutionContext.jobsDispatcher,
+    entitiesService: EntitiesServiceFactory.default({
+      settingsDS: SettingsDataSourceFactory.cached(),
+      templatesDS: TemplatesDataSourceFactory.cached(),
+      entitiesDS,
+    }),
+  };
 };
 
 class CsvCreateRelationshipEntitiesJobFactory {
@@ -20,43 +39,23 @@ class CsvCreateRelationshipEntitiesJobFactory {
     return this.build().useCase;
   }
 
-  // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const relationshipValuesDS =
-      CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
-    const relationshipPendingValuesDS =
-      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const jobsDispatcher =
-      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
-    const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
-    const templatesDS = TemplatesDataSourceFactory.cached({ transactionManager });
-    const entitiesService = EntitiesServiceFactory.default({
-      transactionManager,
-      settingsDS,
-      templatesDS,
-      entitiesDS,
-    });
+    const transactionManager = options.transactionManager ?? ExecutionContext.transactionManager;
+    const dataSources = csvRelationshipDataSources();
+    const core = csvRelationshipCore(options);
 
     const useCase = new CsvCreateRelationshipEntitiesJob({
-      csvImportsDS,
-      relationshipValuesDS,
-      relationshipPendingValuesDS,
-      entitiesDS,
-      entitiesService,
+      ...dataSources,
+      ...core,
       transactionManager,
-      jobsDispatcher,
+      idGenerator: IdGeneratorFactory.default(),
     });
 
     return {
       useCase,
       transactionManager,
-      csvImportsDS,
-      relationshipValuesDS,
-      relationshipPendingValuesDS,
-      entitiesDS,
+      ...dataSources,
+      entitiesDS: core.entitiesDS,
     };
   }
 }

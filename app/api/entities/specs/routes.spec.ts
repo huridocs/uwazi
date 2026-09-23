@@ -207,6 +207,39 @@ describe('entities routes', () => {
 
         expect(response.body.language).toBe('es');
       });
+
+      it.each([
+        ['JSON', { title: 'Not installed', language: 'xx' }, false],
+        ['multipart', { title: 'Not installed', language: 'xx' }, true],
+        [
+          'JSON with translations',
+          {
+            title: 'Not installed',
+            language: 'xx',
+            template: templateId.toString(),
+            translations: { es: { title: [{ value: 'No instalado' }] } },
+          },
+          false,
+        ],
+      ])(
+        'should respond 422 when the body language is not installed (%s)',
+        async (_case, body, multipart) => {
+          const post = request(app).post('/api/entities');
+          const response: SuperTestResponse = multipart
+            ? await post.field('entity', JSON.stringify(body))
+            : await post.send(body);
+
+          expect(response).toHaveStatus(422);
+          expect(response.body.validations).toEqual([
+            expect.objectContaining({ instancePath: '/language' }),
+          ]);
+          expect(
+            (await testingEnvironment.db.getAllFrom('entities')).filter(
+              entity => entity.title === 'Not installed'
+            )
+          ).toEqual([]);
+        }
+      );
     });
 
     describe('V2 entity creation with files (multipart with documents and attachments)', () => {
@@ -404,6 +437,28 @@ describe('entities routes', () => {
         expect(response.body).toMatchObject({
           sharedId: 'shared',
         });
+      });
+
+      it('should respond with the updated language version, not the content-language one', async () => {
+        new UserInContextMockFactory().mock(user);
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', language: 'es', template: templateId.toString() })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            title: 'Pingüino',
+            language: 'es',
+            template: templateId.toString(),
+          })
+          .expect(200);
+
+        expect(response.body).toMatchObject({ language: 'es', title: 'Pingüino' });
       });
 
       it('should preserve AI translated text when user edit has pending prefix (AT conflict)', async () => {
@@ -646,6 +701,28 @@ describe('entities routes', () => {
           en: 'Penguin',
           pt: 'Pinguim',
         });
+      });
+
+      it('should respond with the updated language version, not the content-language one', async () => {
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', template: templateId.toString() })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            language: 'es',
+            title: 'Pingüino',
+            template: templateId.toString(),
+            translations: { en: translated('Penguin', 'text'), pt: translated('Pinguim', 'texto') },
+          })
+          .expect(200);
+
+        expect(response.body).toMatchObject({ language: 'es', title: 'Pingüino' });
       });
 
       it('should keep AI translations that the form still sends as pending', async () => {

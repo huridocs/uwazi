@@ -175,10 +175,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  // Active locale, without Thesaurus: template/RT/UI labels must hydrate; thesauri stay out of the HTML blob.
+  // Active locale, all contexts: thesaurus labels are translated client-side (entity form, template editor).
   const translations = await TranslationsQueryServiceFactory.default().getLegacy({
     locale: locale as LanguageISO6391,
-    excludeContextTypes: ['Thesaurus'],
   });
 
   const [
