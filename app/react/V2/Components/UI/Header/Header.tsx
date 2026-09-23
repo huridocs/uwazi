@@ -10,7 +10,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { SiteName } from '#app/App/SiteName.js';
-import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+import { useCompactBar } from './useCompactBar.js';
 import { buildLibraryUrl } from './buildLibraryUrl.js';
 import { settingsAtom, userAtom } from '../../../atoms/index.js';
 import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
@@ -61,7 +61,7 @@ const buildMobileActions = ({
 const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
   const authenticatedUser = Boolean(useAtomValue(userAtom)?._id);
   const settings = useAtomValue(settingsAtom);
-  const isMobile = useIsMobile();
+  const { barRef, compact: isMobile } = useCompactBar();
   const location = useLocation();
   const libraryUrl = useMemo(
     () =>
@@ -91,7 +91,10 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       >
         <Translate>Skip to main content</Translate>
       </a>
-      <div className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3">
+      <div
+        ref={barRef}
+        className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3"
+      >
         <div data-testid="header-leading" className="flex min-w-0 flex-1 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <div className="min-w-0 overflow-hidden">

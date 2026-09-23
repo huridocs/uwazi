@@ -9,6 +9,7 @@ import { Header } from '../Header.js';
 
 jest.mock('#app/V2/CustomHooks/useIsMobile.js', () => ({
   useIsMobile: () => true,
+  MOBILE_VIEW_MAX_WIDTH: 768,
 }));
 
 jest.mock('#app/App/SiteName.js', () => ({

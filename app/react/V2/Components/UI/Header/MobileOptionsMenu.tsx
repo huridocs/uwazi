@@ -33,23 +33,24 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
       align="right"
       dropdownClassName="w-64 max-w-[calc(100vw-2rem)]"
     >
-      <div className="flex flex-col gap-1 p-2">
-        {actions.map(action => (
-          <I18NLink
-            key={action.id}
-            to={action.to}
-            className="header-bar-panel-item block rounded-md px-3 py-2 text-sm transition-colors"
-            onClick={() => {
-              action.onClick?.();
-              close();
-            }}
-            tabIndex={isOpen ? 0 : -1}
-          >
-            <Translate>{action.label}</Translate>
-          </I18NLink>
-        ))}
-        {children}
-      </div>
+      {isOpen ? (
+        <div className="flex flex-col gap-1 p-2">
+          {actions.map(action => (
+            <I18NLink
+              key={action.id}
+              to={action.to}
+              className="header-bar-panel-item block rounded-md px-3 py-2 text-sm transition-colors"
+              onClick={() => {
+                action.onClick?.();
+                close();
+              }}
+            >
+              <Translate>{action.label}</Translate>
+            </I18NLink>
+          ))}
+          {children}
+        </div>
+      ) : null}
     </BaseDropdown>
   );
 };
