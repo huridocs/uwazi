@@ -28,4 +28,30 @@ describe('CliConfig', () => {
       );
     });
   });
+
+  describe('requiredFor()', () => {
+    const database = [
+      'MONGO_URI',
+      'POSTGRES_HOST',
+      'POSTGRES_PORT',
+      'POSTGRES_DB',
+      'POSTGRES_APP_USER',
+      'POSTGRES_APP_PASSWORD',
+    ];
+
+    it('should require nothing outside production, where local defaults apply', () => {
+      expect(CliConfig.requiredFor({ redis: true }, { NODE_ENV: 'development' })).toEqual([]);
+    });
+
+    it('should require the database variables in production', () => {
+      expect(CliConfig.requiredFor({ redis: false }, { NODE_ENV: 'production' })).toEqual(database);
+    });
+
+    it('should also require REDIS_HOST in production when the command needs Redis', () => {
+      expect(CliConfig.requiredFor({ redis: true }, { NODE_ENV: 'production' })).toEqual([
+        ...database,
+        'REDIS_HOST',
+      ]);
+    });
+  });
 });

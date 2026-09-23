@@ -7,6 +7,7 @@ import { AJVObject, ValidationError } from '#api/core/domain/error/ValidationErr
 import { ErrorPayloadSchema } from '../../contracts/ErrorPayload.js';
 import { ConfigMissing } from '../../runtime/ConfigMissing.js';
 import { ErrorMapper } from '../ErrorMapper.js';
+import { UsageError } from '../UsageError.js';
 import { ExitCode } from '../ExitCode.js';
 
 class RuleBroken extends DomainError {
@@ -55,6 +56,7 @@ describe('ErrorMapper', () => {
       [new Missing(), ExitCode.NotFound],
       [new Duplicated(), ExitCode.Conflict],
       [new RuleBroken(), ExitCode.RuleViolation],
+      [new UsageError('Unknown argument: foo'), ExitCode.Validation],
       [new ConfigMissing(['MONGO_URI']), ExitCode.Unexpected],
       [new Error('boom'), ExitCode.Unexpected],
       ['not even an error', ExitCode.Unexpected],
@@ -112,6 +114,14 @@ describe('ErrorMapper', () => {
         code,
         category,
         message: error.message,
+      });
+    });
+
+    it('should report a usage error as a validation failure', () => {
+      expect(ErrorMapper.toPayload(new UsageError('Unknown argument: foo'), {}).error).toEqual({
+        code: 'usage.invalid',
+        category: 'validation',
+        message: 'Unknown argument: foo',
       });
     });
 

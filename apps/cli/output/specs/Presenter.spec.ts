@@ -1,15 +1,6 @@
-import { Writable } from 'stream';
+import { MemoryStream } from '../../testing/MemoryStream.js';
 import { ErrorPayload } from '../../contracts/ErrorPayload.js';
 import { Presenter } from '../Presenter.js';
-
-class MemoryStream extends Writable {
-  text = '';
-
-  _write(chunk: Buffer, _encoding: string, callback: () => void) {
-    this.text += chunk.toString();
-    callback();
-  }
-}
 
 const streams = () => ({ stdout: new MemoryStream(), stderr: new MemoryStream() });
 

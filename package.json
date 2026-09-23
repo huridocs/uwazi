@@ -18,6 +18,9 @@
   "license": "MIT",
   "author": "huridocs.org",
   "main": "server.js",
+  "bin": {
+    "uwazi": "apps/cli/bin/uwazi.js"
+  },
   "imports": {
     "#api": "./app/api/index.js",
     "#api/*": "./app/api/*",
@@ -75,6 +78,7 @@
     "provision-postgres": "node --no-experimental-fetch scripts/bash.js ./database/provision_postgres.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.cjs migration",
     "migrate": "node ./scripts/runner.js ./scripts/migrate.js",
+    "uwazi": "node ./scripts/runner.js ./apps/cli/bin/uwazi.js",
     "migrate-and-reindex": "node ./scripts/runner.js ./scripts/migrate_and_reindex.js",
     "test-debug": "node --no-experimental-fetch --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node scripts/test.mjs",
