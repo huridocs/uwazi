@@ -331,6 +331,7 @@ describe('LibraryView preview pane', () => {
               [templatesAtom, templates],
               [translationsAtom, translations],
               [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
+              [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
             <LibraryView {...viewProps} selectedId={selectedId} />
@@ -350,5 +351,20 @@ describe('LibraryView preview pane', () => {
     expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
     expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+  });
+
+  it('opens an empty entity form in the right panel', async () => {
+    renderView();
+    fireEvent.click(await screen.findByRole('button', { name: 'Create entity' }));
+    expect(await screen.findByTestId('library-create-entity')).toBeInTheDocument();
+    expect(screen.getByText('New entity')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Title/)).toHaveValue('');
+    expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+  });
+
+  it('opens the upload PDF dialog', async () => {
+    renderView();
+    fireEvent.click(await screen.findByRole('button', { name: 'Upload PDF' }));
+    expect(await screen.findByRole('dialog', { name: 'Upload PDF' })).toBeInTheDocument();
   });
 });

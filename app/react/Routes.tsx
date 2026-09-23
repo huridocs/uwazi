@@ -226,7 +226,7 @@ const getRoutesLayout = (
     {isLibraryV2Enabled(settings?.features) ? (
       <>
         <Route
-          path="library"
+          path="library/*"
           element={<Library />}
           loader={createLibraryLoader(services)(headers)}
           handle={{ library: true }}
@@ -269,7 +269,7 @@ const getRoutesLayout = (
           />
         </Route>
         <Route
-          path="libraryv2"
+          path="libraryv2/*"
           element={<Library />}
           loader={createLibraryLoader(services)(headers)}
           handle={{ library: true }}

@@ -31,6 +31,7 @@ const InteractiveCard = ({ selected }: { selected: boolean }) => {
           { id: 'year', label: 'Year', value: '2021' },
           { id: 'language', label: 'Language', value: 'EN' },
         ]}
+        thumbnailSrc="/api/files/cover.png"
         thumbnailKind="document"
         selected={isSelected}
         onSelect={() => setSelected(current => !current)}
@@ -62,13 +63,16 @@ const CardsSelected: Story = {
   args: { selected: true },
 };
 
-const WithoutThumbnail: Story = {
+const QuietMarkFallback: Story = {
   render: () => (
     <div className="tw-content max-w-sm p-4">
       <EntityCard
         title="Person without files"
         templateId="template2"
-        fields={[{ id: 'country', label: 'Country', value: 'France' }]}
+        fields={[
+          { id: 'country', label: 'Country', value: 'France' },
+          { id: 'recording', label: 'Recording', value: 'hearing.mp4', interactive: true },
+        ]}
         viewHref="/entityv2/person-1"
       />
     </div>
@@ -76,4 +80,4 @@ const WithoutThumbnail: Story = {
 };
 
 export default meta;
-export { Cards, CardsSelected, WithoutThumbnail };
+export { Cards, CardsSelected, QuietMarkFallback };

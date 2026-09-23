@@ -16,7 +16,7 @@ const getFileNameAndExtension = (filename?: string) => {
 };
 
 const getMimetypeFromUrl = (url: string): string => {
-  const extension = url.split('.').pop()?.toLowerCase();
+  const extension = url.split(/[#?]/)[0].split('.').pop()?.toLowerCase();
   const mimeTypes: Record<string, string> = {
     mp4: 'video/mp4',
     avi: 'video/avi',
@@ -25,9 +25,15 @@ const getMimetypeFromUrl = (url: string): string => {
     flv: 'video/x-flv',
     webm: 'video/webm',
     mp3: 'audio/mpeg',
+    mpga: 'audio/mpeg',
+    m4a: 'audio/mp4',
     wav: 'audio/wav',
     ogg: 'audio/ogg',
+    oga: 'audio/ogg',
     aac: 'audio/aac',
+    flac: 'audio/flac',
+    opus: 'audio/ogg',
+    weba: 'audio/webm',
     jpg: 'image/jpeg',
     jpeg: 'image/jpeg',
     png: 'image/png',
@@ -38,7 +44,10 @@ const getMimetypeFromUrl = (url: string): string => {
     docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     txt: 'text/plain',
   };
-  return mimeTypes[extension || ''] || 'application/octet-stream';
+  if (!extension || extension.includes('/')) {
+    return 'application/octet-stream';
+  }
+  return mimeTypes[extension] || 'application/octet-stream';
 };
 
 const validEmailFormat = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

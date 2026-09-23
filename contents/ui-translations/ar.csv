@@ -193,6 +193,7 @@ Chart type uses a custom view,يستخدم نوع المخطط طريقة عرض
 Check to make this instance public (non-logged in users can see public documents and entities),حدد هذا الخيار لجعل هذه الحالة عامة (يمكن للمستخدمين غير المسجلين الاطلاع على المستندات والكيانات العامة)
 Checking which images fit the requirements,التحقق من الصور التي تتوافق مع المتطلبات...
 Choose,اختر
+Choose PDF files,Choose PDF files
 Choose relation type,اختر نوع العلاقة
 Choose which data to use for training,اختر البيانات التي تريد استخدامها للتدريب
 Chrome header,الشريط العلوي
@@ -586,7 +587,6 @@ ID:,رقم التعريف:
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Image doesn't match the required size.,الصورة لا تتوافق مع الحجم المطلوب.
 Import,استيراد
-Import / Export CSV,استيراد / تصدير ملفات CSV
 Import asset,استيراد الأصول
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import failed. Review details below.,فشل الاستيراد. راجع التفاصيل أدناه.
@@ -897,6 +897,7 @@ Open the two-factor Authenticator app on your device,افتح تطبيق الم�
 Options,خيارات
 or,أو
 or drag and drop here,أو اسحب وأسقط هنا
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,أو أفلت ملفاتك هنا
 Or paste a URL,أو الصق عنوان URL
 Order,ترتيب
@@ -1357,6 +1358,7 @@ This table of contents was automatically created by the system.,تم إنشاء 
 this template,هذا النموذج
 This template is in use by existing entities and cannot be deleted.,هذا القالب قيد الاستخدام من قبل كيانات قائمة ولا يمكن حذفه.
 Thumbnail,صورة مصغرة
+Thumbnail frame,Thumbnail frame
 Time,زمن
 Time (UTC),الوقت (UTC)
 Timeline,الجدول الزمني
@@ -1431,6 +1433,7 @@ Updated translations,تم تحديث الترجمات
 Updated user,تم تحديث المستخدم
 Updating template properties across,تحديث خصائص القوالب في جميع أنحاء
 Updating…,جاري التحديث…
+Upload,Upload
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب
 Upload image,تحميل صورة
@@ -1477,7 +1480,7 @@ Validating file structure and headers.,التحقق من صحة بنية الم�
 Value,قيمة
 Value cannot be transformed to the correct type,لا يمكن تحويل القيمة إلى النوع الصحيح
 values,القيم
-"values are staged, not saved","القيم قيد التجهيز، لم تُحفظ بعد"
+"values are staged, not saved",القيم قيد التجهيز، لم تُحفظ بعد
 Verify,تحقق
 Verifying...,تحقق..
 via,عبر

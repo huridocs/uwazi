@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import {
@@ -14,8 +14,19 @@ import {
 } from '#V2/atoms/index.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
-import type { Template } from '#app/apiResponseTypes.js';
+import type { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { LibraryFilters } from '../LibraryFilters.js';
+
+const typeGroupSettings: ClientSettings = {
+  filters: [
+    { id: 'template-medida', name: 'Medida Provisional' },
+    {
+      id: 'group-docs',
+      name: 'Documentos',
+      items: [{ id: 'template1', name: 'Documents' }],
+    },
+  ],
+};
 
 const filterTemplates = [
   {
@@ -97,6 +108,7 @@ const renderFilters = ({
   filterState = { type: ['template1'] },
   andFilters = [],
   aggs = aggregations,
+  settings = {},
 }: {
   onChange?: jest.Mock;
   onAndFiltersChange?: jest.Mock;
@@ -104,6 +116,7 @@ const renderFilters = ({
   filterState?: Record<string, string[]>;
   andFilters?: string[];
   aggs?: LibraryAggregations;
+  settings?: ClientSettings;
 } = {}) =>
   render(
     <TestAtomStoreProvider
@@ -111,7 +124,7 @@ const renderFilters = ({
         [localeAtom, 'en'],
         [templatesAtom, filterTemplates],
         [translationsAtom, translations],
-        [settingsAtom, {}],
+        [settingsAtom, settings],
         [userAtom, { _id: 'admin1', role: 'admin', username: 'admin' }],
       ]}
     >
@@ -126,23 +139,51 @@ const renderFilters = ({
     </TestAtomStoreProvider>
   );
 
-describe('LibraryFilters', () => {
-  it('collapses and expands facet cards', async () => {
-    const user = userEvent.setup();
-    renderFilters();
+const expectVisible = (labels: string[]) => {
+  labels.forEach(label => expect(screen.getByText(label)).toBeInTheDocument());
+};
 
-    expect(screen.getByText('Restricted')).toBeInTheDocument();
-    expect(screen.getByText('Documents')).toBeInTheDocument();
+const expectHidden = (labels: string[]) => {
+  labels.forEach(label => expect(screen.queryByText(label)).not.toBeInTheDocument());
+};
+
+describe('LibraryFilters', () => {
+  it('collapses and expands nested groups without hiding filter cards', async () => {
+    const user = userEvent.setup();
+    renderFilters({ settings: typeGroupSettings });
+
+    expectVisible(['Restricted', 'Documentos', 'Documents', 'Europe', 'numero']);
+    expectHidden(['Spain', '1.1']);
 
     await user.click(screen.getByRole('button', { name: 'Collapse all' }));
-    expect(screen.queryByText('Restricted')).not.toBeInTheDocument();
-    expect(screen.queryByText('Documents')).not.toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Type')).toBeInTheDocument();
+    expectVisible([
+      'Restricted',
+      'Status',
+      'Type',
+      'Country',
+      'Causa',
+      'Descriptores',
+      'Documentos',
+      'Europe',
+      'numero',
+    ]);
+    expectHidden(['Documents', 'Spain', '1.1']);
 
     await user.click(screen.getByRole('button', { name: 'Expand all' }));
-    expect(screen.getByText('Restricted')).toBeInTheDocument();
-    expect(screen.getByText('Documents')).toBeInTheDocument();
+    expectVisible(['Restricted', 'Documents', 'Spain', '1.1']);
+  });
+
+  it('lets a group chevron override expand/collapse all', async () => {
+    const user = userEvent.setup();
+    renderFilters({ settings: typeGroupSettings });
+
+    await user.click(screen.getByRole('button', { name: 'Expand all' }));
+    expectVisible(['Documents', 'Spain', '1.1']);
+
+    const europeRow = screen.getByText('Europe').closest('div');
+    await user.click(within(europeRow!).getByRole('button', { name: 'Collapse' }));
+    expectVisible(['Documents', '1.1']);
+    expectHidden(['Spain']);
   });
 
   it('lists applied filters in the active filters sheet', async () => {
