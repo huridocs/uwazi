@@ -18,9 +18,6 @@
   "license": "MIT",
   "author": "huridocs.org",
   "main": "server.js",
-  "bin": {
-    "uwazi": "apps/cli/bin/uwazi.js"
-  },
   "imports": {
     "#api": "./app/api/index.js",
     "#api/*": "./app/api/*",
