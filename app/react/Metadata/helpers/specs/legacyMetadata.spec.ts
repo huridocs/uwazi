@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /**
  * @jest-environment jsdom
  */
