@@ -1,15 +1,9 @@
 import React, { useMemo } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  BookOpenIcon,
-  Cog6ToothIcon,
-  KeyIcon,
-  MoonIcon,
-  SunIcon,
-} from '@heroicons/react/24/outline';
+import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { actions } from '#app/BasicReducer/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -18,12 +12,14 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { buildLibraryUrl } from './buildLibraryUrl.js';
-import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
+import { settingsAtom, userAtom } from '../../../atoms/index.js';
 import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
 import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.js';
+import { MobileOptionsMenu } from './MobileOptionsMenu.js';
+import { ThemeToggle } from './ThemeToggle.js';
 
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
@@ -63,7 +59,6 @@ const buildMobileActions = ({
 };
 
 const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
-  const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const authenticatedUser = Boolean(useAtomValue(userAtom)?._id);
   const settings = useAtomValue(settingsAtom);
   const isMobile = useIsMobile();
@@ -98,7 +93,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       </a>
       <div className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3">
         <div data-testid="header-leading" className="flex min-w-0 flex-1 items-center gap-3">
-          {isMobile ? <MobileMenuDropdown links={headerLinks} actions={mobileActions} /> : null}
+          {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <div className="min-w-0 overflow-hidden">
             <SiteName
               className="header-bar-brand min-w-0 px-0 py-0 text-base font-semibold"
@@ -110,12 +105,22 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         </div>
         <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />
-          <LanguageDropdown />
-          <div
-            className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
-            aria-hidden="true"
-          />
-          <AskBertButton />
+          {isMobile ? (
+            <MobileOptionsMenu actions={mobileActions}>
+              <LanguageDropdown />
+              <AskBertButton compact={false} />
+              <ThemeToggle labeled />
+            </MobileOptionsMenu>
+          ) : (
+            <>
+              <LanguageDropdown />
+              <div
+                className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
+                aria-hidden="true"
+              />
+              <AskBertButton />
+            </>
+          )}
           {!isMobile && shouldShowLibrary && (
             <I18NLink
               to={libraryUrl}
@@ -148,21 +153,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
               <Translate>Sign in</Translate>
             </I18NLink>
           )}
-          {settings.themeCustomization ? (
-            <button
-              type="button"
-              className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
-              onClick={() => setThemeMode(mode => (mode === 'light' ? 'dark' : 'light'))}
-              aria-label={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
-              title={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
-            >
-              {themeMode === 'light' ? (
-                <MoonIcon className="h-4 w-4" />
-              ) : (
-                <SunIcon className="h-4 w-4" />
-              )}
-            </button>
-          ) : null}
+          {!isMobile ? <ThemeToggle /> : null}
         </div>
       </div>
     </header>

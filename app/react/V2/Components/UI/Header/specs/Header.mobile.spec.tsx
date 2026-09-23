@@ -22,11 +22,11 @@ jest.mock('../MenuLinks', () => ({
 }));
 
 jest.mock('../LanguageDropdown', () => ({
-  LanguageDropdown: () => null,
+  LanguageDropdown: () => <button type="button">EN</button>,
 }));
 
 jest.mock('#V2/Components/AIAssistant/AskBertButton', () => ({
-  AskBertButton: () => null,
+  AskBertButton: () => <button type="button">Ask Bert</button>,
 }));
 
 jest.mock('../../Notifications/RequestStatus', () => ({
@@ -35,7 +35,22 @@ jest.mock('../../Notifications/RequestStatus', () => ({
 
 jest.mock('../MobileMenuDropdown', () => ({
   MobileMenuDropdown: ({ actions }: { actions?: { label: string }[] }) => (
-    <div data-testid="mobile-menu">{actions?.map(action => action.label).join(',')}</div>
+    <div data-testid="mobile-nav">{actions?.map(action => action.label).join(',')}</div>
+  ),
+}));
+
+jest.mock('../MobileOptionsMenu', () => ({
+  MobileOptionsMenu: ({
+    actions,
+    children,
+  }: {
+    actions?: { label: string }[];
+    children?: React.ReactNode;
+  }) => (
+    <div data-testid="mobile-options">
+      {actions?.map(action => action.label).join(',')}
+      {children}
+    </div>
   ),
 }));
 
@@ -49,18 +64,39 @@ const renderHeader = () =>
     'MemoryRouter'
   );
 
-describe('Header mobile', () => {
-  it('keeps Library and Sign in in the menu and lets the brand shrink', () => {
-    renderHeader();
+const mobileHeaderState = () => {
+  const options = screen.getByTestId('mobile-options');
+  const brand = screen.getByTestId('header-brand');
+  const optionsText = options.textContent ?? '';
+  const brandClass = brand.className;
+  return {
+    navHasLibrary: (screen.getByTestId('mobile-nav').textContent ?? '').includes('Library'),
+    hasLibrary: optionsText.includes('Library'),
+    hasSignIn: optionsText.includes('Sign in'),
+    hasSettings: optionsText.includes('Settings'),
+    languageInOptions: options.contains(screen.getByRole('button', { name: 'EN' })),
+    askBertInOptions: options.contains(screen.getByRole('button', { name: 'Ask Bert' })),
+    libraryLink: screen.queryByRole('link', { name: 'Library' }) !== null,
+    signInLink: screen.queryByRole('link', { name: 'Sign in' }) !== null,
+    brandShrinks: brandClass.includes('min-w-0') && !brandClass.includes('shrink-0'),
+    brandClips: (brand.parentElement?.className ?? '').includes('overflow-hidden'),
+  };
+};
 
-    expect(screen.getByTestId('mobile-menu')).toHaveTextContent('Library,Sign in');
-    expect(screen.getByTestId('mobile-menu')).not.toHaveTextContent('Settings');
-    expect(screen.queryByRole('link', { name: 'Library' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
-    expect(screen.getByTestId('header-brand').className).toContain('min-w-0');
-    expect(screen.getByTestId('header-brand').className).not.toContain('shrink-0');
-    expect(screen.getByTestId('header-brand').parentElement?.className).toContain(
-      'overflow-hidden'
-    );
+describe('Header mobile', () => {
+  it('puts header options in a trailing menu and lets the brand shrink', () => {
+    renderHeader();
+    expect(mobileHeaderState()).toEqual({
+      navHasLibrary: false,
+      hasLibrary: true,
+      hasSignIn: true,
+      hasSettings: false,
+      languageInOptions: true,
+      askBertInOptions: true,
+      libraryLink: false,
+      signInLink: false,
+      brandShrinks: true,
+      brandClips: true,
+    });
   });
 });
