@@ -43,6 +43,27 @@ describe('Search routes', () => {
       expect(sharedIds(bareArray)).toEqual(sharedIds(wellFormed));
       expect(sharedIds(bareScalar)).toEqual(sharedIds(wellFormed));
     });
+
+    it('does not 400 when a text filter is sent as empty values:[""]', async () => {
+      const res = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ field1: { values: [''] } }) });
+
+      expect(res.status).toBe(200);
+    });
+
+    it('accepts a text filter wrapped as { values: [term] }', async () => {
+      const asString = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ field1: 'joker' }) });
+      const asValues = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ field1: { values: ['joker'] } }) });
+
+      expect(asString.status).toBe(200);
+      expect(asValues.status).toBe(200);
+      expect(sharedIds(asValues)).toEqual(sharedIds(asString));
+    });
   });
 
   describe('GET /search/lookup', () => {

@@ -194,6 +194,7 @@ Chart type uses a custom view,У цьому типі діаграми викор
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
 Checking which images fit the requirements,"Перевірка, які зображення відповідають вимогам..."
 Choose,Виберіть
+Choose PDF files,Choose PDF files
 Choose relation type,Виберіть тип зв’язку
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
 Chrome header,Заголовок Chrome
@@ -587,7 +588,6 @@ ID:,ПОСВІДЧЕННЯ ОСОБИ:
 "If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
 Image doesn't match the required size.,Зображення не відповідає необхідному розміру.
 Import,Імпортувати
-Import / Export CSV,Імпорт / Експорт CSV-файлів
 Import asset,Імпортний актив
 Import CSV,Імпортувати CSV
 Import failed. Review details below.,Імпорт не вдався. Ознайомтеся з деталями нижче.
@@ -898,6 +898,7 @@ Open the two-factor Authenticator app on your device,Відкрийте заст
 Options,Параметри
 or,або
 or drag and drop here,або перетягніть сюди
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,або опустіть свої файли сюди.
 Or paste a URL,Або вставте URL-адресу
 Order,Порядок
@@ -1358,6 +1359,7 @@ This table of contents was automatically created by the system.,Цей зміс�
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
 Thumbnail,Ескіз
+Thumbnail frame,Thumbnail frame
 Time,Час
 Time (UTC),Час (UTC)
 Timeline,Часова шкала
@@ -1432,6 +1434,7 @@ Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
 Updating…,Оновлення…
+Upload,Upload
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера
 Upload image,Завантажити зображення

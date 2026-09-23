@@ -72,6 +72,25 @@ function normalizeSelectFilterValue(value) {
   };
 }
 
+function textFilterValue(value) {
+  let next = value;
+  if (next && typeof next === 'object' && Array.isArray(next.values)) {
+    next = next.values.find(item => typeof item === 'string' && item.trim()) || '';
+  }
+  if (typeof next === 'string') {
+    next = next.toLowerCase().trim();
+  }
+  return next || undefined;
+}
+
+function selectFilterValue(value) {
+  const normalized = normalizeSelectFilterValue(value);
+  normalized.values = (normalized.values || []).filter(
+    item => typeof item === 'string' && item.trim()
+  );
+  return normalized.values.length ? normalized : undefined;
+}
+
 function processFilters(filters, properties, dictionaries) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
     const suggested = filterName.startsWith('__');
@@ -98,8 +117,11 @@ function processFilters(filters, properties, dictionaries) {
       value.to = date.descriptionToTimestamp(value.to);
     }
 
-    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
-      value = value.toLowerCase();
+    if (['text', 'markdown', 'generatedid'].includes(type)) {
+      value = textFilterValue(value);
+      if (!value) {
+        return res;
+      }
     }
 
     if (['date', 'multidate', 'numeric'].includes(type)) {
@@ -108,7 +130,10 @@ function processFilters(filters, properties, dictionaries) {
 
     if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
-      value = normalizeSelectFilterValue(value);
+      value = selectFilterValue(value);
+      if (!value) {
+        return res;
+      }
       value.values = processParentThesauri(property, value.values, dictionaries, properties);
     }
 
