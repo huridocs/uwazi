@@ -5,7 +5,7 @@ import { config } from '#api/config.js';
 import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
 
-import type { Tenant } from './tenantContext.js';
+import type { Tenant } from './tenant.js';
 
 const schemaValidator = {
   $jsonSchema: {
