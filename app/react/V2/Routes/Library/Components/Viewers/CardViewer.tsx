@@ -8,7 +8,7 @@ import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js
 import type { Entity } from '#V2/api/entities/types.js';
 import { EntityCard } from '../EntityCard.js';
 import { metadataFieldsForCard, thumbnailFromEntity } from '../cardModel.js';
-import { DEFAULT_THUMB_FIT, DEFAULT_THUMB_FRAME } from '../libraryCardDisplay.js';
+import { DEFAULT_THUMB_FRAME } from '../libraryCardDisplay.js';
 import { LoadMore } from '../LoadMore.js';
 import type { LibraryViewerProps } from './types.js';
 
@@ -24,7 +24,6 @@ const CardViewer = ({
   showThumbnail,
   showMetadata,
   onFocusProperty,
-  thumbFit = DEFAULT_THUMB_FIT,
   thumbFrame = DEFAULT_THUMB_FRAME,
 }: CardViewerProps) => {
   const templates = useAtomValue(templatesAtom);
@@ -65,12 +64,12 @@ const CardViewer = ({
               title={entity.title}
               templateId={entity.template}
               fields={metadataFieldsForCard(cardEntity, template, {
-                excludeProperty: thumbnail.propertyName,
+                excludeProperty: showThumbnail ? thumbnail.propertyName : undefined,
                 context: displayContext,
               })}
               thumbnailSrc={thumbnail.src}
               thumbnailKind={thumbnail.kind}
-              thumbFit={thumbFit}
+              thumbFit={thumbnail.fit}
               thumbFrame={thumbFrame}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}

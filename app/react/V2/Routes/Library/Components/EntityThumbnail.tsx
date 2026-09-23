@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { PlayIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
+import { EntityAudioThumb } from './EntityAudioThumb.js';
 import {
   DEFAULT_THUMB_FIT,
   DEFAULT_THUMB_FRAME,
-  imageAspect,
   imageIsMatted,
   type ThumbFit,
   type ThumbFrame,
@@ -67,6 +68,149 @@ const renderDocumentPreview = ({
   </div>
 );
 
+const youtubeEmbedUrl = (url: string): string | undefined => {
+  const match = url.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+  );
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : undefined;
+};
+
+const vimeoEmbedUrl = (url: string): string | undefined => {
+  const match = url.match(/(?:vimeo\.com\/)(?:.*\/)?(\d+)/);
+  return match ? `https://player.vimeo.com/video/${match[1]}?autoplay=1` : undefined;
+};
+
+const stopCardActivation = (event: React.SyntheticEvent) => {
+  event.stopPropagation();
+};
+
+const renderVideoPlayer = (src: string, className: string) => {
+  const embed = youtubeEmbedUrl(src) || vimeoEmbedUrl(src);
+  return (
+    <div
+      className={`overflow-hidden bg-black ${className}`.trim()}
+      onClick={stopCardActivation}
+      onKeyDown={stopCardActivation}
+      role="presentation"
+    >
+      {embed ? (
+        <iframe
+          title="Video"
+          src={embed}
+          className="h-full w-full"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      ) : (
+        <video src={src} autoPlay controls playsInline className="h-full w-full object-cover">
+          <track kind="captions" />
+        </video>
+      )}
+    </div>
+  );
+};
+
+const renderVideoPoster = (className: string, onPlay: () => void) => (
+  <button
+    type="button"
+    aria-label="Play video"
+    className={`group flex items-center justify-center bg-black ${className}`.trim()}
+    onClick={event => {
+      stopCardActivation(event);
+      onPlay();
+    }}
+  >
+    <span
+      data-testid="entity-video-play"
+      className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+    >
+      <PlayIcon className="ms-0.5 h-5 w-5 text-ink" />
+    </span>
+  </button>
+);
+
+const renderImageThumb = ({
+  src,
+  alt,
+  fit,
+  className,
+  onError,
+}: {
+  src: string;
+  alt: string;
+  fit: ThumbFit;
+  className: string;
+  onError: () => void;
+}) => {
+  const matted = imageIsMatted(fit);
+  return (
+    <div
+      className={`flex items-center justify-center overflow-hidden ${matted ? 'bg-vellum' : 'bg-warm'} ${className}`.trim()}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className={`h-full w-full ${matted ? 'object-contain' : 'object-cover'}`}
+        onError={onError}
+      />
+    </div>
+  );
+};
+
+const renderThumbnail = ({
+  src,
+  alt,
+  kind,
+  fit,
+  frame,
+  className,
+  color,
+  failed,
+  videoStarted,
+  onImageError,
+  onPlayVideo,
+}: {
+  src?: string;
+  alt: string;
+  kind?: ThumbnailKind;
+  fit: ThumbFit;
+  frame: ThumbFrame;
+  className: string;
+  color: string;
+  failed: boolean;
+  videoStarted: boolean;
+  onImageError: () => void;
+  onPlayVideo: () => void;
+}) => {
+  if (!src || failed) {
+    return renderQuietMark(color, className);
+  }
+  if (kind === 'document') {
+    return renderDocumentPreview({
+      src,
+      alt,
+      portrait: frame === 'portrait',
+      className,
+      onError: onImageError,
+    });
+  }
+  if (kind === 'audio') {
+    return <EntityAudioThumb src={src} className={className} />;
+  }
+  if (kind === 'video') {
+    return videoStarted
+      ? renderVideoPlayer(src, className)
+      : renderVideoPoster(className, onPlayVideo);
+  }
+  return renderImageThumb({
+    src,
+    alt,
+    fit,
+    className,
+    onError: onImageError,
+  });
+};
+
 const EntityThumbnail = ({
   src,
   alt = '',
@@ -77,47 +221,27 @@ const EntityThumbnail = ({
   className = '',
 }: EntityThumbnailProps) => {
   const [failed, setFailed] = useState(false);
-  const [aspect, setAspect] = useState<ThumbFrame | 'square'>();
+  const [videoStarted, setVideoStarted] = useState(false);
   const color = tint ?? DEFAULT_TINT;
 
   useEffect(() => {
     setFailed(false);
-    setAspect(undefined);
+    setVideoStarted(false);
   }, [src]);
 
-  if (!src || failed) {
-    return renderQuietMark(color, className);
-  }
-
-  if (kind === 'document') {
-    return renderDocumentPreview({
-      src,
-      alt,
-      portrait: frame === 'portrait',
-      className,
-      onError: () => setFailed(true),
-    });
-  }
-
-  const matted = imageIsMatted(fit, frame, aspect);
-  return (
-    <div
-      className={`flex items-center justify-center overflow-hidden ${matted ? 'bg-vellum' : 'bg-warm'} ${className}`.trim()}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className={`h-full w-full ${matted ? 'object-contain' : 'object-cover'}`}
-        onLoad={event => {
-          const { naturalWidth, naturalHeight } = event.currentTarget;
-          if (naturalHeight) {
-            setAspect(imageAspect(naturalWidth, naturalHeight));
-          }
-        }}
-        onError={() => setFailed(true)}
-      />
-    </div>
-  );
+  return renderThumbnail({
+    src,
+    alt,
+    kind,
+    fit,
+    frame,
+    className,
+    color,
+    failed,
+    videoStarted,
+    onImageError: () => setFailed(true),
+    onPlayVideo: () => setVideoStarted(true),
+  });
 };
 
 export type { EntityThumbnailProps };

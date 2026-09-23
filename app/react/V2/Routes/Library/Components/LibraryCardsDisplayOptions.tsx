@@ -1,14 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { DisplayMenuCheckRow } from '#V2/Components/UI/index.js';
-import {
-  DEFAULT_THUMB_FIT,
-  DEFAULT_THUMB_FRAME,
-  THUMB_FITS,
-  THUMB_FRAMES,
-  type ThumbFit,
-  type ThumbFrame,
-} from './libraryCardDisplay.js';
+import { DEFAULT_THUMB_FRAME, THUMB_FRAMES, type ThumbFrame } from './libraryCardDisplay.js';
 
 type LibraryCardsDisplayOptionsProps = {
   showThumbnail: boolean;
@@ -17,8 +10,6 @@ type LibraryCardsDisplayOptionsProps = {
   onShowMetadataChange: (value: boolean) => void;
   thumbFrame?: ThumbFrame;
   onThumbFrameChange?: (value: ThumbFrame) => void;
-  thumbFit?: ThumbFit;
-  onThumbFitChange?: (value: ThumbFit) => void;
 };
 
 const LibraryCardsDisplayOptions = ({
@@ -28,8 +19,6 @@ const LibraryCardsDisplayOptions = ({
   onShowMetadataChange,
   thumbFrame = DEFAULT_THUMB_FRAME,
   onThumbFrameChange,
-  thumbFit = DEFAULT_THUMB_FIT,
-  onThumbFitChange,
 }: LibraryCardsDisplayOptionsProps) => (
   <>
     <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
@@ -58,18 +47,6 @@ const LibraryCardsDisplayOptions = ({
             description={<Translate>{option.detail}</Translate>}
             checked={thumbFrame === option.id}
             onToggle={() => onThumbFrameChange?.(option.id)}
-          />
-        ))}
-        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
-          <Translate>Image fit</Translate>
-        </p>
-        {THUMB_FITS.map(option => (
-          <DisplayMenuCheckRow
-            key={option.id}
-            label={<Translate>{option.label}</Translate>}
-            description={<Translate>{option.detail}</Translate>}
-            checked={thumbFit === option.id}
-            onToggle={() => onThumbFitChange?.(option.id)}
           />
         ))}
       </>

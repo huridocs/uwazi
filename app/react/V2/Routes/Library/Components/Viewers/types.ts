@@ -1,6 +1,6 @@
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibrarySortOrder } from '../../libraryUrlState.js';
-import type { ThumbFit, ThumbFrame } from '../libraryCardDisplay.js';
+import type { ThumbFrame } from '../libraryCardDisplay.js';
 import type { LibraryTableColumnDef, LibraryTableDensity } from '../libraryTableColumns.js';
 
 type LibraryViewerProps = {
@@ -19,7 +19,6 @@ type LibraryViewerProps = {
   onFocusProperty?: (sharedId: string, fieldKey: string) => void;
   tableColumns?: LibraryTableColumnDef[];
   tableDensity?: LibraryTableDensity;
-  thumbFit?: ThumbFit;
   thumbFrame?: ThumbFrame;
 };
 

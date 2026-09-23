@@ -100,7 +100,7 @@ const EntityCard = ({
           tint={accentHex}
           alt=""
           className={`${
-            thumbFrame === 'portrait' ? 'aspect-[3/4]' : 'h-24'
+            thumbFrame === 'portrait' ? 'aspect-[3/4]' : 'h-[142px]'
           } w-full shrink-0 overflow-hidden rounded border border-border/60`}
         />
       )}

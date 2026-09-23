@@ -1,6 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import {
   DisplayMenu,
   DisplayMenuCheckRow,
@@ -10,13 +13,9 @@ import {
 import { SearchTipsContent } from '#V2/Routes/Entity/Components/search/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
-import {
-  DEFAULT_THUMB_FIT,
-  DEFAULT_THUMB_FRAME,
-  type ThumbFit,
-  type ThumbFrame,
-} from './libraryCardDisplay.js';
+import { DEFAULT_THUMB_FRAME, type ThumbFrame } from './libraryCardDisplay.js';
 import { LibraryCardsDisplayOptions } from './LibraryCardsDisplayOptions.js';
+import { effectiveLibrarySort, librarySortOptions, nextLibrarySort } from './librarySort.js';
 import {
   columnMatchKey,
   DEFAULT_LIBRARY_TABLE_DISPLAY,
@@ -44,8 +43,6 @@ type LibraryToolbarProps = {
   onShowMetadataChange: (value: boolean) => void;
   thumbFrame?: ThumbFrame;
   onThumbFrameChange?: (value: ThumbFrame) => void;
-  thumbFit?: ThumbFit;
-  onThumbFitChange?: (value: ThumbFit) => void;
   tableColumns?: LibraryTableColumnDef[];
   tableColumnGroups?: LibraryTableColumnGroup[];
   tableDisplay?: LibraryTableDisplayState;
@@ -53,12 +50,14 @@ type LibraryToolbarProps = {
   onTableDensityChange?: (density: LibraryTableDensity) => void;
 };
 
-const SORT_OPTIONS = [
-  { value: 'title', label: t('System', 'Title', null, false) },
-  { value: 'creationDate', label: t('System', 'Creation date', null, false) },
-  { value: 'editDate', label: t('System', 'Edit date', null, false) },
-  { value: '_score', label: t('System', 'Relevance', null, false) },
-];
+const SORT_DIRECTION_ICON = 'h-3 w-3 shrink-0 text-ink-tertiary';
+
+const sortDirectionArrow = (order: LibrarySortOrder) =>
+  order === 'asc' ? (
+    <ArrowUpIcon className={SORT_DIRECTION_ICON} aria-hidden data-testid="sort-direction-asc" />
+  ) : (
+    <ArrowDownIcon className={SORT_DIRECTION_ICON} aria-hidden data-testid="sort-direction-desc" />
+  );
 
 const VIEW_OPTIONS = [
   { value: 'cards', label: t('System', 'Cards', null, false) },
@@ -173,24 +172,26 @@ const LibraryToolbar = ({
   onShowMetadataChange,
   thumbFrame = DEFAULT_THUMB_FRAME,
   onThumbFrameChange,
-  thumbFit = DEFAULT_THUMB_FIT,
-  onThumbFitChange,
   tableColumns = [],
   tableColumnGroups,
   tableDisplay = DEFAULT_LIBRARY_TABLE_DISPLAY,
   onToggleTableColumn,
   onTableDensityChange,
 }: LibraryToolbarProps) => {
-  const sortValue = sort || 'creationDate';
+  const locale = useAtomValue(localeAtom) || 'en';
+  const sortValue = effectiveLibrarySort(sort);
+  const sortSelectOptions = librarySortOptions(tableColumns, search, sortValue).map(option => ({
+    value: option.value,
+    label: t(option.translationContext, option.label, null, false),
+    accessory: option.value === sortValue ? sortDirectionArrow(order) : undefined,
+  }));
   const displayModified =
     view === 'table'
       ? tableDisplayModified(tableColumns, tableDisplay)
-      : !showThumbnail ||
-        !showMetadata ||
-        (showThumbnail && (thumbFrame !== DEFAULT_THUMB_FRAME || thumbFit !== DEFAULT_THUMB_FIT));
+      : !showThumbnail || !showMetadata || (showThumbnail && thumbFrame !== DEFAULT_THUMB_FRAME);
 
   return (
-    <div className="flex shrink-0 items-center gap-2 border-b border-border bg-parchment px-3 py-2">
+    <div className="flex shrink-0 items-center gap-8 border-b border-border bg-parchment px-3 py-2">
       <QuerySearchBar
         value={search}
         onChange={onSearchChange}
@@ -204,50 +205,58 @@ const LibraryToolbar = ({
         tipsContent={<SearchTipsContent onInsert={onSearchSubmit ?? onSearchChange} />}
         className="min-w-0 flex-1 pb-0 pt-0"
         boxClassName="bg-paper"
+        rightSlot={
+          <span
+            data-testid="library-entity-count"
+            className="shrink-0 text-nano tabular-nums text-ink-tertiary"
+          >
+            {totalRows.toLocaleString(locale)} <Translate>entities</Translate>
+          </span>
+        }
       />
-      <span className="hidden shrink-0 text-nano tabular-nums text-ink-tertiary md:inline">
-        {totalRows} <Translate>entities</Translate>
-      </span>
-      <WarmSelect
-        ariaLabel={t('System', 'Sort', null, false)}
-        variant="paper"
-        value={sortValue}
-        options={SORT_OPTIONS}
-        onChange={value => onSortChange(value, order)}
-      />
-      <WarmSelect
-        ariaLabel={t('System', 'View', null, false)}
-        variant="paper"
-        value={view}
-        options={VIEW_OPTIONS}
-        onChange={value => onViewChange(value as LibraryViewMode)}
-      />
-      <DisplayMenu
-        ariaLabel={t('System', 'Display options', null, false)}
-        appearance="outlined"
-        modified={displayModified}
-      >
-        {view === 'table' ? (
-          <LibraryTableDisplayOptions
-            columns={tableColumns}
-            groups={tableColumnGroups}
-            display={tableDisplay}
-            onToggleColumn={onToggleTableColumn}
-            onDensityChange={onTableDensityChange}
-          />
-        ) : (
-          <LibraryCardsDisplayOptions
-            showThumbnail={showThumbnail}
-            showMetadata={showMetadata}
-            onShowThumbnailChange={onShowThumbnailChange}
-            onShowMetadataChange={onShowMetadataChange}
-            thumbFrame={thumbFrame}
-            onThumbFrameChange={onThumbFrameChange}
-            thumbFit={thumbFit}
-            onThumbFitChange={onThumbFitChange}
-          />
-        )}
-      </DisplayMenu>
+      <div data-testid="library-toolbar-controls" className="flex shrink-0 items-center gap-2">
+        <WarmSelect
+          ariaLabel={t('System', 'Sort', null, false)}
+          variant="paper"
+          value={sortValue}
+          options={sortSelectOptions}
+          onChange={value => {
+            const next = nextLibrarySort(sort, order, value);
+            onSortChange(next.sort, next.order);
+          }}
+        />
+        <WarmSelect
+          ariaLabel={t('System', 'View', null, false)}
+          variant="paper"
+          value={view}
+          options={VIEW_OPTIONS}
+          onChange={value => onViewChange(value as LibraryViewMode)}
+        />
+        <DisplayMenu
+          ariaLabel={t('System', 'Display options', null, false)}
+          appearance="outlined"
+          modified={displayModified}
+        >
+          {view === 'table' ? (
+            <LibraryTableDisplayOptions
+              columns={tableColumns}
+              groups={tableColumnGroups}
+              display={tableDisplay}
+              onToggleColumn={onToggleTableColumn}
+              onDensityChange={onTableDensityChange}
+            />
+          ) : (
+            <LibraryCardsDisplayOptions
+              showThumbnail={showThumbnail}
+              showMetadata={showMetadata}
+              onShowThumbnailChange={onShowThumbnailChange}
+              onShowMetadataChange={onShowMetadataChange}
+              thumbFrame={thumbFrame}
+              onThumbFrameChange={onThumbFrameChange}
+            />
+          )}
+        </DisplayMenu>
+      </div>
     </div>
   );
 };

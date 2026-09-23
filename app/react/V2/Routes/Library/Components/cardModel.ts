@@ -6,15 +6,24 @@ import {
   type DisplayContext,
 } from '#V2/Components/Metadata/display/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
+import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import type { EntityCardField } from './EntityCard.js';
-import type { ThumbnailKind } from './libraryCardDisplay.js';
+import {
+  DEFAULT_THUMB_FIT,
+  thumbnailFitFromStyle,
+  type ThumbFit,
+  type ThumbnailKind,
+} from './libraryCardDisplay.js';
 import { libraryTableCellValue } from './libraryTableCellValue.js';
 
 type CardThumbnail = {
   src?: string;
   propertyName?: string;
   kind?: ThumbnailKind;
+  fit?: ThumbFit;
 };
+
+type TemplateProperty = NonNullable<Template['properties']>[number];
 
 type ThumbnailFromEntityOptions = {
   locale?: string;
@@ -26,7 +35,7 @@ type MetadataFieldsForCardOptions = {
   context?: DisplayContext;
 };
 
-const VISUAL_PROPERTY_TYPES = new Set(['preview', 'image']);
+const THUMBNAIL_PROPERTY_TYPES = new Set(['preview', 'image', 'media']);
 const CARD_MEDIA_TYPES = new Set(['media', 'preview', 'image']);
 
 const defaultDisplayContext = (locale = 'en'): DisplayContext => ({
@@ -49,18 +58,82 @@ const fileUrl = (value: string): string => {
   return `/api/files/${value}`;
 };
 
-const visualSrc = (
-  entity: Entity,
-  property: NonNullable<Template['properties']>[number]
-): string | undefined => {
+const unwrapMediaValue = (value: string): string | undefined => {
+  if (!value.startsWith('(')) {
+    return value;
+  }
+  const match = value.match(/^\(([^,]+)/);
+  const inner = match?.[1]?.trim();
+  return inner || undefined;
+};
+
+const visualSrc = (entity: Entity, property: TemplateProperty): string | undefined => {
   const fromMetadata = metadataStringValue(entity.metadata?.[property.name]);
-  if (fromMetadata) {
-    return fileUrl(fromMetadata);
+  const unwrapped = fromMetadata ? unwrapMediaValue(fromMetadata) : undefined;
+  if (unwrapped) {
+    return fileUrl(unwrapped);
   }
   if (property.type === 'preview' && entity.preview) {
     return fileUrl(entity.preview);
   }
   return undefined;
+};
+
+const UNKNOWN_MIME = 'application/octet-stream';
+
+const fileTokenFromSrc = (src: string): string => src.split(/[#?]/)[0].split('/').pop() || '';
+
+const knownMimeFromUrl = (url: string): string | undefined => {
+  const mime = getMimetypeFromUrl(url);
+  return mime === UNKNOWN_MIME ? undefined : mime;
+};
+
+const fileMatchingSrc = (src: string, entity: Entity) => {
+  const token = fileTokenFromSrc(src);
+  if (!token) {
+    return undefined;
+  }
+  return [...(entity.attachments ?? []), ...(entity.documents ?? [])].find(
+    file => file.filename === token || file._id === token || file.originalname === token
+  );
+};
+
+const mimeFromEntityFiles = (src: string, entity: Entity): string | undefined => {
+  const match = fileMatchingSrc(src, entity);
+  if (!match) {
+    return undefined;
+  }
+  return (
+    match.mimetype || (match.originalname && knownMimeFromUrl(match.originalname)) || undefined
+  );
+};
+
+const mimeForMediaSrc = (src: string, entity: Entity): string =>
+  knownMimeFromUrl(src) ?? mimeFromEntityFiles(src, entity) ?? UNKNOWN_MIME;
+
+const mediaThumbnailKind = (src: string, entity: Entity): ThumbnailKind => {
+  const mime = mimeForMediaSrc(src, entity);
+  if (mime.startsWith('audio/')) {
+    return 'audio';
+  }
+  if (mime.startsWith('image/')) {
+    return 'image';
+  }
+  return 'video';
+};
+
+const thumbnailKindFor = (
+  property: TemplateProperty,
+  src: string,
+  entity: Entity
+): ThumbnailKind => {
+  if (property.type === 'preview') {
+    return 'document';
+  }
+  if (property.type === 'image') {
+    return 'image';
+  }
+  return mediaThumbnailKind(src, entity);
 };
 
 const documentThumbnailSrc = (
@@ -81,24 +154,22 @@ const showInCardVisualThumbnail = (
   entity: Entity,
   properties: NonNullable<Template['properties']>
 ): CardThumbnail | undefined => {
-  const property = properties.find(item => item.showInCard && VISUAL_PROPERTY_TYPES.has(item.type));
+  const property = properties.find(
+    item => item.showInCard && THUMBNAIL_PROPERTY_TYPES.has(item.type) && visualSrc(entity, item)
+  );
   if (!property) {
     return undefined;
   }
   const src = visualSrc(entity, property);
-  const kind: ThumbnailKind = property.type === 'preview' ? 'document' : 'image';
-  return src ? { src, propertyName: property.name, kind } : { propertyName: property.name };
-};
-
-const firstImageThumbnail = (
-  entity: Entity,
-  properties: NonNullable<Template['properties']>
-): CardThumbnail | undefined => {
-  const property = properties.find(item => item.type === 'image' && visualSrc(entity, item));
-  if (!property) {
+  if (!src) {
     return undefined;
   }
-  return { src: visualSrc(entity, property), propertyName: property.name, kind: 'image' };
+  return {
+    src,
+    propertyName: property.name,
+    kind: thumbnailKindFor(property, src, entity),
+    fit: thumbnailFitFromStyle(property.style),
+  };
 };
 
 const thumbnailFromEntity = (
@@ -113,9 +184,9 @@ const thumbnailFromEntity = (
   }
   if (entity.documents?.length) {
     const src = documentThumbnailSrc(entity, options);
-    return src ? { src, kind: 'document' } : {};
+    return src ? { src, kind: 'document', fit: DEFAULT_THUMB_FIT } : {};
   }
-  return firstImageThumbnail(entity, properties) ?? {};
+  return {};
 };
 
 const metadataFieldsForCard = (
@@ -136,13 +207,18 @@ const metadataFieldsForCard = (
       entity.metadata?.[property.name],
       context
     );
-    if (!formatted.text) {
+    const text =
+      formatted.text ||
+      (property.type === 'preview' && entity.preview
+        ? libraryTableCellValue('preview', [{ value: entity.preview }], context).text
+        : '');
+    if (!text) {
       return;
     }
     fields.push({
       id: property.name,
       label: property.label,
-      value: formatted.text,
+      value: text,
       interactive: CARD_MEDIA_TYPES.has(property.type),
     });
   });

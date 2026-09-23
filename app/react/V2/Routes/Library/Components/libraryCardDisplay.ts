@@ -1,52 +1,32 @@
 type ThumbFrame = 'landscape' | 'portrait';
-type ThumbFit = 'auto' | 'cover' | 'contain';
-type ThumbnailKind = 'document' | 'image';
+type ThumbFit = 'cover' | 'contain';
+type ThumbnailKind = 'document' | 'image' | 'audio' | 'video';
 
-const DEFAULT_THUMB_FRAME: ThumbFrame = 'landscape';
-const DEFAULT_THUMB_FIT: ThumbFit = 'auto';
+const DEFAULT_THUMB_FRAME: ThumbFrame = 'portrait';
+const DEFAULT_THUMB_FIT: ThumbFit = 'cover';
+
+/** Landscape card media header — matches the measured uwazi-design slot (142px).
+ *  Tailwind `h-24` (96px) was the previous short band. */
+const LANDSCAPE_THUMB_HEIGHT_PX = 142;
+const landscapeThumbHeightClass = 'h-[142px]';
 
 const THUMB_FRAMES: { id: ThumbFrame; label: string; detail: string }[] = [
-  { id: 'landscape', label: 'Landscape', detail: 'A wide band across the card' },
   { id: 'portrait', label: 'Portrait', detail: '3:4 cards in narrower columns — a gallery hang' },
+  { id: 'landscape', label: 'Landscape', detail: 'A wide band across the card' },
 ];
 
-const THUMB_FITS: { id: ThumbFit; label: string; detail: string }[] = [
-  { id: 'auto', label: 'Auto', detail: 'Ratio decides — wide fills, tall is matted' },
-  { id: 'cover', label: 'Cover', detail: 'Fill the whole slot edge to edge, crop the image' },
-  { id: 'contain', label: 'Contain', detail: 'Whole image on a quiet mat' },
-];
+const thumbnailFitFromStyle = (style?: string): ThumbFit =>
+  style === 'contain' ? 'contain' : 'cover';
 
-const imageAspect = (width: number, height: number): ThumbFrame | 'square' => {
-  const ratio = width / height;
-  if (ratio > 1.05) {
-    return 'landscape';
-  }
-  if (ratio < 0.95) {
-    return 'portrait';
-  }
-  return 'square';
-};
-
-const imageIsMatted = (
-  fit: ThumbFit,
-  frame: ThumbFrame,
-  aspect?: ThumbFrame | 'square'
-): boolean => {
-  if (fit === 'contain') {
-    return true;
-  }
-  if (fit === 'cover') {
-    return false;
-  }
-  return aspect !== frame;
-};
+const imageIsMatted = (fit: ThumbFit): boolean => fit === 'contain';
 
 export type { ThumbFit, ThumbFrame, ThumbnailKind };
 export {
   DEFAULT_THUMB_FIT,
   DEFAULT_THUMB_FRAME,
-  THUMB_FITS,
+  LANDSCAPE_THUMB_HEIGHT_PX,
   THUMB_FRAMES,
-  imageAspect,
   imageIsMatted,
+  landscapeThumbHeightClass,
+  thumbnailFitFromStyle,
 };

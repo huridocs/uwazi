@@ -72,7 +72,7 @@ describe('ServerSearchService', () => {
       expect.objectContaining({
         searchTerm: 'batman',
         types: ['t1'],
-        filters: { country: { values: ['ES'] } },
+        filters: { country: 'ES' },
         fields: ['title', 'sharedId', 'template'],
       }),
       'en',

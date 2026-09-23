@@ -52,6 +52,7 @@ describe('thumbnailFromEntity', () => {
       src: '/api/files/cover.png',
       propertyName: 'cover',
       kind: 'image',
+      fit: 'cover',
     });
   });
 
@@ -65,19 +66,83 @@ describe('thumbnailFromEntity', () => {
       src: '/api/files/doc-preview.jpg',
       propertyName: 'preview',
       kind: 'document',
+      fit: 'cover',
     });
   });
 
-  it('does not fall through to the document when a showInCard image has no value', () => {
+  it('skips an empty showInCard image and uses the next showInCard visual that has a value', () => {
+    const hearing = entity({
+      preview: 'doc-preview.jpg',
+      metadata: { recording: [{ value: '/api/files/hearing.mp3' }] },
+      documents: [documentFile('doc-1')],
+    });
+    const tmpl = template([
+      { _id: 'p-cover', name: 'cover', label: 'Cover', type: 'image', showInCard: true },
+      { _id: 'p-media', name: 'recording', label: 'Recording', type: 'media', showInCard: true },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/hearing.mp3',
+      propertyName: 'recording',
+      kind: 'audio',
+      fit: 'cover',
+    });
+  });
+
+  it('skips empty showInCard visuals and uses the document thumbnail', () => {
     const hearing = entity({
       preview: 'doc-preview.jpg',
       documents: [documentFile('doc-1')],
     });
     const tmpl = template([
       { _id: 'p-cover', name: 'cover', label: 'Cover', type: 'image', showInCard: true },
+      { _id: 'p-media', name: 'recording', label: 'Recording', type: 'media', showInCard: true },
     ]);
 
-    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({ propertyName: 'cover' });
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/doc-preview.jpg',
+      kind: 'document',
+      fit: 'cover',
+    });
+  });
+
+  it('uses a showInCard video media field as the thumbnail', () => {
+    const hearing = entity({
+      metadata: { clip: [{ value: '/api/files/hearing.mp4' }] },
+      documents: [documentFile('doc-1')],
+    });
+    const tmpl = template([
+      { _id: 'p-media', name: 'clip', label: 'Clip', type: 'media', showInCard: true },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/hearing.mp4',
+      propertyName: 'clip',
+      kind: 'video',
+      fit: 'cover',
+    });
+  });
+
+  it('unwraps media timelinks payloads when choosing a thumbnail', () => {
+    const hearing = entity({
+      metadata: {
+        clip: [
+          {
+            value: '(/api/files/hearing.mp4, {"timelinks":{"00:00:00":""}})',
+          },
+        ],
+      },
+    });
+    const tmpl = template([
+      { _id: 'p-media', name: 'clip', label: 'Clip', type: 'media', showInCard: true },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/hearing.mp4',
+      propertyName: 'clip',
+      kind: 'video',
+      fit: 'cover',
+    });
   });
 
   it('uses the document thumbnail when no preview or image is marked showInCard', () => {
@@ -94,6 +159,7 @@ describe('thumbnailFromEntity', () => {
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
       src: '/api/files/doc-preview.jpg',
       kind: 'document',
+      fit: 'cover',
     });
   });
 
@@ -104,24 +170,78 @@ describe('thumbnailFromEntity', () => {
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
       src: '/api/files/doc-1.jpg',
       kind: 'document',
+      fit: 'cover',
     });
   });
 
-  it('uses the first image property when there is no showInCard visual and no document', () => {
+  it('uses the placeholder when showInCard visuals are empty and there is no document', () => {
     const hearing = entity({
       metadata: { cover: [{ value: '/api/files/cover.png' }] },
     });
-    const tmpl = template([{ _id: 'p-cover', name: 'cover', label: 'Cover', type: 'image' }]);
+    const tmpl = template([
+      { _id: 'p-empty', name: 'photo', label: 'Photo', type: 'image', showInCard: true },
+      { _id: 'p-cover', name: 'cover', label: 'Cover', type: 'image' },
+    ]);
 
-    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/cover.png',
-      propertyName: 'cover',
-      kind: 'image',
-    });
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({});
   });
 
   it('returns no src when nothing can be shown', () => {
     expect(thumbnailFromEntity(entity(), template([]))).toEqual({});
+  });
+});
+
+describe('thumbnail fit from template', () => {
+  it('uses the template image property style for object-fit', () => {
+    const hearing = entity({
+      metadata: { cover: [{ value: '/api/files/cover.png' }] },
+    });
+    const tmpl = template([
+      {
+        _id: 'p-cover',
+        name: 'cover',
+        label: 'Cover',
+        type: 'image',
+        showInCard: true,
+        style: 'contain',
+      },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl).fit).toBe('contain');
+  });
+});
+
+describe('thumbnail kind for image files', () => {
+  it('treats a showInCard image property as an image even when the file is a png', () => {
+    const hearing = entity({
+      metadata: { cover: [{ value: '17900782341876n5ao2986x.png' }] },
+    });
+    const tmpl = template([
+      { _id: 'p-cover', name: 'cover', label: 'Image', type: 'image', showInCard: true },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/17900782341876n5ao2986x.png',
+      propertyName: 'cover',
+      kind: 'image',
+      fit: 'cover',
+    });
+  });
+
+  it('classifies a media field that points at a png as an image, not a video', () => {
+    const hearing = entity({
+      metadata: { cover: [{ value: '/api/files/17900782341876n5ao2986x.png' }] },
+    });
+    const tmpl = template([
+      { _id: 'p-media', name: 'cover', label: 'Image', type: 'media', showInCard: true },
+    ]);
+
+    expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
+      src: '/api/files/17900782341876n5ao2986x.png',
+      propertyName: 'cover',
+      kind: 'image',
+      fit: 'cover',
+    });
   });
 });
 
@@ -154,8 +274,27 @@ describe('metadataFieldsForCard', () => {
     ]);
   });
 
+  it('renders the thumbnail visual as a filename row when it is not excluded', () => {
+    expect(metadataFieldsForCard(hearing, tmpl, { context })[0]).toEqual({
+      id: 'cover',
+      label: 'Cover',
+      value: 'cover.png',
+      interactive: true,
+    });
+  });
+
   it('does not include properties that are not marked showInCard', () => {
     const fields = metadataFieldsForCard(hearing, tmpl, { excludeProperty: 'cover', context });
     expect(fields.map(field => field.id)).not.toContain('notes');
+  });
+
+  it('renders a showInCard preview from entity.preview as a filename row', () => {
+    const previewTmpl = template([
+      { _id: 'p-preview', name: 'preview', label: 'Document', type: 'preview', showInCard: true },
+    ]);
+    const withPreview = entity({ preview: 'doc-preview.jpg' });
+    expect(metadataFieldsForCard(withPreview, previewTmpl, { context })).toEqual([
+      { id: 'preview', label: 'Document', value: 'doc-preview.jpg', interactive: true },
+    ]);
   });
 });
