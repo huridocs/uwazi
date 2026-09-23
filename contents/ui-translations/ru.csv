@@ -194,6 +194,7 @@ Chart type uses a custom view,В этом типе диаграммы испол
 Check to make this instance public (non-logged in users can see public documents and entities),"Установите флажок, чтобы сделать этот экземпляр общедоступным (пользователи, не вошедшие в систему, смогут просматривать общедоступные документы и объекты)"
 Checking which images fit the requirements,"Проверка того, какие изображения соответствуют требованиям..."
 Choose,Выберите
+Choose PDF files,Choose PDF files
 Choose relation type,Выберите тип связи
 Choose which data to use for training,"Выберите, какие данные использовать для обучения"
 Chrome header,Заголовок верхней панели
@@ -587,7 +588,6 @@ ID:,ID:
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Image doesn't match the required size.,Изображение не соответствует требуемому размеру.
 Import,Импортировать
-Import / Export CSV,Импорт/экспорт CSV
 Import asset,Импортировать ресурс
 Import CSV,Импортировать CSV
 Import failed. Review details below.,Импорт не удался. Ознакомьтесь с подробностями ниже.
@@ -896,6 +896,7 @@ Open the two-factor Authenticator app on your device,Откройте прило
 Options,Параметры
 or,или
 or drag and drop here,или перетащите сюда
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,или опустите свои файлы сюда.
 Or paste a URL,Или вставьте URL-адрес
 Order,Последовательность
@@ -1353,6 +1354,7 @@ This table of contents was automatically created by the system.,Данное о�
 this template,этот шаблон
 This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
 Thumbnail,Миниатюра
+Thumbnail frame,Thumbnail frame
 Time,Время
 Time (UTC),Время (UTC)
 Timeline,Хронология
@@ -1427,6 +1429,7 @@ Updated translations,Обновленные переводы
 Updated user,Обновленный пользователь
 Updating template properties across,Обновление свойств шаблонов в
 Updating…,Обновляется…
+Upload,Upload
 Upload and select file,Загрузить и выбрать файл
 Upload from computer,Загрузить с компьютера
 Upload image,Загрузить изображение

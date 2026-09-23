@@ -59,10 +59,11 @@ const renderCards = ({
   onFocusProperty?: (sharedId: string, fieldKey: string) => void;
   style?: 'contain' | 'cover';
 } = {}) => {
+  const baseTemplate = templates[0]!;
   const viewerTemplates = [
     {
-      ...templates[0]!,
-      properties: templates[0]!.properties.map(property =>
+      ...baseTemplate,
+      properties: (baseTemplate.properties ?? []).map(property =>
         property.name === 'cover' ? { ...property, style } : property
       ),
     },
