@@ -61,14 +61,15 @@ Password: change this password now
 
 ## Accessing Services
 
-All infrastructure services are automatically started via Docker Compose:
+All infrastructure services are automatically started via Docker Compose and accessible through their published ports:
 
 - **Uwazi App**: http://localhost:3000
 - **Elasticsearch**: http://localhost:9200
-- **MongoDB**: localhost:27017
+- **MongoDB**: mongodb://localhost:27017
 - **Redis**: localhost:6379
-- **PostgreSQL**: localhost:5432
+- **PostgreSQL**: localhost:5432 (user: admin, password: admin)
 - **MinIO (S3)**: http://localhost:9000 (API), http://localhost:9001 (Console)
+  - Credentials: minioadmin / minioadmin
 
 ## Resource Requirements
 
