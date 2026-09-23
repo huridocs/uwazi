@@ -1,6 +1,10 @@
 import type { Entity } from '#V2/api/entities/types.js';
 import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
-import { planSharedMetadataSync } from '../editEntityMetadata.js';
+import {
+  isEntityEditorDirty,
+  mergeSharedFormMetadata,
+  planSharedMetadataSync,
+} from '../editEntityMetadata.js';
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import { EMPTY_ICON } from '../../Components/IconField.js';
 
@@ -168,5 +172,38 @@ describe('planSharedMetadataSync', () => {
     expect(againT1.type).toBe('reset');
     if (againT1.type !== 'reset') return;
     expect(Object.keys(againT1.values.metadata).sort()).toEqual(['location', 'simple_text']);
+  });
+});
+
+describe('isEntityEditorDirty', () => {
+  it('tracks form dirtiness and draft selections', () => {
+    expect(isEntityEditorDirty(false, 1)).toBe(true);
+    expect(isEntityEditorDirty(true, 0)).toBe(true);
+    expect(isEntityEditorDirty(false, 0)).toBe(false);
+  });
+});
+
+describe('mergeSharedFormMetadata', () => {
+  it('rebuilds shape while keeping existing dirty field values', () => {
+    const properties = [textProp('a'), textProp('b'), textProp('c')];
+    expect(
+      mergeSharedFormMetadata({ a: [{ value: 'dirty-a' }] }, properties, {
+        a: [{ value: 'entity-a' }],
+        b: [{ value: 'entity-b' }],
+        c: [{ value: 'entity-c' }],
+      })
+    ).toEqual({
+      a: [{ value: 'dirty-a' }],
+      b: [{ value: 'entity-b' }],
+      c: [{ value: 'entity-c' }],
+    });
+  });
+
+  it('strips keys that are not on the target template', () => {
+    expect(
+      mergeSharedFormMetadata({ report: [{ value: 'x' }], leftover: [{ value: 'y' }] }, [
+        textProp('report'),
+      ])
+    ).toEqual({ report: [{ value: 'x' }] });
   });
 });

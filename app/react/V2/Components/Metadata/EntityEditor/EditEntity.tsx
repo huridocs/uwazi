@@ -191,7 +191,6 @@ const EditEntity = ({
 
   const submit = handleSubmit(
     async values => {
-      if (!entity) return;
       await onSave?.(
         buildEditEntitySaveInput({
           entity,

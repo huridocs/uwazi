@@ -35,6 +35,7 @@ const MultiLanguageField = ({
     onChange,
     onTranslate,
     disabled,
+    source: values[current] ?? '',
   });
   const { others, source, empties, canTranslate, setText, emptyText, summary, translateTitle } =
     languageRowSummary({ languages, current, values, working, onTranslate, label });

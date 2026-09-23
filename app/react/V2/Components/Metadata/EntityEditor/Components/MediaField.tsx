@@ -502,7 +502,11 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onSelect={async (selectedUrl, localFile) =>
-                  updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
+                  updateValue(
+                    selectedUrl,
+                    localFile,
+                    mode === 'media' && !localFile && selectedUrl === currentUrl ? timelinks : []
+                  )
                 }
                 mode={mode}
                 attachments={allAttachments}

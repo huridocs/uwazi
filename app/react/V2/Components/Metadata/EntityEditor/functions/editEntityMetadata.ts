@@ -18,7 +18,7 @@ import {
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
 
 type BuildEditEntitySaveInputArgs = {
-  entity: Entity;
+  entity?: Entity;
   values: EditEntityFormValues;
   metadataProperties: FormMetadataProperty[];
   pendingAttachments: ClientFile[];
@@ -80,13 +80,14 @@ const buildEditEntitySaveInput = ({
     currentLanguage,
   });
   const saved: EntitySaveInput = {
-    ...entity,
-    title: values.title || entity.title,
-    template: values.template || entity.template,
+    ...(entity ?? {}),
+    title: values.title || entity?.title || '',
+    template: values.template || entity?.template || '',
+    language: currentLanguage,
     icon: toSaveIcon(values.showIcon, values.icon),
     metadata: formattedMetadata,
     attachments: [
-      ...(entity.attachments ?? []),
+      ...(entity?.attachments ?? []),
       ...filterReferencedPendingAttachments(
         pendingAttachments,
         currentAndTranslationMetadata(formattedMetadata, translations),

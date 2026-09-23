@@ -1,8 +1,9 @@
 import type { MetadataSchema } from '#shared/types/commonTypes.js';
-import { filterReferencedPendingAttachments, mapMediaMetadataForSave } from '../mediaMetadata.js';
+import { mapMediaMetadataForSave } from '../mediaMetadata.js';
 
 type EntityWithMetadata = {
   metadata?: MetadataSchema;
+  translations?: Record<string, MetadataSchema>;
   attachments?: Array<{
     _id?: string;
     originalname?: string;
@@ -27,268 +28,239 @@ describe('mapMediaMetadataForSave', () => {
     ['media', 'media'],
   ]);
 
-  it('maps image upload ids to uploaded attachment indices', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: 'localImageId' }],
-        text: [{ value: 'hello' }],
-      },
-      attachments: [
-        {
-          _id: 'existing1',
-          originalname: 'existing.pdf',
-          filename: 'existing.pdf',
-          type: 'attachment',
+  describe('current metadata', () => {
+    it('maps image upload ids to uploaded attachment indices', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: 'localImageId' }],
+          text: [{ value: 'hello' }],
         },
-        {
-          _id: 'a1',
-          originalname: 'photo.jpg',
-          filename: 'photo.jpg',
-          type: 'attachment',
-          serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
-          fileLocalID: 'localImageId',
+        attachments: [
+          {
+            _id: 'existing1',
+            originalname: 'existing.pdf',
+            filename: 'existing.pdf',
+            type: 'attachment',
+          },
+          {
+            _id: 'a1',
+            originalname: 'photo.jpg',
+            filename: 'photo.jpg',
+            type: 'attachment',
+            serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
+            fileLocalID: 'localImageId',
+          },
+        ],
+      };
+
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
+      expect(metadata(prepared).text).toEqual([{ value: 'hello' }]);
+    });
+
+    it('maps media timelinks with upload ids to attachment indices', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          media: [{ value: '(localMediaId, {"timelinks":{"00:00:01":"intro"}})' }],
         },
-      ],
-    };
+        attachments: [
+          {
+            _id: 'existing1',
+            originalname: 'existing.pdf',
+            filename: 'existing.pdf',
+            type: 'attachment',
+          },
+          {
+            _id: 'a1',
+            originalname: 'clip.mp4',
+            filename: 'clip.mp4',
+            type: 'attachment',
+            serializedFile: 'data:video/mp4;base64,Y2xpcA==',
+            fileLocalID: 'localMediaId',
+          },
+        ],
+      };
 
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
-    expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
-    expect(metadata(prepared).text).toEqual([{ value: 'hello' }]);
-  });
-
-  it('maps media timelinks with upload ids to attachment indices', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        media: [{ value: '(localMediaId, {"timelinks":{"00:00:01":"intro"}})' }],
-      },
-      attachments: [
+      expect(metadata(prepared).media).toEqual([
         {
-          _id: 'existing1',
-          originalname: 'existing.pdf',
-          filename: 'existing.pdf',
-          type: 'attachment',
+          value: '',
+          attachment: 0,
+          timeLinks: '{"timelinks":{"00:00:01":"intro"}}',
         },
-        {
-          _id: 'a1',
-          originalname: 'clip.mp4',
-          filename: 'clip.mp4',
-          type: 'attachment',
-          serializedFile: 'data:video/mp4;base64,Y2xpcA==',
-          fileLocalID: 'localMediaId',
+      ]);
+    });
+
+    it('uses index 0 for the first uploaded attachment even when existing attachments are present', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: 'newImageId' }],
         },
-      ],
-    };
+        attachments: [
+          { _id: 'existing1', originalname: 'old.png', filename: 'old.png', type: 'attachment' },
+          {
+            _id: 'existing2',
+            originalname: 'notes.pdf',
+            filename: 'notes.pdf',
+            type: 'attachment',
+          },
+          {
+            _id: 'pending1',
+            originalname: '17839533869478fg3uatq4be.png',
+            filename: '17839533869478fg3uatq4be.png',
+            type: 'attachment',
+            serializedFile: 'data:image/png;base64,aW1hZ2U=',
+            fileLocalID: 'newImageId',
+          },
+        ],
+      };
 
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
-    expect(metadata(prepared).media).toEqual([
-      {
-        value: '',
-        attachment: 0,
-        timeLinks: '{"timelinks":{"00:00:01":"intro"}}',
-      },
-    ]);
-  });
+      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
+    });
 
-  it('uses index 0 for the first uploaded attachment even when existing attachments are present', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: 'newImageId' }],
-      },
-      attachments: [
-        {
-          _id: 'existing1',
-          originalname: 'old.png',
-          filename: 'old.png',
-          type: 'attachment',
+    it('clears blob urls from image metadata', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: 'blob:http://localhost:3000/abc' }],
         },
-        {
-          _id: 'existing2',
-          originalname: 'notes.pdf',
-          filename: 'notes.pdf',
-          type: 'attachment',
+        attachments: [],
+      };
+
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+      expect(metadata(prepared).image).toEqual([{ value: '' }]);
+    });
+
+    it('preserves unresolved upload ids instead of wiping them', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: 'missingUploadId' }],
         },
-        {
-          _id: 'pending1',
-          originalname: '17839533869478fg3uatq4be.png',
-          filename: '17839533869478fg3uatq4be.png',
-          type: 'attachment',
-          serializedFile: 'data:image/png;base64,aW1hZ2U=',
-          fileLocalID: 'newImageId',
+        attachments: [],
+      };
+
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+      expect(metadata(prepared).image).toEqual([{ value: 'missingUploadId' }]);
+    });
+
+    it('copies timeLinks from fileLocalID-only pending attachments', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          media: [{ value: 'clipId' }],
         },
-      ],
-    };
+        attachments: [
+          {
+            fileLocalID: 'clipId',
+            originalname: 'clip.mp4',
+            filename: 'clip.mp4',
+            type: 'attachment',
+            timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
+          },
+        ],
+      };
 
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
-    expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
-  });
-
-  it('clears blob urls from image metadata', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: 'blob:http://localhost:3000/abc' }],
-      },
-      attachments: [],
-    };
-
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
-
-    expect(metadata(prepared).image).toEqual([{ value: '' }]);
-  });
-
-  it('preserves unresolved upload ids instead of wiping them', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: 'missingUploadId' }],
-      },
-      attachments: [],
-    };
-
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
-
-    expect(metadata(prepared).image).toEqual([{ value: 'missingUploadId' }]);
-  });
-
-  it('copies timeLinks from fileLocalID-only pending attachments', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        media: [{ value: 'clipId' }],
-      },
-      attachments: [
+      expect(metadata(prepared).media).toEqual([
         {
-          fileLocalID: 'clipId',
-          originalname: 'clip.mp4',
-          filename: 'clip.mp4',
-          type: 'attachment',
+          value: '',
+          attachment: 0,
           timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
         },
-      ],
-    };
+      ]);
+    });
 
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
-
-    expect(metadata(prepared).media).toEqual([
-      {
-        value: '',
-        attachment: 0,
-        timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
-      },
-    ]);
-  });
-
-  it('does not remap upload ids that lack serializedFile attachments', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: 'staleLocalId' }],
-      },
-      attachments: [
-        {
-          _id: 'existing1',
-          originalname: 'old.png',
-          filename: 'old.png',
-          type: 'attachment',
-          fileLocalID: 'staleLocalId',
+    it('does not remap upload ids that lack serializedFile attachments', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: 'staleLocalId' }],
         },
-        {
-          _id: 'pending1',
-          originalname: 'new.png',
-          filename: 'new.png',
-          type: 'attachment',
-          serializedFile: 'data:image/png;base64,aW1hZ2U=',
-          fileLocalID: 'newImageId',
+        attachments: [
+          {
+            _id: 'existing1',
+            originalname: 'old.png',
+            filename: 'old.png',
+            type: 'attachment',
+            fileLocalID: 'staleLocalId',
+          },
+          {
+            _id: 'pending1',
+            originalname: 'new.png',
+            filename: 'new.png',
+            type: 'attachment',
+            serializedFile: 'data:image/png;base64,aW1hZ2U=',
+            fileLocalID: 'newImageId',
+          },
+        ],
+      };
+
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+      expect(metadata(prepared).image).toEqual([{ value: 'staleLocalId' }]);
+    });
+
+    it('preserves existing attachment and timeLinks for empty media values', () => {
+      const entity: EntityWithMetadata = {
+        sharedId: 'entity1',
+        template: 'template1',
+        title: 'Entity',
+        metadata: {
+          image: [{ value: '', attachment: 1 }],
+          media: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
         },
-      ],
-    };
+        attachments: [{ _id: 'a1' }, { _id: 'a2' }],
+      };
 
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+      const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
-    expect(metadata(prepared).image).toEqual([{ value: 'staleLocalId' }]);
+      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 1 }]);
+      expect(metadata(prepared).media).toEqual([
+        { value: '', attachment: 0, timeLinks: '{"timelinks":{}}' },
+      ]);
+    });
   });
 
-  it('preserves existing attachment and timeLinks for empty media values', () => {
-    const entity: EntityWithMetadata = {
-      sharedId: 'entity1',
-      template: 'template1',
-      title: 'Entity',
-      metadata: {
-        image: [{ value: '', attachment: 1 }],
-        media: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
-      },
-      attachments: [{ _id: 'a1' }, { _id: 'a2' }],
-    };
-
-    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
-
-    expect(metadata(prepared).image).toEqual([{ value: '', attachment: 1 }]);
-    expect(metadata(prepared).media).toEqual([
-      { value: '', attachment: 0, timeLinks: '{"timelinks":{}}' },
-    ]);
-  });
-});
-
-describe('filterReferencedPendingAttachments', () => {
-  it('keeps only pending attachments referenced by media metadata', () => {
-    const pending = [
-      { fileLocalID: 'keepMe', serializedFile: 'data:image/png;base64,a' },
-      { fileLocalID: 'dropMe', serializedFile: 'data:image/png;base64,b' },
-    ];
-
-    const referenced = filterReferencedPendingAttachments(
-      pending,
-      [
+  describe('translations', () => {
+    it('maps translation media upload ids with the same pending attachments as current metadata', () => {
+      const prepared = mapMediaMetadataForSave(
         {
-          image: [{ value: 'keepMe' }],
-          media: [{ value: '(otherId, {"timelinks":{}})' }],
+          title: 'New',
+          template: 'template1',
+          metadata: { image: [{ value: '/en.jpg' }] },
+          translations: { es: { title: [{ value: 'Nuevo' }], image: [{ value: 'esImageId' }] } },
+          attachments: [{ originalname: 'es.png', filename: 'es.png', fileLocalID: 'esImageId' }],
         },
-      ],
-      new Set(['image', 'media'])
-    );
-
-    expect(referenced).toEqual([pending[0]]);
-  });
-
-  it('extracts upload ids from timelink media values', () => {
-    const pending = [{ fileLocalID: 'clipId', serializedFile: 'data:video/mp4;base64,Y2xpcA==' }];
-    expect(
-      filterReferencedPendingAttachments(
-        pending,
-        [{ media: [{ value: '(clipId, {"timelinks":{"00:00:01":"intro"}})' }] }],
-        new Set(['media'])
-      )
-    ).toEqual(pending);
-  });
-
-  it('unions upload ids across metadata bags', () => {
-    const pending = [{ fileLocalID: 'a' }, { fileLocalID: 'b' }, { fileLocalID: 'c' }];
-    expect(
-      filterReferencedPendingAttachments(
-        pending,
-        [{ image: [{ value: 'a' }] }, { image: [{ value: 'b' }] }],
-        new Set(['image'])
-      )
-    ).toEqual(pending.slice(0, 2));
+        mediaPropertyNames,
+        mediaPropertyTypes
+      );
+      expect(metadata(prepared).image).toEqual([{ value: '/en.jpg' }]);
+      expect(prepared.translations?.es.image).toEqual([{ value: '', attachment: 0 }]);
+    });
   });
 });

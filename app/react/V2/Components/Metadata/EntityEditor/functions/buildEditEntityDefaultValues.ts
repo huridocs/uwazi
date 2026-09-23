@@ -48,20 +48,21 @@ const mapTemplateProperty = (property: TemplatePropertyInput): FormMetadataPrope
 const buildEditEntityDefaultValues = (
   entity: Entity | undefined,
   templates: EditEntityTemplate[]
-): EditEntityFormValues => ({
-  title: entity?.title || '',
-  template: entity?.template || '',
-  showIcon: hasEntityIcon(entity?.icon),
-  icon: entity?.icon ?? EMPTY_ICON,
-  metadata: formatMetadataForForm(
-    templates
-      .find(template => template._id === entity?.template)
-      ?.properties?.map(mapTemplateProperty) || [],
-    entity?.metadata
-  ),
-  translations: entity?.translations ?? {},
-  touchedTranslations: {},
-});
+): EditEntityFormValues => {
+  const templateId = entity?.template || templates[0]?._id || '';
+  const properties =
+    templates.find(template => template._id === templateId)?.properties?.map(mapTemplateProperty) ??
+    [];
+  return {
+    title: entity?.title || '',
+    template: templateId,
+    showIcon: hasEntityIcon(entity?.icon),
+    icon: entity?.icon ?? EMPTY_ICON,
+    metadata: formatMetadataForForm(properties, entity?.metadata),
+    translations: entity?.translations ?? {},
+    touchedTranslations: {},
+  };
+};
 
 export { buildEditEntityDefaultValues, mapTemplateProperty };
 export type { EditEntityFormValues, EditEntityTemplate };

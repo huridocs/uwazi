@@ -47,7 +47,18 @@ jest.mock('#V2/Components/UI/index.js', () => ({
 }));
 
 jest.mock('../MediaPickerModal', () => ({
-  MediaPickerModal: () => null,
+  MediaPickerModal: ({
+    isOpen,
+    onSelect,
+  }: {
+    isOpen: boolean;
+    onSelect: (url: string, file?: File) => void;
+  }) =>
+    isOpen ? (
+      <button type="button" onClick={() => onSelect('/api/files/other.mp4')}>
+        pick other
+      </button>
+    ) : null,
 }));
 
 type FormValues = { media: string };
@@ -135,5 +146,15 @@ describe('MediaField timelinks', () => {
 
     expect(mockSeekTo).toHaveBeenCalledWith(62, 'seconds');
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-playing', 'true');
+  });
+
+  it('drops timelinks when the media file is changed', async () => {
+    render(<Harness defaultValue={mediaWithTimelink} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('button', { name: 'pick other' }));
+
+    expect(await screen.findByTestId('form-value')).toHaveTextContent(/^\/api\/files\/other\.mp4$/);
+    expect(screen.queryByDisplayValue('intro')).not.toBeInTheDocument();
   });
 });

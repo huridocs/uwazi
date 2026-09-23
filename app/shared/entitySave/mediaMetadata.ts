@@ -1,5 +1,5 @@
 import type { MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import type { EntityWithSaveMetadata, MediaPropertyType } from './types.js';
+import type { EntitySaveMetadata, EntityWithSaveMetadata, MediaPropertyType } from './types.js';
 
 const UPLOAD_ID_PATTERN = /^[a-zA-Z\d_]+$/;
 
@@ -128,38 +128,61 @@ const mapMediaValue = (
   return { value: rawValue };
 };
 
+type MediaMapContext = {
+  attachments: ReadonlyArray<AttachmentLike>;
+  names: ReadonlySet<string>;
+  types: ReadonlyMap<string, MediaPropertyType>;
+};
+
+const mapMediaField = (
+  name: string,
+  values: MetadataObjectSchema[] | undefined,
+  ctx: MediaMapContext
+): MetadataObjectSchema[] | undefined => {
+  if (!values?.length || !ctx.names.has(name)) return values;
+  const propertyType = ctx.types.get(name);
+  const [existing] = values;
+  const rawValue = existing?.value;
+  if (!propertyType || typeof rawValue !== 'string') return values;
+  if (
+    rawValue === '' &&
+    (typeof existing.attachment === 'number' || typeof existing.timeLinks === 'string')
+  ) {
+    return values;
+  }
+  return [mapMediaValue(rawValue, ctx.attachments, propertyType)];
+};
+
+const mapMediaBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveMetadata =>
+  Object.fromEntries(
+    Object.entries(bag).map(([name, values]) => [name, mapMediaField(name, values, ctx)])
+  );
+
 const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
   entity: T,
   mediaPropertyNames: ReadonlySet<string>,
   mediaPropertyTypes: ReadonlyMap<string, MediaPropertyType>
 ): T => {
-  if (!entity.metadata || mediaPropertyNames.size === 0) {
-    return entity;
-  }
-
-  const attachments = entity.attachments ?? [];
-  const metadata = Object.fromEntries(
-    Object.entries(entity.metadata).map(([name, values]) => {
-      if (!values?.length || !mediaPropertyNames.has(name)) {
-        return [name, values];
-      }
-      const propertyType = mediaPropertyTypes.get(name);
-      const [existing] = values;
-      const rawValue = existing?.value;
-      if (!propertyType || typeof rawValue !== 'string') {
-        return [name, values];
-      }
-      if (
-        rawValue === '' &&
-        (typeof existing.attachment === 'number' || typeof existing.timeLinks === 'string')
-      ) {
-        return [name, values];
-      }
-      return [name, [mapMediaValue(rawValue, attachments, propertyType)]];
-    })
-  ) as T['metadata'];
-
-  return { ...entity, metadata };
+  if (mediaPropertyNames.size === 0) return entity;
+  const ctx: MediaMapContext = {
+    attachments: entity.attachments ?? [],
+    names: mediaPropertyNames,
+    types: mediaPropertyTypes,
+  };
+  return {
+    ...entity,
+    ...(entity.metadata ? { metadata: mapMediaBag(entity.metadata, ctx) } : {}),
+    ...(entity.translations
+      ? {
+          translations: Object.fromEntries(
+            Object.entries(entity.translations).map(([language, bag]) => [
+              language,
+              mapMediaBag(bag, ctx),
+            ])
+          ),
+        }
+      : {}),
+  };
 };
 
 export {

@@ -35,21 +35,30 @@ global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 const Harness = ({
   onTranslate,
   initial = { en: 'Hearing', es: 'Audiencia', fr: '' },
+  changeSource = false,
 }: {
   onTranslate?: (language: string) => Promise<string>;
   initial?: Record<string, string>;
+  changeSource?: boolean;
 }) => {
   const [values, setValues] = useState(initial);
   return (
-    <MultiLanguageField
-      label="Title"
-      idPrefix="title"
-      languages={['en', 'es', 'fr']}
-      current="en"
-      values={values}
-      onChange={(language, value) => setValues(prev => ({ ...prev, [language]: value }))}
-      onTranslate={onTranslate}
-    />
+    <>
+      {changeSource ? (
+        <button type="button" onClick={() => setValues(prev => ({ ...prev, en: 'Changed' }))}>
+          change source
+        </button>
+      ) : null}
+      <MultiLanguageField
+        label="Title"
+        idPrefix="title"
+        languages={['en', 'es', 'fr']}
+        current="en"
+        values={values}
+        onChange={(language, value) => setValues(prev => ({ ...prev, [language]: value }))}
+        onTranslate={onTranslate}
+      />
+    </>
   );
 };
 
@@ -93,5 +102,28 @@ describe('MultiLanguageField', () => {
       />
     );
     expect(screen.getByRole('button', { name: 'Auto-translate' })).toHaveAttribute('aria-disabled');
+  });
+
+  it('ignores a translation that finishes after the source text changed', async () => {
+    let resolveFr: (value: string) => void = () => undefined;
+    const onTranslate = jest.fn(
+      () =>
+        new Promise<string>(resolve => {
+          resolveFr = resolve;
+        })
+    );
+    render(
+      <Harness onTranslate={onTranslate} initial={{ en: 'Hearing', es: '', fr: '' }} changeSource />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Auto-translate' }));
+    await waitFor(() => {
+      expect(onTranslate).toHaveBeenCalled();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'change source' }));
+    resolveFr('stale-fr');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Français title')).toHaveValue('');
+    });
+    expect(screen.queryByText('Auto')).not.toBeInTheDocument();
   });
 });

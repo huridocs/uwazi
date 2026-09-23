@@ -90,6 +90,57 @@ describe('rekeyEditEntityLanguage', () => {
 
     expect(next.touchedTranslations).toEqual({ fr: { title: true } });
   });
+
+  it('keeps both language buckets after switching away and back on create', () => {
+    const props = [textProp('description'), imageProp('photo'), dateProp('filed')];
+    const created = values({
+      title: 'New en',
+      translations: {},
+      metadata: {
+        description: [{ value: 'Summary en' }],
+        photo: [{ value: 'enPhoto' }],
+        filed: [{ value: 1 }],
+      },
+    });
+    const inEs = rekeyEditEntityLanguage({
+      values: created,
+      fromLanguage: 'en',
+      toLanguage: 'es',
+      metadataProperties: props,
+    });
+    const back = rekeyEditEntityLanguage({
+      values: {
+        ...inEs,
+        title: 'Nuevo',
+        metadata: {
+          ...inEs.metadata,
+          description: [{ value: 'Resumen es' }],
+          photo: [{ value: 'esPhoto' }],
+        },
+      },
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      metadataProperties: props,
+    });
+
+    expect(back.title).toBe('New en');
+    expect(back.metadata.description).toEqual([{ value: 'Summary en' }]);
+    expect(back.metadata.photo).toEqual([{ value: 'enPhoto' }]);
+    expect(
+      buildTranslationsForSave({
+        values: back,
+        metadataProperties: props,
+        languages,
+        currentLanguage: 'en',
+      })
+    ).toEqual({
+      es: {
+        title: [{ value: 'Nuevo' }],
+        description: [{ value: 'Resumen es' }],
+        photo: [{ value: 'esPhoto' }],
+      },
+    });
+  });
 });
 
 describe('buildTranslationsForSave', () => {

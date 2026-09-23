@@ -2,34 +2,23 @@ import type { Entity } from '#V2/api/entities/types.js';
 import type { ClientFile } from '#app/istore.js';
 import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
-import {
-  buildEditEntitySaveInput,
-  formatMetadataForEntity,
-  isEntityEditorDirty,
-  mergeSharedFormMetadata,
-} from '../editEntityMetadata.js';
+import { buildEditEntitySaveInput, formatMetadataForEntity } from '../editEntityMetadata.js';
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import { EMPTY_ICON } from '../../Components/IconField.js';
 
 describe('formatMetadataForEntity', () => {
+  const rel = (id: string, name: string, label: string): FormMetadataProperty => ({
+    _id: id,
+    type: 'relationship',
+    name,
+    label,
+    content: 'template2',
+    relationType: 'rel1',
+  });
   const properties: FormMetadataProperty[] = [
     { _id: '1', type: 'text', name: 'simple_text', label: 'Text' },
-    {
-      _id: '2',
-      type: 'relationship',
-      name: 'related_people',
-      label: 'Owner',
-      content: 'template2',
-      relationType: 'rel1',
-    },
-    {
-      _id: '3',
-      type: 'relationship',
-      name: 'related_residents',
-      label: 'Residents',
-      content: 'template2',
-      relationType: 'rel1',
-    },
+    rel('2', 'related_people', 'Owner'),
+    rel('3', 'related_residents', 'Residents'),
     { _id: '4', type: 'geolocation', name: 'location', label: 'Location' },
   ];
 
@@ -220,19 +209,24 @@ describe('buildEditEntitySaveInput', () => {
         mediaPropertyNames: new Set(),
         languages: langs,
       });
+      expect(saved.language).toBe('es');
       expect(saved.translations).toEqual({
         en: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
       });
     });
 
+    const pending: ClientFile = {
+      _id: 'esPhoto',
+      fileLocalID: 'esPhoto',
+      originalname: 'es.png',
+      filename: 'es.png',
+      type: 'attachment',
+    };
+    const photoProps: FormMetadataProperty[] = [
+      { _id: 'p', type: 'image', name: 'photo', label: 'Photo' },
+    ];
+
     it('keeps pending uploads referenced only by another language', () => {
-      const pending: ClientFile = {
-        _id: 'esPhoto',
-        fileLocalID: 'esPhoto',
-        originalname: 'es.png',
-        filename: 'es.png',
-        type: 'attachment',
-      };
       const saved = buildEditEntitySaveInput({
         entity,
         currentLanguage: 'en',
@@ -241,58 +235,35 @@ describe('buildEditEntitySaveInput', () => {
           metadata: { photo: [{ value: '/en.jpg' }] },
           translations: { es: { title: [{ value: 'Audiencia' }], photo: [{ value: 'esPhoto' }] } },
         },
-        metadataProperties: [{ _id: 'p', type: 'image', name: 'photo', label: 'Photo' }],
+        metadataProperties: photoProps,
         pendingAttachments: [pending],
         mediaPropertyNames: new Set(['photo']),
         languages: langs,
       });
       expect(saved.attachments).toEqual([{ _id: 'a1', filename: 'existing.pdf' }, pending]);
     });
-  });
-});
 
-describe('isEntityEditorDirty', () => {
-  it('is dirty when only draft property selections exist (e.g. Clear PDF)', () => {
-    expect(isEntityEditorDirty(false, 1)).toBe(true);
-  });
-
-  it('is dirty when the form is dirty without drafts', () => {
-    expect(isEntityEditorDirty(true, 0)).toBe(true);
-  });
-
-  it('is clean when form and drafts are empty', () => {
-    expect(isEntityEditorDirty(false, 0)).toBe(false);
-  });
-});
-
-const textProp = (name: string, id = name): FormMetadataProperty => ({
-  _id: id,
-  type: 'text',
-  name,
-  label: name,
-});
-describe('mergeSharedFormMetadata', () => {
-  it('rebuilds shape while keeping existing dirty field values', () => {
-    const properties = [textProp('a'), textProp('b'), textProp('c')];
-    const current = { a: [{ value: 'dirty-a' }] };
-    const entityMetadata = {
-      a: [{ value: 'entity-a' }],
-      b: [{ value: 'entity-b' }],
-      c: [{ value: 'entity-c' }],
-    };
-
-    expect(mergeSharedFormMetadata(current, properties, entityMetadata)).toEqual({
-      a: [{ value: 'dirty-a' }],
-      b: [{ value: 'entity-b' }],
-      c: [{ value: 'entity-c' }],
+    it('creates without persisted ids and keeps pending media referenced only in translations', () => {
+      const saved = buildEditEntitySaveInput({
+        currentLanguage: 'en',
+        values: {
+          ...values,
+          title: 'New',
+          metadata: { photo: [{ value: '/en.jpg' }] },
+          translations: { es: { title: [{ value: 'Nuevo' }], photo: [{ value: 'esPhoto' }] } },
+        },
+        metadataProperties: photoProps,
+        pendingAttachments: [pending],
+        mediaPropertyNames: new Set(['photo']),
+        languages: langs,
+      });
+      expect(saved._id).toBeUndefined();
+      expect(saved.sharedId).toBeUndefined();
+      expect(saved.language).toBe('en');
+      expect(saved.attachments).toEqual([pending]);
+      expect(saved.translations).toEqual({
+        es: { title: [{ value: 'Nuevo' }], photo: [{ value: 'esPhoto' }] },
+      });
     });
-  });
-
-  it('strips keys that are not on the target template', () => {
-    expect(
-      mergeSharedFormMetadata({ report: [{ value: 'x' }], leftover: [{ value: 'y' }] }, [
-        textProp('report'),
-      ])
-    ).toEqual({ report: [{ value: 'x' }] });
   });
 });
