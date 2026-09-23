@@ -23,7 +23,7 @@ import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
 import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
-import { MobileMenuDropdown } from './MobileMenuDropdown.js';
+import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.js';
 
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
@@ -38,6 +38,29 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type HeaderReduxProps = ConnectedProps<typeof connector>;
+
+const buildMobileActions = ({
+  shouldShowLibrary,
+  authenticatedUser,
+  libraryUrl,
+  openLibrary,
+}: {
+  shouldShowLibrary: boolean;
+  authenticatedUser: boolean;
+  libraryUrl: string;
+  openLibrary: () => void;
+}): MobileMenuAction[] => {
+  const menuActions: MobileMenuAction[] = [];
+  if (shouldShowLibrary) {
+    menuActions.push({ id: 'library', label: 'Library', to: libraryUrl, onClick: openLibrary });
+  }
+  if (authenticatedUser) {
+    menuActions.push({ id: 'settings', label: 'Settings', to: '/settings/account' });
+  } else {
+    menuActions.push({ id: 'sign-in', label: 'Sign in', to: '/login' });
+  }
+  return menuActions;
+};
 
 const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
@@ -58,6 +81,12 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   );
   const shouldShowLibrary = !settings.private || authenticatedUser;
   const headerLinks = settings.links ?? [];
+  const mobileActions = buildMobileActions({
+    shouldShowLibrary,
+    authenticatedUser,
+    libraryUrl,
+    openLibrary: () => setSidePanelView('library'),
+  });
 
   return (
     <header className="header-bar flex flex-col" data-uwazi-header>
@@ -68,13 +97,15 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         <Translate>Skip to main content</Translate>
       </a>
       <div className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
-          <SiteName
-            className="header-bar-brand shrink-0 px-0 py-0 text-base font-semibold"
-            textClassName="truncate"
-            hideTextWhenLogo
-          />
+        <div data-testid="header-leading" className="flex min-w-0 flex-1 items-center gap-3">
+          {isMobile ? <MobileMenuDropdown links={headerLinks} actions={mobileActions} /> : null}
+          <div className="min-w-0 overflow-hidden">
+            <SiteName
+              className="header-bar-brand min-w-0 px-0 py-0 text-base font-semibold"
+              textClassName="truncate"
+              hideTextWhenLogo
+            />
+          </div>
           {!isMobile ? <MenuLinks links={headerLinks} endOverlapPx={16} /> : null}
         </div>
         <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
@@ -85,7 +116,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
             aria-hidden="true"
           />
           <AskBertButton />
-          {shouldShowLibrary && (
+          {!isMobile && shouldShowLibrary && (
             <I18NLink
               to={libraryUrl}
               onClick={() => setSidePanelView('library')}
@@ -94,10 +125,10 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
               aria-label={t('System', 'Library', null, false)}
             >
               <BookOpenIcon className="h-4 w-4" />
-              {!isMobile ? <Translate>Library</Translate> : null}
+              <Translate>Library</Translate>
             </I18NLink>
           )}
-          {authenticatedUser && (
+          {!isMobile && authenticatedUser && (
             <I18NLink
               to="/settings/account"
               className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
@@ -105,16 +136,16 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
               aria-label={t('System', 'Settings', null, false)}
             >
               <Cog6ToothIcon className="h-4 w-4" />
-              {!isMobile ? <Translate>Settings</Translate> : null}
+              <Translate>Settings</Translate>
             </I18NLink>
           )}
-          {!authenticatedUser && (
+          {!isMobile && !authenticatedUser && (
             <I18NLink
               to="/login"
               className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
             >
               <KeyIcon className="h-4 w-4" />
-              {!isMobile ? <Translate>Sign in</Translate> : null}
+              <Translate>Sign in</Translate>
             </I18NLink>
           )}
           {settings.themeCustomization ? (

@@ -50,7 +50,7 @@ const FileTabFooter = () => {
   if (mode === 'multi') {
     return (
       <EntityTabFooter highlighted inset="side">
-        <div className="flex w-full items-center justify-between gap-2">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2">
           <Button
             variant="warm"
             className="inline-flex items-center"
@@ -87,7 +87,7 @@ const FileTabFooter = () => {
   if (isPreview) {
     return (
       <EntityTabFooter inset="side">
-        <div className="flex w-full items-center justify-between gap-2">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2">
           <Button variant="warm" className="inline-flex items-center" onClick={closeFilePreview}>
             <ArrowLeftIcon className={iconClass} />
             <Translate>Back to details</Translate>
@@ -100,7 +100,7 @@ const FileTabFooter = () => {
 
   return (
     <EntityTabFooter inset="side">
-      <div className="flex w-full items-center justify-between gap-2">
+      <div className="flex w-full flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Button variant="warm" className="inline-flex items-center" onClick={openFilePreview}>
             <EyeIcon className={iconClass} />

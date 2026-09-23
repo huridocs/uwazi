@@ -24,11 +24,11 @@ jest.mock('#V2/Components/PDFViewer/index.js', () => ({
 }));
 
 jest.mock('#V2/Components/Relationships/index.js', () => ({
-  RelationshipsDisplay: () => null,
+  RelationshipsDisplay: () => <div data-testid="reference-rail" />,
 }));
 
 jest.mock('#V2/CustomHooks/useIsMobile.js', () => ({
-  useIsMobile: () => false,
+  useIsMobile: jest.fn(() => false),
 }));
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
@@ -49,6 +49,7 @@ jest.mock('#V2/Routes/Entity/Tabs/hooks/useRailInset.js', () => ({
 const { useDocumentPdfView } = jest.requireMock(
   '#V2/Routes/Entity/Tabs/hooks/useDocumentPdfView.js'
 );
+const { useIsMobile } = jest.requireMock('#V2/CustomHooks/useIsMobile.js');
 
 const pdfView = (canWrite: boolean) => ({
   filename: 'a.pdf',
@@ -99,5 +100,12 @@ describe('DocumentTab PDF selection menu', () => {
     useDocumentPdfView.mockReturnValue(pdfView(false));
     render(<DocumentTab entity={entity} mainDocument={mainDocument} />);
     expect(screen.queryByTestId('document-selection-floating-menu')).not.toBeInTheDocument();
+  });
+
+  it('shows the reference rail on a narrow viewport', () => {
+    useIsMobile.mockReturnValue(true);
+    useDocumentPdfView.mockReturnValue(pdfView(false));
+    render(<DocumentTab entity={entity} mainDocument={mainDocument} />);
+    expect(screen.getByTestId('reference-rail')).toBeInTheDocument();
   });
 });
