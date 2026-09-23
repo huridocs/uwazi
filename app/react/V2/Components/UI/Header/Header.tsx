@@ -82,6 +82,13 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
     libraryUrl,
     openLibrary: () => setSidePanelView('library'),
   });
+  const optionsMenu = (
+    <MobileOptionsMenu actions={mobileActions}>
+      <LanguageDropdown />
+      <AskBertButton compact={false} />
+      <ThemeToggle labeled />
+    </MobileOptionsMenu>
+  );
 
   return (
     <header className="header-bar flex flex-col" data-uwazi-header>
@@ -109,54 +116,54 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />
           {isMobile ? (
-            <MobileOptionsMenu actions={mobileActions}>
-              <LanguageDropdown />
-              <AskBertButton compact={false} />
-              <ThemeToggle labeled />
-            </MobileOptionsMenu>
+            optionsMenu
           ) : (
             <>
-              <LanguageDropdown />
-              <div
-                className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
-                aria-hidden="true"
-              />
-              <AskBertButton />
+              <div data-testid="header-tools-menu" className="md:hidden">
+                {optionsMenu}
+              </div>
+              <div data-testid="header-tools" className="hidden items-center gap-2 md:flex">
+                <LanguageDropdown />
+                <div
+                  className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
+                  aria-hidden="true"
+                />
+                <AskBertButton />
+                {shouldShowLibrary && (
+                  <I18NLink
+                    to={libraryUrl}
+                    onClick={() => setSidePanelView('library')}
+                    className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                    activeClassname="header-bar-button-active"
+                    aria-label={t('System', 'Library', null, false)}
+                  >
+                    <BookOpenIcon className="h-4 w-4" />
+                    <Translate>Library</Translate>
+                  </I18NLink>
+                )}
+                {authenticatedUser ? (
+                  <I18NLink
+                    to="/settings/account"
+                    className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                    activeClassname="header-bar-button-active"
+                    aria-label={t('System', 'Settings', null, false)}
+                  >
+                    <Cog6ToothIcon className="h-4 w-4" />
+                    <Translate>Settings</Translate>
+                  </I18NLink>
+                ) : (
+                  <I18NLink
+                    to="/login"
+                    className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                  >
+                    <KeyIcon className="h-4 w-4" />
+                    <Translate>Sign in</Translate>
+                  </I18NLink>
+                )}
+                <ThemeToggle />
+              </div>
             </>
           )}
-          {!isMobile && shouldShowLibrary && (
-            <I18NLink
-              to={libraryUrl}
-              onClick={() => setSidePanelView('library')}
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
-              activeClassname="header-bar-button-active"
-              aria-label={t('System', 'Library', null, false)}
-            >
-              <BookOpenIcon className="h-4 w-4" />
-              <Translate>Library</Translate>
-            </I18NLink>
-          )}
-          {!isMobile && authenticatedUser && (
-            <I18NLink
-              to="/settings/account"
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
-              activeClassname="header-bar-button-active"
-              aria-label={t('System', 'Settings', null, false)}
-            >
-              <Cog6ToothIcon className="h-4 w-4" />
-              <Translate>Settings</Translate>
-            </I18NLink>
-          )}
-          {!isMobile && !authenticatedUser && (
-            <I18NLink
-              to="/login"
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
-            >
-              <KeyIcon className="h-4 w-4" />
-              <Translate>Sign in</Translate>
-            </I18NLink>
-          )}
-          {!isMobile ? <ThemeToggle /> : null}
         </div>
       </div>
     </header>
