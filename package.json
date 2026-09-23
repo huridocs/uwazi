@@ -371,7 +371,7 @@
     "cypress-real-events": "^1.15.0",
     "enzyme": "3.11.0",
     "enzyme-to-json": "^3.6.2",
-    "eslint-plugin-cypress": "^7.0.1",
+    "eslint-plugin-cypress": "^7.0.2",
     "eslint-plugin-storybook": "10.6.0",
     "fetch-mock": "^9.11.0",
     "flowbite-typography": "1.0.5",
