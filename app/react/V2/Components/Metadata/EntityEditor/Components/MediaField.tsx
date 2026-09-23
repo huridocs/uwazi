@@ -359,7 +359,9 @@ const applyMediaSelection = async ({
     onRegister(attachment);
     url = attachment.fileLocalID;
   }
-  const nextValue = mode === 'media' ? encodeTimelinksValue(url, nextTimelinks) : url;
+  const keepTimelinks = mode === 'media' && !localFile && nextUrl === currentUrl;
+  const nextValue =
+    mode === 'media' ? encodeTimelinksValue(url, keepTimelinks ? nextTimelinks : []) : url;
   onChange(nextValue);
   releaseReplacedUpload(currentUrl, nextValue, onRemove);
 };
@@ -501,13 +503,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
               <MediaPickerModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onSelect={async (selectedUrl, localFile) =>
-                  updateValue(
-                    selectedUrl,
-                    localFile,
-                    mode === 'media' && !localFile && selectedUrl === currentUrl ? timelinks : []
-                  )
-                }
+                onSelect={async (selectedUrl, localFile) => updateValue(selectedUrl, localFile)}
                 mode={mode}
                 attachments={allAttachments}
                 currentValue={rawValue}

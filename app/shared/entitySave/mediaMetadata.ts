@@ -45,13 +45,13 @@ const mapTimelinkValue = (
     return { value: rawValue };
   }
 
-  const [, id, timeLinks] = timelinkMatch;
-  const trimmedId = id.trim();
-  if (!isUploadId(trimmedId)) {
+  const [, , timeLinks] = timelinkMatch;
+  const id = parseMediaSourceUrl(rawValue);
+  if (!isUploadId(id)) {
     return { value: rawValue };
   }
 
-  const { index } = findPendingByFileLocalId(attachments, trimmedId);
+  const { index } = findPendingByFileLocalId(attachments, id);
   return index >= 0 ? { value: '', attachment: index, timeLinks } : { value: rawValue };
 };
 
