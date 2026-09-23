@@ -6,6 +6,7 @@ const route = (handle: Route['handle']): Route => ({
   group: 'things',
   name: 'list',
   describe: 'List things',
+  tenancy: 'none',
   needs: { redis: false },
   fieldMap: {},
   options: y => y,

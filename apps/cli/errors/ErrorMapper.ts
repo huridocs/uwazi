@@ -22,7 +22,11 @@ const EXIT_CODE_BY_CATEGORY: Record<ErrorPayloadCategory, ExitCode> = {
 /** The one place that turns any thrown value into the CLI's exit code and error payload. */
 class ErrorMapper {
   static toExitCode(error: unknown): ExitCode {
-    return EXIT_CODE_BY_CATEGORY[ErrorMapper.categoryOf(error)];
+    return ErrorMapper.exitCodeFor(ErrorMapper.categoryOf(error));
+  }
+
+  static exitCodeFor(category: ErrorPayloadCategory): ExitCode {
+    return EXIT_CODE_BY_CATEGORY[category];
   }
 
   static toPayload(error: unknown, fieldMap: FieldMap, correlationId?: string): ErrorPayload {

@@ -14,6 +14,9 @@ import { CliConfig, Env } from './runtime/CliConfig.js';
 import { CliConnections, ConnectionNeeds } from './runtime/CliConnections.js';
 import { ConsoleRedirect } from './runtime/ConsoleRedirect.js';
 import { InterruptGuard } from './runtime/InterruptGuard.js';
+import { AllTenants } from './tenancy/AllTenants.js';
+import { TenantMiddleware } from './tenancy/TenantMiddleware.js';
+import { TenantOptions } from './tenancy/TenantOptions.js';
 
 type Connections = {
   open(needs: ConnectionNeeds): Promise<void>;
@@ -106,9 +109,14 @@ class CliApplication {
     this.groups().forEach((routes, group) => {
       parser.command(group, `Manage ${group}`, groupParser => {
         routes.forEach(route => {
-          groupParser.command(route.name, route.describe, route.options, async args => {
-            onExit(await this.execute(route, args));
-          });
+          groupParser.command(
+            route.name,
+            route.describe,
+            y => route.options(TenantOptions.options(route.tenancy, y)),
+            async args => {
+              onExit(await this.execute(route, args));
+            }
+          );
         });
         return groupParser.demandCommand(1, `Choose a ${group} command`);
       });
@@ -119,13 +127,15 @@ class CliApplication {
 
   private async execute(route: Route, argv: CliArgv): Promise<ExitCode> {
     const presenter = this.presenter(Boolean(argv.json), Boolean(argv.verbose));
+    const fieldMap = { ...TenantOptions.fieldMap, ...route.fieldMap };
 
     return this.guarded(async () => {
       try {
-        presenter.result(await this.handle(route, argv));
-        return ExitCode.Ok;
+        const output = await this.handle(route, argv);
+        presenter.result(output);
+        return AllTenants.isTenantResults(output) ? AllTenants.exitCode(output) : ExitCode.Ok;
       } catch (error) {
-        presenter.error(ErrorMapper.toPayload(error, route.fieldMap), error);
+        presenter.error(ErrorMapper.toPayload(error, fieldMap), error);
         return ErrorMapper.toExitCode(error);
       }
     });
@@ -153,6 +163,7 @@ class CliApplication {
 
   /** Input and configuration are checked before anything connects. */
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
+    const tenants = TenantOptions.parse(route.tenancy, argv);
     const input = route.toInput(argv);
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
     await this.connections.open(route.needs);
@@ -161,8 +172,14 @@ class CliApplication {
       route: `${route.group} ${route.name}`,
       input,
       json: Boolean(argv.json),
+      tenants,
     };
-    await new Pipeline([new AuditMiddleware(), new ControllerMiddleware(route)]).run(context);
+    const downstream = [new ControllerMiddleware(route)];
+    await new Pipeline([
+      new AuditMiddleware(),
+      new TenantMiddleware(downstream),
+      ...downstream,
+    ]).run(context);
 
     return context.result;
   }
