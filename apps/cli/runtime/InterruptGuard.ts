@@ -1,13 +1,12 @@
 import { EventEmitter } from 'events';
-
-const INTERRUPTED_EXIT_CODE = 130;
+import { ExitCode } from '../errors/ExitCode.js';
 
 /** On Ctrl-C, runs the cleanup (closing connections) and exits with the conventional 130. */
 class InterruptGuard {
   private readonly handler = () => {
     this.cleanup()
       .catch(() => {})
-      .finally(() => this.exit(INTERRUPTED_EXIT_CODE));
+      .finally(() => this.exit(ExitCode.Interrupted));
   };
 
   constructor(
