@@ -1,0 +1,28 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:22
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    network_mode: service:uwazi-elasticsearch
+    environment:
+      - DATABASE_NAME=uwazi_development
+      - DBHOST=localhost:27017
+      - ELASTICSEARCH_URL=http://localhost:9200
+      - INDEX_NAME=uwazi_development
+      - REDIS_HOST=localhost
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=uwazi_development
+      - AWS_ENDPOINT_URL=http://localhost:9000
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - S3_BUCKET=uwazi-development
+    depends_on:
+      - uwazi-elasticsearch
+      - uwazi-mongo
+      - uwazi-redis
+      - uwazi-postgres
+      - uwazi-s3
