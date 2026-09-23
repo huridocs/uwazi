@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GlobeAltIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
@@ -23,6 +23,10 @@ import { DateFacet } from './DateFacet.js';
 import { TypeFacet } from './TypeFacet.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { ActiveFiltersSheet, type Chip } from './ActiveFiltersSheet.js';
+import {
+  NestedGroupsExpansionProvider,
+  useNestedGroupsExpansionControls,
+} from './useNestedGroupExpansion.js';
 
 type LibraryFiltersProps = {
   aggregations: LibraryAggregations;
@@ -63,7 +67,6 @@ const PropertyFacet = ({
   aggregations,
   filters,
   setFilter,
-  open,
   locale,
   typeIds,
   andFilters,
@@ -74,7 +77,6 @@ const PropertyFacet = ({
   aggregations: LibraryAggregations;
   filters: LibraryFiltersState;
   setFilter: (key: string, values: string[]) => void;
-  open: boolean;
   locale: string;
   typeIds: string[];
   andFilters: string[];
@@ -120,7 +122,6 @@ const PropertyFacet = ({
         selectedByGroup={selectedByGroup}
         onChangeGroup={(groupId, values) => setFilter(`${property.name}.${groupId}`, values)}
         locale={locale}
-        open={open}
       />
     );
   }
@@ -134,7 +135,6 @@ const PropertyFacet = ({
         from={range.from}
         to={range.to}
         onChange={({ from, to }) => setFilter(property.name, rangeToValues(from, to))}
-        open={open}
       />
     );
   }
@@ -148,7 +148,6 @@ const PropertyFacet = ({
         from={range.from}
         to={range.to}
         onChange={({ from, to }) => setFilter(property.name, dateToValues(from, to))}
-        open={open}
       />
     );
   }
@@ -159,8 +158,7 @@ const PropertyFacet = ({
         title={title}
         name={property.name}
         value={selected[0] ?? ''}
-        onChange={value => setFilter(property.name, value ? [value] : [])}
-        open={open}
+        onChange={value => setFilter(property.name, value.trim() ? [value.trim()] : [])}
       />
     );
   }
@@ -173,7 +171,6 @@ const PropertyFacet = ({
         selected={selected}
         onToggle={id => setFilter(property.name, toggleValue(selected, id))}
         lookup={async searchTerm => lookupAggregation(property.name, searchTerm, lookupQuery())}
-        open={open}
         mode={mode}
         onModeChange={onModeChange}
         onClear={() => setFilter(property.name, [])}
@@ -191,7 +188,6 @@ const PropertyFacet = ({
       buckets={buckets}
       selected={selected}
       onToggle={id => setFilter(property.name, toggleValue(selected, id))}
-      open={open}
       mode={mode}
       onModeChange={type === 'multiselect' ? onModeChange : undefined}
       onClear={() => setFilter(property.name, [])}
@@ -226,12 +222,7 @@ const LibraryFilters = ({
   });
 
   const activeCount = Object.values(filters).reduce((sum, values) => sum + values.length, 0);
-  const facetIds = ['status', 'type', ...propertyFacets.map(property => property.name)];
-  const [openFacets, setOpenFacets] = useState<Record<string, boolean>>({});
-  const isOpen = (id: string) => openFacets[id] !== false;
-  const setAllFacets = (open: boolean) => {
-    setOpenFacets(Object.fromEntries(facetIds.map(id => [id, open])));
-  };
+  const { expansion, expandAll, collapseAll } = useNestedGroupsExpansionControls();
 
   const setFilter = (key: string, values: string[]) => {
     const next = { ...filters };
@@ -249,75 +240,71 @@ const LibraryFilters = ({
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-warm">
-      <div className="shrink-0 px-3.5 py-2">
-        <span className="inline-flex h-7 items-center rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink">
-          <Translate>Filters</Translate>
-        </span>
+    <NestedGroupsExpansionProvider value={expansion}>
+      <div className="flex h-full min-h-0 flex-col bg-warm">
+        <div className="shrink-0 px-3.5 py-2">
+          <span className="inline-flex h-7 items-center rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink">
+            <Translate>Filters</Translate>
+          </span>
+        </div>
+
+        <div className="flex-1 space-y-2 overflow-auto px-3.5 pb-3">
+          {showStatus && (
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+              <FacetCard title={<Translate>Status</Translate>}>
+                <FacetRow
+                  checked={status.includes('restricted')}
+                  onToggle={() => setFilter('status', toggleValue(status, 'restricted'))}
+                  label={<Translate>Restricted</Translate>}
+                  icon={<LockClosedIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
+                  count={restrictedCount}
+                  bold
+                />
+                <FacetRow
+                  checked={status.includes('published')}
+                  onToggle={() => setFilter('status', toggleValue(status, 'published'))}
+                  label={<Translate>Published</Translate>}
+                  icon={<GlobeAltIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
+                  count={publishedCount}
+                  bold
+                />
+              </FacetCard>
+            </NeedAuthorization>
+          )}
+
+          <TypeFacet aggregations={aggregations} typeIds={typeIds} setFilter={setFilter} />
+
+          {propertyFacets.map(property => (
+            <PropertyFacet
+              key={property.name}
+              property={property}
+              templates={templates}
+              aggregations={aggregations}
+              filters={filters}
+              setFilter={setFilter}
+              locale={locale}
+              typeIds={typeIds}
+              andFilters={andFilters}
+              onAndFiltersChange={onAndFiltersChange}
+            />
+          ))}
+        </div>
+
+        <ActiveFiltersSheet chips={chips} onClearAll={clearAll} />
+
+        <div className="flex h-12 shrink-0 items-center gap-2 border-t border-border px-3.5">
+          <LibraryFooterButton onClick={collapseAll}>
+            <Translate>Collapse all</Translate>
+          </LibraryFooterButton>
+          <LibraryFooterButton onClick={expandAll}>
+            <Translate>Expand all</Translate>
+          </LibraryFooterButton>
+          <LibraryFooterButton className="ms-auto" onClick={clearAll} disabled={activeCount === 0}>
+            <Translate>Clear</Translate>
+          </LibraryFooterButton>
+        </div>
       </div>
-
-      <div className="flex-1 space-y-2 overflow-auto px-3.5 pb-3">
-        {showStatus && (
-          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <FacetCard title={<Translate>Status</Translate>} open={isOpen('status')}>
-              <FacetRow
-                checked={status.includes('restricted')}
-                onToggle={() => setFilter('status', toggleValue(status, 'restricted'))}
-                label={<Translate>Restricted</Translate>}
-                icon={<LockClosedIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
-                count={restrictedCount}
-                bold
-              />
-              <FacetRow
-                checked={status.includes('published')}
-                onToggle={() => setFilter('status', toggleValue(status, 'published'))}
-                label={<Translate>Published</Translate>}
-                icon={<GlobeAltIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
-                count={publishedCount}
-                bold
-              />
-            </FacetCard>
-          </NeedAuthorization>
-        )}
-
-        <TypeFacet
-          aggregations={aggregations}
-          typeIds={typeIds}
-          setFilter={setFilter}
-          open={isOpen('type')}
-        />
-
-        {propertyFacets.map(property => (
-          <PropertyFacet
-            key={property.name}
-            property={property}
-            templates={templates}
-            aggregations={aggregations}
-            filters={filters}
-            setFilter={setFilter}
-            open={isOpen(property.name)}
-            locale={locale}
-            typeIds={typeIds}
-            andFilters={andFilters}
-            onAndFiltersChange={onAndFiltersChange}
-          />
-        ))}
-      </div>
-
-      <ActiveFiltersSheet chips={chips} onClearAll={clearAll} />
-
-      <div className="flex h-12 shrink-0 items-center gap-2 border-t border-border px-3.5">
-        <LibraryFooterButton onClick={() => setAllFacets(false)}>
-          <Translate>Collapse all</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton onClick={() => setAllFacets(true)}>
-          <Translate>Expand all</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton className="ms-auto" onClick={clearAll} disabled={activeCount === 0}>
-          <Translate>Clear</Translate>
-        </LibraryFooterButton>
-      </div>
-    </div>
+    </NestedGroupsExpansionProvider>
   );
 };
 

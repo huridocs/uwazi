@@ -185,6 +185,7 @@ Chart type uses a custom view,Placeholder text inside chart area,Pages / Entity 
 Check to make this instance public (non-logged in users can see public documents and entities),Tooltip,Settings > Collection,Tooltip on the public-instance checkbox explaining what enabling it does.
 Checking which images fit the requirements,Loading message,Settings > Collection,Status message shown in the image picker modal's gallery while images are checked against size rules.
 Choose,Button label,Settings > Collection,Label on the button that opens the image picker when no image is selected yet.
+Choose PDF files,File input aria-label,Library,Accessible name of the hidden file picker in the Library upload-PDF modal.
 Choose relation type,Modal step heading,Entity view,Title shown in the create-relationship modal header while the user selects the relationship type.
 Choose which data to use for training,Tooltip heading,Settings > Metadata extraction,"Heading inside the tooltip on the Train model modal's Training sample label, introducing the two sample options below it."
 Chrome header,Section label,Settings > Theme and branding,Section heading above the app top-bar (chrome) color overrides in the theme editor's advanced and simple color panels.
@@ -545,7 +546,6 @@ Icon,Field label,Entity view,Label over the icon picker in the entity icon/flag 
 "If you want to continue, please type",Modal instruction text,Global navigation,"Text in the confirmation modal's extra-confirm step, prompting the user to type a confirmation word before a destructive action proceeds."
 Image doesn't match the required size.,Validation error message,Settings > Collection,Error prefix shown when a selected or uploaded image fails the dimension rule for a favicon or logotype.
 Import,Button label,Settings > Thesauri,Button that opens a hidden file picker to import thesaurus values from a file.
-Import / Export CSV,Footer button label,Library,Button/link in the Library results footer that opens the CSV import/export settings page.
 Import asset,Button label,Settings > Custom Uploads,"Primary button in the table footer that opens the upload dropzone modal, whose header also reuses this label."
 Import CSV,Button label,Settings > Import CSV,"Footer button on the CSV imports list that opens the upload modal, and the title shown at the top of that modal."
 Import failed. Review details below.,Status description text,Settings > Import CSV,"Description line shown on the import status page when the import fails, pointing to the failure details section."
@@ -817,6 +817,7 @@ Open the two-factor Authenticator app on your device,Instructional text,Login,"F
 Options,Table column header,Settings > Templates,Column header in the properties table for the cell that lists a property's configured settings as pills.
 or,Inline connector text,Library,"Joins ""cmd"" and ""shift"" in the Library grid's multi-select hint, also separates upload options in the attachments media modal."
 or drag and drop here,Dropzone subtitle,Entity view,"Subtitle under the click-to-select prompt on the add-file dropzone, indicating files can also be dragged in."
+or drag and drop PDF files here,Dropzone subtitle,Library,Subtitle under the click-to-select prompt in the Library upload-PDF modal.
 or drop your files here.,Helper text,Shared (used across 4 views),"Text following ""Browse files to upload"" in the same dropzone, telling users they can drag and drop files instead of clicking."
 Or paste a URL,Section label,Entity view,"Heading over the URL input field in the media picker modal, offering an alternative to uploading a file."
 Order,Menu row label,Library,Label for the ascending/descending sub-control inside the toolbar's Display options menu.
@@ -1240,6 +1241,7 @@ This table of contents was automatically created by the system.,Tooltip text,Ent
 this template,Table cell text,Settings > Templates,Suffix appended to the template name in the matching-properties table to mark the row belonging to the template currently being edited.
 This template is in use by existing entities and cannot be deleted.,Tooltip text,Settings > Templates,"Tooltip on the disabled row-selection checkbox for a template that has existing entities, in the templates list table."
 Thumbnail,Checkbox row label,Library,Checkbox in the Display options menu that toggles thumbnail visibility in results.
+Thumbnail frame,Radio group label,Library,Label above Landscape/Portrait in the Library display options menu.
 Time (UTC),Field label,Settings > Dataviz > Refresh tab,Label on the time input used to set the UTC time of a scheduled refresh.
 Timeline,View-mode option label / placeholder title,Library,"Option in the toolbar's view dropdown, and the heading shown in the not-yet-available Timeline results view."
 Timelinks,Section heading,Entity view,"Heading over the list of timestamped markers on a media field, also used in the Pages media widget."
@@ -1307,6 +1309,7 @@ Updated translations,Activity log entry description,Settings > Activity log,"Sam
 Updated user,Activity log entry description,Settings > Activity log,"Same `ParsedActions` lookup pattern (`POST/api/users` entry's `desc`), rendered as `semanticData.description` via `<Translate>`."
 Updating template properties across,Progress indicator label,Settings > Templates,Label preceding the entity count in the progress bar shown in the template editor header while property changes are being applied.
 Updating…,Button label (loading state),Settings > Dataviz > Refresh tab,Label on the refresh button while a manual snapshot refresh is in progress.
+Upload,Button label,Library,Primary button in the Library upload-PDF modal that starts uploading the selected files.
 Upload and select file,Button label,Shared (used across 2 views),Button inside the attachments upload modal's drop zone that opens the file picker.
 Upload from computer,Tab label,Shared (used across 2 views),"Tab inside the attachments upload modal for uploading a file from the user's device, opened from Library and Entity view."
 Upload PDF,Footer button label,Library,Button in the Library results footer that starts uploading a new PDF document.

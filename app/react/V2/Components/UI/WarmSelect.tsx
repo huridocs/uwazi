@@ -4,6 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 type WarmSelectOption<T extends string = string> = {
   value: T;
   label: string;
+  accessory?: React.ReactNode;
 };
 
 type WarmSelectProps<T extends string = string> = {
@@ -44,6 +45,7 @@ const WarmSelect = <T extends string>({
         className={triggerClass}
       >
         <span className="truncate">{current?.label}</span>
+        {current?.accessory}
         <ChevronDownIcon
           className={`h-3.5 w-3.5 shrink-0 text-ink-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden
@@ -68,13 +70,14 @@ const WarmSelect = <T extends string>({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`flex w-full cursor-pointer items-center px-3 py-1.5 text-start text-xs transition-colors ${
+                className={`flex w-full cursor-pointer items-center gap-1.5 px-3 py-1.5 text-start text-xs transition-colors ${
                   option.value === value
                     ? 'bg-vellum font-semibold text-ink'
                     : 'text-ink-secondary hover:bg-warm'
                 }`}
               >
-                {option.label}
+                <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                {option.accessory}
               </button>
             ))}
           </div>

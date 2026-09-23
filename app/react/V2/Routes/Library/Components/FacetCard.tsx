@@ -1,8 +1,9 @@
-import React, { useState, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 
 type FacetMode = 'and' | 'or';
 
@@ -131,12 +132,10 @@ const FacetTree = ({
   const groups = buckets.filter(bucket => bucket.id !== 'any');
   const reserveGutter = groups.some(bucket => Boolean(bucket.values?.length));
   const anyBucket = reserveGutter ? buckets.find(bucket => bucket.id === 'any') : undefined;
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
-    defaultExpanded
-      ? Object.fromEntries(
-          groups.filter(bucket => bucket.values?.length).map(bucket => [bucket.id, true])
-        )
-      : {}
+  const expandableIds = groups.filter(bucket => bucket.values?.length).map(bucket => bucket.id);
+  const { expanded, toggleExpanded } = useNestedGroupExpansion(
+    expandableIds,
+    defaultExpanded ? expandableIds : []
   );
 
   return (
@@ -155,9 +154,7 @@ const FacetTree = ({
               expandable={hasChildren}
               expanded={isExpanded}
               reserveGutter={reserveGutter}
-              onExpand={() =>
-                setExpanded(current => ({ ...current, [bucket.id]: !current[bucket.id] }))
-              }
+              onExpand={() => toggleExpanded(bucket.id)}
             />
             {hasChildren && isExpanded && (
               <TreeChildren>
