@@ -138,7 +138,7 @@ describe('HttpSearchService', () => {
       expect.objectContaining({
         searchTerm: 'Colom',
         types: ['country'],
-        filters: { region: { values: ['south'] } },
+        filters: { region: 'south' },
         limit: 50,
         fields: ['title', 'sharedId', 'template'],
         includeUnpublished: true,

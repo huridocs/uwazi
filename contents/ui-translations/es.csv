@@ -194,6 +194,7 @@ Chart type uses a custom view,El tipo de gráfico utiliza una vista personalizad
 Check to make this instance public (non-logged in users can see public documents and entities),Marca esta opción para que esta instancia sea pública (los usuarios que no hayan iniciado sesión podrán ver los documentos y las entidades públicas)
 Checking which images fit the requirements,Comprobando qué imágenes cumplen los requisitos...
 Choose,Seleccionar
+Choose PDF files,Choose PDF files
 Choose relation type,Seleccionar tipo de relación
 Choose which data to use for training,Elige qué datos quieres utilizar para el entrenamiento
 Chrome header,Encabezado superior
@@ -589,7 +590,6 @@ con instrucciones para restablecer tu contraseña."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Image doesn't match the required size.,La imagen no tiene el tamaño requerido.
 Import,Importar
-Import / Export CSV,Importar/Exportar CSV
 Import asset,Importar recurso
 Import CSV,Importar CSV
 Import failed. Review details below.,La importación ha fallado. Consulta los detalles a continuación.
@@ -900,6 +900,7 @@ Open the two-factor Authenticator app on your device,Abre la app Authenticator d
 Options,Opciones
 or,o
 or drag and drop here,o arrastra y suelta aquí
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,o deposita tus archivos aquí
 Or paste a URL,O pega una URL
 Order,Orden
@@ -1357,6 +1358,7 @@ This table of contents was automatically created by the system.,Este índice ha 
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,Esta plantilla está en uso por parte de entidades existentes y no se puede eliminar.
 Thumbnail,Miniatura
+Thumbnail frame,Thumbnail frame
 Time,Tiempo
 Time (UTC),Hora (UTC)
 Timeline,Cronología
@@ -1432,6 +1434,7 @@ Updated translations,Traducciones actualizadas
 Updated user,Usuario actualizado
 Updating template properties across,Actualizando las propiedades de las plantillas en
 Updating…,Actualizando…
+Upload,Upload
 Upload and select file,Sube y selecciona un archivo
 Upload from computer,Subir desde la computadora
 Upload image,Subir imagen
