@@ -1,25 +1,27 @@
 # HTTP sessions → Postgres
 
-Living plan for moving Express/Passport sessions off the Mongo shared database. Analysis only so far. No production code until the open questions below are answered.
+Living plan for moving Express/Passport sessions off the Mongo shared database onto the single Postgres database.
 
 ## Status
 
-- **Analysis** — done (2026-09-23). Mechanism, shared-db reason, `///` tenant check, library options, and how this differs from users/settings/jobs.
-- **Decisions** — open. Proposals are marked as proposals. Do not treat them as agreed.
+- **Analysis** — done (2026-09-23).
+- **Decisions** — locked (2026-09-23). See Decisions.
 - **Implementation** — not started.
 
 ## Task
 
-Stop storing HTTP sessions in Mongo `uwazi_shared_db` (test: `uwazi_shared_db_testing`). Store them in the single combined Postgres database (`POSTGRES_DB`), the same database as users, settings, entities, and jobs.
+Stop storing HTTP sessions in Mongo `uwazi_shared_db` (test: `uwazi_shared_db_testing`). Store them in the single combined Postgres database (`POSTGRES_DB`), table `http_sessions`.
 
-This is not a per-tenant collection move. The session store is one process-wide object. Tenant isolation today is a string stuffed into `passport.user`, not a separate database and not row-level security.
+The session store is one process-wide object. Tenant isolation stays the `id///tenant` string inside `passport.user`. No row-level security, no `tenant_id` column.
 
-Out of scope unless a decision below pulls it in:
+Out of scope:
 
 - Changing login (`LoginUseCase` + `req.logIn`). There is no Passport strategy to replace.
 - Changing the `connect.sid` cookie name. Sockets and several controllers use that name as a room / correlation key.
+- Changing the serialized payload. It stays `` `${user._id}///${tenant}` ``.
 - Users, settings, or any other module's Postgres cutover.
 - A sessions domain model. A session row is Express infrastructure, same class of thing as the job queue table, not a core aggregate.
+- A way to delete every session for one tenant. No such operation exists, so no column for it.
 
 ## How it works today
 
@@ -28,11 +30,18 @@ Two copies of the same store, both built once at startup against `config.SHARED_
 - HTTP: `app/api/auth/routes.js` → `authenticatedUserMiddlewares()` → `MongoStore.create(...)`.
 - Sockets: `app/api/socketio/setupSockets.ts` → `getSessionStore()`. Falls back to `MemoryStore` if Mongo is not connected (tests that never open a DB).
 
-`express-session` options (both call sites that set them; sockets only build the store):
+`express-session` options:
 
 - `resave: false`, `saveUninitialized: false`.
 - Cookie secret: `USER_SESSION_SECRET` in production, hardcoded `harvey&lola` otherwise. No `cookie.maxAge`, no `cookie.domain`, default cookie name `connect.sid`.
-- `connect-mongo` `touchAfter: 24 * 3600`. `ttl` is not set, so the library default applies (14 days). Expired rows are removed by a Mongo TTL index.
+- `connect-mongo` `touchAfter: 24 * 3600`. `ttl` is not passed, so the library default applies: **14 days** (`1209600` seconds). Expired rows are removed by a Mongo TTL index on `expires`.
+
+`connect-mongo` defaults `stringify: true`, and our call sites do not turn it off. A document in `sessions` looks like:
+
+- `_id` — session id
+- `session` — JSON **string** of the Express session (`cookie`, `passport.user`)
+- `expires` — `Date`
+- `lastModified` — `Date`, present because `touchAfter > 0`. Kept **outside** the session JSON. `get` attaches it in memory; `touch` skips the write when it is less than 24h old.
 
 Request order in `app/server.js`:
 
@@ -44,94 +53,110 @@ Login does not use a Passport strategy. `LoginController` runs `LoginUseCase`, t
 
 Logout is `req.session.destroy()`.
 
-Sockets do not go through Passport. On connect, `attachRoleRoomsIfApplicable` loads the session by sid, splits `passport.user` on `///`, checks the tenant, then loads the user inside `tenants.run`. Redis is the Socket.IO adapter in cluster mode. It is not the session store. Every node must see the same session rows, which is why the store is a database.
+Sockets do not go through Passport. On connect, `attachRoleRoomsIfApplicable` loads the session by sid, splits `passport.user` on `///`, checks the tenant, then loads the user inside `tenants.run`. Redis is the Socket.IO adapter in cluster mode. It is not the session store.
 
 `app/api/utils/testingRoutes.ts` builds the session middleware lazily, because `setUpApp` often runs before Mongo is connected.
 
 ## Why the shared database
 
-The store is constructed once, with one Mongo client, before any request. A multi-tenant process has many Mongo databases and one shared database. The store cannot follow "the current tenant's db" without becoming a different component.
+The store is constructed once, with one Mongo client. A multi-tenant process has many Mongo databases and one shared database, so the store cannot follow the current tenant's database.
 
-The tenant **is** known by the time a request hits session middleware (`multitenantMiddleware` runs first). That is enough to *choose* a backend per request. It is not how the store is built today, and it is not why sessions were put in the shared db. They were put there because the store is process-wide infrastructure, same as the `tenants` collection and (originally) `jobs`.
+The tenant is already known when session middleware runs. That would be enough to branch per request. Sessions were put in the shared db because the store is process-wide infrastructure, same as the `tenants` collection and (originally) `jobs`.
 
-`deserializeUser` then loads the user from the **tenant** database (now Mongo or Postgres users, via `postgresCore`). The session row never contained the user document. It only contains the pointer.
+`deserializeUser` loads the user from the tenant database (Mongo or Postgres users, via `postgresCore`). The session row is only the pointer.
 
 ## Why `id///tenant`
 
-`passport_conf.js`:
+`passport_conf.js` stores `` `${user._id}///${tenants.current().name}` ``. Deserialization and the socket role-room path both return unauthenticated when the name after `///` is not the current tenant. `deserializeUser.spec.ts` pins the mismatch case.
 
-```js
-done(null, `${user._id}///${tenants.current().name}`);
-```
+The check exists because the store is shared. A copied session id would otherwise resolve `users._id` in the wrong database. The delimiter is triple slash because an ObjectId hex string cannot contain it. **This stays.** It is the cross-tenant guard, and it is independent of RLS.
 
-On the way back, deserialization splits on `///` and returns `false` if the serialized tenant is not `tenants.current().name`. The socket role-room path does the same check. `deserializeUser.spec.ts` pins the mismatch case.
+## Library
 
-That check exists because the store is shared. A session id copied onto another tenant's host would otherwise resolve `users._id` in the wrong database. User ids are not a global key. The delimiter is triple slash because an ObjectId hex string cannot contain it. Passport would also accept a JSON object (`{ id, tenant }`); the string is a choice, not a library limit. Existing Mongo rows store the string, so changing the shape is a compatibility decision (see questions).
+Replace **`connect-mongo`** with **`connect-pg-simple`**. Not a Passport plugin. Not `connect-session-knex` (we already have an `app_user` `pg.Pool` at `PostgresDB.pool()`; Knex's pool is not a `pg.Pool`). Not a custom store.
 
-This is the only cross-tenant guard. Nothing in the Mongo session document filters by tenant.
+Use the library's queries and column names as-is: `sid`, `sess`, `expire`. Our schema migration creates `http_sessions` (the library default name `session` collides with Mongo client sessions and Knex transactions). Pass `tableName: 'http_sessions'`. `createTableIfMissing: false`. Do not copy their `table.sql` (`COLLATE "default"`, `OIDS`).
 
-## Postgres equivalent of the library
+Wire `PostgresDB.pool()` (the `app_user` pool), not `adminPool()` and not the Knex pool. `ALTER DEFAULT PRIVILEGES` in `002-create_migrator_user.sql` already grants `app_user` DML on tables the migrator creates.
 
-The Mongo dependency to replace is **`connect-mongo`**, not a Passport plugin.
+Two settings are not the library defaults, because those defaults would shorten sessions and write on every request:
 
-| Option | Fits | Why / why not |
-| --- | --- | --- |
-| **`connect-pg-simple`** | Proposed | Direct stand-in: `express-session` `Store`, `pg.Pool`, columns `sid` / `sess` / `expire`. We already have an `app_user` pool at `PostgresDB.pool()`, separate from the Knex pool that sets `app.current_tenant`. `createTableIfMissing` defaults to **false**, which matches "schema only via `yarn add-migration`". |
-| `connect-session-knex` | No | Useful when the app has Knex and no `pg.Pool`. We have both, and Knex's pool is tarn, not `pg.Pool`, so it cannot be handed to `connect-pg-simple` either. Extra dependency, creates its own table by default. |
-| Custom `express-session` Store | Only if we require RLS | Neither library writes `tenant_id` or runs `set_config('app.current_tenant', ...)`. RLS on `app_user` would hide every row (or error: `current_tenant()` uses `current_setting` without a missing-ok flag). A custom store is the cost of RLS. |
+- `ttl: 14 * 24 * 60 * 60`. With no `cookie.maxAge`, `connect-pg-simple` would use **1 day**. `connect-mongo` here is 14 days. One-day sessions were already a source of complaints.
+- A thin subclass for `touchAfter: 24 * 3600`. The library has `disableTouch` (never slide) or touch-on-every-request. It has no "at most once a day". The subclass is the whole departure from stock behavior: `get` attaches `lastModified` in memory the way `connect-mongo` does, `touch` no-ops inside the window, `set` strips `lastModified` so it is not written into `sess`. No extra column. Pruning stays the library default (`pruneSessionInterval` 900s, randomized).
 
-`connect-pg-simple` does not behave like `connect-mongo` out of the box:
-
-- **TTL.** With no `cookie.maxAge`, `connect-pg-simple` defaults to **1 day**. `connect-mongo` defaults to **14 days**. We must pass `ttl` explicitly or sessions get shorter.
-- **`touchAfter`.** Not supported. `disableTouch: true` stops all expiry sliding. Default touch updates `expire` on every request. Preserving "slide at most once per 24h" means a thin wrapper. Cluster mode makes the extra writes real, not theoretical.
-- **Prune.** `pruneSessionInterval` defaults to 900s (randomized 50–150% so nodes don't prune in lockstep). Mongo uses a TTL index. Either is fine; don't also invent a second reaper.
-- **Table DDL.** Their `table.sql` uses `COLLATE "default"` and `WITH (OIDS=FALSE)`, which we should not copy. Our migration owns the DDL. Column names must stay `sid`, `sess`, `expire` if we use the library. `json` vs `jsonb` both work with node-pg; `jsonb` is the better match for the rest of the schema.
-
-Proposed table name: `http_sessions`, passed as `tableName`. The library default `session` collides with how this codebase says "session" (Mongo client sessions, Knex transactions).
-
-Proposed wiring: `PostgresDB.pool()` (the `app_user` pool). Do not use `adminPool()` and do not share the Knex pool. `ALTER DEFAULT PRIVILEGES` in `002-create_migrator_user.sql` already grants `app_user` DML on tables the migrator creates.
-
-## How other modules did it, and what applies here
-
-| Module | Cutover | RLS | Applies to sessions? |
-| --- | --- | --- | --- |
-| Users, settings, entities, translations, relationship types | Per-tenant `postgresCore` | Yes, `tenant_id` + `current_tenant()` | No. Those rows live in the tenant's data and are read inside `ExecutionContext`, which sets the GUC inside a transaction. The session store runs before that context exists, and it is one store for every tenant. |
-| Captchas, password recoveries | Were their own flags; tables still have RLS | Yes | No. Those collections were per-tenant Mongo, not shared-db. |
-| **Jobs (`021-create-jobs-table.sql`)** | **Closest.** Dispatch follows `postgresCore`. The worker polls whichever backend `QUEUE_BACKEND` (`mongo` \| `postgres`, default `mongo`) names. One process, one backend. | **No.** Comment in the migration: workers see every tenant, so there is no current tenant to filter by. The adapter scopes by a `namespace` column. | The shape matches (shared Mongo collection → one Postgres table, tenant is a column/payload, not a database). The flag does **not** fully match: a job is written once and picked by a worker that can be a different process. A session cookie is written and read by the same request pipeline, so a per-tenant flag means a session created on Mongo becomes invisible the moment that tenant flips, and two tenants on one process need two stores. |
-
-`UsersDirectoryFactory` already documents session deserialization as a caller with no ExecutionContext. Moving the store does not change that, and does not require `postgresCore` to be on. A Postgres session may still deserialize a Mongo user, and the reverse, because the session row is only an id plus a tenant name.
+`sess` is `jsonb`. The library sends JSON text either way; `jsonb` matches the rest of the schema.
 
 ## Flag
 
-A tenant feature flag is a poor fit for a singleton store. The workable shapes:
+`SESSIONS_BACKEND=mongo|postgres`, default `mongo`, whole process. Same idea as `QUEUE_BACKEND`. Not a tenant feature flag. Not dual-read.
 
-1. **Process env, one store.** Same idea as `QUEUE_BACKEND`. Proposed name `SESSIONS_BACKEND=mongo|postgres`, default `mongo`. Flip the process, every tenant uses that store. This is the proposal.
-2. **Per-request branch on `postgresCore`.** Possible, because the tenant is already on `appContext`. Each flag flip logs that tenant out (the other store doesn't have the row). Two stores stay alive for the whole mixed period. This is the users/settings pattern forced onto a shared resource. Not proposed.
-3. **Dual-read** (write Postgres, fall back to Mongo, copy on read). Soft cutover, no mass logout. More code, and it has to live in both `routes.js` and `setupSockets.ts`. Not proposed unless we refuse to drop live sessions.
+The process reads and writes only the backend the env names. Turning the flag back to `mongo` does not copy Postgres rows back. Those users sign in again.
 
-The env flag and RLS are separate decisions. Jobs are the proof: no RLS, and still an env switch. Turning RLS on does not require a per-tenant flag. Skipping the per-tenant flag does not by itself forbid RLS. RLS is blocked by the library, not by the flag.
+## Copy
 
-## RLS
+One copy, from the shared db, then the flag flips. No second read path.
 
-Proposal: **no RLS on `http_sessions`**, same call as `jobs`.
+Jobs are the similar runtime case, and they are **not** a copy we can reuse. There is no jobs `MigrationConfig`, and `migrateToPostgres.ts` never mentions `jobs`. What jobs already solved is the **shape**: Mongo `jobs` live in `config.SHARED_DB` with a `namespace` column (the tenant name), and `021-create-jobs-table.sql` keeps that column and skips RLS. New jobs are written to Mongo or Postgres by `postgresCore` / `QUEUE_BACKEND`. In-flight rows were not backfilled.
 
-What actually stops tenant A from using tenant B's session is the `///` check in `deserializeUser` and in `attachRoleRoomsIfApplicable`, plus an unguessable sid. That stays.
+A jobs copy, if we added one, would be per tenant **from the shared db**: `find({ namespace: tenantName })`, and the Postgres row would still carry `namespace`. Sessions do not follow that. Do not add `namespace`, `tenant_id`, or any other column so the copier can filter. The tenant stays inside the session JSON (`passport.user` = `id///tenant`), which is where it is today. The Postgres table is only the `connect-pg-simple` shape of the current Mongo document: `sid`, `sess`, `expire`.
 
-What RLS would add: `app_user` could not `SELECT` another tenant's session JSON. The JSON holds a user id and a tenant name, not a password. The sid in that row is enough to hijack the session if it leaks. Today the shared Mongo db has the same property for anyone with access to `uwazi_shared_db`.
+`MigrateCollectionToPostgres` / `scripts/scripts.v2/migrateToPostgres.ts` also cannot take sessions as another `FLAG_GROUPS` entry:
 
-Cost of adding RLS anyway: a custom store (or a wrapper that sets `app.current_tenant` on the connection for every `get`/`set`/`touch`/`destroy`) and a real `tenant_id` column the library will not populate. `set_config(..., true)` is transaction-local; doing it on a pooled connection without a transaction leaks the GUC to the next checkout. That pool is also a reason not to improvise.
+- `--tenant` is required, and the script opens `tenants.current().dbName`, not `config.SHARED_DB`.
+- `insertBatch` always sets `tenant_id` from the tenant argument and inserts through `PostgresTable`, which sets `app.current_tenant` for RLS.
+- The "table already has rows" skip is per tenant under that RLS context. On a table with no RLS and no `tenant_id`, the first inserted row would make every later tenant skip the whole table.
 
-A generated column (`split_part` on `sess->passport->user`) could support "delete this tenant's sessions" without RLS and without the library knowing. Nothing else in the app deletes sessions by tenant today. Left as a question, not part of the proposal.
+Evolve that script with a shared-db mode, rather than a second copier:
 
-## Proposed implementation (after the questions)
+- Read `DB.mongodb_Db(config.SHARED_DB)`.
+- Do not stamp `tenant_id`, and do not open a tenant-scoped `PostgresTable` transaction. Insert with the `app_user` connection the store will use.
+- Run **once for the process**, not once per `--tenant`. The flag is process-wide and the table has nothing to slice on. A per-tenant loop would re-scan the same collection and then skip after the first row.
+- Conflict target is `sid`, `ON CONFLICT DO NOTHING`.
 
-Not started. When it starts, TDD per `.cursor/rules/tdd.mdc`, and Jest unsandboxed per `.cursor/rules/local-test-runner.mdc`.
+There is no shape break that would stop the copy. Map each Mongo document:
 
-1. Schema migration via `yarn add-migration schema` (next number is whatever the generator assigns; current highest is `021`). Table `http_sessions (sid, sess jsonb, expire)` plus an index on `expire`. No RLS. No `createTableIfMissing`.
-2. One store factory used by `routes.js` and `setupSockets.ts`, so the two copies cannot drift. Branch on `SESSIONS_BACKEND`. Mongo branch keeps today's `MongoStore` options, including `touchAfter` and the `MemoryStore` fallback.
-3. Postgres branch: `connect-pg-simple` on `PostgresDB.pool()`, `ttl` 14 days, `createTableIfMissing: false`, `tableName: 'http_sessions'`, wrapper that honors `touchAfter` of 24h. `serializeUser` / `deserializeUser` unchanged.
-4. Tests: login → cookie → `/api/user` → `/logout` against Postgres; deserialize still rejects a foreign tenant; socket role rooms still refuse a mismatched `///` tenant; Mongo path still works when the env is unset.
-5. Do not copy Mongo `sessions` documents. Cutover logs people out. Say so in the release notes.
+| Mongo `sessions` | `http_sessions` |
+| --- | --- |
+| `_id` | `sid` |
+| `JSON.parse(session)` (it is stored as a string) | `sess` |
+| `expires` | `expire` |
+
+Leave `lastModified` behind. It is not part of the session JSON. The first request after cutover may write `expire` once, because the in-memory `lastModified` is absent; after that, touch is once a day again.
+
+Copy every document, including already expired ones. Prune deletes those. Re-running is `ON CONFLICT (sid) DO NOTHING`: fill sids that are missing, do not overwrite a row Postgres has already updated.
+
+Order of operations:
+
+1. Ship the schema. The table is unused while `SESSIONS_BACKEND` is still `mongo`.
+2. Run the copy once, while the process is still on Mongo.
+3. Flip `SESSIONS_BACKEND=postgres` and restart.
+
+Sessions created after the copy and before the restart are only in Mongo. Those users sign in again. That window is the cost of copy-once. Do not dual-read to close it.
+
+That mode is not a `FLAG_GROUPS` entry and it is not gated on `postgresCore`. A Postgres session may still point at a Mongo user, and the reverse: the row is only an id and a tenant name.
+
+## Decisions
+
+| Topic | Decision |
+| --- | --- |
+| Store | `connect-pg-simple` on `PostgresDB.pool()` |
+| Table | `http_sessions` (`sid`, `sess` jsonb, `expire`). Index on `expire`. No `namespace`, no `tenant_id`, no other columns. |
+| Flag | `SESSIONS_BACKEND=mongo\|postgres`, default `mongo` |
+| RLS | No |
+| Tenant guard | Existing `id///tenant` check, unchanged |
+| Existing rows | Copy once from shared `sessions`. No dual-read. No copy back to Mongo. |
+| TTL / touch | 14 days. Touch at most once per 24h, via a thin subclass. Library prune stays. |
+| Domain module | No |
+
+## Implementation
+
+Not started. TDD per `.cursor/rules/tdd.mdc`. Jest unsandboxed per `.cursor/rules/local-test-runner.mdc`.
+
+1. Schema migration via `yarn add-migration schema` (generator assigns the number; current highest is `021`). `http_sessions (sid varchar primary key, sess jsonb not null, expire timestamp(6) not null)` plus an index on `expire`. No RLS.
+2. One store factory used by `routes.js` and `setupSockets.ts`. Branch on `SESSIONS_BACKEND`. Mongo branch keeps today's `MongoStore` options, including `touchAfter` and the `MemoryStore` fallback.
+3. Postgres branch: `connect-pg-simple` as above, plus the `touchAfter` subclass. `serializeUser` / `deserializeUser` unchanged.
+4. Shared-db mode on `migrateToPostgres.ts` / `MigrateCollectionToPostgres`: one run, source `config.SHARED_DB` `sessions`, no `tenant_id`, conflict on `sid`. Not a `FLAG_GROUPS` / `--tenant` entry.
+5. Tests: login → cookie → `/api/user` → `/logout` on Postgres; a copied Mongo document round-trips (`sid` / parsed `sess` / `expire`), including `passport.user` still containing `///`; deserialize still rejects a foreign tenant; socket role rooms still refuse a mismatched tenant; touch inside 24h does not write; Mongo path still works when the env is unset.
 
 V1 rule: `routes.js` and `passport_conf.js` stay as they are apart from the store wiring. No hexagon around this.
 
@@ -140,37 +165,20 @@ V1 rule: `routes.js` and `passport_conf.js` stay as they are apart from the stor
 - [x] Read backend AGENTS, architecture, migrations, v1-legacy.
 - [x] Trace session middleware, Passport serialize/deserialize, socket store, login/logout.
 - [x] Compare with users / settings (`postgresCore` + RLS) and jobs (`QUEUE_BACKEND`, no RLS).
-- [x] Pick a Postgres store candidate and list the behavior gaps (`ttl`, `touchAfter`).
-- [ ] Answer the open questions.
+- [x] Pick `connect-pg-simple` and record the `ttl` / `touchAfter` gaps.
+- [x] Lock decisions (flag, no RLS, copy once, 14-day touch, `http_sessions`, keep `///`).
 - [ ] Schema migration + store factory (TDD, red first).
 - [ ] Switch both call sites.
-- [ ] Specs listed in the proposal, unsandboxed.
+- [ ] Shared-db mode on the existing copy script (one run, no `tenant_id`).
+- [ ] Specs listed above, unsandboxed.
 - [ ] `yarn lint --type-aware --max-warnings 0`, prettier, `yarn check-types` on the files we touch.
 
 ## Questions
 
-1. **Env switch.** Confirm `SESSIONS_BACKEND=mongo|postgres`, default `mongo`, whole process, not a tenant flag. Anything else (dual-read, per-tenant branch) is a different project.
-2. **RLS.** Confirm we skip it and keep `id///tenant` as the guard. If we want RLS, we drop `connect-pg-simple` and write a store. I would not, for the reasons in the RLS section.
-3. **Live sessions.** Confirm cutover does not copy Mongo sessions, so everyone signs in again. The alternative is dual-read.
-4. **Sliding expiry.** Confirm we keep 14-day TTL and touch at most once per 24h (small wrapper). The alternative is a write on every authenticated request, which is what `connect-pg-simple` does unless `disableTouch` is on — and `disableTouch` stops sliding entirely.
-5. **Payload.** Confirm `id///tenant` stays. An object would be clearer and would survive a tenant name that contains `///`. Changing it either drops old sessions (already the proposal) or needs a reader for both shapes.
-6. **Tenant column for deletion.** Do we need "remove every session for tenant X" (offboarding)? If yes, a `tenant_id` column or a generated column belongs in the first migration. If no, `sid` + `sess` + `expire` is enough.
-
-## Decisions
-
-None confirmed yet. Proposals, pending the questions:
-
-| Topic | Proposal |
-| --- | --- |
-| Store | `connect-pg-simple` on `PostgresDB.pool()` |
-| Flag | `SESSIONS_BACKEND`, default `mongo` |
-| RLS | No |
-| Tenant guard | Existing `///` check, unchanged |
-| Existing rows | Not migrated |
-| TTL / touch | 14 days, touch at most once per 24h |
-| Table | `http_sessions`, our SQL migration |
-| Domain module | No |
+None open.
 
 ## Progress
 
-- **2026-09-23** — Analysis and this plan. No code.
+- **2026-09-23** — Analysis written.
+- **2026-09-23** — Decisions locked. Copy is in scope: one pass from the shared `sessions` collection into `http_sessions`, because the document maps onto `sid` / `sess` / `expire` with no leftover column. The per-tenant migrator is the wrong tool (it reads a tenant db and stamps `tenant_id`). `touchAfter` is a subclass, not a library option; the table and the queries stay stock. No code yet.
+- **2026-09-23** — Jobs do not have a backfill. Their tenant handling is a `namespace` column on the shared Mongo collection and on the Postgres table, and new writes follow `postgresCore` / `QUEUE_BACKEND`. Sessions do not gain that column. The copy script grows a shared-db mode: one process-wide run, and the row stays `sid` / `sess` / `expire`.
