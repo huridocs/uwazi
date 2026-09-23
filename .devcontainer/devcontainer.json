@@ -10,7 +10,7 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "corepack enable && yarn install",
+  "postCreateCommand": "corepack enable && yarn install && sudo apt-get update && sudo apt-get install -y postgresql-client",
   "customizations": {
     "vscode": {
       "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "mongodb.mongodb-vscode"],
@@ -21,7 +21,8 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers-contrib/features/mongodb-mongosh-mongo-tools:1": {}
   },
   "remoteUser": "node"
 }
