@@ -38,6 +38,45 @@ const THUMB_SIZES: { id: ThumbSize; label: string }[] = [
   { id: 'l', label: 'Large' },
 ];
 
+type LibraryCardDisplayState = {
+  showThumbnail: boolean;
+  showMetadata: boolean;
+  thumbFrame: ThumbFrame;
+  thumbSize: ThumbSize;
+};
+
+const DEFAULT_LIBRARY_CARD_DISPLAY: LibraryCardDisplayState = {
+  showThumbnail: true,
+  showMetadata: true,
+  thumbFrame: DEFAULT_THUMB_FRAME,
+  thumbSize: DEFAULT_THUMB_SIZE,
+};
+
+const isThumbFrame = (value: unknown): value is ThumbFrame =>
+  value === 'landscape' || value === 'portrait';
+
+const isThumbSize = (value: unknown): value is ThumbSize =>
+  value === 's' || value === 'm' || value === 'l';
+
+const parseLibraryCardDisplay = (value: unknown): LibraryCardDisplayState => {
+  if (!value || typeof value !== 'object') {
+    return DEFAULT_LIBRARY_CARD_DISPLAY;
+  }
+  const raw = value as Partial<LibraryCardDisplayState>;
+  return {
+    showThumbnail:
+      typeof raw.showThumbnail === 'boolean'
+        ? raw.showThumbnail
+        : DEFAULT_LIBRARY_CARD_DISPLAY.showThumbnail,
+    showMetadata:
+      typeof raw.showMetadata === 'boolean'
+        ? raw.showMetadata
+        : DEFAULT_LIBRARY_CARD_DISPLAY.showMetadata,
+    thumbFrame: isThumbFrame(raw.thumbFrame) ? raw.thumbFrame : DEFAULT_THUMB_FRAME,
+    thumbSize: isThumbSize(raw.thumbSize) ? raw.thumbSize : DEFAULT_THUMB_SIZE,
+  };
+};
+
 const THUMB_FRAMES: { id: ThumbFrame; label: string; detail: string }[] = [
   { id: 'portrait', label: 'Portrait', detail: '3:4 cards in narrower columns — a gallery hang' },
   { id: 'landscape', label: 'Landscape', detail: 'A wide band across the card' },
@@ -48,8 +87,9 @@ const thumbnailFitFromStyle = (style?: string): ThumbFit =>
 
 const imageIsMatted = (fit: ThumbFit): boolean => fit === 'contain';
 
-export type { ThumbFit, ThumbFrame, ThumbSize, ThumbnailKind };
+export type { LibraryCardDisplayState, ThumbFit, ThumbFrame, ThumbSize, ThumbnailKind };
 export {
+  DEFAULT_LIBRARY_CARD_DISPLAY,
   DEFAULT_THUMB_FIT,
   DEFAULT_THUMB_FRAME,
   DEFAULT_THUMB_SIZE,
@@ -59,5 +99,6 @@ export {
   THUMB_FRAMES,
   THUMB_SIZES,
   imageIsMatted,
+  parseLibraryCardDisplay,
   thumbnailFitFromStyle,
 };
