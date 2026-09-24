@@ -6,7 +6,8 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { TenantDomainMissing } from '../../../tenancy/TenantDomainMissing.js';
 import { CreatedUserOutputSchema } from '../../contracts.js';
 import { CreateUserController } from '../CreateUserController.js';
-import { asCli, backends, f, fixtures, stored, useBackend } from './fixtures.js';
+import { ControllerSpecs } from '../../../testing/ControllerSpecs.js';
+import { f, fixtures } from './fixtures.js';
 
 const input = (overrides: Record<string, unknown> = {}) => ({
   username: 'newguy',
@@ -17,9 +18,9 @@ const input = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-describe.each(backends)('CreateUserController ($name)', ({ postgresCore }) => {
+describe.each(ControllerSpecs.backends)('CreateUserController ($name)', ({ postgresCore }) => {
   const welcomeEmailJobs = async () =>
-    (await stored(postgresCore, 'jobs')).filter(
+    (await ControllerSpecs.stored(postgresCore, 'jobs')).filter(
       job =>
         job.name === 'SendWelcomeEmailHandler' && job.namespace === testingTenants.current().name
     );
@@ -27,11 +28,11 @@ describe.each(backends)('CreateUserController ($name)', ({ postgresCore }) => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, { postgres: true });
     await testingEnvironment.pg.pool!.query('DELETE FROM jobs');
-    useBackend(postgresCore, { domain: 'tenant.test' });
+    ControllerSpecs.useBackend(postgresCore, { domain: 'tenant.test' });
   });
 
   it('should create the user and report it', async () => {
-    const output = await asCli(async () =>
+    const output = await ControllerSpecs.asCli(async () =>
       CreateUserController.handle(input({ groups: [f.idString('Researchers')] }))
     );
 
@@ -44,13 +45,13 @@ describe.each(backends)('CreateUserController ($name)', ({ postgresCore }) => {
       },
       welcomeEmailQueued: true,
     });
-    expect(await stored(postgresCore, 'users')).toContainEqual(
+    expect(await ControllerSpecs.stored(postgresCore, 'users')).toContainEqual(
       expect.objectContaining({ username: 'newguy', email: 'newguy@test.com' })
     );
   });
 
   it('should queue the welcome email with the tenant domain', async () => {
-    const { user } = await asCli(async () => CreateUserController.handle(input()));
+    const { user } = await ControllerSpecs.asCli(async () => CreateUserController.handle(input()));
 
     expect(await welcomeEmailJobs()).toEqual([
       expect.objectContaining({
@@ -60,7 +61,7 @@ describe.each(backends)('CreateUserController ($name)', ({ postgresCore }) => {
   });
 
   it('should skip the welcome email when asked', async () => {
-    const output = await asCli(async () =>
+    const output = await ControllerSpecs.asCli(async () =>
       CreateUserController.handle(input({ welcomeEmail: false }))
     );
 
@@ -69,23 +70,25 @@ describe.each(backends)('CreateUserController ($name)', ({ postgresCore }) => {
   });
 
   it('should fail, creating nothing, when the tenant has no domain configured', async () => {
-    useBackend(postgresCore, { domain: '' });
+    ControllerSpecs.useBackend(postgresCore, { domain: '' });
 
-    await expect(asCli(async () => CreateUserController.handle(input()))).rejects.toThrow(
-      TenantDomainMissing
-    );
-    expect((await stored(postgresCore, 'users')).map(u => u.username)).not.toContain('newguy');
+    await expect(
+      ControllerSpecs.asCli(async () => CreateUserController.handle(input()))
+    ).rejects.toThrow(TenantDomainMissing);
+    expect(
+      (await ControllerSpecs.stored(postgresCore, 'users')).map(u => u.username)
+    ).not.toContain('newguy');
   });
 
   it('should fail with a conflict for an existing username', async () => {
     await expect(
-      asCli(async () => CreateUserController.handle(input({ username: 'editor' })))
+      ControllerSpecs.asCli(async () => CreateUserController.handle(input({ username: 'editor' })))
     ).rejects.toThrow(UsernameExists);
   });
 
   it('should enforce the domain rules', async () => {
     await expect(
-      asCli(async () => CreateUserController.handle(input({ username: 'new guy' })))
+      ControllerSpecs.asCli(async () => CreateUserController.handle(input({ username: 'new guy' })))
     ).rejects.toThrow(ZodError);
   });
 });
