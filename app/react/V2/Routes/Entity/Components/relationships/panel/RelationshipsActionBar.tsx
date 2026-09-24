@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Settings2StrokeIcon } from '#V2/Components/CustomIcons/index.js';
@@ -21,31 +22,45 @@ import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.
 
 const iconClass = 'h-3 w-3 shrink-0';
 
-const RelationshipsActionBar = () => {
-  const sourceMarkers = useEntityRelationshipMarkers();
-  const {
-    relationshipsEditMode: editMode,
-    setRelationshipsEditMode: setEditMode,
-    selectedRelationshipIds: selected,
-    setSelectedRelationshipIds: setSelected,
-  } = useRelationshipsSelection();
-  const { openCreateRelationship, openManageRelationTypes } = useRelationshipsActions();
-  const { documentPdfSelection } = useDocumentPdf();
-  const { focusRelationshipsPanel } = useEntityTabNavigation();
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const { activeRelationshipId, clearRelationshipSelection } = useActiveRelationshipHighlight();
-
+const selectionState = (sourceMarkers: { _id: string }[], selected: Set<string>) => {
   const totalCount = sourceMarkers.length;
   const selectedCount = selected.size;
-  const hasSelection = selectedCount > 0;
-  const allSelected = totalCount > 0 && selectedCount === totalCount;
+  return {
+    totalCount,
+    selectedCount,
+    hasSelection: selectedCount > 0,
+    allSelected: totalCount > 0 && selectedCount === totalCount,
+    allIds: sourceMarkers.map(marker => marker._id),
+  };
+};
 
-  const allIds = useMemo(() => sourceMarkers.map(marker => marker._id), [sourceMarkers]);
+type RelationshipCommandsInput = {
+  selected: Set<string>;
+  setSelected: React.Dispatch<React.SetStateAction<Set<string>>>;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setConfirmDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  activeRelationshipId?: string | null;
+  clearRelationshipSelection: () => void;
+  documentPdfSelection?: TextSelection;
+  focusRelationshipsPanel: () => void;
+  openCreateRelationship: (selection?: TextSelection) => void;
+};
 
+const useRelationshipCommands = ({
+  selected,
+  setSelected,
+  setEditMode,
+  setConfirmDelete,
+  activeRelationshipId,
+  clearRelationshipSelection,
+  documentPdfSelection,
+  focusRelationshipsPanel,
+  openCreateRelationship,
+}: RelationshipCommandsInput) => {
   const clearSelection = useCallback(() => {
     setSelected(new Set());
     setConfirmDelete(false);
-  }, [setSelected]);
+  }, [setConfirmDelete, setSelected]);
 
   const { isDeleting, deleteSelected } = useRelationshipBulkDelete(selected, () => {
     if (activeRelationshipId && selected.has(activeRelationshipId)) {
@@ -71,6 +86,67 @@ const RelationshipsActionBar = () => {
     openCreateRelationship(documentPdfSelection);
     focusRelationshipsPanel();
   }, [documentPdfSelection, focusRelationshipsPanel, openCreateRelationship]);
+
+  return { isDeleting, cancelEdit, saveEdit, handleConfirmDelete, handleCreate };
+};
+
+const useRelationshipsActionModel = () => {
+  const sourceMarkers = useEntityRelationshipMarkers();
+  const {
+    relationshipsEditMode: editMode,
+    setRelationshipsEditMode: setEditMode,
+    selectedRelationshipIds: selected,
+    setSelectedRelationshipIds: setSelected,
+  } = useRelationshipsSelection();
+  const { openCreateRelationship, openManageRelationTypes } = useRelationshipsActions();
+  const { documentPdfSelection } = useDocumentPdf();
+  const { focusRelationshipsPanel } = useEntityTabNavigation();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const { activeRelationshipId, clearRelationshipSelection } = useActiveRelationshipHighlight();
+  const summary = selectionState(sourceMarkers, selected);
+  const commands = useRelationshipCommands({
+    selected,
+    setSelected,
+    setEditMode,
+    setConfirmDelete,
+    activeRelationshipId,
+    clearRelationshipSelection,
+    documentPdfSelection,
+    focusRelationshipsPanel,
+    openCreateRelationship,
+  });
+
+  return {
+    editMode,
+    setEditMode,
+    setSelected,
+    openManageRelationTypes,
+    confirmDelete,
+    setConfirmDelete,
+    ...summary,
+    ...commands,
+  };
+};
+
+const RelationshipsActionBar = () => {
+  const {
+    editMode,
+    setEditMode,
+    setSelected,
+    openManageRelationTypes,
+    confirmDelete,
+    setConfirmDelete,
+    totalCount,
+    selectedCount,
+    hasSelection,
+    allSelected,
+    allIds,
+    isDeleting,
+    cancelEdit,
+    saveEdit,
+    handleConfirmDelete,
+    handleCreate,
+  } = useRelationshipsActionModel();
 
   return (
     <EntityWriteAuthorization>
