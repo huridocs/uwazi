@@ -26,7 +26,6 @@ type LibraryRightPaneProps = {
   onRemoveSelection: (sharedId: string) => void;
   onPreviewSelection: (sharedId: string) => void;
   onCreated: (sharedId?: string) => void;
-  inspecting: boolean;
   onAction?: (action: LibraryBulkAction) => void;
 };
 
@@ -48,15 +47,12 @@ const LibraryRightPane = ({
   onRemoveSelection,
   onPreviewSelection,
   onCreated,
-  inspecting,
   onAction,
 }: LibraryRightPaneProps) => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
   }
-  const singleId = selectedIds.length === 1 ? selectedIds[0] : undefined;
-  const showPreview = Boolean(singleId && (focusFieldKey || inspecting));
-  if (selectedIds.length >= 1 && selectionPanelOpen && !showPreview) {
+  if (selectedIds.length > 1 && selectionPanelOpen) {
     return (
       <LibrarySelectionPanel
         rows={rows}

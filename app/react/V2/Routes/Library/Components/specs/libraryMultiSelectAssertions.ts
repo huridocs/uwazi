@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
 const results = () => screen.getByRole('region', { name: 'Library results' });
 
@@ -34,33 +34,25 @@ const panelBarSequence = (footer: HTMLElement) =>
     return text ? [text] : [];
   });
 
-const expectPanelBarEnd = (sequence: string[], count: number, footer: HTMLElement) => {
-  expect(sequence.at(-1)).toBe(count === 1 ? 'View entity' : 'Close');
-  if (count === 1) {
-    expect(sequence.at(-2)).toBe('Close');
-    expect(within(footer).getByRole('link', { name: 'View entity' })).toBeInTheDocument();
-    return;
-  }
-  expect(within(footer).queryByRole('link', { name: 'View entity' })).not.toBeInTheDocument();
-};
-
-const expectPanelBar = (count: number) => {
+const expectPanelBar = () => {
   const footer = selectionPanelFooter();
   expect(within(footer).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
   expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
   expect(within(footer).queryByRole('menu')).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('link', { name: 'View entity' })).not.toBeInTheDocument();
   const sequence = panelBarSequence(footer);
   expect(sequence.slice(0, 4)).toEqual(['Edit', 'Permissions', 'divider', 'Delete']);
-  expectPanelBarEnd(sequence, count, footer);
+  expect(sequence.at(-1)).toBe('Close');
   expect(within(footer).getByRole('button', { name: 'Delete' })).toHaveClass('text-seal-label');
 };
 
 const expectSingleEntity = async (title: string) => {
-  const panel = await screen.findByTestId('library-selection-panel');
-  expect(panel).toHaveTextContent(title);
-  expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
-  expect(screen.getByTestId('library-selection-count')).toHaveTextContent('1 entity');
-  expectPanelBar(1);
+  await waitFor(() => {
+    expect(
+      within(screen.getByTestId('library-entity-preview')).getByText(title)
+    ).toBeInTheDocument();
+  });
+  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
   const footer = screen.getByTestId('library-multi-select-footer');
   expectSelectionActions(footer);
   expect(within(footer).getByTestId('library-selected-count')).toHaveTextContent('1 selected');
@@ -85,14 +77,14 @@ const expectPanelRows = () => {
 const selectionFooter = () => screen.getByTestId('library-multi-select-footer');
 
 const expectDesktopLabelClasses = (footer: HTMLElement) => {
-  expect(footer).toHaveClass('@container', 'w-full');
-  expect(footer).not.toHaveClass('flex');
-  const bar = footer.firstElementChild;
-  expect(bar).toHaveClass('flex');
-  expect(bar).not.toHaveClass('@container');
+  expect(footer).toHaveClass('w-full');
+  expect(footer).not.toHaveClass('@container');
   selectionActionLabels.forEach(label => {
     const text = within(within(footer).getByRole('button', { name: label })).getByText(label);
-    expect(text.parentElement).toHaveClass('hidden', '@min-[56rem]:inline');
+    const classes = text.parentElement?.className.split(/\s+/) ?? [];
+    expect(classes).toContain('sm:inline');
+    expect(classes).not.toContain('hidden');
+    expect(text.parentElement?.className ?? '').not.toContain('@min-');
   });
 };
 
@@ -119,7 +111,7 @@ const expectPanelChrome = () => {
   expect(panelFooter).toHaveClass('h-12');
   expect(within(panelFooter).getByRole('button', { name: 'Close' })).toBeInTheDocument();
   expect(within(panelFooter).getByRole('button', { name: 'Edit' })).toBeInTheDocument();
-  expectPanelBar(3);
+  expectPanelBar();
 };
 
 const expectPageSelectionFooter = () => {
@@ -140,7 +132,7 @@ const expectActionsMenu = () => {
   const panel = screen.getByTestId('library-selection-panel');
   expect(within(panel).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
   expect(within(panel).queryByRole('menu', { name: 'Selection actions' })).not.toBeInTheDocument();
-  expectPanelBar(3);
+  expectPanelBar();
 };
 
 const expectCreateFooter = () => {

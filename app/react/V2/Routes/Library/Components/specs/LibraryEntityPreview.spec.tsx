@@ -363,11 +363,11 @@ describe('LibraryView preview pane', () => {
     expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
   });
 
-  it('shows the selection panel instead of filters when an entity is selected', async () => {
+  it('shows the entity preview instead of filters when an entity is selected', async () => {
     renderView(entityWithDocument.sharedId);
-    const panel = await screen.findByTestId('library-selection-panel');
-    expect(panel).toHaveTextContent('Case 11.481 (Gelman)');
-    expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
+    expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
+    expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
+    expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 

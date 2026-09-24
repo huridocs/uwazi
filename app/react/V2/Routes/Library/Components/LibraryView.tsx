@@ -92,15 +92,13 @@ const LibraryView = ({
     clear();
     onClosePreview();
   };
-  const { selectionPanelOpen, notShown, inspecting, onAction, dialogs } = useLibrarySelectionChrome(
-    {
-      selectedIds,
-      orderedIds,
-      rows,
-      addEntity,
-      onDeleted: dismissSelection,
-    }
-  );
+  const { selectionPanelOpen, notShown, onAction, dialogs } = useLibrarySelectionChrome({
+    selectedIds,
+    orderedIds,
+    rows,
+    addEntity,
+    onDeleted: dismissSelection,
+  });
   const {
     focusFieldKey,
     selectRow,
@@ -238,7 +236,6 @@ const LibraryView = ({
             }
             onPreviewSelection={sharedId => selectEntity(sharedId)}
             onCreated={finishCreated}
-            inspecting={inspecting}
             onAction={onAction}
           />
         </PaneLayout.Pane>
