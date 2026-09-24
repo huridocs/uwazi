@@ -8,7 +8,11 @@ import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js
 import type { Entity } from '#V2/api/entities/types.js';
 import { EntityCard } from '../EntityCard.js';
 import { metadataFieldsForCard, thumbnailFromEntity } from '../cardModel.js';
-import { DEFAULT_THUMB_FRAME } from '../libraryCardDisplay.js';
+import {
+  DEFAULT_THUMB_FRAME,
+  DEFAULT_THUMB_SIZE,
+  PORTRAIT_CARD_GRID_CLASS,
+} from '../libraryCardDisplay.js';
 import { LoadMore } from '../LoadMore.js';
 import type { LibraryViewerProps } from './types.js';
 
@@ -25,6 +29,7 @@ const CardViewer = ({
   showMetadata,
   onFocusProperty,
   thumbFrame = DEFAULT_THUMB_FRAME,
+  thumbSize = DEFAULT_THUMB_SIZE,
 }: CardViewerProps) => {
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom) || 'en';
@@ -45,12 +50,12 @@ const CardViewer = ({
 
   const cardGridCols =
     thumbFrame === 'portrait' && showThumbnail
-      ? 'grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4'
-      : 'grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3';
+      ? PORTRAIT_CARD_GRID_CLASS[thumbSize]
+      : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
 
   return (
     <>
-      <div className={`grid ${cardGridCols}`}>
+      <div className={`grid gap-3 ${cardGridCols}`}>
         {rows.map(entity => {
           const cardEntity = entity as Entity;
           const template = templateById.get(entity.template);
@@ -71,6 +76,7 @@ const CardViewer = ({
               thumbnailKind={thumbnail.kind}
               thumbFit={thumbnail.fit}
               thumbFrame={thumbFrame}
+              thumbSize={thumbSize}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
               selected={selectedId === entity.sharedId}

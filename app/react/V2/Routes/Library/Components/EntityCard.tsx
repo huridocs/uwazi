@@ -8,8 +8,12 @@ import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
 import {
   DEFAULT_THUMB_FIT,
   DEFAULT_THUMB_FRAME,
+  DEFAULT_THUMB_SIZE,
+  LANDSCAPE_CARD_FLOOR_CLASS,
+  LANDSCAPE_THUMB_HEIGHT_CLASS,
   type ThumbFit,
   type ThumbFrame,
+  type ThumbSize,
   type ThumbnailKind,
 } from './libraryCardDisplay.js';
 import { EntityThumbnail } from './EntityThumbnail.js';
@@ -29,6 +33,7 @@ type EntityCardProps = {
   thumbnailKind?: ThumbnailKind;
   thumbFit?: ThumbFit;
   thumbFrame?: ThumbFrame;
+  thumbSize?: ThumbSize;
   selected?: boolean;
   onSelect?: () => void;
   onFocusProperty?: (fieldKey: string) => void;
@@ -45,6 +50,7 @@ const EntityCard = ({
   thumbnailKind,
   thumbFit = DEFAULT_THUMB_FIT,
   thumbFrame = DEFAULT_THUMB_FRAME,
+  thumbSize = DEFAULT_THUMB_SIZE,
   selected = false,
   onSelect,
   onFocusProperty,
@@ -76,6 +82,12 @@ const EntityCard = ({
     : 'bg-paper border-border/60 hover:bg-parchment';
 
   const activate = () => onSelect?.();
+  const slotShape =
+    thumbFrame === 'portrait' ? 'aspect-[3/4]' : LANDSCAPE_THUMB_HEIGHT_CLASS[thumbSize];
+  const cardFloor =
+    showThumbnail && showMetadata && thumbFrame === 'landscape'
+      ? LANDSCAPE_CARD_FLOOR_CLASS[thumbSize]
+      : '';
 
   return (
     <div
@@ -89,7 +101,7 @@ const EntityCard = ({
           activate();
         }
       }}
-      className={`${base} ${surface} flex h-full flex-col gap-2.5 p-3`}
+      className={`${base} ${surface} ${cardFloor} flex h-full flex-col gap-2.5 p-3`}
     >
       {showThumbnail && (
         <EntityThumbnail
@@ -99,9 +111,7 @@ const EntityCard = ({
           frame={thumbFrame}
           tint={accentHex}
           alt=""
-          className={`${
-            thumbFrame === 'portrait' ? 'aspect-[3/4]' : 'h-[142px]'
-          } w-full shrink-0 overflow-hidden rounded border border-border/60`}
+          className={`${slotShape} w-full shrink-0 overflow-hidden rounded border border-border/60`}
         />
       )}
       <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{title}</span>

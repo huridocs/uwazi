@@ -12,8 +12,10 @@ import type { Entity } from '#V2/api/entities/types.js';
 import { EntityCard, type EntityCardField } from '../EntityCard.js';
 import { thumbnailFromEntity } from '../cardModel.js';
 import {
-  landscapeThumbHeightClass,
+  LANDSCAPE_CARD_FLOOR_CLASS,
+  LANDSCAPE_THUMB_HEIGHT_CLASS,
   type ThumbFrame,
+  type ThumbSize,
   type ThumbnailKind,
 } from '../libraryCardDisplay.js';
 
@@ -28,6 +30,8 @@ const renderCard = ({
   thumbnailSrc,
   thumbnailKind,
   thumbFrame,
+  thumbSize,
+  showMetadata,
 }: {
   selected?: boolean;
   showThumbnail?: boolean;
@@ -37,6 +41,8 @@ const renderCard = ({
   thumbnailSrc?: string;
   thumbnailKind?: ThumbnailKind;
   thumbFrame?: ThumbFrame;
+  thumbSize?: ThumbSize;
+  showMetadata?: boolean;
 } = {}) =>
   render(
     <MemoryRouter>
@@ -56,6 +62,8 @@ const renderCard = ({
           thumbnailSrc={thumbnailSrc}
           thumbnailKind={thumbnailKind}
           thumbFrame={thumbFrame}
+          thumbSize={thumbSize}
+          showMetadata={showMetadata}
           onSelect={onSelect}
           onFocusProperty={onFocusProperty}
           viewHref="/entityv2/abc"
@@ -140,7 +148,7 @@ describe('EntityCard', () => {
     expect(document.querySelector('video')).not.toBeInTheDocument();
   });
 
-  it('draws the landscape audio header at 142px with a cream equalizer', () => {
+  it('draws the default landscape audio header at the small band with a cream equalizer', () => {
     renderCard({
       thumbFrame: 'landscape',
       thumbnailSrc: '/api/files/hearing.mp3',
@@ -148,7 +156,7 @@ describe('EntityCard', () => {
     });
     const thumb = screen.getByTestId('entity-audio-thumb');
     expect(thumb).toHaveClass(
-      landscapeThumbHeightClass,
+      LANDSCAPE_THUMB_HEIGHT_CLASS.s,
       'bg-warm',
       'rounded',
       'overflow-hidden',
@@ -172,7 +180,9 @@ describe('EntityCard', () => {
       thumbnailKind: 'audio',
     });
     expect(screen.getByTestId('entity-audio-thumb')).toHaveClass('aspect-[3/4]');
-    expect(screen.getByTestId('entity-audio-thumb')).not.toHaveClass(landscapeThumbHeightClass);
+    expect(screen.getByTestId('entity-audio-thumb')).not.toHaveClass(
+      LANDSCAPE_THUMB_HEIGHT_CLASS.s
+    );
   });
 
   it('keeps video as a black play poster, not the audio equalizer', () => {
@@ -182,7 +192,7 @@ describe('EntityCard', () => {
       thumbnailKind: 'video',
     });
     const play = screen.getByRole('button', { name: 'Play video' });
-    expect(play).toHaveClass('group', 'bg-black', landscapeThumbHeightClass);
+    expect(play).toHaveClass('group', 'bg-black', LANDSCAPE_THUMB_HEIGHT_CLASS.s);
     expect(screen.getByTestId('entity-video-play')).toHaveClass(
       'rounded-full',
       'bg-white',
@@ -206,6 +216,51 @@ describe('EntityCard', () => {
   });
 });
 
+describe('EntityCard thumbnail size', () => {
+  it('sizes the landscape band and card floor for medium', () => {
+    renderCard({
+      thumbFrame: 'landscape',
+      thumbSize: 'm',
+      thumbnailSrc: '/api/files/hearing.mp3',
+      thumbnailKind: 'audio',
+    });
+    const medium = screen.getByTestId('entity-audio-thumb');
+    expect(medium).toHaveClass(LANDSCAPE_THUMB_HEIGHT_CLASS.m);
+    expect(medium.closest('[role="button"]')).toHaveClass(LANDSCAPE_CARD_FLOOR_CLASS.m);
+  });
+
+  it('sizes the landscape band and card floor for large', () => {
+    renderCard({
+      thumbFrame: 'landscape',
+      thumbSize: 'l',
+      thumbnailSrc: '/api/files/hearing.mp3',
+      thumbnailKind: 'audio',
+    });
+    const large = screen.getByTestId('entity-audio-thumb');
+    expect(large).toHaveClass(LANDSCAPE_THUMB_HEIGHT_CLASS.l);
+    expect(large).not.toHaveClass('aspect-[3/4]');
+    expect(large.closest('[role="button"]')).toHaveClass(LANDSCAPE_CARD_FLOOR_CLASS.l);
+  });
+
+  it('keeps portrait at 3:4 for every thumbnail size', () => {
+    (['s', 'm', 'l'] as const).forEach(thumbSize => {
+      const { unmount } = renderCard({
+        thumbFrame: 'portrait',
+        thumbSize,
+        thumbnailSrc: '/api/files/hearing.mp3',
+        thumbnailKind: 'audio',
+      });
+      const thumb = screen.getByTestId('entity-audio-thumb');
+      expect(thumb).toHaveClass('aspect-[3/4]');
+      expect(thumb).not.toHaveClass(LANDSCAPE_THUMB_HEIGHT_CLASS[thumbSize]);
+      expect(thumb.closest('[role="button"]')).not.toHaveClass(
+        LANDSCAPE_CARD_FLOOR_CLASS[thumbSize]
+      );
+      unmount();
+    });
+  });
+});
+
 describe('EntityCard audio playback', () => {
   it('defaults the thumbnail frame to portrait when none is passed', () => {
     renderCard({
@@ -213,7 +268,9 @@ describe('EntityCard audio playback', () => {
       thumbnailKind: 'audio',
     });
     expect(screen.getByTestId('entity-audio-thumb')).toHaveClass('aspect-[3/4]');
-    expect(screen.getByTestId('entity-audio-thumb')).not.toHaveClass(landscapeThumbHeightClass);
+    expect(screen.getByTestId('entity-audio-thumb')).not.toHaveClass(
+      LANDSCAPE_THUMB_HEIGHT_CLASS.s
+    );
   });
 
   it('plays an audio thumbnail without selecting the card', () => {
