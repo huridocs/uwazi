@@ -86,6 +86,13 @@ export class PostgresRelationshipsV1DataSource
     options: HubConnectionsOptions = {}
   ): Promise<V1Relationship[]> {
     const { file, onlyTextReferences } = options;
+
+    // Mongo matches `{ file: { $exists: true } }, { file: null }` here, which never
+    // matches connections that omit the `file` field — effectively an empty result.
+    if (onlyTextReferences && !file) {
+      return [];
+    }
+
     const bindings: unknown[] = [];
     let ownSql = `SELECT "hub" FROM connections WHERE "entity" IN (${PostgresRelationshipsV1DataSource.placeholders(
       entitiesSharedIds.length
