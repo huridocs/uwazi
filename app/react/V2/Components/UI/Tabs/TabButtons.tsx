@@ -65,15 +65,6 @@ const TabButtons = ({
         .join(' ')}
       data-testid="tabs-comp"
     >
-      <div ref={probeRef} data-strip="probe" className="invisible absolute top-0 w-max" aria-hidden>
-        <div className={tabListClass}>
-          {buttons.map(button => (
-            <span key={button.id} className={tabTriggerBaseClass}>
-              {button.label}
-            </span>
-          ))}
-        </div>
-      </div>
       {folded ? (
         <>
           <div className="sr-only">
@@ -126,6 +117,15 @@ const TabButtons = ({
           })}
         </div>
       )}
+      <div ref={probeRef} data-strip="probe" className="invisible absolute top-0 w-max" aria-hidden>
+        <div className={tabListClass}>
+          {buttons.map(button => (
+            <span key={button.id} className={tabTriggerBaseClass}>
+              {button.label}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

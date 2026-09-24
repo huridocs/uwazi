@@ -41,7 +41,12 @@ describe('TabButtons', () => {
     render(
       <TabButtons groupId="entity-main" buttons={buttons} tabListAriaLabel="Entity primary" />
     );
-    expect(screen.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
+    const tab = screen.getByRole('tab', { name: 'Document' });
+    const probe = document.querySelector('[data-strip="probe"]');
+    if (!probe) {
+      throw new Error('missing strip probe');
+    }
+    expect(tab.compareDocumentPosition(probe)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(screen.queryByRole('button', { name: 'Entity primary' })).not.toBeInTheDocument();
   });
 

@@ -74,11 +74,7 @@ const RelationshipConnectionsTableComponent = ({
       className="relative min-w-0 w-full"
     >
       <div
-        className={
-          showCards
-            ? 'invisible pointer-events-none absolute start-0 top-0'
-            : 'max-w-full overflow-x-auto'
-        }
+        className={showCards ? 'invisible pointer-events-none absolute start-0 top-0' : undefined}
       >
         <table
           ref={probeRef}
