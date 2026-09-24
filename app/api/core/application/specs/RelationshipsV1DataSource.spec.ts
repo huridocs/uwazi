@@ -101,6 +101,24 @@ describe('RelationshipsV1DataSource', () => {
       expect(sorted(rows.map(row => row.entity))).toEqual(sorted(['A', 'A', 'B', 'B', 'C']));
     });
 
+    it('returns no hub connections when onlyTextReferences is set without a file', async () => {
+      const sut = createSut();
+
+      await expect(sut.getHubConnections(['A'], { onlyTextReferences: true })).resolves.toEqual([]);
+    });
+
+    it('returns the hub connections of a specific file when onlyTextReferences is set', async () => {
+      const sut = createSut();
+      await sut.saveMultiple([
+        { entity: 'A', hub: factory.id('hub3'), template: null, file: 'file1' },
+        { entity: 'B', hub: factory.id('hub3'), template: factory.id('rel1') },
+      ]);
+
+      const rows = await sut.getHubConnections(['A'], { file: 'file1', onlyTextReferences: true });
+
+      expect(sorted(rows.map(row => row.entity))).toEqual(sorted(['A', 'B']));
+    });
+
     it('returns string-id hub connections for the query service', async () => {
       const sut = createSut();
 
