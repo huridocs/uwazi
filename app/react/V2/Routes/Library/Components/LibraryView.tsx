@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
@@ -7,7 +8,7 @@ import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryRightPane } from './LibraryRightPane.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
-import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
+import { pdfFilesFromList, uploadPdfsAndCreateEntities } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
 import { useLibraryCreateActions, useLibrarySelectionPanel } from './useLibraryViewChrome.js';
@@ -81,8 +82,7 @@ const LibraryView = ({
     onTableDensityChange,
   } = useLibraryTableDisplay(filters.type ?? []);
   const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]);
-  const { selectionPanelOpen, notShown, closeSelectionPanel, reopenSelectionPanel } =
-    useLibrarySelectionPanel(selectedIds, orderedIds);
+  const { selectionPanelOpen, notShown } = useLibrarySelectionPanel(selectedIds, orderedIds);
   const { selectEntity, selectCluster, clear } = useLibraryResultSelection({
     orderedIds,
     selectedIds,
@@ -100,12 +100,26 @@ const LibraryView = ({
     closePreview,
     beginSelection,
     creating,
-    uploadOpen,
     openCreate,
-    openUpload,
-    closeUpload,
     finishCreated,
   } = useLibraryCreateActions(selectEntity, dismissSelection, onEntityCreated);
+  const uploadChosenPdfs = (files: File[]) => {
+    const pdfs = pdfFilesFromList(files);
+    if (!pdfs.length) {
+      return;
+    }
+    void uploadPdfsAndCreateEntities(
+      pdfs,
+      () => undefined,
+      () => undefined
+    )
+      .then(created => {
+        finishCreated(created.at(-1)?.sharedId);
+      })
+      .catch((caught: unknown) => {
+        notify(caught instanceof Error ? caught.message : String(caught), 'error');
+      });
+  };
 
   return (
     <div className="h-full min-h-0 bg-warm" data-testid="library-v2">
@@ -173,14 +187,14 @@ const LibraryView = ({
                 tableDensity={tableDisplay.density}
               />
             </div>
-            {selectedIds.length > 1 ? (
+            {selectedIds.length > 0 ? (
               <LibraryMultiSelectFooter
                 count={selectedIds.length}
                 loadedIds={orderedIds}
                 selectedIds={selectedIds}
                 notShown={notShown}
                 onClear={dismissSelection}
-                onShowList={reopenSelectionPanel}
+                onShowList={() => undefined}
                 onSelectLoaded={() =>
                   onSelectedIdsChange([...new Set([...selectedIds, ...orderedIds])])
                 }
@@ -190,7 +204,7 @@ const LibraryView = ({
                 }}
               />
             ) : (
-              <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={openUpload} />
+              <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={uploadChosenPdfs} />
             )}
           </div>
         </PaneLayout.Pane>
@@ -209,7 +223,7 @@ const LibraryView = ({
             onFiltersChange={onFiltersChange}
             onAndFiltersChange={onAndFiltersChange}
             onClosePreview={closePreview}
-            onCloseSelection={closeSelectionPanel}
+            onCloseSelection={dismissSelection}
             onRemoveSelection={sharedId =>
               onSelectedIdsChange(selectedIds.filter(id => id !== sharedId))
             }
@@ -218,9 +232,6 @@ const LibraryView = ({
           />
         </PaneLayout.Pane>
       </PaneLayout>
-      {uploadOpen ? (
-        <LibraryUploadPdfModal onClose={closeUpload} onUploaded={finishCreated} />
-      ) : null}
     </div>
   );
 };

@@ -362,9 +362,14 @@ describe('LibraryView preview pane', () => {
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 
-  it('opens the upload PDF dialog', async () => {
+  it('opens the native PDF file picker without a modal', async () => {
     renderView();
-    fireEvent.click(await screen.findByRole('button', { name: 'Upload PDF' }));
-    expect(await screen.findByRole('dialog', { name: 'Upload PDF' })).toBeInTheDocument();
+    const upload = await screen.findByRole('button', { name: 'Upload PDF' });
+    const input = document.querySelector('input[type="file"]');
+    expect(input).toBeInstanceOf(HTMLInputElement);
+    const openPicker = jest.spyOn(input as HTMLInputElement, 'click');
+    fireEvent.click(upload);
+    expect(openPicker).toHaveBeenCalled();
+    expect(screen.queryByRole('dialog', { name: 'Upload PDF' })).not.toBeInTheDocument();
   });
 });

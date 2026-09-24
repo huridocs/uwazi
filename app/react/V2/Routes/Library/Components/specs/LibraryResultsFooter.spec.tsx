@@ -38,6 +38,34 @@ const renderFooter = (
   );
 };
 
+const pdfFileInput = () => {
+  const input = document.querySelector('input[type="file"]');
+  expect(input).toBeInstanceOf(HTMLInputElement);
+  return input as HTMLInputElement;
+};
+
+const expectPickerOpens = (input: HTMLInputElement, onUploadPdf: jest.Mock) => {
+  expect(input).toHaveAttribute('accept', 'application/pdf,.pdf');
+  expect(input).toHaveAttribute('multiple');
+  const openPicker = jest.spyOn(input, 'click');
+  fireEvent.click(screen.getByRole('button', { name: 'Upload PDF' }));
+  expect(openPicker).toHaveBeenCalled();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onUploadPdf).not.toHaveBeenCalled();
+};
+
+const expectChosenPdf = (input: HTMLInputElement, onUploadPdf: jest.Mock) => {
+  const pdf = new File(['%PDF'], 'judgment.pdf', { type: 'application/pdf' });
+  fireEvent.change(input, { target: { files: [pdf] } });
+  expect(onUploadPdf).toHaveBeenCalledWith([pdf]);
+};
+
+const expectNativePdfPicker = (onUploadPdf: jest.Mock) => {
+  const input = pdfFileInput();
+  expectPickerOpens(input, onUploadPdf);
+  expectChosenPdf(input, onUploadPdf);
+};
+
 describe('LibraryResultsFooter', () => {
   it('renders the library action bar when featureFlagLibraryV2 is off', () => {
     renderFooter({}, { featureFlagLibraryV2: false });
@@ -58,13 +86,12 @@ describe('LibraryResultsFooter', () => {
     expect(screen.queryByRole('link', { name: 'Import CSV' })).not.toBeInTheDocument();
   });
 
-  it('opens create and upload actions', () => {
+  it('opens create and the native PDF file picker', () => {
     const onCreateEntity = jest.fn();
     const onUploadPdf = jest.fn();
     renderFooter({ onCreateEntity, onUploadPdf }, { featureFlagLibraryV2: false });
     fireEvent.click(screen.getByRole('button', { name: 'Create entity' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Upload PDF' }));
     expect(onCreateEntity).toHaveBeenCalledTimes(1);
-    expect(onUploadPdf).toHaveBeenCalledTimes(1);
+    expectNativePdfPicker(onUploadPdf);
   });
 });
