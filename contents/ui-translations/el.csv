@@ -193,6 +193,7 @@ Chart type uses a custom view,Ο τύπος γραφήματος χρησιμο�
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
 Checking which images fit the requirements,Έλεγχος των εικόνων που πληρούν τις απαιτήσεις...
 Choose,Επιλέξτε
+Choose PDF files,Choose PDF files
 Choose relation type,Επιλέξτε τον τύπο σχέσης
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
 Chrome header,Επικεφαλίδα Chrome
@@ -586,7 +587,6 @@ ID:,Αναγνωριστικό:
 "If you want to continue, please type","Αν θέλετε να συνεχίσετε, πληκτρολογήστε"
 Image doesn't match the required size.,Η εικόνα δεν έχει το απαιτούμενο μέγεθος.
 Import,Εισαγωγή
-Import / Export CSV,Εισαγωγή / Εξαγωγή CSV
 Import asset,Εισαγωγή αρχείου
 Import CSV,Εισαγωγή CSV
 Import failed. Review details below.,Η εισαγωγή απέτυχε. Δείτε τις λεπτομέρειες παρακάτω.
@@ -897,6 +897,7 @@ Open the two-factor Authenticator app on your device,Ανοίξτε την εφ�
 Options,Επιλογές
 or,ή
 or drag and drop here,ή σύρετε και αποθέστε εδώ
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,ή αποθέστε τα αρχεία σας εδώ.
 Or paste a URL,Ή επικολλήστε μια διεύθυνση URL
 Order,Παραγγελία
@@ -1357,6 +1358,7 @@ This table of contents was automatically created by the system.,Αυτός ο π
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
 Thumbnail,Μικρογραφία
+Thumbnail frame,Thumbnail frame
 Time,Χρόνος
 Time (UTC),Ώρα (UTC)
 Timeline,Χρονολόγιο
@@ -1431,6 +1433,7 @@ Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
 Updating…,Ενημέρωση…
+Upload,Upload
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή
 Upload image,Ανεβάστε εικόνα

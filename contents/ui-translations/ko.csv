@@ -191,6 +191,7 @@ Chart type uses a custom view,차트 유형은 사용자 정의 보기를 사용
 Check to make this instance public (non-logged in users can see public documents and entities),이 인스턴스를 공개로 설정할지 확인하세요(로그인하지 않은 사용자도 공개 문서 및 엔티티를 볼 수 있습니다).
 Checking which images fit the requirements,요건에 맞는 이미지를 확인 중입니다...
 Choose,선택하세요
+Choose PDF files,Choose PDF files
 Choose relation type,관계 유형 선택
 Choose which data to use for training,훈련에 사용할 데이터를 선택하세요
 Chrome header,Chrome 헤더
@@ -584,7 +585,6 @@ ID:,ID:
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
 Image doesn't match the required size.,이미지 크기가 지정된 크기와 일치하지 않습니다.
 Import,업로드
-Import / Export CSV,CSV 가져오기/내보내기
 Import asset,자산 가져오기
 Import CSV,CSV 업로드
 Import failed. Review details below.,가져오기에 실패했습니다. 아래에서 세부 정보를 확인하세요.
@@ -890,6 +890,7 @@ Open the two-factor Authenticator app on your device,기기에서 Authenticator 
 Options,옵션
 or,또는
 or drag and drop here,또는 여기로 드래그 앤 드롭하세요
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
 Or paste a URL,또는 URL을 붙여넣으세요
 Order,순서
@@ -1350,6 +1351,7 @@ This table of contents was automatically created by the system.,이 목차는 �
 this template,이 템플릿
 This template is in use by existing entities and cannot be deleted.,이 템플릿은 기존 엔티티에서 사용 중이므로 삭제할 수 없습니다.
 Thumbnail,썸네일
+Thumbnail frame,Thumbnail frame
 Time,시간
 Time (UTC),시간 (UTC)
 Timeline,연표
@@ -1424,6 +1426,7 @@ Updated translations,업데이트된 번역본
 Updated user,업데이트된 사용자
 Updating template properties across,전체에서 템플릿 속성 업데이트
 Updating…,업데이트 중…
+Upload,Upload
 Upload and select file,업로드 및 파일 선택
 Upload from computer,컴퓨터에서 업로드
 Upload image,이미지 업로드

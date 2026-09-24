@@ -5,14 +5,8 @@ import type { Request as ExpressRequest, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {
-  createStaticHandler,
-  createStaticRouter,
-  matchRoutes,
-  RouteObject,
-  StaticHandlerContext,
-  StaticRouterProvider,
-} from 'react-router';
+import { matchRoutes, RouteObject, StaticRouterProvider } from 'react-router';
+import { prepareRouteData } from './ssr/prepareRouteData.js';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -328,17 +322,19 @@ const prepareStoreData = async (
   };
 };
 
-const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+const sendLoaderResponse = (res: Response, response: globalThis.Response) => {
+  const location = response.headers.get('Location');
+  if (location) {
+    res.redirect(response.status, location);
+    return;
+  }
+  res.status(response.status).end();
+};
 
-  return {
-    staticHandleContext,
-    router,
-    ssrError,
-  };
+const loadStaticRoute = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const prepared = await prepareRouteData(fetchRequest, routes);
+  return { ...prepared, ssrError };
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
@@ -462,9 +458,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { staticHandleContext, router, ssrError } = await withSpan('prepare_route_data', async () =>
-    prepareRouteData(req, routes)
+  const preparedRoute = await withSpan('prepare_route_data', async () =>
+    loadStaticRoute(req, routes)
   );
+
+  if (preparedRoute.kind === 'response') {
+    sendLoaderResponse(res, preparedRoute.response);
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = preparedRoute;
 
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);

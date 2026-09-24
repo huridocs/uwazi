@@ -1,7 +1,7 @@
 export { EntityCard } from './EntityCard.js';
 export type { EntityCardField, EntityCardProps } from './EntityCard.js';
 export { EntityThumbnail } from './EntityThumbnail.js';
-export type { EntityThumbnailProps, ThumbnailKind } from './EntityThumbnail.js';
+export type { EntityThumbnailProps } from './EntityThumbnail.js';
 export { LibraryFilters } from './LibraryFilters.js';
 export type { LibraryFiltersProps } from './LibraryFilters.js';
 export { ActiveFiltersSheet } from './ActiveFiltersSheet.js';
