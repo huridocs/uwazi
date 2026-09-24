@@ -1,6 +1,6 @@
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { MongoRelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/MongoRelationshipsV1DataSourceFactory.js';
+import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import { RelationshipsQueryService } from '#api/relationships/query/infrastructure/RelationshipsQueryService.js';
 
 class RelationshipsQueryServiceFactory {
@@ -8,7 +8,7 @@ class RelationshipsQueryServiceFactory {
     return new RelationshipsQueryService({
       entitiesDAO: EntitiesDAOFactory.default(),
       filesDAO: FilesDAOFactory.default(),
-      relationshipsDataSource: MongoRelationshipsV1DataSourceFactory.default(),
+      relationshipsDataSource: RelationshipsV1DataSourceFactory.default(),
     });
   }
 }
