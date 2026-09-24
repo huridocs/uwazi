@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.201",
+  "version": "1.229.205",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -276,7 +276,8 @@
     "yargs": "^17.7.2",
     "yauzl": "3.4.0",
     "yazl": "^3.3.1",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "~3.24.6"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.3.1",
