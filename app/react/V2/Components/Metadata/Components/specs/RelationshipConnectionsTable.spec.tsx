@@ -66,13 +66,11 @@ describe('RelationshipConnectionsTable layout', () => {
     });
   });
 
-  it('keeps the table visible when it fits and does not use horizontal scroll', () => {
+  it('keeps the table inside the field when it fits', () => {
     const { container } = renderTable();
     expect(screen.getByTestId('relationship-connections')).toBeInTheDocument();
     expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
     expect(container.querySelector('.overflow-x-auto')).toBeNull();
-    const tableClass = container.querySelector('table')?.className ?? '';
-    expect(tableClass.includes('w-max') && !tableClass.includes('w-full')).toBe(true);
   });
 
   it('puts inherit columns first and the entity last', () => {

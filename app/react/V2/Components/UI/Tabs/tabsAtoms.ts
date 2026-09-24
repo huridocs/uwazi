@@ -3,6 +3,7 @@ import { atom } from 'jotai';
 
 type TabButtonDef = {
   id: string;
+  name?: string;
   label: React.ReactNode;
 };
 
