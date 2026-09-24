@@ -52,5 +52,7 @@ describe('TabButtons', () => {
     );
     expect(screen.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entity primary' })).toHaveTextContent('Document');
+    expect(document.getElementById('entity-main-tab-document')).toHaveTextContent('Document');
+    expect(document.getElementById('entity-main-tab-metadata')).toHaveTextContent('Metadata');
   });
 });

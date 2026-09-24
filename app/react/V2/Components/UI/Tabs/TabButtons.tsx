@@ -75,18 +75,27 @@ const TabButtons = ({
         </div>
       </div>
       {folded ? (
-        <WarmSelect
-          value={selectValue}
-          ariaLabel={tabListAriaLabel}
-          options={buttons.map(button => ({
-            value: button.id,
-            label: button.name ?? button.id,
-          }))}
-          onChange={tabId => {
-            selectTab(tabId);
-            onTabChange?.(tabId);
-          }}
-        />
+        <>
+          <div className="sr-only">
+            {buttons.map(button => (
+              <span key={button.id} id={`${groupId}-tab-${button.id}`}>
+                {button.name ?? button.id}
+              </span>
+            ))}
+          </div>
+          <WarmSelect
+            value={selectValue}
+            ariaLabel={tabListAriaLabel}
+            options={buttons.map(button => ({
+              value: button.id,
+              label: button.name ?? button.id,
+            }))}
+            onChange={tabId => {
+              selectTab(tabId);
+              onTabChange?.(tabId);
+            }}
+          />
+        </>
       ) : (
         <div className={tabListClass} role="tablist" aria-label={tabListAriaLabel}>
           {buttons.map((button, index) => {
