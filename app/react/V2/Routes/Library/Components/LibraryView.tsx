@@ -1,7 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import React, { useMemo } from 'react';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
@@ -11,17 +9,9 @@ import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
 import { LibraryViewerHost } from './Viewers/index.js';
+import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
 import { useLibraryCreateActions } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
-import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
-import { DEFAULT_THUMB_FRAME, DEFAULT_THUMB_SIZE } from './libraryCardDisplay.js';
-import {
-  visibleLibraryTableColumns,
-  libraryTableColumnGroups,
-  libraryTableColumns,
-  toggleColumnVisibility,
-  type LibraryTableDensity,
-} from './libraryTableColumns.js';
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -48,34 +38,6 @@ type LibraryViewProps = {
   onEntityCreated?: (sharedId?: string) => void;
 };
 
-const useLibraryTableDisplay = (selectedTemplateIds: string[]) => {
-  const templates = useAtomValue(templatesAtom);
-  const [tableDisplay, setTableDisplay] = useAtom(libraryTableDisplayAtom);
-  const tableColumnGroups = useMemo(
-    () => libraryTableColumnGroups(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const tableColumns = useMemo(
-    () => libraryTableColumns(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const visibleTableColumns = useMemo(
-    () => visibleLibraryTableColumns(tableColumns, tableDisplay),
-    [tableColumns, tableDisplay]
-  );
-
-  return {
-    tableColumns,
-    tableColumnGroups,
-    visibleTableColumns,
-    tableDisplay,
-    onToggleTableColumn: (id: string) =>
-      setTableDisplay(current => toggleColumnVisibility(id, current)),
-    onTableDensityChange: (density: LibraryTableDensity) =>
-      setTableDisplay(current => ({ ...current, density })),
-  };
-};
-
 const LibraryView = ({
   rows,
   totalRows,
@@ -100,10 +62,16 @@ const LibraryView = ({
   onLoadMore,
   onEntityCreated,
 }: LibraryViewProps) => {
-  const [showThumbnail, setShowThumbnail] = useState(true);
-  const [showMetadata, setShowMetadata] = useState(true);
-  const [thumbFrame, setThumbFrame] = useState(DEFAULT_THUMB_FRAME);
-  const [thumbSize, setThumbSize] = useState(DEFAULT_THUMB_SIZE);
+  const {
+    showThumbnail,
+    showMetadata,
+    thumbFrame,
+    thumbSize,
+    onShowThumbnailChange,
+    onShowMetadataChange,
+    onThumbFrameChange,
+    onThumbSizeChange,
+  } = useLibraryCardDisplay();
   const {
     tableColumns,
     tableColumnGroups,
@@ -156,13 +124,13 @@ const LibraryView = ({
               onSortChange={onSortChange}
               totalRows={totalRows}
               showThumbnail={showThumbnail}
-              onShowThumbnailChange={setShowThumbnail}
+              onShowThumbnailChange={onShowThumbnailChange}
               showMetadata={showMetadata}
-              onShowMetadataChange={setShowMetadata}
+              onShowMetadataChange={onShowMetadataChange}
               thumbFrame={thumbFrame}
-              onThumbFrameChange={setThumbFrame}
+              onThumbFrameChange={onThumbFrameChange}
               thumbSize={thumbSize}
-              onThumbSizeChange={setThumbSize}
+              onThumbSizeChange={onThumbSizeChange}
               tableColumns={tableColumns}
               tableColumnGroups={tableColumnGroups}
               tableDisplay={tableDisplay}
