@@ -1,12 +1,14 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MOBILE_VIEW_MAX_WIDTH, useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 const useCompactBar = () => {
   const viewportMobile = Boolean(useIsMobile());
   const barRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const element = barRef.current;
     if (!element) return undefined;
     const measure = () => setWidth(element.clientWidth);

@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 const stripOverflows = (availableWidth: number, naturalWidth: number) =>
   availableWidth > 0 && naturalWidth > availableWidth;
@@ -24,7 +26,7 @@ const useStripFold = (signature: string) => {
   const probeRef = useRef<HTMLDivElement>(null);
   const [folded, setFolded] = useState(false);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const avail = availRef.current;
     const probe = probeRef.current;
     if (!avail || !probe) {
