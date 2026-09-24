@@ -50,14 +50,20 @@ describe('PdfTextSelection', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
     window.getSelection()?.removeAllRanges();
   });
 
-  it('reports a touch selection and does not clear it on the touch press', () => {
+  it('reports one touch selection after the selection settles', () => {
+    jest.useFakeTimers();
     const { onSelect, removeAllRanges } = pressTouchSelection();
     expect(removeAllRanges).not.toHaveBeenCalled();
     document.dispatchEvent(new Event('selectionchange'));
+    document.dispatchEvent(new Event('selectionchange'));
+    expect(onSelect).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(200);
+    expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello' }));
   });
 });

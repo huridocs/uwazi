@@ -14,18 +14,28 @@ const selectionInside = (root: HTMLElement) => {
 
 const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches;
 
+const SELECTION_SETTLE_MS = 200;
+
 const PdfTextSelection = ({ onSelect, onDeselect, children }: PdfTextSelectionProps) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const touchSelection = useRef(false);
 
   useEffect(() => {
-    const reportTouchSelection = () => {
-      const root = rootRef.current;
-      if ((!touchSelection.current && !coarsePointer()) || !root || !selectionInside(root)) return;
-      root.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+    let settleTimer: number | undefined;
+    const reportSettledSelection = () => {
+      if (!touchSelection.current && !coarsePointer()) return;
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        const root = rootRef.current;
+        if (!root || !selectionInside(root)) return;
+        root.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      }, SELECTION_SETTLE_MS);
     };
-    document.addEventListener('selectionchange', reportTouchSelection);
-    return () => document.removeEventListener('selectionchange', reportTouchSelection);
+    document.addEventListener('selectionchange', reportSettledSelection);
+    return () => {
+      window.clearTimeout(settleTimer);
+      document.removeEventListener('selectionchange', reportSettledSelection);
+    };
   }, []);
 
   return (
