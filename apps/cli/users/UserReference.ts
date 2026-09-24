@@ -1,6 +1,4 @@
 import { z } from 'zod';
-import { UserNotFound } from '#api/core/domain/user/errors.js';
-import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
 
 type UserReferenceInput = { username?: string; id?: string };
 
@@ -22,20 +20,6 @@ class UserReference {
         message: 'Provide exactly one of username or id',
       });
     }
-  }
-
-  /** Must run inside the tenant: only active users are found. */
-  static async resolveId({ username, id }: UserReferenceInput): Promise<string> {
-    if (id) {
-      return id;
-    }
-
-    const user = await UsersQueryServiceFactory.default().findByUsername(username ?? '');
-    if (!user) {
-      throw new UserNotFound(username ?? '');
-    }
-
-    return user._id;
   }
 }
 

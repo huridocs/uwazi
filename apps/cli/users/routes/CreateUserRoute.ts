@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
+import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
 import type { CreatedUserOutput } from '../contracts.js';
-import { CreateUserCliInput, CreateUserController } from '../controllers/CreateUserController.js';
+import type { CreateUserCliInput } from '../controllers/CreateUserController.js';
 
 class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
   readonly group = 'users';
@@ -27,10 +28,13 @@ class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
 
   readonly fieldMap = { assignedGroupIds: 'groups' };
 
-  private readonly controller = CreateUserController;
+  private readonly controller = new LazyModule(
+    async () => import('../controllers/CreateUserController.js')
+  );
 
   async handle(input: CreateUserCliInput): Promise<CreatedUserOutput> {
-    return this.controller.handle(input);
+    const { CreateUserController } = await this.controller.get();
+    return CreateUserController.handle(input);
   }
 }
 

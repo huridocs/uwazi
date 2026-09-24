@@ -16,9 +16,8 @@ import { CliConfig, Env } from './runtime/CliConfig.js';
 import { CliConnections, ConnectionNeeds } from './runtime/CliConnections.js';
 import { ConsoleRedirect } from './runtime/ConsoleRedirect.js';
 import { InterruptGuard } from './runtime/InterruptGuard.js';
-import { AllTenants } from './tenancy/AllTenants.js';
-import { TenantMiddleware } from './tenancy/TenantMiddleware.js';
 import { TenantOptions } from './tenancy/TenantOptions.js';
+import { TenantResultsOutcome } from './tenancy/TenantResultsOutcome.js';
 
 type Connections = {
   open(needs: ConnectionNeeds): Promise<void>;
@@ -159,7 +158,9 @@ class CliApplication {
       try {
         const output = await this.handle(route, argv);
         presenter.result(output);
-        return AllTenants.isTenantResults(output) ? AllTenants.exitCode(output) : ExitCode.Ok;
+        return TenantResultsOutcome.is(output)
+          ? TenantResultsOutcome.exitCode(output)
+          : ExitCode.Ok;
       } catch (error) {
         presenter.error(ErrorMapper.toPayload(error, fieldMap), error);
         return ErrorMapper.toExitCode(error);
@@ -187,12 +188,16 @@ class CliApplication {
     }
   }
 
-  /** Input and configuration are checked before anything connects. */
+  /**
+   * Input and configuration are checked before anything connects. The tenancy backend is
+   * loaded only then, so --help, --schema and invalid input stay fast.
+   */
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
     const tenants = TenantOptions.parse(route.tenancy, argv);
     const input = route.request.parse(await RequestInput.read(argv.request, this.stdin));
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
     await this.connections.open(route.needs);
+    const { TenantMiddleware } = await import('./tenancy/TenantMiddleware.js');
 
     const context: CliContext = {
       route: `${route.group} ${route.name}`,

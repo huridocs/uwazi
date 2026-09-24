@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
+import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
 import type { UpdatedUserOutput } from '../contracts.js';
-import { UpdateUserCliInput, UpdateUserController } from '../controllers/UpdateUserController.js';
+import type { UpdateUserCliInput } from '../controllers/UpdateUserController.js';
 import { UserReference } from '../UserReference.js';
 
 class UpdateUserRoute implements Route<UpdateUserCliInput, UpdatedUserOutput> {
@@ -30,10 +31,13 @@ class UpdateUserRoute implements Route<UpdateUserCliInput, UpdatedUserOutput> {
   /** `username` in domain errors is the new one: the user is named by `username` | `id`. */
   readonly fieldMap = { username: 'newUsername', assignedGroupIds: 'groups' };
 
-  private readonly controller = UpdateUserController;
+  private readonly controller = new LazyModule(
+    async () => import('../controllers/UpdateUserController.js')
+  );
 
   async handle(input: UpdateUserCliInput): Promise<UpdatedUserOutput> {
-    return this.controller.handle(input);
+    const { UpdateUserController } = await this.controller.get();
+    return UpdateUserController.handle(input);
   }
 }
 

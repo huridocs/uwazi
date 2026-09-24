@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
+import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
 import type { UserListItem } from '../contracts.js';
-import { ListUsersCliInput, ListUsersController } from '../controllers/ListUsersController.js';
+import type { ListUsersCliInput } from '../controllers/ListUsersController.js';
 
 class ListUsersRoute implements Route<ListUsersCliInput, UserListItem[]> {
   readonly group = 'users';
@@ -19,10 +20,13 @@ class ListUsersRoute implements Route<ListUsersCliInput, UserListItem[]> {
 
   readonly fieldMap = {};
 
-  private readonly controller = ListUsersController;
+  private readonly controller = new LazyModule(
+    async () => import('../controllers/ListUsersController.js')
+  );
 
   async handle(input: ListUsersCliInput): Promise<UserListItem[]> {
-    return this.controller.handle(input);
+    const { ListUsersController } = await this.controller.get();
+    return ListUsersController.handle(input);
   }
 }
 

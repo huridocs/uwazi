@@ -1,6 +1,5 @@
 import type { TenantResults } from '../contracts/TenantResults.js';
 import { ErrorMapper } from '../errors/ErrorMapper.js';
-import { ExitCode } from '../errors/ExitCode.js';
 import { CliTenancy } from './CliTenancy.js';
 
 /** Runs a query in every tenant, one after the other, without letting one failure stop it. */
@@ -24,18 +23,6 @@ class AllTenants {
         return collected;
       },
       Promise.resolve({ results: [], errors: [] })
-    );
-  }
-
-  /** Any failed tenant makes the command fail, with the exit code of the first failure. */
-  static exitCode({ errors }: TenantResults<unknown>): ExitCode {
-    const [first] = errors;
-    return first ? ErrorMapper.exitCodeFor(first.error.category) : ExitCode.Ok;
-  }
-
-  static isTenantResults(output: unknown): output is TenantResults<unknown> {
-    return (
-      typeof output === 'object' && output !== null && 'results' in output && 'errors' in output
     );
   }
 }

@@ -3,7 +3,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DB } from '#api/odm/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { ExitCode } from '../../errors/ExitCode.js';
 import { AllTenants } from '../AllTenants.js';
 import { TenantNotFound } from '../TenantNotFound.js';
 
@@ -53,20 +52,5 @@ describe('AllTenants', () => {
         error: { code: 'tenant.not_found', category: 'not_found', message: expect.any(String) },
       },
     ]);
-  });
-
-  describe('exitCode()', () => {
-    it('should be Ok when no tenant failed', () => {
-      expect(AllTenants.exitCode({ results: [], errors: [] })).toBe(ExitCode.Ok);
-    });
-
-    it('should follow the first failure category otherwise', () => {
-      expect(
-        AllTenants.exitCode({
-          results: [],
-          errors: [{ tenant: 'a', error: { code: 'x', category: 'not_found', message: 'm' } }],
-        })
-      ).toBe(ExitCode.NotFound);
-    });
   });
 });

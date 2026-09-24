@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
 import type { RoleCountsOutput } from '../contracts.js';
-import { UserStatsController } from '../controllers/UserStatsController.js';
 
 const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
@@ -22,10 +22,13 @@ class UserStatsRoute implements Route<NoInput, RoleCountsOutput> {
 
   readonly fieldMap = {};
 
-  private readonly controller = UserStatsController;
+  private readonly controller = new LazyModule(
+    async () => import('../controllers/UserStatsController.js')
+  );
 
   async handle(): Promise<RoleCountsOutput> {
-    return this.controller.handle();
+    const { UserStatsController } = await this.controller.get();
+    return UserStatsController.handle();
   }
 }
 
