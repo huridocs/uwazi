@@ -138,6 +138,7 @@ const TableViewer = ({
           data={data}
           density={tableDensity}
           selectedRowIds={selectedIds}
+          rowSelectId={row => row.sharedId}
           onRowClick={(row, event) =>
             onSelect(row.sharedId, {
               shiftKey: event.shiftKey,

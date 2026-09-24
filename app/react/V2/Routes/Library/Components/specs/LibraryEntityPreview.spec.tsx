@@ -334,7 +334,24 @@ describe('LibraryView preview pane', () => {
               [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
-            <LibraryView {...viewProps} selectedIds={selectedId ? [selectedId] : []} />
+            <LibraryView
+              {...viewProps}
+              rows={
+                selectedId
+                  ? [
+                      {
+                        _id: entityWithDocument._id,
+                        sharedId: entityWithDocument.sharedId,
+                        language: entityWithDocument.language,
+                        title: entityWithDocument.title,
+                        template: entityWithDocument.template,
+                        metadata: {},
+                      },
+                    ]
+                  : []
+              }
+              selectedIds={selectedId ? [selectedId] : []}
+            />
           </TestAtomStoreProvider>
         </ServicesProvider>
       </TestRouterContext>
@@ -346,10 +363,11 @@ describe('LibraryView preview pane', () => {
     expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
   });
 
-  it('shows the entity preview instead of filters when an entity is selected', async () => {
+  it('shows the selection panel instead of filters when an entity is selected', async () => {
     renderView(entityWithDocument.sharedId);
-    expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
-    expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
+    const panel = await screen.findByTestId('library-selection-panel');
+    expect(panel).toHaveTextContent('Case 11.481 (Gelman)');
+    expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 

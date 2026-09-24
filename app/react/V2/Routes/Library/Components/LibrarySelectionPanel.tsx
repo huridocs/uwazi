@@ -1,21 +1,30 @@
 import React, { useMemo, useState } from 'react';
-import { t, Translate } from '#app/I18N/index.js';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { orderedSelectionIds } from '../librarySelection.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
-import { LibrarySelectionActionsMenu } from './LibrarySelectionActionsMenu.js';
 import { LibrarySelectionRow } from './LibrarySelectionRow.js';
 import { useLibraryCardDisplay } from './useLibraryDisplay.js';
 
 const LIST_STEP = 120;
 
 const closeButtonClassName =
-  'cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
+  'inline-flex shrink-0 cursor-pointer items-center rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
 
-const editButtonClassName =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-warm';
+const leadButtonClassName =
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-warm';
+
+const ghostButtonClassName =
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
+
+const dangerButtonClassName =
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-seal-label transition-colors hover:bg-seal-tint/40';
+
+const viewEntityClassName =
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors';
 
 type LibrarySelectionPanelProps = {
   rows: LibrarySearchHit[];
@@ -45,9 +54,9 @@ const LibrarySelectionPanel = ({
   );
   const shownIds = listedIds.slice(0, visible);
   const actions = librarySelectionActions();
-  const editAction = actions.find(action => action.id === 'edit');
-  const menuActions = actions.filter(action => action.id !== 'edit');
+  const actionById = (id: LibraryBulkAction) => actions.find(action => action.id === id);
   const count = selectedIds.length;
+  const onlyId = count === 1 ? selectedIds[0] : undefined;
 
   return (
     <div
@@ -121,6 +130,32 @@ const LibrarySelectionPanel = ({
         className="flex h-12 shrink-0 items-center gap-2 bg-paper px-3"
         style={{ borderTop: '1px solid var(--border-primary)' }}
       >
+        <button type="button" onClick={() => onAction?.('edit')} className={leadButtonClassName}>
+          <span className="text-ink-tertiary">{actionById('edit')?.icon}</span>
+          <Translate>Edit</Translate>
+        </button>
+        <button
+          type="button"
+          onClick={() => onAction?.('permissions')}
+          className={ghostButtonClassName}
+        >
+          <span className="text-ink-tertiary">{actionById('permissions')?.icon}</span>
+          <Translate>Permissions</Translate>
+        </button>
+        <span
+          aria-hidden
+          data-testid="library-selection-divider"
+          className="mx-1.5 h-5 w-px shrink-0 self-center bg-border-soft"
+        />
+        <button
+          type="button"
+          onClick={() => onAction?.('delete')}
+          className={dangerButtonClassName}
+        >
+          <span>{actionById('delete')?.icon}</span>
+          <Translate>Delete</Translate>
+        </button>
+        <span className="flex-1" />
         <button
           type="button"
           onClick={onClose}
@@ -129,12 +164,16 @@ const LibrarySelectionPanel = ({
         >
           <Translate>Close</Translate>
         </button>
-        <span className="flex-1" />
-        <button type="button" onClick={() => onAction?.('edit')} className={editButtonClassName}>
-          <span className="text-ink-tertiary">{editAction?.icon}</span>
-          <Translate>Edit</Translate>
-        </button>
-        <LibrarySelectionActionsMenu actions={menuActions} onAction={onAction} />
+        {onlyId ? (
+          <I18NLinkV2
+            to={`${entityBasePath}/${onlyId}`}
+            className={viewEntityClassName}
+            style={{ backgroundColor: 'var(--text-primary)' }}
+          >
+            <Translate>View entity</Translate>
+            <ArrowRightIcon className="h-3.5 w-3.5" />
+          </I18NLinkV2>
+        ) : null}
       </div>
     </div>
   );

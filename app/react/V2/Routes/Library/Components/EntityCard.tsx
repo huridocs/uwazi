@@ -38,6 +38,7 @@ type EntityCardProps = {
   selected?: boolean;
   onSelect?: (modifiers: LibraryClickModifiers) => void;
   onFocusProperty?: (fieldKey: string) => void;
+  selectId?: string;
   viewHref: string;
   showThumbnail?: boolean;
   showMetadata?: boolean;
@@ -55,6 +56,7 @@ const EntityCard = ({
   selected = false,
   onSelect,
   onFocusProperty,
+  selectId,
   viewHref,
   showThumbnail = true,
   showMetadata = true,
@@ -94,6 +96,7 @@ const EntityCard = ({
     <div
       role="button"
       tabIndex={0}
+      data-select-id={selectId}
       aria-pressed={selected}
       onClick={event =>
         activate({

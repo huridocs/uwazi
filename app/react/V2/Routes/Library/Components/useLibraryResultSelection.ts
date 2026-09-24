@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+  addLibraryEntity,
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   EMPTY_CLICK_MODIFIERS,
@@ -55,12 +56,21 @@ const useLibraryResultSelection = ({
     [anchorId, onSelectedIdsChange, selectedIds]
   );
 
+  const addEntity = useCallback(
+    (sharedId: string) => {
+      const next = addLibraryEntity({ ids: [...selectedIds], anchorId }, sharedId);
+      setAnchorId(next.anchorId);
+      onSelectedIdsChange(next.ids);
+    },
+    [anchorId, onSelectedIdsChange, selectedIds]
+  );
+
   const clear = useCallback(() => {
     setAnchorId(undefined);
     onSelectedIdsChange([]);
   }, [onSelectedIdsChange]);
 
-  return { selectEntity, selectCluster, clear };
+  return { selectEntity, selectCluster, addEntity, clear };
 };
 
 export { useLibraryResultSelection };
