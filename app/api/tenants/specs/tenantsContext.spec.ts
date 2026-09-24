@@ -36,14 +36,16 @@ describe('tenantsContext', () => {
       testingEnvironment.setRequestId();
       db = testingDB.db(config.SHARED_DB);
 
-      await db.collection('tenants').deleteMany({});
+      await db.collection('tenants').deleteMany({
+        name: { $in: ['context-tenant-one', 'context-tenant-two'] },
+      });
       await db.collection('tenants').insertMany([
         {
-          name: 'tenant one',
+          name: 'context-tenant-one',
           dbName: 'tenant_one',
         },
         {
-          name: 'tenant two',
+          name: 'context-tenant-two',
           dbName: 'tenant_two',
         },
       ]);
@@ -55,7 +57,9 @@ describe('tenantsContext', () => {
         setTimeout(resolve, 1000);
       });
       await tenants.tearDownTenants();
-      await db.collection('tenants').deleteMany({});
+      await db.collection('tenants').deleteMany({
+        name: { $in: ['context-tenant-one', 'context-tenant-two'] },
+      });
       await testingEnvironment.tearDown();
       jest.spyOn(appContext, 'get').mockRestore();
     });
@@ -65,8 +69,8 @@ describe('tenantsContext', () => {
       await model.initialize();
       await tenants.updateTenants(model);
 
-      expect(tenants.tenants['tenant one'].dbName).toBe('tenant_one');
-      expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
+      expect(tenants.tenants['context-tenant-one'].dbName).toBe('tenant_one');
+      expect(tenants.tenants['context-tenant-two'].dbName).toBe('tenant_two');
       await model.closeChangeStream();
     });
   });
