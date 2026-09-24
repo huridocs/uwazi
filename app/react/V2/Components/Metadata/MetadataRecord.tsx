@@ -70,15 +70,18 @@ const propertyCardContent = (
   templatePropertyById: Map<string, ClientProperty>,
   onOpenEntity?: (target: OpenEntityTarget) => void
 ) => {
+  let content: ReactNode;
   if (isRelationshipProperty(field)) {
-    return (
-      <>{connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity })}</>
-    );
+    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+  } else if (isLongField(field)) {
+    content = renderScalarContent(field, true);
+  } else {
+    content = renderFieldContent(field, { onOpenEntity });
   }
-  if (isLongField(field)) {
-    return <>{renderScalarContent(field, true)}</>;
+  if (!content) {
+    return null;
   }
-  return <>{renderFieldContent(field, { onOpenEntity })}</>;
+  return <>{content}</>;
 };
 
 const standardPropertyCard = ({
