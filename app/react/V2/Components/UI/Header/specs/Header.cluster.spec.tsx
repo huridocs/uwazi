@@ -50,12 +50,12 @@ const renderHeader = () =>
   );
 
 describe('Header tools cluster', () => {
-  it('keeps the inline tools behind the md breakpoint when the window is wide', () => {
+  it('shows the inline tools when the header is desktop width', () => {
     renderHeader();
-    expect(screen.getByTestId('header-tools-menu')).toHaveClass('md:hidden');
-    expect(screen.getByTestId('header-tools')).toHaveClass('hidden', 'md:flex');
-    expect(screen.getByTestId('header-tools-menu')).toContainElement(
-      screen.getByTestId('mobile-options')
-    );
+    const tools = screen.getByTestId('header-tools');
+    expect(tools.className).not.toContain('hidden');
+    expect(screen.queryByTestId('mobile-options')).not.toBeInTheDocument();
+    expect(tools).toContainElement(screen.getByRole('link', { name: 'Library' }));
+    expect(tools).toContainElement(screen.getByRole('button', { name: 'EN' }));
   });
 });
