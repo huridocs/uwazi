@@ -1,26 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import React, { useMemo } from 'react';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
-import { LibraryFilters } from './LibraryFilters.js';
+import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
+import { LibraryRightPane } from './LibraryRightPane.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
-import { LibraryEntityPreview } from './LibraryEntityPreview.js';
-import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
-import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
+import { pdfFilesFromList, uploadPdfsAndCreateEntities } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
-import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
-import { DEFAULT_THUMB_FRAME } from './libraryCardDisplay.js';
-import {
-  visibleLibraryTableColumns,
-  libraryTableColumnGroups,
-  libraryTableColumns,
-  toggleColumnVisibility,
-  type LibraryTableDensity,
-} from './libraryTableColumns.js';
+import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
+import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
+import { useLibraryResultSelection } from './useLibraryResultSelection.js';
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -39,155 +31,12 @@ type LibraryViewProps = {
   andFilters: string[];
   onAndFiltersChange: (andFilters: string[]) => void;
   chips: Chip[];
-  selectedId?: string;
-  onSelect: (sharedId: string) => void;
+  selectedIds?: readonly string[];
+  onSelectedIdsChange: (ids: string[]) => void;
   onClosePreview: () => void;
   entityBasePath: string;
   onLoadMore: (amount: number) => void;
   onEntityCreated?: (sharedId?: string) => void;
-};
-
-const useLibraryTableDisplay = (selectedTemplateIds: string[]) => {
-  const templates = useAtomValue(templatesAtom);
-  const [tableDisplay, setTableDisplay] = useAtom(libraryTableDisplayAtom);
-  const tableColumnGroups = useMemo(
-    () => libraryTableColumnGroups(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const tableColumns = useMemo(
-    () => libraryTableColumns(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const visibleTableColumns = useMemo(
-    () => visibleLibraryTableColumns(tableColumns, tableDisplay),
-    [tableColumns, tableDisplay]
-  );
-
-  return {
-    tableColumns,
-    tableColumnGroups,
-    visibleTableColumns,
-    tableDisplay,
-    onToggleTableColumn: (id: string) =>
-      setTableDisplay(current => toggleColumnVisibility(id, current)),
-    onTableDensityChange: (density: LibraryTableDensity) =>
-      setTableDisplay(current => ({ ...current, density })),
-  };
-};
-
-const useLibraryPreviewFocus = (
-  onSelect: (sharedId: string) => void,
-  onClosePreview: () => void
-) => {
-  const [focusFieldKey, setFocusFieldKey] = useState<string>();
-  return {
-    focusFieldKey,
-    selectRow: (sharedId: string) => {
-      setFocusFieldKey(undefined);
-      onSelect(sharedId);
-    },
-    selectProperty: (sharedId: string, fieldKey: string) => {
-      setFocusFieldKey(fieldKey);
-      onSelect(sharedId);
-    },
-    closePreview: () => {
-      setFocusFieldKey(undefined);
-      onClosePreview();
-    },
-  };
-};
-
-const useLibraryCreateActions = (
-  onSelect: (sharedId: string) => void,
-  onClosePreview: () => void,
-  onEntityCreated?: (sharedId?: string) => void
-) => {
-  const [creating, setCreating] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
-  const preview = useLibraryPreviewFocus(
-    sharedId => {
-      setCreating(false);
-      onSelect(sharedId);
-    },
-    () => {
-      setCreating(false);
-      onClosePreview();
-    }
-  );
-  return {
-    ...preview,
-    creating,
-    uploadOpen,
-    openCreate: () => {
-      preview.closePreview();
-      setCreating(true);
-    },
-    openUpload: () => setUploadOpen(true),
-    closeUpload: () => setUploadOpen(false),
-    finishCreated: (sharedId?: string) => {
-      setCreating(false);
-      setUploadOpen(false);
-      onEntityCreated?.(sharedId);
-      if (sharedId) {
-        preview.selectRow(sharedId);
-      }
-    },
-  };
-};
-
-type LibraryRightPaneProps = {
-  creating: boolean;
-  selectedId?: string;
-  entityBasePath: string;
-  focusFieldKey?: string;
-  aggregations: LibraryAggregations;
-  filters: LibraryFiltersState;
-  andFilters: string[];
-  chips: Chip[];
-  onFiltersChange: (filters: LibraryFiltersState) => void;
-  onAndFiltersChange: (andFilters: string[]) => void;
-  onClosePreview: () => void;
-  onCreated: (sharedId?: string) => void;
-};
-
-const renderLibraryRightPane = ({
-  creating,
-  selectedId,
-  entityBasePath,
-  focusFieldKey,
-  aggregations,
-  filters,
-  andFilters,
-  chips,
-  onFiltersChange,
-  onAndFiltersChange,
-  onClosePreview,
-  onCreated,
-}: LibraryRightPaneProps) => {
-  if (creating) {
-    return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
-  }
-  if (selectedId) {
-    return (
-      <LibraryEntityPreview
-        key={selectedId}
-        sharedId={selectedId}
-        entityBasePath={entityBasePath}
-        onClose={onClosePreview}
-        focusFieldKey={focusFieldKey}
-      />
-    );
-  }
-  return (
-    <LibraryFilters
-      aggregations={aggregations}
-      filters={filters}
-      andFilters={andFilters}
-      onChange={onFiltersChange}
-      onAndFiltersChange={onAndFiltersChange}
-      chips={chips}
-    />
-  );
 };
 
 const LibraryView = ({
@@ -207,16 +56,23 @@ const LibraryView = ({
   andFilters,
   onAndFiltersChange,
   chips,
-  selectedId,
-  onSelect,
+  selectedIds = [],
+  onSelectedIdsChange,
   onClosePreview,
   entityBasePath,
   onLoadMore,
   onEntityCreated,
 }: LibraryViewProps) => {
-  const [showThumbnail, setShowThumbnail] = useState(true);
-  const [showMetadata, setShowMetadata] = useState(true);
-  const [thumbFrame, setThumbFrame] = useState(DEFAULT_THUMB_FRAME);
+  const {
+    showThumbnail,
+    showMetadata,
+    thumbFrame,
+    thumbSize,
+    onShowThumbnailChange,
+    onShowMetadataChange,
+    onThumbFrameChange,
+    onThumbSizeChange,
+  } = useLibraryCardDisplay();
   const {
     tableColumns,
     tableColumnGroups,
@@ -225,18 +81,51 @@ const LibraryView = ({
     onToggleTableColumn,
     onTableDensityChange,
   } = useLibraryTableDisplay(filters.type ?? []);
+  const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]);
+  const { selectEntity, selectCluster, addEntity, clear } = useLibraryResultSelection({
+    orderedIds,
+    selectedIds,
+    onSelectedIdsChange,
+    allowRange: view !== 'map',
+  });
+  const dismissSelection = () => {
+    clear();
+    onClosePreview();
+  };
+  const { selectionPanelOpen, onAction, dialogs } = useLibrarySelectionChrome({
+    selectedIds,
+    rows,
+    addEntity,
+    onDeleted: dismissSelection,
+  });
+  const singleSharedId = selectedIds.length === 1 ? selectedIds[0] : undefined;
   const {
     focusFieldKey,
     selectRow,
     selectProperty,
     closePreview,
+    beginSelection,
     creating,
-    uploadOpen,
     openCreate,
-    openUpload,
-    closeUpload,
     finishCreated,
-  } = useLibraryCreateActions(onSelect, onClosePreview, onEntityCreated);
+  } = useLibraryCreateActions(selectEntity, dismissSelection, onEntityCreated);
+  const uploadChosenPdfs = (files: File[]) => {
+    const pdfs = pdfFilesFromList(files);
+    if (!pdfs.length) {
+      return;
+    }
+    void uploadPdfsAndCreateEntities(
+      pdfs,
+      () => undefined,
+      () => undefined
+    )
+      .then(created => {
+        finishCreated(created.at(-1)?.sharedId);
+      })
+      .catch((caught: unknown) => {
+        notify(caught instanceof Error ? caught.message : String(caught), 'error');
+      });
+  };
 
   return (
     <div className="h-full min-h-0 bg-warm" data-testid="library-v2">
@@ -257,11 +146,13 @@ const LibraryView = ({
               onSortChange={onSortChange}
               totalRows={totalRows}
               showThumbnail={showThumbnail}
-              onShowThumbnailChange={setShowThumbnail}
+              onShowThumbnailChange={onShowThumbnailChange}
               showMetadata={showMetadata}
-              onShowMetadataChange={setShowMetadata}
+              onShowMetadataChange={onShowMetadataChange}
               thumbFrame={thumbFrame}
-              onThumbFrameChange={setThumbFrame}
+              onThumbFrameChange={onThumbFrameChange}
+              thumbSize={thumbSize}
+              onThumbSizeChange={onThumbSizeChange}
               tableColumns={tableColumns}
               tableColumnGroups={tableColumnGroups}
               tableDisplay={tableDisplay}
@@ -281,13 +172,18 @@ const LibraryView = ({
                 view={view}
                 rows={rows}
                 totalRows={totalRows}
-                selectedId={selectedId}
+                selectedIds={selectedIds}
                 onSelect={selectRow}
+                onSelectCluster={(sharedIds, modifiers) => {
+                  beginSelection();
+                  selectCluster(sharedIds, modifiers);
+                }}
                 entityBasePath={entityBasePath}
                 onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
                 thumbFrame={thumbFrame}
+                thumbSize={thumbSize}
                 aggregations={aggregations}
                 sort={sort}
                 order={order}
@@ -297,29 +193,66 @@ const LibraryView = ({
                 tableDensity={tableDisplay.density}
               />
             </div>
-            <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={openUpload} />
+            {selectedIds.length > 1 ? (
+              <LibraryMultiSelectFooter
+                count={selectedIds.length}
+                loadedIds={orderedIds}
+                selectedIds={selectedIds}
+                onClear={dismissSelection}
+                onSelectLoaded={() =>
+                  onSelectedIdsChange([...new Set([...selectedIds, ...orderedIds])])
+                }
+                onDeselectLoaded={() => {
+                  const loaded = new Set(orderedIds);
+                  onSelectedIdsChange(selectedIds.filter(id => !loaded.has(id)));
+                }}
+                onAction={onAction}
+              />
+            ) : (
+              <LibraryResultsFooter
+                onCreateEntity={openCreate}
+                onUploadPdf={uploadChosenPdfs}
+                onExportCsv={() => onAction('export')}
+                singleSelection={
+                  singleSharedId
+                    ? {
+                        sharedId: singleSharedId,
+                        entityBasePath,
+                        onAction,
+                        onClose: dismissSelection,
+                      }
+                    : undefined
+                }
+              />
+            )}
           </div>
         </PaneLayout.Pane>
         <PaneLayout.Pane key="filters" background="transparent">
-          {renderLibraryRightPane({
-            creating,
-            selectedId,
-            entityBasePath,
-            focusFieldKey,
-            aggregations,
-            filters,
-            andFilters,
-            chips,
-            onFiltersChange,
-            onAndFiltersChange,
-            onClosePreview: closePreview,
-            onCreated: finishCreated,
-          })}
+          <LibraryRightPane
+            creating={creating}
+            rows={rows}
+            selectedIds={selectedIds}
+            selectionPanelOpen={selectionPanelOpen}
+            entityBasePath={entityBasePath}
+            focusFieldKey={focusFieldKey}
+            aggregations={aggregations}
+            filters={filters}
+            andFilters={andFilters}
+            chips={chips}
+            onFiltersChange={onFiltersChange}
+            onAndFiltersChange={onAndFiltersChange}
+            onClosePreview={closePreview}
+            onCloseSelection={dismissSelection}
+            onRemoveSelection={sharedId =>
+              onSelectedIdsChange(selectedIds.filter(id => id !== sharedId))
+            }
+            onPreviewSelection={sharedId => selectEntity(sharedId)}
+            onCreated={finishCreated}
+            onAction={onAction}
+          />
         </PaneLayout.Pane>
       </PaneLayout>
-      {uploadOpen ? (
-        <LibraryUploadPdfModal onClose={closeUpload} onUploaded={finishCreated} />
-      ) : null}
+      {dialogs}
     </div>
   );
 };

@@ -1,7 +1,14 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { DisplayMenuCheckRow } from '#V2/Components/UI/index.js';
-import { DEFAULT_THUMB_FRAME, THUMB_FRAMES, type ThumbFrame } from './libraryCardDisplay.js';
+import {
+  DEFAULT_THUMB_FRAME,
+  DEFAULT_THUMB_SIZE,
+  THUMB_FRAMES,
+  THUMB_SIZES,
+  type ThumbFrame,
+  type ThumbSize,
+} from './libraryCardDisplay.js';
 
 type LibraryCardsDisplayOptionsProps = {
   showThumbnail: boolean;
@@ -10,6 +17,8 @@ type LibraryCardsDisplayOptionsProps = {
   onShowMetadataChange: (value: boolean) => void;
   thumbFrame?: ThumbFrame;
   onThumbFrameChange?: (value: ThumbFrame) => void;
+  thumbSize?: ThumbSize;
+  onThumbSizeChange?: (value: ThumbSize) => void;
 };
 
 const LibraryCardsDisplayOptions = ({
@@ -19,6 +28,8 @@ const LibraryCardsDisplayOptions = ({
   onShowMetadataChange,
   thumbFrame = DEFAULT_THUMB_FRAME,
   onThumbFrameChange,
+  thumbSize = DEFAULT_THUMB_SIZE,
+  onThumbSizeChange,
 }: LibraryCardsDisplayOptionsProps) => (
   <>
     <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
@@ -37,6 +48,17 @@ const LibraryCardsDisplayOptions = ({
     {showThumbnail ? (
       <>
         <div className="my-1 h-px border-t border-border-soft" />
+        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+          <Translate>Thumbnail size</Translate>
+        </p>
+        {THUMB_SIZES.map(option => (
+          <DisplayMenuCheckRow
+            key={option.id}
+            label={<Translate>{option.label}</Translate>}
+            checked={thumbSize === option.id}
+            onToggle={() => onThumbSizeChange?.(option.id)}
+          />
+        ))}
         <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>Thumbnail frame</Translate>
         </p>

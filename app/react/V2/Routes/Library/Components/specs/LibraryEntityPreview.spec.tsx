@@ -315,7 +315,7 @@ describe('LibraryView preview pane', () => {
     andFilters: [],
     onAndFiltersChange: jest.fn(),
     chips: [],
-    onSelect: jest.fn(),
+    onSelectedIdsChange: jest.fn(),
     onClosePreview: jest.fn(),
     entityBasePath: '/entityv2',
     onLoadMore: jest.fn(),
@@ -334,7 +334,24 @@ describe('LibraryView preview pane', () => {
               [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
-            <LibraryView {...viewProps} selectedId={selectedId} />
+            <LibraryView
+              {...viewProps}
+              rows={
+                selectedId
+                  ? [
+                      {
+                        _id: entityWithDocument._id,
+                        sharedId: entityWithDocument.sharedId,
+                        language: entityWithDocument.language,
+                        title: entityWithDocument.title,
+                        template: entityWithDocument.template,
+                        metadata: {},
+                      },
+                    ]
+                  : []
+              }
+              selectedIds={selectedId ? [selectedId] : []}
+            />
           </TestAtomStoreProvider>
         </ServicesProvider>
       </TestRouterContext>
@@ -350,6 +367,7 @@ describe('LibraryView preview pane', () => {
     renderView(entityWithDocument.sharedId);
     expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
     expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
+    expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 
@@ -362,9 +380,14 @@ describe('LibraryView preview pane', () => {
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 
-  it('opens the upload PDF dialog', async () => {
+  it('opens the native PDF file picker without a modal', async () => {
     renderView();
-    fireEvent.click(await screen.findByRole('button', { name: 'Upload PDF' }));
-    expect(await screen.findByRole('dialog', { name: 'Upload PDF' })).toBeInTheDocument();
+    const upload = await screen.findByRole('button', { name: 'Upload PDF' });
+    const input = document.querySelector('input[type="file"]');
+    expect(input).toBeInstanceOf(HTMLInputElement);
+    const openPicker = jest.spyOn(input as HTMLInputElement, 'click');
+    fireEvent.click(upload);
+    expect(openPicker).toHaveBeenCalled();
+    expect(screen.queryByRole('dialog', { name: 'Upload PDF' })).not.toBeInTheDocument();
   });
 });
