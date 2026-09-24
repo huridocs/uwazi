@@ -1,13 +1,15 @@
 /* eslint-disable max-classes-per-file */
 import { DomainError } from '../error/DomainError.js';
+import { ConflictError } from '../error/ConflictError.js';
+import { NotFoundError } from '../error/NotFoundError.js';
 
-class UsernameExists extends DomainError {
+class UsernameExists extends ConflictError {
   constructor(username: string) {
     super(`The username "${username}" already exists`, 'user.duplicated_user');
   }
 }
 
-class EmailInUse extends DomainError {
+class EmailInUse extends ConflictError {
   constructor(email: string) {
     super(`The email "${email}" already exists`, 'user.duplicated_email');
   }
@@ -31,7 +33,7 @@ class IsDeleteOfLastUser extends DomainError {
   }
 }
 
-class UserNotFound extends DomainError {
+class UserNotFound extends NotFoundError {
   constructor(id: string) {
     super(`User ${id} not found`, 'user.not_found');
   }

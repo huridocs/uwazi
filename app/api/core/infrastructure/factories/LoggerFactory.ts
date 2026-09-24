@@ -1,5 +1,6 @@
 import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { StderrJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StderrJSONWriter.js';
 import { config } from '#api/config.js';
 import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
 import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
@@ -20,6 +21,18 @@ export class LoggerFactory {
         // do nothing
       };
     }
+
+    return new StandardLogger(writer, getTenant(), ExecutionContext.correlationId);
+  }
+
+  /** Always stderr, whatever the environment: the CLI's stdout is reserved for command output. */
+  static cli() {
+    const writer =
+      process.env.NODE_ENV === 'test'
+        ? () => {
+            // do nothing
+          }
+        : StderrJSONWriter;
 
     return new StandardLogger(writer, getTenant(), ExecutionContext.correlationId);
   }
