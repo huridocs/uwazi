@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { orderedSelectionIds } from '../librarySelection.js';
+import { LibrarySelectionActionsMenu } from './LibrarySelectionActionsMenu.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
@@ -15,12 +16,6 @@ const closeButtonClassName =
 
 const leadButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-warm';
-
-const ghostButtonClassName =
-  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
-
-const dangerButtonClassName =
-  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-seal-label transition-colors hover:bg-seal-tint/40';
 
 type LibrarySelectionPanelProps = {
   rows: LibrarySearchHit[];
@@ -49,8 +44,7 @@ const LibrarySelectionPanel = ({
     selectedIds
   );
   const shownIds = listedIds.slice(0, visible);
-  const actions = librarySelectionActions();
-  const actionById = (id: LibraryBulkAction) => actions.find(action => action.id === id);
+  const editAction = librarySelectionActions().find(action => action.id === 'edit');
   const count = selectedIds.length;
 
   return (
@@ -125,32 +119,6 @@ const LibrarySelectionPanel = ({
         className="flex h-12 shrink-0 items-center gap-2 bg-paper px-3"
         style={{ borderTop: '1px solid var(--border-primary)' }}
       >
-        <button type="button" onClick={() => onAction?.('edit')} className={leadButtonClassName}>
-          <span className="text-ink-tertiary">{actionById('edit')?.icon}</span>
-          <Translate>Edit</Translate>
-        </button>
-        <button
-          type="button"
-          onClick={() => onAction?.('permissions')}
-          className={ghostButtonClassName}
-        >
-          <span className="text-ink-tertiary">{actionById('permissions')?.icon}</span>
-          <Translate>Permissions</Translate>
-        </button>
-        <span
-          aria-hidden
-          data-testid="library-selection-divider"
-          className="mx-1.5 h-5 w-px shrink-0 self-center bg-border-soft"
-        />
-        <button
-          type="button"
-          onClick={() => onAction?.('delete')}
-          className={dangerButtonClassName}
-        >
-          <span>{actionById('delete')?.icon}</span>
-          <Translate>Delete</Translate>
-        </button>
-        <span className="flex-1" />
         <button
           type="button"
           onClick={onClose}
@@ -159,6 +127,11 @@ const LibrarySelectionPanel = ({
         >
           <Translate>Close</Translate>
         </button>
+        <button type="button" onClick={() => onAction?.('edit')} className={leadButtonClassName}>
+          <span className="text-ink-tertiary">{editAction?.icon}</span>
+          <Translate>Edit</Translate>
+        </button>
+        <LibrarySelectionActionsMenu onAction={onAction} />
       </div>
     </div>
   );

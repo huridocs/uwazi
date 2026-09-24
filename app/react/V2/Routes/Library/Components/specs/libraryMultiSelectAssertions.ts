@@ -1,4 +1,10 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
+import {
+  expectActionsMenu,
+  expectFooterLabels,
+  expectPanelBar,
+  expectSingleEntity,
+} from './libraryDesktopFooterAssertions.js';
 
 const results = () => screen.getByRole('region', { name: 'Library results' });
 
@@ -8,56 +14,6 @@ const clickCard = (
   title: string,
   modifiers?: { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean }
 ) => fireEvent.click(card(title), modifiers);
-
-const selectionActionLabels = ['Edit', 'Change template', 'Export CSV', 'Permissions', 'Delete'];
-
-const expectSelectionActions = (footer: HTMLElement) => {
-  const buttons = within(footer).getAllByRole('button');
-  expect(
-    buttons.slice(0, selectionActionLabels.length).map(button => button.getAttribute('aria-label'))
-  ).toEqual(selectionActionLabels);
-  selectionActionLabels.forEach(label => {
-    expect(within(footer).getByRole('button', { name: label })).not.toHaveClass('hidden');
-  });
-  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
-};
-
-const selectionPanelFooter = () =>
-  within(screen.getByTestId('library-selection-panel')).getByTestId('library-selection-footer');
-
-const panelBarSequence = (footer: HTMLElement) =>
-  [...footer.children].flatMap(child => {
-    if (child.getAttribute('data-testid') === 'library-selection-divider') {
-      return ['divider'];
-    }
-    const text = child.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    return text ? [text] : [];
-  });
-
-const expectPanelBar = () => {
-  const footer = selectionPanelFooter();
-  expect(within(footer).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
-  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
-  expect(within(footer).queryByRole('menu')).not.toBeInTheDocument();
-  expect(within(footer).queryByRole('link', { name: 'View entity' })).not.toBeInTheDocument();
-  const sequence = panelBarSequence(footer);
-  expect(sequence.slice(0, 4)).toEqual(['Edit', 'Permissions', 'divider', 'Delete']);
-  expect(sequence.at(-1)).toBe('Close');
-  expect(within(footer).getByRole('button', { name: 'Delete' })).toHaveClass('text-seal-label');
-};
-
-const expectSingleEntity = async (title: string) => {
-  await waitFor(() => {
-    expect(
-      within(screen.getByTestId('library-entity-preview')).getByText(title)
-    ).toBeInTheDocument();
-  });
-  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
-  const footer = screen.getByTestId('library-multi-select-footer');
-  expectSelectionActions(footer);
-  expect(within(footer).getByTestId('library-selected-count')).toHaveTextContent('1 selected');
-  expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
-};
 
 const expectPanelRows = () => {
   const panel = screen.getByTestId('library-selection-panel');
@@ -75,32 +31,6 @@ const expectPanelRows = () => {
 };
 
 const selectionFooter = () => screen.getByTestId('library-multi-select-footer');
-
-const expectDesktopLabelClasses = (footer: HTMLElement) => {
-  expect(footer).toHaveClass('w-full');
-  expect(footer).not.toHaveClass('@container');
-  selectionActionLabels.forEach(label => {
-    const text = within(within(footer).getByRole('button', { name: label })).getByText(label);
-    const classes = text.parentElement?.className.split(/\s+/) ?? [];
-    expect(classes).toContain('sm:inline');
-    expect(classes).not.toContain('hidden');
-    expect(text.parentElement?.className ?? '').not.toContain('@min-');
-  });
-};
-
-const expectFooterLabels = () => {
-  const footer = selectionFooter();
-  expectSelectionActions(footer);
-  expectDesktopLabelClasses(footer);
-  expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toHaveAttribute(
-    'width',
-    '13'
-  );
-  expect(within(footer).getByRole('button', { name: 'Edit' }).innerHTML).toContain('M13 21h8');
-  expect(
-    within(footer).getByRole('checkbox', { name: 'Deselect the loaded entities' })
-  ).toBeInTheDocument();
-};
 
 const expectPanelChrome = () => {
   const panel = screen.getByTestId('library-selection-panel');
@@ -126,13 +56,6 @@ const expectPageSelectionFooter = () => {
 const expectFooterChrome = () => {
   expectPanelChrome();
   expectPageSelectionFooter();
-};
-
-const expectActionsMenu = () => {
-  const panel = screen.getByTestId('library-selection-panel');
-  expect(within(panel).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
-  expect(within(panel).queryByRole('menu', { name: 'Selection actions' })).not.toBeInTheDocument();
-  expectPanelBar();
 };
 
 const expectCreateFooter = () => {
@@ -196,7 +119,9 @@ const expectCloseClearsMap = async (renderLibrary: RenderLibrary) => {
   expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
   expect(screen.queryByTestId('library-multi-select-footer')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'marker-mexico' }));
-  expect(screen.getByTestId('library-selected-count')).toHaveTextContent('1 selected');
+  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
+  expect(screen.getByTestId('library-single-select-actions')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
 };
 
 const clearSelection = () => {
