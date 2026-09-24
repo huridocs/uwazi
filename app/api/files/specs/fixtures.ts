@@ -20,6 +20,9 @@ const importTemplate = db.id('507f1f77bcf86cd799439011');
 const thesaurusId = db.id('507f1f77bcf86cd799439012');
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
+const connectionHub1 = db.id();
+const connectionHub2 = db.id();
+const connectionHub3 = db.id();
 const mainDocument1 = 'english_testing_file.pdf';
 const fileOnPublicEntity = 'fileOnPublicEntity.pdf';
 const restrictedFileName = 'restricted.pdf';
@@ -217,9 +220,9 @@ const fixtures: DBFixture = {
     },
   ],
   connections: [
-    { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
-    { entity: 'entity2', file: uploadId2.toString(), hub: '2' },
-    { entity: 'entity3', hub: '3' },
+    { entity: 'entity1', file: uploadId2.toString(), hub: connectionHub1 },
+    { entity: 'entity2', file: uploadId2.toString(), hub: connectionHub2 },
+    { entity: 'entity3', hub: connectionHub3 },
     { entity: 'sharedId1', file: uploadId.toString() },
   ],
   entities: [

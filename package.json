@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.199",
+  "version": "1.229.205",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -75,6 +75,7 @@
     "provision-postgres": "node --no-experimental-fetch scripts/bash.js ./database/provision_postgres.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.cjs migration",
     "migrate": "node ./scripts/runner.js ./scripts/migrate.js",
+    "uwazi": "node ./scripts/runner.js ./apps/cli/bin/uwazi.js",
     "migrate-and-reindex": "node ./scripts/runner.js ./scripts/migrate_and_reindex.js",
     "test-debug": "node --no-experimental-fetch --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node scripts/test.mjs",
@@ -273,7 +274,8 @@
     "yargs": "^17.7.2",
     "yauzl": "3.4.0",
     "yazl": "^3.3.1",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "~3.24.6"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.3.1",

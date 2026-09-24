@@ -1,14 +1,7 @@
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import type { Relation } from '#shared/contracts/RelationshipsV1DataSource.js';
 
-export type Relation = {
-  hub: { toString(): string };
-  entity: string;
-  template: { toString(): string };
-  entityData: {
-    template: { toString(): string };
-    title: string;
-  };
-};
+export type { Relation };
 
 export class RelationsV1Collection extends Array<Relation> {
   private relationsByHub: { [hubId: string]: Relation[] } = {};

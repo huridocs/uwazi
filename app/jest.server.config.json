@@ -1,11 +1,13 @@
 {
   "workerIdleMemoryLimit": 0.2,
   "displayName": "Server",
+  "roots": ["<rootDir>", "<rootDir>/../apps"],
   "testMatch": [
     "**/app/api/**/specs/*spec.(j|t)s?(x)",
     "**/app/shared/**/specs/*spec.(j|t)s?(x)",
     "**/app/specs/*spec.(j|t)s?(x)",
-    "**/app/react/V2/services/server/**/specs/*spec.(j|t)s?(x)"
+    "**/app/react/V2/services/server/**/specs/*spec.(j|t)s?(x)",
+    "**/apps/**/specs/*spec.(j|t)s?(x)"
   ],
   "testEnvironment": "node",
   "setupFilesAfterEnv": [
