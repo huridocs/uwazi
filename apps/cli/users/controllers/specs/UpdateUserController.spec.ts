@@ -3,14 +3,15 @@ import { EmailInUse, UserNotFound } from '#api/core/domain/user/errors.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UpdatedUserOutputSchema } from '../../contracts.js';
 import { UpdateUserController } from '../UpdateUserController.js';
-import { asCli, backends, f, fixtures, stored, useBackend } from './fixtures.js';
+import { ControllerSpecs } from '../../../testing/ControllerSpecs.js';
+import { f, fixtures } from './fixtures.js';
 
-describe.each(backends)('UpdateUserController ($name)', ({ postgresCore }) => {
+describe.each(ControllerSpecs.backends)('UpdateUserController ($name)', ({ postgresCore }) => {
   const storedUser = async (username: string) =>
-    (await stored(postgresCore, 'users')).find(user => user.username === username);
+    (await ControllerSpecs.stored(postgresCore, 'users')).find(user => user.username === username);
 
   const groupsOf = async (username: string) =>
-    (await stored(postgresCore, 'usergroups'))
+    (await ControllerSpecs.stored(postgresCore, 'usergroups'))
       .filter(group =>
         (group.members as unknown[]).some(
           member =>
@@ -22,11 +23,11 @@ describe.each(backends)('UpdateUserController ($name)', ({ postgresCore }) => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, { postgres: true });
-    useBackend(postgresCore);
+    ControllerSpecs.useBackend(postgresCore);
   });
 
   it('should change only the given fields of a user found by username', async () => {
-    const output = await asCli(async () =>
+    const output = await ControllerSpecs.asCli(async () =>
       UpdateUserController.handle({ username: 'editor', email: 'new@test.com' })
     );
 
@@ -37,7 +38,7 @@ describe.each(backends)('UpdateUserController ($name)', ({ postgresCore }) => {
   });
 
   it('should find the user by id and rename it', async () => {
-    await asCli(async () =>
+    await ControllerSpecs.asCli(async () =>
       UpdateUserController.handle({
         id: f.idString('editor'),
         newUsername: 'renamed',
@@ -49,22 +50,28 @@ describe.each(backends)('UpdateUserController ($name)', ({ postgresCore }) => {
   });
 
   it('should leave groups untouched unless given, and clear them with an empty list', async () => {
-    await asCli(async () => UpdateUserController.handle({ username: 'editor', email: 'a@b.com' }));
+    await ControllerSpecs.asCli(async () =>
+      UpdateUserController.handle({ username: 'editor', email: 'a@b.com' })
+    );
     expect(await groupsOf('editor')).toEqual(['Researchers']);
 
-    await asCli(async () => UpdateUserController.handle({ username: 'editor', groups: [] }));
+    await ControllerSpecs.asCli(async () =>
+      UpdateUserController.handle({ username: 'editor', groups: [] })
+    );
     expect(await groupsOf('editor')).toEqual([]);
   });
 
   it.each(['gone', 'nobody'])('should not find %s', async username => {
     await expect(
-      asCli(async () => UpdateUserController.handle({ username, email: 'x@test.com' }))
+      ControllerSpecs.asCli(async () =>
+        UpdateUserController.handle({ username, email: 'x@test.com' })
+      )
     ).rejects.toThrow(UserNotFound);
   });
 
   it('should fail with a conflict when the email is taken', async () => {
     await expect(
-      asCli(async () =>
+      ControllerSpecs.asCli(async () =>
         UpdateUserController.handle({ username: 'editor', email: 'admin@test.com' })
       )
     ).rejects.toThrow(EmailInUse);
