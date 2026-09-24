@@ -125,7 +125,14 @@ const TableViewer = ({
 
   return (
     <>
-      <div data-testid="library-table">
+      <div
+        data-testid="library-table"
+        onMouseDown={event => {
+          if (event.shiftKey) {
+            event.preventDefault();
+          }
+        }}
+      >
         <DataTable
           columns={columns}
           data={data}

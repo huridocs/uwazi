@@ -81,9 +81,18 @@ describe('EntityCard', () => {
     expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute('href', '/en/entityv2/abc');
   });
 
-  it('marks the card as selected', () => {
-    renderCard({ selected: true });
-    expect(screen.getByRole('button', { pressed: true })).toBeInTheDocument();
+  it('marks the card as selected and does not select its text on shift-click', () => {
+    const onSelect = jest.fn();
+    renderCard({ selected: true, onSelect });
+    const card = screen.getByRole('button', { pressed: true });
+    expect(fireEvent.mouseDown(card, { shiftKey: true })).toBe(false);
+    expect(fireEvent.mouseDown(card)).toBe(true);
+    fireEvent.click(card, { shiftKey: true });
+    expect(onSelect).toHaveBeenCalledWith({
+      shiftKey: true,
+      ctrlKey: false,
+      metaKey: false,
+    });
   });
 
   it('always reserves the thumbnail slot when thumbnails are on', () => {

@@ -10,7 +10,7 @@ import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
-import { useLibraryCreateActions } from './useLibraryViewChrome.js';
+import { useLibraryCreateActions, useLibrarySelectionPanel } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
 
 type LibraryViewProps = {
@@ -81,6 +81,8 @@ const LibraryView = ({
     onTableDensityChange,
   } = useLibraryTableDisplay(filters.type ?? []);
   const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]);
+  const { selectionPanelOpen, notShown, closeSelectionPanel, reopenSelectionPanel } =
+    useLibrarySelectionPanel(selectedIds, orderedIds);
   const { selectEntity, selectCluster, clear } = useLibraryResultSelection({
     orderedIds,
     selectedIds,
@@ -174,8 +176,18 @@ const LibraryView = ({
             {selectedIds.length > 1 ? (
               <LibraryMultiSelectFooter
                 count={selectedIds.length}
+                loadedIds={orderedIds}
+                selectedIds={selectedIds}
+                notShown={notShown}
                 onClear={dismissSelection}
-                onClose={dismissSelection}
+                onShowList={reopenSelectionPanel}
+                onSelectLoaded={() =>
+                  onSelectedIdsChange([...new Set([...selectedIds, ...orderedIds])])
+                }
+                onDeselectLoaded={() => {
+                  const loaded = new Set(orderedIds);
+                  onSelectedIdsChange(selectedIds.filter(id => !loaded.has(id)));
+                }}
               />
             ) : (
               <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={openUpload} />
@@ -187,6 +199,7 @@ const LibraryView = ({
             creating={creating}
             rows={rows}
             selectedIds={selectedIds}
+            selectionPanelOpen={selectionPanelOpen}
             entityBasePath={entityBasePath}
             focusFieldKey={focusFieldKey}
             aggregations={aggregations}
@@ -196,6 +209,11 @@ const LibraryView = ({
             onFiltersChange={onFiltersChange}
             onAndFiltersChange={onAndFiltersChange}
             onClosePreview={closePreview}
+            onCloseSelection={closeSelectionPanel}
+            onRemoveSelection={sharedId =>
+              onSelectedIdsChange(selectedIds.filter(id => id !== sharedId))
+            }
+            onPreviewSelection={sharedId => selectEntity(sharedId)}
             onCreated={finishCreated}
           />
         </PaneLayout.Pane>

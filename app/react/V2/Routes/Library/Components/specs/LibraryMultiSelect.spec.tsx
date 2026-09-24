@@ -87,7 +87,11 @@ const templates = [
   {
     _id: 'country',
     name: 'Country',
-    properties: [{ _id: 'geo-country', name: 'location', label: 'Location', type: 'geolocation' }],
+    properties: [
+      { _id: 'geo-country', name: 'location', label: 'Location', type: 'geolocation' },
+      { _id: 'region', name: 'region', label: 'Region', type: 'select', showInCard: true },
+      { _id: 'year', name: 'year', label: 'Year', type: 'numeric', showInCard: true },
+    ],
   },
   {
     _id: 'case',
@@ -105,7 +109,11 @@ const rows: LibrarySearchHit[] = [
     language: 'en',
     title: 'Mexico',
     template: 'country',
-    metadata: { location: point(19.4, -99.1) },
+    metadata: {
+      location: point(19.4, -99.1),
+      region: [{ value: 'americas', label: 'Americas · North America' }],
+      year: [{ value: 1981 }],
+    },
   },
   {
     _id: '2',
@@ -245,31 +253,39 @@ describe('library multi-select', () => {
     await expectSingleEntity('Case 11.481 (Gelman)');
   });
 
-  it('selects a table range with shift and closes it from the footer', async () => {
+  it('selects a table range with shift', async () => {
     renderLibrary('table');
     fireEvent.click(await ready('Mexico'));
     fireEvent.click(screen.getByText('Case 11.481 (Gelman)'), { shiftKey: true });
-    expect(screen.getByTestId('library-selected-count')).toHaveTextContent('3 selected');
+    expect(screen.getByTestId('library-selection-count')).toHaveTextContent('3 entities');
     expect(screen.getByTestId('library-selection-panel')).toHaveTextContent(
       'Case 10.488 (Ellacuría)'
     );
+  });
 
+  it('closes the selection list without clearing, then clears from the footer', async () => {
+    renderLibrary('table');
+    fireEvent.click(await ready('Mexico'));
+    fireEvent.click(screen.getByText('Case 11.481 (Gelman)'), { shiftKey: true });
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
+    expect(screen.getByTestId('library-selected-count')).toHaveTextContent('3 selected');
+    fireEvent.click(screen.getByTestId('library-selected-count'));
+    expect(screen.getByTestId('library-selection-panel')).toBeInTheDocument();
+    clearSelection();
   });
 
   it('selects every entity in a map cluster and toggles markers with ctrl', async () => {
     renderLibrary('map');
     fireEvent.click(await screen.findByRole('button', { name: 'cluster' }));
-    expect(screen.getByTestId('library-selected-count')).toHaveTextContent('3 selected');
+    expect(screen.getByTestId('library-selection-count')).toHaveTextContent('3 entities');
     expect(screen.getByTestId('library-selection-panel')).toHaveTextContent('Mexico');
     expect(screen.getByTestId('library-selection-panel')).toHaveTextContent('Case 11.481 (Gelman)');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Close selection list' }));
     fireEvent.click(screen.getByRole('button', { name: 'marker-mexico' }));
     fireEvent.click(screen.getByRole('button', { name: 'marker-ellacuria' }), { ctrlKey: true });
-    expect(screen.getByTestId('library-selected-count')).toHaveTextContent('2 selected');
+    expect(screen.getByTestId('library-selection-count')).toHaveTextContent('2 entities');
     expect(screen.getByTestId('library-selection-panel')).not.toHaveTextContent('Gelman');
   });
 });

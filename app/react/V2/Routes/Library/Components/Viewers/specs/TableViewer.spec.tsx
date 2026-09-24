@@ -121,6 +121,20 @@ describe('TableViewer', () => {
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'video');
   });
 
+  it('does not select row text on shift-click and still selects the row', () => {
+    const onSelect = jest.fn();
+    renderTable({ onSelect });
+    const title = screen.getByText('Amnesty International');
+    expect(fireEvent.mouseDown(title, { shiftKey: true })).toBe(false);
+    expect(fireEvent.mouseDown(title)).toBe(true);
+    fireEvent.click(title, { shiftKey: true });
+    expect(onSelect).toHaveBeenCalledWith('org-1', {
+      shiftKey: true,
+      ctrlKey: false,
+      metaKey: false,
+    });
+  });
+
   it('uses compact row padding by default', () => {
     const { container } = renderTable();
     expect(container.querySelector('.min-h-8')).toBeTruthy();

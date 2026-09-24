@@ -25,10 +25,12 @@ const LANDSCAPE_CARD_FLOOR_CLASS: Record<ThumbSize, string> = {
 };
 
 /** Portrait columns. uwazi-design `LibraryView` `cardGridCols` — the 3:4 slot
- *  takes the column width, so size steps the column count rather than a height. */
+ *  takes the column width, so size steps the column count rather than a height.
+ *  Medium's 3-to-4 jump is `lg`. The design uses `xl`, the same threshold this
+ *  branch had, so that one jump starts a Tailwind step sooner. */
 const PORTRAIT_CARD_GRID_CLASS: Record<ThumbSize, string> = {
   s: 'grid-cols-2 sm:grid-cols-4 xl:grid-cols-5',
-  m: 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4',
+  m: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
   l: 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3',
 };
 
