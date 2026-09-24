@@ -40,6 +40,7 @@ const getSideTabButtons = ({
     if (!entity) return;
     buttons.push({
       id: SIDE_TAB.METADATA,
+      name: 'Metadata',
       label: <TabLabel text="Metadata" dirty={metadataDirty} />,
     });
   };
@@ -48,6 +49,7 @@ const getSideTabButtons = ({
     if (!hasMainDocument) return;
     buttons.push({
       id: SIDE_TAB.DOCUMENT,
+      name: 'Document',
       label: <TabLabel text="Document" />,
     });
   };
@@ -55,6 +57,7 @@ const getSideTabButtons = ({
   const pushFilesList = () => {
     buttons.push({
       id: SIDE_TAB.FILES,
+      name: 'Files',
       label: <TabLabel text="Files" count={filesCount} />,
     });
   };
@@ -65,16 +68,19 @@ const getSideTabButtons = ({
       buttons.push(
         {
           id: SIDE_TAB.TOC,
+          name: 'ToC',
           label: <TabLabel text="ToC" />,
         },
         {
           id: SIDE_TAB.RELATIONSHIPS,
+          name: 'Relationships',
           label: relationshipsTabLabel,
         }
       );
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
+        name: 'Search',
         label: <TabLabel text="Search" dirty={searchDirty} />,
       });
       break;
@@ -82,11 +88,13 @@ const getSideTabButtons = ({
       pushDocument();
       buttons.push({
         id: SIDE_TAB.RELATIONSHIPS,
+        name: 'Relationships',
         label: relationshipsTabLabel,
       });
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
+        name: 'Search',
         label: <TabLabel text="Search" dirty={searchDirty} />,
       });
       break;
@@ -98,11 +106,13 @@ const getSideTabButtons = ({
     case MAIN_TAB.FILES:
       buttons.push({
         id: SIDE_TAB.FILE,
+        name: 'File',
         label: <Translate>File</Translate>,
       });
       if (filesSideTabs?.showTranslationsTab) {
         buttons.push({
           id: SIDE_TAB.TRANSLATIONS,
+          name: 'Translations',
           label: <TabLabel text="Translations" count={filesSideTabs.translationsCount} />,
         });
       }
