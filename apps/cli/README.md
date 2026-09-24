@@ -41,6 +41,8 @@ yarn uwazi users update --tenant acme --request '{"username":"bob","role":"admin
 yarn uwazi users delete --tenant acme --request '{"id":"64b7f0c2e4b0a1b2c3d4e5f6"}'
 yarn uwazi users list --all-tenants
 yarn uwazi users stats --tenant acme --pretty
+yarn uwazi settings get --tenant acme
+yarn uwazi settings update --tenant acme --request '{"site_name":"Acme archive"}'
 ```
 
 In production, from `prod/`, the same commands with the binary in place of `yarn uwazi`:
@@ -48,6 +50,8 @@ In production, from `prod/`, the same commands with the binary in place of `yarn
 ```sh
 ./apps/cli/bin/uwazi.js users list --tenant acme
 echo '{"username":"bob","role":"admin"}' | ./apps/cli/bin/uwazi.js users update --tenant acme --request -
+./apps/cli/bin/uwazi.js settings get --tenant acme > settings.json   # edit, then:
+./apps/cli/bin/uwazi.js settings update --tenant acme --request - < settings.json
 ```
 
 ### Options
@@ -74,15 +78,22 @@ yarn uwazi users update --schema
 
 ### Commands
 
-| Command        | Tenancy                       | Request                                                                                                                                |
-| -------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `users create` | `--tenant`                    | `username`, `email`, `role`; optional `groups` (ids, default `[]`), `welcomeEmail` (default `true`)                                    |
-| `users update` | `--tenant`                    | exactly one of `username` / `id` to name the user; optional `newUsername`, `email`, `role`, `groups` — omitted fields stay as they are |
-| `users delete` | `--tenant`                    | exactly one of `username` / `id` (soft delete)                                                                                         |
-| `users list`   | `--tenant` or `--all-tenants` | optional `role` filter                                                                                                                 |
-| `users stats`  | `--tenant` or `--all-tenants` | none                                                                                                                                   |
+| Command           | Tenancy                       | Request                                                                                                                                |
+| ----------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `users create`    | `--tenant`                    | `username`, `email`, `role`; optional `groups` (ids, default `[]`), `welcomeEmail` (default `true`)                                    |
+| `users update`    | `--tenant`                    | exactly one of `username` / `id` to name the user; optional `newUsername`, `email`, `role`, `groups` — omitted fields stay as they are |
+| `users delete`    | `--tenant`                    | exactly one of `username` / `id` (soft delete)                                                                                         |
+| `users list`      | `--tenant` or `--all-tenants` | optional `role` filter                                                                                                                 |
+| `users stats`     | `--tenant` or `--all-tenants` | none                                                                                                                                   |
+| `settings get`    | `--tenant`                    | none — prints the whole settings document as stored, `sync` credentials included                                                       |
+| `settings update` | `--tenant`                    | any part of the settings document (`--schema` for its shape); prints the whole document after saving                                   |
 
 `role` is one of `admin`, `editor`, `collaborator`.
+
+`settings update` replaces each top-level field it is sent and leaves the others as they are.
+Nested objects such as `features` are replaced whole, so a key left out of `features` is
+removed; a top-level field cannot be removed. The output of `settings get` can be sent back as
+is. A stored document with fields the settings schema does not know is rejected.
 
 ## Output
 
