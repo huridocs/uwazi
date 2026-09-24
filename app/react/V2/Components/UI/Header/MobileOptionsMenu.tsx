@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bars3Icon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { BaseDropdown } from './BaseDropdown.js';
@@ -21,7 +21,7 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
       aria-expanded={isOpen}
       aria-label="Toggle options menu"
     >
-      <Bars3Icon className="h-5 w-5" />
+      <EllipsisVerticalIcon className="h-5 w-5" />
     </button>
   );
 
