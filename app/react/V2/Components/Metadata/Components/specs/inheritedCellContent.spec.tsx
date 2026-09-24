@@ -8,7 +8,7 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { inheritedCellContent } from '../inheritedCellContent.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 

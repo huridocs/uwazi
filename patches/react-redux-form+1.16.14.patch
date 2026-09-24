@@ -1,0 +1,320 @@
+diff --git a/node_modules/react-redux-form/lib/components/control-component-factory.js b/node_modules/react-redux-form/lib/components/control-component-factory.js
+index 822b654..08b1d5a 100644
+--- a/node_modules/react-redux-form/lib/components/control-component-factory.js
++++ b/node_modules/react-redux-form/lib/components/control-component-factory.js
+@@ -17,7 +17,7 @@ var _propTypes = require('prop-types');
+ 
+ var _propTypes2 = _interopRequireDefault(_propTypes);
+ 
+-var _reactRedux = require('react-redux');
++var _formContext = require('../utils/form-context');
+ 
+ var _redux = require('redux');
+ 
+@@ -788,7 +788,7 @@ function createControlClass(s) {
+     };
+   }
+ 
+-  var ConnectedControl = (0, _resolveModel2.default)((0, _reactRedux.connect)(mapStateToProps, null, null, {
++  var ConnectedControl = (0, _resolveModel2.default)((0, _formContext.connectWithLocalStore)(mapStateToProps, null, null, {
+     areOwnPropsEqual: function areOwnPropsEqual(nextOwnProps, ownProps) {
+       return (0, _shallowEqual2.default)(nextOwnProps, ownProps, {
+         omitKeys: ['mapProps']
+diff --git a/node_modules/react-redux-form/lib/components/errors-component.js b/node_modules/react-redux-form/lib/components/errors-component.js
+index f7f5781..113f70c 100644
+--- a/node_modules/react-redux-form/lib/components/errors-component.js
++++ b/node_modules/react-redux-form/lib/components/errors-component.js
+@@ -17,7 +17,7 @@ var _propTypes = require('prop-types');
+ 
+ var _propTypes2 = _interopRequireDefault(_propTypes);
+ 
+-var _reactRedux = require('react-redux');
++var _formContext = require('../utils/form-context');
+ 
+ var _get2 = require('../utils/get');
+ 
+@@ -259,7 +259,7 @@ function createErrorsClass() {
+     };
+   }
+ 
+-  return (0, _resolveModel2.default)((0, _reactRedux.connect)(mapStateToProps)(Errors));
++  return (0, _resolveModel2.default)((0, _formContext.connectWithLocalStore)(mapStateToProps)(Errors));
+ }
+ 
+ exports.createErrorsClass = createErrorsClass;
+diff --git a/node_modules/react-redux-form/lib/components/field-component.js b/node_modules/react-redux-form/lib/components/field-component.js
+index 6df4e28..831dccb 100644
+--- a/node_modules/react-redux-form/lib/components/field-component.js
++++ b/node_modules/react-redux-form/lib/components/field-component.js
+@@ -37,7 +37,7 @@ var _pick = require('../utils/pick');
+ 
+ var _pick2 = _interopRequireDefault(_pick);
+ 
+-var _reactRedux = require('react-redux');
++var _formContext = require('../utils/form-context');
+ 
+ var _invariant = require('invariant');
+ 
+@@ -291,7 +291,7 @@ function createFieldClass() {
+     component: 'div'
+   };
+ 
+-  return (0, _resolveModel2.default)((0, _reactRedux.connect)(mapStateToProps)(Field));
++  return (0, _resolveModel2.default)((0, _formContext.connectWithLocalStore)(mapStateToProps)(Field));
+ }
+ 
+ exports.controlPropsMap = _controlPropsMap3.default;
+diff --git a/node_modules/react-redux-form/lib/components/fieldset-component.js b/node_modules/react-redux-form/lib/components/fieldset-component.js
+index 58f9825..374366b 100644
+--- a/node_modules/react-redux-form/lib/components/fieldset-component.js
++++ b/node_modules/react-redux-form/lib/components/fieldset-component.js
+@@ -14,8 +14,6 @@ var _propTypes = require('prop-types');
+ 
+ var _propTypes2 = _interopRequireDefault(_propTypes);
+ 
+-var _reactRedux = require('react-redux');
+-
+ var _getModel = require('../utils/get-model');
+ 
+ var _getModel2 = _interopRequireDefault(_getModel);
+@@ -24,6 +22,8 @@ var _omit = require('../utils/omit');
+ 
+ var _omit2 = _interopRequireDefault(_omit);
+ 
++var _formContext = require('../utils/form-context');
++
+ var _resolveModel = require('../utils/resolve-model');
+ 
+ var _resolveModel2 = _interopRequireDefault(_resolveModel);
+@@ -58,19 +58,22 @@ var Fieldset = function (_Component) {
+   }
+ 
+   _createClass(Fieldset, [{
+-    key: 'getChildContext',
+-    value: function getChildContext() {
+-      return { model: this.props.model };
+-    }
+-  }, {
+     key: 'render',
+     value: function render() {
+       var component = this.props.component;
+-
+-
++      var parent = this.context || {};
+       var allowedProps = (0, _omit2.default)(this.props, Object.keys(propTypes));
+ 
+-      return _react2.default.createElement(component, allowedProps);
++      return _react2.default.createElement(
++        _formContext.RRFFormContext.Provider,
++        {
++          value: {
++            model: this.props.model,
++            localStore: this.props.store || parent.localStore
++          }
++        },
++        _react2.default.createElement(component, allowedProps)
++      );
+     }
+   }]);
+ 
+@@ -79,9 +82,7 @@ var Fieldset = function (_Component) {
+ 
+ Fieldset.displayName = 'Fieldset';
+ 
+-Fieldset.childContextTypes = {
+-  model: _propTypes2.default.any
+-};
++Fieldset.contextType = _formContext.RRFFormContext;
+ 
+ process.env.NODE_ENV !== "production" ? Fieldset.propTypes = propTypes : void 0;
+ 
+@@ -99,4 +100,4 @@ function mapStateToProps(state, _ref) {
+   };
+ }
+ 
+-exports.default = (0, _resolveModel2.default)((0, _reactRedux.connect)(mapStateToProps)(Fieldset));
+\ No newline at end of file
++exports.default = (0, _resolveModel2.default)((0, _formContext.connectWithLocalStore)(mapStateToProps)(Fieldset));
+\ No newline at end of file
+diff --git a/node_modules/react-redux-form/lib/components/form-component.js b/node_modules/react-redux-form/lib/components/form-component.js
+index 752e300..7f362ec 100644
+--- a/node_modules/react-redux-form/lib/components/form-component.js
++++ b/node_modules/react-redux-form/lib/components/form-component.js
+@@ -21,6 +21,8 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
+ 
+ var _reactRedux = require('react-redux');
+ 
++var _formContext = require('../utils/form-context');
++
+ var _shallowEqual = require('../utils/shallow-equal');
+ 
+ var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+@@ -154,14 +156,6 @@ function createFormClass() {
+     }
+ 
+     _createClass(Form, [{
+-      key: 'getChildContext',
+-      value: function getChildContext() {
+-        return {
+-          model: this.props.model,
+-          localStore: this.props.store
+-        };
+-      }
+-    }, {
+       key: 'componentDidMount',
+       value: function componentDidMount() {
+         if ((0, _containsEvent2.default)(this.props.validateOn, 'change')) {
+@@ -456,12 +450,21 @@ function createFormClass() {
+         var allowedProps = (0, _omit2.default)(this.props, disallowedPropTypeKeys);
+         var renderableChildren = typeof children === 'function' ? children(formValue) : children;
+ 
+-        return _react2.default.createElement(component, _extends({}, allowedProps, {
+-          onSubmit: this.handleSubmit,
+-          onReset: this.handleReset,
+-          ref: this.attachNode,
+-          noValidate: hideNativeErrors || noValidate
+-        }), renderableChildren);
++        return _react2.default.createElement(
++          _formContext.RRFFormContext.Provider,
++          {
++            value: {
++              model: this.props.model,
++              localStore: this.props.store
++            }
++          },
++          _react2.default.createElement(component, _extends({}, allowedProps, {
++            onSubmit: this.handleSubmit,
++            onReset: this.handleReset,
++            ref: this.attachNode,
++            noValidate: hideNativeErrors || noValidate
++          }), renderableChildren)
++        );
+       }
+     }]);
+ 
+@@ -475,15 +478,6 @@ function createFormClass() {
+     component: 'form'
+   };
+ 
+-  Form.childContextTypes = {
+-    model: _propTypes2.default.any,
+-    localStore: _propTypes2.default.shape({
+-      subscribe: _propTypes2.default.func,
+-      dispatch: _propTypes2.default.func,
+-      getState: _propTypes2.default.func
+-    })
+-  };
+-
+   function mapStateToProps(state, _ref) {
+     var model = _ref.model;
+ 
+diff --git a/node_modules/react-redux-form/lib/components/local-form-component.js b/node_modules/react-redux-form/lib/components/local-form-component.js
+index ce02000..10eaacd 100644
+--- a/node_modules/react-redux-form/lib/components/local-form-component.js
++++ b/node_modules/react-redux-form/lib/components/local-form-component.js
+@@ -26,6 +26,10 @@ var _formsReducer2 = _interopRequireDefault(_formsReducer);
+ 
+ var _redux = require('redux');
+ 
++var _reactRedux = require('react-redux');
++
++var _formContext = require('../utils/form-context');
++
+ var _omit = require('../utils/omit');
+ 
+ var _omit2 = _interopRequireDefault(_omit);
+@@ -72,7 +76,11 @@ var LocalForm = function (_React$Component) {
+     value: function render() {
+       var allowedProps = (0, _omit2.default)(this.props, ['store', 'initialState']);
+ 
+-      return _react2.default.createElement(_formComponent2.default, _extends({ store: this.store }, allowedProps));
++      return _react2.default.createElement(
++        _reactRedux.Provider,
++        { store: this.store, context: _formContext.RRFReduxContext },
++        _react2.default.createElement(_formComponent2.default, _extends({ store: this.store }, allowedProps))
++      );
+     }
+   }]);
+ 
+diff --git a/node_modules/react-redux-form/lib/utils/form-context.js b/node_modules/react-redux-form/lib/utils/form-context.js
+new file mode 100644
+index 0000000..3507b5f
+--- /dev/null
++++ b/node_modules/react-redux-form/lib/utils/form-context.js
+@@ -0,0 +1,33 @@
++'use strict';
++
++var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
++
++var _react = require('react');
++
++var _reactRedux = require('react-redux');
++
++var RRFFormContext = (0, _react.createContext)({
++  model: undefined,
++  localStore: undefined
++});
++
++var RRFReduxContext = (0, _react.createContext)(null);
++
++function connectWithLocalStore(mapStateToProps, mapDispatchToProps, mergeProps, options) {
++  return function (Component) {
++    var localOptions = _extends({}, options, { context: RRFReduxContext });
++    var ConnectedLocal = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps, mergeProps, localOptions)(Component);
++    var ConnectedApp = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps, mergeProps, options)(Component);
++    function ChooseStore(props) {
++      var local = (0, _react.useContext)(RRFReduxContext);
++      var Comp = local && local.store ? ConnectedLocal : ConnectedApp;
++      return (0, _react.createElement)(Comp, props);
++    }
++    ChooseStore.displayName = ConnectedApp.displayName;
++    return ChooseStore;
++  };
++}
++
++exports.RRFFormContext = RRFFormContext;
++exports.RRFReduxContext = RRFReduxContext;
++exports.connectWithLocalStore = connectWithLocalStore;
+diff --git a/node_modules/react-redux-form/lib/utils/resolve-model.js b/node_modules/react-redux-form/lib/utils/resolve-model.js
+index 786458d..45fcb61 100644
+--- a/node_modules/react-redux-form/lib/utils/resolve-model.js
++++ b/node_modules/react-redux-form/lib/utils/resolve-model.js
+@@ -18,6 +18,8 @@ var _propTypes = require('prop-types');
+ 
+ var _propTypes2 = _interopRequireDefault(_propTypes);
+ 
++var _formContext = require('./form-context');
++
+ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+ 
+ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+@@ -55,9 +57,9 @@ function wrapWithModelResolver(WrappedComponent) {
+     _createClass(ResolvedModelWrapper, [{
+       key: 'render',
+       value: function render() {
+-        var _context = this.context,
+-            parentModel = _context.model,
+-            localStore = _context.localStore;
++        var _context = this.context || {};
++        var parentModel = _context.model;
++        var localStore = _context.localStore;
+ 
+         var resolvedModel = resolveModel(this.props.model, parentModel);
+ 
+@@ -77,14 +79,7 @@ function wrapWithModelResolver(WrappedComponent) {
+     model: _propTypes2.default.any
+   } : void 0;
+ 
+-  ResolvedModelWrapper.contextTypes = {
+-    model: _propTypes2.default.any,
+-    localStore: _propTypes2.default.shape({
+-      subscribe: _propTypes2.default.func,
+-      dispatch: _propTypes2.default.func,
+-      getState: _propTypes2.default.func
+-    })
+-  };
++  ResolvedModelWrapper.contextType = _formContext.RRFFormContext;
+ 
+   return ResolvedModelWrapper;
+ }
+\ No newline at end of file

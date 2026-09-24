@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -18,6 +18,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
 
 import { ViewDocumentLink } from './ViewDocumentLink.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;
@@ -32,7 +33,7 @@ type FileState = {
   editing: boolean;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, 'library'));
 const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & FileOwnProps;

@@ -1,5 +1,5 @@
-import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import React, { useCallback, useRef, useState } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { DropdownList } from '#app/Forms/index.js';
@@ -16,6 +16,7 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface HideColumnsComponentProps {
   columns: Immutable.List<IImmutable<TableViewColumn>>;
@@ -25,7 +26,7 @@ interface HideColumnsComponentProps {
 const mapStateToProps = (state: IStore) => ({
   columns: state.library.ui.get('tableViewColumns'),
 });
-const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     { setTableViewColumnHidden, setTableViewAllColumnsHidden },
     wrapDispatch(dispatch, 'library')
@@ -65,7 +66,10 @@ export const HideColumnsComponent = ({
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
   const dropdownContainerRef = useRef(null);
-  const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
+  const dropdownRef = useRef<{
+    props: { onToggle: (value: null) => void };
+    forceUpdate: () => void;
+  } | null>(null);
 
   const onClickOutside = useCallback((event: MouseEvent) => {
     const target = event.target as HTMLElement;

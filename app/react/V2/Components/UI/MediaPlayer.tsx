@@ -15,7 +15,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
     url?: string;
     fileName?: string;
   };
-  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer>>;
+  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer> | null>;
   className?: string;
 }
 

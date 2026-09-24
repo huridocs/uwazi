@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { EntitiesAPI as entitiesAPI } from '#app/Entities/EntitiesAPI.js';
@@ -7,6 +6,7 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { ClientFile } from '#app/istore.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
@@ -38,7 +38,7 @@ const updateSelection = (
 
 const deleteSelection =
   (entityDocument: IImmutable<ClientFile> | undefined, propertyName: string, propertyID?: string) =>
-  (dispatch: Dispatch<{}>) => {
+  (dispatch: AppDispatch) => {
     const document = entityDocument?.toJS();
 
     const updatedSelections = document?.propertySelections?.filter(

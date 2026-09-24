@@ -25,7 +25,7 @@ const TestRouterContext = ({
   const Stub = createRoutesStub([
     {
       path,
-      Component: () => children,
+      Component: () => <>{children}</>,
       HydrateFallback,
       loader: () => loaderData,
     },

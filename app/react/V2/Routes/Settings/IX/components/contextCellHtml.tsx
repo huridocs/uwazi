@@ -15,12 +15,17 @@ const ixContextClassnames: { [key: string]: string } = {
   ix_match: 'ix_match bg-highlight text-ink',
 };
 
+type HtmlProps = { className?: string; children?: React.ReactNode };
+
+const isHtmlElement = (node: React.ReactNode): node is React.ReactElement<HtmlProps> =>
+  React.isValidElement<HtmlProps>(node);
+
 const elementClass = (node: React.ReactNode) =>
-  React.isValidElement(node) ? (node.props as { className?: string }).className : undefined;
+  isHtmlElement(node) ? node.props.className : undefined;
 
 const isClass = (node: React.ReactNode, className: string) => elementClass(node) === className;
 
-const recreate = (node: React.ReactElement, children: React.ReactNode, key?: number) => {
+const recreate = (node: React.ReactElement<HtmlProps>, children: React.ReactNode, key?: number) => {
   const elementType = node.type === 'p' ? 'span' : node.type;
   return React.createElement(
     elementType,
@@ -68,7 +73,7 @@ const buildTruncatedMatch = ({
   ];
 };
 
-const truncateMatching = (matchingParagraph: React.ReactElement) => {
+const truncateMatching = (matchingParagraph: React.ReactElement<HtmlProps>) => {
   const childrenArray = React.Children.toArray(matchingParagraph.props.children);
   const range = matchChildIndexes(childrenArray);
   if (!range) {
@@ -94,7 +99,7 @@ const truncateMatching = (matchingParagraph: React.ReactElement) => {
 
 const truncateFirstNode = (nodes: React.ReactNode[]) => {
   const [firstNode] = nodes;
-  if (!React.isValidElement(firstNode)) {
+  if (!isHtmlElement(firstNode)) {
     return nodes;
   }
   const textContent = extractTextContent(firstNode);
@@ -109,7 +114,11 @@ const truncateFirstNode = (nodes: React.ReactNode[]) => {
   return recreate(firstNode, truncatedText);
 };
 
-const truncateAdjacent = (node: React.ReactElement, index: number, maxContext: number) => {
+const truncateAdjacent = (
+  node: React.ReactElement<HtmlProps>,
+  index: number,
+  maxContext: number
+) => {
   const textContent = extractTextContent(node);
   const optimizedText = optimizeTextForDisplay(textContent);
   const maxAdjacentLength = Math.floor(maxContext * 0.5);
@@ -123,10 +132,13 @@ const truncateAdjacent = (node: React.ReactElement, index: number, maxContext: n
 };
 
 const rewriteContextNode = (node: React.ReactNode, index: number, maxContext: number) => {
-  if (React.isValidElement(node) && isClass(node, ixContextClassnames.ix_matching_paragraph)) {
+  if (!isHtmlElement(node)) {
+    return <>{node}</>;
+  }
+  if (isClass(node, ixContextClassnames.ix_matching_paragraph)) {
     return recreate(node, truncateMatching(node), index);
   }
-  if (React.isValidElement(node) && isClass(node, ixContextClassnames.ix_adjacent_paragraph)) {
+  if (isClass(node, ixContextClassnames.ix_adjacent_paragraph)) {
     return truncateAdjacent(node, index, maxContext);
   }
   return node;
@@ -140,7 +152,7 @@ const adjacentOf = (nodes: React.ReactNode[], matchingIndex: number, after: bool
 };
 
 const matchingContextLength = (
-  matchingParagraph: React.ReactElement,
+  matchingParagraph: React.ReactElement<HtmlProps>,
   beforeText: string,
   afterText: string
 ) => {
@@ -154,7 +166,7 @@ const matchingContextLength = (
 const truncateMatchedNodes = (
   nodes: React.ReactNode[],
   matchingIndex: number,
-  matchingParagraph: React.ReactElement
+  matchingParagraph: React.ReactElement<HtmlProps>
 ) => {
   const adjacentBefore = adjacentOf(nodes, matchingIndex, false);
   const adjacentAfter = adjacentOf(nodes, matchingIndex, true);
@@ -175,7 +187,7 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
     isClass(node, ixContextClassnames.ix_matching_paragraph)
   );
   const matchingParagraph = nodes[matchingIndex];
-  if (matchingIndex === -1 || !React.isValidElement(matchingParagraph)) {
+  if (matchingIndex === -1 || !isHtmlElement(matchingParagraph)) {
     return truncateFirstNode(nodes);
   }
   return truncateMatchedNodes(nodes, matchingIndex, matchingParagraph);
@@ -197,7 +209,7 @@ const createDomNode = (
   node: ChildNode,
   key: number,
   paragraphsAsSpan: boolean
-): React.ReactNode => {
+): React.ReactElement | string | undefined => {
   if (node.type === 'text') {
     return node.data;
   }

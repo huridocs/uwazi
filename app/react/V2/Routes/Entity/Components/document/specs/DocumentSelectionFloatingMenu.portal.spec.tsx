@@ -7,7 +7,7 @@ import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { DocumentSelectionFloatingMenu } from '../DocumentSelectionFloatingMenu.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const selection: TextSelection = {

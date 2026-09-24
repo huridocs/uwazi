@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import { api } from '#app/utils/api.js';
@@ -77,14 +77,16 @@ jest.mock('#V2/Components/PDFViewer', () => ({
 }));
 
 const testCheckboxes = async (expectedSelected?: string) => {
-  thesauri[0].values.forEach(async value => {
-    const checkbox = await screen.findByLabelText(value.label);
-    if (value.label === expectedSelected) {
-      expect(checkbox).toBeChecked();
-    } else {
-      expect(checkbox).not.toBeChecked();
-    }
-  });
+  await Promise.all(
+    thesauri[0].values.map(async value => {
+      const checkbox = await screen.findByLabelText(value.label);
+      if (value.label === expectedSelected) {
+        await waitFor(() => expect(checkbox).toBeChecked());
+      } else {
+        expect(checkbox).not.toBeChecked();
+      }
+    })
+  );
 };
 
 const findSidepanel = async () => {

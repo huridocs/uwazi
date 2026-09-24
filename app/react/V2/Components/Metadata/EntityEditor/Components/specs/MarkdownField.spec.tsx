@@ -8,7 +8,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { MarkdownField } from '../MarkdownField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
 }));
 
@@ -21,12 +21,15 @@ jest.mock('../EntityPdfFillField', () => ({
       onFocus: () => void;
       onClick: () => void;
     }) => React.ReactNode;
-  }) =>
-    children({
-      overlay: <div data-testid="pdf-fill-overlay" />,
-      onFocus: jest.fn(),
-      onClick: jest.fn(),
-    }),
+  }) => (
+    <>
+      {children({
+        overlay: <div data-testid="pdf-fill-overlay" />,
+        onFocus: jest.fn(),
+        onClick: jest.fn(),
+      })}
+    </>
+  ),
 }));
 
 type FormValues = {

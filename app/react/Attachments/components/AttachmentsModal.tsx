@@ -6,11 +6,12 @@ import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 const ReactModal = resolveDefaultExport(ReactModalModule);
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone-esm';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#UI/index.js';
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -18,8 +19,8 @@ interface AttachmentsModalProps {
   storeKey: string;
   model: string;
   onClose(): void;
-  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
-  uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment: (...args: any[]) => (dispatch: AppDispatch) => Promise<any>;
+  uploadAttachmentFromUrl: (...args: any[]) => (dispatch: AppDispatch) => void;
   getPercentage?: number;
 }
 
@@ -154,7 +155,7 @@ const AttachmentsModalCmp = ({
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: AttachmentsModalProps) =>
+const mapDispatchToProps = (dispatch: AppDispatch, ownProps: AttachmentsModalProps) =>
   bindActionCreators(
     {
       uploadAttachment: ownProps.uploadAttachment,

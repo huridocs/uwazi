@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { actions } from '#app/BasicReducer/index.js';
@@ -10,6 +10,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { SiteName } from '#app/App/SiteName.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { useCompactBar } from './useCompactBar.js';
 import { buildLibraryUrl } from './buildLibraryUrl.js';
 import { settingsAtom, userAtom } from '../../../atoms/index.js';
@@ -26,7 +27,7 @@ const mapStateToProps = (state: IStore) => ({
   libraryFilters: state.library.filters,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     { setSidePanelView: actions.set.bind(null, 'library.sidepanel.view') },
     wrapDispatch(dispatch, 'library')

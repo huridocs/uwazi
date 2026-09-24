@@ -22,7 +22,7 @@ const DatavizAtomHydration = ({ children }: DatavizAtomHydrationProps) => {
     [thesauriAtom, datavizThesauri],
     [relationshipTypesAtom, datavizRelationTypes],
   ]);
-  return children;
+  return <>{children}</>;
 };
 
 type DatavizStoryProviderProps = {

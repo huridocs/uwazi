@@ -3,8 +3,20 @@ import { createPortal } from 'react-dom';
 
 type PortalTooltipPlacement = 'top' | 'right' | 'bottom' | 'left';
 
+type TooltipTriggerProps = {
+  ref?: React.Ref<HTMLElement>;
+  'aria-describedby'?: string;
+  onBlur?: () => void;
+  onFocus?: () => void;
+  onMouseEnter?: () => void;
+  onMouseOver?: () => void;
+  onMouseLeave?: () => void;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
+};
+
 type PortalTooltipProps = {
-  children: React.ReactElement;
+  children: React.ReactElement<TooltipTriggerProps>;
   content: React.ReactNode;
   placement?: PortalTooltipPlacement;
   className?: string;

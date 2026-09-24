@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import { Dispatch } from 'redux';
 import { IStore } from '#app/istore.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
@@ -12,9 +11,10 @@ import {
 } from '#app/Library/actions/actionTypes.js';
 import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { PermissionType, MixedAccess } from '../../../shared/types/permissionSchema.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {
-  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+  return async (dispatch: AppDispatch, getState: () => IStore) => {
     const response = await savePermissions(permissionsData);
     const publicPermission = response.permissions.find(p => p.type === PermissionType.PUBLIC);
     const publicIsMixed = publicPermission?.level === MixedAccess.MIXED;

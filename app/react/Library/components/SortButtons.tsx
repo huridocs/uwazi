@@ -1,5 +1,5 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { wrapDispatch } from '#app/Multireducer/index.js';
@@ -8,6 +8,7 @@ import { DropdownList } from '#app/Forms/index.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { IStore } from '#app/istore.js';
 import omit from 'lodash/omit.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import {
   filterTemplates,
   getPropertySortType,
@@ -40,7 +41,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   return { ...ownProps, stateProperty, search, templates };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, 'library'));
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

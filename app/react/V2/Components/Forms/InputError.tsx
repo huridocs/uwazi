@@ -8,7 +8,7 @@ interface InputErrorProps {
 }
 
 const renderChild = (child: string | React.ReactNode) =>
-  isString(child) ? <Translate>{child}</Translate> : child;
+  isString(child) ? <Translate>{child}</Translate> : <>{child}</>;
 
 const InputError = ({ children, className = '' }: InputErrorProps) => (
   <p className={`${className} mt-2 text-sm text-seal`.trim()}>{renderChild(children)}</p>

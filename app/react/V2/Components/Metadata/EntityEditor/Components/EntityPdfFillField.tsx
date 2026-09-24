@@ -40,10 +40,10 @@ const EntityPdfFillField = <TFormValues extends FieldValues>({
         placement={placement}
         applyValue={value => applyPdfFillFormValue(setValue, field, value)}
       >
-        {slot => children(slot)}
+        {slot => <>{children(slot)}</>}
       </EntityPdfFill>
     ) : (
-      children()
+      <>{children()}</>
     )}
   </EntityField>
 );

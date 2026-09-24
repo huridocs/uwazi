@@ -31,7 +31,7 @@ const getTextContent = (node: React.ReactNode | React.ReactNode[] | string | num
 
   if (Array.isArray(node)) return node.map(child => getTextContent(child)).join('');
 
-  if (isValidElement(node)) {
+  if (isValidElement<{ children?: React.ReactNode }>(node)) {
     const { children } = node.props;
     if (Array.isArray(children)) {
       const texts = children.map(child => getTextContent(child));
@@ -44,7 +44,7 @@ const getTextContent = (node: React.ReactNode | React.ReactNode[] | string | num
 };
 
 const getClassName = (node: React.ReactNode): string => {
-  if (isValidElement(node)) {
+  if (isValidElement<{ className?: string }>(node)) {
     return node.props.className || '';
   }
   return '';

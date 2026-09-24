@@ -12,6 +12,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { PageType } from '#shared/types/pageType.js';
 import { TranslationContext, TranslationType } from '#shared/translationType.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { ExportStore } from '#app/Library/reducers/ExportStoreType.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
@@ -207,4 +208,5 @@ export interface IStore {
   inlineEdit: IImmutable<InlineEdit>;
   locale: string;
   ixExtractors: Immutable<ClientIXExtractorType[]>;
+  exportSearchResults: ExportStore['exportSearchResults'];
 }

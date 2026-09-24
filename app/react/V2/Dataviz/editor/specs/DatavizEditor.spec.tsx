@@ -90,11 +90,10 @@ describe('DatavizEditor duplicate name validation', () => {
 
     await waitFor(() => {
       expect(getEditorTab('Info')).toHaveAttribute('aria-selected', 'true');
+      expect(
+        screen.getByText('This data visualization name already exists. Enter a unique name.')
+      ).toBeVisible();
     });
-
-    expect(
-      screen.getByText('This data visualization name already exists. Enter a unique name.')
-    ).toBeVisible();
     expect(mockNotify).not.toHaveBeenCalled();
   });
 

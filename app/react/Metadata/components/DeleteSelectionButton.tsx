@@ -1,5 +1,5 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import uniqBy from 'lodash/uniqBy.js';
 import { IImmutable } from '#shared/types/Immutable.js';
@@ -7,6 +7,7 @@ import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { ClientFile, IStore } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
 import { deleteSelection } from '../actions/metadataExtractionActions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 type deleteSelectionButtonProps = {
   propertyName: string;
@@ -32,7 +33,7 @@ const mapStateToProps = (state: IStore) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       deleteSelectionAction: deleteSelection,

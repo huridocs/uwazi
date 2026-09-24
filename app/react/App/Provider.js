@@ -1,27 +1,22 @@
-import { Component, Children } from 'react';
+import { Children, Component, createContext, createElement } from 'react';
 import PropTypes from 'prop-types';
 
 import { isClient } from '#app/utils/index.js';
+
+const AppProviderContext = createContext({});
 
 class CustomProvider extends Component {
   constructor(props) {
     super(props);
     this.data = isClient && window.__reduxData__ ? window.__reduxData__ : props.initialData;
     this.renderedFromServer = true;
-    // User lives in __atomStoreData__ (same source as userAtom); keep getUser for legacy context.
     this.user =
       isClient && window.__atomStoreData__?.user !== undefined
         ? window.__atomStoreData__.user
         : props.user;
-  }
-
-  getChildContext() {
-    return {
-      getInitialData: this.getInitialData.bind(this),
-      isRenderedFromServer: this.isRenderedFromServer.bind(this),
-      getUser: this.getUser.bind(this),
-      language: this.props.language,
-    };
+    this.getInitialData = this.getInitialData.bind(this);
+    this.isRenderedFromServer = this.isRenderedFromServer.bind(this);
+    this.getUser = this.getUser.bind(this);
   }
 
   getUser() {
@@ -41,8 +36,19 @@ class CustomProvider extends Component {
   }
 
   render() {
-    const { children } = this.props;
-    return Children.only(children);
+    const { children, language } = this.props;
+    return createElement(
+      AppProviderContext.Provider,
+      {
+        value: {
+          getInitialData: this.getInitialData,
+          isRenderedFromServer: this.isRenderedFromServer,
+          getUser: this.getUser,
+          language,
+        },
+      },
+      Children.only(children)
+    );
   }
 }
 
@@ -53,11 +59,4 @@ CustomProvider.propTypes = {
   language: PropTypes.string,
 };
 
-CustomProvider.childContextTypes = {
-  getInitialData: PropTypes.func,
-  isRenderedFromServer: PropTypes.func,
-  getUser: PropTypes.func,
-  language: PropTypes.string,
-};
-
-export { CustomProvider };
+export { CustomProvider, AppProviderContext };

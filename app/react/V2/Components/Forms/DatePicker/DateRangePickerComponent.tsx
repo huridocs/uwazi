@@ -31,8 +31,8 @@ const DateRangePickerComponent = React.forwardRef(
       labelClear,
       label,
       disabled,
-      placeholderStart,
-      placeholderEnd,
+      placeholderStart = 'Select start',
+      placeholderEnd = 'Select end',
       hasErrors,
       errorMessage,
       id = uniqueID(),
@@ -49,10 +49,13 @@ const DateRangePickerComponent = React.forwardRef(
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
-    const divRef = useRef(null);
+    const divRef = useRef<HTMLInputElement | null>(null);
     const fromRef = useRef<HTMLInputElement>(null);
     const toRef = useRef<HTMLInputElement>(null);
-    useImperativeHandle(forwardedRef, () => divRef.current);
+    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+      forwardedRef,
+      () => divRef.current
+    );
 
     const fieldStyles = inputClassName || '';
     const instance = useRef<DateRangePicker | null>(null);
@@ -179,10 +182,10 @@ const DateRangePickerComponent = React.forwardRef(
               <InputField
                 id="from"
                 // @ts-ignore
-                datepicker={true}
-                datepicker-autohide={true}
-                datepicker-buttons={true}
-                datepicker-autoselect-today={true}
+                datepicker
+                datepicker-autohide
+                datepicker-buttons
+                datepicker-autoselect-today
                 type="text"
                 disabled={disabled}
                 hasErrors={Boolean(hasErrors || errorMessage)}
@@ -211,10 +214,10 @@ const DateRangePickerComponent = React.forwardRef(
               <InputField
                 id="to"
                 // @ts-ignore
-                datepicker={true}
-                datepicker-autohide={true}
-                datepicker-buttons={true}
-                datepicker-autoselect-today={true}
+                datepicker
+                datepicker-autohide
+                datepicker-buttons
+                datepicker-autoselect-today
                 type="text"
                 disabled={disabled}
                 hasErrors={Boolean(hasErrors || errorMessage)}
@@ -235,17 +238,6 @@ const DateRangePickerComponent = React.forwardRef(
     );
   }
 );
-
-DateRangePickerComponent.defaultProps = {
-  placeholderStart: 'Select start',
-  placeholderEnd: 'Select end',
-  dateFormat: undefined,
-  onFromDateSelected: undefined,
-  onToDateSelected: undefined,
-  from: undefined,
-  to: undefined,
-  onClear: () => {},
-};
 
 export type { DateRangePickerProps };
 export { DateRangePickerComponent };

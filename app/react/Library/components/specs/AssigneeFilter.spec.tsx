@@ -1,5 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { enzymeFn, enzymeProps } from '#app/utils/enzymeNode.js';
 import { AssigneeFilterSelectUncontrolled } from '../AssigneeFilter.js';
 
 describe('AssigneeFilter uncontrolled', () => {
@@ -48,13 +49,13 @@ describe('AssigneeFilter uncontrolled', () => {
   it('should split the selection and options between read and write multiselects', () => {
     const multiselects = component.find('MultiSelect');
 
-    const read = multiselects.get(0);
-    const write = multiselects.get(1);
+    const read = enzymeProps(multiselects.get(0));
+    const write = enzymeProps(multiselects.get(1));
 
-    expect(read.props.value).toEqual(['user1', 'user2']);
-    expect(write.props.value).toEqual(['group1']);
+    expect(read.value).toEqual(['user1', 'user2']);
+    expect(write.value).toEqual(['group1']);
 
-    expect(read.props.options).toMatchObject([
+    expect(read.options).toMatchObject([
       {
         label: 'User 1',
         title: 'User 1',
@@ -75,7 +76,7 @@ describe('AssigneeFilter uncontrolled', () => {
         icon: { type: 'Icons', _id: 'users' },
       },
     ]);
-    expect(write.props.options).toEqual([
+    expect(write.options).toEqual([
       {
         label: 'User 1',
         title: 'User 1',
@@ -99,9 +100,11 @@ describe('AssigneeFilter uncontrolled', () => {
   });
 
   it('should all onChange with the joined results', () => {
-    const onChangeRead = component.find('MultiSelect').get(0).props.onChange;
-
-    onChangeRead(['user1', 'user2', 'group1']);
+    enzymeFn(enzymeProps(component.find('MultiSelect').get(0)).onChange)([
+      'user1',
+      'user2',
+      'group1',
+    ]);
 
     expect(onChangeMock).toHaveBeenCalledWith([
       {

@@ -43,7 +43,7 @@ const SettingsHeaderTitle = ({
     );
   }
 
-  return title;
+  return <>{title}</>;
 };
 
 const breadcrumbItemTheme = {

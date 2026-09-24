@@ -9,7 +9,7 @@ type TestProviderProps = {
 
 const HydrateAtoms = ({ initialValues, children }: TestProviderProps) => {
   useHydrateAtoms(initialValues);
-  return children;
+  return <>{children}</>;
 };
 
 const TestAtomStoreProvider = ({ initialValues, children }: TestProviderProps) => (
