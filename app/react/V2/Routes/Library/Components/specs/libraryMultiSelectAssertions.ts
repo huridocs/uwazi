@@ -52,9 +52,22 @@ const expectPanelRows = () => {
 
 const selectionFooter = () => screen.getByTestId('library-multi-select-footer');
 
+const expectDesktopLabelClasses = (footer: HTMLElement) => {
+  expect(footer).toHaveClass('@container', 'w-full');
+  expect(footer).not.toHaveClass('flex');
+  const bar = footer.firstElementChild;
+  expect(bar).toHaveClass('flex');
+  expect(bar).not.toHaveClass('@container');
+  selectionActionLabels.forEach(label => {
+    const text = within(within(footer).getByRole('button', { name: label })).getByText(label);
+    expect(text.parentElement).toHaveClass('hidden', '@min-[56rem]:inline');
+  });
+};
+
 const expectFooterLabels = () => {
   const footer = selectionFooter();
   expectSelectionActions(footer);
+  expectDesktopLabelClasses(footer);
   expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toHaveAttribute(
     'width',
     '13'
