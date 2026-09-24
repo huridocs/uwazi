@@ -85,7 +85,6 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   const optionsMenu = (
     <MobileOptionsMenu actions={mobileActions}>
       <LanguageDropdown />
-      <AskBertButton compact={false} />
       <ThemeToggle labeled />
     </MobileOptionsMenu>
   );
@@ -116,10 +115,14 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />
           {isMobile ? (
-            optionsMenu
+            <>
+              <AskBertButton />
+              {optionsMenu}
+            </>
           ) : (
             <>
-              <div data-testid="header-tools-menu" className="md:hidden">
+              <div data-testid="header-tools-menu" className="flex items-center gap-2 md:hidden">
+                <AskBertButton />
                 {optionsMenu}
               </div>
               <div data-testid="header-tools" className="hidden items-center gap-2 md:flex">
