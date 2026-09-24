@@ -6,7 +6,7 @@ Living plan for moving Express/Passport sessions off the Mongo shared database o
 
 - **Analysis** — done (2026-09-23).
 - **Decisions** — locked (2026-09-23). See Decisions.
-- **Implementation** — in place, not shipped. Schema `022`, store factory, both call sites, shared-db copy. Default remains `mongo`.
+- **Implementation** — in place, not shipped. Schema `023`, store factory, both call sites, shared-db copy. Default remains `mongo`.
 
 ## Task
 
@@ -152,7 +152,7 @@ That mode is not a `FLAG_GROUPS` entry and it is not gated on `postgresCore`. A 
 
 Shipped in this branch, default still `mongo`. TDD: each spec was red for the missing table, the missing store, the empty `http_sessions` table after login, and the missing copier, then green.
 
-1. Schema migration via `yarn add-migration schema` (generator assigns the number; current highest is `021`). `http_sessions (sid varchar primary key, sess jsonb not null, expire timestamp(6) not null)` plus an index on `expire`. No RLS.
+1. Schema migration via `yarn add-migration schema` (generator assigns the number; `022` is connections, so this one is `023`). `http_sessions (sid varchar primary key, sess jsonb not null, expire timestamp(6) not null)` plus an index on `expire`. No RLS.
 2. One store factory used by `routes.js` and `setupSockets.ts`. Branch on `SESSIONS_BACKEND`. Mongo branch keeps today's `MongoStore` options, including `touchAfter` and the `MemoryStore` fallback.
 3. Postgres branch: `connect-pg-simple` as above, plus the `touchAfter` subclass. `serializeUser` / `deserializeUser` unchanged.
 4. Shared-db mode on `migrateToPostgres.ts` / `MigrateCollectionToPostgres`: one run, source `config.SHARED_DB` `sessions`, no `tenant_id`, conflict on `sid`. Not a `FLAG_GROUPS` / `--tenant` entry.
@@ -167,7 +167,7 @@ V1 rule: `routes.js` and `passport_conf.js` stay as they are apart from the stor
 - [x] Compare with users / settings (`postgresCore` + RLS) and jobs (`QUEUE_BACKEND`, no RLS).
 - [x] Pick `connect-pg-simple` and record the `ttl` / `touchAfter` gaps.
 - [x] Lock decisions (flag, no RLS, copy once, 14-day touch, `http_sessions`, keep `///`).
-- [x] Schema migration `022-create-http-sessions-table.sql`.
+- [x] Schema migration `023-create-http-sessions-table.sql`.
 - [x] Store factory (`app/api/auth/httpSessionStore.ts`) and both call sites.
 - [x] Shared-db copy: `copyHttpSessions` + `migrateToPostgres.ts --sessions`.
 - [x] Specs: schema, store (mongo + postgres, touch window), login round-trip, copy. Lint and `yarn check-types` on the files we touched.
@@ -182,4 +182,4 @@ None open.
 - **2026-09-23** — Analysis written.
 - **2026-09-23** — Decisions locked. Copy is in scope: one pass from the shared `sessions` collection into `http_sessions`, because the document maps onto `sid` / `sess` / `expire` with no leftover column. The per-tenant migrator is the wrong tool (it reads a tenant db and stamps `tenant_id`). `touchAfter` is a subclass, not a library option; the table and the queries stay stock. No code yet.
 - **2026-09-23** — Jobs do not have a backfill. Their tenant handling is a `namespace` column on the shared Mongo collection and on the Postgres table, and new writes follow `postgresCore` / `QUEUE_BACKEND`. Sessions do not gain that column. The copy script grows a shared-db mode: one process-wide run, and the row stays `sid` / `sess` / `expire`.
-- **2026-09-23** — Implemented. `SESSIONS_BACKEND` defaults to `mongo`. Postgres uses `connect-pg-simple` on `PostgresDB.pool()` with a wrapper that skips touch inside 24h and keeps TTL at 14 days. Copy is `node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions` (shared db, `ON CONFLICT (sid) DO NOTHING`, no tenant column). Schema is `022`.
+- **2026-09-23** — Implemented. `SESSIONS_BACKEND` defaults to `mongo`. Postgres uses `connect-pg-simple` on `PostgresDB.pool()` with a wrapper that skips touch inside 24h and keeps TTL at 14 days. Copy is `node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions` (shared db, `ON CONFLICT (sid) DO NOTHING`, no tenant column). Schema is `023`.

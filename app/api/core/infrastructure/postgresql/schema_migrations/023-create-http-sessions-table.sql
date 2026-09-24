@@ -1,4 +1,4 @@
--- Migration 022: create-http-sessions-table
+-- Migration 023: create-http-sessions-table
 -- Express session store, same shape as connect-mongo: sid, sess, expire.
 -- No tenant column and no row level security. The tenant stays inside sess
 -- (passport.user = id///tenant). connect-pg-simple owns the queries.

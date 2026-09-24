@@ -8,7 +8,7 @@ const pool = () => {
   return adminPool;
 };
 
-describe('022-create-http-sessions-table', () => {
+describe('023-create-http-sessions-table', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });
