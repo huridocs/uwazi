@@ -21,6 +21,7 @@ type EntityMainTabsState = {
   stageSideTab: (sideTab: SideTabId) => void;
   focusRelationshipsPanel: () => void;
   focusDocumentPanel: () => void;
+  requestedPane?: { index: number; id: number };
 };
 
 type EntitySideTabsState = {

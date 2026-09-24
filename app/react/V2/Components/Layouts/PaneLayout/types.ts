@@ -9,6 +9,7 @@ type PaneLayoutProps = {
   minPaneRatios?: number[];
   localStorageKey?: string;
   className?: string;
+  requestedPane?: { index: number; id: number };
 };
 
 export type { PaneProps, PaneLayoutProps };
