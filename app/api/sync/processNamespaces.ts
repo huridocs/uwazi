@@ -8,6 +8,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { Settings as SettingsModel } from '#api/core/domain/settings/Settings.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
+import type { ConnectionsSyncHandler } from './ConnectionsSyncHandler.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
@@ -158,18 +159,25 @@ class ProcessNamespaces {
     }, false);
   }
 
+  private static connectionsHandler(): ConnectionsSyncHandler {
+    return SyncHandlerRegistry.get('connections') as ConnectionsSyncHandler;
+  }
+
   private async shouldSkipRel(
     data: any,
     templateData: TemplateSchema,
     templateHasValidRelationProperties: boolean
   ) {
-    const hubOtherConnections = await models.connections().get({
-      hub: data.hub,
-      _id: { $ne: data._id },
-    });
+    const hubOtherConnections = (
+      await ProcessNamespaces.connectionsHandler().getHubConnections(String(data.hub))
+    ).filter(connection => String(connection._id) !== String(data._id));
 
     const hubOtherEntities = await entitiesDao().find(
-      { sharedIds: hubOtherConnections.map(h => h.entity) },
+      {
+        sharedIds: hubOtherConnections
+          .map(h => h.entity)
+          .filter((entity): entity is string => typeof entity === 'string'),
+      },
       { select: ['template'] }
     );
 
@@ -267,8 +275,13 @@ class ProcessNamespaces {
   }
 
   private async connections() {
-    const data = await this.fetchData();
-    const entityTemplate = await getEntityTemplate(data.entity);
+    const data = await ProcessNamespaces.connectionsHandler().getById(
+      this.change.mongoId.toString()
+    );
+    if (!data) {
+      return { skip: true };
+    }
+    const entityTemplate = await getEntityTemplate(data.entity as string);
     if (!entityTemplate) {
       return { skip: true };
     }
