@@ -11,6 +11,7 @@ type LibraryRightPaneProps = {
   creating: boolean;
   rows: LibrarySearchHit[];
   selectedIds: readonly string[];
+  selectionPanelOpen: boolean;
   entityBasePath: string;
   focusFieldKey?: string;
   aggregations: LibraryAggregations;
@@ -20,6 +21,9 @@ type LibraryRightPaneProps = {
   onFiltersChange: (filters: LibraryFiltersState) => void;
   onAndFiltersChange: (andFilters: string[]) => void;
   onClosePreview: () => void;
+  onCloseSelection: () => void;
+  onRemoveSelection: (sharedId: string) => void;
+  onPreviewSelection: (sharedId: string) => void;
   onCreated: (sharedId?: string) => void;
 };
 
@@ -27,6 +31,7 @@ const LibraryRightPane = ({
   creating,
   rows,
   selectedIds,
+  selectionPanelOpen,
   entityBasePath,
   focusFieldKey,
   aggregations,
@@ -36,21 +41,27 @@ const LibraryRightPane = ({
   onFiltersChange,
   onAndFiltersChange,
   onClosePreview,
+  onCloseSelection,
+  onRemoveSelection,
+  onPreviewSelection,
   onCreated,
 }: LibraryRightPaneProps) => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
   }
-  if (selectedIds.length > 1) {
+  if (selectedIds.length > 1 && selectionPanelOpen) {
     return (
       <LibrarySelectionPanel
         rows={rows}
         selectedIds={selectedIds}
         entityBasePath={entityBasePath}
+        onClose={onCloseSelection}
+        onRemove={onRemoveSelection}
+        onPreview={onPreviewSelection}
       />
     );
   }
-  const [selectedId] = selectedIds;
+  const [selectedId] = selectedIds.length === 1 ? selectedIds : [];
   if (selectedId) {
     return (
       <LibraryEntityPreview

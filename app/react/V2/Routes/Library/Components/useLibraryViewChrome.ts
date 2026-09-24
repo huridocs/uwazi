@@ -66,4 +66,19 @@ const useLibraryCreateActions = (
   };
 };
 
-export { useLibraryCreateActions };
+const useLibrarySelectionPanel = (
+  selectedIds: readonly string[],
+  orderedIds: readonly string[]
+) => {
+  const selectionKey = selectedIds.join('\0');
+  const [closedSelectionKey, setClosedSelectionKey] = useState<string | null>(null);
+  const loaded = new Set(orderedIds);
+  return {
+    selectionPanelOpen: selectedIds.length > 1 && closedSelectionKey !== selectionKey,
+    notShown: selectedIds.filter(id => !loaded.has(id)).length,
+    closeSelectionPanel: () => setClosedSelectionKey(selectionKey),
+    reopenSelectionPanel: () => setClosedSelectionKey(null),
+  };
+};
+
+export { useLibraryCreateActions, useLibrarySelectionPanel };

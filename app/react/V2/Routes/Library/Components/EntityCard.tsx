@@ -112,6 +112,11 @@ const EntityCard = ({
           });
         }
       }}
+      onMouseDown={event => {
+        if (event.shiftKey) {
+          event.preventDefault();
+        }
+      }}
       className={`${base} ${surface} ${cardFloor} flex h-full flex-col gap-2.5 p-3`}
     >
       {showThumbnail && (

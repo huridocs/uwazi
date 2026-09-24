@@ -24,7 +24,7 @@ describe('thumbnail size', () => {
     });
     expect(PORTRAIT_CARD_GRID_CLASS).toEqual({
       s: 'grid-cols-2 sm:grid-cols-4 xl:grid-cols-5',
-      m: 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4',
+      m: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
       l: 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3',
     });
   });

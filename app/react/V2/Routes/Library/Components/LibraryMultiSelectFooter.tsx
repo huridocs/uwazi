@@ -1,182 +1,196 @@
-import React, { useState } from 'react';
-import {
-  ArrowDownTrayIcon,
-  ChevronDownIcon,
-  KeyIcon,
-  PencilSquareIcon,
-  ShareIcon,
-  Square2StackIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import React, { Fragment, useState, type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { LibraryFooterButton } from './LibraryFooterButton.js';
+import { librarySelectionActions } from './librarySelectionActions.js';
+import type { LibraryBulkAction, LibrarySelectionAction } from './librarySelectionActions.js';
+import { LibrarySelectionIcon } from './librarySelectionIcons.js';
+import { LibrarySelectAllBox } from './LibrarySelectAllBox.js';
+import { LibrarySelectionActionsSheet } from './LibrarySelectionActionsSheet.js';
 
-const iconClassName = 'h-3.5 w-3.5 shrink-0 text-ink-tertiary';
-const actionsMenuId = 'library-selection-actions';
+const barLeadClassName = 'text-ink font-medium hover:bg-warm';
+const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
+const barDangerClassName = 'text-seal-label hover:bg-seal-tint/40';
 
-type LibraryBulkAction =
-  'edit' | 'change-template' | 'export-csv' | 'share' | 'permissions' | 'delete';
+const barButtonClassName =
+  'hidden shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors @[56rem]:px-3 sm:flex';
+
+type BarTone = 'lead' | 'ghost' | 'danger';
 
 type LibraryMultiSelectFooterProps = {
   count: number;
+  loadedIds: readonly string[];
+  selectedIds: readonly string[];
+  notShown: number;
   onClear: () => void;
-  onClose: () => void;
+  onShowList: () => void;
+  onSelectLoaded: () => void;
+  onDeselectLoaded: () => void;
   onAction?: (action: LibraryBulkAction) => void;
+};
+
+const barToneClass = (tone: BarTone) => {
+  if (tone === 'lead') {
+    return barLeadClassName;
+  }
+  if (tone === 'danger') {
+    return barDangerClassName;
+  }
+  return barGhostClassName;
+};
+
+const actionTone = (action: LibrarySelectionAction): BarTone => {
+  if (action.id === 'edit') {
+    return 'lead';
+  }
+  if (action.danger) {
+    return 'danger';
+  }
+  return 'ghost';
 };
 
 const LibraryMultiSelectFooter = ({
   count,
+  loadedIds,
+  selectedIds,
+  notShown,
   onClear,
-  onClose,
+  onShowList,
+  onSelectLoaded,
+  onDeselectLoaded,
   onAction,
 }: LibraryMultiSelectFooterProps) => {
-  const [actionsOpen, setActionsOpen] = useState(false);
-  const run = (action: LibraryBulkAction) => {
-    setActionsOpen(false);
-    onAction?.(action);
-  };
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const actions = librarySelectionActions();
+  const barButton = ({
+    icon,
+    label,
+    tone,
+    onClick,
+  }: {
+    icon: ReactNode;
+    label: string;
+    tone: BarTone;
+    onClick?: () => void;
+  }) => (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={`${barButtonClassName} ${barToneClass(tone)}`}
+    >
+      <span className={tone === 'danger' ? '' : 'text-ink-tertiary'}>{icon}</span>
+      <span className="hidden @[56rem]:inline">
+        <Translate>{label}</Translate>
+      </span>
+    </button>
+  );
 
   return (
     <div
-      className="flex h-12 shrink-0 items-center justify-between gap-2 border-t border-border bg-paper px-3"
       data-testid="library-multi-select-footer"
+      className="@container flex h-12 shrink-0 items-center gap-1 bg-paper px-3"
+      style={{ borderTop: '1px solid var(--border-primary)' }}
     >
-      <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
-        <LibraryFooterButton
-          icon={<PencilSquareIcon className={iconClassName} />}
-          onClick={() => run('edit')}
-        >
-          <Translate>Edit</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<Square2StackIcon className={iconClassName} />}
-          onClick={() => run('change-template')}
-        >
-          <Translate>Change template</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<ArrowDownTrayIcon className={iconClassName} />}
-          onClick={() => run('export-csv')}
-        >
-          <Translate>Export CSV</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<ShareIcon className={iconClassName} />}
-          onClick={() => run('share')}
-        >
-          <Translate>Share</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<KeyIcon className={iconClassName} />}
-          onClick={() => run('permissions')}
-        >
-          <Translate>Permissions</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<TrashIcon className={iconClassName} />}
-          onClick={() => run('delete')}
-        >
-          <Translate>Delete</Translate>
-        </LibraryFooterButton>
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <span
-          className="whitespace-nowrap text-xs text-ink-secondary"
-          data-testid="library-selected-count"
-        >
-          {count} <Translate>selected</Translate>
-        </span>
-        <LibraryFooterButton onClick={onClear}>
-          <Translate>Clear</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton onClick={onClose}>
-          <Translate>Close</Translate>
-        </LibraryFooterButton>
-        <LibraryFooterButton
-          icon={<PencilSquareIcon className={iconClassName} />}
-          onClick={() => run('edit')}
-        >
-          <Translate>Edit</Translate>
-        </LibraryFooterButton>
-        <div className="relative">
-          <LibraryFooterButton
-            icon={<ChevronDownIcon className={iconClassName} />}
-            onClick={() => setActionsOpen(open => !open)}
-            expanded={actionsOpen}
-            popup="menu"
-            controls={actionsMenuId}
-          >
-            <Translate>Actions</Translate>
-          </LibraryFooterButton>
-          {actionsOpen ? (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                aria-hidden
-                onClick={() => setActionsOpen(false)}
-              />
-              <div
-                id={actionsMenuId}
-                role="menu"
-                aria-label="Actions"
-                className="absolute bottom-full end-0 z-20 mb-1 min-w-[160px] overflow-hidden rounded-md border border-border bg-paper shadow-lg"
-              >
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('edit')}
-                >
-                  <Translate>Edit</Translate>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('change-template')}
-                >
-                  <Translate>Change template</Translate>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('export-csv')}
-                >
-                  <Translate>Export CSV</Translate>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('share')}
-                >
-                  <Translate>Share</Translate>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('permissions')}
-                >
-                  <Translate>Permissions</Translate>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="block w-full px-3 py-1.5 text-start text-xs text-ink-secondary hover:bg-warm"
-                  onClick={() => run('delete')}
-                >
-                  <Translate>Delete</Translate>
-                </button>
-              </div>
-            </>
+      {actions.map(action => (
+        <Fragment key={action.id}>
+          {action.danger ? (
+            <span
+              aria-hidden
+              className="mx-1.5 hidden h-5 w-px shrink-0 self-center bg-border-soft sm:block"
+            />
           ) : null}
-        </div>
-      </div>
+          {barButton({
+            icon: action.icon,
+            label: action.label,
+            tone: actionTone(action),
+            onClick: () => onAction?.(action.id),
+          })}
+        </Fragment>
+      ))}
+      <span
+        data-part="selection-end"
+        className="ms-auto hidden shrink-0 items-center gap-1 sm:flex"
+      >
+        <span className="me-2 inline-flex shrink-0">
+          <LibrarySelectAllBox
+            loadedIds={loadedIds}
+            selectedIds={selectedIds}
+            onSelectLoaded={onSelectLoaded}
+            onDeselectLoaded={onDeselectLoaded}
+          />
+        </span>
+        <span className="relative flex w-[7.5rem] shrink-0 items-center text-xs leading-tight tabular-nums">
+          <span role="status" aria-live="polite" className="flex min-w-0">
+            <button
+              type="button"
+              data-testid="library-selected-count"
+              onClick={onShowList}
+              className="cursor-pointer truncate rounded-sm font-semibold text-ink hover:underline focus-visible:ring-1 focus-visible:ring-carbon/40 focus-visible:outline-none"
+            >
+              {count.toLocaleString()} <Translate>selected</Translate>
+            </button>
+          </span>
+          {notShown > 0 ? (
+            <span
+              aria-live="polite"
+              className="absolute start-0 top-full -mt-0.5 hidden text-meta leading-none sm:flex"
+            >
+              <button
+                type="button"
+                onClick={onShowList}
+                className="cursor-pointer rounded-sm whitespace-nowrap text-carbon hover:underline focus-visible:ring-1 focus-visible:ring-carbon/40 focus-visible:outline-none"
+              >
+                {notShown.toLocaleString()} <Translate>not shown</Translate>
+              </button>
+            </span>
+          ) : null}
+        </span>
+        {barButton({
+          icon: <LibrarySelectionIcon name="x" size={13} />,
+          label: 'Clear',
+          tone: 'ghost',
+          onClick: onClear,
+        })}
+      </span>
+      <span
+        role="status"
+        aria-live="polite"
+        className="me-auto shrink-0 text-xs font-semibold text-ink tabular-nums sm:hidden"
+      >
+        {count.toLocaleString()} <Translate>selected</Translate>
+      </span>
+      <button
+        type="button"
+        onClick={() => setSheetOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={sheetOpen}
+        className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium sm:hidden ${barLeadClassName}`}
+      >
+        <span className="text-ink-tertiary" aria-hidden>
+          <LibrarySelectionIcon name="more-horizontal" size={13} />
+        </span>
+        <Translate>Actions</Translate>
+      </button>
+      <button
+        type="button"
+        onClick={onClear}
+        className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium sm:hidden ${barGhostClassName}`}
+      >
+        <span className="text-ink-tertiary">
+          <LibrarySelectionIcon name="x" size={13} />
+        </span>
+        <Translate>Clear</Translate>
+      </button>
+      {sheetOpen ? (
+        <LibrarySelectionActionsSheet
+          count={count}
+          actions={actions}
+          onClose={() => setSheetOpen(false)}
+          onAction={onAction}
+        />
+      ) : null}
     </div>
   );
 };
 
-export type { LibraryBulkAction, LibraryMultiSelectFooterProps };
+export type { LibraryMultiSelectFooterProps };
 export { LibraryMultiSelectFooter };
