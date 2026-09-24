@@ -6,7 +6,7 @@ Living plan for moving Express/Passport sessions off the Mongo shared database o
 
 - **Analysis** — done (2026-09-23).
 - **Decisions** — locked (2026-09-23). See Decisions.
-- **Implementation** — in place, not shipped. Schema `023`, store factory, both call sites, shared-db copy. Default remains `mongo`.
+- **Implementation** — done (2026-09-24). Schema `023`, store factory, both call sites, shared-db copy. Default remains `mongo`. Local login checked on one tenant. Rollout is still the one-time copy, then the flag, on every process together.
 
 ## Task
 
@@ -92,6 +92,16 @@ Two settings are not the library defaults, because those defaults would shorten 
 
 The process reads and writes only the backend the env names. Turning the flag back to `mongo` does not copy Postgres rows back. Those users sign in again.
 
+Every API process in a deployment uses the same value. One process on `mongo` and another on `postgres` would split `connect.sid`: each process would miss the rows the other wrote. There is no per-tenant mix and no dual-read.
+
+## Multi-tenant
+
+No second code path. The store, the pool, and the flag are process-wide. Tenant A and tenant B both land in `http_sessions`. The tenant is only the suffix of `passport.user`.
+
+A login on tenant A stores `` `${user._id}///${tenant A}` ``. A later request whose current tenant is B fails the existing check in `deserializeUser` / the socket role-room path and is unauthenticated. That check does not look at which backend holds the row. A local one-tenant login does not hide a branch that appears only when a second tenant exists.
+
+The copy is the same shape at any tenant count: one pass over the shared Mongo `sessions` collection. It does not filter by tenant.
+
 ## Copy
 
 One copy, from the shared db, then the flag flips. No second read path.
@@ -121,7 +131,7 @@ There is no shape break that would stop the copy. Map each Mongo document:
 | `JSON.parse(session)` (it is stored as a string) | `sess` |
 | `expires` | `expire` |
 
-Leave `lastModified` behind. It is not part of the session JSON. The first request after cutover may write `expire` once, because the in-memory `lastModified` is absent; after that, touch is once a day again.
+Leave `lastModified` behind. It is not part of the session JSON. On read, the store derives it as `expire - 14 days`, which is when that `expire` was last written. Mongo's `expires` is the same "last touch + 14 days", so a copied row keeps the old touch time. The first request writes `expire` only when that derived time is already older than 24h.
 
 Copy every document, including already expired ones. Prune deletes those. Re-running is `ON CONFLICT (sid) DO NOTHING`: fill sids that are missing, do not overwrite a row Postgres has already updated.
 
@@ -171,7 +181,8 @@ V1 rule: `routes.js` and `passport_conf.js` stay as they are apart from the stor
 - [x] Store factory (`app/api/auth/httpSessionStore.ts`) and both call sites.
 - [x] Shared-db copy: `copyHttpSessions` + `migrateToPostgres.ts --sessions`.
 - [x] Specs: schema, store (mongo + postgres, touch window), login round-trip, copy. Lint and `yarn check-types` on the files we touched.
-- [ ] Run `--sessions` against a real shared database before flipping `SESSIONS_BACKEND`. Not done here.
+- [x] Local login on one tenant. `sess` is `cookie` + `passport.user` (`id///tenant`). `expire` is the separate 14-day deadline. `lastModified` is not stored.
+- [ ] Rollout, not more code: run `--sessions` against that environment's shared Mongo db, then set `SESSIONS_BACKEND=postgres` on every process and restart. Not done here.
 
 ## Questions
 
@@ -182,4 +193,5 @@ None open.
 - **2026-09-23** — Analysis written.
 - **2026-09-23** — Decisions locked. Copy is in scope: one pass from the shared `sessions` collection into `http_sessions`, because the document maps onto `sid` / `sess` / `expire` with no leftover column. The per-tenant migrator is the wrong tool (it reads a tenant db and stamps `tenant_id`). `touchAfter` is a subclass, not a library option; the table and the queries stay stock. No code yet.
 - **2026-09-23** — Jobs do not have a backfill. Their tenant handling is a `namespace` column on the shared Mongo collection and on the Postgres table, and new writes follow `postgresCore` / `QUEUE_BACKEND`. Sessions do not gain that column. The copy script grows a shared-db mode: one process-wide run, and the row stays `sid` / `sess` / `expire`.
-- **2026-09-23** — Implemented. `SESSIONS_BACKEND` defaults to `mongo`. Postgres uses `connect-pg-simple` on `PostgresDB.pool()` with a wrapper that skips touch inside 24h and keeps TTL at 14 days. Copy is `node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions` (shared db, `ON CONFLICT (sid) DO NOTHING`, no tenant column). Schema is `023`.
+- **2026-09-23** — Implemented. `SESSIONS_BACKEND` defaults to `mongo`. Postgres uses `connect-pg-simple` on `PostgresDB.pool()` with a wrapper that skips touch inside 24h and keeps TTL at 14 days. Copy is `node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions` (shared db, `ON CONFLICT (sid) DO NOTHING`, no tenant column). Schema is `023` (`022` is the connections table).
+- **2026-09-24** — Local login confirmed. `sess` holds `cookie` and `passport.user`; `expire` is the column, 14 days out; `lastModified` stays in memory (`expire - 14 days`) so touch still skips inside 24h. Multi-tenant does not add a path: one table, the existing `///` check. The flag is either/or for every process. Development stops here. Rollout is the copy, then the flag, together.
