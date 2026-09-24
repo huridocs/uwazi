@@ -6620,6 +6620,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/connect-pg-simple@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@types/connect-pg-simple@npm:7.0.3"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/express-session": "npm:*"
+    "@types/pg": "npm:*"
+  checksum: 10c0/cfd667be1c92539d6fc067284069b28365c806905e15dc4beda03c022c39d21d5a42e2af7268b3a6df59ad97f70ded238be6c1e1ee7279545a07a6736d3a9837
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*, @types/connect@npm:3.4.38":
   version: 3.4.38
   resolution: "@types/connect@npm:3.4.38"
@@ -6801,7 +6812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-session@npm:^1.18.2":
+"@types/express-session@npm:1.18.2":
   version: 1.18.2
   resolution: "@types/express-session@npm:1.18.2"
   dependencies:
@@ -10194,6 +10205,15 @@ __metadata:
     express-session: ^1.17.1
     mongodb: ">= 5.1.0 < 7"
   checksum: 10c0/78f34bc09684290f7d3afde447f71793dba33159069a24d929b31dfc517d1ffd52b614dfa34c5eb00700dda5a9d87d7af7d43c2c518c1f6bb6aa3761571a8e70
+  languageName: node
+  linkType: hard
+
+"connect-pg-simple@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "connect-pg-simple@npm:10.0.0"
+  dependencies:
+    pg: "npm:^8.12.0"
+  checksum: 10c0/98ec0af49757e3ae9e44fc16693f21344aca7f155ecfc881b1d396c2a851f23fdf46d53b1416a07b3ffeeb13542b0e8cfa677a99b7482080fb916eb3f5b1cdde
   languageName: node
   linkType: hard
 
@@ -19321,7 +19341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.23.0":
+"pg@npm:^8.12.0, pg@npm:^8.23.0":
   version: 8.23.0
   resolution: "pg@npm:8.23.0"
   dependencies:
@@ -24194,6 +24214,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.6.6"
     "@types/body-parser": "npm:^1.19.6"
     "@types/child-process-promise": "npm:^2.2.6"
+    "@types/connect-pg-simple": "npm:^7.0.3"
     "@types/enzyme": "npm:3.10.12"
     "@types/enzyme-adapter-react-16": "npm:1.0.2"
     "@types/expect-puppeteer": "npm:4.4.7"
@@ -24262,6 +24283,7 @@ __metadata:
     compression: "npm:^1.8.1"
     concurrently: "npm:^9.2.1"
     connect-mongo: "npm:5.1.0"
+    connect-pg-simple: "npm:^10.0.0"
     cookie: "npm:1.1.1"
     cookie-parser: "npm:1.4.7"
     copy-webpack-plugin: "npm:12.0.2"

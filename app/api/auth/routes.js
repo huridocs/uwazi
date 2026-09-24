@@ -1,12 +1,11 @@
 import cookieParser from 'cookie-parser';
-import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
-import { DB } from '#api/odm/index.js';
 import { config } from '#api/config.js';
 import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
 import { LogoutController } from '#api/core/infrastructure/express/users/LogoutController.js';
 import { GetCurrentUserController } from '#api/core/infrastructure/express/users/GetCurrentUserController.js';
+import { createHttpSessionStore } from './httpSessionStore.js';
 
 import './passport_conf.js';
 
@@ -16,14 +15,7 @@ const authenticatedUserMiddlewares = () => [
   cookieParser(),
   session({
     secret: process.env.NODE_ENV === 'production' ? config.userSessionSecret : 'harvey&lola',
-    store: MongoStore.create({
-      touchAfter: 24 * 3600,
-      dbName: config.SHARED_DB,
-      client: DB.connectionForDB(config.SHARED_DB, {
-        useCache: true,
-        noListener: false,
-      }).getClient(),
-    }),
+    store: createHttpSessionStore(),
     resave: false,
     saveUninitialized: false,
   }),
