@@ -28,6 +28,9 @@ import {
   clearSelection,
   clickCard,
   expectActionsMenu,
+  expectCloseClearsCards,
+  expectCloseClearsMap,
+  expectCloseClearsTable,
   expectCtrlPair,
   expectFooterChrome,
   expectFooterLabels,
@@ -263,16 +266,10 @@ describe('library multi-select', () => {
     );
   });
 
-  it('closes the selection list without clearing, then clears from the footer', async () => {
-    renderLibrary('table');
-    fireEvent.click(await ready('Mexico'));
-    fireEvent.click(screen.getByText('Case 11.481 (Gelman)'), { shiftKey: true });
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
-    expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
-    expect(screen.getByTestId('library-selected-count')).toHaveTextContent('3 selected');
-    fireEvent.click(screen.getByTestId('library-selected-count'));
-    expect(screen.getByTestId('library-selection-panel')).toBeInTheDocument();
-    clearSelection();
+  it('clears cards, table rows, and the map selection when the panel closes', async () => {
+    await expectCloseClearsCards(renderLibrary);
+    await expectCloseClearsTable(renderLibrary);
+    await expectCloseClearsMap(renderLibrary);
   });
 
   it('selects every entity in a map cluster and toggles markers with ctrl', async () => {

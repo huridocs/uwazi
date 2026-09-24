@@ -30,7 +30,6 @@ const useLibraryCreateActions = (
   onEntityCreated?: (sharedId?: string) => void
 ) => {
   const [creating, setCreating] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
   const preview = useLibraryPreviewFocus(
     (sharedId, modifiers) => {
       setCreating(false);
@@ -48,16 +47,12 @@ const useLibraryCreateActions = (
       preview.clearFocus();
     },
     creating,
-    uploadOpen,
     openCreate: () => {
       preview.closePreview();
       setCreating(true);
     },
-    openUpload: () => setUploadOpen(true),
-    closeUpload: () => setUploadOpen(false),
     finishCreated: (sharedId?: string) => {
       setCreating(false);
-      setUploadOpen(false);
       onEntityCreated?.(sharedId);
       if (sharedId) {
         preview.selectRow(sharedId);
@@ -70,14 +65,10 @@ const useLibrarySelectionPanel = (
   selectedIds: readonly string[],
   orderedIds: readonly string[]
 ) => {
-  const selectionKey = selectedIds.join('\0');
-  const [closedSelectionKey, setClosedSelectionKey] = useState<string | null>(null);
   const loaded = new Set(orderedIds);
   return {
-    selectionPanelOpen: selectedIds.length > 1 && closedSelectionKey !== selectionKey,
+    selectionPanelOpen: selectedIds.length > 1,
     notShown: selectedIds.filter(id => !loaded.has(id)).length,
-    closeSelectionPanel: () => setClosedSelectionKey(selectionKey),
-    reopenSelectionPanel: () => setClosedSelectionKey(null),
   };
 };
 

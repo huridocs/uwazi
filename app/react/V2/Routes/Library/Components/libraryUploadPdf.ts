@@ -18,6 +18,21 @@ const entityFromCreatePdfResponse = (response: unknown): Entity | undefined => {
   return undefined;
 };
 
+const isPdfFile = (file: File) =>
+  file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+const pdfFilesFromList = (files: readonly File[]) => {
+  const seen = new Set<string>();
+  return files.filter(file => {
+    const key = `${file.name}:${file.size}`;
+    if (!isPdfFile(file) || seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+
 const uploadPdfsAndCreateEntities = async (
   files: File[],
   onProgress: (percent: number, filename: string) => void,
@@ -32,4 +47,4 @@ const uploadPdfsAndCreateEntities = async (
     .filter((entity): entity is Entity => Boolean(entity));
 };
 
-export { entityFromCreatePdfResponse, uploadPdfsAndCreateEntities };
+export { entityFromCreatePdfResponse, pdfFilesFromList, uploadPdfsAndCreateEntities };

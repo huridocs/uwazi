@@ -11,7 +11,7 @@ const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
 const barDangerClassName = 'text-seal-label hover:bg-seal-tint/40';
 
 const barButtonClassName =
-  'hidden shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors @[56rem]:px-3 sm:flex';
+  'shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors @[56rem]:px-3';
 
 type BarTone = 'lead' | 'ghost' | 'danger';
 
@@ -65,17 +65,19 @@ const LibraryMultiSelectFooter = ({
     label,
     tone,
     onClick,
+    phoneHidden = false,
   }: {
     icon: ReactNode;
     label: string;
     tone: BarTone;
     onClick?: () => void;
+    phoneHidden?: boolean;
   }) => (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`${barButtonClassName} ${barToneClass(tone)}`}
+      className={`${phoneHidden ? 'hidden sm:flex' : 'flex'} ${barButtonClassName} ${barToneClass(tone)}`}
     >
       <span className={tone === 'danger' ? '' : 'text-ink-tertiary'}>{icon}</span>
       <span className="hidden @[56rem]:inline">
@@ -110,7 +112,7 @@ const LibraryMultiSelectFooter = ({
         data-part="selection-end"
         className="ms-auto hidden shrink-0 items-center gap-1 sm:flex"
       >
-        <span className="me-2 inline-flex shrink-0">
+        <span className={`me-2 inline-flex shrink-0 ${count >= 2 ? '' : 'invisible'}`}>
           <LibrarySelectAllBox
             loadedIds={loadedIds}
             selectedIds={selectedIds}
@@ -149,6 +151,7 @@ const LibraryMultiSelectFooter = ({
           label: 'Clear',
           tone: 'ghost',
           onClick: onClear,
+          phoneHidden: true,
         })}
       </span>
       <span

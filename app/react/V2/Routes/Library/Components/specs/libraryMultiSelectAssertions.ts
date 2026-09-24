@@ -9,6 +9,19 @@ const clickCard = (
   modifiers?: { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean }
 ) => fireEvent.click(card(title), modifiers);
 
+const selectionActionLabels = ['Edit', 'Change template', 'Export CSV', 'Permissions', 'Delete'];
+
+const expectSelectionActions = (footer: HTMLElement) => {
+  const buttons = within(footer).getAllByRole('button');
+  expect(
+    buttons.slice(0, selectionActionLabels.length).map(button => button.getAttribute('aria-label'))
+  ).toEqual(selectionActionLabels);
+  selectionActionLabels.forEach(label => {
+    expect(within(footer).getByRole('button', { name: label })).not.toHaveClass('hidden');
+  });
+  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+};
+
 const expectSingleEntity = async (title: string) => {
   await waitFor(() => {
     expect(
@@ -16,8 +29,10 @@ const expectSingleEntity = async (title: string) => {
     ).toBeInTheDocument();
   });
   expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
-  expect(screen.queryByTestId('library-multi-select-footer')).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
+  const footer = screen.getByTestId('library-multi-select-footer');
+  expectSelectionActions(footer);
+  expect(within(footer).getByTestId('library-selected-count')).toHaveTextContent('1 selected');
+  expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
 };
 
 const expectPanelRows = () => {
@@ -39,10 +54,7 @@ const selectionFooter = () => screen.getByTestId('library-multi-select-footer');
 
 const expectFooterLabels = () => {
   const footer = selectionFooter();
-  ['Edit', 'Change template', 'Export CSV', 'Permissions', 'Delete'].forEach(label => {
-    expect(within(footer).getByRole('button', { name: label })).toBeInTheDocument();
-  });
-  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+  expectSelectionActions(footer);
   expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toHaveAttribute(
     'width',
     '13'
@@ -98,6 +110,64 @@ const expectCreateFooter = () => {
   expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
 };
 
+const closeSelectionPanel = () => {
+  fireEvent.click(
+    within(screen.getByTestId('library-selection-panel')).getByRole('button', { name: 'Close' })
+  );
+};
+
+const expectCardsDeselected = () => {
+  ['Mexico', 'Ellacuría', 'Gelman'].forEach(title => {
+    expect(card(title)).toHaveAttribute('aria-pressed', 'false');
+  });
+  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('library-multi-select-footer')).not.toBeInTheDocument();
+};
+
+const tableRow = (title: string) =>
+  within(screen.getByTestId('library-table')).getByText(title).closest('[class*="bg-parchment"]');
+
+const expectTableRowsDeselected = () => {
+  ['Mexico', 'Case 11.481 (Gelman)', 'Case 10.488 (Ellacuría)'].forEach(title => {
+    expect(tableRow(title)).toBeNull();
+  });
+};
+
+type RenderLibrary = (view: 'cards' | 'table' | 'map') => { unmount: () => void };
+
+const expectCloseClearsCards = async (renderLibrary: RenderLibrary) => {
+  const view = renderLibrary('cards');
+  await screen.findByText('Mexico');
+  clickCard('Mexico');
+  clickCard('Gelman', { shiftKey: true });
+  expect(card('Mexico')).toHaveAttribute('aria-pressed', 'true');
+  expect(card('Gelman')).toHaveAttribute('aria-pressed', 'true');
+  closeSelectionPanel();
+  expectCardsDeselected();
+  view.unmount();
+};
+
+const expectCloseClearsTable = async (renderLibrary: RenderLibrary) => {
+  const view = renderLibrary('table');
+  fireEvent.click(await screen.findByText('Mexico'));
+  fireEvent.click(screen.getByText('Case 11.481 (Gelman)'), { shiftKey: true });
+  expect(tableRow('Mexico')).not.toBeNull();
+  expect(tableRow('Case 11.481 (Gelman)')).not.toBeNull();
+  closeSelectionPanel();
+  expectTableRowsDeselected();
+  view.unmount();
+};
+
+const expectCloseClearsMap = async (renderLibrary: RenderLibrary) => {
+  renderLibrary('map');
+  fireEvent.click(await screen.findByRole('button', { name: 'cluster' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Close selection list' }));
+  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('library-multi-select-footer')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'marker-mexico' }));
+  expect(screen.getByTestId('library-selected-count')).toHaveTextContent('1 selected');
+};
+
 const clearSelection = () => {
   const [clear] = within(selectionFooter()).getAllByRole('button', { name: 'Clear' });
   fireEvent.click(clear);
@@ -115,6 +185,9 @@ const expectCtrlPair = () => {
 export {
   clearSelection,
   clickCard,
+  expectCloseClearsCards,
+  expectCloseClearsMap,
+  expectCloseClearsTable,
   expectActionsMenu,
   expectCtrlPair,
   expectFooterChrome,
