@@ -337,7 +337,7 @@ describe('LibraryView preview pane', () => {
     andFilters: [],
     onAndFiltersChange: jest.fn(),
     chips: [],
-    onSelect: jest.fn(),
+    onSelectedIdsChange: jest.fn(),
     onClosePreview: jest.fn(),
     entityBasePath: '/entityv2',
     onLoadMore: jest.fn(),
@@ -356,7 +356,7 @@ describe('LibraryView preview pane', () => {
               [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
-            <LibraryView {...viewProps} selectedId={selectedId} />
+            <LibraryView {...viewProps} selectedIds={selectedId ? [selectedId] : []} />
           </TestAtomStoreProvider>
         </ServicesProvider>
       </TestRouterContext>

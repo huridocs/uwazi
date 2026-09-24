@@ -109,7 +109,11 @@ describe('TableViewer', () => {
     renderTable({ onSelect, onFocusProperty });
 
     fireEvent.click(screen.getByText('Amnesty International'));
-    expect(onSelect).toHaveBeenCalledWith('org-1');
+    expect(onSelect).toHaveBeenCalledWith('org-1', {
+      shiftKey: false,
+      ctrlKey: false,
+      metaKey: false,
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Latitude: -35.9, Longitude: -65' }));
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'location');

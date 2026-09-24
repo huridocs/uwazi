@@ -80,7 +80,7 @@ const renderLibraryTableCell = ({
 const TableViewer = ({
   rows,
   totalRows,
-  selectedId,
+  selectedIds = [],
   onSelect,
   onLoadMore,
   sort,
@@ -130,8 +130,14 @@ const TableViewer = ({
           columns={columns}
           data={data}
           density={tableDensity}
-          selectedRowId={selectedId}
-          onRowClick={row => onSelect(row.sharedId)}
+          selectedRowIds={selectedIds}
+          onRowClick={(row, event) =>
+            onSelect(row.sharedId, {
+              shiftKey: event.shiftKey,
+              ctrlKey: event.ctrlKey,
+              metaKey: event.metaKey,
+            })
+          }
           sort={sortState}
           onSort={
             onSortChange
