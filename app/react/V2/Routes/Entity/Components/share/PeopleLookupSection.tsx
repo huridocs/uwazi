@@ -10,7 +10,7 @@ type PeopleLookupSectionProps = {
   showLookupHint: boolean;
   disabled: boolean;
   adding: boolean;
-  lookupInputRef: React.RefObject<HTMLInputElement>;
+  lookupInputRef: React.RefObject<HTMLInputElement | null>;
   onTermChange: (value: string) => void;
   onToggleHint: () => void;
   onAdd: () => Promise<void>;

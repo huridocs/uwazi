@@ -1,13 +1,89 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
-import AdapterModule from '@cfaester/enzyme-adapter-react-18';
+import AdapterModule from '@belzile/enzyme-adapter-react-19';
 import Enzyme from 'enzyme';
+import reactDom from 'react-dom';
+import { MessageChannel } from 'node:worker_threads';
+import { configureEnzymeReact19 } from './setUpEnzymeReact19.js';
+
+if (typeof Element !== 'undefined') {
+  Element.prototype.getAnimations = function getAnimations() {
+    return [];
+  };
+}
+
+const rafQueue = new Map();
+let rafHandle = 0;
+let rafPumping = false;
+let rafFrames = 0;
+
+const runRafBatch = () => {
+  const batch = [...rafQueue.values()];
+  rafQueue.clear();
+  batch.forEach(callback => {
+    callback(0);
+  });
+};
+
+const scheduleNextRaf = () => {
+  if (rafQueue.size === 0 || rafFrames >= 4) {
+    rafQueue.clear();
+    rafFrames = 0;
+    return;
+  }
+  rafFrames += 1;
+  rafPumping = true;
+  queueMicrotask(flushRaf);
+};
+
+const flushRaf = () => {
+  rafPumping = false;
+  runRafBatch();
+  scheduleNextRaf();
+};
+
+globalThis.requestAnimationFrame = callback => {
+  rafHandle += 1;
+  rafQueue.set(rafHandle, callback);
+  if (!rafPumping) {
+    rafPumping = true;
+    queueMicrotask(flushRaf);
+  }
+  return rafHandle;
+};
+globalThis.cancelAnimationFrame = id => {
+  rafQueue.delete(id);
+};
+
+const findDOMNode = component => {
+  if (component == null) {
+    return null;
+  }
+  if (component.nodeType === 1 || component.nodeType === 3) {
+    return component;
+  }
+  let fiber = component._reactInternals || component._reactInternalFiber;
+  while (fiber) {
+    if (fiber.stateNode && fiber.stateNode.nodeType === 1) {
+      return fiber.stateNode;
+    }
+    fiber = fiber.child;
+  }
+  return null;
+};
+
+reactDom.findDOMNode = findDOMNode;
 
 Object.assign(global, { TextDecoder, TextEncoder });
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+if (typeof globalThis.MessageChannel === 'undefined') {
+  globalThis.MessageChannel = MessageChannel;
+}
 
 const Adapter = AdapterModule.default || AdapterModule;
 Enzyme.configure({ adapter: new Adapter() });
+configureEnzymeReact19();
 
 const warn = console.warn.bind(console);
 console.warn = function (message) {

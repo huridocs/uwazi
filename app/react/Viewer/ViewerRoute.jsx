@@ -35,16 +35,16 @@ class ViewerRouteComponent extends RouteHandler {
   }
 
   emptyState() {
-    this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/templates'));
-    this.context.store.dispatch(actions.unset('viewer/thesauris'));
-    this.context.store.dispatch(actions.unset('viewer/relationTypes'));
-    this.context.store.dispatch(actions.unset('viewer/rawText'));
-    this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
-    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
-    this.context.store.dispatch(setReferences([]));
-    this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(relationships.emptyState());
+    this.store.dispatch(actions.unset('viewer/doc'));
+    this.store.dispatch(actions.unset('viewer/templates'));
+    this.store.dispatch(actions.unset('viewer/thesauris'));
+    this.store.dispatch(actions.unset('viewer/relationTypes'));
+    this.store.dispatch(actions.unset('viewer/rawText'));
+    this.store.dispatch(formActions.reset('documentViewer.tocForm'));
+    this.store.dispatch(actions.unset('viewer/targetDoc'));
+    this.store.dispatch(setReferences([]));
+    this.store.dispatch(actions.unset('entityView/entity'));
+    this.store.dispatch(relationships.emptyState());
   }
 
   urlHasChanged(nextProps) {
@@ -62,8 +62,8 @@ class ViewerRouteComponent extends RouteHandler {
   }
 
   selectTab({ tabView = 'metadata' }) {
-    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tabView));
-    this.context.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
+    this.store.dispatch(actions.set('viewer.sidepanel.tab', tabView));
+    this.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
   }
 
   render() {

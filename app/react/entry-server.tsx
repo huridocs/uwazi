@@ -242,6 +242,33 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
+type RequestStateLoader = (requestParams: RequestParams, state: IStore) => Promise<unknown>;
+
+type RouteElementProps = {
+  params?: Record<string, string | undefined>;
+  children?: React.ReactElement<RouteElementProps>;
+  allowedRoles?: string[];
+};
+
+const isRequestStateLoader = (value: unknown): value is RequestStateLoader =>
+  typeof value === 'function';
+
+const requestStateOf = (type: React.ReactElement['type'] | undefined) => {
+  if (
+    typeof type === 'function' &&
+    'requestState' in type &&
+    isRequestStateLoader(type.requestState)
+  ) {
+    return type.requestState;
+  }
+  return undefined;
+};
+
+const isRouteElement = (
+  element: React.ReactNode
+): element is React.ReactElement<RouteElementProps> =>
+  React.isValidElement<RouteElementProps>(element);
+
 const setReduxState = async (
   req: ExpressRequest,
   reduxState: IStore,
@@ -251,21 +278,21 @@ const setReduxState = async (
   const dataLoaders = matched
     ?.map(({ route, params }) => {
       routeParams = { ...routeParams, ...params };
-      if (route.element) {
-        const component = route.element as React.ReactElement & {
-          type: { requestState: Function };
-        };
+      if (isRouteElement(route.element)) {
+        const component = route.element;
         routeParams = { ...routeParams, ...component.props.params };
-        if (component.props.children?.type?.requestState) {
-          return component.props.children.type.requestState;
+        const childLoader = requestStateOf(component.props.children?.type);
+        if (childLoader) {
+          return childLoader;
         }
-        if (component.type.requestState) {
-          return component.type.requestState;
+        const loader = requestStateOf(component.type);
+        if (loader) {
+          return loader;
         }
       }
       return null;
     })
-    .filter(v => v);
+    .filter((loader): loader is RequestStateLoader => loader != null);
   const initialStore = createReduxStore(reduxState);
   let loadingError: FetchResponseError | undefined;
   if (dataLoaders && dataLoaders.length > 0) {
@@ -422,7 +449,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
 
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const lastRouteElement = isRouteElement(lastRouteMatched?.route.element)
+    ? lastRouteMatched.route.element
+    : undefined;
   const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
   const routeName = lastRouteMatched?.route?.path || 'library';
 

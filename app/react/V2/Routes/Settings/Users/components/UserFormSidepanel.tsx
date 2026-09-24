@@ -104,8 +104,8 @@ const UserFormSidepanel = ({
   const { notify } = useRequestStatus();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const password = useRef<string>();
-  const actionType = useRef<SubmitType>();
+  const password = useRef<string>(undefined);
+  const actionType = useRef<SubmitType>(undefined);
 
   const defaultValues =
     selectedUser ||

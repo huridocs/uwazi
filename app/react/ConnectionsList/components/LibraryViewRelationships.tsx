@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Immutable from 'immutable';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { Icon } from '#app/UI/index.js';
 import { Item } from '#app/Layout/index.js';
 import { Collapsible } from '#app/App/Collapsible.js';
@@ -10,6 +10,7 @@ import { RelationshipMetadataConnected as RelationshipMetadata } from '#app/Rela
 import { LoadMoreRelationshipsButton } from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
 import { IStore } from '#app/istore.js';
 import * as actions from '../../Relationships/actions/actions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
@@ -25,7 +26,7 @@ function mapStateToProps(state: IStore) {
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<{}>) {
+function mapDispatchToProps(dispatch: AppDispatch) {
   return bindActionCreators(
     {
       selectConnection: actions.selectConnection,

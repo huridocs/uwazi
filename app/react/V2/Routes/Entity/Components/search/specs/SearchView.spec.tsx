@@ -21,7 +21,7 @@ let mockPdfController: {
 
 jest.mock('#app/I18N/index.js', () => ({
   t: (_ctx: string, key: string) => key,
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('#V2/atoms/index.js', () => ({

@@ -4,7 +4,7 @@ import { act, render, screen } from '@testing-library/react';
 import { MediaPlayer } from '../MediaPlayer.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('react-player', () => ({

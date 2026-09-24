@@ -15,7 +15,7 @@ interface LabelProps {
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
 const renderChild = (child: string | React.ReactNode) =>
-  isString(child) ? <Translate>{child}</Translate> : child;
+  isString(child) ? <Translate>{child}</Translate> : <>{child}</>;
 
 const variantClass: Record<LabelVariant, string> = {
   primary: 'block text-sm font-normal',

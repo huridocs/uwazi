@@ -4,13 +4,13 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { api } from '#app/utils/api.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { IStore } from '#app/istore.js';
-import { Dispatch } from 'redux';
 import { ensure } from '#shared/tsUtils.js';
 import { FileType } from '#shared/types/fileType.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 const tocGenerationActions = {
   reviewToc(fileId: string) {
-    return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+    return async (dispatch: AppDispatch, getState: () => IStore) => {
       const currentDoc = getState().documentViewer.doc.toJS();
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
 

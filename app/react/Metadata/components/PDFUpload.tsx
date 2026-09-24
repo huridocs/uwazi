@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import get from 'lodash/get.js';
@@ -7,13 +7,14 @@ import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import { MetadataFormFiles } from './MetadataFormFiles.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 type PDFUploadProps = {
   model: string;
 };
 
 const handlePDFUpload =
-  (event: React.FormEvent<HTMLInputElement>, model: string) => (dispatch: Dispatch<{}>) => {
+  (event: React.FormEvent<HTMLInputElement>, model: string) => (dispatch: AppDispatch) => {
     const { files } = event.target as HTMLInputElement;
     if (files && files.length > 0) {
       Array.from(files).forEach(file => {
@@ -35,7 +36,7 @@ const mapStateToProps = (state: IStore, ownProps: PDFUploadProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators({ handlePDFUploadAction: handlePDFUpload }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

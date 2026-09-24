@@ -1,10 +1,11 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { I18NLink } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import { Icon } from '#app/Layout/index.js';
 import * as actions from '../../Relationships/actions/actions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface RelationshipLinkProps {
   propValue: any;
@@ -14,7 +15,7 @@ const mapStateToProps = ({ entityView }: IStore) => ({
   uiState: entityView.uiState,
 });
 
-function mapDispatchToProps(dispatch: Dispatch<{}>) {
+function mapDispatchToProps(dispatch: AppDispatch) {
   return bindActionCreators(
     {
       selectConnection: actions.selectConnection,

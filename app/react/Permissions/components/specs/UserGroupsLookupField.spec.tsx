@@ -5,6 +5,7 @@ import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { enzymeProps } from '#app/utils/enzymeNode.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField.js';
 
 describe('UserGroupsLookupField', () => {
@@ -160,14 +161,14 @@ describe('UserGroupsLookupField', () => {
       component.find('input').simulate('keydown', getEvent('ArrowUp'));
       const items = component.find('li');
 
-      await expect(items.get(3).props.className).toMatch('selected');
+      await expect(enzymeProps(items.get(3)).className).toMatch('selected');
     });
 
     it('should select first when hiting down with no selection', async () => {
       component.find('input').simulate('keydown', getEvent('ArrowDown'));
       const items = component.find('li');
 
-      await expect(items.get(0).props.className).toMatch('selected');
+      await expect(enzymeProps(items.get(0)).className).toMatch('selected');
     });
 
     it('should navigate up when hiting up with selection', async () => {
@@ -176,7 +177,7 @@ describe('UserGroupsLookupField', () => {
 
       const items = component.find('li');
 
-      await expect(items.get(2).props.className).toMatch('selected');
+      await expect(enzymeProps(items.get(2)).className).toMatch('selected');
     });
 
     it('should navigate down when hiting down with selection', async () => {
@@ -185,7 +186,7 @@ describe('UserGroupsLookupField', () => {
 
       const items = component.find('li');
 
-      await expect(items.get(1).props.className).toMatch('selected');
+      await expect(enzymeProps(items.get(1)).className).toMatch('selected');
     });
 
     it('should trigger an event if Enter press with selection', () => {

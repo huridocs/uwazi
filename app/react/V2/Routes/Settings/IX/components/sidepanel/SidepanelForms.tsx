@@ -30,20 +30,23 @@ import { escapeLucene, searchRelatedEntities } from '../../helpers/index.js';
 const dateStringToSeconds = (dateString: string) =>
   DateTime.fromISO(dateString).setZone('UTC').toSeconds();
 
+type SelectableLabelProps = { isSelected?: boolean };
+
+const withSelection = (label: React.ReactNode, selected: boolean): React.ReactNode =>
+  React.isValidElement<SelectableLabelProps>(label)
+    ? React.cloneElement(label, { isSelected: selected })
+    : label;
+
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
 ): MultiselectListOption[] =>
   options.map(option => ({
     ...option,
-    label: React.cloneElement(option.label as React.ReactElement, {
-      isSelected: selectedValues?.includes(option.value),
-    }),
+    label: withSelection(option.label, Boolean(selectedValues?.includes(option.value))),
     items: option.items?.map(subItem => ({
       ...subItem,
-      label: React.cloneElement(subItem.label as React.ReactElement, {
-        isSelected: selectedValues?.includes(subItem.value),
-      }),
+      label: withSelection(subItem.label, Boolean(selectedValues?.includes(subItem.value))),
     })),
   }));
 

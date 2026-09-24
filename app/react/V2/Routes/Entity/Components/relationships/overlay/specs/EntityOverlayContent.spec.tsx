@@ -12,7 +12,7 @@ import { EntityOverlayProvider, useEntityOverlay } from '../../../context/Entity
 import { EntityOverlayContent } from '../EntityOverlayContent.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({ children, to }: { children: React.ReactNode; to: string }) => (
     <a href={to}>{children}</a>
   ),

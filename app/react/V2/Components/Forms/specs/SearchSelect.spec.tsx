@@ -6,7 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { SearchSelect } from '../SearchSelect.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const groups = [

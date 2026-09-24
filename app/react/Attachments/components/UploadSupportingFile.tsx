@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#UI/index.js';
 import { attachmentCompleted } from '#app/Metadata/actions/supportingFilesActions.js';
 import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions.js';
 import { AttachmentsModal } from './AttachmentsModal.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface UploadSupportingFileProps {
   entitySharedId: string;
   storeKey: string;
   model?: string;
   progress?: any;
-  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
-  uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
-  attachmentCompleted: (entity: string) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment?: (...args: any[]) => (dispatch: AppDispatch) => Promise<any>;
+  uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: AppDispatch) => void;
+  attachmentCompleted: (entity: string) => (dispatch: AppDispatch) => void;
 }
 
 function mapStateToProps({ attachments }: { attachments: any }) {
@@ -23,7 +24,7 @@ function mapStateToProps({ attachments }: { attachments: any }) {
   };
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators({ attachmentCompleted }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -2,6 +2,8 @@ import { TargetTemplateStep } from './TargetTemplate/index.js';
 import { SourceTemplateStep } from './SourceTemplate/index.js';
 import { ExtractionConfigurationStep } from './ExtractionConfiguration/index.js';
 
+import type { JSX } from 'react';
+
 const AddExtractorSteps: Record<
   number,
   {

@@ -34,16 +34,14 @@ jest.mock('../../Notifications/RequestStatus', () => ({
 
 const { useCompactBar } = jest.requireMock('../useCompactBar');
 
+const headerState = {
+  ...defaultState,
+  library: { search: {}, filters: fromJS({ properties: [] }) },
+};
+
 const renderHeader = (compact: boolean) => {
   useCompactBar.mockReturnValue({ barRef: { current: null }, compact });
-  return renderConnectedContainer(
-    <Header />,
-    () => ({
-      ...defaultState,
-      library: { search: {}, filters: fromJS({ properties: [] }) },
-    }),
-    'MemoryRouter'
-  );
+  return renderConnectedContainer(<Header />, () => headerState, 'MemoryRouter');
 };
 
 const optionsMenu = () => screen.getByRole('button', { name: 'Toggle options menu' }).parentElement;

@@ -57,7 +57,7 @@ const AudioPlayer = ({ url, className, altText, onDuration }: AudioPlayerProps) 
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <audio
             ref={audioRef}
-            src={url || ''}
+            src={url || undefined}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}

@@ -156,8 +156,9 @@ describe('Viewer', () => {
     });
 
     it('should loadDefaultViewerMenu()', () => {
+      props.loadDefaultViewerMenu = jasmine.createSpy('loadDefaultViewerMenu');
       render({ mount: true });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
+      expect(props.loadDefaultViewerMenu).toHaveBeenCalled();
     });
   });
 

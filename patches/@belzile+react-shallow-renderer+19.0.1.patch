@@ -1,0 +1,13 @@
+diff --git a/node_modules/@belzile/react-shallow-renderer/src/ReactShallowRenderer.js b/node_modules/@belzile/react-shallow-renderer/src/ReactShallowRenderer.js
+index ac8b451..00eaac8 100644
+--- a/node_modules/@belzile/react-shallow-renderer/src/ReactShallowRenderer.js
++++ b/node_modules/@belzile/react-shallow-renderer/src/ReactShallowRenderer.js
+@@ -740,7 +740,7 @@ See https://fb.me/react-invalid-hook-call for tips about how to debug and fix th
+   }
+ }
+ 
+-// let currentlyValidatingElement = null;
++let currentlyValidatingElement = null;
+ 
+ // function getDisplayName(element) {
+ //   if (element == null) {

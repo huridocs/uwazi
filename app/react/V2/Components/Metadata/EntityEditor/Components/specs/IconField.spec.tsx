@@ -8,7 +8,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { EMPTY_ICON, IconField, type EntityIcon } from '../IconField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('#V2/Components/Forms/index.js', () => ({

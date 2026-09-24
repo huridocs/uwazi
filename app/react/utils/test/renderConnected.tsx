@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { BrowserRouter, MemoryRouter, InitialEntry } from 'react-router';

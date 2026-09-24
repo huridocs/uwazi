@@ -29,7 +29,7 @@ class PageViewComponent extends RouteHandler {
   }
 
   closeSidePanel() {
-    wrapDispatch(this.context.store.dispatch, 'library')(unselectAllDocuments());
+    wrapDispatch(this.store.dispatch, 'library')(unselectAllDocuments());
   }
 
   componentDidMount() {
@@ -46,17 +46,17 @@ class PageViewComponent extends RouteHandler {
 
   emptyState() {
     this.closeSidePanel();
-    this.context.store.dispatch(actions.unset('page/pageView'));
-    this.context.store.dispatch(actions.unset('page/itemLists'));
-    this.context.store.dispatch(actions.unset('page/datasets'));
-    this.context.store.dispatch(actions.unset('page/error'));
+    this.store.dispatch(actions.unset('page/pageView'));
+    this.store.dispatch(actions.unset('page/itemLists'));
+    this.store.dispatch(actions.unset('page/datasets'));
+    this.store.dispatch(actions.unset('page/error'));
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('page/pageView', state.page.pageView));
-    this.context.store.dispatch(actions.set('page/itemLists', state.page.itemLists));
-    this.context.store.dispatch(actions.set('page/datasets', state.page.datasets));
-    this.context.store.dispatch(actions.set('page/error', state.page.error));
+    this.store.dispatch(actions.set('page/pageView', state.page.pageView));
+    this.store.dispatch(actions.set('page/itemLists', state.page.itemLists));
+    this.store.dispatch(actions.set('page/datasets', state.page.datasets));
+    this.store.dispatch(actions.set('page/error', state.page.error));
   }
 
   render() {

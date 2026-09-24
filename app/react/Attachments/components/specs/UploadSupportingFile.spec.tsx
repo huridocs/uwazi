@@ -48,6 +48,7 @@ describe('UploadSupportingFile', () => {
       expect(uploadFromComputerTab).not.toBe(null);
 
       reduxStore = { ...defaultState, ...updateProgress(100) };
+      store.dispatch({ type: 'TEST_PROGRESS' });
       renderResult.rerender(
         <Provider store={store}>
           <UploadSupportingFile entitySharedId="entity1" storeKey="library" />

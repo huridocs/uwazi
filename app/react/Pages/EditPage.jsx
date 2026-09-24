@@ -15,7 +15,7 @@ class EditPageComponent extends RouteHandler {
   }
 
   componentDidMount() {
-    this.context.store.dispatch(formActions.reset('page.data'));
+    this.store.dispatch(formActions.reset('page.data'));
   }
 
   render() {

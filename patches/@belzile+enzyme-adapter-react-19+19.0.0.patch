@@ -1,0 +1,13 @@
+diff --git a/node_modules/@belzile/enzyme-adapter-react-19/dist/ReactNineteenAdapter.js b/node_modules/@belzile/enzyme-adapter-react-19/dist/ReactNineteenAdapter.js
+index 1f44072..ba1a492 100644
+--- a/node_modules/@belzile/enzyme-adapter-react-19/dist/ReactNineteenAdapter.js
++++ b/node_modules/@belzile/enzyme-adapter-react-19/dist/ReactNineteenAdapter.js
+@@ -244,7 +244,7 @@ function nodeToHostNode(_node) {
+         return null;
+     }
+     const mapper = (item) => {
+-        // if (item && item.instance) return ReactDOM.findDOMNode(item.instance);
++        if (item && item.instance) return react_dom_1.default.findDOMNode(item.instance);
+         return null;
+     };
+     if (Array.isArray(node)) {
