@@ -11,6 +11,9 @@ type LibraryFooterButtonProps = {
   disabled?: boolean;
   to?: string;
   className?: string;
+  expanded?: boolean;
+  popup?: 'menu';
+  controls?: string;
 };
 
 const LibraryFooterButton = ({
@@ -20,6 +23,9 @@ const LibraryFooterButton = ({
   disabled = false,
   to,
   className = '',
+  expanded,
+  popup,
+  controls,
 }: LibraryFooterButtonProps) => {
   const classes = `${footerButtonClassName} ${className}`.trim();
   const content = (
@@ -38,7 +44,15 @@ const LibraryFooterButton = ({
   }
 
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={classes}>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={classes}
+      aria-expanded={expanded}
+      aria-haspopup={popup}
+      aria-controls={controls}
+    >
       {content}
     </button>
   );
