@@ -77,6 +77,7 @@ interface DataTableProps<T extends { rowId: string }> {
   sort?: DataTableSort;
   onSort?: (key: string) => void;
   onRowClick?: (row: T, event: React.MouseEvent<HTMLElement>) => void;
+  rowSelectId?: (row: T) => string | undefined;
   selectedRowId?: string | null;
   selectedRowIds?: readonly string[];
   selection?: DataTableSelection<T>;
@@ -191,6 +192,7 @@ const SortableRow = <T extends { rowId: string }>({
   density,
   depth,
   onRowClick,
+  rowSelectId,
 }: {
   row: import('@tanstack/react-table').Row<T>;
   gridTemplateColumns: string;
@@ -202,6 +204,7 @@ const SortableRow = <T extends { rowId: string }>({
   density: DataTableDensity;
   depth: number;
   onRowClick?: (row: T, event: React.MouseEvent<HTMLElement>) => void;
+  rowSelectId?: (row: T) => string | undefined;
 }) => {
   const { setNodeRef, transform, transition, isDragging, listeners, attributes } = useSortable({
     id: row.id,
@@ -228,6 +231,7 @@ const SortableRow = <T extends { rowId: string }>({
     <>
       <div
         ref={setNodeRef}
+        data-select-id={rowSelectId?.(row.original)}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...rowInteractionProps}
         className={`${ROW_BASE} ${ROW_DENSITY[density]} ${isClickable ? 'cursor-pointer' : ''} ${
@@ -270,6 +274,7 @@ const SortableRow = <T extends { rowId: string }>({
             density={density}
             depth={depth + 1}
             onRowClick={onRowClick}
+            rowSelectId={rowSelectId}
           />
         ))}
     </>
@@ -304,6 +309,7 @@ const DataTable = <T extends { rowId: string }>({
   sort,
   onSort,
   onRowClick,
+  rowSelectId,
   selectedRowId,
   selectedRowIds,
   selection,
@@ -483,6 +489,7 @@ const DataTable = <T extends { rowId: string }>({
                   density={density}
                   depth={0}
                   onRowClick={onRowClick}
+                  rowSelectId={rowSelectId}
                 />
               ))
             )}

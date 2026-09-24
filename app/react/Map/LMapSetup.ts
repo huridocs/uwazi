@@ -152,7 +152,16 @@ const addMapMarkers = (args: {
   const markers = pointMarkers
     .map(pointMarker => parseMarkerPoint(pointMarker, templatesInfo, renderPopupInfo))
     .filter(marker => marker.properties.entity?.sharedId !== deletedEntity);
-  markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
+  markers.forEach(point => {
+    const marker = getClusterMarker(point);
+    const sharedId = point.properties.entity?.sharedId;
+    if (point.properties.libraryMap && sharedId) {
+      marker.on('add', () => {
+        marker.getElement()?.setAttribute('data-select-id', sharedId);
+      });
+    }
+    marker.addTo(markerGroup);
+  });
   markerGroup.on('clusterclick', cluster => {
     const pointer = cluster as Leaflet.LeafletMouseEvent;
     args.clickOnCluster?.(

@@ -80,6 +80,7 @@ const CardViewer = ({
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
               selected={selectedIds.includes(entity.sharedId)}
+              selectId={entity.sharedId}
               onSelect={modifiers => onSelect(entity.sharedId, modifiers)}
               onFocusProperty={fieldKey => onFocusProperty?.(entity.sharedId, fieldKey)}
               viewHref={`${entityBasePath}/${entity.sharedId}`}

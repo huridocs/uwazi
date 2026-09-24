@@ -11,7 +11,7 @@ import type { Chip } from './ActiveFiltersSheet.js';
 import { pdfFilesFromList, uploadPdfsAndCreateEntities } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
-import { useLibraryCreateActions, useLibrarySelectionPanel } from './useLibraryViewChrome.js';
+import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
 
 type LibraryViewProps = {
@@ -82,8 +82,7 @@ const LibraryView = ({
     onTableDensityChange,
   } = useLibraryTableDisplay(filters.type ?? []);
   const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]);
-  const { selectionPanelOpen, notShown } = useLibrarySelectionPanel(selectedIds, orderedIds);
-  const { selectEntity, selectCluster, clear } = useLibraryResultSelection({
+  const { selectEntity, selectCluster, addEntity, clear } = useLibraryResultSelection({
     orderedIds,
     selectedIds,
     onSelectedIdsChange,
@@ -93,6 +92,15 @@ const LibraryView = ({
     clear();
     onClosePreview();
   };
+  const { selectionPanelOpen, notShown, inspecting, onAction, dialogs } = useLibrarySelectionChrome(
+    {
+      selectedIds,
+      orderedIds,
+      rows,
+      addEntity,
+      onDeleted: dismissSelection,
+    }
+  );
   const {
     focusFieldKey,
     selectRow,
@@ -202,6 +210,7 @@ const LibraryView = ({
                   const loaded = new Set(orderedIds);
                   onSelectedIdsChange(selectedIds.filter(id => !loaded.has(id)));
                 }}
+                onAction={onAction}
               />
             ) : (
               <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={uploadChosenPdfs} />
@@ -229,9 +238,12 @@ const LibraryView = ({
             }
             onPreviewSelection={sharedId => selectEntity(sharedId)}
             onCreated={finishCreated}
+            inspecting={inspecting}
+            onAction={onAction}
           />
         </PaneLayout.Pane>
       </PaneLayout>
+      {dialogs}
     </div>
   );
 };

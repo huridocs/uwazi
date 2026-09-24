@@ -1,4 +1,5 @@
 import {
+  addLibraryEntity,
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   orderedSelectionIds,
@@ -8,6 +9,20 @@ import {
 const orderedIds = ['mexico', 'ellacuria', 'gelman', 'other'];
 const none: LibrarySelection = { ids: [] };
 const plain = { shiftKey: false, ctrlKey: false, metaKey: false };
+
+describe('addLibraryEntity', () => {
+  it('adds the entity and keeps the ones already selected', () => {
+    const next = addLibraryEntity({ ids: ['mexico'], anchorId: 'mexico' }, 'gelman');
+
+    expect(next).toEqual({ ids: ['mexico', 'gelman'], anchorId: 'gelman' });
+  });
+
+  it('does not duplicate an entity that is already selected', () => {
+    const next = addLibraryEntity({ ids: ['mexico', 'gelman'], anchorId: 'mexico' }, 'gelman');
+
+    expect(next).toEqual({ ids: ['mexico', 'gelman'], anchorId: 'gelman' });
+  });
+});
 
 describe('applyLibraryEntityClick', () => {
   it('replaces the selection with the clicked entity', () => {

@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 
 const results = () => screen.getByRole('region', { name: 'Library results' });
 
@@ -22,13 +22,45 @@ const expectSelectionActions = (footer: HTMLElement) => {
   expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
 };
 
-const expectSingleEntity = async (title: string) => {
-  await waitFor(() => {
-    expect(
-      within(screen.getByTestId('library-entity-preview')).getByText(title)
-    ).toBeInTheDocument();
+const selectionPanelFooter = () =>
+  within(screen.getByTestId('library-selection-panel')).getByTestId('library-selection-footer');
+
+const panelBarSequence = (footer: HTMLElement) =>
+  [...footer.children].flatMap(child => {
+    if (child.getAttribute('data-testid') === 'library-selection-divider') {
+      return ['divider'];
+    }
+    const text = child.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+    return text ? [text] : [];
   });
-  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
+
+const expectPanelBarEnd = (sequence: string[], count: number, footer: HTMLElement) => {
+  expect(sequence.at(-1)).toBe(count === 1 ? 'View entity' : 'Close');
+  if (count === 1) {
+    expect(sequence.at(-2)).toBe('Close');
+    expect(within(footer).getByRole('link', { name: 'View entity' })).toBeInTheDocument();
+    return;
+  }
+  expect(within(footer).queryByRole('link', { name: 'View entity' })).not.toBeInTheDocument();
+};
+
+const expectPanelBar = (count: number) => {
+  const footer = selectionPanelFooter();
+  expect(within(footer).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('menu')).not.toBeInTheDocument();
+  const sequence = panelBarSequence(footer);
+  expect(sequence.slice(0, 4)).toEqual(['Edit', 'Permissions', 'divider', 'Delete']);
+  expectPanelBarEnd(sequence, count, footer);
+  expect(within(footer).getByRole('button', { name: 'Delete' })).toHaveClass('text-seal-label');
+};
+
+const expectSingleEntity = async (title: string) => {
+  const panel = await screen.findByTestId('library-selection-panel');
+  expect(panel).toHaveTextContent(title);
+  expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
+  expect(screen.getByTestId('library-selection-count')).toHaveTextContent('1 entity');
+  expectPanelBar(1);
   const footer = screen.getByTestId('library-multi-select-footer');
   expectSelectionActions(footer);
   expect(within(footer).getByTestId('library-selected-count')).toHaveTextContent('1 selected');
@@ -87,7 +119,7 @@ const expectPanelChrome = () => {
   expect(panelFooter).toHaveClass('h-12');
   expect(within(panelFooter).getByRole('button', { name: 'Close' })).toBeInTheDocument();
   expect(within(panelFooter).getByRole('button', { name: 'Edit' })).toBeInTheDocument();
-  expect(within(panelFooter).getByRole('button', { name: 'Actions' })).toBeInTheDocument();
+  expectPanelBar(3);
 };
 
 const expectPageSelectionFooter = () => {
@@ -106,15 +138,9 @@ const expectFooterChrome = () => {
 
 const expectActionsMenu = () => {
   const panel = screen.getByTestId('library-selection-panel');
-  fireEvent.click(within(panel).getByRole('button', { name: 'Actions' }));
-  const menu = screen.getByRole('menu', { name: 'Selection actions' });
-  ['Change template', 'Export CSV', 'Permissions'].forEach(label => {
-    expect(within(menu).getByRole('menuitem', { name: label })).toBeInTheDocument();
-  });
-  expect(within(menu).queryByRole('menuitem', { name: 'Share' })).not.toBeInTheDocument();
-  expect(within(menu).getByRole('separator')).toBeInTheDocument();
-  expect(within(menu).getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
-  expect(within(menu).queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
+  expect(within(panel).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
+  expect(within(panel).queryByRole('menu', { name: 'Selection actions' })).not.toBeInTheDocument();
+  expectPanelBar(3);
 };
 
 const expectCreateFooter = () => {
@@ -196,6 +222,7 @@ const expectCtrlPair = () => {
 };
 
 export {
+  card,
   clearSelection,
   clickCard,
   expectCloseClearsCards,

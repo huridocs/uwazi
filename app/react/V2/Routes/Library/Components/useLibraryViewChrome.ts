@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryClickModifiers } from '../librarySelection.js';
+import type { LibraryBulkAction } from './librarySelectionActions.js';
+import { useLibraryLongPress } from './useLibraryLongPress.js';
+import { useLibrarySelectionCommands } from './useLibrarySelectionCommands.js';
 
 const useLibraryPreviewFocus = (
   onSelect: (sharedId: string, modifiers?: LibraryClickModifiers) => void,
@@ -67,9 +71,51 @@ const useLibrarySelectionPanel = (
 ) => {
   const loaded = new Set(orderedIds);
   return {
-    selectionPanelOpen: selectedIds.length > 1,
+    selectionPanelOpen: selectedIds.length >= 1,
     notShown: selectedIds.filter(id => !loaded.has(id)).length,
   };
 };
 
-export { useLibraryCreateActions, useLibrarySelectionPanel };
+const useLibraryInspectCommands = (
+  selectedIds: readonly string[],
+  rows: readonly LibrarySearchHit[],
+  onDeleted: () => void
+) => {
+  const [inspecting, setInspecting] = useState(false);
+  const selectionKey = selectedIds.join('\u0000');
+  const commands = useLibrarySelectionCommands(selectedIds, rows, onDeleted);
+  useEffect(() => {
+    setInspecting(false);
+  }, [selectionKey]);
+  const onAction = (action: LibraryBulkAction) => {
+    if (action === 'edit' && selectedIds.length === 1) {
+      setInspecting(true);
+      return;
+    }
+    commands.onAction(action);
+  };
+  return { inspecting, onAction, dialogs: commands.dialogs };
+};
+
+type LibrarySelectionChromeArgs = {
+  selectedIds: readonly string[];
+  orderedIds: readonly string[];
+  rows: readonly LibrarySearchHit[];
+  addEntity: (sharedId: string) => void;
+  onDeleted: () => void;
+};
+
+const useLibrarySelectionChrome = ({
+  selectedIds,
+  orderedIds,
+  rows,
+  addEntity,
+  onDeleted,
+}: LibrarySelectionChromeArgs) => {
+  const panel = useLibrarySelectionPanel(selectedIds, orderedIds);
+  useLibraryLongPress(addEntity);
+  const commands = useLibraryInspectCommands(selectedIds, rows, onDeleted);
+  return { ...panel, ...commands };
+};
+
+export { useLibraryCreateActions, useLibrarySelectionChrome, useLibrarySelectionPanel };

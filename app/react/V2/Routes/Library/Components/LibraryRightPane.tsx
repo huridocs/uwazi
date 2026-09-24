@@ -6,6 +6,7 @@ import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
 import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryFilters } from './LibraryFilters.js';
 import { LibrarySelectionPanel } from './LibrarySelectionPanel.js';
+import type { LibraryBulkAction } from './librarySelectionActions.js';
 
 type LibraryRightPaneProps = {
   creating: boolean;
@@ -25,6 +26,8 @@ type LibraryRightPaneProps = {
   onRemoveSelection: (sharedId: string) => void;
   onPreviewSelection: (sharedId: string) => void;
   onCreated: (sharedId?: string) => void;
+  inspecting: boolean;
+  onAction?: (action: LibraryBulkAction) => void;
 };
 
 const LibraryRightPane = ({
@@ -45,11 +48,15 @@ const LibraryRightPane = ({
   onRemoveSelection,
   onPreviewSelection,
   onCreated,
+  inspecting,
+  onAction,
 }: LibraryRightPaneProps) => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
   }
-  if (selectedIds.length > 1 && selectionPanelOpen) {
+  const singleId = selectedIds.length === 1 ? selectedIds[0] : undefined;
+  const showPreview = Boolean(singleId && (focusFieldKey || inspecting));
+  if (selectedIds.length >= 1 && selectionPanelOpen && !showPreview) {
     return (
       <LibrarySelectionPanel
         rows={rows}
@@ -58,6 +65,7 @@ const LibraryRightPane = ({
         onClose={onCloseSelection}
         onRemove={onRemoveSelection}
         onPreview={onPreviewSelection}
+        onAction={onAction}
       />
     );
   }

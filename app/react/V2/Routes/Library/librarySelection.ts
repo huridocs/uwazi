@@ -49,6 +49,17 @@ const replaceWith = (clickedId: string): LibrarySelection => ({
   anchorId: clickedId,
 });
 
+/** Touch long-press: keep the current selection and include this entity. */
+const addLibraryEntity = (selection: LibrarySelection, clickedId: string): LibrarySelection => {
+  if (!clickedId) {
+    return selection;
+  }
+  if (selection.ids.includes(clickedId)) {
+    return { ids: selection.ids, anchorId: clickedId };
+  }
+  return { ids: [...selection.ids, clickedId], anchorId: clickedId };
+};
+
 const shiftRangeSelection = (
   selection: LibrarySelection,
   orderedIds: readonly string[],
@@ -130,6 +141,7 @@ const orderedSelectionIds = (rowIds: readonly string[], selectedIds: readonly st
 export type { LibraryClickModifiers, LibrarySelection };
 export {
   EMPTY_CLICK_MODIFIERS,
+  addLibraryEntity,
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   orderedSelectionIds,
