@@ -25,6 +25,7 @@ import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/mig
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
 import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/RelationshipTypesMigrationConfig.js';
+import { ConnectionsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ConnectionsMigrationConfig.js';
 import { UsersMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UsersMigrationConfig.js';
 import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UserGroupsMigrationConfig.js';
 import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
@@ -53,6 +54,7 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   templates: TemplateMigrationConfig,
   files: FilesMigrationConfig,
   relationship_types: RelationshipTypesMigrationConfig,
+  connections: ConnectionsMigrationConfig,
   users: UsersMigrationConfig,
   usergroups: UserGroupsMigrationConfig,
   password_recoveries: PasswordRecoveryMigrationConfig,
@@ -88,6 +90,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'password_recoveries',
     'translations',
     'entities',
+    'connections',
     'ix_extractors',
     'ix_models',
     'ix_suggestions',

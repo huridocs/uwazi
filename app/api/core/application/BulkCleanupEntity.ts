@@ -4,7 +4,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesService } from './FilesService.js';
-import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 
 const InputSchema = z.object({
   sharedIds: z.array(z.string().trim().min(1)).min(1).max(100),
@@ -16,7 +16,7 @@ type Output = Input;
 
 type Deps = {
   filesService: FilesService;
-  relationshipsDS: MongoRelationshipsV1DataSource;
+  relationshipsDS: RelationshipsV1DataSource;
   entitiesDS: EntitiesDataSource;
 };
 
