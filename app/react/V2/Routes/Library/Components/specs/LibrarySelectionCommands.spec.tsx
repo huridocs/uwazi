@@ -33,7 +33,7 @@ describe('library selection commands', () => {
     clickCard('Mexico');
     await expectSingleEntity('Mexico');
     fireEvent.click(
-      within(screen.getByTestId('library-multi-select-footer')).getByRole('button', {
+      within(screen.getByTestId('library-single-select-actions')).getByRole('button', {
         name: 'Edit',
       })
     );

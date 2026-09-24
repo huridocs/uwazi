@@ -76,6 +76,10 @@ describe('LibraryResultsFooter', () => {
       'href',
       '/en/settings/csv'
     );
+    expect(screen.getByRole('button', { name: 'Export CSV' }).querySelector('svg')).toBeTruthy();
+    expect(screen.queryByTestId('library-single-select-actions')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Change template' })).not.toBeInTheDocument();
   });
 
   it('hides editor actions for anonymous users even when the V2 flag is on', () => {

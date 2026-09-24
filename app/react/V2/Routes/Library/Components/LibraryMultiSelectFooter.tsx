@@ -1,10 +1,10 @@
-import React, { Fragment, useState, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction, LibrarySelectionAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import { LibrarySelectAllBox } from './LibrarySelectAllBox.js';
-import { LibrarySelectionActionsSheet } from './LibrarySelectionActionsSheet.js';
 
 const barLeadClassName = 'text-ink font-medium hover:bg-warm';
 const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
@@ -19,9 +19,7 @@ type LibraryMultiSelectFooterProps = {
   count: number;
   loadedIds: readonly string[];
   selectedIds: readonly string[];
-  notShown: number;
   onClear: () => void;
-  onShowList: () => void;
   onSelectLoaded: () => void;
   onDeselectLoaded: () => void;
   onAction?: (action: LibraryBulkAction) => void;
@@ -51,36 +49,34 @@ const LibraryMultiSelectFooter = ({
   count,
   loadedIds,
   selectedIds,
-  notShown,
   onClear,
-  onShowList,
   onSelectLoaded,
   onDeselectLoaded,
   onAction,
 }: LibraryMultiSelectFooterProps) => {
-  const [sheetOpen, setSheetOpen] = useState(false);
   const actions = librarySelectionActions();
+  const leadActions = actions.filter(action => action.id !== 'delete');
+  const deleteAction = actions.find(action => action.id === 'delete');
   const barButton = ({
     icon,
     label,
     tone,
     onClick,
-    phoneHidden = false,
   }: {
     icon: ReactNode;
     label: string;
     tone: BarTone;
     onClick?: () => void;
-    phoneHidden?: boolean;
   }) => (
     <button
+      key={label}
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`${phoneHidden ? 'hidden sm:flex' : 'flex'} ${barButtonClassName} ${barToneClass(tone)}`}
+      className={`inline-flex ${barButtonClassName} ${barToneClass(tone)}`}
     >
       <span className={tone === 'danger' ? '' : 'text-ink-tertiary'}>{icon}</span>
-      <span className="max-sm:hidden sm:inline">
+      <span className="sm:inline">
         <Translate>{label}</Translate>
       </span>
     </button>
@@ -92,105 +88,47 @@ const LibraryMultiSelectFooter = ({
         className="flex h-12 items-center gap-1 bg-paper px-3"
         style={{ borderTop: '1px solid var(--border-primary)' }}
       >
-        {actions.map(action => (
-          <Fragment key={action.id}>
-            {action.danger ? (
-              <span
-                aria-hidden
-                className="mx-1.5 hidden h-5 w-px shrink-0 self-center bg-border-soft sm:block"
-              />
-            ) : null}
-            {barButton({
+        <div data-testid="library-multi-select-actions" className="flex min-w-0 items-center">
+          {leadActions.map(action =>
+            barButton({
               icon: action.icon,
               label: action.label,
               tone: actionTone(action),
               onClick: () => onAction?.(action.id),
-            })}
-          </Fragment>
-        ))}
-        <span
-          data-part="selection-end"
-          className="ms-auto hidden shrink-0 items-center gap-1 sm:flex"
-        >
-          <span className={`me-2 inline-flex shrink-0 ${count >= 2 ? '' : 'invisible'}`}>
-            <LibrarySelectAllBox
-              loadedIds={loadedIds}
-              selectedIds={selectedIds}
-              onSelectLoaded={onSelectLoaded}
-              onDeselectLoaded={onDeselectLoaded}
-            />
-          </span>
-          <span className="relative flex w-[7.5rem] shrink-0 items-center text-xs leading-tight tabular-nums">
-            <span role="status" aria-live="polite" className="flex min-w-0">
-              <button
-                type="button"
-                data-testid="library-selected-count"
-                onClick={onShowList}
-                className="cursor-pointer truncate rounded-sm font-semibold text-ink hover:underline focus-visible:ring-1 focus-visible:ring-carbon/40 focus-visible:outline-none"
-              >
-                {count.toLocaleString()} <Translate>selected</Translate>
-              </button>
-            </span>
-            {notShown > 0 ? (
-              <span
-                aria-live="polite"
-                className="absolute start-0 top-full -mt-0.5 hidden text-meta leading-none sm:flex"
-              >
-                <button
-                  type="button"
-                  onClick={onShowList}
-                  className="cursor-pointer rounded-sm whitespace-nowrap text-carbon hover:underline focus-visible:ring-1 focus-visible:ring-carbon/40 focus-visible:outline-none"
-                >
-                  {notShown.toLocaleString()} <Translate>not shown</Translate>
-                </button>
-              </span>
-            ) : null}
+            })
+          )}
+          <LibraryFooterDivider />
+          {deleteAction
+            ? barButton({
+                icon: deleteAction.icon,
+                label: deleteAction.label,
+                tone: 'danger',
+                onClick: () => onAction?.(deleteAction.id),
+              })
+            : null}
+        </div>
+        <div className="ms-auto flex shrink-0 items-center gap-2">
+          <LibrarySelectAllBox
+            loadedIds={loadedIds}
+            selectedIds={selectedIds}
+            onSelectLoaded={onSelectLoaded}
+            onDeselectLoaded={onDeselectLoaded}
+          />
+          <span
+            role="status"
+            aria-live="polite"
+            data-testid="library-selected-count"
+            className="shrink-0 text-xs font-semibold text-ink tabular-nums"
+          >
+            {count.toLocaleString()} <Translate>selected</Translate>
           </span>
           {barButton({
             icon: <LibrarySelectionIcon name="x" size={13} />,
             label: 'Clear',
             tone: 'ghost',
             onClick: onClear,
-            phoneHidden: true,
           })}
-        </span>
-        <span
-          role="status"
-          aria-live="polite"
-          className="me-auto shrink-0 text-xs font-semibold text-ink tabular-nums sm:hidden"
-        >
-          {count.toLocaleString()} <Translate>selected</Translate>
-        </span>
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          aria-haspopup="dialog"
-          aria-expanded={sheetOpen}
-          className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium sm:hidden ${barLeadClassName}`}
-        >
-          <span className="text-ink-tertiary" aria-hidden>
-            <LibrarySelectionIcon name="more-horizontal" size={13} />
-          </span>
-          <Translate>Actions</Translate>
-        </button>
-        <button
-          type="button"
-          onClick={onClear}
-          className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium sm:hidden ${barGhostClassName}`}
-        >
-          <span className="text-ink-tertiary">
-            <LibrarySelectionIcon name="x" size={13} />
-          </span>
-          <Translate>Clear</Translate>
-        </button>
-        {sheetOpen ? (
-          <LibrarySelectionActionsSheet
-            count={count}
-            actions={actions}
-            onClose={() => setSheetOpen(false)}
-            onAction={onAction}
-          />
-        ) : null}
+        </div>
       </div>
     </div>
   );

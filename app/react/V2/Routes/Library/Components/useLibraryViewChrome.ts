@@ -64,20 +64,12 @@ const useLibraryCreateActions = (
   };
 };
 
-const useLibrarySelectionPanel = (
-  selectedIds: readonly string[],
-  orderedIds: readonly string[]
-) => {
-  const loaded = new Set(orderedIds);
-  return {
-    selectionPanelOpen: selectedIds.length > 1,
-    notShown: selectedIds.filter(id => !loaded.has(id)).length,
-  };
-};
+const useLibrarySelectionPanel = (selectedIds: readonly string[]) => ({
+  selectionPanelOpen: selectedIds.length > 1,
+});
 
 type LibrarySelectionChromeArgs = {
   selectedIds: readonly string[];
-  orderedIds: readonly string[];
   rows: readonly LibrarySearchHit[];
   addEntity: (sharedId: string) => void;
   onDeleted: () => void;
@@ -85,12 +77,11 @@ type LibrarySelectionChromeArgs = {
 
 const useLibrarySelectionChrome = ({
   selectedIds,
-  orderedIds,
   rows,
   addEntity,
   onDeleted,
 }: LibrarySelectionChromeArgs) => {
-  const panel = useLibrarySelectionPanel(selectedIds, orderedIds);
+  const panel = useLibrarySelectionPanel(selectedIds);
   useLibraryLongPress(addEntity);
   const commands = useLibrarySelectionCommands(selectedIds, rows, onDeleted);
   return { ...panel, ...commands };

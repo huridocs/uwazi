@@ -18,6 +18,11 @@ const selectMexicoThroughGelman = async () => {
 const panelFooter = () =>
   within(screen.getByTestId('library-selection-panel')).getByTestId('library-selection-footer');
 
+const openSelectionMenu = () => {
+  fireEvent.click(within(panelFooter()).getByRole('button', { name: 'Actions' }));
+  return screen.getByRole('menu', { name: 'Selection actions' });
+};
+
 const expectDeleteCopy = (dialog: HTMLElement) => {
   expect(within(dialog).getByRole('heading', { name: 'Delete 3 entities?' })).toBeInTheDocument();
   expect(
@@ -28,7 +33,7 @@ const expectDeleteCopy = (dialog: HTMLElement) => {
 };
 
 const cancelPanelDelete = async () => {
-  fireEvent.click(within(panelFooter()).getByRole('button', { name: 'Delete' }));
+  fireEvent.click(within(openSelectionMenu()).getByRole('menuitem', { name: 'Delete' }));
   const dialog = await screen.findByRole('dialog');
   expectDeleteCopy(dialog);
   fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
@@ -37,7 +42,7 @@ const cancelPanelDelete = async () => {
 };
 
 const confirmPanelDelete = async () => {
-  fireEvent.click(within(panelFooter()).getByRole('button', { name: 'Delete' }));
+  fireEvent.click(within(openSelectionMenu()).getByRole('menuitem', { name: 'Delete' }));
   fireEvent.click(
     within(await screen.findByRole('dialog')).getByRole('button', { name: 'Delete' })
   );
@@ -62,7 +67,7 @@ const expectShareDialog = (dialog: HTMLElement) => {
 
 const openPermissions = async () => {
   await selectMexicoThroughGelman();
-  fireEvent.click(within(panelFooter()).getByRole('button', { name: 'Permissions' }));
+  fireEvent.click(within(openSelectionMenu()).getByRole('menuitem', { name: 'Permissions' }));
   return screen.findByRole('dialog');
 };
 

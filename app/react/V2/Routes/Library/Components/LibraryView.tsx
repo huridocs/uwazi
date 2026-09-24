@@ -92,13 +92,13 @@ const LibraryView = ({
     clear();
     onClosePreview();
   };
-  const { selectionPanelOpen, notShown, onAction, dialogs } = useLibrarySelectionChrome({
+  const { selectionPanelOpen, onAction, dialogs } = useLibrarySelectionChrome({
     selectedIds,
-    orderedIds,
     rows,
     addEntity,
     onDeleted: dismissSelection,
   });
+  const singleSharedId = selectedIds.length === 1 ? selectedIds[0] : undefined;
   const {
     focusFieldKey,
     selectRow,
@@ -193,14 +193,12 @@ const LibraryView = ({
                 tableDensity={tableDisplay.density}
               />
             </div>
-            {selectedIds.length > 0 ? (
+            {selectedIds.length > 1 ? (
               <LibraryMultiSelectFooter
                 count={selectedIds.length}
                 loadedIds={orderedIds}
                 selectedIds={selectedIds}
-                notShown={notShown}
                 onClear={dismissSelection}
-                onShowList={() => undefined}
                 onSelectLoaded={() =>
                   onSelectedIdsChange([...new Set([...selectedIds, ...orderedIds])])
                 }
@@ -211,7 +209,21 @@ const LibraryView = ({
                 onAction={onAction}
               />
             ) : (
-              <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={uploadChosenPdfs} />
+              <LibraryResultsFooter
+                onCreateEntity={openCreate}
+                onUploadPdf={uploadChosenPdfs}
+                onExportCsv={() => onAction('export')}
+                singleSelection={
+                  singleSharedId
+                    ? {
+                        sharedId: singleSharedId,
+                        entityBasePath,
+                        onAction,
+                        onClose: dismissSelection,
+                      }
+                    : undefined
+                }
+              />
             )}
           </div>
         </PaneLayout.Pane>

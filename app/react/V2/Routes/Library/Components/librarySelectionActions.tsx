@@ -2,8 +2,8 @@ import React, { type ReactNode } from 'react';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import type { LibrarySelectionIconName } from './librarySelectionIcons.js';
 
-/** uwazi-design `useSelectionActions` order, without Share. */
-type LibraryBulkAction = 'edit' | 'change-template' | 'export' | 'permissions' | 'delete';
+/** Selection actions. Share is Permissions. Change template is not a library action. */
+type LibraryBulkAction = 'edit' | 'export' | 'permissions' | 'delete';
 
 type LibrarySelectionAction = {
   id: LibraryBulkAction;
@@ -18,11 +18,13 @@ const actionIcon = (name: LibrarySelectionIconName) => (
 
 const librarySelectionActions = (): LibrarySelectionAction[] => [
   { id: 'edit', label: 'Edit', icon: actionIcon('pen-line') },
-  { id: 'change-template', label: 'Change template', icon: actionIcon('layout-template') },
   { id: 'export', label: 'Export CSV', icon: actionIcon('file-down') },
   { id: 'permissions', label: 'Permissions', icon: actionIcon('lock') },
   { id: 'delete', label: 'Delete', icon: actionIcon('trash'), danger: true },
 ];
 
+const librarySelectionMenuActions = (): LibrarySelectionAction[] =>
+  librarySelectionActions().filter(action => action.id !== 'edit');
+
 export type { LibraryBulkAction, LibrarySelectionAction };
-export { librarySelectionActions };
+export { librarySelectionActions, librarySelectionMenuActions };
