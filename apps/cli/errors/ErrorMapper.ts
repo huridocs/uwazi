@@ -6,7 +6,7 @@ import { ConfigMissing } from '../runtime/ConfigMissing.js';
 import { ExitCode } from './ExitCode.js';
 import { UsageError } from './UsageError.js';
 
-/** Domain field name → CLI flag name, so validation issues point at what the user typed. */
+/** Domain field name → request field or flag, so validation issues point at what the user sent. */
 type FieldMap = Record<string, string>;
 
 type ValidationIssue = NonNullable<ErrorPayload['error']['validation']>[number];
@@ -22,7 +22,11 @@ const EXIT_CODE_BY_CATEGORY: Record<ErrorPayloadCategory, ExitCode> = {
 /** The one place that turns any thrown value into the CLI's exit code and error payload. */
 class ErrorMapper {
   static toExitCode(error: unknown): ExitCode {
-    return EXIT_CODE_BY_CATEGORY[ErrorMapper.categoryOf(error)];
+    return ErrorMapper.exitCodeFor(ErrorMapper.categoryOf(error));
+  }
+
+  static exitCodeFor(category: ErrorPayloadCategory): ExitCode {
+    return EXIT_CODE_BY_CATEGORY[category];
   }
 
   static toPayload(error: unknown, fieldMap: FieldMap, correlationId?: string): ErrorPayload {
@@ -98,7 +102,7 @@ class ErrorMapper {
     };
   }
 
-  /** `issue.field` arrives as the domain path and leaves as the CLI flag, when one is mapped. */
+  /** `issue.field` arrives as the domain path and leaves as what the user sent, when mapped. */
   private static issue(issue: ValidationIssue, fieldMap: FieldMap): ValidationIssue {
     return { ...issue, field: fieldMap[issue.field] ?? issue.field };
   }
