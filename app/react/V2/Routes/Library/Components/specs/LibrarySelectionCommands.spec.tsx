@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import { card, clickCard } from './libraryMultiSelectAssertions.js';
+import { fireEvent, screen, within } from '@testing-library/react';
+import { card, clickCard, expectSingleEntity } from './libraryMultiSelectAssertions.js';
 import {
   longPress,
   ready,
@@ -27,15 +27,17 @@ describe('library selection commands', () => {
     restoreMediaMock();
   });
 
-  it('opens the entity preview when Edit is used on one selected entity', async () => {
+  it('keeps the entity preview when Edit is used on one selected entity', async () => {
     renderLibrary('cards');
     await ready('Mexico');
     clickCard('Mexico');
-    const panel = await screen.findByTestId('library-selection-panel');
-    fireEvent.click(within(panel).getByRole('button', { name: 'Edit' }));
-    await waitFor(() => {
-      expect(screen.getByTestId('library-entity-preview')).toHaveTextContent('Mexico');
-    });
+    await expectSingleEntity('Mexico');
+    fireEvent.click(
+      within(screen.getByTestId('library-multi-select-footer')).getByRole('button', {
+        name: 'Edit',
+      })
+    );
+    await expectSingleEntity('Mexico');
   });
 
   it('confirms delete and removes the selected entities', async () => {
@@ -60,10 +62,11 @@ describe('library selection commands', () => {
     renderLibrary('cards');
     await ready('Mexico');
     clickCard('Mexico');
-    await screen.findByTestId('library-selection-panel');
+    await expectSingleEntity('Mexico');
     longPress(card('Gelman'), 'mouse');
-    expect(screen.getByTestId('library-selection-count')).toHaveTextContent('1 entity');
+    await expectSingleEntity('Mexico');
     clickCard('Gelman', { shiftKey: true });
     expect(screen.getByTestId('library-selection-count')).toHaveTextContent('3 entities');
+    expect(screen.getByTestId('library-selection-panel')).toBeInTheDocument();
   });
 });

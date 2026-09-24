@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { orderedSelectionIds } from '../librarySelection.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
@@ -22,9 +21,6 @@ const ghostButtonClassName =
 
 const dangerButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-seal-label transition-colors hover:bg-seal-tint/40';
-
-const viewEntityClassName =
-  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors';
 
 type LibrarySelectionPanelProps = {
   rows: LibrarySearchHit[];
@@ -56,7 +52,6 @@ const LibrarySelectionPanel = ({
   const actions = librarySelectionActions();
   const actionById = (id: LibraryBulkAction) => actions.find(action => action.id === id);
   const count = selectedIds.length;
-  const onlyId = count === 1 ? selectedIds[0] : undefined;
 
   return (
     <div
@@ -164,16 +159,6 @@ const LibrarySelectionPanel = ({
         >
           <Translate>Close</Translate>
         </button>
-        {onlyId ? (
-          <I18NLinkV2
-            to={`${entityBasePath}/${onlyId}`}
-            className={viewEntityClassName}
-            style={{ backgroundColor: 'var(--text-primary)' }}
-          >
-            <Translate>View entity</Translate>
-            <ArrowRightIcon className="h-3.5 w-3.5" />
-          </I18NLinkV2>
-        ) : null}
       </div>
     </div>
   );

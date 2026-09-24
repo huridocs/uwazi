@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryClickModifiers } from '../librarySelection.js';
-import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { useLibraryLongPress } from './useLibraryLongPress.js';
 import { useLibrarySelectionCommands } from './useLibrarySelectionCommands.js';
 
@@ -71,30 +70,9 @@ const useLibrarySelectionPanel = (
 ) => {
   const loaded = new Set(orderedIds);
   return {
-    selectionPanelOpen: selectedIds.length >= 1,
+    selectionPanelOpen: selectedIds.length > 1,
     notShown: selectedIds.filter(id => !loaded.has(id)).length,
   };
-};
-
-const useLibraryInspectCommands = (
-  selectedIds: readonly string[],
-  rows: readonly LibrarySearchHit[],
-  onDeleted: () => void
-) => {
-  const [inspecting, setInspecting] = useState(false);
-  const selectionKey = selectedIds.join('\u0000');
-  const commands = useLibrarySelectionCommands(selectedIds, rows, onDeleted);
-  useEffect(() => {
-    setInspecting(false);
-  }, [selectionKey]);
-  const onAction = (action: LibraryBulkAction) => {
-    if (action === 'edit' && selectedIds.length === 1) {
-      setInspecting(true);
-      return;
-    }
-    commands.onAction(action);
-  };
-  return { inspecting, onAction, dialogs: commands.dialogs };
 };
 
 type LibrarySelectionChromeArgs = {
@@ -114,7 +92,7 @@ const useLibrarySelectionChrome = ({
 }: LibrarySelectionChromeArgs) => {
   const panel = useLibrarySelectionPanel(selectedIds, orderedIds);
   useLibraryLongPress(addEntity);
-  const commands = useLibraryInspectCommands(selectedIds, rows, onDeleted);
+  const commands = useLibrarySelectionCommands(selectedIds, rows, onDeleted);
   return { ...panel, ...commands };
 };
 

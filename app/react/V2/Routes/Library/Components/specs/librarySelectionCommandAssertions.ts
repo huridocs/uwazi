@@ -83,7 +83,8 @@ const longPressCard = async () => {
   const cards = renderLibrary('cards');
   await ready('Mexico');
   clickCard('Mexico');
-  await screen.findByTestId('library-selection-panel');
+  await screen.findByTestId('library-entity-preview');
+  expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
   longPress(card('Gelman'));
   expectTwoSelected('Gelman');
   cards.unmount();

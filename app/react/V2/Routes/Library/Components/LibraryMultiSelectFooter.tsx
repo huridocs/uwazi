@@ -11,7 +11,7 @@ const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
 const barDangerClassName = 'text-seal-label hover:bg-seal-tint/40';
 
 const barButtonClassName =
-  'shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors @min-[56rem]:px-3';
+  'shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3';
 
 type BarTone = 'lead' | 'ghost' | 'danger';
 
@@ -80,14 +80,14 @@ const LibraryMultiSelectFooter = ({
       className={`${phoneHidden ? 'hidden sm:flex' : 'flex'} ${barButtonClassName} ${barToneClass(tone)}`}
     >
       <span className={tone === 'danger' ? '' : 'text-ink-tertiary'}>{icon}</span>
-      <span className="hidden @min-[56rem]:inline">
+      <span className="max-sm:hidden sm:inline">
         <Translate>{label}</Translate>
       </span>
     </button>
   );
 
   return (
-    <div data-testid="library-multi-select-footer" className="@container w-full shrink-0">
+    <div data-testid="library-multi-select-footer" className="w-full shrink-0">
       <div
         className="flex h-12 items-center gap-1 bg-paper px-3"
         style={{ borderTop: '1px solid var(--border-primary)' }}
