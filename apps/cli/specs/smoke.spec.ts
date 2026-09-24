@@ -62,6 +62,7 @@ describe('uwazi binary', () => {
   it.each([
     ['help', ['users', 'create', '--help'], 0],
     ['--schema', ['users', 'create', '--schema'], 0],
+    ['settings --schema', ['settings', 'update', '--schema'], 0],
     ['an invalid request', ['users', 'create', '--tenant', 'x', '--request', '{}'], 2],
   ])('should not load the backend for %s', (_case, args, exitCode) => {
     const { status, modules } = loadedModules(args);
