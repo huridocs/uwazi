@@ -1,11 +1,9 @@
-import type { Argv } from 'yargs';
 import { z } from 'zod';
-import type { CliArgv, Route } from '../../routing/Route.js';
+import type { Route } from '../../routing/Route.js';
 import type { RoleCountsOutput } from '../contracts.js';
 import { UserStatsController } from '../controllers/UserStatsController.js';
 
-const NoInput = z.object({});
-
+const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class UserStatsRoute implements Route<NoInput, RoleCountsOutput> {
@@ -19,22 +17,12 @@ class UserStatsRoute implements Route<NoInput, RoleCountsOutput> {
 
   readonly needs = { redis: false };
 
+  /** Takes no input of its own: --tenant / --all-tenants come from its tenancy. */
+  readonly request = NoInput;
+
   readonly fieldMap = {};
 
-  /** No flags of its own: --tenant / --all-tenants come from its tenancy. */
-  private readonly flags = {};
-
-  private readonly schema = NoInput;
-
   private readonly controller = UserStatsController;
-
-  options(yargs: Argv): Argv {
-    return yargs.options(this.flags);
-  }
-
-  toInput(argv: CliArgv): NoInput {
-    return this.schema.parse(argv);
-  }
 
   async handle(): Promise<RoleCountsOutput> {
     return this.controller.handle();

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * The shape every failing command writes to stderr with --json. Callers branch on `code`
+ * The shape every failing command writes to stderr (as text with --pretty). Callers branch on `code`
  * (stable, namespaced) and the exit code; `message` is for people and may change.
  */
 const ErrorPayloadSchema = z.object({

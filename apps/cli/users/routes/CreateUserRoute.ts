@@ -1,10 +1,8 @@
-import type { Argv } from 'yargs';
 import { z } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
-import type { CliArgv, Route } from '../../routing/Route.js';
+import type { Route } from '../../routing/Route.js';
 import type { CreatedUserOutput } from '../contracts.js';
 import { CreateUserCliInput, CreateUserController } from '../controllers/CreateUserController.js';
-import { UserFlags } from './UserFlags.js';
 
 class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
   readonly group = 'users';
@@ -17,43 +15,19 @@ class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
 
   readonly needs = { redis: false };
 
-  readonly fieldMap = {
-    username: '--username',
-    email: '--email',
-    role: '--role',
-    groups: '--groups',
-    assignedGroupIds: '--groups',
-  };
+  readonly request = z
+    .object({
+      username: z.string(),
+      email: z.string(),
+      role: z.nativeEnum(UserRole),
+      groups: z.array(z.string()).default([]).describe('User group ids'),
+      welcomeEmail: z.boolean().default(true).describe('Queue the welcome email'),
+    })
+    .strict();
 
-  private readonly flags = {
-    username: { type: 'string', describe: 'Username' },
-    email: UserFlags.email,
-    role: UserFlags.role,
-    groups: UserFlags.groups,
-    'welcome-email': {
-      type: 'boolean',
-      default: true,
-      describe: 'Queue the welcome email (--no-welcome-email to skip)',
-    },
-  } as const;
-
-  private readonly schema = z.object({
-    username: z.string(),
-    email: z.string(),
-    role: z.nativeEnum(UserRole),
-    groups: z.array(z.string()).default([]),
-    welcomeEmail: z.boolean().default(true),
-  });
+  readonly fieldMap = { assignedGroupIds: 'groups' };
 
   private readonly controller = CreateUserController;
-
-  options(yargs: Argv): Argv {
-    return yargs.options(this.flags);
-  }
-
-  toInput(argv: CliArgv): CreateUserCliInput {
-    return this.schema.parse(argv);
-  }
 
   async handle(input: CreateUserCliInput): Promise<CreatedUserOutput> {
     return this.controller.handle(input);

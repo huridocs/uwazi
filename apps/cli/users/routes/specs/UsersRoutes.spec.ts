@@ -7,8 +7,7 @@ const route = (name: string) => {
   return found;
 };
 
-/** What yargs hands a route: the parsed flags plus yargs' own keys. */
-const argv = (args: Record<string, unknown>) => ({ _: ['users'], $0: 'uwazi', ...args });
+const parse = (name: string, request: unknown) => route(name).request.parse(request);
 
 const issuesOf = (fn: () => unknown) => {
   try {
@@ -35,17 +34,16 @@ describe('UsersRoutes', () => {
     UsersRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false }));
   });
 
-  it('should leave tenant flags out of every input', () => {
-    UsersRoutes.all().forEach(r => {
-      expect(r.fieldMap).not.toHaveProperty('tenant');
-    });
-  });
+  it.each(['create', 'update', 'delete', 'list', 'stats'])(
+    '%s should reject unknown request fields, tenant included',
+    name => {
+      expect(issuesOf(() => parse(name, { tenant: 'acme', username: 'bob' }))).toContain('');
+    }
+  );
 
   describe('create', () => {
-    it('should map flags to input, with welcome email and groups defaulted', () => {
-      expect(
-        route('create').toInput(argv({ username: 'bob', email: 'bob@x.org', role: 'editor' }))
-      ).toEqual({
+    it('should take the request as input, with welcome email and groups defaulted', () => {
+      expect(parse('create', { username: 'bob', email: 'bob@x.org', role: 'editor' })).toEqual({
         username: 'bob',
         email: 'bob@x.org',
         role: 'editor',
@@ -54,83 +52,75 @@ describe('UsersRoutes', () => {
       });
     });
 
-    it('should honour --no-welcome-email and --groups', () => {
+    it('should honour welcomeEmail and groups', () => {
       expect(
-        route('create').toInput(
-          argv({
-            username: 'bob',
-            email: 'bob@x.org',
-            role: 'editor',
-            groups: ['g1', 'g2'],
-            welcomeEmail: false,
-          })
-        )
+        parse('create', {
+          username: 'bob',
+          email: 'bob@x.org',
+          role: 'editor',
+          groups: ['g1', 'g2'],
+          welcomeEmail: false,
+        })
       ).toMatchObject({ groups: ['g1', 'g2'], welcomeEmail: false });
     });
 
     it('should require username, email and a known role', () => {
-      expect(issuesOf(() => route('create').toInput(argv({ role: 'boss' })))).toEqual([
+      expect(issuesOf(() => parse('create', { role: 'boss' }))).toEqual([
         'username',
         'email',
         'role',
       ]);
     });
 
-    it('should name the flags in validation errors', () => {
-      expect(route('create').fieldMap).toMatchObject({
-        username: '--username',
-        email: '--email',
-        role: '--role',
-        assignedGroupIds: '--groups',
-      });
+    it('should report domain errors on assigned groups under groups', () => {
+      expect(route('create').fieldMap).toEqual({ assignedGroupIds: 'groups' });
     });
   });
 
   describe.each(['update', 'delete'])('%s', name => {
-    it('should accept --username', () => {
-      expect(route(name).toInput(argv({ username: 'bob' }))).toMatchObject({ username: 'bob' });
+    it('should accept username', () => {
+      expect(parse(name, { username: 'bob' })).toMatchObject({ username: 'bob' });
     });
 
-    it('should accept --id when it is a 24-character hex id', () => {
+    it('should accept id when it is a 24-character hex id', () => {
       const id = 'aaaaaaaaaaaaaaaaaaaaaaaa';
-      expect(route(name).toInput(argv({ id }))).toMatchObject({ id });
-      expect(issuesOf(() => route(name).toInput(argv({ id: 'nope' })))).toEqual(['id']);
+      expect(parse(name, { id })).toMatchObject({ id });
+      expect(issuesOf(() => parse(name, { id: 'nope' }))).toEqual(['id']);
     });
 
     it.each([
-      ['neither --username nor --id', {}],
-      ['both --username and --id', { username: 'bob', id: 'aaaaaaaaaaaaaaaaaaaaaaaa' }],
+      ['neither username nor id', {}],
+      ['both username and id', { username: 'bob', id: 'aaaaaaaaaaaaaaaaaaaaaaaa' }],
     ])('should reject %s', (_case, reference) => {
-      expect(issuesOf(() => route(name).toInput(argv(reference)))).toEqual(['user']);
-    });
-
-    it('should name the reference flags in validation errors', () => {
-      expect(route(name).fieldMap.user).toBe('--username | --id');
+      expect(issuesOf(() => parse(name, reference))).toEqual(['user']);
     });
   });
 
   describe('update', () => {
-    it('should map the change flags, leaving absent ones undefined', () => {
-      expect(
-        route('update').toInput(argv({ username: 'bob', newUsername: 'robert', email: 'r@x.org' }))
-      ).toEqual({ username: 'bob', newUsername: 'robert', email: 'r@x.org' });
+    it('should take the changes, leaving absent ones undefined', () => {
+      expect(parse('update', { username: 'bob', newUsername: 'robert', email: 'r@x.org' })).toEqual(
+        { username: 'bob', newUsername: 'robert', email: 'r@x.org' }
+      );
     });
 
-    it('should report domain errors on the new username under --new-username', () => {
-      expect(route('update').fieldMap.username).toBe('--new-username');
+    it('should report domain errors on the new username under newUsername', () => {
+      expect(route('update').fieldMap).toEqual({
+        username: 'newUsername',
+        assignedGroupIds: 'groups',
+      });
     });
   });
 
   describe('list', () => {
-    it('should accept a known --role filter only', () => {
-      expect(route('list').toInput(argv({ role: 'admin' }))).toEqual({ role: 'admin' });
-      expect(issuesOf(() => route('list').toInput(argv({ role: 'boss' })))).toEqual(['role']);
+    it('should accept a known role filter only', () => {
+      expect(parse('list', { role: 'admin' })).toEqual({ role: 'admin' });
+      expect(issuesOf(() => parse('list', { role: 'boss' }))).toEqual(['role']);
     });
   });
 
   describe('stats', () => {
-    it('should take no input of its own', () => {
-      expect(route('stats').toInput(argv({ tenant: 'acme' }))).toEqual({});
+    it('should take an empty request', () => {
+      expect(parse('stats', {})).toEqual({});
     });
   });
 });

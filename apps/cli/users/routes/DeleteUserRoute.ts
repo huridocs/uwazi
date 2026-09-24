@@ -1,6 +1,5 @@
-import type { Argv } from 'yargs';
 import { z } from 'zod';
-import type { CliArgv, Route } from '../../routing/Route.js';
+import type { Route } from '../../routing/Route.js';
 import type { DeletedUserOutput } from '../contracts.js';
 import { DeleteUserController } from '../controllers/DeleteUserController.js';
 import { UserReference, UserReferenceInput } from '../UserReference.js';
@@ -16,21 +15,11 @@ class DeleteUserRoute implements Route<UserReferenceInput, DeletedUserOutput> {
 
   readonly needs = { redis: false };
 
-  readonly fieldMap = { user: '--username | --id', username: '--username', id: '--id' };
+  readonly request = z.object(UserReference.shape).strict().superRefine(UserReference.refine);
 
-  private readonly flags = UserReference.flags;
-
-  private readonly schema = z.object(UserReference.shape).superRefine(UserReference.refine);
+  readonly fieldMap = {};
 
   private readonly controller = DeleteUserController;
-
-  options(yargs: Argv): Argv {
-    return yargs.options(this.flags);
-  }
-
-  toInput(argv: CliArgv): UserReferenceInput {
-    return this.schema.parse(argv);
-  }
 
   async handle(input: UserReferenceInput): Promise<DeletedUserOutput> {
     return this.controller.handle(input);

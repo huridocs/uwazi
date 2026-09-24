@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
 
 /**
- * What `uwazi users …` prints with --json. Owned by the CLI, not shared with the HTTP API: the
+ * What `uwazi users …` prints. Owned by the CLI, not shared with the HTTP API: the
  * manager depends on these shapes, so fields are only ever added.
  */
 const UserOutputSchema = z.object({

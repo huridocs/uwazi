@@ -4,7 +4,7 @@ import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/Use
 
 type UserReferenceInput = { username?: string; id?: string };
 
-/** How a command names an existing user: exactly one of --username or --id. */
+/** How a request names an existing user: exactly one of `username` or `id`. */
 class UserReference {
   static readonly shape = {
     username: z.string().min(1).optional(),
@@ -14,17 +14,12 @@ class UserReference {
       .optional(),
   };
 
-  static readonly flags = {
-    username: { type: 'string', describe: 'Username of the user' },
-    id: { type: 'string', describe: 'Id of the user' },
-  } as const;
-
   static refine(input: UserReferenceInput, ctx: z.RefinementCtx): void {
     if (Boolean(input.username) === Boolean(input.id)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['user'],
-        message: 'Provide exactly one of --username or --id',
+        message: 'Provide exactly one of username or id',
       });
     }
   }

@@ -1,5 +1,6 @@
-import type { Writable } from 'stream';
+import type { Readable, Writable } from 'stream';
 import yargs, { Argv } from 'yargs';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import { config } from '#api/config.js';
 import { ErrorMapper } from './errors/ErrorMapper.js';
 import { ExitCode } from './errors/ExitCode.js';
@@ -9,6 +10,7 @@ import { AuditMiddleware } from './pipeline/AuditMiddleware.js';
 import type { CliContext } from './pipeline/CliContext.js';
 import { Pipeline } from './pipeline/Pipeline.js';
 import { ControllerMiddleware } from './routing/ControllerMiddleware.js';
+import { RequestInput } from './routing/RequestInput.js';
 import type { CliArgv, Route } from './routing/Route.js';
 import { CliConfig, Env } from './runtime/CliConfig.js';
 import { CliConnections, ConnectionNeeds } from './runtime/CliConnections.js';
@@ -28,6 +30,7 @@ type CliApplicationOptions = {
   connections?: Connections;
   stdout?: Writable;
   stderr?: Writable;
+  stdin?: Readable;
   env?: Env;
 };
 
@@ -44,6 +47,8 @@ class CliApplication {
 
   private readonly stderr?: Writable;
 
+  private readonly stdin: Readable;
+
   private readonly env: Env;
 
   constructor({
@@ -51,12 +56,14 @@ class CliApplication {
     connections = CliConnections,
     stdout,
     stderr,
+    stdin,
     env,
   }: CliApplicationOptions) {
     this.routes = routes;
     this.connections = connections;
     this.stdout = stdout;
     this.stderr = stderr;
+    this.stdin = stdin ?? process.stdin;
     this.env = env ?? process.env;
   }
 
@@ -68,7 +75,7 @@ class CliApplication {
         exitCode = code;
       }).parseAsync();
     } catch (error) {
-      const presenter = this.presenter(argv.includes('--json'), argv.includes('--verbose'));
+      const presenter = this.presenter(argv.includes('--pretty'), argv.includes('--verbose'));
       presenter.error(ErrorMapper.toPayload(error, {}), error);
       return ErrorMapper.toExitCode(error);
     }
@@ -80,7 +87,11 @@ class CliApplication {
     const parser = yargs(argv)
       .scriptName('uwazi')
       .usage('$0 <command>')
-      .option('json', { type: 'boolean', default: false, describe: 'Machine-readable output' })
+      .option('pretty', {
+        type: 'boolean',
+        default: false,
+        describe: 'Human-readable output instead of JSON',
+      })
       .option('verbose', { type: 'boolean', default: false, describe: 'Print stack traces' })
       .demandCommand(1, 'Choose a command')
       .strict()
@@ -112,7 +123,14 @@ class CliApplication {
           groupParser.command(
             route.name,
             route.describe,
-            y => route.options(TenantOptions.options(route.tenancy, y)),
+            y =>
+              TenantOptions.options(route.tenancy, y)
+                .option('request', RequestInput.option)
+                .option('schema', {
+                  type: 'boolean',
+                  default: false,
+                  describe: 'Print the JSON schema of --request and exit',
+                }),
             async args => {
               onExit(await this.execute(route, args));
             }
@@ -126,7 +144,15 @@ class CliApplication {
   }
 
   private async execute(route: Route, argv: CliArgv): Promise<ExitCode> {
-    const presenter = this.presenter(Boolean(argv.json), Boolean(argv.verbose));
+    const presenter = this.presenter(Boolean(argv.pretty), Boolean(argv.verbose));
+
+    if (argv.schema) {
+      presenter.result(
+        zodToJsonSchema(route.request, { $refStrategy: 'none', applyRegexFlags: true })
+      );
+      return ExitCode.Ok;
+    }
+
     const fieldMap = { ...TenantOptions.fieldMap, ...route.fieldMap };
 
     return this.guarded(async () => {
@@ -164,14 +190,14 @@ class CliApplication {
   /** Input and configuration are checked before anything connects. */
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
     const tenants = TenantOptions.parse(route.tenancy, argv);
-    const input = route.toInput(argv);
+    const input = route.request.parse(await RequestInput.read(argv.request, this.stdin));
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
     await this.connections.open(route.needs);
 
     const context: CliContext = {
       route: `${route.group} ${route.name}`,
       input,
-      json: Boolean(argv.json),
+      json: !argv.pretty,
       tenants,
     };
     const downstream = [new ControllerMiddleware(route)];
@@ -191,8 +217,8 @@ class CliApplication {
     );
   }
 
-  private presenter(json: boolean, verbose: boolean): Presenter {
-    return new Presenter({ json, verbose, stdout: this.stdout, stderr: this.stderr });
+  private presenter(pretty: boolean, verbose: boolean): Presenter {
+    return new Presenter({ json: !pretty, verbose, stdout: this.stdout, stderr: this.stderr });
   }
 }
 

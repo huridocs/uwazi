@@ -17,11 +17,11 @@ describe('uwazi binary', () => {
 
     expect(status).toBe(0);
     expect(stdout).toContain('uwazi');
-    expect(stdout).toContain('--json');
+    expect(stdout).toContain('--pretty');
   });
 
   it('should exit 2 with a usage error payload on stderr and nothing on stdout', () => {
-    const { status, stdout, stderr } = uwazi('does-not-exist', '--json');
+    const { status, stdout, stderr } = uwazi('does-not-exist');
 
     expect(status).toBe(2);
     expect(stdout).toBe('');
