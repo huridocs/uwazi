@@ -13,7 +13,7 @@ import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
 import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
-import { DEFAULT_THUMB_FRAME } from './libraryCardDisplay.js';
+import { DEFAULT_THUMB_FRAME, DEFAULT_THUMB_SIZE } from './libraryCardDisplay.js';
 import {
   visibleLibraryTableColumns,
   libraryTableColumnGroups,
@@ -217,6 +217,7 @@ const LibraryView = ({
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [showMetadata, setShowMetadata] = useState(true);
   const [thumbFrame, setThumbFrame] = useState(DEFAULT_THUMB_FRAME);
+  const [thumbSize, setThumbSize] = useState(DEFAULT_THUMB_SIZE);
   const {
     tableColumns,
     tableColumnGroups,
@@ -262,6 +263,8 @@ const LibraryView = ({
               onShowMetadataChange={setShowMetadata}
               thumbFrame={thumbFrame}
               onThumbFrameChange={setThumbFrame}
+              thumbSize={thumbSize}
+              onThumbSizeChange={setThumbSize}
               tableColumns={tableColumns}
               tableColumnGroups={tableColumnGroups}
               tableDisplay={tableDisplay}
@@ -288,6 +291,7 @@ const LibraryView = ({
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
                 thumbFrame={thumbFrame}
+                thumbSize={thumbSize}
                 aggregations={aggregations}
                 sort={sort}
                 order={order}

@@ -9,6 +9,10 @@ import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js'
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import {
+  PORTRAIT_CARD_GRID_CLASS,
+  LANDSCAPE_THUMB_HEIGHT_CLASS,
+} from '../../libraryCardDisplay.js';
 import { CardViewer } from '../CardViewer.js';
 
 const templates = [
@@ -54,10 +58,14 @@ const renderCards = ({
   showThumbnail = true,
   onFocusProperty,
   style = 'contain',
+  thumbFrame,
+  thumbSize,
 }: {
   showThumbnail?: boolean;
   onFocusProperty?: (sharedId: string, fieldKey: string) => void;
   style?: 'contain' | 'cover';
+  thumbFrame?: 'landscape' | 'portrait';
+  thumbSize?: 's' | 'm' | 'l';
 } = {}) => {
   const baseTemplate = templates[0]!;
   const viewerTemplates = [
@@ -86,6 +94,8 @@ const renderCards = ({
           onLoadMore={() => undefined}
           showThumbnail={showThumbnail}
           showMetadata
+          thumbFrame={thumbFrame}
+          thumbSize={thumbSize}
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
@@ -101,6 +111,36 @@ describe('CardViewer thumbnail fit', () => {
   it('uses cover object-fit when the template image property is Fill', () => {
     renderCards({ style: 'cover' });
     expect(document.querySelector('img')).toHaveClass('object-cover');
+  });
+});
+
+const cardGrid = () => screen.getAllByText('Hearing')[0]?.closest('.grid');
+
+const expectPortraitColumns = (thumbSize: 's' | 'm' | 'l') => {
+  const view = renderCards({ thumbFrame: 'portrait', thumbSize });
+  expect(cardGrid()).toHaveClass(...PORTRAIT_CARD_GRID_CLASS[thumbSize].split(' '));
+  view.unmount();
+};
+
+describe('CardViewer thumbnail size', () => {
+  it('hangs small portrait cards in the narrowest columns', () => {
+    expectPortraitColumns('s');
+  });
+
+  it('hangs medium portrait cards in the middle column count', () => {
+    expectPortraitColumns('m');
+  });
+
+  it('hangs large portrait cards in the widest columns', () => {
+    expectPortraitColumns('l');
+  });
+
+  it('draws a large landscape band at the large height', () => {
+    renderCards({ thumbFrame: 'landscape', thumbSize: 'l' });
+    expect(document.querySelector('img')?.parentElement).toHaveClass(
+      LANDSCAPE_THUMB_HEIGHT_CLASS.l
+    );
+    expect(document.querySelector('img')?.parentElement).not.toHaveClass('aspect-[3/4]');
   });
 });
 

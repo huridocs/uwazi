@@ -13,7 +13,12 @@ import {
 import { SearchTipsContent } from '#V2/Routes/Entity/Components/search/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
-import { DEFAULT_THUMB_FRAME, type ThumbFrame } from './libraryCardDisplay.js';
+import {
+  DEFAULT_THUMB_FRAME,
+  DEFAULT_THUMB_SIZE,
+  type ThumbFrame,
+  type ThumbSize,
+} from './libraryCardDisplay.js';
 import { LibraryCardsDisplayOptions } from './LibraryCardsDisplayOptions.js';
 import { effectiveLibrarySort, librarySortOptions, nextLibrarySort } from './librarySort.js';
 import {
@@ -43,6 +48,8 @@ type LibraryToolbarProps = {
   onShowMetadataChange: (value: boolean) => void;
   thumbFrame?: ThumbFrame;
   onThumbFrameChange?: (value: ThumbFrame) => void;
+  thumbSize?: ThumbSize;
+  onThumbSizeChange?: (value: ThumbSize) => void;
   tableColumns?: LibraryTableColumnDef[];
   tableColumnGroups?: LibraryTableColumnGroup[];
   tableDisplay?: LibraryTableDisplayState;
@@ -172,6 +179,8 @@ const LibraryToolbar = ({
   onShowMetadataChange,
   thumbFrame = DEFAULT_THUMB_FRAME,
   onThumbFrameChange,
+  thumbSize = DEFAULT_THUMB_SIZE,
+  onThumbSizeChange,
   tableColumns = [],
   tableColumnGroups,
   tableDisplay = DEFAULT_LIBRARY_TABLE_DISPLAY,
@@ -188,7 +197,9 @@ const LibraryToolbar = ({
   const displayModified =
     view === 'table'
       ? tableDisplayModified(tableColumns, tableDisplay)
-      : !showThumbnail || !showMetadata || (showThumbnail && thumbFrame !== DEFAULT_THUMB_FRAME);
+      : !showThumbnail ||
+        !showMetadata ||
+        (showThumbnail && (thumbFrame !== DEFAULT_THUMB_FRAME || thumbSize !== DEFAULT_THUMB_SIZE));
 
   return (
     <div className="flex shrink-0 items-center gap-8 border-b border-border bg-parchment px-3 py-2">
@@ -253,6 +264,8 @@ const LibraryToolbar = ({
               onShowMetadataChange={onShowMetadataChange}
               thumbFrame={thumbFrame}
               onThumbFrameChange={onThumbFrameChange}
+              thumbSize={thumbSize}
+              onThumbSizeChange={onThumbSizeChange}
             />
           )}
         </DisplayMenu>
