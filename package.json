@@ -114,6 +114,7 @@
     "fast-xml-parser": "^5.3.6",
     "@types/express": "4.17.25",
     "@types/express-serve-static-core": "4.17.33",
+    "@types/express-session": "1.18.2",
     "pbkdf2": "^3.1.5"
   },
   "dependencies": {
@@ -163,6 +164,7 @@
     "clean-insights-sdk": "^2.6.2",
     "compression": "^1.8.1",
     "connect-mongo": "5.1.0",
+    "connect-pg-simple": "^10.0.0",
     "cookie": "1.1.1",
     "cookie-parser": "1.4.7",
     "cors": "^2.8.6",
@@ -314,6 +316,7 @@
     "@testing-library/user-event": "^14.6.6",
     "@types/body-parser": "^1.19.6",
     "@types/child-process-promise": "^2.2.6",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/enzyme": "3.10.12",
     "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/expect-puppeteer": "4.4.7",

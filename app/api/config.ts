@@ -5,7 +5,7 @@ import { dirname } from 'path';
 import { readFileSync } from 'fs';
 import { hostname } from 'os';
 import { z } from 'zod';
-import { Tenant } from './tenants/tenantContext.js';
+import type { Tenant } from '#api/tenants/tenant.js';
 import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
@@ -28,6 +28,19 @@ const QueueBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
 
 /** Which job store this process's queue worker polls. Run one worker per backend. */
 const queueBackend = QueueBackendSchema.parse(process.env.QUEUE_BACKEND || undefined);
+
+const SessionsBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
+
+/** Which Express session store this process uses. One backend for every tenant. */
+const resolveSessionsBackend = (value: string | undefined) => {
+  const parsed = SessionsBackendSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new Error(`SESSIONS_BACKEND must be "mongo" or "postgres", got ${JSON.stringify(value)}`);
+  }
+  return parsed.data;
+};
+
+const sessionsBackend = resolveSessionsBackend(process.env.SESSIONS_BACKEND || undefined);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -203,6 +216,7 @@ export const config = {
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
   queueBackend,
+  sessionsBackend,
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,
@@ -218,3 +232,5 @@ export const config = {
     },
   },
 };
+
+export { resolveSessionsBackend };
