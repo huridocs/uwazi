@@ -17,7 +17,7 @@ import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
 import type { EntityWithFiles } from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { EntitiesDAO } from './contracts/EntitiesDAO.js';
-import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { FileDTO } from '../domain/files/domainTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
@@ -35,7 +35,7 @@ type Deps = {
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
   entityDAO: EntitiesDAO;
-  relationshipsDataSource: MongoRelationshipsV1DataSource;
+  relationshipsDataSource: RelationshipsV1DataSource;
 };
 
 class EntitiesQueryService {

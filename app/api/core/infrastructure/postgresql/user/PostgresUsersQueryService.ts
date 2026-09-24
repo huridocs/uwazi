@@ -1,5 +1,9 @@
 import type { UsersQueryService } from '#api/core/application/contracts/UsersQueryService.js';
-import type { RoleCounts, UserProfile } from '#api/core/application/contracts/UserReadModels.js';
+import type {
+  RoleCounts,
+  UserProfile,
+  UserView,
+} from '#api/core/application/contracts/UserReadModels.js';
 import { zeroFilledByRole } from '#api/core/application/contracts/UserReadModels.js';
 import { PostgresUsersDAO } from './PostgresUsersDAO.js';
 import { PostgresUsersMapper } from './PostgresUsersMapper.js';
@@ -23,6 +27,12 @@ class PostgresUsersQueryService implements UsersQueryService {
 
   async countByRole(): Promise<RoleCounts> {
     return zeroFilledByRole(await this.usersDAO.countByRole());
+  }
+
+  async findByUsername(username: string): Promise<UserView | undefined> {
+    const row = await this.usersDAO.findOne({ username });
+
+    return row ? PostgresUsersMapper.toView(row) : undefined;
   }
 }
 

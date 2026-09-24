@@ -1,3 +1,4 @@
+import { ZodError } from 'zod';
 import { UserRole } from '../User.js';
 import { UserAccount } from '../UserAccount.js';
 import { Credentials } from '../Credentials.js';
@@ -16,6 +17,36 @@ describe('UserAccount', () => {
     });
 
     expect(account.credentials).toBe(credentials);
+  });
+
+  describe('create()', () => {
+    const credentials = new Credentials({ password: EncryptedPassword.fromHash('hashed-value') });
+
+    it('should validate the profile and keep the credentials', () => {
+      const account = UserAccount.create({
+        _id: 'user1',
+        username: ' user1 ',
+        role: UserRole.EDITOR,
+        email: 'user1@example.com',
+        credentials,
+      });
+
+      expect(account).toBeInstanceOf(UserAccount);
+      expect(account.username).toBe('user1');
+      expect(account.credentials).toBe(credentials);
+    });
+
+    it('should reject an invalid profile', () => {
+      expect(() =>
+        UserAccount.create({
+          _id: 'user1',
+          username: 'user one',
+          role: UserRole.EDITOR,
+          email: 'user1@example.com',
+          credentials,
+        })
+      ).toThrow(ZodError);
+    });
   });
 
   describe('setPassword()', () => {

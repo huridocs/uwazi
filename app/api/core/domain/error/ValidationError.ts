@@ -1,4 +1,4 @@
-import { DomainError } from './DomainError.js';
+import { DomainError, ErrorCategory } from './DomainError.js';
 
 type AJVObject = {
   keyword: string;
@@ -8,6 +8,8 @@ type AJVObject = {
 
 abstract class ValidationError extends DomainError {
   abstract asAJV(): AJVObject;
+
+  static readonly category: ErrorCategory = 'validation';
 }
 
 export { ValidationError };
