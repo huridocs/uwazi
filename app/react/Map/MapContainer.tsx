@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { LMap } from '#app/Map/index.js';
-import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
+import { DataMarker, MarkerInput, type MapPointerModifiers } from '#app/Map/MapHelper.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 
@@ -11,8 +11,8 @@ type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 type MapProps = {
   markers?: MarkerInput[];
   height?: number;
-  clickOnMarker?: (marker: DataMarker) => {};
-  clickOnCluster?: (cluster: DataMarker[]) => {};
+  clickOnMarker?: (marker: DataMarker, modifiers?: MapPointerModifiers) => void;
+  clickOnCluster?: (cluster: DataMarker[], modifiers?: MapPointerModifiers) => void;
   onClick?: (event: { lngLat: [number, number] }) => void;
   showControls?: boolean;
   renderPopupInfo?: boolean;

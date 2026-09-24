@@ -28,6 +28,12 @@ type TemplatesInfo = {
   [k: string]: { color: string; name: string };
 };
 
+type MapPointerModifiers = {
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+};
+
 type MarkerInput = {
   label?: string;
   latitude: number;
@@ -151,5 +157,22 @@ const checkMapInitialization = (map: L.Map, containerId: string) => {
   }
 };
 
-export { DataMarker, getClusterMarker, parseMarkerPoint, checkMapInitialization };
-export type { LMarker, MarkerProperties, MarkerInput, TemplatesInfo };
+const mapPointerModifiers = (originalEvent?: Event): MapPointerModifiers => {
+  if (!(originalEvent instanceof MouseEvent)) {
+    return { shiftKey: false, ctrlKey: false, metaKey: false };
+  }
+  return {
+    shiftKey: originalEvent.shiftKey,
+    ctrlKey: originalEvent.ctrlKey,
+    metaKey: originalEvent.metaKey,
+  };
+};
+
+export {
+  DataMarker,
+  getClusterMarker,
+  mapPointerModifiers,
+  parseMarkerPoint,
+  checkMapInitialization,
+};
+export type { LMarker, MapPointerModifiers, MarkerProperties, MarkerInput, TemplatesInfo };

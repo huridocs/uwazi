@@ -5,6 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
+import type { LibraryClickModifiers } from '../librarySelection.js';
 import {
   DEFAULT_THUMB_FIT,
   DEFAULT_THUMB_FRAME,
@@ -30,7 +31,7 @@ type EntityCardProps = {
   thumbFit?: ThumbFit;
   thumbFrame?: ThumbFrame;
   selected?: boolean;
-  onSelect?: () => void;
+  onSelect?: (modifiers: LibraryClickModifiers) => void;
   onFocusProperty?: (fieldKey: string) => void;
   viewHref: string;
   showThumbnail?: boolean;
@@ -75,18 +76,28 @@ const EntityCard = ({
     ? 'bg-parchment border-border'
     : 'bg-paper border-border/60 hover:bg-parchment';
 
-  const activate = () => onSelect?.();
+  const activate = (modifiers: LibraryClickModifiers) => onSelect?.(modifiers);
 
   return (
     <div
       role="button"
       tabIndex={0}
       aria-pressed={selected}
-      onClick={activate}
+      onClick={event =>
+        activate({
+          shiftKey: event.shiftKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+        })
+      }
       onKeyDown={event => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          activate();
+          activate({
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            metaKey: event.metaKey,
+          });
         }
       }}
       className={`${base} ${surface} flex h-full flex-col gap-2.5 p-3`}

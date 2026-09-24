@@ -76,8 +76,9 @@ interface DataTableProps<T extends { rowId: string }> {
   footer?: React.ReactNode;
   sort?: DataTableSort;
   onSort?: (key: string) => void;
-  onRowClick?: (row: T) => void;
+  onRowClick?: (row: T, event: React.MouseEvent<HTMLElement>) => void;
   selectedRowId?: string | null;
+  selectedRowIds?: readonly string[];
   selection?: DataTableSelection<T>;
   reorder?: DataTableReorder<T>;
   tree?: DataTableTree<T>;
@@ -200,7 +201,7 @@ const SortableRow = <T extends { rowId: string }>({
   isClickable: boolean;
   density: DataTableDensity;
   depth: number;
-  onRowClick?: (row: T) => void;
+  onRowClick?: (row: T, event: React.MouseEvent<HTMLElement>) => void;
 }) => {
   const { setNodeRef, transform, transition, isDragging, listeners, attributes } = useSortable({
     id: row.id,
@@ -219,7 +220,7 @@ const SortableRow = <T extends { rowId: string }>({
 
   const rowInteractionProps = isClickable
     ? {
-        onClick: () => onRowClick?.(row.original),
+        onClick: (event: React.MouseEvent<HTMLElement>) => onRowClick?.(row.original, event),
       }
     : {};
 
@@ -275,6 +276,26 @@ const SortableRow = <T extends { rowId: string }>({
   );
 };
 
+const rowIsSelected = ({
+  rowId,
+  tanstackSelected,
+  selectedRowId,
+  selectedRowIds,
+}: {
+  rowId: string;
+  tanstackSelected: boolean;
+  selectedRowId?: string | null;
+  selectedRowIds?: readonly string[];
+}) => {
+  if (selectedRowIds) {
+    return selectedRowIds.includes(rowId);
+  }
+  if (selectedRowId != null) {
+    return rowId === selectedRowId;
+  }
+  return tanstackSelected;
+};
+
 const DataTable = <T extends { rowId: string }>({
   columns,
   data,
@@ -284,6 +305,7 @@ const DataTable = <T extends { rowId: string }>({
   onSort,
   onRowClick,
   selectedRowId,
+  selectedRowIds,
   selection,
   reorder,
   tree,
@@ -451,11 +473,12 @@ const DataTable = <T extends { rowId: string }>({
                   columns={columns}
                   reorderEnabled={reorderEnabled}
                   treeEnabled={treeEnabled}
-                  isSelected={
-                    selectedRowId != null
-                      ? row.original.rowId === selectedRowId
-                      : row.getIsSelected()
-                  }
+                  isSelected={rowIsSelected({
+                    rowId: row.original.rowId,
+                    tanstackSelected: row.getIsSelected(),
+                    selectedRowId,
+                    selectedRowIds,
+                  })}
                   isClickable={isClickable}
                   density={density}
                   depth={0}

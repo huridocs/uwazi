@@ -6,37 +6,47 @@ import type { DataMarker } from '#app/Map/MapHelper.js';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { BlankState } from '#V2/Components/UI/BlankState.js';
+import type { LibraryClickModifiers } from '../../librarySelection.js';
 import type { LibraryViewerProps } from './types.js';
 import { libraryMapMarkers } from './libraryMapMarkers.js';
 
-type MapViewerProps = Pick<LibraryViewerProps, 'rows' | 'totalRows' | 'onSelect'>;
+type MapViewerProps = Pick<
+  LibraryViewerProps,
+  'rows' | 'totalRows' | 'onSelect' | 'onSelectCluster'
+>;
 
 const entitySharedId = (marker: DataMarker) => marker.properties?.entity?.sharedId;
 
-const MapViewer = ({ rows, onSelect }: MapViewerProps) => {
+const clusterSharedIds = (cluster: DataMarker[]) =>
+  cluster.map(entitySharedId).filter((sharedId): sharedId is string => Boolean(sharedId));
+
+const MapViewer = ({ rows, onSelect, onSelectCluster }: MapViewerProps) => {
   const templates = useAtomValue(templatesAtom);
   const markers = useMemo(() => libraryMapMarkers(rows, templates), [rows, templates]);
 
   const clickOnMarker = useCallback(
-    (marker: DataMarker) => {
+    (marker: DataMarker, modifiers?: LibraryClickModifiers) => {
       const sharedId = entitySharedId(marker);
       if (sharedId) {
-        onSelect(sharedId);
+        onSelect(sharedId, modifiers);
       }
-      return {};
     },
     [onSelect]
   );
 
   const clickOnCluster = useCallback(
-    (cluster: DataMarker[]) => {
-      const sharedId = cluster.map(entitySharedId).find(Boolean);
-      if (sharedId) {
-        onSelect(sharedId);
+    (cluster: DataMarker[], modifiers?: LibraryClickModifiers) => {
+      const sharedIds = clusterSharedIds(cluster);
+      if (onSelectCluster) {
+        onSelectCluster(sharedIds, modifiers);
+        return;
       }
-      return {};
+      const [sharedId] = sharedIds;
+      if (sharedId) {
+        onSelect(sharedId, modifiers);
+      }
     },
-    [onSelect]
+    [onSelect, onSelectCluster]
   );
 
   if (rows.length === 0) {

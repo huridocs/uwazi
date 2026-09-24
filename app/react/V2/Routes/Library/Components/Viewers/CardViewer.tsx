@@ -17,7 +17,7 @@ type CardViewerProps = LibraryViewerProps;
 const CardViewer = ({
   rows,
   totalRows,
-  selectedId,
+  selectedIds = [],
   onSelect,
   entityBasePath,
   onLoadMore,
@@ -73,8 +73,8 @@ const CardViewer = ({
               thumbFrame={thumbFrame}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
-              selected={selectedId === entity.sharedId}
-              onSelect={() => onSelect(entity.sharedId)}
+              selected={selectedIds.includes(entity.sharedId)}
+              onSelect={modifiers => onSelect(entity.sharedId, modifiers)}
               onFocusProperty={fieldKey => onFocusProperty?.(entity.sharedId, fieldKey)}
               viewHref={`${entityBasePath}/${entity.sharedId}`}
             />
