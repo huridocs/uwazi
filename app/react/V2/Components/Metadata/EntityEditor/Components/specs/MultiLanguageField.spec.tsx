@@ -111,7 +111,7 @@ describe('MultiLanguageField', () => {
   it('ignores a translation that finishes after the source text changed', async () => {
     let resolveFr: (value: string) => void = () => undefined;
     const onTranslate = jest.fn(
-      () =>
+      async () =>
         new Promise<string>(resolve => {
           resolveFr = resolve;
         })
