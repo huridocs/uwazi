@@ -3,7 +3,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 type WarmSelectOption<T extends string = string> = {
   value: T;
-  label: string;
+  label: React.ReactNode;
   accessory?: React.ReactNode;
 };
 

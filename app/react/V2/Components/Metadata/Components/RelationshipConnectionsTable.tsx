@@ -71,7 +71,7 @@ const RelationshipConnectionsTableComponent = ({
       ref={containerRef}
       data-testid="relationship-connections"
       data-connections-root
-      className="relative min-w-0 w-full"
+      className="relative min-w-0 w-full overflow-hidden"
     >
       <div
         className={showCards ? 'invisible pointer-events-none absolute start-0 top-0' : undefined}
