@@ -198,6 +198,7 @@ class MetadataFormFields extends Component {
             prefix={_model}
             onChange={this.relationshipChange.bind(this, property)}
             sort
+            forceUpdate
           />
         );
       case 'newRelationship':
@@ -225,6 +226,7 @@ class MetadataFormFields extends Component {
             prefix={_model}
             onChange={this.relationshipChange.bind(this, property)}
             sort
+            forceUpdate
           />
         );
       case 'date':
