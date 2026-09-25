@@ -4,6 +4,7 @@ import { ChangeStream, MongoError } from 'mongodb';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
+import { featureFlagsMongoSchema } from './featureFlags.js';
 
 import type { Tenant } from './tenant.js';
 
@@ -29,33 +30,7 @@ const mongoSchema = new mongoose.Schema({
   customUploads: String,
   activityLogs: String,
   domain: String,
-  featureFlags: {
-    s3Storage: Boolean,
-    esReplicas: Number,
-    sync: Boolean,
-    deactivateTestJob: Boolean,
-    paragraphExtraction: Boolean,
-    fileCacheHeaders: Boolean,
-    themeCustomization: Boolean,
-    newHeader: Boolean,
-    featureFlagEntityViewerv2: Boolean,
-    featureFlagLibraryV2: Boolean,
-    postgresCore: Boolean,
-    postgresPages: Boolean,
-    postgresCsv: Boolean,
-    aiAssistant: Boolean,
-    aiAssistantServiceUrl: String,
-    translationService: Boolean,
-    translationServiceUrl: String,
-    telemetry: {
-      enabled: Boolean,
-      sampleRate: Number,
-    },
-    prometheus: {
-      enabled: Boolean,
-      sampleRate: Number,
-    },
-  },
+  featureFlags: featureFlagsMongoSchema,
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
   maintenance: Boolean,
