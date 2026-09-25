@@ -1,10 +1,10 @@
 import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import type { TenantRecord } from '#api/tenants/application/contracts/TenantsDataSource.js';
+import { TenantNotFound } from '#api/tenants/application/errors.js';
 import { TenantsDataSourceFactory } from '#api/tenants/infrastructure/TenantsDataSourceFactory.js';
 import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TenantNotFound } from './TenantNotFound.js';
 
 class CliTenancy {
   static async resolve(name: string): Promise<Tenant> {

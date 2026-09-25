@@ -5,7 +5,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { CliTenancy } from '../CliTenancy.js';
-import { TenantNotFound } from '../TenantNotFound.js';
+import { TenantNotFound } from '#api/tenants/application/errors.js';
 
 const tenantsCollection = () => DB.mongodb_Db(config.SHARED_DB).collection('tenants');
 
