@@ -132,6 +132,37 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
   return `(${url}, ${JSON.stringify({ timelinks: timelinksObj })})`;
 };
 
+const mediaFieldValue = (mode: MediaPickerMode, url: string, timelinks: EditableTimelink[]) =>
+  mode === 'media' ? encodeTimelinksValue(url, timelinks) : url;
+
+const applyUploadedMedia = async ({
+  entitySharedId,
+  localFile,
+  mode,
+  nextTimelinks,
+  previousUrl,
+  onChange,
+  onRegisterPendingAttachment,
+  releaseUploadIfReplaced,
+}: {
+  entitySharedId: string;
+  localFile: File;
+  mode: MediaPickerMode;
+  nextTimelinks: EditableTimelink[];
+  previousUrl: string;
+  onChange: (value: string) => void;
+  onRegisterPendingAttachment: (attachment: ClientFile) => void;
+  releaseUploadIfReplaced: (previousUrl: string, nextValue: string) => void;
+}) => {
+  const attachment = await registerMediaAttachment(entitySharedId, localFile);
+  const { fileLocalID } = attachment;
+  if (!fileLocalID) return;
+  onRegisterPendingAttachment(attachment);
+  const nextValue = mediaFieldValue(mode, fileLocalID, nextTimelinks);
+  onChange(nextValue);
+  releaseUploadIfReplaced(previousUrl, nextValue);
+};
+
 const timelinkToSeconds = (timelink: EditableTimelink) =>
   Number(timelink.hh || 0) * 3600 + Number(timelink.mm || 0) * 60 + Number(timelink.ss || 0);
 
@@ -143,16 +174,12 @@ type MediaFieldPreviewProps = {
   onTimelinksChange: (timelinks: EditableTimelink[]) => void;
 };
 
-const MediaFieldPreview = ({
-  url,
-  timelinks,
-  valueKey,
-  disabled,
-  onTimelinksChange,
-}: MediaFieldPreviewProps) => {
-  const playerRef = React.useRef<PlayerInstance>(null);
+const useTimelinkDraft = (
+  timelinks: EditableTimelink[],
+  valueKey: string,
+  onTimelinksChange: (timelinks: EditableTimelink[]) => void
+) => {
   const [localTimelinks, setLocalTimelinks] = useState(timelinks);
-  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     setLocalTimelinks(timelinks);
@@ -162,11 +189,6 @@ const MediaFieldPreview = ({
   const commitTimelinks = (next: EditableTimelink[]) => {
     setLocalTimelinks(next);
     onTimelinksChange(next);
-  };
-
-  const handlePlay = (timelink: EditableTimelink) => {
-    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
-    setPlaying(true);
   };
 
   const updateLocalTimelink = (index: number, patch: Partial<EditableTimelink>) => {
@@ -180,6 +202,29 @@ const MediaFieldPreview = ({
       itemIndex === index ? { ...item, [part]: padTimePart(item[part] || '0') } : item
     );
     commitTimelinks(next);
+  };
+
+  return { localTimelinks, commitTimelinks, updateLocalTimelink, commitTimePart };
+};
+
+const MediaFieldPreview = ({
+  url,
+  timelinks,
+  valueKey,
+  disabled,
+  onTimelinksChange,
+}: MediaFieldPreviewProps) => {
+  const playerRef = React.useRef<PlayerInstance>(null);
+  const [playing, setPlaying] = useState(false);
+  const { localTimelinks, commitTimelinks, updateLocalTimelink, commitTimePart } = useTimelinkDraft(
+    timelinks,
+    valueKey,
+    onTimelinksChange
+  );
+
+  const handlePlay = (timelink: EditableTimelink) => {
+    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
+    setPlaying(true);
   };
 
   const commitLabel = () => {
@@ -196,20 +241,22 @@ const MediaFieldPreview = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <MediaPlayer
-        className="m-auto"
-        playerRef={playerRef}
-        url={url}
-        width={500}
-        height={300}
-        playing={playing}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onClickPreview={() => setPlaying(true)}
-      />
+    <div className="flex w-full min-w-0 max-w-125 flex-col gap-4">
+      <div className="aspect-5/3 w-full min-w-0">
+        <MediaPlayer
+          className="h-full w-full"
+          playerRef={playerRef}
+          url={url}
+          width="100%"
+          height="100%"
+          playing={playing}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onClickPreview={() => setPlaying(true)}
+        />
+      </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex min-w-0 flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm font-semibold">
             <Translate>Timelinks</Translate>
@@ -379,25 +426,22 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
-            const previousUrl = currentUrl;
             if (localFile) {
-              const attachment = await registerMediaAttachment(entitySharedId, localFile);
-              const { fileLocalID } = attachment;
-              if (!fileLocalID) {
-                return;
-              }
-              onRegisterPendingAttachment(attachment);
-              const nextValue =
-                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID;
-              mediaField.onChange(nextValue);
-              releaseUploadIfReplaced(previousUrl, nextValue);
+              await applyUploadedMedia({
+                entitySharedId,
+                localFile,
+                mode,
+                nextTimelinks,
+                previousUrl: currentUrl,
+                onChange: mediaField.onChange,
+                onRegisterPendingAttachment,
+                releaseUploadIfReplaced,
+              });
               return;
             }
-
-            const nextValue =
-              mode === 'media' ? encodeTimelinksValue(nextUrl, nextTimelinks) : nextUrl;
+            const nextValue = mediaFieldValue(mode, nextUrl, nextTimelinks);
             mediaField.onChange(nextValue);
-            releaseUploadIfReplaced(previousUrl, nextValue);
+            releaseUploadIfReplaced(currentUrl, nextValue);
           };
 
           const handleUnlink = () => {
@@ -448,7 +492,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
               </div>
 
               {hasValue ? (
-                <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
+                <div className="mt-3 flex w-full min-w-0 justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
                   {mode === 'image' ? (
                     <img
                       src={previewUrl}

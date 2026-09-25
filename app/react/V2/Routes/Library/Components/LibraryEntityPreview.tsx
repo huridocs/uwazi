@@ -58,6 +58,7 @@ const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
   stageSideTab: noop,
   focusRelationshipsPanel: noop,
   focusDocumentPanel: noop,
+  showSidePane: noop,
 });
 
 const EntityFilesFromEntity = ({

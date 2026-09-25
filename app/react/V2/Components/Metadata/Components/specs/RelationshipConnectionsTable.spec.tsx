@@ -73,6 +73,11 @@ describe('RelationshipConnectionsTable layout', () => {
     expect(container.querySelector('.overflow-x-auto')).toBeNull();
   });
 
+  it('clips the measurement table so it cannot widen the editor', () => {
+    renderTable();
+    expect(screen.getByTestId('relationship-connections').className).toContain('overflow-hidden');
+  });
+
   it('puts inherit columns first and the entity last', () => {
     render(
       <RelationshipConnectionsTable
