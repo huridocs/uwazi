@@ -31,18 +31,26 @@ jest.mock('#V2/Components/UI/index.js', () => ({
   MediaPlayer: ({
     playerRef,
     playing,
+    width,
   }: {
     playerRef?: React.MutableRefObject<{
       seekTo: typeof mockSeekTo;
       getCurrentTime: typeof mockGetCurrentTime;
     } | null>;
     playing?: boolean;
+    width?: number | string;
   }) => {
     if (playerRef) {
       playerRef.current = { seekTo: mockSeekTo, getCurrentTime: mockGetCurrentTime };
     }
 
-    return <div data-testid="media-player" data-playing={playing ? 'true' : 'false'} />;
+    return (
+      <div
+        data-testid="media-player"
+        data-playing={playing ? 'true' : 'false'}
+        data-width={width}
+      />
+    );
   },
 }));
 
@@ -53,6 +61,12 @@ jest.mock('../MediaPickerModal', () => ({
 type FormValues = { media: string };
 
 const mediaWithTimelink = '(/api/files/video.mp4, {"timelinks":{"00:01:02":"intro"}})';
+
+const expectNumberTimeField = (field: HTMLElement, max?: string) => {
+  expect(field).toHaveAttribute('type', 'number');
+  expect(field).toHaveAttribute('step', '1');
+  if (max) expect(field).toHaveAttribute('max', max);
+};
 
 const Harness = ({ defaultValue }: { defaultValue: string }) => {
   const form = useForm<FormValues>({ defaultValues: { media: defaultValue } });
@@ -75,15 +89,6 @@ const Harness = ({ defaultValue }: { defaultValue: string }) => {
   );
 };
 
-const expectNumberTimeField = (label: string, max?: string) => {
-  const input = screen.getByLabelText(label);
-  expect(input).toHaveAttribute('type', 'number');
-  expect(input).toHaveAttribute('step', '1');
-  if (max) {
-    expect(input).toHaveAttribute('max', max);
-  }
-};
-
 describe('MediaField timelinks', () => {
   beforeEach(() => {
     mockSeekTo.mockClear();
@@ -91,12 +96,18 @@ describe('MediaField timelinks', () => {
     mockGetCurrentTime.mockReturnValue(125);
   });
 
+  it('sizes the player to the field', () => {
+    render(<Harness defaultValue="/api/files/video.mp4" />);
+
+    expect(screen.getByTestId('media-player')).toHaveAttribute('data-width', '100%');
+  });
+
   it('renders time inputs as number fields with step 1', () => {
     render(<Harness defaultValue={mediaWithTimelink} />);
 
-    expectNumberTimeField('Hours');
-    expectNumberTimeField('Minutes', '59');
-    expectNumberTimeField('Seconds', '59');
+    expectNumberTimeField(screen.getByLabelText('Hours'));
+    expectNumberTimeField(screen.getByLabelText('Minutes'), '59');
+    expectNumberTimeField(screen.getByLabelText('Seconds'), '59');
   });
 
   it('adds a timelink from the player current time', () => {

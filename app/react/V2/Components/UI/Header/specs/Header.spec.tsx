@@ -6,6 +6,9 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fromJS } from 'immutable';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { userAtom } from '#V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { Header } from '../Header.js';
 
 jest.mock('../useCompactBar', () => ({
@@ -34,10 +37,19 @@ jest.mock('../../Notifications/RequestStatus', () => ({
 
 const { useCompactBar } = jest.requireMock('../useCompactBar');
 
-const renderHeader = (compact: boolean) => {
+const signedInUser: ClientUserSchema = {
+  _id: 'user-1',
+  username: 'editor',
+  role: 'editor',
+  email: 'editor@example.com',
+};
+
+const renderHeader = (compact: boolean, user?: ClientUserSchema) => {
   useCompactBar.mockReturnValue({ barRef: { current: null }, compact });
   return renderConnectedContainer(
-    <Header />,
+    <TestAtomStoreProvider initialValues={user ? [[userAtom, user]] : []}>
+      <Header />
+    </TestAtomStoreProvider>,
     () => ({
       ...defaultState,
       library: { search: {}, filters: fromJS({ properties: [] }) },
@@ -50,16 +62,17 @@ const optionsMenu = () => screen.getByRole('button', { name: 'Toggle options men
 
 const expectCompactMenuClosed = () => {
   const options = optionsMenu();
+  const signIn = screen.getByRole('link', { name: 'Sign in' });
   expect(screen.getByRole('button', { name: 'Toggle navigation menu' })).toBeInTheDocument();
+  expect(options).not.toContainElement(signIn);
   expect(screen.queryByRole('link', { name: 'Library' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
   expect(options).not.toContainElement(screen.getByRole('button', { name: 'Ask Bert' }));
   return options;
 };
 
 const expectCompactMenuOpen = (options: HTMLElement | null) => {
   expect(options).toContainElement(screen.getByRole('link', { name: 'Library' }));
-  expect(options).toContainElement(screen.getByRole('link', { name: 'Sign in' }));
+  expect(options).not.toContainElement(screen.getByRole('link', { name: 'Sign in' }));
   expect(screen.queryByRole('link', { name: 'Settings' })).not.toBeInTheDocument();
   expect(options).toContainElement(screen.getByRole('button', { name: 'EN' }));
   expect(options).not.toContainElement(screen.getByRole('button', { name: 'Ask Bert' }));
@@ -72,6 +85,17 @@ describe('Header', () => {
     const options = expectCompactMenuClosed();
     await user.click(screen.getByRole('button', { name: 'Toggle options menu' }));
     expectCompactMenuOpen(options);
+  });
+
+  it('puts the library icon on the bar when signed in', async () => {
+    const user = userEvent.setup();
+    renderHeader(true, signedInUser);
+    const library = screen.getByRole('link', { name: 'Library' });
+    expect(optionsMenu()).not.toContainElement(library);
+    expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Toggle options menu' }));
+    expect(optionsMenu()).not.toContainElement(library);
+    expect(optionsMenu()).toContainElement(screen.getByRole('link', { name: 'Settings' }));
   });
 
   it('shows language, library, and Ask Bert inline on a wide bar', () => {
