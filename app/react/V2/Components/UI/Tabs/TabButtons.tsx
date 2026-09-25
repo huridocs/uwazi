@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { WarmSelect } from '../WarmSelect.js';
 import { useTabGroup } from './useTabGroup.js';
 import { useStripFold } from './useStripFold.js';
@@ -24,6 +25,12 @@ type TabButtonsProps = {
   tabListAriaLabel?: string;
 };
 
+const useTabStripFold = (buttons: TabButtonDef[]) => {
+  const isMobile = useIsMobile();
+  const strip = useStripFold(buttons.map(button => `${button.id}:${button.name ?? ''}`).join('|'));
+  return { availRef: strip.availRef, probeRef: strip.probeRef, folded: isMobile || strip.folded };
+};
+
 const TabButtons = ({
   groupId,
   buttons,
@@ -38,9 +45,7 @@ const TabButtons = ({
   const displayActiveTabId = activeTabId ?? atomActiveTabId;
   const atomSyncTabId = syncActiveTabId ?? activeTabId;
   const totalTabs = buttons.length;
-  const { availRef, probeRef, folded } = useStripFold(
-    buttons.map(button => `${button.id}:${button.name ?? ''}`).join('|')
-  );
+  const { availRef, probeRef, folded } = useTabStripFold(buttons);
   const selectValue = displayActiveTabId || buttons[0]?.id || '';
 
   useEffect(() => {
@@ -79,7 +84,7 @@ const TabButtons = ({
             ariaLabel={tabListAriaLabel}
             options={buttons.map(button => ({
               value: button.id,
-              label: button.name ?? button.id,
+              label: button.label,
             }))}
             onChange={tabId => {
               selectTab(tabId);

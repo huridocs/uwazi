@@ -58,6 +58,14 @@ const buildMobileActions = ({
   return menuActions;
 };
 
+const splitMobileActions = (entries: MobileMenuAction[], authenticatedUser: boolean) => {
+  const shortcutId = authenticatedUser ? 'library' : 'sign-in';
+  return {
+    barAction: entries.find(entry => entry.id === shortcutId),
+    menuActions: entries.filter(entry => entry.id !== shortcutId),
+  };
+};
+
 const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
   const authenticatedUser = Boolean(useAtomValue(userAtom)?._id);
   const settings = useAtomValue(settingsAtom);
@@ -76,14 +84,17 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   );
   const shouldShowLibrary = !settings.private || authenticatedUser;
   const headerLinks = settings.links ?? [];
-  const mobileActions = buildMobileActions({
-    shouldShowLibrary,
-    authenticatedUser,
-    libraryUrl,
-    openLibrary: () => setSidePanelView('library'),
-  });
+  const { barAction, menuActions } = splitMobileActions(
+    buildMobileActions({
+      shouldShowLibrary,
+      authenticatedUser,
+      libraryUrl,
+      openLibrary: () => setSidePanelView('library'),
+    }),
+    authenticatedUser
+  );
   const optionsMenu = (
-    <MobileOptionsMenu actions={mobileActions}>
+    <MobileOptionsMenu actions={menuActions}>
       <LanguageDropdown />
       <ThemeToggle labeled />
     </MobileOptionsMenu>
@@ -117,6 +128,21 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
           {isMobile ? (
             <>
               <AskBertButton />
+              {barAction ? (
+                <I18NLink
+                  to={barAction.to}
+                  onClick={barAction.onClick}
+                  className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+                  activeClassname="header-bar-button-active"
+                  aria-label={t('System', barAction.label, null, false)}
+                >
+                  {barAction.id === 'library' ? (
+                    <BookOpenIcon className="h-5 w-5" />
+                  ) : (
+                    <KeyIcon className="h-5 w-5" />
+                  )}
+                </I18NLink>
+              ) : null}
               {optionsMenu}
             </>
           ) : (

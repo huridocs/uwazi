@@ -13,6 +13,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
+import { useRevealSidePane } from './useRevealSidePane.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entityViewerPaths.js';
 
@@ -216,6 +217,7 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
 
 const EntityOverlay = () => {
   const overlay = useEntityOverlayState();
+  useRevealSidePane(overlay.isOpen);
   if (!overlay.isOpen) return null;
   return <EntityOverlayPanel overlay={overlay} />;
 };

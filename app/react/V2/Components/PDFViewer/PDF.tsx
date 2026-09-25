@@ -1,10 +1,7 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  SelectionRegion,
-  HandleTextSelection,
-  TextSelection,
-} from '@huridocs/react-text-selection-handler';
+import { SelectionRegion, TextSelection } from '@huridocs/react-text-selection-handler';
+import { PdfTextSelection } from './PdfTextSelection.js';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
@@ -20,6 +17,27 @@ import { PDFPage } from './PDFPage.js';
 import { PageRenderQueue } from './functions/pageRenderQueue.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
+
+const pageContainerForSnippet = (
+  pageRefs: { [key: number]: HTMLDivElement | null },
+  page: number
+) => {
+  const current = pageRefs[page];
+  if (current) return current;
+  const found = document.querySelector(`#page-${page}-container`);
+  if (!(found instanceof HTMLDivElement)) return undefined;
+  pageRefs[page] = found;
+  return found;
+};
+
+const openPdfDocument = (fileUrl: string) =>
+  PDFJS.getDocument({
+    url: fileUrl,
+    cMapUrl: CMAP_URL,
+    cMapPacked: true,
+    wasmUrl: WASM_URL,
+    isEvalSupported: false,
+  });
 
 const PAGE_VISIBILITY_THRESHOLDS = [0, 0.1, 0.25, 0.4, 0.5, 0.75, 1];
 const PRELOAD_ROOT_MARGIN = '500px 0px 500px 0px';
@@ -139,14 +157,7 @@ const PDF = ({
     const deadline = Date.now() + 5000;
 
     const attempt = (): void => {
-      let pageContainer = pageRefsMap.current[snippet.page];
-      if (!pageContainer) {
-        const found = document.querySelector(`#page-${snippet.page}-container`);
-        if (found instanceof HTMLDivElement) {
-          pageRefsMap.current[snippet.page] = found;
-          pageContainer = found;
-        }
-      }
+      const pageContainer = pageContainerForSnippet(pageRefsMap.current, snippet.page);
 
       if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
         return;
@@ -233,28 +244,32 @@ const PDF = ({
     let cancelled = false;
 
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
-      if (cancelled) {
-        return;
-      }
-      if (taskData.percent < 100) {
-        setLoading({ isLoading: true, progress: taskData.percent });
-      } else {
-        setLoading({ isLoading: false, progress: 0 });
-      }
+      if (cancelled) return;
+      setLoading(
+        taskData.percent < 100
+          ? { isLoading: true, progress: taskData.percent }
+          : { isLoading: false, progress: 0 }
+      );
     };
 
-    setPDF(undefined);
-    setError(undefined);
-    setLoading({ isLoading: true, progress: 0 });
+    const resetPdfState = () => {
+      setPDF(undefined);
+      setError(undefined);
+      setLoading({ isLoading: true, progress: 0 });
+    };
 
-    const loadingTask = PDFJS.getDocument({
-      url: fileUrl,
-      cMapUrl: CMAP_URL,
-      cMapPacked: true,
-      wasmUrl: WASM_URL,
-      isEvalSupported: false,
-    });
+    const resetView = () => {
+      const pageVisibility = pageVisibilityRef.current;
+      isReady.current = false;
+      pageVisibility.clear();
+      pageRefsMap.current = {};
+      viewportPagesRef.current.clear();
+      renderingQueueRef.current.prioritize(initialPageRef.current);
+      return pageVisibility;
+    };
 
+    resetPdfState();
+    const loadingTask = openPdfDocument(fileUrl);
     loadingTask.onProgress = handleLoading;
 
     loadingTask.promise
@@ -288,12 +303,7 @@ const PDF = ({
         }
       });
 
-    const pageVisibility = pageVisibilityRef.current;
-    isReady.current = false;
-    pageVisibility.clear();
-    pageRefsMap.current = {};
-    viewportPagesRef.current.clear();
-    renderingQueueRef.current.prioritize(initialPageRef.current);
+    const pageVisibility = resetView();
 
     return () => {
       cancelled = true;
@@ -493,7 +503,7 @@ const PDF = ({
   }
 
   return (
-    <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
+    <PdfTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
       <div
         className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
       >
@@ -512,7 +522,7 @@ const PDF = ({
           {pages}
         </div>
       </div>
-    </HandleTextSelection>
+    </PdfTextSelection>
   );
 };
 

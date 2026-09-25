@@ -7,6 +7,11 @@ import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { isMobileOverrideAtom } from '#V2/atoms/isMobileAtom.js';
 import { LanguageSelect } from '../LanguageSelect.js';
+import {
+  focusDetachedInput,
+  installScrollIntoView,
+  renderScrollList,
+} from './languageSelectSpecHelpers.js';
 
 const options = [
   { value: 'en', label: 'English', iso6391: 'en' },
@@ -80,6 +85,27 @@ describe('LanguageSelect', () => {
       'Español',
       'Français',
     ]);
+  });
+
+  it('opens the menu outside an overflow-hidden parent', async () => {
+    const store = createStore();
+    render(
+      <Provider store={store}>
+        <div data-testid="clip" className="overflow-hidden">
+          <LanguageSelect
+            value="en"
+            options={options}
+            onChange={jest.fn()}
+            aria-label="Language"
+            appearance="compact"
+          />
+        </div>
+      </Provider>
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Language' }));
+
+    expect(screen.getByTestId('clip').contains(screen.getByRole('listbox'))).toBe(false);
   });
 
   it('calls onChange with the selected value and closes', async () => {
@@ -179,6 +205,16 @@ describe('LanguageSelect', () => {
       await user.keyboard('f');
       expectActiveOption('fr');
     });
+  });
+
+  describe('type-ahead from trigger and listbox', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
 
     it('opens from a closed focused trigger and jumps to matching prefix', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
@@ -227,38 +263,18 @@ describe('LanguageSelect', () => {
       await openSelect(user);
       expectActiveOption('en');
 
-      const outside = document.createElement('input');
-      document.body.appendChild(outside);
-      outside.focus();
-      expect(outside).toHaveFocus();
-
+      const outside = focusDetachedInput();
       await user.keyboard('f{Enter}');
+      outside.remove();
       expectActiveOption('en');
       expect(onChange).not.toHaveBeenCalled();
       expect(screen.getByRole('listbox')).toBeInTheDocument();
-      outside.remove();
     });
 
     it('scrolls the highlighted option into view', async () => {
-      const scrollIntoView = jest.fn();
-      Element.prototype.scrollIntoView = scrollIntoView;
-
-      const manyOptions = Array.from({ length: 40 }, (_, index) => ({
-        value: `lang-${index}`,
-        label: index === 35 ? 'Zebra' : `Language ${String(index).padStart(2, '0')}`,
-      }));
-      const store = createStore();
+      const scrollIntoView = installScrollIntoView();
       const onChange = jest.fn();
-      render(
-        <Provider store={store}>
-          <LanguageSelect
-            value="lang-0"
-            options={manyOptions}
-            onChange={onChange}
-            aria-label="Language"
-          />
-        </Provider>
-      );
+      renderScrollList(onChange);
 
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       await openSelect(user);

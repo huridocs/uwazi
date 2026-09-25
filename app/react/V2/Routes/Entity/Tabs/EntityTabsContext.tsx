@@ -21,6 +21,7 @@ type EntityMainTabsState = {
   stageSideTab: (sideTab: SideTabId) => void;
   focusRelationshipsPanel: () => void;
   focusDocumentPanel: () => void;
+  showSidePane: () => void;
   requestedPane?: { index: number; id: number };
 };
 
@@ -60,6 +61,7 @@ const EntityTabsProvider = ({
       stageSideTab: value.stageSideTab,
       focusRelationshipsPanel: value.focusRelationshipsPanel,
       focusDocumentPanel: value.focusDocumentPanel,
+      showSidePane: value.showSidePane,
     }),
     [
       value.activeMainTab,
@@ -69,6 +71,7 @@ const EntityTabsProvider = ({
       value.focusSideTab,
       value.onMainTabChange,
       value.relationshipsOnMain,
+      value.showSidePane,
       value.stageSideTab,
     ]
   );
