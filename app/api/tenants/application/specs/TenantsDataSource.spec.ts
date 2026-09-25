@@ -40,7 +40,7 @@ describe('TenantsDataSource', () => {
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingDB.tearDown();
   });
 
   describe.each(backends)('$name', () => {

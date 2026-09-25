@@ -49,7 +49,11 @@ const toUpdate = (patch: TenantPatch): Update => {
 };
 
 class MongoTenantsDataSource implements TenantsDataSource {
-  constructor(private readonly db: Db) {}
+  /**
+   * The database is resolved per call, not captured: a long lived data source would otherwise
+   * keep querying a client that has since been closed and reopened.
+   */
+  constructor(private readonly db: () => Db) {}
 
   async all(): Promise<TenantRecord[]> {
     return this.collection()
@@ -83,7 +87,7 @@ class MongoTenantsDataSource implements TenantsDataSource {
   }
 
   private collection() {
-    return this.db.collection<TenantRecord>('tenants');
+    return this.db().collection<TenantRecord>('tenants');
   }
 }
 

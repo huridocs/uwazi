@@ -16,7 +16,7 @@ describe('tenant registry use cases', () => {
 
   afterAll(async () => {
     await db.collection('tenants').deleteMany({ name: { $in: names } });
-    await testingDB.disconnect();
+    await testingDB.tearDown();
   });
 
   beforeEach(async () => {

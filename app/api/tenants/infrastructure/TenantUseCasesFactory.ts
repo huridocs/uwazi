@@ -1,8 +1,12 @@
 import { DeregisterTenant } from '../application/DeregisterTenant.js';
 import { GetTenant } from '../application/GetTenant.js';
 import { ListTenants } from '../application/ListTenants.js';
+import { RecordTenantHealthCheck } from '../application/RecordTenantHealthCheck.js';
 import { RegisterTenant } from '../application/RegisterTenant.js';
+import { SetTenantFeatureFlags } from '../application/SetTenantFeatureFlags.js';
+import { SetTenantMaintenance } from '../application/SetTenantMaintenance.js';
 import { UpdateTenant } from '../application/UpdateTenant.js';
+import { UpdateTenantStats } from '../application/UpdateTenantStats.js';
 import { TenantsDataSourceFactory } from './TenantsDataSourceFactory.js';
 
 /**
@@ -28,6 +32,22 @@ class TenantUseCasesFactory {
 
   static getTenant(): GetTenant {
     return new GetTenant(TenantsDataSourceFactory.default());
+  }
+
+  static setTenantFeatureFlags(): SetTenantFeatureFlags {
+    return new SetTenantFeatureFlags(TenantsDataSourceFactory.default());
+  }
+
+  static setTenantMaintenance(): SetTenantMaintenance {
+    return new SetTenantMaintenance(TenantsDataSourceFactory.default());
+  }
+
+  static updateTenantStats(): UpdateTenantStats {
+    return new UpdateTenantStats(TenantsDataSourceFactory.default());
+  }
+
+  static recordTenantHealthCheck(): RecordTenantHealthCheck {
+    return new RecordTenantHealthCheck(TenantsDataSourceFactory.default());
   }
 }
 

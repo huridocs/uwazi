@@ -10,7 +10,7 @@ import { MongoTenantsDataSource } from './MongoTenantsDataSource.js';
  */
 class TenantsDataSourceFactory {
   static default(): TenantsDataSource {
-    return new MongoTenantsDataSource(DB.mongodb_Db(config.SHARED_DB));
+    return new MongoTenantsDataSource(() => DB.mongodb_Db(config.SHARED_DB));
   }
 }
 

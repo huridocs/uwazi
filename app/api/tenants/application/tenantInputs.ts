@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { FeatureFlagsSchema } from '../featureFlags.js';
+import { FeatureFlagsPatchSchema, FeatureFlagsSchema } from '../featureFlags.js';
+import {
+  TenantHealthCheckSchema,
+  TenantMetadataSchema,
+  TenantStatsSchema,
+} from '../operationalData.js';
 
 const name = z.string().min(1);
 const globalMatomo = z.object({ id: z.string(), url: z.string() }).strict();
@@ -45,7 +50,20 @@ const UpdateTenantInputSchema = z
     attachments: z.string().nullish(),
     customUploads: z.string().nullish(),
     activityLogs: z.string().nullish(),
+    metadata: TenantMetadataSchema.nullish(),
   })
+  .strict();
+
+const SetFeatureFlagsInputSchema = z
+  .object({ name, featureFlags: FeatureFlagsPatchSchema })
+  .strict();
+
+const SetMaintenanceInputSchema = z.object({ name, maintenance: z.boolean() }).strict();
+
+const UpdateStatsInputSchema = z.object({ name, stats: TenantStatsSchema }).strict();
+
+const RecordHealthCheckInputSchema = z
+  .object({ name, healthCheck: TenantHealthCheckSchema })
   .strict();
 
 const TenantNameInputSchema = z.object({ name }).strict();
@@ -53,6 +71,27 @@ const TenantNameInputSchema = z.object({ name }).strict();
 type RegisterTenantInput = z.infer<typeof RegisterTenantInputSchema>;
 type UpdateTenantInput = z.infer<typeof UpdateTenantInputSchema>;
 type TenantNameInput = z.infer<typeof TenantNameInputSchema>;
+type SetFeatureFlagsInput = z.infer<typeof SetFeatureFlagsInputSchema>;
+type SetMaintenanceInput = z.infer<typeof SetMaintenanceInputSchema>;
+type UpdateStatsInput = z.infer<typeof UpdateStatsInputSchema>;
+type RecordHealthCheckInput = z.infer<typeof RecordHealthCheckInputSchema>;
 
-export { derivedPaths, RegisterTenantInputSchema, TenantNameInputSchema, UpdateTenantInputSchema };
-export type { RegisterTenantInput, TenantNameInput, UpdateTenantInput };
+export {
+  derivedPaths,
+  RecordHealthCheckInputSchema,
+  RegisterTenantInputSchema,
+  SetFeatureFlagsInputSchema,
+  SetMaintenanceInputSchema,
+  TenantNameInputSchema,
+  UpdateStatsInputSchema,
+  UpdateTenantInputSchema,
+};
+export type {
+  RecordHealthCheckInput,
+  RegisterTenantInput,
+  SetFeatureFlagsInput,
+  SetMaintenanceInput,
+  TenantNameInput,
+  UpdateStatsInput,
+  UpdateTenantInput,
+};

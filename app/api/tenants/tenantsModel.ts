@@ -77,11 +77,14 @@ class TenantsModel extends EventEmitter {
     this.changeStream.on('change', () => {
       this.pendingChanges = true;
       if (this.debounceTimer) clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(async () => {
-        if (this.pendingChanges) {
-          await this.change();
-          this.pendingChanges = false;
+      this.debounceTimer = setTimeout(() => {
+        if (!this.pendingChanges) {
+          return;
         }
+        this.pendingChanges = false;
+        // Nothing awaits this timer, so a failed reload is reported rather than left to reject in
+        // the background: the connection may well be gone by the time it fires.
+        this.change().catch(handleError);
       }, 1000);
     });
 

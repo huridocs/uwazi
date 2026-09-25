@@ -77,27 +77,51 @@ const map = <T>(definition: FeatureFlagDefinition, scalar: (type: FeatureFlagTyp
 
 const entries = Object.entries(FEATURE_FLAGS) as [FeatureFlagName, FeatureFlagDefinition][];
 
-/** Every flag optional, unknown flags rejected, groups validated field by field. */
-const FeatureFlagsSchema = z
-  .object(
-    Object.fromEntries(
-      entries.map(([name, definition]) => [
-        name,
-        (isFeatureFlagGroup(definition)
-          ? z.object(map(definition, type => zodTypes[type].optional()) as z.ZodRawShape).strict()
-          : zodTypes[definition]
-        ).optional(),
-      ])
+const flagsObject = (nullable: boolean) => {
+  const scalar = (type: FeatureFlagType) =>
+    nullable ? zodTypes[type].nullish() : zodTypes[type].optional();
+
+  return z
+    .object(
+      Object.fromEntries(
+        entries.map(([name, definition]) => {
+          const flag = isFeatureFlagGroup(definition)
+            ? z.object(map(definition, scalar) as z.ZodRawShape).strict()
+            : zodTypes[definition];
+
+          return [name, nullable ? flag.nullish() : flag.optional()];
+        })
+      )
     )
-  )
-  .strict() as unknown as z.ZodType<FeatureFlags, z.ZodTypeDef, unknown>;
+    .strict();
+};
+
+/** Every flag optional, unknown flags rejected, groups validated field by field. */
+const FeatureFlagsSchema = flagsObject(false) as unknown as z.ZodType<
+  FeatureFlags,
+  z.ZodTypeDef,
+  unknown
+>;
+
+/** The same, with `null` allowed everywhere it means "remove this flag". */
+const FeatureFlagsPatchSchema = flagsObject(true) as unknown as z.ZodType<
+  FeatureFlagsPatch,
+  z.ZodTypeDef,
+  unknown
+>;
 
 /** The `featureFlags` branch of the tenants mongoose schema. */
 const featureFlagsMongoSchema: Record<string, unknown> = Object.fromEntries(
   entries.map(([name, definition]) => [name, map(definition, type => mongoTypes[type])])
 );
 
-export { FEATURE_FLAGS, FeatureFlagsSchema, featureFlagsMongoSchema, isFeatureFlagGroup };
+export {
+  FEATURE_FLAGS,
+  FeatureFlagsPatchSchema,
+  FeatureFlagsSchema,
+  featureFlagsMongoSchema,
+  isFeatureFlagGroup,
+};
 export type {
   FeatureFlagDefinition,
   FeatureFlagGroup,

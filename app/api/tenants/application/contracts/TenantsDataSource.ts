@@ -1,11 +1,13 @@
 import type { FeatureFlagsPatch } from '../../featureFlags.js';
+import type { TenantOperationalData } from '../../operationalData.js';
 import type { Tenant } from '../../tenant.js';
 
 /**
  * One stored tenant. Every field but `name` is optional: rows are written by several tools and
- * the registry has never required them.
+ * the registry has never required them. It is wider than `Tenant` — it also carries the
+ * operational data uwazi stores for other tools but never reads.
  */
-type TenantRecord = Partial<Tenant> & { name: string };
+type TenantRecord = Partial<Tenant> & TenantOperationalData & { name: string };
 
 type Nullable<T> = { [K in keyof T]?: T[K] | null };
 

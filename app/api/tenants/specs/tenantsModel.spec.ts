@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingDB } from '#api/utils/testing_db.js';
+import * as errorHandler from '#api/utils/handleError.js';
 import { TenantsModel, tenantsModel } from '../tenantsModel.js';
 
 const modelTenantNames = [
@@ -165,6 +166,35 @@ describe('tenantsModel', () => {
   });
 
   describe('on error', () => {
+    it('should report a failed reload instead of rejecting in the background', async () => {
+      let changeEvent: Function = () => {};
+      const stream = {
+        on: (event: string, fn: Function) => {
+          if (event === 'change') changeEvent = fn;
+        },
+        close: jest.fn(),
+      };
+      //@ts-ignore
+      jest.spyOn(Model, 'watch').mockReturnValue(stream);
+      const failing = { all: jest.fn().mockRejectedValue(new Error('connection is gone')) };
+      //@ts-ignore
+      const failingModel = new TenantsModel(failing);
+      await failingModel.initialize();
+      const handled = jest.spyOn(errorHandler, 'handleError').mockImplementation(() => undefined);
+
+      changeEvent();
+      await new Promise(resolve => {
+        setTimeout(resolve, 1100);
+      });
+
+      expect(failing.all).toHaveBeenCalled();
+      expect(handled).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'connection is gone' })
+      );
+      await failingModel.closeChangeStream();
+      handled.mockRestore();
+    });
+
     it('watch not supported should close the connection', async () => {
       //Model.watch is not supported by Mongo in-memory used by the tests
       mockChangeStream = {
