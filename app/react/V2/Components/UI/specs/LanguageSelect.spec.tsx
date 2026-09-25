@@ -55,6 +55,37 @@ const expectActiveOption = (value: string) => {
   );
 };
 
+const expectSelectionUnchanged = (onChange: jest.Mock, value: string) => {
+  expectActiveOption(value);
+  expect(onChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('listbox')).toBeInTheDocument();
+};
+
+const focusOutsideSelect = () => {
+  const outside = document.createElement('input');
+  document.body.appendChild(outside);
+  outside.focus();
+  return outside;
+};
+
+const typeAheadOptions = Array.from({ length: 40 }, (_, index) => ({
+  value: `lang-${index}`,
+  label: index === 35 ? 'Zebra' : `Language ${String(index).padStart(2, '0')}`,
+}));
+
+const renderTypeAheadSelect = () => {
+  render(
+    <Provider store={createStore()}>
+      <LanguageSelect
+        value="lang-0"
+        options={typeAheadOptions}
+        onChange={jest.fn()}
+        aria-label="Language"
+      />
+    </Provider>
+  );
+};
+
 describe('LanguageSelect', () => {
   it('shows the translated name on the desktop trigger and in option rows', async () => {
     renderSelect({ isMobile: false });
@@ -101,173 +132,157 @@ describe('LanguageSelect', () => {
       jest.useRealTimers();
     });
 
-    it('moves highlight with arrows and selects with Enter', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
-      const listbox = screen.getByRole('listbox');
-      expect(listbox).toHaveFocus();
+    describe('listbox keys and prefix', () => {
+      it('moves highlight with arrows and selects with Enter', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toHaveFocus();
 
-      await user.keyboard('{ArrowDown}');
-      await user.keyboard('{Enter}');
+        await user.keyboard('{ArrowDown}');
+        await user.keyboard('{Enter}');
 
-      expect(onChange).toHaveBeenCalledWith('es');
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-    });
-
-    it('selects highlighted option with Space', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
-      expect(screen.getByRole('listbox')).toHaveFocus();
-
-      await user.keyboard('{ArrowDown}{ArrowDown}');
-      await user.keyboard(' ');
-
-      expect(onChange).toHaveBeenCalledWith('fr');
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-    });
-
-    it('closes on Escape without selecting', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
-      expect(screen.getByRole('listbox')).toHaveFocus();
-
-      await user.keyboard('{ArrowDown}');
-      await user.keyboard('{Escape}');
-
-      expect(onChange).not.toHaveBeenCalled();
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-    });
-
-    it('jumps highlight to first label matching accumulated prefix', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
-      expect(screen.getByRole('listbox')).toHaveFocus();
-
-      await user.keyboard('f');
-      expectActiveOption('fr');
-      await user.keyboard('{Enter}');
-      expect(onChange).toHaveBeenCalledWith('fr');
-    });
-
-    it('accumulates multi-character prefix within the reset window', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'fr' });
-      await openSelect(user);
-
-      await user.keyboard('e');
-      expectActiveOption('en');
-      await user.keyboard('s');
-      expectActiveOption('es');
-      await user.keyboard('{Enter}');
-      expect(onChange).toHaveBeenCalledWith('es');
-    });
-
-    it('resets the type-ahead prefix after 500ms', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      renderSelect({ value: 'en' });
-      await openSelect(user);
-
-      await user.keyboard('e');
-      expectActiveOption('en');
-      await act(async () => {
-        jest.advanceTimersByTime(500);
+        expect(onChange).toHaveBeenCalledWith('es');
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
       });
-      await user.keyboard('f');
-      expectActiveOption('fr');
+
+      it('selects highlighted option with Space', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
+        expect(screen.getByRole('listbox')).toHaveFocus();
+
+        await user.keyboard('{ArrowDown}{ArrowDown}');
+        await user.keyboard(' ');
+
+        expect(onChange).toHaveBeenCalledWith('fr');
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      });
+
+      it('closes on Escape without selecting', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
+        expect(screen.getByRole('listbox')).toHaveFocus();
+
+        await user.keyboard('{ArrowDown}');
+        await user.keyboard('{Escape}');
+
+        expect(onChange).not.toHaveBeenCalled();
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      });
+
+      it('jumps highlight to first label matching accumulated prefix', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
+        expect(screen.getByRole('listbox')).toHaveFocus();
+
+        await user.keyboard('f');
+        expectActiveOption('fr');
+        await user.keyboard('{Enter}');
+        expect(onChange).toHaveBeenCalledWith('fr');
+      });
+
+      it('accumulates multi-character prefix within the reset window', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'fr' });
+        await openSelect(user);
+
+        await user.keyboard('e');
+        expectActiveOption('en');
+        await user.keyboard('s');
+        expectActiveOption('es');
+        await user.keyboard('{Enter}');
+        expect(onChange).toHaveBeenCalledWith('es');
+      });
+
+      it('resets the type-ahead prefix after 500ms', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        renderSelect({ value: 'en' });
+        await openSelect(user);
+
+        await user.keyboard('e');
+        expectActiveOption('en');
+        await act(async () => {
+          jest.advanceTimersByTime(500);
+        });
+        await user.keyboard('f');
+        expectActiveOption('fr');
+      });
+
+      it('opens from a closed focused trigger and jumps to matching prefix', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        screen.getByRole('button', { name: 'Language' }).focus();
+
+        await user.keyboard('f');
+        expect(screen.getByRole('button', { name: 'Language' })).toHaveAttribute(
+          'aria-expanded',
+          'true'
+        );
+        expectActiveOption('fr');
+        await user.keyboard('{Enter}');
+        expect(onChange).toHaveBeenCalledWith('fr');
+      });
+
+      it('accumulates prefix across closed-trigger open into the listbox', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'fr' });
+        screen.getByRole('button', { name: 'Language' }).focus();
+
+        await user.keyboard('e');
+        expectActiveOption('en');
+        await user.keyboard('s{Enter}');
+        expect(onChange).toHaveBeenCalledWith('es');
+      });
     });
 
-    it('opens from a closed focused trigger and jumps to matching prefix', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      screen.getByRole('button', { name: 'Language' }).focus();
+    describe('focus outside the highlighted option', () => {
+      it('type-ahead still works when an option is focused', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
 
-      await user.keyboard('f');
-      expect(screen.getByRole('button', { name: 'Language' })).toHaveAttribute(
-        'aria-expanded',
-        'true'
-      );
-      expectActiveOption('fr');
-      await user.keyboard('{Enter}');
-      expect(onChange).toHaveBeenCalledWith('fr');
-    });
+        const option = screen.getByRole('option', { name: 'English' });
+        option.focus();
+        expect(option).toHaveFocus();
 
-    it('accumulates prefix across closed-trigger open into the listbox', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'fr' });
-      screen.getByRole('button', { name: 'Language' }).focus();
+        await user.keyboard('f');
+        expectActiveOption('fr');
+        await user.keyboard('{Enter}');
+        expect(onChange).toHaveBeenCalledWith('fr');
+      });
 
-      await user.keyboard('e');
-      expectActiveOption('en');
-      await user.keyboard('s{Enter}');
-      expect(onChange).toHaveBeenCalledWith('es');
-    });
+      it('ignores keydown when focus is outside the select', async () => {
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        const { onChange } = renderSelect({ value: 'en' });
+        await openSelect(user);
+        expectActiveOption('en');
 
-    it('type-ahead still works when an option is focused', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
+        const outside = focusOutsideSelect();
+        expect(outside).toHaveFocus();
 
-      const option = screen.getByRole('option', { name: 'English' });
-      option.focus();
-      expect(option).toHaveFocus();
+        await user.keyboard('f{Enter}');
+        expectSelectionUnchanged(onChange, 'en');
+        outside.remove();
+      });
 
-      await user.keyboard('f');
-      expectActiveOption('fr');
-      await user.keyboard('{Enter}');
-      expect(onChange).toHaveBeenCalledWith('fr');
-    });
+      it('scrolls the highlighted option into view', async () => {
+        const scrollIntoView = jest.fn();
+        Element.prototype.scrollIntoView = scrollIntoView;
+        renderTypeAheadSelect();
 
-    it('ignores keydown when focus is outside the select', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      const { onChange } = renderSelect({ value: 'en' });
-      await openSelect(user);
-      expectActiveOption('en');
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        await openSelect(user);
+        scrollIntoView.mockClear();
 
-      const outside = document.createElement('input');
-      document.body.appendChild(outside);
-      outside.focus();
-      expect(outside).toHaveFocus();
-
-      await user.keyboard('f{Enter}');
-      expectActiveOption('en');
-      expect(onChange).not.toHaveBeenCalled();
-      expect(screen.getByRole('listbox')).toBeInTheDocument();
-      outside.remove();
-    });
-
-    it('scrolls the highlighted option into view', async () => {
-      const scrollIntoView = jest.fn();
-      Element.prototype.scrollIntoView = scrollIntoView;
-
-      const manyOptions = Array.from({ length: 40 }, (_, index) => ({
-        value: `lang-${index}`,
-        label: index === 35 ? 'Zebra' : `Language ${String(index).padStart(2, '0')}`,
-      }));
-      const store = createStore();
-      const onChange = jest.fn();
-      render(
-        <Provider store={store}>
-          <LanguageSelect
-            value="lang-0"
-            options={manyOptions}
-            onChange={onChange}
-            aria-label="Language"
-          />
-        </Provider>
-      );
-
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      await openSelect(user);
-      scrollIntoView.mockClear();
-
-      await user.keyboard('z');
-      expectActiveOption('lang-35');
-      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
-      expect(screen.getByRole('listbox')).toHaveClass('max-h-60', 'overflow-y-auto');
+        await user.keyboard('z');
+        expectActiveOption('lang-35');
+        expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+        expect(screen.getByRole('listbox')).toHaveClass('max-h-60', 'overflow-y-auto');
+      });
     });
   });
 });

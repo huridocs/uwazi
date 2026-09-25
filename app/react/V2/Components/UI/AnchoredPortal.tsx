@@ -52,9 +52,9 @@ const sameStyle = (a: CSSProperties, b: CSSProperties) =>
 const placePanel = (
   anchor: DOMRect,
   panel: DOMRect,
-  prefer: 'start' | 'end',
-  width?: number
+  placement: { prefer: 'start' | 'end'; width?: number }
 ): CSSProperties => {
+  const { prefer, width } = placement;
   const w = width ?? panel.width;
   let left = prefer === 'end' ? anchor.right - w : anchor.left;
   left = Math.min(Math.max(PAD, left), window.innerWidth - PAD - w);
@@ -73,6 +73,21 @@ const placePanel = (
     minWidth: width ? undefined : panel.width,
     zIndex: 60,
     visibility: 'visible',
+  };
+};
+
+const trackPanelLayout = (panelEl: HTMLElement | null, update: () => void) => {
+  update();
+  window.addEventListener('resize', update);
+  window.addEventListener('scroll', update, true);
+  const observer =
+    panelEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
+  if (panelEl) observer?.observe(panelEl);
+
+  return () => {
+    window.removeEventListener('resize', update);
+    window.removeEventListener('scroll', update, true);
+    observer?.disconnect();
   };
 };
 
@@ -102,24 +117,11 @@ const AnchoredPortal = ({
       const anchor = anchorRef.current?.getBoundingClientRect();
       const panel = panelRef.current?.getBoundingClientRect();
       if (!anchor || !panel) return;
-      const next = placePanel(anchor, panel, prefer, width);
+      const next = placePanel(anchor, panel, { prefer, width });
       setStyle(current => (sameStyle(current, next) ? current : next));
     };
 
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-
-    const panelEl = panelRef.current;
-    const observer =
-      panelEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
-    if (panelEl) observer?.observe(panelEl);
-
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
-      observer?.disconnect();
-    };
+    return trackPanelLayout(panelRef.current, update);
   }, [open, anchorRef, prefer, width]);
 
   if (!open) return null;

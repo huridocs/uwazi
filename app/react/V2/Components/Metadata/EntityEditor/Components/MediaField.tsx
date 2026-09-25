@@ -182,14 +182,6 @@ const MediaFieldPreview = ({
     commitTimelinks(next);
   };
 
-  const commitLabel = () => {
-    commitTimelinks(localTimelinks);
-  };
-
-  const removeTimelink = (index: number) => {
-    commitTimelinks(localTimelinks.filter((_item, itemIndex) => itemIndex !== index));
-  };
-
   const addTimelink = () => {
     const currentTime = playerRef.current?.getCurrentTime() ?? 0;
     commitTimelinks([...localTimelinks, secondsToTimelink(currentTime)]);
@@ -295,14 +287,18 @@ const MediaFieldPreview = ({
                   maxLength={TIMELINK_LABEL_MAX}
                   value={timelink.label}
                   onChange={event => updateLocalTimelink(index, { label: event.target.value })}
-                  onBlur={commitLabel}
+                  onBlur={() => commitTimelinks(localTimelinks)}
                   placeholder="Label"
                   className="min-w-32 flex-1 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-sm"
                 />
                 <button
                   type="button"
                   disabled={disabled}
-                  onClick={() => removeTimelink(index)}
+                  onClick={() =>
+                    commitTimelinks(
+                      localTimelinks.filter((_item, itemIndex) => itemIndex !== index)
+                    )
+                  }
                   aria-label="Remove timelink"
                 >
                   <XMarkIcon className="w-4 h-4" />
@@ -380,22 +376,18 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
             const previousUrl = currentUrl;
-            if (localFile) {
-              const attachment = await registerMediaAttachment(entitySharedId, localFile);
-              const { fileLocalID } = attachment;
-              if (!fileLocalID) {
-                return;
-              }
-              onRegisterPendingAttachment(attachment);
-              const nextValue =
-                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID;
-              mediaField.onChange(nextValue);
-              releaseUploadIfReplaced(previousUrl, nextValue);
+            const attachment = localFile
+              ? await registerMediaAttachment(entitySharedId, localFile)
+              : undefined;
+            if (localFile && !attachment?.fileLocalID) {
               return;
             }
-
+            if (attachment) {
+              onRegisterPendingAttachment(attachment);
+            }
+            const storedUrl = attachment?.fileLocalID || nextUrl;
             const nextValue =
-              mode === 'media' ? encodeTimelinksValue(nextUrl, nextTimelinks) : nextUrl;
+              mode === 'media' ? encodeTimelinksValue(storedUrl, nextTimelinks) : storedUrl;
             mediaField.onChange(nextValue);
             releaseUploadIfReplaced(previousUrl, nextValue);
           };

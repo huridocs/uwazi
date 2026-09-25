@@ -75,6 +75,15 @@ const Harness = ({ defaultValue }: { defaultValue: string }) => {
   );
 };
 
+const expectNumberTimeField = (label: string, max?: string) => {
+  const input = screen.getByLabelText(label);
+  expect(input).toHaveAttribute('type', 'number');
+  expect(input).toHaveAttribute('step', '1');
+  if (max) {
+    expect(input).toHaveAttribute('max', max);
+  }
+};
+
 describe('MediaField timelinks', () => {
   beforeEach(() => {
     mockSeekTo.mockClear();
@@ -85,18 +94,9 @@ describe('MediaField timelinks', () => {
   it('renders time inputs as number fields with step 1', () => {
     render(<Harness defaultValue={mediaWithTimelink} />);
 
-    const hours = screen.getByLabelText('Hours');
-    const minutes = screen.getByLabelText('Minutes');
-    const seconds = screen.getByLabelText('Seconds');
-
-    expect(hours).toHaveAttribute('type', 'number');
-    expect(hours).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('type', 'number');
-    expect(minutes).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('max', '59');
-    expect(seconds).toHaveAttribute('type', 'number');
-    expect(seconds).toHaveAttribute('step', '1');
-    expect(seconds).toHaveAttribute('max', '59');
+    expectNumberTimeField('Hours');
+    expectNumberTimeField('Minutes', '59');
+    expectNumberTimeField('Seconds', '59');
   });
 
   it('adds a timelink from the player current time', () => {

@@ -21,16 +21,40 @@ const languageAutonym = (language: { key: string; label?: string }) =>
 const getSelectedLanguage = (locale: string, languages?: LanguagesListSchema) =>
   languages?.find(lang => lang.key === locale) || languages?.find(lang => lang.default);
 
-export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = '' }) => {
+const useLanguageDropdown = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const locale = useAtomValue(localeAtom);
   const { languages: languageList } = useAtomValue(settingsAtom);
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
-
   const selectedLanguage = getSelectedLanguage(locale, languageList);
-
   const isTablet = useIsMobile(768);
+
+  return {
+    inlineEditState,
+    setInlineEditState,
+    locale,
+    languageList,
+    location,
+    dropdownOpen,
+    setDropdownOpen,
+    selectedLanguage,
+    isTablet,
+  };
+};
+
+export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = '' }) => {
+  const {
+    inlineEditState,
+    setInlineEditState,
+    locale,
+    languageList,
+    location,
+    dropdownOpen,
+    setDropdownOpen,
+    selectedLanguage,
+    isTablet,
+  } = useLanguageDropdown();
 
   const handleMainClick = (event: React.MouseEvent) => {
     if (inlineEditState.inlineEdit) {

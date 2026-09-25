@@ -28,6 +28,57 @@ const WIDTH_SAFETY_BUFFER: number = 2;
 
 type Snippet = { text: string; page: number; filename?: string };
 
+type PageRefMap = { [key: number]: HTMLDivElement | null };
+
+const pageContainerForSnippet = (page: number, pageRefs: PageRefMap) => {
+  const cached = pageRefs[page];
+  if (cached) {
+    return cached;
+  }
+
+  const found = document.querySelector(`#page-${page}-container`);
+  if (!(found instanceof HTMLDivElement)) {
+    return null;
+  }
+
+  pageRefs[page] = found;
+  return found;
+};
+
+type PdfViewReset = {
+  isReady: { current: boolean };
+  pageVisibility: Map<number, number>;
+  pageRefsMap: { current: PageRefMap };
+  viewportPages: Set<number>;
+  renderingQueue: PageRenderQueue;
+  initialPage: number;
+};
+
+const resetLoadedPdf = (
+  setPdfDocument: (document: PDFDocumentProxy | undefined) => void,
+  setPdfError: (error: React.ReactNode) => void,
+  setPdfLoading: (loading: { isLoading: boolean; progress: number }) => void
+) => {
+  setPdfDocument(undefined);
+  setPdfError(undefined);
+  setPdfLoading({ isLoading: true, progress: 0 });
+};
+
+const clearPdfViewState = ({
+  isReady,
+  pageVisibility,
+  pageRefsMap,
+  viewportPages,
+  renderingQueue,
+  initialPage,
+}: PdfViewReset) => {
+  isReady.current = false;
+  pageVisibility.clear();
+  pageRefsMap.current = {};
+  viewportPages.clear();
+  renderingQueue.prioritize(initialPage);
+};
+
 type PDFControls = {
   goToPage: (page: number) => void;
   scrollToHighlight: (page: number, highlightKey: string) => void;
@@ -139,14 +190,7 @@ const PDF = ({
     const deadline = Date.now() + 5000;
 
     const attempt = (): void => {
-      let pageContainer = pageRefsMap.current[snippet.page];
-      if (!pageContainer) {
-        const found = document.querySelector(`#page-${snippet.page}-container`);
-        if (found instanceof HTMLDivElement) {
-          pageRefsMap.current[snippet.page] = found;
-          pageContainer = found;
-        }
-      }
+      const pageContainer = pageContainerForSnippet(snippet.page, pageRefsMap.current);
 
       if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
         return;
@@ -243,9 +287,7 @@ const PDF = ({
       }
     };
 
-    setPDF(undefined);
-    setError(undefined);
-    setLoading({ isLoading: true, progress: 0 });
+    resetLoadedPdf(setPDF, setError, setLoading);
 
     const loadingTask = PDFJS.getDocument({
       url: fileUrl,
@@ -289,11 +331,14 @@ const PDF = ({
       });
 
     const pageVisibility = pageVisibilityRef.current;
-    isReady.current = false;
-    pageVisibility.clear();
-    pageRefsMap.current = {};
-    viewportPagesRef.current.clear();
-    renderingQueueRef.current.prioritize(initialPageRef.current);
+    clearPdfViewState({
+      isReady,
+      pageVisibility,
+      pageRefsMap,
+      viewportPages: viewportPagesRef.current,
+      renderingQueue: renderingQueueRef.current,
+      initialPage: initialPageRef.current,
+    });
 
     return () => {
       cancelled = true;
