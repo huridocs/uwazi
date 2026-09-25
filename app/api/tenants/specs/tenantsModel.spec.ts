@@ -1,6 +1,6 @@
 // oxlint-disable max-statements
 import { config } from '#api/config.js';
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -78,7 +78,6 @@ describe('tenantsModel', () => {
       const tenantTwo = tenants.find(t => t.name === 'model-tenant-two');
 
       expect(tenantOne).toEqual({
-        _id: expect.any(ObjectId),
         name: 'model-tenant-one',
         dbName: 'tenant_one',
         indexName: 'index name',
@@ -92,7 +91,6 @@ describe('tenantsModel', () => {
         },
       });
       expect(tenantTwo).toEqual({
-        _id: expect.any(ObjectId),
         name: 'model-tenant-two',
         dbName: 'tenant_two',
       });

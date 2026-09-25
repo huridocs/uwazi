@@ -12,7 +12,7 @@ const stored = [
     dbName: 'ds-tenant-b',
     indexName: 'ds-tenant-b',
     domain: 'b.uwazi.io',
-    featureFlags: { postgresCore: true, s3Storage: true, telemetry: { enabled: true } },
+    featureFlags: { postgresCore: true, fileCacheHeaders: true, telemetry: { enabled: true } },
   },
   { name: 'ds-tenant-a', dbName: 'ds-tenant-a', indexName: 'ds-tenant-a' },
 ];
@@ -23,6 +23,12 @@ const stored = [
  * data source.
  */
 const backends = [{ name: 'Mongo' }];
+
+/**
+ * `fileCacheHeaders` rather than a flag other suites count globally: these rows live in the real
+ * shared collection while the suite runs, and `tenantsContext` loads whatever is there into the
+ * process wide registry.
+ */
 
 describe('TenantsDataSource', () => {
   let db: Db;
@@ -96,7 +102,7 @@ describe('TenantsDataSource', () => {
 
         expect(result.featureFlags).toEqual({
           postgresCore: true,
-          s3Storage: true,
+          fileCacheHeaders: true,
           postgresPages: true,
           telemetry: { enabled: true },
         });
@@ -105,7 +111,10 @@ describe('TenantsDataSource', () => {
       it('should remove a single feature flag sent as null', async () => {
         const result = await sut.upsert('ds-tenant-b', { featureFlags: { postgresCore: null } });
 
-        expect(result.featureFlags).toEqual({ s3Storage: true, telemetry: { enabled: true } });
+        expect(result.featureFlags).toEqual({
+          fileCacheHeaders: true,
+          telemetry: { enabled: true },
+        });
       });
 
       it('should remove a flag inside a group without touching its siblings', async () => {
