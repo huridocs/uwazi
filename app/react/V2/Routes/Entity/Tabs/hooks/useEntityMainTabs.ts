@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   mergeTabGroup,
@@ -18,12 +18,21 @@ import {
 import { MAIN_TAB, SIDE_TAB, isValidMainTab, type MainTabId, type SideTabId } from '../tabIds.js';
 import { useEntitySideButtonModel } from './useEntitySideButtonModel.js';
 
+const usePaneRequest = (): [{ index: number; id: number } | undefined, (index: number) => void] => {
+  const [requestedPane, setRequestedPane] = useState<{ index: number; id: number } | undefined>();
+  const requestPane = useCallback((index: number) => {
+    setRequestedPane(current => ({ index, id: (current?.id ?? 0) + 1 }));
+  }, []);
+  return [requestedPane, requestPane];
+};
+
 const useMainTabActions = ({
   activeMainTab,
   buttonsFor,
   documentOnMain,
   hasMainDocument,
   relationshipsOnMain,
+  requestPane,
   setPendingSideTab,
   setTabGroups,
   updateEntityUrl,
@@ -33,6 +42,7 @@ const useMainTabActions = ({
   documentOnMain: boolean;
   hasMainDocument: boolean;
   relationshipsOnMain: boolean;
+  requestPane: (index: number) => void;
   setPendingSideTab: (value: SideTabId | null) => void;
   setTabGroups: (updater: TabGroupsState | ((prev: TabGroupsState) => TabGroupsState)) => void;
   updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
@@ -77,19 +87,30 @@ const useMainTabActions = ({
       setPendingSideTab(sideTab);
       selectSideTab(sideTab);
       setEntitySideTabInUrl(updateEntityUrl, activeMainTab, sideTab);
+      requestPane(1);
     },
-    [activeMainTab, selectSideTab, setPendingSideTab, updateEntityUrl]
+    [activeMainTab, requestPane, selectSideTab, setPendingSideTab, updateEntityUrl]
   );
 
   const focusRelationshipsPanel = useCallback(() => {
-    if (relationshipsOnMain) return;
+    if (relationshipsOnMain) {
+      requestPane(0);
+      return;
+    }
     focusSideTab(SIDE_TAB.RELATIONSHIPS);
-  }, [focusSideTab, relationshipsOnMain]);
+  }, [focusSideTab, relationshipsOnMain, requestPane]);
 
   const focusDocumentPanel = useCallback(() => {
-    if (documentOnMain) return;
+    if (documentOnMain) {
+      requestPane(0);
+      return;
+    }
     focusSideTab(SIDE_TAB.DOCUMENT);
-  }, [documentOnMain, focusSideTab]);
+  }, [documentOnMain, focusSideTab, requestPane]);
+
+  const showSidePane = useCallback(() => {
+    requestPane(1);
+  }, [requestPane]);
 
   return useMemo(
     () => ({
@@ -98,8 +119,16 @@ const useMainTabActions = ({
       stageSideTab,
       focusRelationshipsPanel,
       focusDocumentPanel,
+      showSidePane,
     }),
-    [focusDocumentPanel, focusRelationshipsPanel, focusSideTab, onMainTabChange, stageSideTab]
+    [
+      focusDocumentPanel,
+      focusRelationshipsPanel,
+      focusSideTab,
+      onMainTabChange,
+      showSidePane,
+      stageSideTab,
+    ]
   );
 };
 
@@ -123,14 +152,18 @@ const useEntityMainTabs = ({
     () => resolveMainTabFromUrl(searchParams, hasMainDocument),
     [searchParams, hasMainDocument]
   );
-  const relationshipsOnMain = activeMainTab === MAIN_TAB.RELATIONSHIPS;
-  const documentOnMain = activeMainTab === MAIN_TAB.DOCUMENT;
+  const onMain = {
+    relationships: activeMainTab === MAIN_TAB.RELATIONSHIPS,
+    document: activeMainTab === MAIN_TAB.DOCUMENT,
+  };
+  const [requestedPane, requestPane] = usePaneRequest();
   const actions = useMainTabActions({
     activeMainTab,
     buttonsFor,
-    documentOnMain,
+    documentOnMain: onMain.document,
     hasMainDocument,
-    relationshipsOnMain,
+    relationshipsOnMain: onMain.relationships,
+    requestPane,
     setPendingSideTab,
     setTabGroups,
     updateEntityUrl,
@@ -138,11 +171,12 @@ const useEntityMainTabs = ({
   return useMemo(
     () => ({
       activeMainTab,
-      relationshipsOnMain,
-      documentOnMain,
+      relationshipsOnMain: onMain.relationships,
+      documentOnMain: onMain.document,
+      requestedPane,
       ...actions,
     }),
-    [actions, activeMainTab, documentOnMain, relationshipsOnMain]
+    [actions, activeMainTab, onMain.document, onMain.relationships, requestedPane]
   );
 };
 
