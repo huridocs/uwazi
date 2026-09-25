@@ -10,7 +10,7 @@ title3, header with dots value 3, text value 3, 2020, ______________, thesauri2 
 "
 `;
 
-exports[`importFile readStream when file is a a zip should return a stream for a file that should be called import.csv by default 1`] = `
+exports[`importFile readStream when file is a zip should return a stream for a file that should be called import.csv by default 1`] = `
 "Title , file , attachments
 
 file1, 1.pdf, att1.doc
@@ -19,7 +19,7 @@ file3, 3.pdf,
 "
 `;
 
-exports[`importFile readStream when file is a a zip when passing a filename should return a read stream for that file 1`] = `
+exports[`importFile readStream when file is a zip when passing a filename should return a read stream for that file 1`] = `
 "file1.txt
 "
 `;
