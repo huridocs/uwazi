@@ -1041,3 +1041,13 @@ header button svg:not([class*='notification-kind-icon']),
     animation: none !important;
   }
 }
+
+.entity-markdown,
+.entity-markdown *:not([style]) {
+  all: revert !important;
+}
+
+.entity-markdown *:is(h1, h2, h3, h4, h5, h6, p):not([style]) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
