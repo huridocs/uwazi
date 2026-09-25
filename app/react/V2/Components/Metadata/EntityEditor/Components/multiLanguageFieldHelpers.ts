@@ -65,6 +65,7 @@ const languageRowSummary = ({
   working,
   onTranslate,
   label,
+  serviceAvailable = true,
 }: {
   languages: string[];
   current: string;
@@ -72,6 +73,7 @@ const languageRowSummary = ({
   working: string[];
   onTranslate?: (language: string) => Promise<string>;
   label: string;
+  serviceAvailable?: boolean;
 }) => {
   const others = languages.filter(language => language !== current);
   const source = values[current]?.trim() ?? '';
@@ -88,11 +90,17 @@ const languageRowSummary = ({
     source,
     empties,
     canTranslate:
-      Boolean(onTranslate) && source.length > 0 && empties.length > 0 && working.length === 0,
+      Boolean(onTranslate) &&
+      serviceAvailable &&
+      source.length > 0 &&
+      empties.length > 0 &&
+      working.length === 0,
     setText,
     emptyText,
     summary: empties.length === 0 ? setText : emptyText,
-    translateTitle: translateHint({ source, current, label, empties }),
+    translateTitle: serviceAvailable
+      ? translateHint({ source, current, label, empties })
+      : t('System', 'Translation service is unavailable', null, false),
   };
 };
 

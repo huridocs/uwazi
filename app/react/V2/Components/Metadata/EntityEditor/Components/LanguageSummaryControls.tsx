@@ -17,6 +17,7 @@ type LanguageSummaryControlsProps = {
   disabled: boolean;
   showAutoTranslate: boolean;
   translateTitle: string;
+  serviceUnavailable?: boolean;
   onToggle: () => void;
   onAutoTranslate: () => void;
 };
@@ -35,6 +36,7 @@ const LanguageSummaryControls = ({
   disabled,
   showAutoTranslate,
   translateTitle,
+  serviceUnavailable = false,
   onToggle,
   onAutoTranslate,
 }: LanguageSummaryControlsProps) => (
@@ -98,6 +100,11 @@ const LanguageSummaryControls = ({
         <SparklesIcon className="h-micro w-micro shrink-0" aria-hidden />
         {step < 3 && <Translate>Auto-translate</Translate>}
       </button>
+    ) : null}
+    {!probe && serviceUnavailable ? (
+      <span role="status" className="min-w-0 truncate text-meta text-seal">
+        {translateTitle}
+      </span>
     ) : null}
   </>
 );

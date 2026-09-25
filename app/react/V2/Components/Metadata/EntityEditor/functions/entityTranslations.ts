@@ -190,6 +190,12 @@ const setTranslationText = ({
   },
 });
 
+const translationValuePath = (language: string, propertyName: string) =>
+  `translations.${language}.${propertyName}`;
+
+const translationTouchedPath = (language: string, propertyName: string) =>
+  `touchedTranslations.${language}.${propertyName}`;
+
 export {
   buildTranslationsForSave,
   installedLanguageKeys,
@@ -197,4 +203,6 @@ export {
   setTranslationText,
   setTranslationTouched,
   stringFromValues,
+  translationTouchedPath,
+  translationValuePath,
 };

@@ -103,7 +103,8 @@ const useFieldTranslate = ({
     working,
     machine,
     translate,
-    markUser: (language: string) => setMachine(prev => ({ ...prev, [language]: false })),
+    markUser: (language: string) =>
+      setMachine(prev => (prev[language] ? { ...prev, [language]: false } : prev)),
   };
 };
 

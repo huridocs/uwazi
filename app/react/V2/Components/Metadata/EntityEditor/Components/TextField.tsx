@@ -1,5 +1,12 @@
-import React from 'react';
-import { FieldValues, Path, RegisterOptions, useFormContext, useWatch } from 'react-hook-form';
+import React, { useCallback } from 'react';
+import {
+  FieldValues,
+  Path,
+  PathValue,
+  RegisterOptions,
+  useFormContext,
+  useFormState,
+} from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
@@ -27,12 +34,21 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   pdfFill,
   translatableName,
 }: TextFieldProps<TFormValues>) => {
-  const { register, setValue, getFieldState, formState } = useFormContext<TFormValues>();
+  const { register, setValue, getFieldState, control } = useFormContext<TFormValues>();
+  const formState = useFormState({ control, name: field, exact: true });
   const fieldState = getFieldState(field, formState);
   const { showError, message } = getFieldErrorState(fieldState);
   const registration = register(field, registerOptions);
-  const currentValue = String(useWatch({ name: field }) ?? '');
   const translatable = type === 'text' ? translatableName : undefined;
+  const onCurrentChange = useCallback(
+    (value: string) => {
+      setValue(field, value as PathValue<TFormValues, typeof field>, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    },
+    [field, setValue]
+  );
 
   return (
     <EntityPdfFillField
@@ -69,13 +85,7 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
               propertyName={translatable}
               label={label}
               idPrefix={String(field)}
-              currentValue={currentValue}
-              onCurrentChange={value =>
-                setValue(field, value as TFormValues[typeof field], {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
+              onCurrentChange={onCurrentChange}
               messageSlot={translationMessageSlot(showError, message)}
               disabled={disabled}
             />

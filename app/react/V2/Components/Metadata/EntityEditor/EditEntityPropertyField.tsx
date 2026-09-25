@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useMemo } from 'react';
+import { useFormContext } from 'react-hook-form';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';
 import type { FileType } from '#shared/types/fileType.js';
@@ -39,7 +40,6 @@ type EditEntityPropertyFieldProps = {
   thesauri: ClientThesaurus[];
   templates: InheritColumnTemplate[];
   metadataProperties: FormMetadataProperty[];
-  metadata?: EditEntityFormValues['metadata'];
   entityMetadata?: Entity['metadata'];
   entitySharedId: string;
   entityAttachments: FileType[];
@@ -68,7 +68,6 @@ const EditEntityPropertyField = ({
   thesauri,
   templates,
   metadataProperties,
-  metadata,
   entityMetadata,
   entitySharedId,
   entityAttachments,
@@ -79,6 +78,7 @@ const EditEntityPropertyField = ({
   relationshipLookup,
   relationshipLookupSearch,
 }: EditEntityPropertyFieldProps) => {
+  const { getValues } = useFormContext<EditEntityFormValues>();
   const field = getMetadataFieldPath(property);
   const registerOptions = { required: property.required };
   const context = activeTemplateId;
@@ -167,7 +167,7 @@ const EditEntityPropertyField = ({
             : undefined
         }
         lookupSearch={async search => {
-          const selectedValues = metadata?.[fieldName] ?? [];
+          const selectedValues = getValues(`metadata.${fieldName}`) ?? [];
           const lookedUp = await relationshipLookup({
             search,
             template: property.content,
@@ -320,14 +320,7 @@ const EditEntityPropertyField = ({
   }
 
   if (property.type === 'preview') {
-    const previewValue = metadata?.[property.name]?.[0]?.value;
-    return (
-      <PreviewField
-        context={context}
-        label={property.label}
-        value={typeof previewValue === 'string' ? previewValue : undefined}
-      />
-    );
+    return <PreviewField context={context} label={property.label} field={field} />;
   }
 
   return null;

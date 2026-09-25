@@ -1,5 +1,12 @@
-import React from 'react';
-import { FieldValues, Path, RegisterOptions, useFormContext, useWatch } from 'react-hook-form';
+import React, { useCallback } from 'react';
+import {
+  FieldValues,
+  Path,
+  PathValue,
+  RegisterOptions,
+  useFormContext,
+  useFormState,
+} from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
@@ -21,10 +28,19 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
 }: TitleFieldProps<TFormValues>) => {
-  const { register, setValue, getFieldState, formState } = useFormContext<TFormValues>();
+  const { register, setValue, getFieldState, control } = useFormContext<TFormValues>();
+  const formState = useFormState({ control, name: field, exact: true });
   const { showError, message } = getFieldErrorState(getFieldState(field, formState));
   const registration = register(field, registerOptions);
-  const currentValue = String(useWatch({ name: field }) ?? '');
+  const onCurrentChange = useCallback(
+    (value: string) => {
+      setValue(field, value as PathValue<TFormValues, typeof field>, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    },
+    [field, setValue]
+  );
 
   return (
     <EntityPdfFillField
@@ -60,13 +76,7 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
             propertyName="title"
             label={label}
             idPrefix={String(field)}
-            currentValue={currentValue}
-            onCurrentChange={value =>
-              setValue(field, value as TFormValues[typeof field], {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
-            }
+            onCurrentChange={onCurrentChange}
             messageSlot={translationMessageSlot(showError, message)}
             disabled={disabled}
           />

@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 import React, { useState } from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { DEFAULT_DEBOUNCE_MS } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { MultiLanguageField } from '../MultiLanguageField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -36,10 +37,12 @@ const Harness = ({
   onTranslate,
   initial = { en: 'Hearing', es: 'Audiencia', fr: '' },
   changeSource = false,
+  serviceUnavailable = false,
 }: {
   onTranslate?: (language: string) => Promise<string>;
   initial?: Record<string, string>;
   changeSource?: boolean;
+  serviceUnavailable?: boolean;
 }) => {
   const [values, setValues] = useState(initial);
   return (
@@ -57,6 +60,7 @@ const Harness = ({
         values={values}
         onChange={(language, value) => setValues(prev => ({ ...prev, [language]: value }))}
         onTranslate={onTranslate}
+        serviceUnavailable={serviceUnavailable}
       />
     </>
   );
@@ -125,5 +129,56 @@ describe('MultiLanguageField', () => {
       expect(screen.getByLabelText('Français title')).toHaveValue('');
     });
     expect(screen.queryByText('Auto')).not.toBeInTheDocument();
+  });
+
+  it('commits a translation row after idle, not on each keystroke', () => {
+    jest.useFakeTimers();
+    const onChange = jest.fn();
+    render(
+      <MultiLanguageField
+        label="Title"
+        idPrefix="title"
+        languages={['en', 'es']}
+        current="en"
+        values={{ en: 'Hearing', es: 'Audiencia' }}
+        onChange={onChange}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+    fireEvent.change(screen.getByLabelText('Español title'), { target: { value: 'Hola' } });
+    expect(onChange).not.toHaveBeenCalled();
+    act(() => {
+      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_MS);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith('es', 'Hola');
+    jest.useRealTimers();
+  });
+
+  it('flushes a translation row on blur', () => {
+    const onChange = jest.fn();
+    render(
+      <MultiLanguageField
+        label="Title"
+        idPrefix="title"
+        languages={['en', 'es']}
+        current="en"
+        values={{ en: 'Hearing', es: 'Audiencia' }}
+        onChange={onChange}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+    const input = screen.getByLabelText('Español title');
+    fireEvent.change(input, { target: { value: 'Hola' } });
+    fireEvent.blur(input);
+    expect(onChange).toHaveBeenCalledWith('es', 'Hola');
+  });
+
+  it('disables auto-translate and shows status when the service is unavailable', () => {
+    render(<Harness onTranslate={jest.fn()} serviceUnavailable />);
+    const button = screen.getByRole('button', { name: 'Auto-translate' });
+    expect(button).toHaveAttribute('aria-disabled');
+    expect(button).toHaveAttribute('title', 'Translation service is unavailable');
+    expect(screen.getByRole('status')).toHaveTextContent('Translation service is unavailable');
   });
 });

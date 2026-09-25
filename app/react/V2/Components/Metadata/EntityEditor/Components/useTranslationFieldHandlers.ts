@@ -1,23 +1,26 @@
-import { useCallback } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { t } from '#app/I18N/index.js';
+import { useCallback, useMemo } from 'react';
+import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
 import { translateText } from '#V2/api/translationService/index.js';
-import { notify } from '#V2/utils/notifyBridge.js';
 import {
-  setTranslationText,
-  setTranslationTouched,
   stringFromValues,
+  translationTouchedPath,
+  translationValuePath,
 } from '../functions/entityTranslations.js';
 import type { EditEntityFormValues } from '../functions/buildEditEntityDefaultValues.js';
+import { useTranslationServiceAvailability } from './TranslationServiceAvailability.js';
+
+const formPath = (path: string) => path as FieldPath<EditEntityFormValues>;
 
 const requestFieldTranslation = async ({
   current,
   currentValue,
   language,
+  onUnavailable,
 }: {
   current: string;
   currentValue: string;
   language: string;
+  onUnavailable: () => void;
 }) => {
   const [text, error] = await translateText({
     text: currentValue,
@@ -25,27 +28,64 @@ const requestFieldTranslation = async ({
     language_to: language,
   });
   if (error || !text) {
-    notify(t('System', 'An error occurred', null, false), 'error');
+    onUnavailable();
     return '';
   }
   return text;
+};
+
+const useWatchedTranslationValues = ({
+  current,
+  currentValue,
+  languages,
+  propertyName,
+}: {
+  current: string | undefined;
+  currentValue: string;
+  languages: string[];
+  propertyName: string;
+}) => {
+  const others = useMemo(
+    () => languages.filter(language => language !== current),
+    [current, languages]
+  );
+  const paths = useMemo(
+    () => others.map(language => formPath(translationValuePath(language, propertyName))),
+    [others, propertyName]
+  );
+  const watched = useWatch({ name: paths });
+  return useMemo(() => {
+    const watchedList = Array.isArray(watched) ? watched : [watched];
+    return Object.fromEntries([
+      [current ?? '', currentValue],
+      ...others.map((language, index) => [language, stringFromValues(watchedList[index])]),
+    ]);
+  }, [current, currentValue, others, watched]);
 };
 
 const useTranslationFieldHandlers = ({
   propertyName,
   current,
   currentValue,
+  sourceField,
   onCurrentChange,
   languages,
 }: {
   propertyName: string;
   current: string | undefined;
   currentValue: string;
+  sourceField: string;
   onCurrentChange: (value: string) => void;
   languages: string[];
 }) => {
   const { setValue, getValues } = useFormContext<EditEntityFormValues>();
-  const translations = useWatch<EditEntityFormValues, 'translations'>({ name: 'translations' });
+  const { markUnavailable } = useTranslationServiceAvailability();
+  const values = useWatchedTranslationValues({
+    current,
+    currentValue,
+    languages,
+    propertyName,
+  });
 
   const onChange = useCallback(
     (language: string, value: string) => {
@@ -53,25 +93,12 @@ const useTranslationFieldHandlers = ({
         onCurrentChange(value);
         return;
       }
-      setValue(
-        'translations',
-        setTranslationText({
-          translations: getValues('translations') ?? {},
-          language,
-          propertyName,
-          value,
-        }),
-        { shouldDirty: true }
-      );
-      setValue(
-        'touchedTranslations',
-        setTranslationTouched({
-          touched: getValues('touchedTranslations') ?? {},
-          language,
-          propertyName,
-        }),
-        { shouldDirty: true }
-      );
+      const valuePath = formPath(translationValuePath(language, propertyName));
+      const touchedPath = formPath(translationTouchedPath(language, propertyName));
+      setValue(valuePath, [{ value }], { shouldDirty: true });
+      if (!getValues(touchedPath)) {
+        setValue(touchedPath, true, { shouldDirty: true });
+      }
     },
     [current, getValues, onCurrentChange, propertyName, setValue]
   );
@@ -79,17 +106,15 @@ const useTranslationFieldHandlers = ({
   const onTranslate = useCallback(
     async (language: string) => {
       if (!current) return '';
-      return requestFieldTranslation({ current, currentValue, language });
+      return requestFieldTranslation({
+        current,
+        currentValue: String(getValues(formPath(sourceField)) ?? ''),
+        language,
+        onUnavailable: markUnavailable,
+      });
     },
-    [current, currentValue]
+    [current, getValues, markUnavailable, sourceField]
   );
-
-  const values = Object.fromEntries([
-    [current ?? '', currentValue],
-    ...languages
-      .filter(language => language !== current)
-      .map(language => [language, stringFromValues(translations?.[language]?.[propertyName])]),
-  ]);
 
   return { onChange, onTranslate, values };
 };
