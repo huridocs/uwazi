@@ -48,6 +48,13 @@ type FeatureFlags = {
     : { [G in keyof Registry[K]]?: ValueOf<Registry[K][G]> };
 };
 
+/** A change to the stored flags: a value sets it, `null` removes it, `undefined` leaves it. */
+type FeatureFlagsPatch = {
+  [K in FeatureFlagName]?: Registry[K] extends FeatureFlagType
+    ? ValueOf<Registry[K]> | null
+    : { [G in keyof Registry[K]]?: ValueOf<Registry[K][G]> | null } | null;
+};
+
 const isFeatureFlagGroup = (definition: FeatureFlagDefinition): definition is FeatureFlagGroup =>
   typeof definition === 'object';
 
@@ -91,4 +98,10 @@ const featureFlagsMongoSchema: Record<string, unknown> = Object.fromEntries(
 );
 
 export { FEATURE_FLAGS, FeatureFlagsSchema, featureFlagsMongoSchema, isFeatureFlagGroup };
-export type { FeatureFlagDefinition, FeatureFlagGroup, FeatureFlagName, FeatureFlags };
+export type {
+  FeatureFlagDefinition,
+  FeatureFlagGroup,
+  FeatureFlagName,
+  FeatureFlags,
+  FeatureFlagsPatch,
+};
