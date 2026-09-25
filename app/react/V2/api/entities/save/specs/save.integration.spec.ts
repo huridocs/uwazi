@@ -77,7 +77,13 @@ const imageUploadEntity = () => ({
 const parseEntityJsonFromPayload = (payload: ReturnType<typeof buildSaveWithFilesPayload>) =>
   JSON.parse(payload.fields?.[0]?.value ?? '{}') as {
     metadata?: { image?: Array<{ attachment?: number; value: string }> };
-    translations?: Record<string, { image?: Array<{ attachment?: number; value: string }> }>;
+    translations?: Record<
+      string,
+      {
+        title?: Array<{ value: string }>;
+        image?: Array<{ attachment?: number; value: string }>;
+      }
+    >;
     attachments?: Array<{ serializedFile?: string }>;
   };
 
@@ -234,19 +240,7 @@ describe('entity save stack integration', () => {
       expect(payload.fields?.[0]?.name).toBe('entity');
       expect(payload.files?.map(file => file.name)).toEqual(['attachments[0]', 'documents[0]']);
 
-      mockPostMultipart.mockResolvedValue([
-        {
-          entity: {
-            _id: 'entity1',
-            sharedId: 'entity1',
-            language: 'en',
-            template: 't1',
-            creationDate: 1,
-            user: 'u1',
-            title: 'Entity 1',
-          },
-        },
-      ]);
+      mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
 
       const [saved, error] = await saveWithFiles(entity, {
         headers: { 'Content-Language': 'en' },
@@ -270,7 +264,7 @@ describe('entity save stack integration', () => {
       expect(payload.files?.[0]?.filename).toBe('photo.jpg');
     });
 
-    it('maps a newly uploaded image on a non-current language during create', async () => {
+    it('omits translation media pending uploads instead of sending attachment indices', async () => {
       mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
       const entity = {
         title: 'Entity 1',
@@ -293,8 +287,8 @@ describe('entity save stack integration', () => {
 
       expect(error).toBeUndefined();
       expect(entityJson.metadata?.image).toEqual([{ value: '/en.jpg' }]);
-      expect(entityJson.translations?.es.image).toEqual([{ value: '', attachment: 0 }]);
-      expect(entityJson.attachments?.[0]?.serializedFile).toBeUndefined();
+      expect(entityJson.translations?.es.image).toBeUndefined();
+      expect(entityJson.translations?.es.title).toEqual([{ value: 'Entidad' }]);
     });
   });
 });

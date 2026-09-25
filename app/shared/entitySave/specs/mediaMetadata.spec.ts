@@ -247,20 +247,43 @@ describe('mapMediaMetadataForSave', () => {
   });
 
   describe('translations', () => {
-    it('maps translation media upload ids with the same pending attachments as current metadata', () => {
+    it('omits translation media pending uploads so they inherit the target language files', () => {
+      const prepared = mapMediaMetadataForSave(
+        {
+          title: 'New',
+          template: 'template1',
+          metadata: { image: [{ value: 'enImageId' }] },
+          translations: { es: { title: [{ value: 'Nuevo' }], image: [{ value: 'enImageId' }] } },
+          attachments: [
+            {
+              originalname: 'en.png',
+              filename: 'en.png',
+              fileLocalID: 'enImageId',
+              serializedFile: 'data:image/png;base64,aW1hZ2U=',
+            },
+          ],
+        },
+        mediaPropertyNames,
+        mediaPropertyTypes
+      );
+      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
+      expect(prepared.translations?.es.image).toBeUndefined();
+      expect(prepared.translations?.es.title).toEqual([{ value: 'Nuevo' }]);
+    });
+
+    it('keeps translation media urls without attachment indices', () => {
       const prepared = mapMediaMetadataForSave(
         {
           title: 'New',
           template: 'template1',
           metadata: { image: [{ value: '/en.jpg' }] },
-          translations: { es: { title: [{ value: 'Nuevo' }], image: [{ value: 'esImageId' }] } },
-          attachments: [{ originalname: 'es.png', filename: 'es.png', fileLocalID: 'esImageId' }],
+          translations: { es: { image: [{ value: 'https://cdn/es.jpg' }] } },
+          attachments: [],
         },
         mediaPropertyNames,
         mediaPropertyTypes
       );
-      expect(metadata(prepared).image).toEqual([{ value: '/en.jpg' }]);
-      expect(prepared.translations?.es.image).toEqual([{ value: '', attachment: 0 }]);
+      expect(prepared.translations?.es.image).toEqual([{ value: 'https://cdn/es.jpg' }]);
     });
   });
 });

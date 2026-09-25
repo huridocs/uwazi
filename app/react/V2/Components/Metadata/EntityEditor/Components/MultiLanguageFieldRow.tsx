@@ -76,7 +76,9 @@ const MultiLanguageFieldRow = React.memo(
   }: MultiLanguageFieldRowProps) => {
     const fieldId = `${idPrefix}-lang-${language}`;
     const commit = useCallback((next: string) => onChange(language, next), [language, onChange]);
-    const { draft, setDraft, commitNow } = useDebouncedDraft(value, commit);
+    const { draft, setDraft, commitNow } = useDebouncedDraft(value, commit, {
+      flushWhen: current,
+    });
     const onInput = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       onUserEdit(language);
       setDraft(event.target.value);
