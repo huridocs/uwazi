@@ -10,12 +10,32 @@ type MarkdownProps = {
 
 const markdownParser = new MarkdownIt({ html: true });
 
+const safeCssValue = [/^[a-zA-Z0-9\s,.#%()-]+$/];
+
 const sanitizeOptions = {
-  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'del', 'ins']),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
+    '*': ['id', 'class', 'style'],
     a: ['href', 'name', 'target', 'rel'],
     img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+    abbr: ['title'],
+  },
+  allowedStyles: {
+    '*': Object.fromEntries(
+      [
+        'color',
+        'background-color',
+        'font-family',
+        'font-size',
+        'font-style',
+        'font-weight',
+        'text-align',
+        'text-decoration',
+        'text-transform',
+        'vertical-align',
+      ].map(property => [property, safeCssValue])
+    ),
   },
   transformTags: {
     a: (tagName: string, attribs: sanitizeHtml.Attributes) => ({
