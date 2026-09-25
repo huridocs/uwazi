@@ -76,6 +76,7 @@ type ClientFeatureFlags = {
   featureFlagEntityViewerv2?: boolean;
   featureFlagLibraryV2?: boolean;
   aiAssistant?: boolean;
+  translationService?: boolean;
 };
 
 type ClientProperty = Property & {

@@ -49,6 +49,8 @@ describe('buildEditEntityDefaultValues', () => {
     expect(values.template).toBe('t1');
     expect(values.showIcon).toBe(false);
     expect(values.metadata.text_prop).toEqual([{ value: 'hello' }]);
+    expect(values.translations).toEqual({});
+    expect(values.touchedTranslations).toEqual({});
   });
 
   it('returns empty defaults when entity is missing', () => {
@@ -59,6 +61,20 @@ describe('buildEditEntityDefaultValues', () => {
       showIcon: false,
       icon: { _id: null, type: 'Empty', label: '' },
       metadata: {},
+      translations: {},
+      touchedTranslations: {},
     });
+  });
+
+  it('uses the first template when creating without an entity', () => {
+    const values = buildEditEntityDefaultValues(undefined, [
+      {
+        _id: 't1',
+        properties: [{ _id: 'p1', name: 'text_prop', type: 'text', label: 'Text' }],
+      },
+    ]);
+    expect(values.template).toBe('t1');
+    expect(values.metadata.text_prop).toEqual([]);
+    expect(values.translations).toEqual({});
   });
 });

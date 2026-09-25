@@ -140,9 +140,11 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Attachments
 Authentication code,Authentication code
+Auto,Auto
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,auto-created
+Auto-translate,Auto-translate
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
 Available default translation,Available default translation
@@ -469,8 +471,10 @@ Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
+Error loading your media,Error loading your media
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,low
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Manage relationship types
 Manage site settings and configuration,Manage site settings and configuration
 Manage types,Manage types
@@ -1387,7 +1392,9 @@ Training,Training
 Training model,Training model
 Training sample,Training sample
 Translate,Translate
+Translating,Translating
 Translation,Translation
+Translation service is unavailable,Translation service is unavailable
 Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

@@ -107,4 +107,16 @@ describe('editEntityErrors', () => {
       },
     });
   });
+
+  it('should map translation api validations onto the matching field', () => {
+    expect(
+      apiValidationsToEditEntityErrors([
+        { instancePath: '/translations/es/title', message: 'Title is invalid' },
+        { instancePath: '/translations/es/simple_text', message: 'Text is invalid' },
+      ])
+    ).toEqual({
+      title: 'Title is invalid',
+      metadata: { simple_text: 'Text is invalid' },
+    });
+  });
 });

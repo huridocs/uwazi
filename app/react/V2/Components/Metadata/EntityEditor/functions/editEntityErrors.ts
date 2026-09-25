@@ -20,6 +20,47 @@ const parseMetadataPropertyName = (instancePath: string): string | undefined => 
   return undefined;
 };
 
+const setIfEmpty = (target: Record<string, string>, key: string, message: string) => {
+  if (!target[key]) target[key] = message;
+};
+
+const applyRootValidation = (errors: EditEntityErrors, instancePath: string, message: string) => {
+  if (instancePath === '.title' || instancePath === '/title') {
+    if (!errors.title) errors.title = message;
+    return true;
+  }
+  if (instancePath === '.template' || instancePath === '/template') {
+    if (!errors.template) errors.template = message;
+    return true;
+  }
+  return false;
+};
+
+const applyValidation = ({
+  errors,
+  metadata,
+  instancePath,
+  message,
+}: {
+  errors: EditEntityErrors;
+  metadata: Record<string, string>;
+  instancePath: string;
+  message: string;
+}) => {
+  if (applyRootValidation(errors, instancePath, message)) return;
+  const translationProperty = instancePath.match(/^\/translations\/[^/]+\/([^/]+)/)?.[1];
+  if (translationProperty === 'title') {
+    if (!errors.title) errors.title = message;
+    return;
+  }
+  if (translationProperty) {
+    setIfEmpty(metadata, translationProperty, message);
+    return;
+  }
+  const propertyName = parseMetadataPropertyName(instancePath);
+  if (propertyName) setIfEmpty(metadata, propertyName, message);
+};
+
 const apiValidationsToEditEntityErrors = (
   validations: ApiValidation[] | undefined
 ): EditEntityErrors | undefined => {
@@ -29,22 +70,7 @@ const apiValidationsToEditEntityErrors = (
   const metadata: Record<string, string> = {};
 
   validations.forEach(({ instancePath, message }) => {
-    if (!message) return;
-
-    if (instancePath === '.title' || instancePath === '/title') {
-      if (!errors.title) errors.title = message;
-      return;
-    }
-
-    if (instancePath === '.template' || instancePath === '/template') {
-      if (!errors.template) errors.template = message;
-      return;
-    }
-
-    const propertyName = parseMetadataPropertyName(instancePath);
-    if (propertyName && !metadata[propertyName]) {
-      metadata[propertyName] = message;
-    }
+    if (message) applyValidation({ errors, metadata, instancePath, message });
   });
 
   if (Object.keys(metadata).length > 0) {
@@ -136,24 +162,34 @@ const getFirstEditEntityErrorPath = (
   return findFirstMetadataErrorPath(errors.metadata, metadataProperties);
 };
 
-const applyScalarEditEntityError = (
-  setError: UseFormSetError<EditEntityFormValues>,
-  path: 'title' | 'template',
-  message: string | undefined,
-  appliedPaths: Set<string>
-) => {
+const applyScalarEditEntityError = ({
+  setError,
+  path,
+  message,
+  appliedPaths,
+}: {
+  setError: UseFormSetError<EditEntityFormValues>;
+  path: 'title' | 'template';
+  message: string | undefined;
+  appliedPaths: Set<string>;
+}) => {
   if (!message) return;
 
   setError(path, { type: 'server', message });
   appliedPaths.add(path);
 };
 
-const applyMetadataEditEntityErrors = (
-  setError: UseFormSetError<EditEntityFormValues>,
-  metadataErrors: Record<string, string | undefined>,
-  metadataProperties: FormMetadataProperty[],
-  appliedPaths: Set<string>
-) => {
+const applyMetadataEditEntityErrors = ({
+  setError,
+  metadataErrors,
+  metadataProperties,
+  appliedPaths,
+}: {
+  setError: UseFormSetError<EditEntityFormValues>;
+  metadataErrors: Record<string, string | undefined>;
+  metadataProperties: FormMetadataProperty[];
+  appliedPaths: Set<string>;
+}) => {
   const relationshipPrimaryNames = buildRelationshipPrimaryNames(metadataProperties);
   const propertyByName = new Map(metadataProperties.map(property => [property.name, property]));
 
@@ -181,11 +217,21 @@ const applyEditEntityErrors = (
 
   const appliedPaths = new Set<string>();
 
-  applyScalarEditEntityError(setError, 'title', errors.title, appliedPaths);
-  applyScalarEditEntityError(setError, 'template', errors.template, appliedPaths);
+  applyScalarEditEntityError({ setError, path: 'title', message: errors.title, appliedPaths });
+  applyScalarEditEntityError({
+    setError,
+    path: 'template',
+    message: errors.template,
+    appliedPaths,
+  });
 
   if (errors.metadata) {
-    applyMetadataEditEntityErrors(setError, errors.metadata, metadataProperties, appliedPaths);
+    applyMetadataEditEntityErrors({
+      setError,
+      metadataErrors: errors.metadata,
+      metadataProperties,
+      appliedPaths,
+    });
   }
 };
 

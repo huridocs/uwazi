@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
+import {
+  Controller,
+  FieldValues,
+  Path,
+  RegisterOptions,
+  useFormContext,
+  useFormState,
+} from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
@@ -34,7 +41,8 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
   inheritColumns = [],
   onEditSource,
 }: RelationshipFieldProps<TFormValues>) => {
-  const { control, getFieldState, formState } = useFormContext<TFormValues>();
+  const { control, getFieldState } = useFormContext<TFormValues>();
+  const formState = useFormState({ control, name: field, exact: true });
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const fieldState = getFieldState(field, formState);
   const { showError, message } = getFieldErrorState(fieldState);

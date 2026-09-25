@@ -69,7 +69,14 @@ const EditEntityComponent = ({
 
   const store = useMemo(() => {
     const nextStore = createStore();
-    nextStore.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
+    nextStore.set(settingsAtom, {
+      mapLayers: ['Streets', 'Hybrid', 'Satellite'],
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish' },
+      ],
+      features: { translationService: true },
+    });
     nextStore.set(templatesAtom, templatesForStory);
     nextStore.set(thesauriAtom, thesauri);
     nextStore.set(localeAtom, locale);

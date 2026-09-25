@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ImageMetadataProperty } from '#V2/formatters/types.js';
 
@@ -21,6 +21,11 @@ const Image = ({
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
   const cover = imageStyle === 'cover';
   const compact = density === 'compact';
+  const srcKey = values.map(image => image.value).join('\0');
+
+  useEffect(() => {
+    setErrorIndices(new Set());
+  }, [srcKey]);
 
   if (!values.length || !values[0].value) {
     return null;
@@ -51,7 +56,7 @@ const Image = ({
               style={{ objectFit: cover ? 'cover' : 'contain' }}
               src={image.value}
               alt={image.alt}
-              onError={() => setErrorIndices(prevErrors => prevErrors.add(index))}
+              onError={() => setErrorIndices(prevErrors => new Set(prevErrors).add(index))}
             />
           </div>
         );

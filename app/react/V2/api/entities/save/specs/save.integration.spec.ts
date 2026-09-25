@@ -77,6 +77,13 @@ const imageUploadEntity = () => ({
 const parseEntityJsonFromPayload = (payload: ReturnType<typeof buildSaveWithFilesPayload>) =>
   JSON.parse(payload.fields?.[0]?.value ?? '{}') as {
     metadata?: { image?: Array<{ attachment?: number; value: string }> };
+    translations?: Record<
+      string,
+      {
+        title?: Array<{ value: string }>;
+        image?: Array<{ attachment?: number; value: string }>;
+      }
+    >;
     attachments?: Array<{ serializedFile?: string }>;
   };
 
@@ -233,19 +240,7 @@ describe('entity save stack integration', () => {
       expect(payload.fields?.[0]?.name).toBe('entity');
       expect(payload.files?.map(file => file.name)).toEqual(['attachments[0]', 'documents[0]']);
 
-      mockPostMultipart.mockResolvedValue([
-        {
-          entity: {
-            _id: 'entity1',
-            sharedId: 'entity1',
-            language: 'en',
-            template: 't1',
-            creationDate: 1,
-            user: 'u1',
-            title: 'Entity 1',
-          },
-        },
-      ]);
+      mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
 
       const [saved, error] = await saveWithFiles(entity, {
         headers: { 'Content-Language': 'en' },
@@ -267,6 +262,33 @@ describe('entity save stack integration', () => {
       expect(entityJson.attachments?.[0]?.serializedFile).toBeUndefined();
       expect(payload.files?.map(file => file.name)).toEqual(['attachments[0]']);
       expect(payload.files?.[0]?.filename).toBe('photo.jpg');
+    });
+
+    it('omits translation media pending uploads instead of sending attachment indices', async () => {
+      mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
+      const entity = {
+        title: 'Entity 1',
+        template: 't1',
+        language: 'en',
+        metadata: { image: [{ value: '/en.jpg' }] },
+        translations: {
+          es: { title: [{ value: 'Entidad' }], image: [{ value: 'localImageId' }] },
+        },
+        attachments: imageUploadEntity().attachments,
+      };
+      const [, error] = await saveWithFiles(entity, {
+        headers: { 'Content-Language': 'en' },
+        ...imageUploadMediaConfig(),
+      });
+      const payload = mockPostMultipart.mock.calls[0]?.[1] as ReturnType<
+        typeof buildSaveWithFilesPayload
+      >;
+      const entityJson = parseEntityJsonFromPayload(payload);
+
+      expect(error).toBeUndefined();
+      expect(entityJson.metadata?.image).toEqual([{ value: '/en.jpg' }]);
+      expect(entityJson.translations?.es.image).toBeUndefined();
+      expect(entityJson.translations?.es.title).toEqual([{ value: 'Entidad' }]);
     });
   });
 });

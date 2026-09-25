@@ -1,5 +1,5 @@
 import type { MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import type { EntityWithSaveMetadata, MediaPropertyType } from './types.js';
+import type { EntitySaveMetadata, EntityWithSaveMetadata, MediaPropertyType } from './types.js';
 
 const UPLOAD_ID_PATTERN = /^[a-zA-Z\d_]+$/;
 
@@ -16,29 +16,25 @@ const parseMediaSourceUrl = (value: string): string => {
 type AttachmentLike = {
   fileLocalID?: string;
   serializedFile?: string;
+  timeLinks?: string;
 };
 
 const isUploadedAttachment = (
   file: AttachmentLike
 ): file is AttachmentLike & { serializedFile: string } => typeof file.serializedFile === 'string';
 
-const findUploadedAttachmentIndex = (
-  attachments: ReadonlyArray<AttachmentLike>,
-  matches: (file: AttachmentLike) => boolean
-): number => attachments.filter(isUploadedAttachment).findIndex(matches);
+const pendingUploadAttachments = (attachments: ReadonlyArray<AttachmentLike>) => {
+  const uploaded = attachments.filter(isUploadedAttachment);
+  return uploaded.length > 0 ? uploaded : attachments.filter(file => Boolean(file.fileLocalID));
+};
 
-const findFileLocalIdAttachmentIndex = (
+const findPendingByFileLocalId = (
   attachments: ReadonlyArray<AttachmentLike>,
   fileLocalID: string
-): number =>
-  attachments
-    .filter(file => Boolean(file.fileLocalID))
-    .findIndex(file => file.fileLocalID === fileLocalID);
-
-const resolveMetadataAttachmentIndex = (
-  attachments: ReadonlyArray<AttachmentLike>,
-  fileLocalID: string
-): number => findUploadedAttachmentIndex(attachments, file => file.fileLocalID === fileLocalID);
+) => {
+  const pending = pendingUploadAttachments(attachments);
+  return { pending, index: pending.findIndex(file => file.fileLocalID === fileLocalID) };
+};
 
 const mapTimelinkValue = (
   rawValue: string,
@@ -49,24 +45,26 @@ const mapTimelinkValue = (
     return { value: rawValue };
   }
 
-  const [, id, timeLinks] = timelinkMatch;
-  const trimmedId = id.trim();
-  if (!isUploadId(trimmedId)) {
+  const [, , timeLinks] = timelinkMatch;
+  const id = parseMediaSourceUrl(rawValue);
+  if (!isUploadId(id)) {
     return { value: rawValue };
   }
 
-  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, trimmedId);
-  return attachmentIndex >= 0
-    ? { value: '', attachment: attachmentIndex, timeLinks }
-    : { value: rawValue };
+  const { index } = findPendingByFileLocalId(attachments, id);
+  return index >= 0 ? { value: '', attachment: index, timeLinks } : { value: rawValue };
 };
 
 const mapUploadIdValue = (
   uploadId: string,
   attachments: ReadonlyArray<AttachmentLike>
 ): MetadataObjectSchema => {
-  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, uploadId);
-  return attachmentIndex >= 0 ? { value: '', attachment: attachmentIndex } : { value: uploadId };
+  const { pending, index } = findPendingByFileLocalId(attachments, uploadId);
+  if (index < 0) {
+    return { value: uploadId };
+  }
+  const timeLinks = pending[index]?.timeLinks;
+  return { value: '', attachment: index, ...(timeLinks ? { timeLinks } : {}) };
 };
 
 const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => {
@@ -85,22 +83,28 @@ const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => 
   return isUploadId(rawValue) ? rawValue : undefined;
 };
 
+type MediaMetadataBag = Record<string, ReadonlyArray<{ value?: unknown }> | undefined> | undefined;
+
+const currentAndTranslationMetadata = (
+  current: MediaMetadataBag,
+  translations?: Record<string, MediaMetadataBag>
+): MediaMetadataBag[] => [current, ...Object.values(translations ?? {})];
+
 const filterReferencedPendingAttachments = <T extends AttachmentLike>(
   pending: ReadonlyArray<T>,
-  metadata: EntityWithSaveMetadata['metadata'],
+  metadataBags: ReadonlyArray<MediaMetadataBag>,
   mediaPropertyNames: ReadonlySet<string>
 ): T[] => {
   const referenced = new Set<string>();
-  mediaPropertyNames.forEach(name => {
-    const rawValue = metadata?.[name]?.[0]?.value;
-    if (typeof rawValue !== 'string') {
-      return;
+  for (const metadata of metadataBags) {
+    for (const name of mediaPropertyNames) {
+      const rawValue = metadata?.[name]?.[0]?.value;
+      if (typeof rawValue === 'string') {
+        const uploadId = extractUploadIdFromMediaValue(rawValue);
+        if (uploadId) referenced.add(uploadId);
+      }
     }
-    const uploadId = extractUploadIdFromMediaValue(rawValue);
-    if (uploadId) {
-      referenced.add(uploadId);
-    }
-  });
+  }
   return pending.filter(
     (attachment): attachment is T & { fileLocalID: string } =>
       typeof attachment.fileLocalID === 'string' && referenced.has(attachment.fileLocalID)
@@ -124,48 +128,77 @@ const mapMediaValue = (
   return { value: rawValue };
 };
 
+type MediaMapContext = {
+  attachments: ReadonlyArray<AttachmentLike>;
+  names: ReadonlySet<string>;
+  types: ReadonlyMap<string, MediaPropertyType>;
+};
+
+const mapMediaField = (
+  name: string,
+  values: MetadataObjectSchema[] | undefined,
+  ctx: MediaMapContext
+): MetadataObjectSchema[] | undefined => {
+  if (!values?.length || !ctx.names.has(name)) return values;
+  const propertyType = ctx.types.get(name);
+  const [existing] = values;
+  const rawValue = existing?.value;
+  if (!propertyType || typeof rawValue !== 'string') return values;
+  if (
+    rawValue === '' &&
+    (typeof existing.attachment === 'number' || typeof existing.timeLinks === 'string')
+  ) {
+    return values;
+  }
+  return [mapMediaValue(rawValue, ctx.attachments, propertyType)];
+};
+
+const mapMediaBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveMetadata =>
+  Object.fromEntries(
+    Object.entries(bag).map(([name, values]) => [name, mapMediaField(name, values, ctx)])
+  );
+
+const mapTranslationBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveMetadata =>
+  Object.fromEntries(
+    Object.entries(bag).flatMap(([name, values]) => {
+      const mapped = mapMediaField(name, values, ctx);
+      return mapped?.some(entry => typeof entry.attachment === 'number') ? [] : [[name, mapped]];
+    })
+  );
+
 const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
   entity: T,
   mediaPropertyNames: ReadonlySet<string>,
   mediaPropertyTypes: ReadonlyMap<string, MediaPropertyType>
 ): T => {
-  if (!entity.metadata || mediaPropertyNames.size === 0) {
-    return entity;
-  }
-
-  const attachments = entity.attachments ?? [];
-  const metadata = Object.fromEntries(
-    Object.entries(entity.metadata).map(([name, values]) => {
-      if (!values?.length || !mediaPropertyNames.has(name)) {
-        return [name, values];
-      }
-      const propertyType = mediaPropertyTypes.get(name);
-      const existing = values[0];
-      const rawValue = existing?.value;
-      if (!propertyType || typeof rawValue !== 'string') {
-        return [name, values];
-      }
-      if (
-        rawValue === '' &&
-        (typeof existing.attachment === 'number' || typeof existing.timeLinks === 'string')
-      ) {
-        return [name, values];
-      }
-      return [name, [mapMediaValue(rawValue, attachments, propertyType)]];
-    })
-  ) as T['metadata'];
-
-  return { ...entity, metadata };
+  if (mediaPropertyNames.size === 0) return entity;
+  const ctx: MediaMapContext = {
+    attachments: entity.attachments ?? [],
+    names: mediaPropertyNames,
+    types: mediaPropertyTypes,
+  };
+  return {
+    ...entity,
+    ...(entity.metadata ? { metadata: mapMediaBag(entity.metadata, ctx) } : {}),
+    ...(entity.translations
+      ? {
+          translations: Object.fromEntries(
+            Object.entries(entity.translations).map(([language, bag]) => [
+              language,
+              mapTranslationBag(bag, ctx),
+            ])
+          ),
+        }
+      : {}),
+  };
 };
 
 export {
+  currentAndTranslationMetadata,
   extractUploadIdFromMediaValue,
   filterReferencedPendingAttachments,
-  findFileLocalIdAttachmentIndex,
-  findUploadedAttachmentIndex,
   isUploadId,
   mapMediaMetadataForSave,
   mapMediaValue,
   parseMediaSourceUrl,
-  resolveMetadataAttachmentIndex,
 };

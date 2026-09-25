@@ -1,87 +1,16 @@
-import isString from 'lodash/isString.js';
 import type { MetadataObjectSchema, MetadataSchema } from '#shared/types/commonTypes.js';
-import { isUploadId } from './mediaMetadata.js';
+import { mapMediaValue } from './mediaMetadata.js';
 import { isLegacyMetadataObject, isMediaProperty, shouldSkipValue } from './legacyTypes.js';
-import type {
-  LegacyTemplate,
-  MediaProperty,
-  WrapableAttachment,
-  WrapableEntity,
-} from './legacyTypes.js';
-
-type LinkedAttachmentValue = {
-  value: string;
-  attachment: number;
-  timeLinks?: string;
-};
-type FileLocalMetadataValues = Record<string, LinkedAttachmentValue>;
+import type { LegacyTemplate, MediaProperty, WrapableEntity } from './legacyTypes.js';
 
 type WrappedEntity<T extends WrapableEntity> = Omit<T, 'metadata'> & {
   metadata?: MetadataSchema;
 };
 
-const buildFileLocalMetadataValues = (
-  attachments: ReadonlyArray<WrapableAttachment>
-): FileLocalMetadataValues =>
-  attachments
-    .filter(attachment => Boolean(attachment.fileLocalID))
-    .reduce<FileLocalMetadataValues>((previousValue, attachment, index) => {
-      const { fileLocalID } = attachment;
-      if (!fileLocalID) {
-        return previousValue;
-      }
-      return {
-        ...previousValue,
-        [fileLocalID]: {
-          value: '',
-          attachment: index,
-          timeLinks: attachment.timeLinks,
-        },
-      };
-    }, {});
-
 const resolveFieldValue = (metadataEntry: unknown) =>
   isLegacyMetadataObject(metadataEntry) && metadataEntry.data !== undefined
     ? metadataEntry.data
     : metadataEntry;
-
-const resolveMediaFileLocalId = (
-  property: MediaProperty | undefined,
-  metadataEntry: unknown,
-  fieldValue: unknown
-): { fileLocalID: unknown; timeLinks?: string } => {
-  if (!(property && metadataEntry && property.type === 'media' && isString(fieldValue))) {
-    return { fileLocalID: fieldValue };
-  }
-
-  const mediaExpGroups = fieldValue.match(/^\(?([\w+]{5,15})(, ({.+})\))?|$/);
-  if (!mediaExpGroups?.[1]) {
-    return { fileLocalID: fieldValue };
-  }
-
-  const [, matchedId = fieldValue, , timeLinks] = mediaExpGroups;
-  return { fileLocalID: matchedId, timeLinks };
-};
-
-const withTimeLinks = (
-  values: FileLocalMetadataValues,
-  fileLocalID: unknown,
-  timeLinks?: string
-): FileLocalMetadataValues => {
-  if (
-    !timeLinks ||
-    !isString(fileLocalID) ||
-    fileLocalID.length >= 20 ||
-    !isUploadId(fileLocalID) ||
-    !values[fileLocalID]
-  ) {
-    return values;
-  }
-  return {
-    ...values,
-    [fileLocalID]: { ...values[fileLocalID], timeLinks },
-  };
-};
 
 const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
   if (value === null || value === undefined) {
@@ -105,39 +34,37 @@ const wrapArrayEntry = (metadataEntry: ReadonlyArray<unknown>): MetadataObjectSc
     return { value: toPropertyValue(entry) };
   });
 
-const defaultWrappedValue = (metadataEntry: unknown): MetadataObjectSchema => {
-  if (isLegacyMetadataObject(metadataEntry) && metadataEntry.data !== undefined) {
-    return { value: toPropertyValue(metadataEntry.data) };
-  }
-  return { value: toPropertyValue(metadataEntry) };
+const defaultWrappedValue = (metadataEntry: unknown): MetadataObjectSchema => ({
+  value: toPropertyValue(resolveFieldValue(metadataEntry)),
+});
+
+type WrapEntryContext = {
+  mediaProperties: MediaProperty[];
+  attachments: NonNullable<WrapableEntity['attachments']>;
 };
 
 const wrapMetadataEntry = (
   key: string,
   metadataEntry: unknown,
-  mediaProperties: MediaProperty[],
-  fileLocalMetadataValues: FileLocalMetadataValues
-): { wrapped: MetadataObjectSchema[]; values: FileLocalMetadataValues } => {
+  { mediaProperties, attachments }: WrapEntryContext
+): MetadataObjectSchema[] => {
   const property = mediaProperties.find(item => item.name === key);
   const fieldValue = resolveFieldValue(metadataEntry);
 
-  if (isMediaProperty(property) && shouldSkipValue(fieldValue)) {
-    return { wrapped: [{ value: '' }], values: fileLocalMetadataValues };
+  if (isMediaProperty(property)) {
+    if (shouldSkipValue(fieldValue)) {
+      return [{ value: '' }];
+    }
+    if (typeof fieldValue === 'string') {
+      return [mapMediaValue(fieldValue, attachments, property.type)];
+    }
   }
-
-  const { fileLocalID, timeLinks } = resolveMediaFileLocalId(property, metadataEntry, fieldValue);
-  const values = withTimeLinks(fileLocalMetadataValues, fileLocalID, timeLinks);
-  const metadataValue =
-    isMediaProperty(property) && typeof fileLocalID === 'string' ? values[fileLocalID] : undefined;
 
   if (Array.isArray(metadataEntry)) {
-    return { wrapped: wrapArrayEntry(metadataEntry), values };
+    return wrapArrayEntry(metadataEntry);
   }
 
-  return {
-    wrapped: [metadataValue ?? defaultWrappedValue(metadataEntry)],
-    values,
-  };
+  return [defaultWrappedValue(metadataEntry)];
 };
 
 const wrapEntityMetadata = <T extends WrapableEntity>(
@@ -150,32 +77,20 @@ const wrapEntityMetadata = <T extends WrapableEntity>(
         property.type === 'image' || property.type === 'media'
     ) ?? [];
 
-  if (!entity.metadata) {
+  const sourceMetadata = entity.metadata;
+  if (!sourceMetadata) {
     const { metadata: _metadata, ...rest } = entity;
     return { ...rest };
   }
 
-  const { metadata } = Object.keys(entity.metadata).reduce<{
-    metadata: MetadataSchema;
-    values: FileLocalMetadataValues;
-  }>(
-    (state, key) => {
-      const { wrapped, values } = wrapMetadataEntry(
-        key,
-        entity.metadata?.[key],
-        mediaProperties,
-        state.values
-      );
-      return {
-        metadata: { ...state.metadata, [key]: wrapped },
-        values,
-      };
-    },
-    {
-      metadata: {},
-      values: buildFileLocalMetadataValues(entity.attachments ?? []),
-    }
-  );
+  const context: WrapEntryContext = {
+    mediaProperties,
+    attachments: entity.attachments ?? [],
+  };
+  const metadata = Object.keys(sourceMetadata).reduce<MetadataSchema>((acc, key) => {
+    acc[key] = wrapMetadataEntry(key, sourceMetadata[key], context);
+    return acc;
+  }, {});
 
   return { ...entity, metadata };
 };

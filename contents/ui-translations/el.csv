@@ -140,9 +140,11 @@ Attachment renamed,Το συνημμένο μετονομάστηκε
 Attachment uploaded,Το συνημμένο αρχείο μεταφορτώθηκε
 Attachments,Συνημμένα αρχεία
 Authentication code,Κωδικός πιστοποίησης
+Auto,Auto
 auto created,αυτόματα δημιουργημένος
 Auto-accept suggestions,Αυτόματη αποδοχή προτάσεων
 auto-created,αυτόματα δημιουργημένος
+Auto-translate,Auto-translate
 Automatic Table of Contents,Αυτόματος πίνακας περιεχομένων
 Automatically generated,Δημιουργήθηκε αυτόματα
 Available default translation,Διαθέσιμη προεπιλεγμένη μετάφραση
@@ -468,8 +470,10 @@ Entity updated,Η οντότητα ενημερώθηκε
 Error,Σφάλμα
 Error adding thesauri.,Σφάλμα προσθήκης θησαυρών.
 Error loading your image,Σφάλμα φόρτωσης της εικόνας σας
+Error loading your media,Error loading your media
 Error saving template.,Σφάλμα αποθήκευσης προτύπου.
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,αποδεικτικά στοιχεία
 exact phrase,ακριβής φράση
 Expand all,Ανάπτυξη όλων
@@ -690,6 +694,7 @@ Longitude must be between -180 and 180,Το γεωγραφικό μήκος πρ
 Lookup help,Βοήθεια αναζήτησης
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Διαχείριση τύπων σχέσεων
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Manage types,Διαχείριση τύπων
@@ -1386,7 +1391,9 @@ Training,Εκπαίδευση
 Training model,Εκπαίδευση μοντέλου
 Training sample,Δείγμα εκπαίδευσης
 Translate,Μετάφραση
+Translating,Translating
 Translation,Μετάφραση
+Translation service is unavailable,Translation service is unavailable
 Translations,Μεταφράσεις
 Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς

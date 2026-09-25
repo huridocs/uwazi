@@ -426,12 +426,14 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
+            const keepTimelinks = mode === 'media' && !localFile && nextUrl === currentUrl;
+            const resolvedTimelinks = keepTimelinks ? nextTimelinks : [];
             if (localFile) {
               await applyUploadedMedia({
                 entitySharedId,
                 localFile,
                 mode,
-                nextTimelinks,
+                nextTimelinks: resolvedTimelinks,
                 previousUrl: currentUrl,
                 onChange: mediaField.onChange,
                 onRegisterPendingAttachment,
@@ -439,7 +441,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
               });
               return;
             }
-            const nextValue = mediaFieldValue(mode, nextUrl, nextTimelinks);
+            const nextValue = mediaFieldValue(mode, nextUrl, resolvedTimelinks);
             mediaField.onChange(nextValue);
             releaseUploadIfReplaced(currentUrl, nextValue);
           };
@@ -521,9 +523,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
               <MediaPickerModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onSelect={async (selectedUrl, localFile) =>
-                  updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
-                }
+                onSelect={async (selectedUrl, localFile) => updateValue(selectedUrl, localFile)}
                 mode={mode}
                 attachments={allAttachments}
                 currentValue={rawValue}

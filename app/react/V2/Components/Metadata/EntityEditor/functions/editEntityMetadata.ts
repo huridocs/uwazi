@@ -1,11 +1,15 @@
 import type { ClientFile } from '#app/istore.js';
-import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
-import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import {
+  currentAndTranslationMetadata,
+  filterReferencedPendingAttachments,
+} from '#shared/entitySave/mediaMetadata.js';
+import type { LanguagesListSchema, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
+import { buildTranslationsForSave } from './entityTranslations.js';
 import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
 import {
   groupRelationshipProperties,
@@ -14,11 +18,13 @@ import {
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
 
 type BuildEditEntitySaveInputArgs = {
-  entity: Entity;
+  entity?: Entity;
   values: EditEntityFormValues;
   metadataProperties: FormMetadataProperty[];
   pendingAttachments: ClientFile[];
   mediaPropertyNames: Set<string>;
+  currentLanguage: string;
+  languages?: LanguagesListSchema;
   mainDocumentId?: string;
   draftPropertySelections?: PropertySelectionSchema[];
 };
@@ -61,24 +67,34 @@ const buildEditEntitySaveInput = ({
   metadataProperties,
   pendingAttachments,
   mediaPropertyNames,
+  currentLanguage,
+  languages = [],
   mainDocumentId,
   draftPropertySelections,
 }: BuildEditEntitySaveInputArgs): EntitySaveInput => {
   const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
+  const translations = buildTranslationsForSave({
+    values,
+    metadataProperties,
+    languages,
+    currentLanguage,
+  });
   const saved: EntitySaveInput = {
-    ...entity,
-    title: values.title || entity.title,
-    template: values.template || entity.template,
+    ...(entity ?? {}),
+    title: values.title || entity?.title || '',
+    template: values.template || entity?.template || '',
+    language: currentLanguage,
     icon: toSaveIcon(values.showIcon, values.icon),
     metadata: formattedMetadata,
     attachments: [
-      ...(entity.attachments ?? []),
+      ...(entity?.attachments ?? []),
       ...filterReferencedPendingAttachments(
         pendingAttachments,
-        formattedMetadata,
+        currentAndTranslationMetadata(formattedMetadata, translations),
         mediaPropertyNames
       ),
     ],
+    ...(translations ? { translations } : {}),
   };
 
   if (mainDocumentId && draftPropertySelections && draftPropertySelections.length > 0) {
@@ -124,12 +140,17 @@ type PlanSharedMetadataSyncOptions = {
   force?: boolean;
 };
 
-const planSharedMetadataSync = (
-  currentValues: EditEntityFormValues,
-  metadataProperties: FormMetadataProperty[],
-  entityMetadata?: Entity['metadata'],
-  options?: PlanSharedMetadataSyncOptions
-): SharedMetadataSync => {
+const planSharedMetadataSync = ({
+  currentValues,
+  metadataProperties,
+  entityMetadata,
+  options,
+}: {
+  currentValues: EditEntityFormValues;
+  metadataProperties: FormMetadataProperty[];
+  entityMetadata?: Entity['metadata'];
+  options?: PlanSharedMetadataSyncOptions;
+}): SharedMetadataSync => {
   const currentMetadata = currentValues.metadata ?? {};
   if (!options?.force && isSameMetadataShape(currentMetadata, metadataProperties)) {
     return { type: 'noop' };
