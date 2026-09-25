@@ -3,7 +3,12 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { UwaziLoader } from '#V2/Components/UI/index.js';
-import { languageDir, languageLabel, writeSourceFirstHint } from './multiLanguageFieldHelpers.js';
+import {
+  languageDir,
+  languageLabel,
+  translationServiceUnavailable,
+  writeSourceFirstHint,
+} from './multiLanguageFieldHelpers.js';
 
 type MultiLanguageFieldRowProps = {
   language: string;
@@ -41,7 +46,7 @@ const retranslateTitle = ({
   label: string;
   value: string;
 }) => {
-  if (serviceUnavailable) return t('System', 'Translation service is unavailable', null, false);
+  if (serviceUnavailable) return translationServiceUnavailable();
   if (!source) return writeSourceFirstHint(current, label);
   return t(
     'System',

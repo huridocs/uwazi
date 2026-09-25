@@ -27,6 +27,9 @@ const foldStep = ({
   return 3;
 };
 
+const translationServiceUnavailable = () =>
+  t('System', 'Translation service is unavailable', null, false);
+
 const writeSourceFirstHint = (current: string, label: string) =>
   t('System', `Write the ${languageLabel(current)} ${label.toLowerCase()} first`, null, false);
 
@@ -100,9 +103,16 @@ const languageRowSummary = ({
     summary: empties.length === 0 ? setText : emptyText,
     translateTitle: serviceAvailable
       ? translateHint({ source, current, label, empties })
-      : t('System', 'Translation service is unavailable', null, false),
+      : translationServiceUnavailable(),
   };
 };
 
-export { foldStep, languageDir, languageLabel, languageRowSummary, writeSourceFirstHint };
+export {
+  foldStep,
+  languageDir,
+  languageLabel,
+  languageRowSummary,
+  translationServiceUnavailable,
+  writeSourceFirstHint,
+};
 export type { FoldStep };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWatch } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import { stringFromValues } from '../functions/entityTranslations.js';
 import { EntityField } from './EntityField.js';
 
 type PreviewFieldProps = {
@@ -10,9 +11,8 @@ type PreviewFieldProps = {
 };
 
 const previewSrc = (value: unknown) => {
-  if (typeof value === 'string') return value;
-  if (Array.isArray(value) && typeof value[0]?.value === 'string') return value[0].value;
-  return undefined;
+  if (typeof value === 'string') return value || undefined;
+  return stringFromValues(Array.isArray(value) ? value : undefined) || undefined;
 };
 
 const PreviewField = ({ context, label, field }: PreviewFieldProps) => {

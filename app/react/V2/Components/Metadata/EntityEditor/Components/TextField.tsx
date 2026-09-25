@@ -1,16 +1,13 @@
 import React, { useCallback } from 'react';
-import {
-  FieldValues,
-  Path,
-  PathValue,
-  RegisterOptions,
-  useFormContext,
-  useFormState,
-} from 'react-hook-form';
+import { FieldValues, Path, RegisterOptions, useFormContext, useFormState } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
+import {
+  applyPdfFillFormValue,
+  EntityPdfFillField,
+  type PdfFillTarget,
+} from './EntityPdfFillField.js';
 import { EntityTranslationField } from './EntityTranslationField.js';
 
 type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -41,12 +38,7 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   const registration = register(field, registerOptions);
   const translatable = type === 'text' ? translatableName : undefined;
   const onCurrentChange = useCallback(
-    (value: string) => {
-      setValue(field, value as PathValue<TFormValues, typeof field>, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    },
+    (value: string) => applyPdfFillFormValue({ setValue, field, value, shouldValidate: true }),
     [field, setValue]
   );
 

@@ -3,7 +3,6 @@ import React, { useCallback, useState } from 'react';
 import {
   FieldValues,
   Path,
-  PathValue,
   RegisterOptions,
   useFormContext,
   useFormState,
@@ -17,8 +16,13 @@ import {
   EntityFieldError,
   EntityFieldLabel,
   getFieldErrorState,
+  translationMessageSlot,
 } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
+import {
+  applyPdfFillFormValue,
+  EntityPdfFillField,
+  type PdfFillTarget,
+} from './EntityPdfFillField.js';
 import { EntityTranslationField } from './EntityTranslationField.js';
 
 type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -58,12 +62,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   const registration = register(field, registerOptions);
   const [mode, setMode] = useState<MarkdownFieldMode>('write');
   const onCurrentChange = useCallback(
-    (value: string) => {
-      setValue(field, value as PathValue<TFormValues, typeof field>, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    },
+    (value: string) => applyPdfFillFormValue({ setValue, field, value, shouldValidate: true }),
     [field, setValue]
   );
   const writePanelId = `${field}-panel-write`;
@@ -166,6 +165,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
               label={label}
               idPrefix={String(field)}
               onCurrentChange={onCurrentChange}
+              messageSlot={translationMessageSlot(showError, message)}
               multiline
               disabled={disabled}
             />

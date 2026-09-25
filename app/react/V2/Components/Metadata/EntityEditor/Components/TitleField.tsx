@@ -1,16 +1,9 @@
 import React, { useCallback } from 'react';
-import {
-  FieldValues,
-  Path,
-  PathValue,
-  RegisterOptions,
-  useFormContext,
-  useFormState,
-} from 'react-hook-form';
+import { FieldValues, Path, RegisterOptions, useFormContext, useFormState } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField } from './EntityPdfFillField.js';
+import { applyPdfFillFormValue, EntityPdfFillField } from './EntityPdfFillField.js';
 import { EntityTranslationField } from './EntityTranslationField.js';
 
 type TitleFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -33,12 +26,7 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
   const { showError, message } = getFieldErrorState(getFieldState(field, formState));
   const registration = register(field, registerOptions);
   const onCurrentChange = useCallback(
-    (value: string) => {
-      setValue(field, value as PathValue<TFormValues, typeof field>, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    },
+    (value: string) => applyPdfFillFormValue({ setValue, field, value, shouldValidate: true }),
     [field, setValue]
   );
 

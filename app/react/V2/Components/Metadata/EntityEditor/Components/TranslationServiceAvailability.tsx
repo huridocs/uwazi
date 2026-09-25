@@ -1,8 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { probeTranslationService } from '#V2/api/translationService/index.js';
-import { settingsAtom } from '#V2/atoms/index.js';
-import { installedLanguageKeys } from '../functions/entityTranslations.js';
+import { useInstalledEntityLanguages } from './useInstalledEntityLanguages.js';
 
 type TranslationServiceAvailability = {
   available: boolean;
@@ -33,13 +31,13 @@ const useProbeTranslationService = (enabled: boolean, from?: string, to?: string
 };
 
 const TranslationServiceAvailabilityProvider = ({ children }: { children: React.ReactNode }) => {
-  const settings = useAtomValue(settingsAtom);
-  const languages = installedLanguageKeys(settings.languages ?? []);
-  const value = useProbeTranslationService(
-    Boolean(settings.features?.translationService),
+  const { languages, canAutoTranslate } = useInstalledEntityLanguages();
+  const { available, markUnavailable } = useProbeTranslationService(
+    canAutoTranslate,
     languages[0],
     languages[1]
   );
+  const value = useMemo(() => ({ available, markUnavailable }), [available, markUnavailable]);
   return (
     <TranslationServiceAvailabilityContext.Provider value={value}>
       {children}

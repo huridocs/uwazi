@@ -9,9 +9,9 @@ import {
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, TemplateField } from './Components/index.js';
+import { useInstalledEntityLanguages } from './Components/useInstalledEntityLanguages.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
 import type { EditEntityProps } from './editEntityTypes.js';
 import {
@@ -60,7 +60,7 @@ const EditEntity = ({
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
   const settings = useAtomValue(settingsAtom);
-  const { language } = useEntityLanguage();
+  const { current: language } = useInstalledEntityLanguages();
   const { handleSubmit, control, getValues, setValue, reset, setError, watch } = formContext;
   const { isDirty } = useFormState({ control });
   const selectedTemplate = useWatch({ control, name: 'template' });
@@ -96,7 +96,7 @@ const EditEntity = ({
 
   useEffect(() => {
     const previous = languageRef.current;
-    if (previous === language) return;
+    if (!previous || !language || previous === language) return;
     languageRef.current = language;
     reset(
       rekeyEditEntityLanguage({
@@ -186,6 +186,7 @@ const EditEntity = ({
     const { unsubscribe } = watch((_values, info) => {
       if (info.name && mains.has(info.name)) sync();
     });
+    sync();
     return unsubscribe;
   }, [displayProperties, getValues, setValue, watch]);
 
@@ -219,7 +220,7 @@ const EditEntity = ({
           metadataProperties,
           pendingAttachments,
           mediaPropertyNames,
-          currentLanguage: language,
+          currentLanguage: language ?? entity?.language ?? 'en',
           languages: settings.languages ?? [],
           mainDocumentId,
           draftPropertySelections,
