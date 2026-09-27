@@ -1,4 +1,5 @@
 import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-selection-handler';
+import { mergeLineRectangles } from './mergeLineRectangles.js';
 
 type PdfWord = {
   text: string;
@@ -140,6 +141,22 @@ type WordRangeSelection = {
   root: HTMLElement;
 };
 
+const rectanglesForWord = (word: PdfWord, regions: HTMLElement[]): SelectionRectangle[] => {
+  const range = document.createRange();
+  range.setStart(word.node, word.startOffset);
+  range.setEnd(word.node, word.endOffset);
+  const region =
+    regions.find(element => element.getAttribute('data-region-selector-id') === word.regionId) ||
+    undefined;
+
+  return Array.from(range.getClientRects())
+    .map(rectangle => {
+      const host = region || regions.find(element => regionContainsRect(element, rectangle));
+      return host ? rectangleForRegion(rectangle, host) : undefined;
+    })
+    .filter((rectangle): rectangle is SelectionRectangle => Boolean(rectangle));
+};
+
 const selectionFromWordRange = ({
   words,
   startIndex,
@@ -148,19 +165,13 @@ const selectionFromWordRange = ({
 }: WordRangeSelection): TextSelection => {
   const [from, to] = orderedRange(startIndex, endIndex);
   const selectedWords = words.slice(from, to + 1);
-  const range = rangeForWords(words, from, to);
   const regions = regionElementsIn(root);
-
-  const selectionRectangles = Array.from(range.getClientRects())
-    .map(rectangle => {
-      const region = regions.find(element => regionContainsRect(element, rectangle));
-      return region ? rectangleForRegion(rectangle, region) : undefined;
-    })
-    .filter((rectangle): rectangle is SelectionRectangle => Boolean(rectangle));
 
   return {
     text: selectedWords.map(word => word.text).join(' '),
-    selectionRectangles,
+    selectionRectangles: mergeLineRectangles(
+      selectedWords.flatMap(word => rectanglesForWord(word, regions))
+    ),
   };
 };
 

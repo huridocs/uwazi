@@ -244,5 +244,45 @@ describe('wordSelection', () => {
         'beta gamma'
       );
     });
+
+    it('keeps only word boxes when a cross-page range would include page-sized client rects', () => {
+      const root = mountLayers(`
+        <div data-region-selector-id="1">
+          <div class="textLayer"><span>alpha beta</span></div>
+        </div>
+        <div data-region-selector-id="2">
+          <div class="textLayer"><span>gamma</span></div>
+        </div>
+      `);
+      const words = collectPdfWords(root);
+      const regions = root.querySelectorAll('[data-region-selector-id]');
+      jest
+        .spyOn(regions[0], 'getBoundingClientRect')
+        .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 400 }));
+      jest
+        .spyOn(regions[1], 'getBoundingClientRect')
+        .mockReturnValue(rect({ left: 0, top: 420, width: 200, height: 400 }));
+
+      Range.prototype.getClientRects = function mockRects() {
+        if (this.startContainer !== this.endContainer) {
+          return asRectList([rect({ left: 0, top: 0, width: 200, height: 820 })]);
+        }
+        if (this.startContainer === words[2].node) {
+          return asRectList([rect({ left: 8, top: 430, width: 48, height: 12 })]);
+        }
+        if (this.startOffset >= 6) {
+          return asRectList([rect({ left: 48, top: 10, width: 36, height: 12 })]);
+        }
+        return asRectList([rect({ left: 0, top: 10, width: 40, height: 12 })]);
+      };
+
+      const selection = selectionFromWordRange({ words, startIndex: 1, endIndex: 2, root });
+
+      expect(selection.text).toBe('beta gamma');
+      expect(selection.selectionRectangles).toEqual([
+        { left: 48, top: 10, width: 36, height: 12, regionId: '1' },
+        { left: 8, top: 10, width: 48, height: 12, regionId: '2' },
+      ]);
+    });
   });
 });
