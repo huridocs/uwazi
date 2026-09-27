@@ -244,4 +244,15 @@ const selectionFromWordRange = ({
 };
 
 export type { PdfWord, WordRangeSelection };
-export { collectPdfWords, findWordIndex, findWordAtPoint, selectionFromWordRange, rangeForWords };
+export {
+  collectPdfWords,
+  findWordIndex,
+  findWordAtPoint,
+  selectionFromWordRange,
+  rangeForWords,
+  caretFromPoint,
+  clientRectsForWord,
+  regionElementsIn,
+  regionContainsRect,
+  rectangleForRegion,
+};

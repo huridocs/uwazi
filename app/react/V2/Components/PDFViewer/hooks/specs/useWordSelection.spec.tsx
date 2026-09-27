@@ -2,123 +2,21 @@
  * @jest-environment jsdom
  */
 
-import React, { useRef } from 'react';
-import { fireEvent, render } from '@testing-library/react';
-import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import { useWordSelection } from '../useWordSelection.js';
-
-const rect = ({
-  left,
-  top,
-  width,
-  height,
-}: {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}): DOMRect =>
-  ({
-    x: left,
-    y: top,
-    left,
-    top,
-    width,
-    height,
-    right: left + width,
-    bottom: top + height,
-    toJSON: () => ({}),
-  }) as DOMRect;
-
-type WordHighlight = {
-  preview?: TextSelection;
-  committed?: TextSelection;
-};
-
-type HarnessProps = {
-  enabled: boolean;
-  onSelect: (selection: TextSelection) => void;
-  onDeselect?: () => void;
-  onHighlightChange?: (highlight: WordHighlight | undefined) => void;
-  onClearReady?: (clear: () => void) => void;
-};
-
-const Harness = ({
-  enabled,
-  onSelect,
-  onDeselect,
-  onHighlightChange,
-  onClearReady,
-}: HarnessProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { clearSelection } = useWordSelection({
-    enabled,
-    containerRef,
-    onSelect,
-    onDeselect,
-    onHighlightChange,
-  });
-  onClearReady?.(clearSelection);
-
-  return (
-    <div ref={containerRef} data-testid="word-root">
-      <div data-region-selector-id="1">
-        <div className="textLayer">
-          <span data-word="one">one</span> <span data-word="two">two</span>{' '}
-          <span data-word="three">three</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const wordNode = (label: string) => {
-  const span = document.querySelector(`[data-word="${label}"]`);
-  const node = span?.firstChild;
-  if (!(node instanceof Text)) {
-    throw new Error(`missing word ${label}`);
-  }
-  return node;
-};
-
-const renderHarness = (props: Partial<HarnessProps> = {}) => {
-  const onSelect = props.onSelect || jest.fn();
-  const onDeselect = props.onDeselect || jest.fn();
-  const onHighlightChange = props.onHighlightChange || jest.fn();
-  const view = render(
-    <Harness
-      enabled={props.enabled ?? true}
-      onSelect={onSelect}
-      onDeselect={onDeselect}
-      onHighlightChange={onHighlightChange}
-      onClearReady={props.onClearReady}
-    />
-  );
-  const root = view.getByTestId('word-root');
-  const region = root.querySelector('[data-region-selector-id]') as HTMLElement;
-  jest
-    .spyOn(region, 'getBoundingClientRect')
-    .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 40 }));
-  Range.prototype.getClientRects = function mockRects() {
-    const boxes: Record<string, ReturnType<typeof rect>> = {
-      two: rect({ left: 40, top: 0, width: 40, height: 10 }),
-      three: rect({ left: 80, top: 0, width: 40, height: 10 }),
-    };
-    const box =
-      boxes[this.startContainer.textContent || ''] ||
-      rect({ left: 0, top: 0, width: 40, height: 10 });
-    return Object.assign([box], {
-      item: (index: number) => (index === 0 ? box : null),
-    }) as unknown as DOMRectList;
-  };
-  return { ...view, root, onSelect, onDeselect, onHighlightChange };
-};
+import { fireEvent } from '@testing-library/react';
+import {
+  flushPointerFrame,
+  hover,
+  installPointerFrame,
+  renderHarness,
+  wordNode,
+} from './useWordSelection.helpers.js';
 
 describe('useWordSelection', () => {
   const originalCaret = document.caretPositionFromPoint;
   const originalGetClientRects = Range.prototype.getClientRects;
 
   beforeEach(() => {
+    installPointerFrame();
     Object.defineProperty(document, 'caretPositionFromPoint', {
       configurable: true,
       value: (x: number) => {
@@ -136,13 +34,14 @@ describe('useWordSelection', () => {
       value: originalCaret,
     });
     Range.prototype.getClientRects = originalGetClientRects;
+    jest.restoreAllMocks();
   });
 
   describe('highlighting', () => {
     it('illuminates the word under the pointer before any click', () => {
       const { root, onSelect, onHighlightChange } = renderHarness();
 
-      fireEvent.mouseMove(root, { clientX: 100, clientY: 5 });
+      hover(root, 100);
 
       expect(onSelect).not.toHaveBeenCalled();
       expect(onHighlightChange).toHaveBeenLastCalledWith({
@@ -159,7 +58,7 @@ describe('useWordSelection', () => {
         preview: expect.objectContaining({ text: 'one' }),
       });
 
-      fireEvent.mouseMove(root, { clientX: 100, clientY: 5 });
+      hover(root, 100);
       expect(onHighlightChange).toHaveBeenLastCalledWith({
         preview: expect.objectContaining({ text: 'one two three' }),
       });
@@ -178,13 +77,13 @@ describe('useWordSelection', () => {
       fireEvent.click(root, { clientX: 10, clientY: 5 });
       fireEvent.click(root, { clientX: 100, clientY: 5 });
 
-      fireEvent.mouseMove(root, { clientX: 10, clientY: 5 });
+      hover(root, 10);
       expect(onHighlightChange).toHaveBeenLastCalledWith({
         preview: expect.objectContaining({ text: 'one' }),
         committed: expect.objectContaining({ text: 'one two three' }),
       });
 
-      fireEvent.mouseMove(root, { clientX: 400, clientY: 5 });
+      hover(root, 400);
       expect(onHighlightChange).toHaveBeenLastCalledWith({
         committed: expect.objectContaining({ text: 'one two three' }),
       });
@@ -282,6 +181,52 @@ describe('useWordSelection', () => {
 
       expect(writeText).not.toHaveBeenCalled();
       input.remove();
+    });
+  });
+
+  describe('performance', () => {
+    it('does not publish again when the pointer stays on the same word', () => {
+      const { root, onHighlightChange } = renderHarness();
+
+      hover(root, 100);
+      hover(root, 110);
+
+      expect(onHighlightChange).toHaveBeenCalledTimes(1);
+      expect(onHighlightChange).toHaveBeenLastCalledWith({
+        preview: expect.objectContaining({ text: 'three' }),
+      });
+    });
+
+    it('coalesces pointer moves into one frame', () => {
+      const { root, onHighlightChange } = renderHarness();
+
+      fireEvent.mouseMove(root, { clientX: 10, clientY: 5 });
+      fireEvent.mouseMove(root, { clientX: 50, clientY: 5 });
+      fireEvent.mouseMove(root, { clientX: 100, clientY: 5 });
+
+      expect(onHighlightChange).not.toHaveBeenCalled();
+
+      flushPointerFrame();
+
+      expect(onHighlightChange).toHaveBeenCalledTimes(1);
+      expect(onHighlightChange).toHaveBeenLastCalledWith({
+        preview: expect.objectContaining({ text: 'three' }),
+      });
+    });
+
+    it('measures word boxes once until layout is invalidated', () => {
+      const { root } = renderHarness();
+      const getClientRects = jest.fn(Range.prototype.getClientRects);
+      Range.prototype.getClientRects = getClientRects;
+
+      hover(root, 100);
+      const measured = getClientRects.mock.calls.length;
+      expect(measured).toBeGreaterThan(0);
+
+      hover(root, 10);
+      hover(root, 50);
+
+      expect(getClientRects).toHaveBeenCalledTimes(measured);
     });
   });
 });

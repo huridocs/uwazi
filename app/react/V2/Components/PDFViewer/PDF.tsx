@@ -148,6 +148,7 @@ const PDF = ({
   const { clearSelection } = useWordSelection({
     enabled: wordSelectionActive,
     containerRef: pdfContainerRef,
+    layoutKey: currentScale,
     onSelect: handleSelect,
     onDeselect,
     onHighlightChange: setWordHighlight,

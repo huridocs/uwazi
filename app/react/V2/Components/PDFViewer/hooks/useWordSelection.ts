@@ -11,6 +11,7 @@ import {
 type UseWordSelectionArgs = {
   enabled: boolean;
   containerRef: RefObject<HTMLElement | null>;
+  layoutKey?: number | string;
   onSelect: (selection: TextSelection) => void;
   onDeselect?: () => void;
   onHighlightChange?: (highlight: WordHighlight | undefined) => void;
@@ -25,6 +26,7 @@ const useLatest = <T>(value: T) => {
 const useWordSelection = ({
   enabled,
   containerRef,
+  layoutKey,
   onSelect,
   onDeselect,
   onHighlightChange,
@@ -77,7 +79,7 @@ const useWordSelection = ({
       unbindSelection();
       unbindCopy();
     };
-  }, [containerRef, enabled, notifyHighlight, onSelectRef, onDeselectRef]);
+  }, [containerRef, enabled, layoutKey, notifyHighlight, onSelectRef, onDeselectRef]);
 
   return { clearSelection };
 };
