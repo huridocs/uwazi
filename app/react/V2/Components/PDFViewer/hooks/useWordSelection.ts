@@ -1,6 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef } from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { collectPdfWords, type PdfWord } from '../functions/wordSelection.js';
+import { bindCommittedCopy } from './copyCommittedSelection.js';
 import {
   bindWordSelectionListeners,
   releaseWordSelection,
@@ -61,7 +62,7 @@ const useWordSelection = ({
       return undefined;
     }
 
-    return bindWordSelectionListeners({
+    const unbindSelection = bindWordSelectionListeners({
       root,
       startIndexRef,
       highlightRef,
@@ -71,6 +72,11 @@ const useWordSelection = ({
       onDeselect: () => onDeselectRef.current?.(),
       onHighlightChange: notifyHighlight,
     });
+    const unbindCopy = bindCommittedCopy(highlightRef);
+    return () => {
+      unbindSelection();
+      unbindCopy();
+    };
   }, [containerRef, enabled, notifyHighlight, onSelectRef, onDeselectRef]);
 
   return { clearSelection };

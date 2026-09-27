@@ -1,6 +1,7 @@
 import React from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-selection-handler';
+import { clearControlAnchor } from './functions/clearControlAnchor.js';
 import { mergeLineRectangles } from './functions/mergeLineRectangles.js';
 
 const HIGHLIGHT_PAD_X = 6;
@@ -56,6 +57,7 @@ const WordSelectionHighlight = ({
   const committedRects = visibleRectangles(committed, regionId);
   const lastVisible = committedRects[committedRects.length - 1];
   const lastOverall = (committed?.selectionRectangles || []).at(-1);
+  const clearAnchor = lastVisible ? clearControlAnchor(lastVisible) : undefined;
   const showClear =
     Boolean(onClear) &&
     Boolean(lastVisible) &&
@@ -97,10 +99,7 @@ const WordSelectionHighlight = ({
             onClear();
           }}
           className="absolute z-20 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-parchment shadow-sm"
-          style={{
-            top: Math.max(0, lastVisible.top - 8),
-            left: lastVisible.left + lastVisible.width - 6,
-          }}
+          style={{ top: clearAnchor?.y, left: clearAnchor?.x }}
         >
           <XMarkIcon className="h-3 w-3" aria-hidden />
         </button>

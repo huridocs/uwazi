@@ -1,20 +1,17 @@
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
+import { clearControlAnchor } from '#V2/Components/PDFViewer/functions/clearControlAnchor.js';
 
-type SelectionMenuPosition = { x: number; y: number };
+type SelectionMenuPosition = { host: HTMLElement; x: number; y: number };
 
 const getSelectionMenuPosition = (selection: TextSelection): SelectionMenuPosition | undefined => {
   const last = selection.selectionRectangles.at(-1);
   if (!last) return undefined;
 
   const page = last.regionId ?? '1';
-  const pageContainer = document.querySelector<HTMLElement>(`#page-${page}-container`);
-  if (!pageContainer) return undefined;
+  const host = document.querySelector<HTMLElement>(`#page-${page}-container`);
+  if (!host) return undefined;
 
-  const pageRect = pageContainer.getBoundingClientRect();
-  return {
-    x: pageRect.left + (last.left ?? 0) + (last.width ?? 0),
-    y: pageRect.top + (last.top ?? 0),
-  };
+  return { host, ...clearControlAnchor(last) };
 };
 
 export type { SelectionMenuPosition };
