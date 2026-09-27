@@ -4,6 +4,7 @@ import { HandleTextSelection, type TextSelection } from '@huridocs/react-text-se
 type PdfTextSelectionProps = {
   onSelect: (selection: TextSelection) => void;
   onDeselect?: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 };
 
@@ -16,11 +17,19 @@ const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches;
 
 const SELECTION_SETTLE_MS = 200;
 
-const PdfTextSelection = ({ onSelect, onDeselect, children }: PdfTextSelectionProps) => {
+const PdfTextSelection = ({
+  onSelect,
+  onDeselect,
+  disabled = false,
+  children,
+}: PdfTextSelectionProps) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const touchSelection = useRef(false);
 
   useEffect(() => {
+    if (disabled) {
+      return undefined;
+    }
     let settleTimer: number | undefined;
     const reportSettledSelection = () => {
       if (!touchSelection.current && !coarsePointer()) return;
@@ -36,24 +45,35 @@ const PdfTextSelection = ({ onSelect, onDeselect, children }: PdfTextSelectionPr
       window.clearTimeout(settleTimer);
       document.removeEventListener('selectionchange', reportSettledSelection);
     };
-  }, []);
+  }, [disabled]);
+
+  const content = (
+    <div
+      ref={rootRef}
+      onPointerDown={event => {
+        if (disabled) return;
+        touchSelection.current = event.pointerType === 'touch';
+      }}
+      onTouchStart={() => {
+        if (disabled) return;
+        touchSelection.current = true;
+      }}
+      onMouseDownCapture={event => {
+        if (disabled) return;
+        if (touchSelection.current || coarsePointer()) event.stopPropagation();
+      }}
+    >
+      {children}
+    </div>
+  );
+
+  if (disabled) {
+    return content;
+  }
 
   return (
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
-      <div
-        ref={rootRef}
-        onPointerDown={event => {
-          touchSelection.current = event.pointerType === 'touch';
-        }}
-        onTouchStart={() => {
-          touchSelection.current = true;
-        }}
-        onMouseDownCapture={event => {
-          if (touchSelection.current || coarsePointer()) event.stopPropagation();
-        }}
-      >
-        {children}
-      </div>
+      {content}
     </HandleTextSelection>
   );
 };

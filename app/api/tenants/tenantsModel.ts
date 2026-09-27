@@ -44,6 +44,7 @@ const mongoSchema = new mongoose.Schema({
     postgresPages: Boolean,
     postgresCsv: Boolean,
     aiAssistant: Boolean,
+    textWordSelection: Boolean,
     aiAssistantServiceUrl: String,
     translationService: Boolean,
     translationServiceUrl: String,

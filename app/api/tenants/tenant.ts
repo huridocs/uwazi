@@ -22,6 +22,7 @@ export type Tenant = {
     postgresPages?: boolean;
     postgresCsv?: boolean;
     aiAssistant?: boolean;
+    textWordSelection?: boolean;
     aiAssistantServiceUrl?: string;
     translationService?: boolean;
     translationServiceUrl?: string;

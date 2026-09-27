@@ -1,15 +1,22 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { SelectionRegion, TextSelection } from '@huridocs/react-text-selection-handler';
 import { PdfTextSelection } from './PdfTextSelection.js';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll, pickMostVisiblePage } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
-import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import {
+  adjustSelectionsToScale,
+  getHighlightsFromSelection,
+} from './functions/handleTextSelection.js';
+import { useWordSelection } from './hooks/useWordSelection.js';
+import { WordSelectionToggle } from './WordSelectionToggle.js';
 import { waitForElement } from './functions/waitForElement.js';
 import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
@@ -43,6 +50,7 @@ const PAGE_VISIBILITY_THRESHOLDS = [0, 0.1, 0.25, 0.4, 0.5, 0.75, 1];
 const PRELOAD_ROOT_MARGIN = '500px 0px 500px 0px';
 const BORDER_WIDTH: number = 1;
 const WIDTH_SAFETY_BUFFER: number = 2;
+const WORD_SELECTION_PREVIEW_COLOR = '#93c5fd';
 
 type Snippet = { text: string; page: number; filename?: string };
 
@@ -114,6 +122,13 @@ const PDF = ({
   const [internalHighlights, setInternalHighlights] = useState<
     { [page: number]: TextHighlight[] }[]
   >([]);
+  const settings = useAtomValue(settingsAtom);
+  const wordSelectionAvailable = Boolean(settings.features?.textWordSelection);
+  const [wordSelectionMode, setWordSelectionMode] = useState(false);
+  const wordSelectionActive = wordSelectionAvailable && wordSelectionMode;
+  const [wordPreviewHighlights, setWordPreviewHighlights] = useState<{
+    [page: number]: TextHighlight[];
+  }>();
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
@@ -134,6 +149,28 @@ const PDF = ({
     },
     [onSelect, currentScale]
   );
+
+  const handleWordPreview = useCallback(
+    (selection: TextSelection | undefined) => {
+      if (!selection) {
+        setWordPreviewHighlights(undefined);
+        return;
+      }
+      const normalized = adjustSelectionsToScale(selection, currentScale, true);
+      setWordPreviewHighlights(
+        getHighlightsFromSelection(normalized, WORD_SELECTION_PREVIEW_COLOR)
+      );
+    },
+    [currentScale]
+  );
+
+  useWordSelection({
+    enabled: wordSelectionActive,
+    containerRef: pdfContainerRef,
+    onSelect: handleSelect,
+    onDeselect,
+    onPreviewChange: handleWordPreview,
+  });
 
   const goToPage = useCallback(
     (page: number) => {
@@ -439,7 +476,10 @@ const PDF = ({
     return Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
       const regionId = number;
       const highlightsForPage = allHighlights.find(group => group && group[regionId]);
-      const pageHighlights = highlightsForPage?.[regionId];
+      const pageHighlights = [
+        ...(highlightsForPage?.[regionId] ?? []),
+        ...(wordPreviewHighlights?.[regionId] ?? []),
+      ];
 
       return (
         <div
@@ -461,7 +501,7 @@ const PDF = ({
               page={number}
               eventBus={pdfEventBus}
               intersectionObserver={intersectionObserver}
-              highlights={pageHighlights}
+              highlights={pageHighlights.length ? pageHighlights : undefined}
               onHighlightClick={onHighlightClick}
               containerWidth={containerWidth}
               onScaleChange={handleScaleChange}
@@ -475,6 +515,7 @@ const PDF = ({
     pdf,
     highlights,
     internalHighlights,
+    wordPreviewHighlights,
     pdfEventBus,
     intersectionObserver,
     onHighlightClick,
@@ -503,10 +544,20 @@ const PDF = ({
   }
 
   return (
-    <PdfTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
+    <PdfTextSelection
+      onSelect={handleSelect}
+      onDeselect={onDeselect}
+      disabled={wordSelectionActive}
+    >
       <div
         className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
       >
+        {wordSelectionAvailable ? (
+          <WordSelectionToggle
+            checked={wordSelectionMode}
+            onToggle={() => setWordSelectionMode(current => !current)}
+          />
+        ) : null}
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
@@ -518,7 +569,13 @@ const PDF = ({
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
         ) : null}
-        <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
+        <div
+          id="pdf-container"
+          className={`pdfViewer ${wordSelectionActive ? '[&_.textLayer]:select-none' : ''}`}
+          ref={setPdfContainer}
+          style={viewerStyle}
+          data-word-selection={wordSelectionActive ? 'true' : undefined}
+        >
           {pages}
         </div>
       </div>
