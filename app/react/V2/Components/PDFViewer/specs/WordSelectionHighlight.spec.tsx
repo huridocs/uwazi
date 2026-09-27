@@ -15,21 +15,44 @@ const selection = {
 };
 
 describe('WordSelectionHighlight', () => {
-  it('paints the whole range with a soft fill and no mix-blend', () => {
+  it('paints a translucent grouped fill with padding and rounded corners', async () => {
+    const { container } = render(<WordSelectionHighlight preview={selection} />);
+
+    const layer = container.querySelector('[data-word-highlight-layer]');
+    const marks = container.querySelectorAll('[data-word-highlight]');
+
+    await expect(layer).toHaveStyle({ opacity: '0.22' });
+    expect(marks).toHaveLength(2);
+    expect(marks[0]).toHaveClass('rounded-sm');
+    await expect(marks[0]).toHaveStyle({
+      top: '18px',
+      left: '8px',
+      width: '44px',
+      height: '16px',
+      backgroundColor: 'var(--color-carbon, #00b4f0)',
+    });
+    expect(screen.queryByRole('button', { name: 'Clear selection' })).not.toBeInTheDocument();
+  });
+
+  it('paints preview and committed rectangles in one layer so overlaps stay even', () => {
+    const preview = {
+      text: 'one',
+      selectionRectangles: [{ left: 10, top: 20, width: 40, height: 12, regionId: '1' }],
+    };
     const { container } = render(
-      <WordSelectionHighlight selection={selection} committed={false} />
+      <WordSelectionHighlight preview={preview} committed={selection} />
     );
 
-    const marks = container.querySelectorAll('[data-word-highlight]');
-    expect(marks).toHaveLength(2);
-    expect(marks[0]).toHaveClass('bg-highlight-blue');
-    expect((marks[0] as HTMLElement).style.mixBlendMode).toBe('');
-    expect(screen.queryByRole('button', { name: 'Clear selection' })).not.toBeInTheDocument();
+    const layer = container.querySelector('[data-word-highlight-layer]');
+    const marks = layer?.querySelectorAll('[data-word-highlight]');
+
+    expect(container.querySelectorAll('[data-word-highlight-layer]')).toHaveLength(1);
+    expect(marks).toHaveLength(3);
   });
 
   it('keeps the committed range visible and clears it from the X', () => {
     const onClear = jest.fn();
-    render(<WordSelectionHighlight selection={selection} committed onClear={onClear} />);
+    render(<WordSelectionHighlight committed={selection} onClear={onClear} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
 

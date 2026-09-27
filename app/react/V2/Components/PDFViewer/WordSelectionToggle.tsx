@@ -7,7 +7,7 @@ type WordSelectionToggleProps = {
 };
 
 const WordSelectionToggle = ({ checked, onToggle }: WordSelectionToggleProps) => (
-  <div className="flex w-full justify-end">
+  <div className="flex w-full shrink-0 justify-end">
     <ToggleButton checked={checked} onToggle={onToggle} size="small">
       Word selection
     </ToggleButton>

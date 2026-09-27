@@ -16,6 +16,7 @@ const selectionInside = (root: HTMLElement) => {
 const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches;
 
 const SELECTION_SETTLE_MS = 200;
+const noop = () => undefined;
 
 const PdfTextSelection = ({
   onSelect,
@@ -67,12 +68,11 @@ const PdfTextSelection = ({
     </div>
   );
 
-  if (disabled) {
-    return content;
-  }
-
   return (
-    <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
+    <HandleTextSelection
+      onSelect={disabled ? noop : onSelect}
+      onDeselect={disabled ? noop : onDeselect}
+    >
       {content}
     </HandleTextSelection>
   );

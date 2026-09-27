@@ -468,7 +468,7 @@ const PDF = ({
             pageRefsMap.current[regionId] = el;
           }}
           className={[
-            'relative mb-4 border-solid',
+            'relative mb-4 overflow-hidden border-solid',
             `[border-width:${BORDER_WIDTH}px]`,
             'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
           ].join(' ')}
@@ -485,16 +485,10 @@ const PDF = ({
               onScaleChange={handleScaleChange}
               renderingQueue={renderingQueueRef.current}
             />
-            {wordHighlight?.preview ? (
+            {wordHighlight?.preview || wordHighlight?.committed ? (
               <WordSelectionHighlight
-                selection={wordHighlight.preview}
-                regionId={regionId.toString()}
-              />
-            ) : null}
-            {wordHighlight?.committed ? (
-              <WordSelectionHighlight
-                selection={wordHighlight.committed}
-                committed
+                preview={wordHighlight.preview}
+                committed={wordHighlight.committed}
                 regionId={regionId.toString()}
                 onClear={clearSelection}
               />
@@ -542,9 +536,7 @@ const PDF = ({
       onDeselect={onDeselect}
       disabled={wordSelectionActive}
     >
-      <div
-        className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
-      >
+      <div className={`flex h-full w-full min-h-0 flex-col gap-2 justify-center p-3 ${className}`}>
         {wordSelectionAvailable ? (
           <WordSelectionToggle
             checked={wordSelectionMode}
@@ -564,7 +556,7 @@ const PDF = ({
         ) : null}
         <div
           id="pdf-container"
-          className={`pdfViewer ${wordSelectionActive ? '[&_.textLayer]:select-none' : ''}`}
+          className={`pdfViewer min-h-0 w-full min-w-0 flex-1 ${wordSelectionActive ? '[&_.textLayer]:select-none' : ''}`}
           ref={setPdfContainer}
           style={viewerStyle}
           data-word-selection={wordSelectionActive ? 'true' : undefined}

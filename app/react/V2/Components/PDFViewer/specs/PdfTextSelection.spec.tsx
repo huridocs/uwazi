@@ -80,6 +80,32 @@ describe('PdfTextSelection', () => {
     expect(onDeselect).not.toHaveBeenCalled();
   });
 
+  it('does not remount children when disabled changes', () => {
+    let mounts = 0;
+    const Child = () => {
+      React.useEffect(() => {
+        mounts += 1;
+      }, []);
+      return <div>Hello</div>;
+    };
+    const onSelect = jest.fn();
+    const { rerender } = render(
+      <PdfTextSelection onSelect={onSelect}>
+        <Child />
+      </PdfTextSelection>
+    );
+
+    expect(mounts).toBe(1);
+
+    rerender(
+      <PdfTextSelection onSelect={onSelect} disabled>
+        <Child />
+      </PdfTextSelection>
+    );
+
+    expect(mounts).toBe(1);
+  });
+
   it('reports one touch selection after the selection settles', () => {
     jest.useFakeTimers();
     const { onSelect, removeAllRanges } = pressTouchSelection();

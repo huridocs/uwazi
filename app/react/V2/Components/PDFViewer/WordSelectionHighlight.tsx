@@ -2,50 +2,82 @@ import React from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-selection-handler';
 
+const HIGHLIGHT_PAD_PX = 2;
+const HIGHLIGHT_OPACITY = 0.22;
+const HIGHLIGHT_FILL = 'var(--color-carbon, #00b4f0)';
+
 type WordSelectionHighlightProps = {
-  selection: TextSelection;
-  committed?: boolean;
+  preview?: TextSelection;
+  committed?: TextSelection;
   regionId?: string;
   onClear?: () => void;
 };
 
-const visibleRectangles = (selection: TextSelection, regionId?: string): SelectionRectangle[] =>
-  (selection.selectionRectangles || []).filter(rectangle =>
+type LayeredRectangle = SelectionRectangle & { layer: 'preview' | 'committed' };
+
+const visibleRectangles = (
+  selection: TextSelection | undefined,
+  regionId?: string
+): SelectionRectangle[] =>
+  (selection?.selectionRectangles || []).filter(rectangle =>
     rectangle.regionId && regionId ? rectangle.regionId === regionId : true
   );
 
+const layeredRectangles = (
+  selection: TextSelection | undefined,
+  regionId: string | undefined,
+  layer: LayeredRectangle['layer']
+): LayeredRectangle[] =>
+  visibleRectangles(selection, regionId).map(rectangle => ({ ...rectangle, layer }));
+
+const paddedStyle = (rectangle: SelectionRectangle): React.CSSProperties => ({
+  top: rectangle.top - HIGHLIGHT_PAD_PX,
+  left: rectangle.left - HIGHLIGHT_PAD_PX,
+  width: rectangle.width + HIGHLIGHT_PAD_PX * 2,
+  height: rectangle.height + HIGHLIGHT_PAD_PX * 2,
+  backgroundColor: HIGHLIGHT_FILL,
+});
+
 const WordSelectionHighlight = ({
-  selection,
-  committed = false,
+  preview,
+  committed,
   regionId,
   onClear,
 }: WordSelectionHighlightProps) => {
-  const rectangles = visibleRectangles(selection, regionId);
-  const lastVisible = rectangles[rectangles.length - 1];
-  const lastOverall = (selection.selectionRectangles || []).at(-1);
+  const rectangles = [
+    ...layeredRectangles(preview, regionId, 'preview'),
+    ...layeredRectangles(committed, regionId, 'committed'),
+  ];
+  const committedRects = visibleRectangles(committed, regionId);
+  const lastVisible = committedRects[committedRects.length - 1];
+  const lastOverall = (committed?.selectionRectangles || []).at(-1);
   const showClear =
-    committed &&
     Boolean(onClear) &&
     Boolean(lastVisible) &&
     lastOverall?.regionId === lastVisible?.regionId &&
     lastOverall?.top === lastVisible?.top &&
     lastOverall?.left === lastVisible?.left;
 
+  if (!rectangles.length && !showClear) {
+    return null;
+  }
+
   return (
     <>
-      {rectangles.map(rectangle => (
-        <div
-          key={`${rectangle.top}-${rectangle.left}-${rectangle.width}`}
-          data-word-highlight=""
-          className="pointer-events-none absolute z-10 bg-highlight-blue"
-          style={{
-            top: rectangle.top,
-            left: rectangle.left,
-            width: rectangle.width,
-            height: rectangle.height,
-          }}
-        />
-      ))}
+      <div
+        data-word-highlight-layer=""
+        className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
+        style={{ opacity: HIGHLIGHT_OPACITY }}
+      >
+        {rectangles.map(rectangle => (
+          <div
+            key={`${rectangle.layer}-${rectangle.top}-${rectangle.left}-${rectangle.width}`}
+            data-word-highlight=""
+            className="absolute rounded-sm"
+            style={paddedStyle(rectangle)}
+          />
+        ))}
+      </div>
       {showClear && lastVisible && onClear ? (
         <button
           type="button"

@@ -104,4 +104,19 @@ describe('PDF word selection flag', () => {
 
     expect(document.querySelector('#pdf-container')).toHaveAttribute('data-word-selection', 'true');
   });
+
+  it('keeps the PDF container mounted when word selection is toggled on', async () => {
+    await act(async () => {
+      renderPdf(true);
+    });
+    await waitFor(() => expect(document.querySelector('#pdf-container')).toBeInTheDocument());
+
+    const container = document.querySelector('#pdf-container');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Word selection' }));
+    });
+
+    expect(document.querySelector('#pdf-container')).toBe(container);
+  });
 });
