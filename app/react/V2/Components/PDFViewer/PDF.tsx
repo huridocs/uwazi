@@ -120,7 +120,7 @@ const PDF = ({
     { [page: number]: TextHighlight[] }[]
   >([]);
   const settings = useAtomValue(settingsAtom);
-  const wordSelectionAvailable = Boolean(settings.features?.textWordSelection);
+  const wordSelectionAvailable = Boolean(settings.features?.experimentalFeatures);
   const [wordSelectionMode, setWordSelectionMode] = useState(false);
   const wordSelectionActive = wordSelectionAvailable && wordSelectionMode;
   const [wordHighlight, setWordHighlight] = useState<WordHighlight>();

@@ -57,9 +57,9 @@ const resolvedPdf = {
   destroy: jest.fn(),
 };
 
-const renderPdf = (textWordSelection = false) =>
+const renderPdf = (experimentalFeatures = false) =>
   render(
-    <TestAtomStoreProvider initialValues={[[settingsAtom, { features: { textWordSelection } }]]}>
+    <TestAtomStoreProvider initialValues={[[settingsAtom, { features: { experimentalFeatures } }]]}>
       <PdfViewer fileUrl="/file.pdf" />
     </TestAtomStoreProvider>
   );
@@ -70,7 +70,7 @@ describe('PDF word selection flag', () => {
     mockGetDocument.mockReturnValue(resolvedPdf);
   });
 
-  it('hides the word-selection toggle when the textWordSelection flag is off', async () => {
+  it('hides the word-selection toggle when the experimentalFeatures flag is off', async () => {
     await act(async () => {
       renderPdf(false);
     });
@@ -79,7 +79,7 @@ describe('PDF word selection flag', () => {
     expect(screen.queryByRole('checkbox', { name: 'Word selection' })).not.toBeInTheDocument();
   });
 
-  it('shows the word-selection toggle when the textWordSelection flag is on', async () => {
+  it('shows the word-selection toggle when the experimentalFeatures flag is on', async () => {
     await act(async () => {
       renderPdf(true);
     });
