@@ -22,12 +22,12 @@ describe('WordSelectionHighlight', () => {
     const marks = container.querySelectorAll('[data-word-highlight]');
 
     await expect(layer).toHaveStyle({ opacity: '0.22' });
-    expect(marks).toHaveLength(2);
+    expect(marks).toHaveLength(1);
     expect(marks[0]).toHaveClass('rounded-sm');
     await expect(marks[0]).toHaveStyle({
       top: '18px',
-      left: '8px',
-      width: '44px',
+      left: '4px',
+      width: '87px',
       height: '16px',
       backgroundColor: 'var(--color-carbon, #00b4f0)',
     });
@@ -47,7 +47,7 @@ describe('WordSelectionHighlight', () => {
     const marks = layer?.querySelectorAll('[data-word-highlight]');
 
     expect(container.querySelectorAll('[data-word-highlight-layer]')).toHaveLength(1);
-    expect(marks).toHaveLength(3);
+    expect(marks).toHaveLength(2);
   });
 
   it('keeps the committed range visible and clears it from the X', () => {

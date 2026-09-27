@@ -3,17 +3,17 @@ import type { TextSelection } from '@huridocs/react-text-selection-handler';
 type SelectionMenuPosition = { x: number; y: number };
 
 const getSelectionMenuPosition = (selection: TextSelection): SelectionMenuPosition | undefined => {
-  const [first] = selection.selectionRectangles;
-  if (!first) return undefined;
+  const last = selection.selectionRectangles.at(-1);
+  if (!last) return undefined;
 
-  const page = first.regionId ?? '1';
+  const page = last.regionId ?? '1';
   const pageContainer = document.querySelector<HTMLElement>(`#page-${page}-container`);
   if (!pageContainer) return undefined;
 
   const pageRect = pageContainer.getBoundingClientRect();
   return {
-    x: pageRect.left + (first.left ?? 0) + (first.width ?? 0) / 2,
-    y: pageRect.top + (first.top ?? 0),
+    x: pageRect.left + (last.left ?? 0) + (last.width ?? 0),
+    y: pageRect.top + (last.top ?? 0),
   };
 };
 

@@ -1,8 +1,10 @@
 import React from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-selection-handler';
+import { mergeLineRectangles } from './functions/mergeLineRectangles.js';
 
-const HIGHLIGHT_PAD_PX = 2;
+const HIGHLIGHT_PAD_X = 6;
+const HIGHLIGHT_PAD_Y = 2;
 const HIGHLIGHT_OPACITY = 0.22;
 const HIGHLIGHT_FILL = 'var(--color-carbon, #00b4f0)';
 
@@ -28,13 +30,16 @@ const layeredRectangles = (
   regionId: string | undefined,
   layer: LayeredRectangle['layer']
 ): LayeredRectangle[] =>
-  visibleRectangles(selection, regionId).map(rectangle => ({ ...rectangle, layer }));
+  mergeLineRectangles(visibleRectangles(selection, regionId)).map(rectangle => ({
+    ...rectangle,
+    layer,
+  }));
 
 const paddedStyle = (rectangle: SelectionRectangle): React.CSSProperties => ({
-  top: rectangle.top - HIGHLIGHT_PAD_PX,
-  left: rectangle.left - HIGHLIGHT_PAD_PX,
-  width: rectangle.width + HIGHLIGHT_PAD_PX * 2,
-  height: rectangle.height + HIGHLIGHT_PAD_PX * 2,
+  top: rectangle.top - HIGHLIGHT_PAD_Y,
+  left: rectangle.left - HIGHLIGHT_PAD_X,
+  width: rectangle.width + HIGHLIGHT_PAD_X * 2,
+  height: rectangle.height + HIGHLIGHT_PAD_Y * 2,
   backgroundColor: HIGHLIGHT_FILL,
 });
 
