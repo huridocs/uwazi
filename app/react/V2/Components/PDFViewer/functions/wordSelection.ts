@@ -76,20 +76,42 @@ const caretFromPoint = (x: number, y: number): CaretPositionLike | undefined => 
   return undefined;
 };
 
-const wordContainsPoint = (word: PdfWord, x: number, y: number): boolean => {
+const fitsInside = (inner: DOMRect, outer: DOMRect) =>
+  inner.width > 0 &&
+  inner.height > 0 &&
+  inner.width <= outer.width + 2 &&
+  inner.height <= outer.height + 2;
+
+const rangeRectsForWord = (word: PdfWord): DOMRect[] => {
   const range = document.createRange();
   range.setStart(word.node, word.startOffset);
   range.setEnd(word.node, word.endOffset);
-  return Array.from(range.getClientRects()).some(
+  return Array.from(range.getClientRects());
+};
+
+const clientRectsForWord = (word: PdfWord): DOMRect[] => {
+  const spanBox = word.node.parentElement?.getBoundingClientRect();
+  const rangeRects = rangeRectsForWord(word);
+  const usable = spanBox ? rangeRects.filter(box => fitsInside(box, spanBox)) : rangeRects;
+  if (usable.length) {
+    return usable;
+  }
+  if (spanBox && spanBox.width > 0 && spanBox.height > 0) {
+    return [spanBox];
+  }
+  return rangeRects.filter(box => box.width > 0 && box.height > 0);
+};
+
+const wordContainsPoint = (word: PdfWord, x: number, y: number): boolean =>
+  clientRectsForWord(word).some(
     box => x >= box.left && x <= box.right && y >= box.top && y <= box.bottom
   );
-};
 
 const findWordAtPoint = (words: PdfWord[], x: number, y: number): number => {
   const caret = caretFromPoint(x, y);
   if (caret) {
     const fromCaret = findWordIndex(words, caret.offsetNode, caret.offset);
-    if (fromCaret >= 0) {
+    if (fromCaret >= 0 && wordContainsPoint(words[fromCaret], x, y)) {
       return fromCaret;
     }
   }
@@ -142,14 +164,11 @@ type WordRangeSelection = {
 };
 
 const rectanglesForWord = (word: PdfWord, regions: HTMLElement[]): SelectionRectangle[] => {
-  const range = document.createRange();
-  range.setStart(word.node, word.startOffset);
-  range.setEnd(word.node, word.endOffset);
   const region =
     regions.find(element => element.getAttribute('data-region-selector-id') === word.regionId) ||
     undefined;
 
-  return Array.from(range.getClientRects())
+  return clientRectsForWord(word)
     .map(rectangle => {
       const host = region || regions.find(element => regionContainsRect(element, rectangle));
       return host ? rectangleForRegion(rectangle, host) : undefined;

@@ -99,11 +99,18 @@ const renderHarness = (props: Partial<HarnessProps> = {}) => {
   jest
     .spyOn(region, 'getBoundingClientRect')
     .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 40 }));
-  Range.prototype.getClientRects = () =>
-    Object.assign([rect({ left: 0, top: 0, width: 20, height: 10 })], {
-      item: (index: number) =>
-        index === 0 ? rect({ left: 0, top: 0, width: 20, height: 10 }) : null,
+  Range.prototype.getClientRects = function mockRects() {
+    const boxes: Record<string, ReturnType<typeof rect>> = {
+      two: rect({ left: 40, top: 0, width: 40, height: 10 }),
+      three: rect({ left: 80, top: 0, width: 40, height: 10 }),
+    };
+    const box =
+      boxes[this.startContainer.textContent || ''] ||
+      rect({ left: 0, top: 0, width: 40, height: 10 });
+    return Object.assign([box], {
+      item: (index: number) => (index === 0 ? box : null),
     }) as unknown as DOMRectList;
+  };
   return { ...view, root, onSelect, onDeselect, onHighlightChange };
 };
 

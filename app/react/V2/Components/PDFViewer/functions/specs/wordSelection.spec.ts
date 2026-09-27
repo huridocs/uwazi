@@ -2,47 +2,8 @@
  * @jest-environment jsdom
  */
 
-import {
-  collectPdfWords,
-  findWordIndex,
-  findWordAtPoint,
-  selectionFromWordRange,
-} from '../wordSelection.js';
-
-const rect = ({
-  left,
-  top,
-  width,
-  height,
-}: {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}): DOMRect =>
-  ({
-    x: left,
-    y: top,
-    left,
-    top,
-    width,
-    height,
-    right: left + width,
-    bottom: top + height,
-    toJSON: () => ({}),
-  }) as DOMRect;
-
-const asRectList = (rects: DOMRect[]): DOMRectList =>
-  Object.assign(rects, {
-    item: (index: number) => rects[index] ?? null,
-  }) as unknown as DOMRectList;
-
-const mountLayers = (html: string) => {
-  const root = document.createElement('div');
-  root.innerHTML = html;
-  document.body.appendChild(root);
-  return root;
-};
+import { collectPdfWords, findWordIndex, findWordAtPoint } from '../wordSelection.js';
+import { asRectList, mountLayers, rect } from './wordSelection.helpers.js';
 
 describe('wordSelection', () => {
   const originalGetClientRects = Range.prototype.getClientRects;
@@ -144,8 +105,40 @@ describe('wordSelection', () => {
         configurable: true,
         value: () => ({ offsetNode: textNode, offset: 7 }),
       });
+      Range.prototype.getClientRects = function mockRects() {
+        if (this.startOffset >= 6) {
+          return asRectList([rect({ left: 0, top: 0, width: 40, height: 20 })]);
+        }
+        return asRectList([rect({ left: 0, top: 0, width: 8, height: 12 })]);
+      };
 
       expect(findWordAtPoint(words, 10, 10)).toBe(1);
+    });
+
+    it('ignores a caret that is not actually under the pointer', () => {
+      const root = mountLayers(`
+        <div data-region-selector-id="1">
+          <div class="textLayer"><span>alpha</span></div>
+        </div>
+        <div data-region-selector-id="2">
+          <div class="textLayer"><span>gamma</span></div>
+        </div>
+      `);
+      const words = collectPdfWords(root);
+      const gammaNode = words[1].node;
+
+      Object.defineProperty(document, 'caretPositionFromPoint', {
+        configurable: true,
+        value: () => ({ offsetNode: gammaNode, offset: 0 }),
+      });
+      Range.prototype.getClientRects = function mockRects() {
+        if (this.startContainer === gammaNode) {
+          return asRectList([rect({ left: 0, top: 430, width: 48, height: 12 })]);
+        }
+        return asRectList([rect({ left: 0, top: 10, width: 40, height: 12 })]);
+      };
+
+      expect(findWordAtPoint(words, 20, 200)).toBe(-1);
     });
 
     it('falls back to word boxes when caret APIs are missing', () => {
@@ -176,113 +169,6 @@ describe('wordSelection', () => {
       expect(findWordAtPoint(words, 55, 6)).toBe(1);
       expect(findWordAtPoint(words, 10, 6)).toBe(0);
       expect(findWordAtPoint(words, 400, 400)).toBe(-1);
-    });
-  });
-
-  describe('selectionFromWordRange', () => {
-    it('selects the inclusive word range and maps rectangles to the page region', () => {
-      const root = mountLayers(`
-        <div data-region-selector-id="3">
-          <div class="textLayer"><span>one two three</span></div>
-        </div>
-      `);
-      const words = collectPdfWords(root);
-      const region = root.querySelector('[data-region-selector-id]') as HTMLElement;
-
-      jest
-        .spyOn(region, 'getBoundingClientRect')
-        .mockReturnValue(rect({ left: 10, top: 20, width: 200, height: 100 }));
-      Range.prototype.getClientRects = () =>
-        asRectList([rect({ left: 15, top: 24, width: 30, height: 10 })]);
-
-      const selection = selectionFromWordRange({ words, startIndex: 0, endIndex: 2, root });
-
-      expect(selection.text).toBe('one two three');
-      expect(selection.selectionRectangles).toEqual([
-        { left: 5, top: 4, width: 30, height: 10, regionId: '3' },
-      ]);
-    });
-
-    it('normalizes a backwards range the same way a calendar does', () => {
-      const root = mountLayers(`
-        <div data-region-selector-id="1">
-          <div class="textLayer"><span>one two three</span></div>
-        </div>
-      `);
-      const words = collectPdfWords(root);
-      const region = root.querySelector('[data-region-selector-id]') as HTMLElement;
-      jest
-        .spyOn(region, 'getBoundingClientRect')
-        .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 100 }));
-      Range.prototype.getClientRects = () =>
-        asRectList([rect({ left: 0, top: 0, width: 10, height: 10 })]);
-
-      expect(selectionFromWordRange({ words, startIndex: 2, endIndex: 0, root }).text).toBe(
-        'one two three'
-      );
-    });
-
-    it('joins words across rendered pages in reading order', () => {
-      const root = mountLayers(`
-        <div data-region-selector-id="1">
-          <div class="textLayer"><span>alpha beta</span></div>
-        </div>
-        <div data-region-selector-id="2">
-          <div class="textLayer"><span>gamma</span></div>
-        </div>
-      `);
-      const words = collectPdfWords(root);
-      root.querySelectorAll('[data-region-selector-id]').forEach(region => {
-        jest
-          .spyOn(region, 'getBoundingClientRect')
-          .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 100 }));
-      });
-      Range.prototype.getClientRects = () =>
-        asRectList([rect({ left: 0, top: 0, width: 10, height: 10 })]);
-
-      expect(selectionFromWordRange({ words, startIndex: 1, endIndex: 2, root }).text).toBe(
-        'beta gamma'
-      );
-    });
-
-    it('keeps only word boxes when a cross-page range would include page-sized client rects', () => {
-      const root = mountLayers(`
-        <div data-region-selector-id="1">
-          <div class="textLayer"><span>alpha beta</span></div>
-        </div>
-        <div data-region-selector-id="2">
-          <div class="textLayer"><span>gamma</span></div>
-        </div>
-      `);
-      const words = collectPdfWords(root);
-      const regions = root.querySelectorAll('[data-region-selector-id]');
-      jest
-        .spyOn(regions[0], 'getBoundingClientRect')
-        .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 400 }));
-      jest
-        .spyOn(regions[1], 'getBoundingClientRect')
-        .mockReturnValue(rect({ left: 0, top: 420, width: 200, height: 400 }));
-
-      Range.prototype.getClientRects = function mockRects() {
-        if (this.startContainer !== this.endContainer) {
-          return asRectList([rect({ left: 0, top: 0, width: 200, height: 820 })]);
-        }
-        if (this.startContainer === words[2].node) {
-          return asRectList([rect({ left: 8, top: 430, width: 48, height: 12 })]);
-        }
-        if (this.startOffset >= 6) {
-          return asRectList([rect({ left: 48, top: 10, width: 36, height: 12 })]);
-        }
-        return asRectList([rect({ left: 0, top: 10, width: 40, height: 12 })]);
-      };
-
-      const selection = selectionFromWordRange({ words, startIndex: 1, endIndex: 2, root });
-
-      expect(selection.text).toBe('beta gamma');
-      expect(selection.selectionRectangles).toEqual([
-        { left: 48, top: 10, width: 36, height: 12, regionId: '1' },
-        { left: 8, top: 10, width: 48, height: 12, regionId: '2' },
-      ]);
     });
   });
 });
