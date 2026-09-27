@@ -3,7 +3,7 @@
  */
 
 import { collectPdfWords, selectionFromWordRange } from '../wordSelection.js';
-import { asRectList, mountLayers, rect } from './wordSelection.helpers.js';
+import { asRectList, mockFullSpanClientRects, mountLayers, rect } from './wordSelection.helpers.js';
 
 describe('selectionFromWordRange', () => {
   const originalGetClientRects = Range.prototype.getClientRects;
@@ -119,7 +119,7 @@ describe('selectionFromWordRange', () => {
     ]);
   });
 
-  it('uses the text-layer span box when a word range reports a page-sized rect', () => {
+  it('uses the text-layer span box when a whole-span word reports a page-sized rect', () => {
     const root = mountLayers(`
       <div data-region-selector-id="2">
         <div class="textLayer"><span>gamma</span></div>
@@ -140,6 +140,21 @@ describe('selectionFromWordRange', () => {
     expect(selectionFromWordRange({ words, startIndex: 0, endIndex: 0, root })).toEqual({
       text: 'gamma',
       selectionRectangles: [{ left: 8, top: 10, width: 48, height: 12, regionId: '2' }],
+    });
+  });
+
+  it('keeps a per-word box when every range rect is the parent span', () => {
+    const root = mountLayers(`
+      <div data-region-selector-id="1">
+        <div class="textLayer"><span>one two three</span></div>
+      </div>
+    `);
+    const words = collectPdfWords(root);
+    mockFullSpanClientRects(root, rect({ left: 0, top: 10, width: 130, height: 12 }));
+
+    expect(selectionFromWordRange({ words, startIndex: 1, endIndex: 1, root })).toEqual({
+      text: 'two',
+      selectionRectangles: [{ left: 40, top: 10, width: 30, height: 12, regionId: '1' }],
     });
   });
 });

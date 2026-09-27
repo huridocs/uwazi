@@ -4,7 +4,7 @@ import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-sel
 import { clearControlAnchor } from './functions/clearControlAnchor.js';
 import { mergeLineRectangles } from './functions/mergeLineRectangles.js';
 
-const HIGHLIGHT_PAD_X = 6;
+const HIGHLIGHT_PAD_X = 8;
 const HIGHLIGHT_PAD_Y = 2;
 const HIGHLIGHT_OPACITY = 0.22;
 const HIGHLIGHT_FILL = 'var(--color-carbon, #00b4f0)';

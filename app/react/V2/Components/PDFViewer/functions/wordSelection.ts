@@ -76,11 +76,27 @@ const caretFromPoint = (x: number, y: number): CaretPositionLike | undefined => 
   return undefined;
 };
 
+const SIZE_TOLERANCE_PX = 2;
+
 const fitsInside = (inner: DOMRect, outer: DOMRect) =>
   inner.width > 0 &&
   inner.height > 0 &&
-  inner.width <= outer.width + 2 &&
-  inner.height <= outer.height + 2;
+  inner.width <= outer.width + SIZE_TOLERANCE_PX &&
+  inner.height <= outer.height + SIZE_TOLERANCE_PX;
+
+const sameSize = (left: DOMRect, right: DOMRect) =>
+  Math.abs(left.width - right.width) <= SIZE_TOLERANCE_PX &&
+  Math.abs(left.height - right.height) <= SIZE_TOLERANCE_PX;
+
+const coversWholeNode = (word: PdfWord) =>
+  word.startOffset === 0 && word.endOffset === (word.node.textContent || '').length;
+
+const isUsableWordRect = (box: DOMRect, word: PdfWord, spanBox: DOMRect) => {
+  if (!fitsInside(box, spanBox)) {
+    return false;
+  }
+  return coversWholeNode(word) || !sameSize(box, spanBox);
+};
 
 const rangeRectsForWord = (word: PdfWord): DOMRect[] => {
   const range = document.createRange();
@@ -89,15 +105,48 @@ const rangeRectsForWord = (word: PdfWord): DOMRect[] => {
   return Array.from(range.getClientRects());
 };
 
+const sliceHostBox = (host: DOMRect, startRatio: number, widthRatio: number): DOMRect => {
+  const left = host.left + host.width * startRatio;
+  const width = Math.max(host.width * widthRatio, 1);
+  return {
+    x: left,
+    y: host.top,
+    left,
+    top: host.top,
+    width,
+    height: host.height,
+    right: left + width,
+    bottom: host.top + host.height,
+    toJSON: () => ({}),
+  } as DOMRect;
+};
+
+const estimateWordRect = (word: PdfWord, spanBox: DOMRect): DOMRect => {
+  if (coversWholeNode(word)) {
+    return spanBox;
+  }
+
+  const total = Math.max((word.node.textContent || '').length, 1);
+  return sliceHostBox(
+    spanBox,
+    word.startOffset / total,
+    (word.endOffset - word.startOffset) / total
+  );
+};
+
 const clientRectsForWord = (word: PdfWord): DOMRect[] => {
   const spanBox = word.node.parentElement?.getBoundingClientRect();
   const rangeRects = rangeRectsForWord(word);
-  const usable = spanBox ? rangeRects.filter(box => fitsInside(box, spanBox)) : rangeRects;
+  if (!spanBox) {
+    return rangeRects.filter(box => box.width > 0 && box.height > 0);
+  }
+
+  const usable = rangeRects.filter(box => isUsableWordRect(box, word, spanBox));
   if (usable.length) {
     return usable;
   }
-  if (spanBox && spanBox.width > 0 && spanBox.height > 0) {
-    return [spanBox];
+  if (spanBox.width > 0 && spanBox.height > 0) {
+    return [estimateWordRect(word, spanBox)];
   }
   return rangeRects.filter(box => box.width > 0 && box.height > 0);
 };

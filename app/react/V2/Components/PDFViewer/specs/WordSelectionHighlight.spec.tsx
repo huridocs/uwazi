@@ -26,8 +26,8 @@ describe('WordSelectionHighlight', () => {
     expect(marks[0]).toHaveClass('rounded-sm');
     await expect(marks[0]).toHaveStyle({
       top: '18px',
-      left: '4px',
-      width: '87px',
+      left: '2px',
+      width: '91px',
       height: '16px',
       backgroundColor: 'var(--color-carbon, #00b4f0)',
     });

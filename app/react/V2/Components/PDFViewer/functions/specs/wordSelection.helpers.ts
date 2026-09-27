@@ -33,4 +33,14 @@ const mountLayers = (html: string) => {
   return root;
 };
 
-export { rect, asRectList, mountLayers };
+const mockFullSpanClientRects = (root: HTMLElement, spanBox: DOMRect) => {
+  const region = root.querySelector('[data-region-selector-id]') as HTMLElement;
+  const span = root.querySelector('span') as HTMLElement;
+  jest
+    .spyOn(region, 'getBoundingClientRect')
+    .mockReturnValue(rect({ left: 0, top: 0, width: 200, height: 100 }));
+  jest.spyOn(span, 'getBoundingClientRect').mockReturnValue(spanBox);
+  Range.prototype.getClientRects = () => asRectList([spanBox]);
+};
+
+export { rect, asRectList, mountLayers, mockFullSpanClientRects };

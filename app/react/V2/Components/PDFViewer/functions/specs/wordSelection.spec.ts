@@ -170,5 +170,26 @@ describe('wordSelection', () => {
       expect(findWordAtPoint(words, 10, 6)).toBe(0);
       expect(findWordAtPoint(words, 400, 400)).toBe(-1);
     });
+
+    it('hits the word under the pointer when every range rect is the parent span', () => {
+      const root = mountLayers(`
+        <div data-region-selector-id="1">
+          <div class="textLayer"><span>one two three</span></div>
+        </div>
+      `);
+      const words = collectPdfWords(root);
+      const span = root.querySelector('span') as HTMLElement;
+      const spanBox = rect({ left: 0, top: 0, width: 130, height: 12 });
+      jest.spyOn(span, 'getBoundingClientRect').mockReturnValue(spanBox);
+      Object.defineProperty(document, 'caretPositionFromPoint', {
+        configurable: true,
+        value: () => ({ offsetNode: words[0].node, offset: 1 }),
+      });
+      Range.prototype.getClientRects = () => asRectList([spanBox]);
+
+      expect(findWordAtPoint(words, 10, 6)).toBe(0);
+      expect(findWordAtPoint(words, 50, 6)).toBe(1);
+      expect(findWordAtPoint(words, 110, 6)).toBe(2);
+    });
   });
 });
