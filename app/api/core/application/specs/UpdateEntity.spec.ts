@@ -1136,6 +1136,71 @@ describe('UpdateEntityUseCase', () => {
           'Entity 1 PT',
         ]);
       });
+
+      it('should keep unsent translatable values on other languages', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'image_entity',
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Image Entity EN' }] }],
+          translations: {
+            pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }],
+          },
+        });
+
+        expect(
+          (await getAllEntities('image_entity')).map(({ language, title, metadata }) => ({
+            language,
+            title,
+            image: metadata.image,
+          }))
+        ).toEqual([
+          {
+            language: 'en',
+            title: 'Image Entity EN',
+            image: [{ value: 'https://example.com/en.jpg' }],
+          },
+          {
+            language: 'pt',
+            title: 'Atualizado PT',
+            image: [{ value: 'https://example.com/pt.jpg' }],
+          },
+        ]);
+      });
+
+      it('should link different uploaded images per language', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'image_entity',
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Image Entity EN' }] },
+            { name: 'image', value: [{ value: '', attachment: 0 }] },
+          ],
+          translations: {
+            pt: [
+              { name: 'title', value: [{ value: 'Image Entity PT' }] },
+              { name: 'image', value: [{ value: '', attachment: 1 }] },
+            ],
+          },
+          uploadedFiles: [
+            inputFile('attachments[0]', 'en.png', 'en.png', 'image/png', 'attachment'),
+            inputFile('attachments[1]', 'pt.png', 'pt.png', 'image/png', 'attachment'),
+          ],
+        });
+
+        expect(
+          (await getAllEntities('image_entity')).map(({ language, metadata }) => ({
+            language,
+            image: metadata.image,
+          }))
+        ).toEqual([
+          { language: 'en', image: [{ value: '/api/files/en.png' }] },
+          { language: 'pt', image: [{ value: '/api/files/pt.png' }] },
+        ]);
+      });
     });
 
     describe('EntityUpdatedEvent changed languages', () => {

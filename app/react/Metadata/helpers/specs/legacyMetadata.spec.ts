@@ -1,7 +1,7 @@
-// oxlint-disable max-lines
 /**
  * @jest-environment jsdom
  */
+// oxlint-disable max-lines
 import fetchMock from 'fetch-mock';
 import { ClientTemplateSchema } from '#app/istore.js';
 import { prepareMetadataAndFiles, wrapEntityMetadata } from '#shared/entitySave/legacyMetadata.js';

@@ -12,6 +12,8 @@ const resolveFieldValue = (metadataEntry: unknown) =>
     ? metadataEntry.data
     : metadataEntry;
 
+const isFileValue = (value: object) => typeof File !== 'undefined' && value instanceof File;
+
 const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
   if (value === null || value === undefined) {
     return null;
@@ -19,7 +21,7 @@ const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
-  if (typeof value === 'object' && !(value instanceof File)) {
+  if (typeof value === 'object' && !isFileValue(value)) {
     return value as MetadataObjectSchema['value'];
   }
   return null;

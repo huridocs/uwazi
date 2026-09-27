@@ -158,14 +158,6 @@ const mapMediaBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveM
     Object.entries(bag).map(([name, values]) => [name, mapMediaField(name, values, ctx)])
   );
 
-const mapTranslationBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveMetadata =>
-  Object.fromEntries(
-    Object.entries(bag).flatMap(([name, values]) => {
-      const mapped = mapMediaField(name, values, ctx);
-      return mapped?.some(entry => typeof entry.attachment === 'number') ? [] : [[name, mapped]];
-    })
-  );
-
 const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
   entity: T,
   mediaPropertyNames: ReadonlySet<string>,
@@ -185,7 +177,7 @@ const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
           translations: Object.fromEntries(
             Object.entries(entity.translations).map(([language, bag]) => [
               language,
-              mapTranslationBag(bag, ctx),
+              mapMediaBag(bag, ctx),
             ])
           ),
         }

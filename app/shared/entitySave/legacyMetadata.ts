@@ -49,7 +49,7 @@ const prepareMetadataAndFiles = async (
 
   return {
     ...wrappedEntity,
-    file: primaryFile instanceof File ? primaryFile : undefined,
+    file: typeof File !== 'undefined' && primaryFile instanceof File ? primaryFile : undefined,
     attachments: [...files, ...attachedFiles],
     template: templateId,
     metadata: wrappedEntity.metadata ?? {},

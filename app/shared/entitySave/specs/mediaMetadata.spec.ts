@@ -247,18 +247,18 @@ describe('mapMediaMetadataForSave', () => {
   });
 
   describe('translations', () => {
-    it('omits translation media pending uploads so they inherit the target language files', () => {
+    it('maps translation media upload ids with the same pending attachments as current metadata', () => {
       const prepared = mapMediaMetadataForSave(
         {
           title: 'New',
           template: 'template1',
-          metadata: { image: [{ value: 'enImageId' }] },
-          translations: { es: { title: [{ value: 'Nuevo' }], image: [{ value: 'enImageId' }] } },
+          metadata: { image: [{ value: '/en.jpg' }] },
+          translations: { es: { title: [{ value: 'Nuevo' }], image: [{ value: 'esImageId' }] } },
           attachments: [
             {
-              originalname: 'en.png',
-              filename: 'en.png',
-              fileLocalID: 'enImageId',
+              originalname: 'es.png',
+              filename: 'es.png',
+              fileLocalID: 'esImageId',
               serializedFile: 'data:image/png;base64,aW1hZ2U=',
             },
           ],
@@ -266,8 +266,8 @@ describe('mapMediaMetadataForSave', () => {
         mediaPropertyNames,
         mediaPropertyTypes
       );
-      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
-      expect(prepared.translations?.es.image).toBeUndefined();
+      expect(metadata(prepared).image).toEqual([{ value: '/en.jpg' }]);
+      expect(prepared.translations?.es.image).toEqual([{ value: '', attachment: 0 }]);
       expect(prepared.translations?.es.title).toEqual([{ value: 'Nuevo' }]);
     });
 

@@ -264,7 +264,7 @@ describe('entity save stack integration', () => {
       expect(payload.files?.[0]?.filename).toBe('photo.jpg');
     });
 
-    it('omits translation media pending uploads instead of sending attachment indices', async () => {
+    it('maps a newly uploaded image on a non-current language during create', async () => {
       mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
       const entity = {
         title: 'Entity 1',
@@ -287,7 +287,7 @@ describe('entity save stack integration', () => {
 
       expect(error).toBeUndefined();
       expect(entityJson.metadata?.image).toEqual([{ value: '/en.jpg' }]);
-      expect(entityJson.translations?.es.image).toBeUndefined();
+      expect(entityJson.translations?.es.image).toEqual([{ value: '', attachment: 0 }]);
       expect(entityJson.translations?.es.title).toEqual([{ value: 'Entidad' }]);
     });
   });
