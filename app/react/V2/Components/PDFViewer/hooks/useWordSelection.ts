@@ -1,14 +1,24 @@
-import { type RefObject, useEffect, useRef } from 'react';
+import { type RefObject, useCallback, useEffect, useRef } from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { collectPdfWords, type PdfWord } from '../functions/wordSelection.js';
-import { bindWordSelectionListeners, releaseWordSelection } from './wordSelectionHandlers.js';
+import {
+  bindWordSelectionListeners,
+  releaseWordSelection,
+  type WordHighlight,
+} from './wordSelectionHandlers.js';
 
 type UseWordSelectionArgs = {
   enabled: boolean;
   containerRef: RefObject<HTMLElement | null>;
   onSelect: (selection: TextSelection) => void;
   onDeselect?: () => void;
-  onPreviewChange?: (selection: TextSelection | undefined) => void;
+  onHighlightChange?: (highlight: WordHighlight | undefined) => void;
+};
+
+const useLatest = <T>(value: T) => {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
 };
 
 const useWordSelection = ({
@@ -16,24 +26,33 @@ const useWordSelection = ({
   containerRef,
   onSelect,
   onDeselect,
-  onPreviewChange,
+  onHighlightChange,
 }: UseWordSelectionArgs) => {
   const startIndexRef = useRef<number | null>(null);
+  const highlightRef = useRef<WordHighlight | undefined>();
   const wordsRef = useRef<PdfWord[]>([]);
-  const onSelectRef = useRef(onSelect);
-  const onDeselectRef = useRef(onDeselect);
-  const onPreviewChangeRef = useRef(onPreviewChange);
+  const onSelectRef = useLatest(onSelect);
+  const onDeselectRef = useLatest(onDeselect);
+  const onHighlightChangeRef = useLatest(onHighlightChange);
 
-  onSelectRef.current = onSelect;
-  onDeselectRef.current = onDeselect;
-  onPreviewChangeRef.current = onPreviewChange;
+  const notifyHighlight = useCallback(
+    (highlight: WordHighlight | undefined) => {
+      onHighlightChangeRef.current?.(highlight);
+    },
+    [onHighlightChangeRef]
+  );
+
+  const clearSelection = useCallback(() => {
+    if (startIndexRef.current === null && !highlightRef.current) {
+      return;
+    }
+    releaseWordSelection(startIndexRef, highlightRef, notifyHighlight);
+    onDeselectRef.current?.();
+  }, [notifyHighlight, onDeselectRef]);
 
   useEffect(() => {
-    const notifyPreview = (selection: TextSelection | undefined) =>
-      onPreviewChangeRef.current?.(selection);
-
     if (!enabled) {
-      releaseWordSelection(startIndexRef, notifyPreview);
+      releaseWordSelection(startIndexRef, highlightRef, notifyHighlight);
       return undefined;
     }
 
@@ -45,14 +64,17 @@ const useWordSelection = ({
     return bindWordSelectionListeners({
       root,
       startIndexRef,
+      highlightRef,
       wordsRef,
       collectWords: collectPdfWords,
       onSelect: selection => onSelectRef.current(selection),
       onDeselect: () => onDeselectRef.current?.(),
-      onPreviewChange: notifyPreview,
+      onHighlightChange: notifyHighlight,
     });
-  }, [containerRef, enabled]);
+  }, [containerRef, enabled, notifyHighlight, onSelectRef, onDeselectRef]);
+
+  return { clearSelection };
 };
 
-export type { UseWordSelectionArgs };
+export type { UseWordSelectionArgs, WordHighlight };
 export { useWordSelection };
