@@ -1,6 +1,4 @@
 import { DeregisterTenant } from '../application/DeregisterTenant.js';
-import { GetTenant } from '../application/GetTenant.js';
-import { ListTenants } from '../application/ListTenants.js';
 import { RecordTenantHealthCheck } from '../application/RecordTenantHealthCheck.js';
 import { RegisterTenant } from '../application/RegisterTenant.js';
 import { SetTenantFeatureFlags } from '../application/SetTenantFeatureFlags.js';
@@ -24,14 +22,6 @@ class TenantUseCasesFactory {
 
   static deregisterTenant(): DeregisterTenant {
     return new DeregisterTenant(TenantsDataSourceFactory.default());
-  }
-
-  static listTenants(): ListTenants {
-    return new ListTenants(TenantsDataSourceFactory.default());
-  }
-
-  static getTenant(): GetTenant {
-    return new GetTenant(TenantsDataSourceFactory.default());
   }
 
   static setTenantFeatureFlags(): SetTenantFeatureFlags {

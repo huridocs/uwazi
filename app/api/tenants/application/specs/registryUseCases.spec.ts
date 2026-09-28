@@ -98,31 +98,6 @@ describe('tenant registry use cases', () => {
     });
   });
 
-  describe('ListTenants', () => {
-    it('should return every tenant sorted by name', async () => {
-      const result = (await TenantUseCasesFactory.listTenants().execute()).filter(tenant =>
-        names.includes(tenant.name)
-      );
-
-      expect(result.map(tenant => tenant.name)).toEqual(['uc-tenant-a', 'uc-tenant-b']);
-    });
-  });
-
-  describe('GetTenant', () => {
-    const sut = () => TenantUseCasesFactory.getTenant();
-
-    it('should return the tenant', async () => {
-      expect(await sut().execute('uc-tenant-b')).toEqual({
-        name: 'uc-tenant-b',
-        dbName: 'uc-tenant-b',
-      });
-    });
-
-    it('should fail when there is no such tenant', async () => {
-      await expect(sut().execute('uc-tenant-new')).rejects.toThrow(TenantNotFound);
-    });
-  });
-
   describe('DeregisterTenant', () => {
     const sut = () => TenantUseCasesFactory.deregisterTenant();
 
