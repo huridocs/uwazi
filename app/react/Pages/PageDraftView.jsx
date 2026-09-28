@@ -38,6 +38,7 @@ class PageDraftViewComponent extends RouteHandler {
   }
 
   componentDidMount() {
+    super.componentDidMount();
     this.closeSidePanel();
     if (isClient) {
       window.updatePageDatasets = updatePageDatasets;

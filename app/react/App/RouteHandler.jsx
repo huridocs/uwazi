@@ -37,7 +37,10 @@ class RouteHandler extends ReduxStoreComponent {
     super(props, context);
     setLocale(getLocale({ store: this.store }));
     this.state = {};
-    if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
+  }
+
+  componentDidMount() {
+    if ((!this.isRenderedFromServer() || this.props.location?.state?.isClient) && isClient) {
       this.getClientState(this.props).catch(ex => {
         // used in inherited types
         // eslint-disable-next-line react/no-unused-state

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import React from 'react';
+import React, { act } from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -42,7 +42,7 @@ describe('RouteHandler', () => {
 
   const context = { store: { getState: () => state, dispatch: jest.fn() } };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.spyOn(api, 'locale');
     jest.spyOn(I18NUtils, 'saveLocale');
 
@@ -71,6 +71,9 @@ describe('RouteHandler', () => {
 
     instance = component.instance();
     instance.constructor = TestController;
+    await act(async () => {
+      instance.componentDidMount();
+    });
   });
 
   afterEach(() => {

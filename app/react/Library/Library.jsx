@@ -17,11 +17,15 @@ class LibraryRootComponent extends RouteHandler {
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
 
     const { dispatch } = this.store;
-    wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
     this.scrollCallback = this.scrollCallback.bind(this);
     this.state = { scrollCount: 0 };
+  }
+
+  componentDidMount() {
+    super.componentDidMount();
+    wrapDispatch(this.store.dispatch, 'library')(enterLibrary());
   }
 
   urlHasChanged(nextProps) {
