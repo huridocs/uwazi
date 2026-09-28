@@ -58,7 +58,7 @@ describe('EntityLanguageBar', () => {
     expect(options).toEqual(['Español', 'Inglés']);
   });
 
-  it('confirms before switching language when metadata edits are dirty', async () => {
+  it('switches language while metadata is being edited', async () => {
     mockLanguageBar.isEditing = true;
     mockLanguageBar.isDirty = true;
     const store = createStore();
@@ -72,8 +72,8 @@ describe('EntityLanguageBar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Language' }));
     await userEvent.click(screen.getByRole('option', { name: 'Spanish' }));
 
-    expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
-    expect(mockLanguageBar.setLanguage).not.toHaveBeenCalled();
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(mockLanguageBar.setLanguage).toHaveBeenCalledWith('es');
     expect(mockLanguageBar.cancelEdit).not.toHaveBeenCalled();
   });
 });

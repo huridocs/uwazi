@@ -11,16 +11,6 @@ describe('Media player', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/short-video.mp4', req => {
-      req.reply({
-        statusCode: 200,
-        body: 'mock video content',
-        headers: {
-          'Content-Type': 'video/mp4',
-        },
-      });
-    }).as('getVideo');
-
     cy.intercept('GET', '/short-video-thumbnail.jpg', req => {
       req.reply({
         statusCode: 200,

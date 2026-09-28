@@ -1,6 +1,7 @@
 import type { MetadataObjectSchema as CommonMetadataObjectSchema } from '#shared/types/commonTypes.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { FileType as ApiFileType } from '#shared/types/fileType.js';
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 
 type EntityRelation = {
   readonly _id?: string;
@@ -61,6 +62,7 @@ interface Entity extends Omit<
     label: string;
   };
   permissions?: EntityWithFilesSchema['permissions'];
+  translations?: EntityTranslationsDTO;
 }
 
 export type { Entity, EntityRelation, FileType, MetadataSchema, MetadataObjectSchema };
