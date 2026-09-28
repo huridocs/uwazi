@@ -1,6 +1,4 @@
 import path from 'path';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { IdempotencyKey } from '../domain/IdempotencyKey.js';
 import { Segmentation } from '../domain/Segmentation.js';
@@ -8,6 +6,7 @@ import { SegmentationFailureReason } from '../domain/SegmentationFailureReason.j
 import { OutcomeHandle, SegmentationOutcome } from './contracts/SegmentationOutcome.js';
 import { PdfSegmenter } from './contracts/PdfSegmenter.js';
 import { SegmentationDataSource } from './contracts/SegmentationDataSource.js';
+import { SegmentationXmlStore } from './contracts/SegmentationXmlStore.js';
 import { MalformedSegmentationResult } from './errors/MalformedSegmentationResult.js';
 import { SegmentationResultGone } from './errors/SegmentationResultGone.js';
 import { SegmentationScheduler } from './SegmentationScheduler.js';
@@ -15,7 +14,7 @@ import { SegmentationScheduler } from './SegmentationScheduler.js';
 type Deps = {
   segmentationDS: SegmentationDataSource;
   pdfSegmenter: PdfSegmenter;
-  fileStorage: FileStorage;
+  xmlStore: SegmentationXmlStore;
   scheduler: SegmentationScheduler;
 };
 
@@ -71,10 +70,7 @@ class SaveSegmentationResult extends AbstractUseCase<SegmentationOutcome, void, 
     }
 
     const xmlFilename = SaveSegmentationResult.xmlFilenameFor(segmentation.filename);
-    await this.deps.fileStorage.storeContent(
-      new FileContents(() => result.xml),
-      path.join('segmentation', xmlFilename)
-    );
+    await this.deps.xmlStore.store(xmlFilename, result.xml);
     segmentation.complete(key, result.layout, xmlFilename);
     await this.save(segmentation);
   }

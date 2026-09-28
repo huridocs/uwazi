@@ -1,4 +1,4 @@
-import { SegmentType } from '../../domain/SegmentType.js';
+import { SegmentType } from '../domain/SegmentType.js';
 
 const STORED_BY_TYPE: Record<SegmentType, string> = {
   [SegmentType.TEXT]: 'Text',
@@ -20,11 +20,11 @@ const TYPE_BY_STORED = new Map(
 );
 
 /**
- * Segment types as Mongo stores them: the names the old pipeline copied from the service, kept so
- * existing records and not-yet-migrated readers stay valid. A missing type is the service's
- * default, text; an unknown one is `OTHER`.
+ * Segment types under the names the old pipeline copied from the service. Mongo still stores them
+ * so, and the segmentation endpoint still answers with them, so existing records and clients stay
+ * valid. A missing type is the service's default, text; an unknown one is `OTHER`.
  */
-class StoredSegmentTypes {
+class LegacySegmentTypeNames {
   static toDomain(stored: string | undefined): SegmentType {
     if (stored === undefined) {
       return SegmentType.TEXT;
@@ -37,4 +37,4 @@ class StoredSegmentTypes {
   }
 }
 
-export { StoredSegmentTypes };
+export { LegacySegmentTypeNames };
