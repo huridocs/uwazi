@@ -7,15 +7,15 @@ const viewport = { width: 800, height: 600 };
 const size = { width: 300, height: 40 };
 
 describe('placeSelectionMenu', () => {
-  it('centers on the anchor when the menu fits', () => {
+  it('sits just above and to the left of the anchor when the menu fits', () => {
     expect(placeSelectionMenu({ x: 400, y: 200 }, size, viewport)).toEqual({
-      left: 250,
+      left: 100,
       top: 152,
     });
   });
 
   it('clamps left near the viewport right', () => {
-    expect(placeSelectionMenu({ x: 790, y: 200 }, size, viewport).left).toBe(
+    expect(placeSelectionMenu({ x: 810, y: 200 }, size, viewport).left).toBe(
       viewport.width - SELECTION_MENU_PAD - size.width
     );
   });
