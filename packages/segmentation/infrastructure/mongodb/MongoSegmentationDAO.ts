@@ -4,11 +4,8 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { MongoSegmentationDBO } from './MongoSegmentationDBO.js';
 
 /**
- * The `segmentations` collection. It carries a 24h TTL index on `autoexpire` from the old dispatch
- * loop, which set it on every record it created. Every write here clears it, so no record written
- * through this module can be reaped by it.
- *
- * Segmentations are never synced to other instances, so writes skip the sync log.
+ * The `segmentations` collection. Segmentations are never synced to other instances, so writes
+ * skip the sync log.
  */
 class MongoSegmentationDAO extends MongoDataSource<MongoSegmentationDBO> {
   protected collectionName = 'segmentations';
@@ -29,7 +26,7 @@ class MongoSegmentationDAO extends MongoDataSource<MongoSegmentationDBO> {
   async insertForFile(dbo: MongoSegmentationDBO): Promise<boolean> {
     const result = await this.getCollection().updateOne(
       { fileID: dbo.fileID },
-      { $setOnInsert: { ...dbo, autoexpire: null } },
+      { $setOnInsert: dbo },
       { upsert: true }
     );
     return result.upsertedCount === 1;
@@ -38,7 +35,7 @@ class MongoSegmentationDAO extends MongoDataSource<MongoSegmentationDBO> {
   /** Replaces a stored document's fields; a document no longer there is not recreated. */
   async replaceExisting(dbo: MongoSegmentationDBO): Promise<void> {
     const { _id, ...fields } = dbo;
-    await this.getCollection().replaceOne({ _id }, { ...fields, autoexpire: null });
+    await this.getCollection().replaceOne({ _id }, fields);
   }
 
   async deleteMany(filter: Filter<MongoSegmentationDBO>): Promise<MongoSegmentationDBO[]> {

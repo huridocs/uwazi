@@ -1,7 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import {
   factory,
@@ -68,7 +67,7 @@ describe('ProcessSuggestions', () => {
 
   describe('when no pending pdf has a ready segmentation', () => {
     beforeEach(async () => {
-      await SegmentationModel.delete({});
+      await testingEnvironment.db.getCollection('segmentations')?.deleteMany({});
     });
 
     it('should answer ready with the reason, agreeing with the emitted status', async () => {

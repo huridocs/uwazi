@@ -1,6 +1,7 @@
 import type { Register } from '../../app/queueRegistry.js';
 import type { Application } from 'express';
 import type { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { QueueIdleSegmentationsFactory } from './infrastructure/factories/QueueIdleSegmentationsFactory.js';
 import { QueueSegmentationsOnFeatureEnabledFactory } from './infrastructure/factories/QueueSegmentationsOnFeatureEnabledFactory.js';
 import { SegmentationResultListenerFactory } from './infrastructure/factories/SegmentationResultListenerFactory.js';
 import { RequestSegmentationJobHandler } from './infrastructure/jobs/RequestSegmentationJobHandler.js';
@@ -25,6 +26,11 @@ class SegmentationComposition {
   /** The worker's consumer of the segmentation service's results queue. */
   static createResultListener() {
     return SegmentationResultListenerFactory.default();
+  }
+
+  /** Requests a tenant's idle segmentations, for `uwazi segmentation queue-idle`. */
+  static queueIdleSegmentations() {
+    return QueueIdleSegmentationsFactory.default();
   }
 
   static registerListeners(eventsBus: EventsBus) {

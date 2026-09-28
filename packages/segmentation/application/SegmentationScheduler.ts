@@ -16,13 +16,15 @@ type Deps = {
 class SegmentationScheduler {
   constructor(private readonly deps: Deps) {}
 
-  async schedule(segmentations: Segmentation[]): Promise<void> {
+  /** Returns how many were requested. */
+  async schedule(segmentations: Segmentation[]): Promise<number> {
     const queued = segmentations.filter(segmentation => segmentation.queue());
 
     await ArrayUtils.sequentialFor(queued, async segmentation =>
       this.deps.segmentationDS.save(segmentation)
     );
     await this.deps.jobs.requestSegmentation(queued.map(segmentation => segmentation.id));
+    return queued.length;
   }
 }
 

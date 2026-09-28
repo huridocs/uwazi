@@ -27,7 +27,6 @@ type MongoSegmentationDBO = {
   requestedAt?: number;
   xmlname?: string;
   failureReason?: string;
-  autoexpire?: Date | null;
   segmentation?: {
     page_width?: number;
     page_height?: number;

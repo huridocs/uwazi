@@ -5,17 +5,17 @@ import { SegmentationDAOFactory } from '../../factories/SegmentationDAOFactory.j
 
 const f = getFixturesFactory();
 
-const legacyClaim = {
-  _id: f.id('claim'),
+const stored = {
+  _id: f.id('stored'),
   fileID: f.id('file'),
   filename: 'file.pdf',
-  status: 'processing',
-  autoexpire: new Date(),
+  status: 'queued',
+  attempt: 0,
 };
 
 describe('MongoSegmentationDAO', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp({ segmentations: [legacyClaim] });
+    await testingEnvironment.setUp({ segmentations: [stored] });
   });
 
   afterAll(async () => {
@@ -27,43 +27,29 @@ describe('MongoSegmentationDAO', () => {
       () => SegmentationDAOFactory.default().dao as MongoSegmentationDAO
     );
 
-  const stored = async () => testingEnvironment.db.getAllFrom('segmentations');
+  const all = async () => testingEnvironment.db.getAllFrom('segmentations');
 
-  it('should clear the TTL field when it replaces a document', async () => {
-    await sut().replaceExisting({ ...legacyClaim, status: 'idle', attempt: 0 });
+  it('should replace the fields of a stored document', async () => {
+    await sut().replaceExisting({ ...stored, status: 'processing', attempt: 1, requestedAt: 5 });
 
-    expect(await stored()).toEqual([
-      {
-        _id: f.id('claim'),
-        fileID: f.id('file'),
-        filename: 'file.pdf',
-        status: 'idle',
-        attempt: 0,
-        autoexpire: null,
-      },
-    ]);
-  });
-
-  it('should clear the TTL field on documents it inserts', async () => {
-    await sut().insertForFile({
-      _id: f.id('new'),
-      fileID: f.id('other'),
-      filename: 'other.pdf',
-      status: 'idle',
-      autoexpire: new Date(),
-    });
-
-    expect((await stored()).find(doc => doc._id.equals(f.id('new')))?.autoexpire).toBeNull();
+    expect(await all()).toEqual([{ ...stored, status: 'processing', attempt: 1, requestedAt: 5 }]);
   });
 
   it('should not recreate a document that is gone', async () => {
-    await sut().replaceExisting({
-      _id: f.id('gone'),
-      fileID: f.id('gone'),
-      filename: 'gone.pdf',
-      status: 'idle',
-    });
+    await sut().replaceExisting({ ...stored, _id: f.id('gone'), fileID: f.id('gone') });
 
-    expect(await stored()).toHaveLength(1);
+    expect(await all()).toEqual([stored]);
+  });
+
+  it('should insert a document for a file that has none, and report it', async () => {
+    const inserted = { ...stored, _id: f.id('new'), fileID: f.id('other'), status: 'idle' };
+
+    expect(await sut().insertForFile(inserted)).toBe(true);
+    expect(await all()).toEqual([stored, inserted]);
+  });
+
+  it('should not insert a second document for a file, and report it', async () => {
+    expect(await sut().insertForFile({ ...stored, _id: f.id('second') })).toBe(false);
+    expect(await all()).toEqual([stored]);
   });
 });

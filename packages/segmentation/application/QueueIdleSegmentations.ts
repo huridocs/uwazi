@@ -20,24 +20,36 @@ type Deps = {
  * while it was off. Each batch is scheduled in its own transaction, so a large backlog is never
  * one transaction, and a batch that fails leaves the rest idle for the next run.
  */
-class QueueIdleSegmentations extends AbstractUseCase<Input, void, Deps> {
-  async execute({ batchSize, heartbeat }: Input): Promise<void> {
+type Output = {
+  segmentationEnabled: boolean;
+  requested: number;
+};
+
+class QueueIdleSegmentations extends AbstractUseCase<Input, Output, Deps> {
+  async execute({ batchSize, heartbeat }: Input): Promise<Output> {
     if (!(await this.deps.settingsDS.readFeature('segmentation'))) {
-      return;
+      return { segmentationEnabled: false, requested: 0 };
     }
-    await this.drain(batchSize, heartbeat);
+    return { segmentationEnabled: true, requested: await this.drain(batchSize, heartbeat) };
   }
 
-  private async drain(batchSize: number, heartbeat: HeartbeatCallback, afterId?: string) {
+  private async drain(
+    batchSize: number,
+    heartbeat: HeartbeatCallback,
+    afterId?: string
+  ): Promise<number> {
     const batch = await this.deps.segmentationDS.nextIdleBatch(batchSize, afterId);
     if (!batch.length) {
-      return;
+      return 0;
     }
 
-    await this.transactionManager.run(async () => this.deps.scheduler.schedule(batch));
+    const requested = await this.transactionManager.run(async () =>
+      this.deps.scheduler.schedule(batch)
+    );
     await heartbeat();
-    await this.drain(batchSize, heartbeat, batch[batch.length - 1].id);
+    return requested + (await this.drain(batchSize, heartbeat, batch[batch.length - 1].id));
   }
 }
 
 export { QueueIdleSegmentations };
+export type { Output as QueueIdleSegmentationsOutput };

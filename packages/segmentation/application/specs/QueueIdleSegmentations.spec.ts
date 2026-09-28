@@ -49,7 +49,9 @@ describe('QueueIdleSegmentations', () => {
       await setUp(true);
       const heartbeat = jest.fn().mockResolvedValue(undefined);
 
-      await sut().execute({ batchSize: 2, heartbeat });
+      const result = await sut().execute({ batchSize: 2, heartbeat });
+
+      expect(result).toEqual({ segmentationEnabled: true, requested: 3 });
 
       expect(await statusByFilename()).toEqual({
         'a.pdf': 'queued',
@@ -66,7 +68,9 @@ describe('QueueIdleSegmentations', () => {
     it('should leave everything idle when segmentation is off', async () => {
       await setUp(false);
 
-      await sut().execute({ batchSize: 2, heartbeat: jest.fn() });
+      const result = await sut().execute({ batchSize: 2, heartbeat: jest.fn() });
+
+      expect(result).toEqual({ segmentationEnabled: false, requested: 0 });
 
       expect(await statusByFilename()).toEqual({
         'a.pdf': 'idle',

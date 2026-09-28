@@ -377,6 +377,42 @@
       }
     },
     {
+      "files": ["apps/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/packages/segmentation/**", "#segmentation/**"],
+                "message": "The segmentation package is private. Import its public contract from '#segmentation'."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["apps/cli/segmentation/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "**/packages/segmentation/**",
+                  "#segmentation/**",
+                  "!#segmentation/composition"
+                ],
+                "message": "The segmentation package is private. Import its public contract from '#segmentation', or its host wiring from '#segmentation/composition'."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["app/api/**/*.ts", "packages/**/*.ts"],
       "rules": {
         "local/require-js-extension": "error"
