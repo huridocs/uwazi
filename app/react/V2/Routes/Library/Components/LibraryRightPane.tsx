@@ -73,6 +73,7 @@ const LibraryRightPane = ({
         sharedId={selectedId}
         entityBasePath={entityBasePath}
         onClose={onClosePreview}
+        onAction={onAction}
         focusFieldKey={focusFieldKey}
       />
     );

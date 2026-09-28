@@ -98,7 +98,6 @@ const LibraryView = ({
     addEntity,
     onDeleted: dismissSelection,
   });
-  const singleSharedId = selectedIds.length === 1 ? selectedIds[0] : undefined;
   const {
     focusFieldKey,
     selectRow,
@@ -213,16 +212,6 @@ const LibraryView = ({
                 onCreateEntity={openCreate}
                 onUploadPdf={uploadChosenPdfs}
                 onExportCsv={() => onAction('export')}
-                singleSelection={
-                  singleSharedId
-                    ? {
-                        sharedId: singleSharedId,
-                        entityBasePath,
-                        onAction,
-                        onClose: dismissSelection,
-                      }
-                    : undefined
-                }
               />
             )}
           </div>

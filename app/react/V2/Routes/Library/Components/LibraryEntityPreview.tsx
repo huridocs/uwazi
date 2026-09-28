@@ -21,6 +21,7 @@ import {
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
+import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { pickMainTab } from '#V2/Routes/Entity/Tabs/entityTabState.js';
 import {
   MAIN_TAB,
@@ -33,6 +34,8 @@ import {
   type EntityTabsState,
 } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
+import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
+import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
 import { focusMetadataFieldAtom } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
 
@@ -40,6 +43,7 @@ type LibraryEntityPreviewProps = {
   sharedId: string;
   entityBasePath: string;
   onClose: () => void;
+  onAction?: (action: LibraryBulkAction) => void;
   focusFieldKey?: string;
 };
 
@@ -90,10 +94,12 @@ const useLibraryPreviewTab = () => {
 const LibraryEntityPreviewView = ({
   entityBasePath,
   onClose,
+  onAction,
   focusFieldKey,
 }: {
   entityBasePath: string;
   onClose: () => void;
+  onAction?: (action: LibraryBulkAction) => void;
   focusFieldKey?: string;
 }) => {
   const entity = useEntityScopedEntity();
@@ -154,6 +160,7 @@ const LibraryEntityPreviewView = ({
           <LibraryEntityPreviewFooter
             entityBasePath={entityBasePath}
             onClose={onClose}
+            onAction={onAction}
             mainTabId={mainTabId}
           />
         </div>
@@ -162,12 +169,18 @@ const LibraryEntityPreviewView = ({
   );
 };
 
-const PreviewStatus = ({ children }: { children: React.ReactNode }) => (
-  <div
-    className="flex h-full min-h-0 items-center justify-center bg-paper p-4 text-sm text-ink-tertiary"
-    data-testid="library-entity-preview"
-  >
-    {children}
+const PreviewStatus = ({
+  children,
+  footer,
+}: {
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+}) => (
+  <div className="flex h-full min-h-0 flex-col bg-paper" data-testid="library-entity-preview">
+    <div className="flex min-h-0 flex-1 items-center justify-center p-4 text-sm text-ink-tertiary">
+      {children}
+    </div>
+    {footer}
   </div>
 );
 
@@ -186,6 +199,7 @@ const LibraryPreviewReady = ({
   defaultLanguage,
   entityBasePath,
   onClose,
+  onAction,
   onRefreshEntity,
   focusFieldKey,
 }: {
@@ -193,6 +207,7 @@ const LibraryPreviewReady = ({
   defaultLanguage: string | undefined;
   entityBasePath: string;
   onClose: () => void;
+  onAction?: (action: LibraryBulkAction) => void;
   onRefreshEntity: () => Promise<void>;
   focusFieldKey?: string;
 }) => {
@@ -213,6 +228,7 @@ const LibraryPreviewReady = ({
             <LibraryEntityPreviewView
               entityBasePath={entityBasePath}
               onClose={onClose}
+              onAction={onAction}
               focusFieldKey={focusFieldKey}
             />
           </EntityFilesFromEntity>
@@ -227,15 +243,26 @@ const LibraryEntityPreview = ({
   sharedId,
   entityBasePath,
   onClose,
+  onAction,
   focusFieldKey,
 }: LibraryEntityPreviewProps) => {
   const { entity, loading, error, reload } = useLibraryPreviewEntity(sharedId);
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   useEscapeClose(onClose);
+  const pendingFooter = onAction ? (
+    <EntityTabFooter inset="side">
+      <LibrarySingleSelectActions
+        entityBasePath={entityBasePath}
+        sharedId={sharedId}
+        onAction={onAction}
+        onClose={onClose}
+      />
+    </EntityTabFooter>
+  ) : null;
   if (loading) {
     return (
-      <PreviewStatus>
+      <PreviewStatus footer={pendingFooter}>
         <span aria-live="polite" aria-busy="true">
           <Translate>Loading</Translate>
         </span>
@@ -244,7 +271,7 @@ const LibraryEntityPreview = ({
   }
   if (error || !entity) {
     return (
-      <PreviewStatus>
+      <PreviewStatus footer={pendingFooter}>
         <span aria-live="polite">
           <Translate>NO DATA AVAILABLE</Translate>
         </span>
@@ -257,6 +284,7 @@ const LibraryEntityPreview = ({
       defaultLanguage={defaultLanguage}
       entityBasePath={entityBasePath}
       onClose={onClose}
+      onAction={onAction}
       onRefreshEntity={reload}
       focusFieldKey={focusFieldKey}
     />

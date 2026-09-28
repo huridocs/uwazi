@@ -71,8 +71,16 @@ const expectIconOnly = (root: HTMLElement, label: string) => {
   expect(button).not.toHaveTextContent(label);
 };
 
-const expectSingleSelectBar = (footer: HTMLElement, preview: HTMLElement) => {
-  const actions = within(footer).getByTestId('library-single-select-actions');
+const expectResultsBarUnchanged = (footer: HTMLElement) => {
+  expect(within(footer).queryByTestId('library-single-select-actions')).not.toBeInTheDocument();
+  ['Edit', 'Permissions', 'Delete', 'Close'].forEach(name => {
+    expect(within(footer).queryByRole('button', { name })).not.toBeInTheDocument();
+  });
+  expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
+};
+
+const expectRightHandGroup = (actions: HTMLElement) => {
+  expect(actions).toHaveClass('ms-auto');
   expect(childSequence(actions)).toEqual([
     'Edit',
     'divider',
@@ -86,14 +94,24 @@ const expectSingleSelectBar = (footer: HTMLElement, preview: HTMLElement) => {
   expectShownLabel(within(actions).getByRole('button', { name: 'Edit' }), 'Edit');
   ['Permissions', 'Delete'].forEach(label => expectIconOnly(actions, label));
   expect(within(actions).getByRole('button', { name: 'Close' }).querySelector('svg')).toBeNull();
-  const viewEntity = within(actions).getByRole('link', { name: 'View entity' });
+};
+
+const expectOneViewEntity = (actions: HTMLElement) => {
+  const viewEntities = screen.getAllByRole('link', { name: /View entity/ });
+  expect(viewEntities).toHaveLength(1);
+  expect(screen.queryByRole('button', { name: /View entity/ })).not.toBeInTheDocument();
+  const [viewEntity] = viewEntities;
+  expect(actions).toContainElement(viewEntity);
   expect(viewEntity).toHaveClass('bg-ink');
-  expect(viewEntity).toHaveAttribute(
-    'href',
-    within(preview)
-      .getByRole('link', { name: /View entity/ })
-      .getAttribute('href')
-  );
+  expect(viewEntity.getAttribute('href')).toEqual(expect.stringMatching(/\/entityv2\/.+/));
+};
+
+const expectSingleSelectBar = (footer: HTMLElement, preview: HTMLElement) => {
+  expectResultsBarUnchanged(footer);
+  const actions = within(preview).getByTestId('library-single-select-actions');
+  expect(within(preview).getByTestId('library-entity-preview-footer')).toContainElement(actions);
+  expectRightHandGroup(actions);
+  expectOneViewEntity(actions);
 };
 
 const expectSingleEntity = async (title: string) => {

@@ -13,17 +13,21 @@ import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { MAIN_TAB, type MainTabId } from '#V2/Routes/Entity/Tabs/index.js';
 import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
+import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
+import type { LibraryBulkAction } from './librarySelectionActions.js';
 
 type LibraryEntityPreviewFooterProps = {
   entityBasePath: string;
   onClose: () => void;
   mainTabId: MainTabId;
+  onAction?: (action: LibraryBulkAction) => void;
 };
 
 const LibraryEntityPreviewFooter = ({
   entityBasePath,
   onClose,
   mainTabId,
+  onAction,
 }: LibraryEntityPreviewFooterProps) => {
   const entity = useEntityScopedEntity();
   const { requestAddFile } = useEntityFiles();
@@ -78,19 +82,28 @@ const LibraryEntityPreviewFooter = ({
                 </EntityWriteAuthorization>
               ) : null}
             </div>
-            <div className="flex items-center gap-2">
-              <LibraryFooterButton onClick={onClose}>
-                <Translate>Close</Translate>
-              </LibraryFooterButton>
-              <I18NLinkV2
-                to={href}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
-                style={{ backgroundColor: 'var(--text-primary)' }}
-              >
-                <Translate>View entity</Translate>
-                <ArrowRightIcon className="h-3.5 w-3.5" />
-              </I18NLinkV2>
-            </div>
+            {onAction ? (
+              <LibrarySingleSelectActions
+                entityBasePath={entityBasePath}
+                sharedId={entity.sharedId}
+                onAction={onAction}
+                onClose={onClose}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <LibraryFooterButton onClick={onClose}>
+                  <Translate>Close</Translate>
+                </LibraryFooterButton>
+                <I18NLinkV2
+                  to={href}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
+                  style={{ backgroundColor: 'var(--text-primary)' }}
+                >
+                  <Translate>View entity</Translate>
+                  <ArrowRightIcon className="h-3.5 w-3.5" />
+                </I18NLinkV2>
+              </div>
+            )}
           </>
         )}
       </div>
