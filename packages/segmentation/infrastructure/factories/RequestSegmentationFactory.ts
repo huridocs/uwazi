@@ -3,6 +3,7 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PdfSegmenter } from '../../application/contracts/PdfSegmenter.js';
 import { RequestSegmentation } from '../../application/RequestSegmentation.js';
+// eslint-disable-next-line import/no-cycle
 import { SegmentationJobsAdapter } from '../jobs/SegmentationJobsAdapter.js';
 import { PdfSegmenterFactory } from './PdfSegmenterFactory.js';
 import { SegmentationDataSourceFactory } from './SegmentationDataSourceFactory.js';

@@ -1,5 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SegmentationScheduler } from '../../application/SegmentationScheduler.js';
+// eslint-disable-next-line import/no-cycle
 import { SegmentationJobsAdapter } from '../jobs/SegmentationJobsAdapter.js';
 import { SegmentationDataSourceFactory } from './SegmentationDataSourceFactory.js';
 

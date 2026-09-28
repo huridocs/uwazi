@@ -8,7 +8,7 @@ import {
   f,
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   setUpBackends,
   storedSegmentations,
   testConfigs,
@@ -36,9 +36,9 @@ describe('DeleteFileSegmentations', () => {
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      // Resets the tenant's feature flags, so it has to come before useBackend.
+      // Resets the tenant's feature flags, so it has to come before selectBackend.
       await testingEnvironment.setupTenantTmpPaths([]);
-      useBackend(postgresCore);
+      selectBackend(postgresCore);
       await testingEnvironment.setFixtures(
         withSegmentations(true, [ready('a'), ready('b'), ready('noXmlOnDisk'), idle('pending')])
       );

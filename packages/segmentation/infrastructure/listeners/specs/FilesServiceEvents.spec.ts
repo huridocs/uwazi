@@ -8,7 +8,7 @@ import { SegmentationComposition } from '../../../composition.js';
 import {
   f,
   settings,
-  useBackend,
+  selectBackend,
   storedSegmentations,
   testConfigs,
 } from '../../../application/specs/SegmentationIntakeFixtures.js';
@@ -46,7 +46,7 @@ describe('segmentation listeners on FilesService events', () => {
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      useBackend(postgresCore);
+      selectBackend(postgresCore);
       await testingEnvironment.setFixtures({ ...settings(true), files: [], segmentations: [] });
     });
 

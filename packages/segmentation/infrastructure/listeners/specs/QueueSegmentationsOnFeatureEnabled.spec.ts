@@ -3,14 +3,14 @@ import { QueueSegmentationsOnFeatureEnabledFactory } from '../../factories/Queue
 import {
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   requestedSegmentationIds,
 } from '../../../application/specs/SegmentationIntakeFixtures.js';
 
 describe('QueueSegmentationsOnFeatureEnabled', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({}, { postgres: false });
-    useBackend(false);
+    selectBackend(false);
     await testingEnvironment.setFixtures(withSegmentations(true, [idle('a')]));
     await testingEnvironment.jobs.clear();
   });

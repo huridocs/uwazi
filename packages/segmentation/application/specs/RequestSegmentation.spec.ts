@@ -9,7 +9,7 @@ import {
   f,
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   setUpBackends,
   testConfigs,
 } from './SegmentationIntakeFixtures.js';
@@ -76,9 +76,9 @@ describe('RequestSegmentation', () => {
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const setUp = async (segmentation: object, segmentationOn = true) => {
-      // Resets the tenant's feature flags, so it has to come before useBackend.
+      // Resets the tenant's feature flags, so it has to come before selectBackend.
       await testingEnvironment.setupTenantTmpPaths([{ filename: 'english.pdf', type: 'document' }]);
-      useBackend(postgresCore);
+      selectBackend(postgresCore);
       await testingEnvironment.setFixtures(withSegmentations(segmentationOn, [segmentation]));
       await testingEnvironment.jobs.clear();
       segmenter = new FakePdfSegmenter();

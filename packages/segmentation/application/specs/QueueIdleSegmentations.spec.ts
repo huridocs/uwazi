@@ -4,7 +4,7 @@ import {
   f,
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   setUpBackends,
   storedSegmentations,
   requestedSegmentationIds,
@@ -32,7 +32,7 @@ describe('QueueIdleSegmentations', () => {
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const setUp = async (segmentationOn: boolean) => {
-      useBackend(postgresCore);
+      selectBackend(postgresCore);
       await testingEnvironment.setFixtures(fixtures(segmentationOn));
       await testingEnvironment.jobs.clear();
     };

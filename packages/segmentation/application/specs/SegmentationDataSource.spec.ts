@@ -14,7 +14,7 @@ import {
   fixtures,
   storedSegmentations,
   testConfigs,
-  useBackend,
+  selectBackend,
 } from './SegmentationContractFixtures.js';
 
 const snapshot = (segmentation: Segmentation | undefined) =>
@@ -54,7 +54,7 @@ describe('SegmentationDataSource', () => {
 
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
-      useBackend(usePostgres);
+      selectBackend(usePostgres);
       await testingEnvironment.setFixtures(fixtures);
     });
 

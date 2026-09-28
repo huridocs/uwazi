@@ -9,7 +9,7 @@ import {
   fixtures,
   byFileId,
   testConfigs,
-  useBackend,
+  selectBackend,
 } from './SegmentationContractFixtures.js';
 
 const box = { left: 10, top: 20, width: 100, height: 12 };
@@ -52,7 +52,7 @@ describe('SegmentationDirectory', () => {
 
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
-      useBackend(usePostgres);
+      selectBackend(usePostgres);
       await testingEnvironment.setFixtures(fixtures);
     });
 

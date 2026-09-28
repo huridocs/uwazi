@@ -30,7 +30,7 @@ const withSegmentations = (segmentationOn: boolean, segmentations: object[]): DB
   segmentations,
 });
 
-const useBackend = (postgresCore: boolean) =>
+const selectBackend = (postgresCore: boolean) =>
   testingTenants.changeCurrentTenant({
     name: 'segmentation-intake',
     featureFlags: { postgresCore },
@@ -77,7 +77,7 @@ export {
   settings,
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   setUpBackends,
   storedSegmentations,
   requestedSegmentationIds,

@@ -6,7 +6,7 @@ import {
   f,
   idle,
   withSegmentations,
-  useBackend,
+  selectBackend,
   storedSegmentations,
 } from '../../../application/specs/SegmentationIntakeFixtures.js';
 
@@ -14,7 +14,7 @@ describe('DeleteSegmentationsOnFilesDeleted', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({}, { postgres: false });
     await testingEnvironment.setupTenantTmpPaths([]);
-    useBackend(false);
+    selectBackend(false);
     await testingEnvironment.setFixtures(withSegmentations(false, [idle('a'), idle('b')]));
   });
 

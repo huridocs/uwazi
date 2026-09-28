@@ -5,14 +5,14 @@ import { SegmentOnFileCreated } from '../SegmentOnFileCreated.js';
 import {
   f,
   withSegmentations,
-  useBackend,
+  selectBackend,
   storedSegmentations,
 } from '../../../application/specs/SegmentationIntakeFixtures.js';
 
 describe('SegmentOnFileCreated', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({}, { postgres: false });
-    useBackend(false);
+    selectBackend(false);
     await testingEnvironment.setFixtures(withSegmentations(false, []));
   });
 

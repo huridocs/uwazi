@@ -165,7 +165,7 @@ const testConfigs: TestConfig[] = [
   { name: 'Postgres', usePostgres: true },
 ];
 
-const useBackend = (usePostgres: boolean) =>
+const selectBackend = (usePostgres: boolean) =>
   testingTenants.changeCurrentTenant({
     name: TENANT_ID,
     featureFlags: { postgresCore: usePostgres },
@@ -180,6 +180,6 @@ export {
   storedSegmentations,
   byFileId,
   testConfigs,
-  useBackend,
+  selectBackend,
 };
 export type { StoredSegmentation };

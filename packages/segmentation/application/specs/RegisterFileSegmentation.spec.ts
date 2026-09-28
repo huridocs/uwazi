@@ -3,7 +3,7 @@ import { RegisterFileSegmentationFactory } from '../../infrastructure/factories/
 import {
   f,
   withSegmentations,
-  useBackend,
+  selectBackend,
   setUpBackends,
   storedSegmentations,
   requestedSegmentationIds,
@@ -28,7 +28,7 @@ describe('RegisterFileSegmentation', () => {
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const setUp = async (segmentationOn: boolean) => {
-      useBackend(postgresCore);
+      selectBackend(postgresCore);
       await testingEnvironment.setFixtures(withSegmentations(segmentationOn, []));
       await testingEnvironment.jobs.clear();
     };

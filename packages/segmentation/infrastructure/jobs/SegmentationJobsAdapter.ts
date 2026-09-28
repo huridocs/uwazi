@@ -1,7 +1,9 @@
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { SegmentationJobs } from '../../application/contracts/SegmentationJobs.js';
 import { SegmentationOutcome } from '../../application/contracts/PdfSegmenter.js';
+// eslint-disable-next-line import/no-cycle
 import { RequestSegmentationJobHandler } from './RequestSegmentationJobHandler.js';
+// eslint-disable-next-line import/no-cycle
 import { SaveSegmentationResultJobHandler } from './SaveSegmentationResultJobHandler.js';
 import { SegmentationOutcomeParams } from './SegmentationOutcomeParams.js';
 
