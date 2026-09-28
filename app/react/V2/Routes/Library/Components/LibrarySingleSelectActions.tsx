@@ -44,7 +44,6 @@ const LibrarySingleSelectActions = ({
           <span className="text-ink-tertiary">{actionById('edit')?.icon}</span>
           <Translate>Edit</Translate>
         </button>
-        <LibraryFooterDivider />
         <button
           type="button"
           aria-label="Permissions"

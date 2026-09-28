@@ -106,8 +106,19 @@ const panelBarSides = (footer: HTMLElement) => {
   return { leftSide, rightSide };
 };
 
-const expectPanelDelete = (actions: HTMLElement) => {
+const selectionDividers = (root: HTMLElement) => [
+  ...root.querySelectorAll('[data-testid="library-footer-divider"], hr'),
+];
+
+const expectDividerOnlyBeforeDelete = (root: HTMLElement, deleteControl: HTMLElement) => {
+  const dividers = selectionDividers(root);
+  expect(dividers).toHaveLength(1);
+  expect(dividers[0]).toBe(deleteControl.previousElementSibling);
+};
+
+const expectPanelDelete = (footer: HTMLElement, actions: HTMLElement) => {
   const deleteButton = within(actions).getByRole('button', { name: 'Delete' });
+  expectDividerOnlyBeforeDelete(footer, deleteButton);
   const divider = deleteButton.previousElementSibling;
   expect(divider).toHaveAttribute('data-testid', 'library-footer-divider');
   expect(divider).toHaveClass('w-px', 'bg-border-soft');
@@ -116,10 +127,10 @@ const expectPanelDelete = (actions: HTMLElement) => {
 const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
   const actions = within(leftSide).getByTestId('library-single-select-actions');
   expectNotPushedRight(actions, footer);
-  expect(childSequence(actions)).toEqual(['Edit', 'divider', 'Permissions', 'divider', 'Delete']);
+  expect(childSequence(actions)).toEqual(['Edit', 'Permissions', 'divider', 'Delete']);
   expectShownLabel(within(actions).getByRole('button', { name: 'Edit' }), 'Edit');
   ['Permissions', 'Delete'].forEach(label => expectIconOnly(actions, label));
-  expectPanelDelete(actions);
+  expectPanelDelete(footer, actions);
   expect(within(leftSide).queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   expect(within(leftSide).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 };
@@ -199,6 +210,7 @@ const expectMultiSelectActions = (footer: HTMLElement) => {
   expect(edit.innerHTML).toContain('M13 21h8');
   const deleteButton = within(footer).getByRole('button', { name: 'Delete' });
   expectShownLabel(deleteButton, 'Delete');
+  expectDividerOnlyBeforeDelete(footer, deleteButton);
 };
 
 const expectMultiSelectSummary = (footer: HTMLElement) => {
@@ -232,6 +244,7 @@ const menuSequence = (menu: HTMLElement) =>
 const expectMenuItems = (menu: HTMLElement) => {
   expect(menuSequence(menu)).toEqual(['Export CSV', 'Permissions', 'divider', 'Delete']);
   const deleteItem = within(menu).getByRole('menuitem', { name: 'Delete' });
+  expectDividerOnlyBeforeDelete(menu, deleteItem);
   expect(deleteItem).toHaveTextContent('Delete');
   ['Edit', 'Share', 'Change template'].forEach(name => {
     expect(within(menu).queryByRole('menuitem', { name })).not.toBeInTheDocument();
