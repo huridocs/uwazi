@@ -79,39 +79,73 @@ const expectResultsBarUnchanged = (footer: HTMLElement) => {
   expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 };
 
-const expectRightHandGroup = (actions: HTMLElement) => {
-  expect(actions).toHaveClass('ms-auto');
-  expect(childSequence(actions)).toEqual([
-    'Edit',
-    'divider',
-    'Permissions',
-    'divider',
-    'Delete',
-    'divider',
-    'Close',
-    'View entity',
-  ]);
-  expectShownLabel(within(actions).getByRole('button', { name: 'Edit' }), 'Edit');
-  ['Permissions', 'Delete'].forEach(label => expectIconOnly(actions, label));
-  expect(within(actions).getByRole('button', { name: 'Close' }).querySelector('svg')).toBeNull();
+const classTokens = (element: Element) => element.className.split(/\s+/).filter(Boolean);
+
+const expectNotPushedRight = (element: HTMLElement, footer: HTMLElement) => {
+  let current: HTMLElement | null = element;
+  while (current && current !== footer) {
+    const tokens = classTokens(current);
+    expect(tokens).not.toContain('ms-auto');
+    expect(tokens).not.toContain('ml-auto');
+    expect(tokens).not.toContain('justify-end');
+    expect(tokens).not.toContain('justify-center');
+    current = current.parentElement;
+  }
 };
 
-const expectOneViewEntity = (actions: HTMLElement) => {
+const panelBarSides = (footer: HTMLElement) => {
+  const [left, right, ...extra] = [...footer.children];
+  expect(extra).toHaveLength(0);
+  expect(left).toBeInstanceOf(HTMLElement);
+  expect(right).toBeInstanceOf(HTMLElement);
+  const leftSide = left as HTMLElement;
+  const rightSide = right as HTMLElement;
+  expect(classTokens(footer)).not.toContain('justify-end');
+  expect(classTokens(footer)).not.toContain('justify-center');
+  expect(classTokens(rightSide)).toContain('ms-auto');
+  return { leftSide, rightSide };
+};
+
+const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
+  const actions = within(leftSide).getByTestId('library-single-select-actions');
+  expectNotPushedRight(actions, footer);
+  expect(childSequence(actions)).toEqual(['Edit', 'divider', 'Permissions', 'divider', 'Delete']);
+  expectShownLabel(within(actions).getByRole('button', { name: 'Edit' }), 'Edit');
+  ['Permissions', 'Delete'].forEach(label => expectIconOnly(actions, label));
+  expect(within(leftSide).queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+  expect(within(leftSide).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
+};
+
+const expectDismissCluster = (rightSide: HTMLElement) => {
+  ['Edit', 'Permissions', 'Delete'].forEach(name => {
+    expect(within(rightSide).queryByRole('button', { name })).not.toBeInTheDocument();
+  });
+  expect(childSequence(rightSide)).toEqual(['Close', 'View entity']);
+  expect(within(rightSide).getByRole('button', { name: 'Close' }).querySelector('svg')).toBeNull();
+};
+
+const expectLeftActionCluster = (footer: HTMLElement) => {
+  const { leftSide, rightSide } = panelBarSides(footer);
+  expectActionCluster(leftSide, footer);
+  expectDismissCluster(rightSide);
+  return rightSide;
+};
+
+const expectOneViewEntity = (rightSide: HTMLElement) => {
   const viewEntities = screen.getAllByRole('link', { name: /View entity/ });
   expect(viewEntities).toHaveLength(1);
   expect(screen.queryByRole('button', { name: /View entity/ })).not.toBeInTheDocument();
   const [viewEntity] = viewEntities;
-  expect(actions).toContainElement(viewEntity);
+  expect(rightSide).toContainElement(viewEntity);
   expect(viewEntity).toHaveClass('bg-ink');
   expect(viewEntity.getAttribute('href')).toEqual(expect.stringMatching(/\/entityv2\/.+/));
 };
 
 const expectSingleSelectBar = (footer: HTMLElement, preview: HTMLElement) => {
   expectResultsBarUnchanged(footer);
-  const actions = within(preview).getByTestId('library-single-select-actions');
-  expect(within(preview).getByTestId('library-entity-preview-footer')).toContainElement(actions);
-  expectRightHandGroup(actions);
-  expectOneViewEntity(actions);
+  const panelBar = within(preview).getByTestId('library-entity-preview-footer');
+  const rightSide = expectLeftActionCluster(panelBar);
+  expectOneViewEntity(rightSide);
 };
 
 const expectSingleEntity = async (title: string) => {
