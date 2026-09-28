@@ -17,7 +17,7 @@ const menuItem = (action: LibrarySelectionAction, onClick: () => void) => (
       action.danger ? 'text-seal-label' : 'text-ink'
     }`}
   >
-    <span className={action.danger ? '' : 'text-ink-tertiary'} aria-hidden>
+    <span className={action.danger ? 'text-seal' : 'text-ink-tertiary'} aria-hidden>
       {action.icon}
     </span>
     <span className="sm:inline">

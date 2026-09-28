@@ -11,6 +11,9 @@ const textButtonClassName =
 const iconButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
 
+const deleteButtonClassName =
+  'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-seal transition-colors hover:bg-seal-tint';
+
 type LibrarySingleSelectActionsProps = {
   entityBasePath: string;
   sharedId: string;
@@ -55,7 +58,7 @@ const LibrarySingleSelectActions = ({
           type="button"
           aria-label="Delete"
           onClick={() => onAction?.('delete')}
-          className={iconButtonClassName}
+          className={deleteButtonClassName}
         >
           {actionById('delete')?.icon}
         </button>
