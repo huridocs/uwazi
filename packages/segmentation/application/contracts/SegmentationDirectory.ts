@@ -1,5 +1,7 @@
 import { SegmentationReadModel, SegmentationStatusReadModel } from './SegmentationReadModels.js';
 
+//cc: let's colocate the methods types in this file, reducing amount of files.
+
 /** What the segmentation module exposes to other modules. */
 interface SegmentationDirectory {
   readyByFileIds(fileIds: string[]): Promise<SegmentationReadModel[]>;

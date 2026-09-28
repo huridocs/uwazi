@@ -1,22 +1,8 @@
 import { MalformedSegmentationResult } from '../../application/errors/MalformedSegmentationResult.js';
 import { DocumentLayout, LayoutPage } from '../../domain/DocumentLayout.js';
 import { LayoutSegment } from '../../domain/LayoutSegment.js';
-import { SegmentType } from '../../domain/SegmentType.js';
+import { SegmentTypeNames } from '../SegmentTypeNames.js';
 import { WireExtractionData, WireExtractionDataSchema, WireSegmentBox } from './wireTypes.js';
-
-const TYPE_BY_WIRE: Record<string, SegmentType> = {
-  Text: SegmentType.TEXT,
-  Title: SegmentType.TITLE,
-  'Section header': SegmentType.SECTION_HEADER,
-  'List item': SegmentType.LIST_ITEM,
-  Table: SegmentType.TABLE,
-  Picture: SegmentType.PICTURE,
-  Caption: SegmentType.CAPTION,
-  Formula: SegmentType.FORMULA,
-  Footnote: SegmentType.FOOTNOTE,
-  'Page header': SegmentType.PAGE_HEADER,
-  'Page footer': SegmentType.PAGE_FOOTER,
-};
 
 /**
  * The service's extraction data into a `DocumentLayout`. The service calls every region a
@@ -48,8 +34,7 @@ class DocumentLayoutTranslator {
       height: box.height,
       pageNumber: box.page_number,
       text: box.text ?? '',
-      type:
-        box.type === undefined ? SegmentType.TEXT : (TYPE_BY_WIRE[box.type] ?? SegmentType.OTHER),
+      type: SegmentTypeNames.toType(box.type),
     });
   }
 

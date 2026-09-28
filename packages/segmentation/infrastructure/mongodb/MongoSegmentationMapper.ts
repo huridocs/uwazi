@@ -5,7 +5,7 @@ import { Segmentation } from '../../domain/Segmentation.js';
 import { SegmentationFailureReason } from '../../domain/SegmentationFailureReason.js';
 import { SegmentationStatus } from '../../domain/SegmentationStatus.js';
 import { MongoParagraphDBO, MongoSegmentationDBO } from './MongoSegmentationDBO.js';
-import { LegacySegmentTypeNames } from '../LegacySegmentTypeNames.js';
+import { SegmentTypeNames } from '../SegmentTypeNames.js';
 
 type StoredLayout = NonNullable<MongoSegmentationDBO['segmentation']>;
 
@@ -56,7 +56,7 @@ class MongoSegmentationMapper {
             height: paragraph.height ?? 0,
             pageNumber: paragraph.page_number ?? 1,
             text: paragraph.text ?? '',
-            type: LegacySegmentTypeNames.toDomain(paragraph.type),
+            type: SegmentTypeNames.toType(paragraph.type),
           })
       ),
     });
@@ -93,7 +93,7 @@ class MongoSegmentationMapper {
         page_width: layout.page(segment.pageNumber)!.width,
         page_height: layout.page(segment.pageNumber)!.height,
         text: segment.text,
-        type: LegacySegmentTypeNames.toStored(segment.type),
+        type: SegmentTypeNames.toName(segment.type),
       })),
     };
   }

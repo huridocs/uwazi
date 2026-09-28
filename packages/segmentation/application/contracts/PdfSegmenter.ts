@@ -3,6 +3,8 @@ import { DocumentLayout } from '../../domain/DocumentLayout.js';
 import { IdempotencyKey } from '../../domain/IdempotencyKey.js';
 import { OutcomeHandle } from './SegmentationOutcome.js';
 
+//cc: let's colocate the methods types in this file, reducing amount of files. SegmentationRequest, OutcomeHandle.
+
 type SegmentationRequest = {
   key: IdempotencyKey;
   filename: string;

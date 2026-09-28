@@ -6,7 +6,8 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { SegmentationDirectoryFactory } from '#segmentation';
+import { IXSegmentation } from './IXSegmentation.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { LanguageUtils } from '#shared/language/index.js';
@@ -99,15 +100,10 @@ const buildPdfMaterialsForFiles = async (
     }
   );
 
-  const segs = await SegmentationModel.get(
-    { fileID: { $in: fileIds }, status: 'ready' },
-    'fileID filename xmlname segmentation'
+  const segs = await SegmentationDirectoryFactory.default().readyByFileIds(
+    fileIds.map(id => id.toString())
   );
-  const segById = new Map(
-    segs
-      .filter((s): s is typeof s & { fileID: ObjectId } => !!s.fileID)
-      .map(s => [s.fileID!.toString(), s])
-  );
+  const segById = new Map(segs.map(s => [s.fileId, IXSegmentation.fromReadModel(s)]));
 
   const materials = await Promise.all(
     files.map(async f => {

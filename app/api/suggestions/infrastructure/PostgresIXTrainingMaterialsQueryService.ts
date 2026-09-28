@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { SegmentationDirectory } from '#segmentation';
 import {
   PostgresDataSource,
   PostgresDataSourceDeps,
@@ -9,16 +9,13 @@ import {
   TrainingMaterialsQuery,
 } from '../domain/IXTrainingMaterialsQueryService.js';
 import type { IXSuggestionsRow } from './PostgresIXSuggestionsRow.js';
+import { TrainingSegmentationsJoin } from './TrainingSegmentationsJoin.js';
 import { toHex } from './postgresSuggestionQueries.js';
 
-type Deps = Omit<PostgresDataSourceDeps, 'sync'> & { mongoDb: Db };
+type Deps = Omit<PostgresDataSourceDeps, 'sync'> & { segmentationDirectory: SegmentationDirectory };
 
 /** A row as Postgres answers it: everything but the segmentation, with the file id as hex. */
 type PgTrainingRow = Omit<TrainingFileRow, 'segmentation' | 'fileId'> & { fileId: string };
-
-type Segmentation = TrainingFileRow['segmentation'];
-
-const SEGMENTATION_BATCH_SIZE = 50;
 
 /**
  * Mongo's `currentValue: { $nin: ['', null, undefined], $ne: [] }`. On an array `$nin` tests every
@@ -57,9 +54,8 @@ const projection = `"ix_suggestions"."fileId" AS "fileId",
 /**
  * Postgres implementation of {@link IXTrainingMaterialsQueryService}.
  *
- * Suggestions, entities and files are joined in Postgres; segmentations still live in Mongo, so they
- * are joined per batch of rows with one query each. A row with no ready segmentation drops out, and
- * one with several yields a row per segmentation, as Mongo's `$unwind` does.
+ * Suggestions, entities and files are joined in Postgres. Segmentations belong to the segmentation
+ * module and are joined after, through its directory; a row with no ready segmentation drops out.
  *
  * `entities` carries permission RLS, and a training run walks every labeled document, so it reads
  * bypassing it.
@@ -68,25 +64,15 @@ export class PostgresIXTrainingMaterialsQueryService
   extends PostgresDataSource<IXSuggestionsRow>
   implements IXTrainingMaterialsQueryService
 {
-  private readonly mongoDb: Db;
+  private readonly segmentations: TrainingSegmentationsJoin;
 
-  constructor({ mongoDb, ...deps }: Deps) {
+  constructor({ segmentationDirectory, ...deps }: Deps) {
     super('ix_suggestions', deps);
-    this.mongoDb = mongoDb;
+    this.segmentations = new TrainingSegmentationsJoin(segmentationDirectory);
   }
 
-  async *streamFilesForTraining(query: TrainingMaterialsQuery): AsyncGenerator<TrainingFileRow> {
-    let batch: PgTrainingRow[] = [];
-
-    for await (const row of this.streamPostgresRows(query)) {
-      batch.push(row);
-      if (batch.length >= SEGMENTATION_BATCH_SIZE) {
-        yield* this.withSegmentations(batch);
-        batch = [];
-      }
-    }
-
-    yield* this.withSegmentations(batch);
+  streamFilesForTraining(query: TrainingMaterialsQuery): AsyncGenerator<TrainingFileRow> {
+    return this.segmentations.join(this.streamPostgresRows(query));
   }
 
   private streamPostgresRows({ extractorId, property, limit }: TrainingMaterialsQuery) {
@@ -102,48 +88,5 @@ export class PostgresIXTrainingMaterialsQueryService
       )
       .selectRaw(projection, [property, property, property])
       .stream({ bypass: true, refIds: [] });
-  }
-
-  private async *withSegmentations(batch: PgTrainingRow[]): AsyncGenerator<TrainingFileRow> {
-    if (!batch.length) {
-      return;
-    }
-
-    const segmentations = await this.readySegmentationsFor(
-      batch.map(({ fileId }) => new ObjectId(fileId))
-    );
-
-    for (const { fileId, ...row } of batch) {
-      for (const segmentation of segmentations.get(fileId) ?? []) {
-        yield { ...row, fileId: new ObjectId(fileId), segmentation };
-      }
-    }
-  }
-
-  /** The ready segmentations of the files, by file id as hex. */
-  private async readySegmentationsFor(fileIds: ObjectId[]) {
-    const found = await this.mongoDb
-      .collection<Segmentation & { fileID: ObjectId }>('segmentations')
-      .find(
-        { fileID: { $in: fileIds }, status: 'ready' },
-        {
-          projection: {
-            fileID: 1,
-            propertySelections: 1,
-            filename: 1,
-            xmlname: 1,
-            segmentation: 1,
-          },
-        }
-      )
-      .toArray();
-
-    const byFile = new Map<string, Segmentation[]>();
-    found.forEach(({ fileID, ...segmentation }) => {
-      const key = String(fileID);
-      byFile.set(key, [...(byFile.get(key) ?? []), segmentation]);
-    });
-
-    return byFile;
   }
 }

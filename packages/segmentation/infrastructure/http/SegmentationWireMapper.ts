@@ -1,5 +1,5 @@
 import { Segmentation } from '../../domain/Segmentation.js';
-import { LegacySegmentTypeNames } from '../LegacySegmentTypeNames.js';
+import { SegmentTypeNames } from '../SegmentTypeNames.js';
 
 /**
  * The segmentation endpoint's response, as clients have always received it: one document-wide
@@ -48,7 +48,7 @@ class SegmentationWireMapper {
         height: segment.height,
         pageNumber: segment.pageNumber,
         text: segment.text,
-        type: LegacySegmentTypeNames.toStored(segment.type),
+        type: SegmentTypeNames.toName(segment.type),
       })),
     };
   }

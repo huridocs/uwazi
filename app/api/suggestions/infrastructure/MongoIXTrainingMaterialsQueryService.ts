@@ -1,24 +1,27 @@
 import { Db, Document, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { SegmentationDirectory } from '#segmentation';
 import { Suggestion } from '../domain/IXSuggestionsDataSource.js';
 import {
   IXTrainingMaterialsQueryService,
   TrainingFileRow,
   TrainingMaterialsQuery,
 } from '../domain/IXTrainingMaterialsQueryService.js';
+import { TrainingSegmentationsJoin } from './TrainingSegmentationsJoin.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+  segmentationDirectory: SegmentationDirectory;
 };
 
 const ixSuggestionsCollection = 'ixsuggestions';
 
 /**
- * Both `$unwind`s are the filter, not a formality: a suggestion whose file is not ready, or whose
- * segmentation is missing or unfinished, produces an empty array and drops out of the walk. That
- * is how unusable documents are kept out of a training run.
+ * The `$unwind`s are the filter, not a formality: a suggestion whose entity is missing, or whose
+ * file is missing or not ready, produces an empty array and drops out of the walk. Segmentations
+ * belong to the segmentation module and are joined after, through its directory.
  */
 const trainingPipeline = ({ extractorId, property, limit }: TrainingMaterialsQuery): Document[] => [
   {
@@ -62,19 +65,6 @@ const trainingPipeline = ({ extractorId, property, limit }: TrainingMaterialsQue
     },
   },
   { $unwind: '$file' },
-  {
-    $lookup: {
-      from: 'segmentations',
-      localField: 'fileId',
-      foreignField: 'fileID',
-      as: 'segmentation',
-      pipeline: [
-        { $match: { status: 'ready' } },
-        { $project: { propertySelections: 1, filename: 1, xmlname: 1, segmentation: 1 } },
-      ],
-    },
-  },
-  { $unwind: '$segmentation' },
 ];
 
 /**
@@ -87,11 +77,16 @@ export class MongoIXTrainingMaterialsQueryService
 {
   protected collectionName = ixSuggestionsCollection;
 
+  private readonly segmentations: TrainingSegmentationsJoin;
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
+    this.segmentations = new TrainingSegmentationsJoin(deps.segmentationDirectory);
   }
 
   streamFilesForTraining(query: TrainingMaterialsQuery) {
-    return this.getCollection().aggregate<TrainingFileRow>(trainingPipeline(query));
+    return this.segmentations.join(
+      this.getCollection().aggregate<Omit<TrainingFileRow, 'segmentation'>>(trainingPipeline(query))
+    );
   }
 }

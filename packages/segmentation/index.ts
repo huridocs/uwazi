@@ -7,4 +7,5 @@ export type {
 } from './application/contracts/SegmentationReadModels.js';
 export { SegmentationStatus } from './domain/SegmentationStatus.js';
 export { SegmentType } from './domain/SegmentType.js';
+export { SegmentTypeNames } from './infrastructure/SegmentTypeNames.js';
 export { SegmentationDirectoryFactory } from './infrastructure/factories/SegmentationDirectoryFactory.js';
