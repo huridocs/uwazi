@@ -59,19 +59,15 @@ const Harness = () => {
   });
   store.set(localeAtom, 'en');
 
-  const field = (
-    <LinkField<EditEntityFormValues>
-      context="System"
-      label="Link"
-      field="metadata.link.0.value"
-      translatableName="link"
-    />
-  );
-
   return (
     <Provider store={store}>
       <FormProvider {...form}>
-        {field}
+        <LinkField<EditEntityFormValues>
+          context="System"
+          label="Link"
+          field="metadata.link.0.value"
+          translatableName="link"
+        />
         <pre data-testid="values">{JSON.stringify(form.watch('translations'))}</pre>
       </FormProvider>
     </Provider>

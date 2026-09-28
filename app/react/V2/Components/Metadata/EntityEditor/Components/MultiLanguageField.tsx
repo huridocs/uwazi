@@ -137,15 +137,8 @@ const MultiLanguageField = React.memo(
                     idPrefix={extra.idPrefix}
                     sideLabel="URL"
                     value={extra.values[language] ?? ''}
-                    source=""
-                    busy={false}
-                    isMachine={false}
-                    multiline={false}
                     disabled={disabled}
-                    showRetranslate={false}
                     onChange={extra.onChange}
-                    onTranslate={() => undefined}
-                    onUserEdit={() => undefined}
                   />
                 ) : null}
               </div>

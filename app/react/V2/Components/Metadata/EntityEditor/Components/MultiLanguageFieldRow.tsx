@@ -16,17 +16,17 @@ type MultiLanguageFieldRowProps = {
   label: string;
   idPrefix: string;
   value: string;
-  source: string;
-  busy: boolean;
-  isMachine: boolean;
-  multiline: boolean;
+  source?: string;
+  busy?: boolean;
+  isMachine?: boolean;
+  multiline?: boolean;
   disabled: boolean;
-  showRetranslate: boolean;
+  showRetranslate?: boolean;
   sideLabel?: string;
   serviceUnavailable?: boolean;
   onChange: (language: string, value: string) => void;
-  onTranslate: (language: string) => void;
-  onUserEdit: (language: string) => void;
+  onTranslate?: (language: string) => void;
+  onUserEdit?: (language: string) => void;
 };
 
 const inputClass = (isMachine: boolean) =>
@@ -64,17 +64,17 @@ const MultiLanguageFieldRow = React.memo(
     label,
     idPrefix,
     value,
-    source,
-    busy,
-    isMachine,
-    multiline,
+    source = '',
+    busy = false,
+    isMachine = false,
+    multiline = false,
     disabled,
-    showRetranslate,
+    showRetranslate = false,
     sideLabel,
     serviceUnavailable = false,
     onChange,
-    onTranslate,
-    onUserEdit,
+    onTranslate = () => undefined,
+    onUserEdit = () => undefined,
   }: MultiLanguageFieldRowProps) => {
     const fieldId = `${idPrefix}-lang-${language}`;
     const commit = useCallback((next: string) => onChange(language, next), [language, onChange]);

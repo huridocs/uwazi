@@ -109,12 +109,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   linkSource={linkSource}
                   messageSlot={translationMessageSlot(showError, message)}
                   disabled={disabled}
-                  paired={{
-                    label: `${label} URL`,
-                    idPrefix: `${linkSource}.url`,
-                    linkPart: 'url',
-                    linkSource,
-                  }}
+                  paired={{ label: `${label} URL`, idPrefix: `${linkSource}.url` }}
                 />
               ) : (
                 <EntityFieldError showError={showError} message={message} />

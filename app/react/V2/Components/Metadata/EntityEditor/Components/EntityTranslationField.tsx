@@ -17,12 +17,7 @@ type EntityTranslationFieldProps = {
   linkPart?: LinkPart;
   linkSource?: string;
   autoTranslate?: boolean;
-  paired?: {
-    label: string;
-    idPrefix: string;
-    linkPart: LinkPart;
-    linkSource: string;
-  };
+  paired?: { label: string; idPrefix: string };
 };
 
 const EntityTranslationField = React.memo(
@@ -60,8 +55,8 @@ const EntityTranslationField = React.memo(
       currentValue: pairedValue,
       sourceField: paired?.idPrefix ?? idPrefix,
       languages,
-      linkPart: paired?.linkPart,
-      linkSource: paired?.linkSource,
+      linkPart: paired ? 'url' : undefined,
+      linkSource: paired ? linkSource : undefined,
     });
 
     if (!current || languages.length < 2) return messageSlot ?? null;
