@@ -3,8 +3,13 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
-import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import {
+  EntityFieldError,
+  getFieldErrorState,
+  translationMessageSlot,
+} from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
+import { EntityTranslationField } from './EntityTranslationField.js';
 
 type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -12,6 +17,7 @@ type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
+  translatableName?: string;
 };
 
 const LinkField = <TFormValues extends FieldValues = FieldValues>({
@@ -20,6 +26,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
   field,
   registerOptions,
   disabled,
+  translatableName,
 }: LinkFieldProps<TFormValues>) => {
   const { control } = useFormContext<TFormValues>();
   const required = Boolean(registerOptions?.required);
@@ -92,7 +99,32 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   />
                 </div>
               </div>
-              <EntityFieldError showError={showError} message={message} />
+              {translatableName ? (
+                <>
+                  <EntityTranslationField
+                    propertyName={translatableName}
+                    label={label}
+                    idPrefix={`${String(field)}.label`}
+                    linkPart="label"
+                    linkSource={String(field)}
+                    onCurrentChange={() => undefined}
+                    messageSlot={translationMessageSlot(showError, message)}
+                    disabled={disabled}
+                  />
+                  <EntityTranslationField
+                    propertyName={translatableName}
+                    label={`${label} URL`}
+                    idPrefix={`${String(field)}.url`}
+                    linkPart="url"
+                    linkSource={String(field)}
+                    autoTranslate={false}
+                    onCurrentChange={() => undefined}
+                    disabled={disabled}
+                  />
+                </>
+              ) : (
+                <EntityFieldError showError={showError} message={message} />
+              )}
             </>
           );
         }}

@@ -102,17 +102,7 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   return headers;
 };
 
-const logSSRAborted = ({
-  req,
-  step,
-  ssrStart,
-  routeName,
-}: {
-  req: ExpressRequest;
-  step: string;
-  ssrStart: bigint;
-  routeName?: string;
-}) => {
+const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
   const now = process.hrtime.bigint();
   const elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
 
@@ -428,7 +418,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       .join('/') || 'home';
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Matching routes', ssrStart });
+    logSSRAborted(req, 'Matching routes', ssrStart);
     return;
   }
 
@@ -456,7 +446,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Store data', ssrStart, routeName });
+    logSSRAborted(req, 'Store data', ssrStart, routeName);
     return;
   }
 
@@ -465,7 +455,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Route data', ssrStart, routeName });
+    logSSRAborted(req, 'Route data', ssrStart, routeName);
     return;
   }
 
@@ -481,7 +471,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { staticHandleContext, router, ssrError } = preparedRoute;
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Before requestStates', ssrStart, routeName });
+    logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
     return;
   }
   const { initialStore, initialState, loadingError } = await withSpan('set_redux_state', async () =>
@@ -495,7 +485,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Component HTML', ssrStart, routeName });
+    logSSRAborted(req, 'Component HTML', ssrStart, routeName);
     return;
   }
 
@@ -520,7 +510,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Root HTML', ssrStart, routeName });
+    logSSRAborted(req, 'Root HTML', ssrStart, routeName);
     return;
   }
   const html = withSpan('render_root_html', () =>
@@ -539,7 +529,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   if (req.aborted) {
-    logSSRAborted({ req, step: 'Aborted before response', ssrStart, routeName });
+    logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
     return;
   }
   const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);

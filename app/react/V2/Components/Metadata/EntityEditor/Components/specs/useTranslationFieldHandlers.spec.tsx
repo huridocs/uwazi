@@ -57,6 +57,52 @@ const Harness = () => {
   );
 };
 
+const LinkButtons = () => {
+  const form = useFormContext<EditEntityFormValues>();
+  const { onChange } = useTranslationFieldHandlers({
+    propertyName: 'external_link',
+    current: 'en',
+    currentValue: 'Docs',
+    sourceField: 'metadata.external_link.0.value.label',
+    linkPart: 'label',
+    linkSource: 'metadata.external_link.0.value',
+    onCurrentChange: jest.fn(),
+    languages: ['en', 'es'],
+  });
+  return (
+    <>
+      <button type="button" onClick={() => onChange('es', 'Documentos')}>
+        label
+      </button>
+      <pre data-testid="link-values">{JSON.stringify(form.getValues())}</pre>
+    </>
+  );
+};
+
+const linkDefaults = (): EditEntityFormValues => ({
+  ...defaultValues(),
+  metadata: {
+    external_link: [{ value: { label: 'Docs', url: 'https://example.org/docs' } }],
+  },
+  translations: {
+    es: {
+      external_link: [{ value: { label: 'Docs es', url: 'https://example.org/es' } }],
+    },
+  },
+});
+
+const LinkHarness = () => {
+  const form = useForm<EditEntityFormValues>({
+    defaultValues: linkDefaults(),
+  });
+  return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <FormProvider {...form}>
+      <LinkButtons />
+    </FormProvider>
+  );
+};
+
 describe('useTranslationFieldHandlers', () => {
   it('writes only the edited translation path and touches it once', () => {
     render(<Harness />);
@@ -68,5 +114,17 @@ describe('useTranslationFieldHandlers', () => {
       description: [{ value: 'Resumen' }],
     });
     expect(values.touchedTranslations).toEqual({ es: { title: true } });
+  });
+
+  it('updates a link label without replacing the url', () => {
+    render(<LinkHarness />);
+    fireEvent.click(screen.getByRole('button', { name: 'label' }));
+    const values = JSON.parse(screen.getByTestId('link-values').textContent ?? '{}');
+    expect(values.translations.es.external_link).toEqual([
+      { value: { label: 'Documentos', url: 'https://example.org/es' } },
+    ]);
+    expect(values.metadata.external_link).toEqual([
+      { value: { label: 'Docs', url: 'https://example.org/docs' } },
+    ]);
   });
 });

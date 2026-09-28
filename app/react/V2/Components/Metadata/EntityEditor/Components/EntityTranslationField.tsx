@@ -1,6 +1,7 @@
 import React from 'react';
 import { useIdleFormValue } from '#V2/CustomHooks/useIdleFormValue.js';
 import { useInstalledEntityLanguages } from './useInstalledEntityLanguages.js';
+import type { LinkPart } from '../functions/entityTranslations.js';
 import { useTranslationFieldHandlers } from './useTranslationFieldHandlers.js';
 import { MultiLanguageField } from './MultiLanguageField.js';
 import { useTranslationServiceAvailability } from './TranslationServiceAvailability.js';
@@ -13,6 +14,9 @@ type EntityTranslationFieldProps = {
   multiline?: boolean;
   messageSlot?: React.ReactNode;
   disabled?: boolean;
+  linkPart?: LinkPart;
+  linkSource?: string;
+  autoTranslate?: boolean;
 };
 
 const EntityTranslationField = React.memo(
@@ -24,6 +28,9 @@ const EntityTranslationField = React.memo(
     multiline,
     messageSlot,
     disabled,
+    linkPart,
+    linkSource,
+    autoTranslate = true,
   }: EntityTranslationFieldProps) => {
     const currentValue = useIdleFormValue(idPrefix);
     const { languages, current, canAutoTranslate } = useInstalledEntityLanguages();
@@ -35,6 +42,8 @@ const EntityTranslationField = React.memo(
       sourceField: idPrefix,
       onCurrentChange,
       languages,
+      linkPart,
+      linkSource,
     });
 
     if (!current || languages.length < 2) return messageSlot ?? null;
@@ -47,8 +56,8 @@ const EntityTranslationField = React.memo(
         current={current}
         values={values}
         onChange={onChange}
-        onTranslate={canAutoTranslate ? onTranslate : undefined}
-        serviceUnavailable={canAutoTranslate && !available}
+        onTranslate={autoTranslate && canAutoTranslate ? onTranslate : undefined}
+        serviceUnavailable={autoTranslate && canAutoTranslate && !available}
         multiline={multiline}
         messageSlot={messageSlot}
         disabled={disabled}

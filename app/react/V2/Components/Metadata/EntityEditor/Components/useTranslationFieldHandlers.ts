@@ -2,9 +2,12 @@ import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
 import { translateText } from '#V2/api/translationService/index.js';
 import {
-  stringFromValues,
+  linkValueWithPart,
+  storedTranslationValue,
+  translationEntryText,
   translationTouchedPath,
   translationValuePath,
+  type LinkPart,
 } from '../functions/entityTranslations.js';
 import type { EditEntityFormValues } from '../functions/buildEditEntityDefaultValues.js';
 import { useTranslationServiceAvailability } from './TranslationServiceAvailability.js';
@@ -39,11 +42,13 @@ const useWatchedTranslationValues = ({
   currentValue,
   languages,
   propertyName,
+  linkPart,
 }: {
   current: string | undefined;
   currentValue: string;
   languages: string[];
   propertyName: string;
+  linkPart?: LinkPart;
 }) => {
   const others = useMemo(
     () => languages.filter(language => language !== current),
@@ -58,9 +63,12 @@ const useWatchedTranslationValues = ({
     const watchedList = Array.isArray(watched) ? watched : [watched];
     return Object.fromEntries([
       [current ?? '', currentValue],
-      ...others.map((language, index) => [language, stringFromValues(watchedList[index])]),
+      ...others.map((language, index) => [
+        language,
+        translationEntryText(watchedList[index], linkPart),
+      ]),
     ]);
-  }, [current, currentValue, others, watched]);
+  }, [current, currentValue, linkPart, others, watched]);
 };
 
 const useTranslationFieldHandlers = ({
@@ -70,6 +78,8 @@ const useTranslationFieldHandlers = ({
   sourceField,
   onCurrentChange,
   languages,
+  linkPart,
+  linkSource,
 }: {
   propertyName: string;
   current: string | undefined;
@@ -77,6 +87,8 @@ const useTranslationFieldHandlers = ({
   sourceField: string;
   onCurrentChange: (value: string) => void;
   languages: string[];
+  linkPart?: LinkPart;
+  linkSource?: string;
 }) => {
   const { setValue, getValues } = useFormContext<EditEntityFormValues>();
   const { markUnavailable } = useTranslationServiceAvailability();
@@ -85,6 +97,7 @@ const useTranslationFieldHandlers = ({
     currentValue,
     languages,
     propertyName,
+    linkPart,
   });
 
   const onChange = useCallback(
@@ -95,12 +108,21 @@ const useTranslationFieldHandlers = ({
       }
       const valuePath = formPath(translationValuePath(language, propertyName));
       const touchedPath = formPath(translationTouchedPath(language, propertyName));
-      setValue(valuePath, [{ value }], { shouldDirty: true });
+      const nextValue =
+        linkPart && linkSource
+          ? linkValueWithPart({
+              existing: storedTranslationValue(getValues(valuePath)),
+              fallback: getValues(formPath(linkSource)),
+              part: linkPart,
+              text: value,
+            })
+          : value;
+      setValue(valuePath, [{ value: nextValue }], { shouldDirty: true });
       if (!getValues(touchedPath)) {
         setValue(touchedPath, true, { shouldDirty: true });
       }
     },
-    [current, getValues, onCurrentChange, propertyName, setValue]
+    [current, getValues, linkPart, linkSource, onCurrentChange, propertyName, setValue]
   );
 
   const onTranslate = useCallback(

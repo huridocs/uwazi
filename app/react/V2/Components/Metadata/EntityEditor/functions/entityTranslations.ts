@@ -26,6 +26,54 @@ const stringFromValues = (values?: MetadataObjectSchema[]): string => {
   return typeof value === 'string' ? value : '';
 };
 
+type LinkPart = 'label' | 'url';
+
+type LinkParts = { label: string; url: string };
+
+const isLinkRecord = (value: unknown): value is { label?: unknown; url?: unknown } =>
+  typeof value === 'object' &&
+  value !== null &&
+  !Array.isArray(value) &&
+  ('label' in value || 'url' in value);
+
+const linkPartText = (value: unknown, part: LinkPart) => {
+  if (!isLinkRecord(value)) return '';
+  const text = value[part];
+  return typeof text === 'string' ? text : '';
+};
+
+const linkValueWithPart = ({
+  existing,
+  fallback,
+  part,
+  text,
+}: {
+  existing: unknown;
+  fallback: unknown;
+  part: LinkPart;
+  text: string;
+}): LinkParts => {
+  const candidate = isLinkRecord(existing) ? existing : fallback;
+  const record = isLinkRecord(candidate) ? candidate : {};
+  const label = typeof record.label === 'string' ? record.label : '';
+  const url = typeof record.url === 'string' ? record.url : '';
+  if (part === 'label') return { label: text, url };
+  return { label, url: text };
+};
+
+const storedTranslationValue = (entry: unknown): unknown => {
+  if (!Array.isArray(entry) || entry.length === 0) return undefined;
+  const first: unknown = entry[0];
+  if (typeof first === 'object' && first !== null && 'value' in first) return first.value;
+  return undefined;
+};
+
+const translationEntryText = (entry: unknown, part?: LinkPart) => {
+  const stored = storedTranslationValue(entry);
+  if (part) return linkPartText(stored, part);
+  return typeof stored === 'string' ? stored : '';
+};
+
 const toFormMetadataValues = (values?: MetadataObjectSchema[]): MetadataValue[] =>
   (values ?? []).map(entry => ({
     value: entry.value,
@@ -199,10 +247,14 @@ const translationTouchedPath = (language: string, propertyName: string) =>
 export {
   buildTranslationsForSave,
   installedLanguageKeys,
+  linkValueWithPart,
   rekeyEditEntityLanguage,
   setTranslationText,
   setTranslationTouched,
+  storedTranslationValue,
   stringFromValues,
+  translationEntryText,
   translationTouchedPath,
   translationValuePath,
 };
+export type { LinkPart };

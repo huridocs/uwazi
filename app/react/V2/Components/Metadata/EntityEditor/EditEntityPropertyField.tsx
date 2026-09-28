@@ -254,6 +254,7 @@ const EditEntityPropertyField = ({
         field={field}
         registerOptions={registerOptions}
         disabled={disabled}
+        translatableName={property.name}
       />
     );
   }
