@@ -1,6 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
@@ -18,6 +19,7 @@ type LibrarySingleSelectActionsProps = {
   entityBasePath: string;
   sharedId: string;
   onAction?: (action: LibraryBulkAction) => void;
+  onEdit?: () => void;
   onClose: () => void;
   leading?: ReactNode;
 };
@@ -29,21 +31,16 @@ const LibrarySingleSelectActions = ({
   entityBasePath,
   sharedId,
   onAction,
+  onEdit,
   onClose,
   leading,
 }: LibrarySingleSelectActionsProps) => (
   <>
     <div className="flex min-w-0 items-center gap-2">
       <div data-testid="library-single-select-actions" className="flex shrink-0 items-center">
-        <button
-          type="button"
-          aria-label="Edit"
-          onClick={() => onAction?.('edit')}
-          className={`${textButtonClassName} text-ink`}
-        >
-          <span className="text-ink-tertiary">{actionById('edit')?.icon}</span>
+        <LibraryFooterButton onClick={() => onEdit?.()}>
           <Translate>Edit</Translate>
-        </button>
+        </LibraryFooterButton>
         <button
           type="button"
           aria-label="Permissions"

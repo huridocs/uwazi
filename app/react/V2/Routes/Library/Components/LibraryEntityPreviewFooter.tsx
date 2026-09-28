@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Button, useTabGroup } from '#V2/Components/UI/index.js';
 import {
   EntityWriteAuthorization,
   useEntityFiles,
@@ -31,6 +31,7 @@ type PreviewBarProps = {
   entityBasePath: string;
   sharedId: string;
   onAction?: (action: LibraryBulkAction) => void;
+  onEdit?: () => void;
   onClose: () => void;
   href: string;
   tabActions: React.ReactNode;
@@ -44,6 +45,7 @@ const previewBar = ({
   entityBasePath,
   sharedId,
   onAction,
+  onEdit,
   onClose,
   href,
   tabActions,
@@ -69,6 +71,7 @@ const previewBar = ({
         entityBasePath={entityBasePath}
         sharedId={sharedId}
         onAction={onAction}
+        onEdit={onEdit}
         onClose={onClose}
         leading={tabActions}
       />
@@ -104,9 +107,10 @@ const LibraryEntityPreviewFooter = ({
   const { requestAddFile } = useEntityFiles();
   const { isEditing, isSaving, formMountHost, formId, requestDiscard, startEditing } =
     useMetadataEditing();
+  const { selectTab } = useTabGroup('entity-main');
   const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
   const editingMetadata = isEditing && formMountHost === 'main';
-  const showEdit = mainTabId === MAIN_TAB.METADATA && !editingMetadata;
+  const showEdit = mainTabId === MAIN_TAB.METADATA && !editingMetadata && !onAction;
   const showAddFile = mainTabId === MAIN_TAB.FILES;
   const tabActions = (
     <>
@@ -144,6 +148,10 @@ const LibraryEntityPreviewFooter = ({
           entityBasePath,
           sharedId: entity.sharedId,
           onAction,
+          onEdit: () => {
+            selectTab(MAIN_TAB.METADATA);
+            startEditing('main');
+          },
           onClose,
           href,
           tabActions,
