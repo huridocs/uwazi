@@ -8,11 +8,12 @@ import {
   setTranslationText,
 } from '../entityTranslations.js';
 
-const textProp = (name: string): FormMetadataProperty => ({
+const textProp = (name: string, required = false): FormMetadataProperty => ({
   _id: name,
   type: 'text',
   name,
   label: name,
+  required,
 });
 
 const imageProp = (name: string): FormMetadataProperty => ({
@@ -250,25 +251,29 @@ describe('buildTranslationsForSave', () => {
       })
     ).toEqual({
       es: {
-        title: [{ value: '' }],
+        title: [{ value: 'Hearing' }],
         description: [{ value: '' }],
         photo: [],
       },
     });
   });
 
-  it('fills a blank title from the current language so required titles can save', () => {
+  it('fills blank required values from the current language', () => {
     expect(
       buildTranslationsForSave({
-        values: values({ translations: { es: { title: [{ value: '' }] } } }),
-        metadataProperties: [textProp('description')],
+        values: values({
+          metadata: { summary: [{ value: 'Needed' }] },
+          translations: { es: { title: [{ value: '' }], summary: [{ value: '' }] } },
+          touchedTranslations: { es: { summary: true } },
+        }),
+        metadataProperties: [textProp('summary', true)],
         languages,
         currentLanguage: 'en',
       })
     ).toEqual({
       es: {
         title: [{ value: 'Hearing' }],
-        description: [{ value: 'Summary' }],
+        summary: [{ value: 'Needed' }],
       },
     });
   });

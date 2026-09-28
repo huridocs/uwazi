@@ -156,8 +156,8 @@ const pickTranslationValue = ({
   touched: boolean;
   blankFallsBack: boolean;
 }): MetadataObjectSchema[] => {
+  if (blankFallsBack && isBlankTitle(existing)) return fallback;
   if (touched) return existing ?? textValues('');
-  if (blankFallsBack) return isBlankTitle(existing) ? fallback : (existing ?? fallback);
   return isMissingTranslation(existing) ? fallback : (existing ?? fallback);
 };
 
@@ -185,7 +185,7 @@ const completeLanguageBucket = ({
       existing: bucket[property.name],
       fallback: fallback[property.name],
       touched: Boolean(touched[property.name]),
-      blankFallsBack: false,
+      blankFallsBack: Boolean(property.required),
     });
   });
   return next;
