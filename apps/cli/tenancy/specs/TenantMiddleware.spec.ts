@@ -7,7 +7,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import type { CliContext } from '../../pipeline/CliContext.js';
 import type { Middleware } from '../../pipeline/Middleware.js';
 import { TenantMiddleware } from '../TenantMiddleware.js';
-import { TenantNotFound } from '../TenantNotFound.js';
+import { TenantNotFound } from '#api/tenants/application/errors.js';
 
 const NAMES = ['tenant-mw-a', 'tenant-mw-b'];
 

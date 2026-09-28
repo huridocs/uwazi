@@ -4,7 +4,7 @@ import { DB } from '#api/odm/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { AllTenants } from '../AllTenants.js';
-import { TenantNotFound } from '../TenantNotFound.js';
+import { TenantNotFound } from '#api/tenants/application/errors.js';
 
 const NAMES = ['all-tenants-a', 'all-tenants-b'];
 
