@@ -43,6 +43,7 @@ import {
   IXSuggestionsMigrationConfig,
   PageLocalesMigrationConfig,
   PageMigrationConfig,
+  SegmentationsMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -167,6 +168,9 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   ixextractors: IXExtractorsMigrationConfig.mapDocument,
   ixmodels: IXModelsMigrationConfig.mapDocument,
   ixsuggestions: IXSuggestionsMigrationConfig.mapDocument,
+  // Mirrored only on request (`postgresMirror`): many IX specs hold segmentation fixtures that
+  // predate the table and are not meant to reach it.
+  segmentations: SegmentationsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
