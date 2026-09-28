@@ -139,9 +139,11 @@ Attachment renamed,ပူးတွဲဖိုင် အမည်ပြောင
 Attachment uploaded,ပူးတွဲဖိုင် တင်ပြီးပါပြီ။
 Attachments,တွဲချိတ်မှုများ
 Authentication code,စစ်မှန်ကြောင်း အတည်ပြုကုဒ်
+Auto,Auto
 auto created,အလိုအလျောက် ဖန်တီးထားသည်
 Auto-accept suggestions,အကြံပြုချက်များကို အလိုအလျောက် လက်ခံပါ
 auto-created,အော်တို ဖန်တီးထားသော
+Auto-translate,Auto-translate
 Automatic Table of Contents,အလိုအလျောက် မာတိကာ
 Automatically generated,အလိုအလျောက် ထုတ်လုပ်ထားသည်
 Available default translation,ရရှိနိုင်သည့် မူလဘာသာပြန်ဆိုချက်
@@ -462,8 +464,10 @@ Entity updated,အဖွဲ့အစည်းကို အပ်ဒိတ်လ�
 Error,ချွတ်ယွင်းချက်
 Error adding thesauri.,အဓိပ္ပာယ်တူစာရင်းများ ထည့်သွင်းရာတွင် အမှားဖြစ်ပါသည်။
 Error loading your image,သင့်ပုံကို တင်နေစဉ် အမှားဖြစ်နေပါသည်။
+Error loading your media,Error loading your media
 Error saving template.,ပုံစံ သိမ်းဆည်းရာတွင် အမှားဖြစ်နေသည်။
 Error updating thesauri.,အဓိပ္ပာယ်တူစာရင်းများကို အပ်ဒိတ်လုပ်ရာတွင် အမှားဖြစ်နေသည်။
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,သက်သေ
 exact phrase,တိကျသော စကားစု
 Expand all,အားလုံးကို တိုးချဲ့ပြရန်
@@ -683,6 +687,7 @@ Longitude must be between -180 and 180,လောင်ဂျီတွဒ်သ�
 Lookup help,ရှာဖွေရေးအကူအညီ
 Lost connection to the server. Your changes may be lost,ဆာဗာနှင့် ချိတ်ဆက်မှု ပြတ်သွားပါသည်။ သင့်ပြင်ဆင်ချက်များ ပျောက်ဆုံးနိုင်ပါသည်။
 low,နိမ့်သော
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,ဆက်နွယ်မှုအမျိုးအစားများကို စီမံခန့်ခွဲပါ။
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်
 Manage types,အမျိုးအစားများကို စီမံခန့်ခွဲပါ
@@ -1360,7 +1365,9 @@ Training,လေ့ကျင့်ရေး
 Training model,လေ့ကျင့်မော်ဒယ်
 Training sample,လေ့ကျင့်မှုနမူနာ
 Translate,ဘာသာပြန်ရန်
+Translating,Translating
 Translation,ဘာသာပြန်ဆိုခြင်း
+Translation service is unavailable,Translation service is unavailable
 Translations,ဘာသာပြန်ဆိုချက်များ
 Translations imported.,ဘာသာပြန်ချက်များ တင်သွင်းပြီးပါပြီ။
 Translations reset successfully,ဘာသာပြန်ချက်များကို အောင်မြင်စွာ ပြန်လည်သတ်မှတ်ပြီးပါပြီ။

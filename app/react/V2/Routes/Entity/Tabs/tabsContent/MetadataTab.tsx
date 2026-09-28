@@ -40,6 +40,9 @@ const keepOmitted = (saved: Entity, previous: Entity): Entity => ({
   ...(!('permissions' in saved) && previous.permissions
     ? { permissions: previous.permissions }
     : {}),
+  ...(!('translations' in saved) && previous.translations
+    ? { translations: previous.translations }
+    : {}),
 });
 
 const persistSavedEntity = async ({

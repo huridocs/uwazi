@@ -75,14 +75,16 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       entity.ensureTranslations(languages, defaultLanguage);
     }
 
+    const attachments = input.uploadedFiles?.filter(file => file.isAttachment()) ?? [];
+
     if (input.translations) {
-      await this.applyTranslations(entity, input.translations);
+      await this.applyTranslations(entity, input.translations, attachments);
     }
 
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
       input.propertyAssignments,
       entity.template,
-      input?.uploadedFiles?.filter(f => f.isAttachment()),
+      attachments,
       entity
     );
 
@@ -150,13 +152,17 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     return entity;
   }
 
-  private async applyTranslations(entity: Entity, translations: TranslationsInput) {
+  private async applyTranslations(
+    entity: Entity,
+    translations: TranslationsInput,
+    attachments: InputFile[]
+  ) {
     await Promise.all(
       Object.entries(translations).map(async ([language, values]) => {
         const assignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
           values ?? [],
           entity.template,
-          [],
+          attachments,
           entity
         );
         entity.setTranslatedPropertyAssignments({
