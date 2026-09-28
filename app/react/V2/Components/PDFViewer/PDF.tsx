@@ -1,15 +1,20 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { SelectionRegion, TextSelection } from '@huridocs/react-text-selection-handler';
 import { PdfTextSelection } from './PdfTextSelection.js';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll, pickMostVisiblePage } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { useWordSelection, type WordHighlight } from './hooks/useWordSelection.js';
+import { WordSelectionToggle } from './WordSelectionToggle.js';
+import { WordSelectionHighlight } from './WordSelectionHighlight.js';
 import { waitForElement } from './functions/waitForElement.js';
 import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
@@ -114,6 +119,11 @@ const PDF = ({
   const [internalHighlights, setInternalHighlights] = useState<
     { [page: number]: TextHighlight[] }[]
   >([]);
+  const settings = useAtomValue(settingsAtom);
+  const wordSelectionAvailable = Boolean(settings.features?.experimentalFeatures);
+  const [wordSelectionMode, setWordSelectionMode] = useState(false);
+  const wordSelectionActive = wordSelectionAvailable && wordSelectionMode;
+  const [wordHighlight, setWordHighlight] = useState<WordHighlight>();
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
@@ -134,6 +144,15 @@ const PDF = ({
     },
     [onSelect, currentScale]
   );
+
+  const { clearSelection } = useWordSelection({
+    enabled: wordSelectionActive,
+    containerRef: pdfContainerRef,
+    layoutKey: currentScale,
+    onSelect: handleSelect,
+    onDeselect,
+    onHighlightChange: setWordHighlight,
+  });
 
   const goToPage = useCallback(
     (page: number) => {
@@ -450,7 +469,7 @@ const PDF = ({
             pageRefsMap.current[regionId] = el;
           }}
           className={[
-            'relative mb-4 border-solid',
+            'relative mb-4 overflow-hidden border-solid',
             `[border-width:${BORDER_WIDTH}px]`,
             'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
           ].join(' ')}
@@ -467,6 +486,14 @@ const PDF = ({
               onScaleChange={handleScaleChange}
               renderingQueue={renderingQueueRef.current}
             />
+            {wordHighlight?.preview || wordHighlight?.committed ? (
+              <WordSelectionHighlight
+                preview={wordHighlight.preview}
+                committed={wordHighlight.committed}
+                regionId={regionId.toString()}
+                onClear={clearSelection}
+              />
+            ) : null}
           </SelectionRegion>
         </div>
       );
@@ -475,6 +502,8 @@ const PDF = ({
     pdf,
     highlights,
     internalHighlights,
+    wordHighlight,
+    clearSelection,
     pdfEventBus,
     intersectionObserver,
     onHighlightClick,
@@ -503,10 +532,18 @@ const PDF = ({
   }
 
   return (
-    <PdfTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div
-        className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
-      >
+    <PdfTextSelection
+      onSelect={handleSelect}
+      onDeselect={onDeselect}
+      disabled={wordSelectionActive}
+    >
+      <div className={`flex h-full w-full min-h-0 flex-col gap-2 justify-center p-3 ${className}`}>
+        {wordSelectionAvailable ? (
+          <WordSelectionToggle
+            checked={wordSelectionMode}
+            onToggle={() => setWordSelectionMode(current => !current)}
+          />
+        ) : null}
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
@@ -518,7 +555,13 @@ const PDF = ({
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
         ) : null}
-        <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
+        <div
+          id="pdf-container"
+          className={`pdfViewer min-h-0 w-full min-w-0 flex-1 ${wordSelectionActive ? '[&_.textLayer]:select-none' : ''}`}
+          ref={setPdfContainer}
+          style={viewerStyle}
+          data-word-selection={wordSelectionActive ? 'true' : undefined}
+        >
           {pages}
         </div>
       </div>

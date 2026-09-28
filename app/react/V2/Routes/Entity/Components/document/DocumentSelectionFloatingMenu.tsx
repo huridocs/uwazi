@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
@@ -33,23 +33,7 @@ const DocumentSelectionFloatingMenu = ({
   scrollRoot,
 }: DocumentSelectionFloatingMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [layoutTick, setLayoutTick] = useState(0);
   const [menuSize, setMenuSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    let frame = 0;
-    const bump = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setLayoutTick(tick => tick + 1));
-    };
-    scrollRoot?.addEventListener('scroll', bump, { passive: true });
-    window.addEventListener('resize', bump);
-    return () => {
-      cancelAnimationFrame(frame);
-      scrollRoot?.removeEventListener('scroll', bump);
-      window.removeEventListener('resize', bump);
-    };
-  }, [scrollRoot]);
 
   useLayoutEffect(() => {
     const node = menuRef.current;
@@ -58,24 +42,24 @@ const DocumentSelectionFloatingMenu = ({
     setMenuSize(prev =>
       prev.width === width && prev.height === height ? prev : { width, height }
     );
-  }, [selection, armedLabel, layoutTick]);
+  }, [selection, armedLabel]);
 
   const position = getSelectionMenuPosition(selection);
   if (!position || typeof document === 'undefined') return null;
 
   const { left, top } = placeSelectionMenu(position, menuSize, {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: position.host.clientWidth,
+    height: position.host.clientHeight,
   });
 
-  const themeStyle = copyThemeScopeStyle(scrollRoot);
+  const themeStyle = copyThemeScopeStyle(scrollRoot || position.host);
 
   return createPortal(
     <div
       ref={menuRef}
       className="tw-content tw-content--chrome"
       style={{
-        position: 'fixed',
+        position: 'absolute',
         left,
         top,
         display: 'inline-flex',
@@ -110,7 +94,7 @@ const DocumentSelectionFloatingMenu = ({
         </button>
       </div>
     </div>,
-    document.body
+    position.host
   );
 };
 

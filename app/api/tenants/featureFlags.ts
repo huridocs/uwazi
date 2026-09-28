@@ -25,6 +25,7 @@ const FEATURE_FLAGS = {
   translationServiceUrl: 'string',
   telemetry: { enabled: 'boolean', sampleRate: 'number' },
   prometheus: { enabled: 'boolean', sampleRate: 'number' },
+  experimentalFeatures: 'boolean',
 } as const;
 
 type FeatureFlagType = 'boolean' | 'number' | 'string';
