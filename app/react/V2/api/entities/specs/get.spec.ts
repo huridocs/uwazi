@@ -39,7 +39,7 @@ describe('entities get api', () => {
 
     expect(apiClient.getJson).toHaveBeenCalledWith(
       'entities',
-      { _id: 'e1', omitRelationships: true, include: ['permissions'] },
+      { _id: 'e1', omitRelationships: true, include: ['permissions', 'translations'] },
       languageOptions
     );
     expect(error).toBeUndefined();
@@ -53,7 +53,7 @@ describe('entities get api', () => {
 
     expect(apiClient.getJson).toHaveBeenCalledWith(
       'entities',
-      { sharedId: 's1', omitRelationships: true, include: ['permissions'] },
+      { sharedId: 's1', omitRelationships: true, include: ['permissions', 'translations'] },
       languageOptions
     );
     expect(error).toBeUndefined();
