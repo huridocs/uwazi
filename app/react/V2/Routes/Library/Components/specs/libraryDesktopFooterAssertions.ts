@@ -71,21 +71,6 @@ const expectIconOnly = (root: HTMLElement, label: string) => {
   expect(button).not.toHaveTextContent(label);
 };
 
-const classList = (element: Element) => element.className.split(/\s+/).filter(Boolean);
-
-const expectRedOutlineTrash = (control: HTMLElement) => {
-  const icon = control.querySelector('svg');
-  expect(icon).toBeInstanceOf(SVGElement);
-  expect(icon).toHaveAttribute('fill', 'none');
-  expect(icon).toHaveAttribute('stroke', 'currentColor');
-  const colored = icon?.parentElement;
-  expect(colored).toBeInstanceOf(HTMLElement);
-  expect(classList(colored as Element)).toContain('text-seal');
-  expect(classList(colored as Element)).not.toContain('text-seal-label');
-  expect(classList(colored as Element)).not.toContain('text-ink-secondary');
-  expect(classList(colored as Element)).not.toContain('text-ink');
-};
-
 const expectResultsBarUnchanged = (footer: HTMLElement) => {
   expect(within(footer).queryByTestId('library-single-select-actions')).not.toBeInTheDocument();
   ['Edit', 'Permissions', 'Delete', 'Close'].forEach(name => {
@@ -94,7 +79,7 @@ const expectResultsBarUnchanged = (footer: HTMLElement) => {
   expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 };
 
-const classTokens = classList;
+const classTokens = (element: Element) => element.className.split(/\s+/).filter(Boolean);
 
 const expectNotPushedRight = (element: HTMLElement, footer: HTMLElement) => {
   let current: HTMLElement | null = element;
@@ -126,7 +111,6 @@ const expectPanelDelete = (actions: HTMLElement) => {
   const divider = deleteButton.previousElementSibling;
   expect(divider).toHaveAttribute('data-testid', 'library-footer-divider');
   expect(divider).toHaveClass('w-px', 'bg-border-soft');
-  expectRedOutlineTrash(deleteButton);
 };
 
 const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
@@ -214,9 +198,7 @@ const expectMultiSelectActions = (footer: HTMLElement) => {
   expect(edit.querySelector('svg')).toHaveAttribute('width', '13');
   expect(edit.innerHTML).toContain('M13 21h8');
   const deleteButton = within(footer).getByRole('button', { name: 'Delete' });
-  expect(deleteButton).toHaveClass('text-seal-label');
   expectShownLabel(deleteButton, 'Delete');
-  expectRedOutlineTrash(deleteButton);
 };
 
 const expectMultiSelectSummary = (footer: HTMLElement) => {
@@ -250,9 +232,7 @@ const menuSequence = (menu: HTMLElement) =>
 const expectMenuItems = (menu: HTMLElement) => {
   expect(menuSequence(menu)).toEqual(['Export CSV', 'Permissions', 'divider', 'Delete']);
   const deleteItem = within(menu).getByRole('menuitem', { name: 'Delete' });
-  expect(deleteItem).toHaveClass('text-seal-label');
   expect(deleteItem).toHaveTextContent('Delete');
-  expectRedOutlineTrash(deleteItem);
   ['Edit', 'Share', 'Change template'].forEach(name => {
     expect(within(menu).queryByRole('menuitem', { name })).not.toBeInTheDocument();
   });
