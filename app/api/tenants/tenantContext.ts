@@ -2,7 +2,7 @@ import { config } from '#api/config.js';
 import { handleError } from '#api/utils/index.js';
 import { appContext } from '#api/utils/AppContext.js';
 import type { Tenant } from './tenant.js';
-import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
+import { TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;
 
@@ -39,7 +39,7 @@ class Tenants {
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
-    tenants.forEach((tenant: TenantDocument) => {
+    tenants.forEach((tenant: DBTenant) => {
       this.add(tenant);
     });
   }

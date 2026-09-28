@@ -1,15 +1,14 @@
-import { config } from '#api/config.js';
 import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { DB } from '#api/odm/index.js';
+import type { TenantRecord } from '#api/tenants/application/contracts/TenantsDataSource.js';
+import { TenantNotFound } from '#api/tenants/application/errors.js';
+import { TenantsDataSourceFactory } from '#api/tenants/infrastructure/TenantsDataSourceFactory.js';
 import { Tenant, tenants } from '#api/tenants/tenantContext.js';
-import type { DBTenant } from '#api/tenants/tenantsModel.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TenantNotFound } from './TenantNotFound.js';
 
 class CliTenancy {
   static async resolve(name: string): Promise<Tenant> {
-    const stored = await CliTenancy.collection().findOne({ name }, { projection: { _id: 0 } });
+    const stored = await TenantsDataSourceFactory.default().getByName(name);
 
     if (!stored) {
       throw new TenantNotFound(name);
@@ -19,9 +18,7 @@ class CliTenancy {
   }
 
   static async all(): Promise<Tenant[]> {
-    const stored = await CliTenancy.collection()
-      .find({}, { projection: { _id: 0 }, sort: { name: 1 } })
-      .toArray();
+    const stored = await TenantsDataSourceFactory.default().all();
 
     return stored.map(CliTenancy.register);
   }
@@ -40,15 +37,11 @@ class CliTenancy {
   }
 
   /**
-   * A one-off read of the shared tenants collection. `tenants.setupTenants()` is not used: it
-   * opens a change stream that would keep the process alive after the command finishes.
+   * The legacy tenant context resolves names through this registry. Reads go through the data
+   * source rather than `tenants.setupTenants()`, which opens a change stream that would keep the
+   * process alive after the command finishes.
    */
-  private static collection() {
-    return DB.mongodb_Db(config.SHARED_DB).collection<DBTenant>('tenants');
-  }
-
-  /** The legacy tenant context resolves names through this registry. */
-  private static register(stored: DBTenant): Tenant {
+  private static register(stored: TenantRecord): Tenant {
     tenants.add(stored);
     return tenants.tenants[stored.name];
   }

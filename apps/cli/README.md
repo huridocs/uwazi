@@ -43,6 +43,9 @@ yarn uwazi users list --all-tenants
 yarn uwazi users stats --tenant acme --pretty
 yarn uwazi settings get --tenant acme
 yarn uwazi settings update --tenant acme --request '{"site_name":"Acme archive"}'
+yarn uwazi tenants list --pretty
+yarn uwazi tenants register --request '{"name":"acme","domain":"acme.uwazi.io"}'
+yarn uwazi tenants feature-flags --request '{"name":"acme","featureFlags":{"postgresCore":true}}'
 ```
 
 In production, from `prod/`, the same commands with the binary in place of `yarn uwazi`:
@@ -61,7 +64,7 @@ echo '{"username":"bob","role":"admin"}' | ./apps/cli/bin/uwazi.js users update 
 | `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                  |
 | `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history. |
 | `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.           |
-| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands.                                  |
+| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `tenants …`.         |
 | `--all-tenants`       | Run a query in every tenant (queries only; writes always target one tenant).               |
 | `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                             |
 | `--verbose`           | Add stack traces to errors.                                                                |
@@ -69,6 +72,10 @@ echo '{"username":"bob","role":"admin"}' | ./apps/cli/bin/uwazi.js users update 
 
 Tenant selection is a flag, not part of the request: it chooses where the command runs, the
 request is what the command does. Unknown request fields are rejected, `tenant` included.
+
+`tenants …` is the exception, and for the same reason: those commands administer the registry
+that sits above every tenant, so there is no tenant to run _in_. The tenant they act _on_ is the
+subject of the command, and travels in the request as `name`.
 
 `--schema` is the reference for each command's input:
 
@@ -78,15 +85,24 @@ yarn uwazi users update --schema
 
 ### Commands
 
-| Command           | Tenancy                       | Request                                                                                                                                |
-| ----------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `users create`    | `--tenant`                    | `username`, `email`, `role`; optional `groups` (ids, default `[]`), `welcomeEmail` (default `true`)                                    |
-| `users update`    | `--tenant`                    | exactly one of `username` / `id` to name the user; optional `newUsername`, `email`, `role`, `groups` — omitted fields stay as they are |
-| `users delete`    | `--tenant`                    | exactly one of `username` / `id` (soft delete)                                                                                         |
-| `users list`      | `--tenant` or `--all-tenants` | optional `role` filter                                                                                                                 |
-| `users stats`     | `--tenant` or `--all-tenants` | none                                                                                                                                   |
-| `settings get`    | `--tenant`                    | none — prints the whole settings document as stored, `sync` credentials included                                                       |
-| `settings update` | `--tenant`                    | any part of the settings document (`--schema` for its shape); prints the whole document after saving                                   |
+| Command                 | Tenancy                       | Request                                                                                                                                |
+| ----------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `users create`          | `--tenant`                    | `username`, `email`, `role`; optional `groups` (ids, default `[]`), `welcomeEmail` (default `true`)                                    |
+| `users update`          | `--tenant`                    | exactly one of `username` / `id` to name the user; optional `newUsername`, `email`, `role`, `groups` — omitted fields stay as they are |
+| `users delete`          | `--tenant`                    | exactly one of `username` / `id` (soft delete)                                                                                         |
+| `users list`            | `--tenant` or `--all-tenants` | optional `role` filter                                                                                                                 |
+| `users stats`           | `--tenant` or `--all-tenants` | none                                                                                                                                   |
+| `settings get`          | `--tenant`                    | none — prints the whole settings document as stored, `sync` credentials included                                                       |
+| `settings update`       | `--tenant`                    | any part of the settings document (`--schema` for its shape); prints the whole document after saving                                   |
+| `tenants list`          | none                          | none — prints every registry row as stored                                                                                             |
+| `tenants get`           | none                          | `name`                                                                                                                                 |
+| `tenants register`      | none                          | `name`; optional `dbName`, `indexName`, `domain`, `featureFlags`, `globalMatomo`, `ciMatomoActive`, folder paths                       |
+| `tenants update`        | none                          | `name` plus any field to change; `null` removes one                                                                                    |
+| `tenants delete`        | none                          | `name` — removes the registry row only                                                                                                 |
+| `tenants feature-flags` | none                          | `name`, `featureFlags` — merged flag by flag; `null` removes one                                                                       |
+| `tenants maintenance`   | none                          | `name`, `maintenance` (boolean)                                                                                                        |
+| `tenants stats`         | none                          | `name`, `stats` — stored for other tools, never read by uwazi                                                                          |
+| `tenants health-check`  | none                          | `name`, `healthCheck` — replaces the stored one                                                                                        |
 
 `role` is one of `admin`, `editor`, `collaborator`.
 
@@ -94,6 +110,34 @@ yarn uwazi users update --schema
 Nested objects such as `features` are replaced whole, so a key left out of `features` is
 removed; a top-level field cannot be removed. The output of `settings get` can be sent back as
 is. A stored document with fields the settings schema does not know is rejected.
+
+### tenants
+
+`tenants register` is idempotent: registering a tenant that already exists updates it, so the
+automation that provisions instances can run it again without checking first. It fills in what it
+was not given — `dbName` and `indexName` default to the tenant name, and the folder paths follow
+the layout `<name>/documents`, `<name>/custom_uploads`, `<name>/log` — and keeps any value passed
+explicitly.
+
+It writes the registry row and nothing else. Creating the tenant's database, running its
+migrations and building its search index stay where they are today.
+
+`tenants update` and `tenants feature-flags` take a partial request: **a field left out stays as
+it is, a field sent as `null` is removed.** `featureFlags` merges flag by flag, so a caller never
+drops a flag it does not know about — removing one means sending it as `null`.
+
+> This differs from `settings update`, which replaces each top-level field it is sent and cannot
+> remove one. The two were built against different use cases; check `--schema` when in doubt.
+
+`tenants list` and `tenants get` print the row as stored, including fields uwazi itself never
+reads (`stats`, `healthChecks`, `metadata`).
+
+Unlike `settings`, the output of `get` is **not** a valid `update` request: `featureFlags`,
+`maintenance`, `stats` and `healthChecks` each have their own command, so `update` rejects them.
+Send only the fields you mean to change.
+
+On an installation with no registry — a single instance configured entirely from the environment —
+`tenants list` prints `[]`. The commands report what is registered, and there the tenant is not.
 
 ## Output
 
