@@ -1,6 +1,7 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { handleError } from '#api/utils/handleError.js';
+import { AfterCommitContext } from './AfterCommitContext.js';
 import { DeleteFileSegmentationsFactory } from '../factories/DeleteFileSegmentationsFactory.js';
 
 /**
@@ -11,9 +12,11 @@ class DeleteSegmentationsOnFilesDeleted {
   static register(eventsBus: EventsBus) {
     eventsBus.on(FilesDeletedEvent, async ({ files }) => {
       try {
-        await DeleteFileSegmentationsFactory.default().execute({
-          fileIds: files.flatMap(file => (file._id ? [file._id.toString()] : [])),
-        });
+        await AfterCommitContext.run(async () =>
+          DeleteFileSegmentationsFactory.default().execute({
+            fileIds: files.flatMap(file => (file._id ? [file._id.toString()] : [])),
+          })
+        );
       } catch (error) {
         handleError(error);
       }

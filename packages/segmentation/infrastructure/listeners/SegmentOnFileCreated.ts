@@ -1,6 +1,7 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { handleError } from '#api/utils/handleError.js';
+import { AfterCommitContext } from './AfterCommitContext.js';
 import { RegisterFileSegmentationFactory } from '../factories/RegisterFileSegmentationFactory.js';
 
 /**
@@ -11,12 +12,14 @@ class SegmentOnFileCreated {
   static register(eventsBus: EventsBus) {
     eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
       try {
-        await RegisterFileSegmentationFactory.default().execute({
-          fileId: newFile._id.toString(),
-          filename: newFile.filename!,
-          type: newFile.type,
-          mimetype: newFile.mimetype,
-        });
+        await AfterCommitContext.run(async () =>
+          RegisterFileSegmentationFactory.default().execute({
+            fileId: newFile._id.toString(),
+            filename: newFile.filename!,
+            type: newFile.type,
+            mimetype: newFile.mimetype,
+          })
+        );
       } catch (error) {
         handleError(error);
       }
