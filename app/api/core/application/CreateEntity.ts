@@ -42,10 +42,11 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       userId: this.actor?.id,
     });
 
+    const attachments = input.inputFiles?.filter(file => file.isAttachment()) ?? [];
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
       input.propertyAssignments,
       entity.template,
-      input?.inputFiles?.filter(f => f.isAttachment()) || []
+      attachments
     );
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
@@ -53,7 +54,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     // Target language values are copied into every language first; translations overwrite theirs, so required
     // properties are validated again over the final state.
     if (input.translations) {
-      await this.applyTranslations(entity, input.translations);
+      await this.applyTranslations(entity, input.translations, attachments);
       entity.validateRequiredProperties();
     }
 
@@ -87,12 +88,17 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     );
   }
 
-  private async applyTranslations(entity: Entity, translations: TranslationsInput) {
+  private async applyTranslations(
+    entity: Entity,
+    translations: TranslationsInput,
+    attachments: InputFile[]
+  ) {
     await Promise.all(
       Object.entries(translations).map(async ([language, values]) => {
         const assignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
           values ?? [],
-          entity.template
+          entity.template,
+          attachments
         );
         entity.setTranslatedPropertyAssignments({
           language: language as LanguageISO6391,

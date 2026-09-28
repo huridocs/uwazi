@@ -19,6 +19,7 @@ const useMetadataEditingForm = () => {
   const form = useForm<EditEntityFormValues>({
     defaultValues: buildEditEntityDefaultValues(entity, templates),
   });
+  void form.formState.isDirty;
   const mediaUpload = useEntityMediaUpload(entity, form.watch('template'));
 
   const registerCancelEdit = useCallback((handler: () => void) => {

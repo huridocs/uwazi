@@ -139,12 +139,12 @@ describe('entity with translations schemas', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should reject attachment references inside translations', () => {
+  it('should accept attachment references inside translations', () => {
     const result = CreateEntityWithTranslationsSchema.safeParse({
       ...createPayload,
       translations: { pt: { image: [{ value: '', attachment: 0 }] } },
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 });

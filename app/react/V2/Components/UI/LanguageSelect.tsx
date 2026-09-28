@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { AnchoredPortal } from './AnchoredPortal.js';
 import { useLanguageSelectListbox } from './useLanguageSelectListbox.js';
 
 type LanguageSelectOption<T extends string = string> = {
@@ -110,41 +111,41 @@ const LanguageSelect = <T extends string>({
           aria-hidden
         />
       </button>
-      {open && !disabled ? (
-        <>
-          <div className="fixed inset-0 z-10" aria-hidden onClick={close} />
-          <div
-            ref={listboxRef}
-            id={listboxId}
-            role="listbox"
-            tabIndex={-1}
-            aria-label={listAriaLabel}
-            aria-activedescendant={activeDescendantId}
-            className={`absolute top-full z-20 mt-1 max-h-60 min-w-full overflow-y-auto rounded-md border border-border bg-paper shadow-md focus:outline-none ${
-              align === 'end' ? 'inset-e-0' : 'inset-s-0'
-            }`}
-          >
-            {options.map((option, index) => (
-              <button
-                key={option.value}
-                id={`${listboxId}-option-${option.value}`}
-                type="button"
-                role="option"
-                tabIndex={-1}
-                aria-selected={option.value === value}
-                onMouseDown={event => event.preventDefault()}
-                onClick={() => selectOption(option.value)}
-                className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
-                  index === highlightedIndex,
-                  option.value === value
-                )}`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
+      <AnchoredPortal
+        open={open && !disabled}
+        anchorRef={triggerElementRef}
+        onClose={close}
+        prefer={align === 'end' ? 'end' : 'start'}
+      >
+        <div
+          ref={listboxRef}
+          id={listboxId}
+          role="listbox"
+          tabIndex={-1}
+          aria-label={listAriaLabel}
+          aria-activedescendant={activeDescendantId}
+          className="max-h-60 w-max min-w-40 overflow-y-auto rounded-md border border-border bg-paper shadow-md focus:outline-none"
+        >
+          {options.map((option, index) => (
+            <button
+              key={option.value}
+              id={`${listboxId}-option-${option.value}`}
+              type="button"
+              role="option"
+              tabIndex={-1}
+              aria-selected={option.value === value}
+              onMouseDown={event => event.preventDefault()}
+              onClick={() => selectOption(option.value)}
+              className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
+                index === highlightedIndex,
+                option.value === value
+              )}`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </AnchoredPortal>
     </div>
   );
 };

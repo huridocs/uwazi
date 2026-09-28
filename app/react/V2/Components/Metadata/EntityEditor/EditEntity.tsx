@@ -1,12 +1,17 @@
-import React, { Fragment, useEffect, useMemo, useRef } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useFormState, useWatch } from 'react-hook-form';
 import { t } from '#app/I18N/index.js';
-import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
+import {
+  currentAndTranslationMetadata,
+  filterReferencedPendingAttachments,
+} from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
+import { settingsAtom } from '#V2/atoms/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, TemplateField } from './Components/index.js';
+import { useInstalledEntityLanguages } from './Components/useInstalledEntityLanguages.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
 import type { EditEntityProps } from './editEntityTypes.js';
 import {
@@ -18,6 +23,7 @@ import {
   planSharedMetadataSync,
   isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
+import { rekeyEditEntityLanguage } from './functions/entityTranslations.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
@@ -35,6 +41,7 @@ import {
   type RelationshipLookupSearchArgs,
 } from './functions/relationshipFieldHelpers.js';
 import { usePdfFill } from './Components/EntityPdfFill.js';
+import { TranslationServiceAvailabilityProvider } from './Components/TranslationServiceAvailability.js';
 
 /* eslint-disable max-statements, max-lines -- orchestrator: watches, sync effects, submit, lookup cache */
 const EditEntity = ({
@@ -52,17 +59,19 @@ const EditEntity = ({
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const { handleSubmit, control, getValues, setValue, reset, setError } = formContext;
-  const { isDirty, dirtyFields } = useFormState({ control });
+  const settings = useAtomValue(settingsAtom);
+  const { current: language } = useInstalledEntityLanguages();
+  const { handleSubmit, control, getValues, setValue, reset, setError, watch } = formContext;
+  const { isDirty } = useFormState({ control });
   const selectedTemplate = useWatch({ control, name: 'template' });
-  const metadata = useWatch({ control, name: 'metadata' });
   const previousTemplateRef = useRef(selectedTemplate);
+  const [metadataEpoch, setMetadataEpoch] = useState(0);
   const { draftPropertySelections } = usePdfFill();
-  const hasDirtyFields = Object.keys(dirtyFields).length > 0;
+  const languageRef = useRef(language);
 
   useEffect(() => {
-    onDirtyChange?.(isEntityEditorDirty(isDirty || hasDirtyFields, draftPropertySelections.length));
-  }, [hasDirtyFields, isDirty, draftPropertySelections.length, onDirtyChange]);
+    onDirtyChange?.(isEntityEditorDirty(isDirty, draftPropertySelections.length));
+  }, [draftPropertySelections.length, isDirty, onDirtyChange]);
 
   const availableTemplates = useMemo(
     () =>
@@ -84,6 +93,21 @@ const EditEntity = ({
     () => activeTemplate?.properties?.map(mapTemplateProperty) || [],
     [activeTemplate]
   );
+
+  useEffect(() => {
+    const previous = languageRef.current;
+    if (!previous || !language || previous === language) return;
+    languageRef.current = language;
+    reset(
+      rekeyEditEntityLanguage({
+        values: getValues(),
+        fromLanguage: previous,
+        toLanguage: language,
+        metadataProperties,
+      }),
+      { keepDirty: true }
+    );
+  }, [getValues, language, metadataProperties, reset]);
   const displayProperties = useMemo(
     () =>
       sortByTemplatePropertyOrder(
@@ -109,41 +133,62 @@ const EditEntity = ({
     [metadataProperties]
   );
 
-  const removePendingAttachmentIfUnused = (fileLocalID: string) => {
-    const formMetadata = getValues('metadata');
-    const stillReferenced = [...mediaPropertyNames].some(name => {
-      const rawValue = formMetadata?.[name]?.[0]?.value;
-      return (
-        typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
-      );
-    });
-    if (!stillReferenced) removePendingAttachment(fileLocalID);
-  };
+  const removePendingAttachmentIfUnused = useCallback(
+    (fileLocalID: string) => {
+      const stillReferenced =
+        filterReferencedPendingAttachments(
+          [{ fileLocalID }],
+          currentAndTranslationMetadata(getValues('metadata'), getValues('translations')),
+          mediaPropertyNames
+        ).length > 0;
+      if (!stillReferenced) removePendingAttachment(fileLocalID);
+    },
+    [getValues, mediaPropertyNames, removePendingAttachment]
+  );
 
   const isMetadataReady = metadataProperties.every(
-    property => metadata?.[property.name] !== undefined
+    property => metadataEpoch >= 0 && getValues('metadata')?.[property.name] !== undefined
   );
 
   useEffect(() => {
     const templateChanged = previousTemplateRef.current !== selectedTemplate;
     previousTemplateRef.current = selectedTemplate;
-    const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata, {
-      force: templateChanged,
+    const plan = planSharedMetadataSync({
+      currentValues: getValues(),
+      metadataProperties,
+      entityMetadata: entity?.metadata,
+      options: { force: templateChanged },
     });
-    if (plan.type === 'noop') return;
+    if (plan.type === 'noop') {
+      setMetadataEpoch(value => value + 1);
+      return;
+    }
     reset(plan.values, plan.options);
+    setMetadataEpoch(value => value + 1);
   }, [entity?.metadata, getValues, metadataProperties, reset, selectedTemplate]);
 
   useEffect(() => {
-    getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
-      const sourceValues = metadata?.[mainName] ?? [];
-      otherNames.forEach(name => {
-        if (JSON.stringify(metadata?.[name] ?? []) !== JSON.stringify(sourceValues)) {
-          setValue(`metadata.${name}`, sourceValues);
-        }
+    const pairs = getGroupedRelationshipSyncPairs(displayProperties);
+    if (!pairs.length) return undefined;
+    const mains = new Set(pairs.map(pair => `metadata.${pair.mainName}`));
+    const sync = () => {
+      pairs.forEach(({ mainName, otherNames }) => {
+        const sourceValues = getValues(`metadata.${mainName}`) ?? [];
+        otherNames.forEach(name => {
+          if (
+            JSON.stringify(getValues(`metadata.${name}`) ?? []) !== JSON.stringify(sourceValues)
+          ) {
+            setValue(`metadata.${name}`, sourceValues);
+          }
+        });
       });
+    };
+    const { unsubscribe } = watch((_values, info) => {
+      if (info.name && mains.has(info.name)) sync();
     });
-  }, [displayProperties, metadata, setValue]);
+    sync();
+    return unsubscribe;
+  }, [displayProperties, getValues, setValue, watch]);
 
   const relationshipLookupCache = useMemo(
     () => new Map<string, MultiselectListOption[]>(),
@@ -151,8 +196,11 @@ const EditEntity = ({
     [entity?._id, activeTemplate?._id]
   );
 
-  const relationshipLookupSearch = async (args: RelationshipLookupSearchArgs) =>
-    Promise.resolve(mergeRelationshipLookupOptions({ ...args, cache: relationshipLookupCache }));
+  const relationshipLookupSearch = useCallback(
+    async (args: RelationshipLookupSearchArgs) =>
+      Promise.resolve(mergeRelationshipLookupOptions({ ...args, cache: relationshipLookupCache })),
+    [relationshipLookupCache]
+  );
 
   useEffect(() => {
     if (!errors) return;
@@ -165,7 +213,6 @@ const EditEntity = ({
 
   const submit = handleSubmit(
     async values => {
-      if (!entity) return;
       await onSave?.(
         buildEditEntitySaveInput({
           entity,
@@ -173,6 +220,8 @@ const EditEntity = ({
           metadataProperties,
           pendingAttachments,
           mediaPropertyNames,
+          currentLanguage: language ?? entity?.language ?? 'en',
+          languages: settings.languages ?? [],
           mainDocumentId,
           draftPropertySelections,
         })
@@ -182,56 +231,57 @@ const EditEntity = ({
   );
 
   return (
-    <form
-      id={formId}
-      onSubmit={submit}
-      className="flex w-full min-w-0 flex-col gap-3 font-sans text-base text-ink"
-      data-testid="entity-edit-form"
-    >
-      <TitleField<EditEntityFormValues>
-        context="System"
-        label="Title"
-        field="title"
-        registerOptions={{ required: true }}
-        disabled={disabled}
-      />
-      <IconField disabled={disabled} />
-      <TemplateField<EditEntityFormValues>
-        context="System"
-        label="Template"
-        field="template"
-        registerOptions={{ required: true }}
-        disabled={disabled}
-        options={availableTemplates}
-        hideFilters
-      />
-      {isMetadataReady && (
-        <Fragment key={selectedTemplate}>
-          {displayProperties.map(property => (
-            <div key={property._id} className="flex flex-col gap-1">
-              <EditEntityPropertyField
-                property={property}
-                disabled={disabled}
-                activeTemplateId={activeTemplate?._id ?? ''}
-                thesauri={thesauri}
-                templates={templates}
-                metadataProperties={metadataProperties}
-                metadata={metadata}
-                entityMetadata={entity?.metadata}
-                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                entityAttachments={entityAttachments}
-                pendingAttachments={pendingAttachments}
-                registerPendingAttachment={registerPendingAttachment}
-                removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
-                onEditSource={onEditSource}
-                relationshipLookup={relationshipLookup}
-                relationshipLookupSearch={relationshipLookupSearch}
-              />
-            </div>
-          ))}
-        </Fragment>
-      )}
-    </form>
+    <TranslationServiceAvailabilityProvider>
+      <form
+        id={formId}
+        onSubmit={submit}
+        className="flex w-full min-w-0 flex-col gap-3 font-sans text-base text-ink"
+        data-testid="entity-edit-form"
+      >
+        <TitleField<EditEntityFormValues>
+          context="System"
+          label="Title"
+          field="title"
+          registerOptions={{ required: true }}
+          disabled={disabled}
+        />
+        <IconField disabled={disabled} />
+        <TemplateField<EditEntityFormValues>
+          context="System"
+          label="Template"
+          field="template"
+          registerOptions={{ required: true }}
+          disabled={disabled}
+          options={availableTemplates}
+          hideFilters
+        />
+        {isMetadataReady && (
+          <Fragment key={selectedTemplate}>
+            {displayProperties.map(property => (
+              <div key={property._id} className="flex flex-col gap-1">
+                <EditEntityPropertyField
+                  property={property}
+                  disabled={disabled}
+                  activeTemplateId={activeTemplate?._id ?? ''}
+                  thesauri={thesauri}
+                  templates={templates}
+                  metadataProperties={metadataProperties}
+                  entityMetadata={entity?.metadata}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  entityAttachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  registerPendingAttachment={registerPendingAttachment}
+                  removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
+                  onEditSource={onEditSource}
+                  relationshipLookup={relationshipLookup}
+                  relationshipLookupSearch={relationshipLookupSearch}
+                />
+              </div>
+            ))}
+          </Fragment>
+        )}
+      </form>
+    </TranslationServiceAvailabilityProvider>
   );
 };
 

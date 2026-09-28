@@ -96,7 +96,7 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('cell').querySelector('.no-tailwind')).toBeTruthy();
+    expect(screen.getByTestId('cell').querySelector('.entity-markdown')).toBeTruthy();
     expect(screen.getByTestId('cell').innerHTML).toContain('<strong>');
   });
 

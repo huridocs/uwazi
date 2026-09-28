@@ -7,7 +7,6 @@ export interface MarkDownType {
   onChange: () => {};
   value?: string;
   rows?: number;
-  htmlOnViewer?: boolean;
   showPreview?: boolean;
 }
 export class MarkDown extends Component<MarkDownType> {
@@ -39,7 +38,7 @@ export class MarkDown extends Component<MarkDownType> {
           </TabContent>
           {showPreview && (
             <TabContent for="preview" className="markdownViewer">
-              <MarkdownViewer html={this.props.htmlOnViewer} markdown={value} />
+              <MarkdownViewer html markdown={value} />
             </TabContent>
           )}
         </Tabs>

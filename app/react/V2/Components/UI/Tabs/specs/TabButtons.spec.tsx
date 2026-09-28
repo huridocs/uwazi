@@ -2,8 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { TabButtons } from '../TabButtons.js';
+
+let mockIsMobile = false;
+
+jest.mock('#app/V2/CustomHooks/useIsMobile.js', () => ({
+  useIsMobile: () => mockIsMobile,
+}));
 
 const buttons = [
   { id: 'document', name: 'Document', label: 'Document' },
@@ -32,6 +38,10 @@ const mockWidths = (available: number, natural: number) => {
 };
 
 describe('TabButtons', () => {
+  beforeEach(() => {
+    mockIsMobile = false;
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -50,6 +60,16 @@ describe('TabButtons', () => {
     expect(screen.queryByRole('button', { name: 'Entity primary' })).not.toBeInTheDocument();
   });
 
+  it('folds on a mobile viewport even when the labels fit', () => {
+    mockIsMobile = true;
+    mockWidths(400, 120);
+    render(
+      <TabButtons groupId="entity-main" buttons={buttons} tabListAriaLabel="Entity primary" />
+    );
+    expect(screen.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Entity primary' })).toHaveTextContent('Document');
+  });
+
   it('folds into a labeled select when the strip does not fit', () => {
     mockWidths(80, 400);
     render(
@@ -59,5 +79,22 @@ describe('TabButtons', () => {
     expect(screen.getByRole('button', { name: 'Entity primary' })).toHaveTextContent('Document');
     expect(document.getElementById('entity-main-tab-document')).toHaveTextContent('Document');
     expect(document.getElementById('entity-main-tab-metadata')).toHaveTextContent('Metadata');
+  });
+
+  it('keeps tab counts in the folded menu', () => {
+    mockWidths(80, 400);
+    render(
+      <TabButtons
+        groupId="entity-side"
+        buttons={[
+          { id: 'relationships', name: 'Relationships', label: <>Relationships 8</> },
+          { id: 'files', name: 'Files', label: <>Files 6</> },
+        ]}
+        tabListAriaLabel="Side panel tabs"
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Side panel tabs' }));
+    expect(screen.getByRole('option', { name: 'Relationships 8' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Files 6' })).toBeInTheDocument();
   });
 });

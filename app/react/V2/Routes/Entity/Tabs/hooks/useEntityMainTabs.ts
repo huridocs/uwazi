@@ -108,6 +108,10 @@ const useMainTabActions = ({
     focusSideTab(SIDE_TAB.DOCUMENT);
   }, [documentOnMain, focusSideTab, requestPane]);
 
+  const showSidePane = useCallback(() => {
+    requestPane(1);
+  }, [requestPane]);
+
   return useMemo(
     () => ({
       onMainTabChange,
@@ -115,8 +119,16 @@ const useMainTabActions = ({
       stageSideTab,
       focusRelationshipsPanel,
       focusDocumentPanel,
+      showSidePane,
     }),
-    [focusDocumentPanel, focusRelationshipsPanel, focusSideTab, onMainTabChange, stageSideTab]
+    [
+      focusDocumentPanel,
+      focusRelationshipsPanel,
+      focusSideTab,
+      onMainTabChange,
+      showSidePane,
+      stageSideTab,
+    ]
   );
 };
 

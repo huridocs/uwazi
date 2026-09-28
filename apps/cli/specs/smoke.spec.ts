@@ -42,6 +42,14 @@ const loadedModules = (args: string[]) => {
 
 const BACKEND = /\/app\/api\/(odm|tenants|core\/infrastructure)\/|\/node_modules\/@sentry\//;
 
+/**
+ * The guard is a path heuristic for "nothing expensive was loaded". These three are leaves that
+ * import zod and nothing else: the routes take their request schemas from the application layer,
+ * as `settings update` does, so `--schema` prints the use case's own contract.
+ */
+const CHEAP =
+  /\/app\/api\/tenants\/(featureFlags|operationalData)\.ts$|\/app\/api\/tenants\/application\/tenantInputs\.ts$/;
+
 describe('uwazi binary', () => {
   it('should print help on stdout and exit 0', () => {
     const { status, stdout } = uwazi(['--help']);
@@ -63,12 +71,14 @@ describe('uwazi binary', () => {
     ['help', ['users', 'create', '--help'], 0],
     ['--schema', ['users', 'create', '--schema'], 0],
     ['settings --schema', ['settings', 'update', '--schema'], 0],
+    ['tenants --schema', ['tenants', 'update', '--schema'], 0],
+    ['tenants help', ['tenants', 'register', '--help'], 0],
     ['an invalid request', ['users', 'create', '--tenant', 'x', '--request', '{}'], 2],
   ])('should not load the backend for %s', (_case, args, exitCode) => {
     const { status, modules } = loadedModules(args);
 
     expect(status).toBe(exitCode);
     expect(modules).toContainEqual(expect.stringContaining('/apps/cli/CliApplication.ts'));
-    expect(modules.filter(url => BACKEND.test(url))).toEqual([]);
+    expect(modules.filter(url => BACKEND.test(url) && !CHEAP.test(url))).toEqual([]);
   });
 });

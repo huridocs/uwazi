@@ -140,9 +140,11 @@ Attachment renamed,Pièce jointe renommée
 Attachment uploaded,Pièce jointe téléchargée
 Attachments,Pièces Jointes
 Authentication code,Code d'authentification
+Auto,Auto
 auto created,créé automatiquement
 Auto-accept suggestions,Accepter automatiquement les suggestions
 auto-created,créé automatiquement
+Auto-translate,Auto-translate
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
 Available default translation,Traduction par défaut disponible
@@ -469,8 +471,10 @@ Entity updated,Entité mise à jour
 Error,Erreur
 Error adding thesauri.,Erreur lors de l'ajout des thésaurus.
 Error loading your image,Erreur lors du chargement de votre image
+Error loading your media,Error loading your media
 Error saving template.,Erreur lors de l'enregistrement du modèle.
 Error updating thesauri.,Erreur lors de la mise à jour des thésaurus.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,preuves
 exact phrase,expression exacte
 Expand all,Tout développer
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,La longitude doit être comprise entre -1
 Lookup help,Aide à la recherche
 Lost connection to the server. Your changes may be lost,La connexion au serveur a été interrompue. Vos modifications risquent d'être perdues.
 low,Bas
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Gérer les types de relations
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
 Manage types,Gérer les types
@@ -1386,7 +1391,9 @@ Training,Formation
 Training model,Entraînement du modèle
 Training sample,Exemple d'entraînement
 Translate,Traduire
+Translating,Translating
 Translation,Traduction
+Translation service is unavailable,Translation service is unavailable
 Translations,Traductions
 Translations imported.,Traductions importées.
 Translations reset successfully,Les traductions ont été réinitialisées avec succès

@@ -56,6 +56,10 @@ describe('MarkDown', () => {
       const container = component.find(MarkdownViewer);
       expect(container.props().markdown).toBe('# <b>This is a title</b>');
     });
+    it('should render inline html like the entity view does', () => {
+      render();
+      expect(component.find(MarkdownViewer).props().html).toBe(true);
+    });
     it('should not display if the pages is for an entity view', () => {
       props.showPreview = false;
       render();

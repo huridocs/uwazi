@@ -96,6 +96,7 @@ const MediaPlayer = ({
 }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const [playerHeight, setPlayerHeight] = useState(0);
+  const [loadError, setLoadError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const mediaType: MediaType = verifyUrl(url);
@@ -106,6 +107,11 @@ const MediaPlayer = ({
 
   const renderThumbnail =
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
+
+  useEffect(() => {
+    setLoadError(false);
+    setPlaying(false);
+  }, [url]);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -138,8 +144,17 @@ const MediaPlayer = ({
         </div>
       )}
 
-      {mediaType !== 'invalid' && playerHeight ? (
+      {mediaType !== 'invalid' && loadError && (
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full">
+          <p className="text-center">
+            <Translate>Error loading your media</Translate>
+          </p>
+        </div>
+      )}
+
+      {mediaType !== 'invalid' && playerHeight && !loadError ? (
         <ReactPlayer
+          key={url}
           ref={playerRef}
           className="absolute top-0 left-0"
           width="100%"
@@ -158,6 +173,7 @@ const MediaPlayer = ({
           onClickPreview={() => !playing && setPlaying(true)}
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...props}
+          onError={() => setLoadError(true)}
         />
       ) : (
         <div />
