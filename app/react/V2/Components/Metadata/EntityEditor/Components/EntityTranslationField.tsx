@@ -10,7 +10,7 @@ type EntityTranslationFieldProps = {
   propertyName: string;
   label: string;
   idPrefix: string;
-  onCurrentChange: (value: string) => void;
+  onCurrentChange?: (value: string) => void;
   multiline?: boolean;
   messageSlot?: React.ReactNode;
   disabled?: boolean;
@@ -35,6 +35,7 @@ const EntityTranslationField = React.memo(
     const currentValue = useIdleFormValue(idPrefix);
     const { languages, current, canAutoTranslate } = useInstalledEntityLanguages();
     const { available } = useTranslationServiceAvailability();
+    const showTranslate = autoTranslate && canAutoTranslate;
     const { onChange, onTranslate, values } = useTranslationFieldHandlers({
       propertyName,
       current,
@@ -56,8 +57,8 @@ const EntityTranslationField = React.memo(
         current={current}
         values={values}
         onChange={onChange}
-        onTranslate={autoTranslate && canAutoTranslate ? onTranslate : undefined}
-        serviceUnavailable={autoTranslate && canAutoTranslate && !available}
+        onTranslate={showTranslate ? onTranslate : undefined}
+        serviceUnavailable={showTranslate && !available}
         multiline={multiline}
         messageSlot={messageSlot}
         disabled={disabled}

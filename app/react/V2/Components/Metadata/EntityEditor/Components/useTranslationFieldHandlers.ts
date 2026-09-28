@@ -85,7 +85,7 @@ const useTranslationFieldHandlers = ({
   current: string | undefined;
   currentValue: string;
   sourceField: string;
-  onCurrentChange: (value: string) => void;
+  onCurrentChange?: (value: string) => void;
   languages: string[];
   linkPart?: LinkPart;
   linkSource?: string;
@@ -103,7 +103,7 @@ const useTranslationFieldHandlers = ({
   const onChange = useCallback(
     (language: string, value: string) => {
       if (language === current) {
-        onCurrentChange(value);
+        onCurrentChange?.(value);
         return;
       }
       const valuePath = formPath(translationValuePath(language, propertyName));

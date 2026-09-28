@@ -56,6 +56,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const { showError, message } = getFieldErrorState(fieldState);
+          const linkSource = String(field);
 
           return (
             <>
@@ -104,21 +105,19 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   <EntityTranslationField
                     propertyName={translatableName}
                     label={label}
-                    idPrefix={`${String(field)}.label`}
+                    idPrefix={`${linkSource}.label`}
                     linkPart="label"
-                    linkSource={String(field)}
-                    onCurrentChange={() => undefined}
+                    linkSource={linkSource}
                     messageSlot={translationMessageSlot(showError, message)}
                     disabled={disabled}
                   />
                   <EntityTranslationField
                     propertyName={translatableName}
                     label={`${label} URL`}
-                    idPrefix={`${String(field)}.url`}
+                    idPrefix={`${linkSource}.url`}
                     linkPart="url"
-                    linkSource={String(field)}
+                    linkSource={linkSource}
                     autoTranslate={false}
-                    onCurrentChange={() => undefined}
                     disabled={disabled}
                   />
                 </>
