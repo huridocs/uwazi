@@ -281,6 +281,10 @@
               {
                 "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
                 "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              },
+              {
+                "group": ["**/packages/segmentation/**", "#segmentation/**"],
+                "message": "The segmentation package is private. Import its public contract from '#segmentation'."
               }
             ]
           }
@@ -288,7 +292,91 @@
       }
     },
     {
-      "files": ["app/api/**/*.ts"],
+      "files": [
+        "app/queueRegistry.ts",
+        "app/worker.ts",
+        "app/api/eventListeners.ts",
+        "app/api/api.js"
+      ],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "fs",
+                "message": "Please use { storage } from api/files"
+              },
+              {
+                "name": "fs/promises",
+                "message": "Please use { storage } from api/files"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              },
+              {
+                "group": [
+                  "**/packages/segmentation/**",
+                  "#segmentation/**",
+                  "!#segmentation/composition"
+                ],
+                "message": "The segmentation package is private. Import its public contract from '#segmentation', or its host wiring from '#segmentation/composition'."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/segmentation/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "fs",
+                "message": "Please use { storage } from api/files"
+              },
+              {
+                "name": "fs/promises",
+                "message": "Please use { storage } from api/files"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              },
+              {
+                "group": [
+                  "#segmentation",
+                  "#segmentation/**",
+                  "#api/services/**",
+                  "#api/suggestions/**",
+                  "#api/paragraphExtraction/**",
+                  "#api/segmentation.v2/**"
+                ],
+                "message": "The segmentation package depends only on platform code in #api. Use relative imports inside the package, and never another module's internals."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["app/api/**/*.ts", "packages/**/*.ts"],
       "rules": {
         "local/require-js-extension": "error"
       }

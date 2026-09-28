@@ -24,6 +24,8 @@
       "#api/*": ["./app/api/*"],
       "#app/*": ["./app/react/*"],
       "#shared/*": ["./app/shared/*"],
+      "#segmentation": ["./packages/segmentation/index.ts"],
+      "#segmentation/composition": ["./packages/segmentation/composition.ts"],
       "#UI": ["./app/react/UI"],
       "#UI/*": ["./app/react/UI/*"],
       "#V2/*": ["./app/react/V2/*"],
@@ -42,6 +44,7 @@
   "include": [
     "app",
     "apps",
+    "packages",
     "external_modules",
     "database",
     "e2e",

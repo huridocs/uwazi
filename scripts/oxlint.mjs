@@ -45,7 +45,7 @@ for (let i = 0; i < args.length; i += 1) {
 }
 
 // Default paths when none are provided on the CLI.
-const targets = paths.length ? paths : ['app', 'e2e', 'cypress'];
+const targets = paths.length ? paths : ['app', 'packages', 'e2e', 'cypress'];
 
 const result = spawnSync(
   './node_modules/.bin/oxlint',

@@ -15,7 +15,7 @@ const rest = passed.filter(arg => arg !== '--write' && arg !== '-w' && arg !== '
 
 // Default targets when the caller didn't pass any paths of their own.
 const hasPaths = rest.some(arg => !arg.startsWith('-'));
-const targets = hasPaths ? rest : ['app/**/*.{js,ts,tsx}', ...rest];
+const targets = hasPaths ? rest : ['app/**/*.{js,ts,tsx}', 'packages/**/*.{js,ts,tsx}', ...rest];
 
 const args = ['--cache', ...(mode ? [mode] : ['--check']), ...targets];
 

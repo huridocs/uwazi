@@ -377,3 +377,5 @@ export function registerJobs(register: Register) {
       })
   );
 }
+
+export type { Register };

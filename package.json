@@ -21,6 +21,8 @@
   "imports": {
     "#api": "./app/api/index.js",
     "#api/*": "./app/api/*",
+    "#segmentation": "./packages/segmentation/index.js",
+    "#segmentation/composition": "./packages/segmentation/composition.js",
     "#shared": "./app/shared/index.js",
     "#shared/*": "./app/shared/*",
     "#app": "./app/react/index.js",
