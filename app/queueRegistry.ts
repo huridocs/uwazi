@@ -88,6 +88,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { SendAccountLockedEmailHandler } from '#api/core/infrastructure/jobs/SendAccountLockedEmailHandler.js';
+import { SegmentationComposition } from '#segmentation/composition';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -130,6 +131,8 @@ export class TestJob extends UwaziJobHandler<UwaziJobParams> {
 
 export function registerJobs(register: Register) {
   register(TestJob, async () => new TestJob());
+
+  SegmentationComposition.registerJobs(register);
 
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 
