@@ -35,9 +35,7 @@ const LibrarySingleSelectActions = ({
       className={`${textButtonClassName} text-ink`}
     >
       <span className="text-ink-tertiary">{actionById('edit')?.icon}</span>
-      <span className="sm:inline">
-        <Translate>Edit</Translate>
-      </span>
+      <Translate>Edit</Translate>
     </button>
     <LibraryFooterDivider />
     <button
