@@ -18,14 +18,14 @@ const selection: TextSelection = {
 const mountMenu = (themed: HTMLElement) => {
   const page = document.createElement('div');
   page.id = 'page-1-container';
+  page.style.position = 'relative';
   themed.appendChild(page);
   return render(
     <DocumentSelectionFloatingMenu
       selection={selection}
       onCreateRelationship={jest.fn()}
       onAddToToC={jest.fn()}
-    />,
-    { container: themed }
+    />
   );
 };
 
@@ -40,11 +40,11 @@ const themedRoot = () => {
 };
 
 describe('DocumentSelectionFloatingMenu portal theme', () => {
-  it('copies ThemeProvider vars onto the body chrome host', () => {
+  it('copies ThemeProvider vars onto the page chrome host', () => {
     const themed = themedRoot();
     const { unmount } = mountMenu(themed);
     const menu = screen.getByTestId('document-selection-floating-menu');
-    expect(menu.parentElement).toBe(document.body);
+    expect(menu.parentElement?.id).toBe('page-1-container');
     expect(menu).toHaveClass('tw-content', 'tw-content--chrome');
     expect(menu.style.getPropertyValue('--color-theme-action-primary')).toBe('#1A1A1A');
     expect(menu.style.getPropertyValue('--color-theme-text-on-solid')).toBe('#f5f0e8');
