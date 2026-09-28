@@ -8,7 +8,6 @@ import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastruct
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ocrManager } from '#api/services/ocr/OcrManager.js';
-import { PDFSegmentation } from '#api/services/pdfsegmentation/PDFSegmentation.js';
 import { preserveSync } from '#api/services/preserve/preserveSync.js';
 import { DistributedLoop } from '#api/services/tasksmanager/DistributedLoop.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
@@ -18,6 +17,7 @@ import { tenants } from '#api/tenants/index.js';
 import { tocService } from '#api/toc_generation/tocService.js';
 import { sleep } from '#shared/tsUtils.js';
 import { handleError } from '#api/utils/handleError.js';
+import { SegmentationComposition } from '#segmentation/composition';
 
 const systemLogger = LoggerFactory.systemLogger();
 
@@ -62,24 +62,8 @@ DB.connect(config.DBHOST, config.DBAUTH)
         host: config.redis.host,
         delayTimeBetweenTasks: 10000,
       }),
-
-      pdf_segmentation: new PDFSegmentation(),
+      segmentation_results: SegmentationComposition.createResultListener(),
     };
-
-    // Tunable for backlog drains: the delay is applied *after* each tick returns, so at the
-    // default it is roughly half of every cycle. Lowering it also shortens DistributedLoop's
-    // redlock lease, which is `maxLockTime + delayTimeBetweenTasks` and is never extended — the
-    // reason `segmentOnePdf` claims each file before dispatching it rather than after.
-    // Only the segmentation loop is tuned here; the other consumers keep their own delays.
-    services.segmentation_distributed_loop = new DistributedLoop(
-      'segmentation_repeat',
-      services.pdf_segmentation.segmentPdfs,
-      {
-        port: config.redis.port,
-        host: config.redis.host,
-        delayTimeBetweenTasks: Number(process.env.SEGMENTATION_LOOP_DELAY) || 60000,
-      }
-    );
 
     Object.values(services).forEach(service => service.start());
 

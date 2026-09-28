@@ -107,6 +107,16 @@ describe('Segmentation', () => {
     });
   });
 
+  describe('a claim left by the dispatch loop before attempts were counted', () => {
+    it('should accept a result for attempt zero while processing', () => {
+      const segmentation = load({ status: SegmentationStatus.PROCESSING, attempt: 0 });
+
+      expect(segmentation.complete(IdempotencyKey.of('seg1', 0), layout, 'document.xml')).toBe(
+        'applied'
+      );
+    });
+  });
+
   describe('complete()', () => {
     it('should store the layout and become ready', () => {
       const segmentation = processing();

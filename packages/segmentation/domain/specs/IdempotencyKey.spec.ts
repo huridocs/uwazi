@@ -21,11 +21,15 @@ describe('IdempotencyKey', () => {
     expect(key.equals(IdempotencyKey.of('seg2', 3))).toBe(false);
   });
 
+  it('should accept attempt zero, the attempt made before keys existed', () => {
+    expect(IdempotencyKey.parse('seg1:0').attempt).toBe(0);
+    expect(IdempotencyKey.of('seg1', 0).toString()).toBe('seg1:0');
+  });
+
   it.each([
     ['no separator', 'seg1'],
     ['an empty id', ':3'],
     ['a non numeric attempt', 'seg1:abc'],
-    ['a zero attempt', 'seg1:0'],
     ['a negative attempt', 'seg1:-1'],
     ['a fractional attempt', 'seg1:1.5'],
     ['an empty string', ''],
@@ -36,7 +40,7 @@ describe('IdempotencyKey', () => {
   it.each([
     ['an empty id', '', 1],
     ['an id containing the separator', 'se:g1', 1],
-    ['a zero attempt', 'seg1', 0],
+    ['a negative attempt', 'seg1', -1],
     ['a fractional attempt', 'seg1', 1.5],
   ])('should refuse to build a key with %s', (_case, id, attempt) => {
     expect(() => IdempotencyKey.of(id, attempt)).toThrow(InvalidIdempotencyKey);

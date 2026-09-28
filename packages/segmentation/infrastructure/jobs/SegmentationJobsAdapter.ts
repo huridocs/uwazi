@@ -1,6 +1,9 @@
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { SegmentationJobs } from '../../application/contracts/SegmentationJobs.js';
+import { SegmentationOutcome } from '../../application/contracts/SegmentationOutcome.js';
 import { RequestSegmentationJobHandler } from './RequestSegmentationJobHandler.js';
+import { SaveSegmentationResultJobHandler } from './SaveSegmentationResultJobHandler.js';
+import { SegmentationOutcomeParams } from './SegmentationOutcomeParams.js';
 
 class SegmentationJobsAdapter implements SegmentationJobs {
   constructor(private readonly jobsDispatcher: JobsDispatcher) {}
@@ -18,6 +21,14 @@ class SegmentationJobsAdapter implements SegmentationJobs {
         dispatch(RequestSegmentationJobHandler, { segmentationId }, options)
       );
     });
+  }
+
+  /** Used by the result listener, which is outside the application layer. */
+  async saveResult(outcome: SegmentationOutcome): Promise<void> {
+    await this.jobsDispatcher.dispatch(
+      SaveSegmentationResultJobHandler,
+      SegmentationOutcomeParams.from(outcome)
+    );
   }
 }
 

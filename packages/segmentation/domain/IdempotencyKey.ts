@@ -5,6 +5,9 @@ const SEPARATOR = ':';
 /**
  * Identifies one attempt at segmenting one record. It travels to the segmentation service and
  * back, so a result can be matched to the attempt that produced it and a stale one ignored.
+ *
+ * Requests number their attempts from 1. Attempt 0 is the one a segmentation claimed by the old
+ * dispatch loop is in: it predates keys, and its result arrives without one.
  */
 class IdempotencyKey {
   readonly segmentationId: string;
@@ -52,7 +55,7 @@ class IdempotencyKey {
       segmentationId.length > 0 &&
       !segmentationId.includes(SEPARATOR) &&
       Number.isInteger(attempt) &&
-      attempt >= 1
+      attempt >= 0
     );
   }
 }

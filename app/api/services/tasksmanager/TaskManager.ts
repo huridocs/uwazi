@@ -39,6 +39,12 @@ export interface Service<R = ResultsMessage> {
    * so `processResults` must tolerate seeing the same message more than once.
    */
   deleteAfterProcessing?: boolean;
+  /**
+   * With `deleteAfterProcessing`, how many times a message may be delivered before it is dropped
+   * and reported. Without it, a message that can never be processed — its tenant unknown, say —
+   * would be delivered forever.
+   */
+  maxDeliveries?: number;
 }
 
 export class TaskManager<T = TaskMessage, R = ResultsMessage> {
@@ -127,6 +133,13 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
   }
 
   private async processResultsMessage(message: QueueMessage) {
+    if (this.deliveredTooOften(message)) {
+      await this.deleteResultsMessage(message.id);
+      throw new Error(
+        `Results message ${message.id} on ${this.resultsQueue} was delivered ${message.rc} times without being processed; it has been dropped`
+      );
+    }
+
     if (!this.service.deleteAfterProcessing) {
       await this.deleteResultsMessage(message.id);
     }
@@ -140,6 +153,11 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
     if (this.service.deleteAfterProcessing) {
       await this.deleteResultsMessage(message.id);
     }
+  }
+
+  private deliveredTooOften(message: QueueMessage) {
+    const { deleteAfterProcessing, maxDeliveries } = this.service;
+    return Boolean(deleteAfterProcessing && maxDeliveries && message.rc > maxDeliveries);
   }
 
   private async deleteResultsMessage(id: string) {

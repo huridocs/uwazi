@@ -16,6 +16,7 @@ describe('taskManager with deleteAfterProcessing', () => {
     processResults,
     processResultsMessageHiddenTime: 1,
     deleteAfterProcessing: true,
+    maxDeliveries: 3,
   };
 
   const pendingResults = async () =>
@@ -67,4 +68,19 @@ describe('taskManager with deleteAfterProcessing', () => {
     }, 5000);
     expect(processResults.mock.calls[0]).toEqual(processResults.mock.calls[1]);
   });
+
+  it('should give up on a message that keeps failing, once delivered maxDeliveries times', async () => {
+    processResults.mockRejectedValue(new Error('always fails'));
+
+    await externalDummyService.sendFinishedMessage({ task: 'segmentation', tenant: 'tenant' });
+
+    await waitForExpect(async () => {
+      expect(await pendingResults()).toBe(0);
+    }, 8000);
+    expect(processResults).toHaveBeenCalledTimes(3);
+    expect(handleError.handleError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('delivered 4 times') }),
+      { useContext: false }
+    );
+  }, 10000);
 });
