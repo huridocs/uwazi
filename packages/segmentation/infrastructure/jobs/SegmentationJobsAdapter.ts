@@ -5,13 +5,17 @@ import { RequestSegmentationJobHandler } from './RequestSegmentationJobHandler.j
 class SegmentationJobsAdapter implements SegmentationJobs {
   constructor(private readonly jobsDispatcher: JobsDispatcher) {}
 
-  async requestSegmentation(segmentationIds: string[]): Promise<void> {
+  async requestSegmentation(
+    segmentationIds: string[],
+    { delayMs }: { delayMs?: number } = {}
+  ): Promise<void> {
     if (!segmentationIds.length) {
       return;
     }
+    const options = delayMs ? { lockedUntil: Date.now() + delayMs } : undefined;
     await this.jobsDispatcher.dispatchMany(dispatch => {
       segmentationIds.forEach(segmentationId =>
-        dispatch(RequestSegmentationJobHandler, { segmentationId })
+        dispatch(RequestSegmentationJobHandler, { segmentationId }, options)
       );
     });
   }
