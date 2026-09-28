@@ -75,7 +75,7 @@ const LibraryMultiSelectFooter = ({
       onClick={onClick}
       className={`inline-flex ${barButtonClassName} ${barToneClass(tone)}`}
     >
-      <span className={tone === 'danger' ? '' : 'text-ink-tertiary'}>{icon}</span>
+      <span className={tone === 'danger' ? 'text-seal' : 'text-ink-tertiary'}>{icon}</span>
       <span className="sm:inline">
         <Translate>{label}</Translate>
       </span>
