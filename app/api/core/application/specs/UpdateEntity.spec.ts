@@ -14,6 +14,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MissingTranslationLanguageError } from '#api/core/application/errors.js';
+import { MissingTranslatedPropertyError } from '#api/core/domain/entity/errors.js';
 import { User } from '#api/users.v2/model/User.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
@@ -1137,17 +1138,19 @@ describe('UpdateEntityUseCase', () => {
         ]);
       });
 
-      it('should keep unsent translatable values on other languages', async () => {
+      it('should reject a translation missing a translatable property', async () => {
         const { sut } = createSut(postgresCore);
 
-        await sut.execute({
-          language: 'en',
-          sharedId: 'image_entity',
-          propertyAssignments: [{ name: 'title', value: [{ value: 'Image Entity EN' }] }],
-          translations: {
-            pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }],
-          },
-        });
+        await expect(
+          sut.execute({
+            language: 'en',
+            sharedId: 'image_entity',
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Image Entity EN' }] }],
+            translations: {
+              pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }],
+            },
+          })
+        ).rejects.toThrow(new MissingTranslatedPropertyError('pt', 'image'));
 
         expect(
           (await getAllEntities('image_entity')).map(({ language, title, metadata }) => ({
@@ -1163,7 +1166,7 @@ describe('UpdateEntityUseCase', () => {
           },
           {
             language: 'pt',
-            title: 'Atualizado PT',
+            title: 'Image Entity PT',
             image: [{ value: 'https://example.com/pt.jpg' }],
           },
         ]);

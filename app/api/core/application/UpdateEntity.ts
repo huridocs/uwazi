@@ -168,7 +168,6 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         entity.setTranslatedPropertyAssignments({
           language: language as LanguageISO6391,
           assignments,
-          partial: true,
         });
       })
     );
