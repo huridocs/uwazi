@@ -56,6 +56,9 @@ describe('SettingsService', () => {
     expect(translations.reconcileLinks).not.toHaveBeenCalled();
     expect(settingsDS.update).toHaveBeenCalledWith(expect.any(Settings));
     expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(SettingsChangedEvent));
+    expect(eventEmitter.emit).toHaveBeenCalledWith(
+      expect.objectContaining({ payload: { changes: { keys: ['filters'] } } })
+    );
   });
 
   it('should throw when called outside a transaction', async () => {
