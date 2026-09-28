@@ -364,6 +364,7 @@
                   "#segmentation",
                   "#segmentation/**",
                   "#api/services/**",
+                  "!#api/services/tasksmanager/**",
                   "#api/suggestions/**",
                   "#api/paragraphExtraction/**",
                   "#api/segmentation.v2/**"
