@@ -13,7 +13,7 @@ const nearRightSelection: TextSelection = {
   selectionRectangles: [{ top: 20, left: 340, width: 40, height: 8, regionId: '1' }],
 };
 
-const ensurePageContainer = (left = 100, top = 120, width = 400, height = 500) => {
+const ensurePageContainer = (box = { left: 100, top: 120, width: 400, height: 500 }) => {
   cy.document().then(doc => {
     let page = doc.getElementById('page-1-container');
     if (!page) {
@@ -23,27 +23,30 @@ const ensurePageContainer = (left = 100, top = 120, width = 400, height = 500) =
     }
     Object.assign(page.style, {
       position: 'fixed',
-      left: `${left}px`,
-      top: `${top}px`,
-      width: `${width}px`,
-      height: `${height}px`,
+      left: `${box.left}px`,
+      top: `${box.top}px`,
+      width: `${box.width}px`,
+      height: `${box.height}px`,
     });
   });
 };
 
-const mountMenu = (
-  props: Partial<React.ComponentProps<typeof DocumentSelectionFloatingMenu>> = {}
-) => {
+type MenuMount = {
+  selection?: TextSelection;
+  armedLabel?: string;
+};
+
+const mountMenu = ({ selection: nextSelection = selection, armedLabel }: MenuMount = {}) => {
   const onCreateRelationship = cy.stub().as('createRelationship');
   const onAddToToC = cy.stub().as('addToToC');
   const onFillFromSelection = cy.stub().as('fillFromSelection');
   mount(
     <DocumentSelectionFloatingMenu
-      selection={selection}
+      selection={nextSelection}
       onCreateRelationship={onCreateRelationship}
       onAddToToC={onAddToToC}
       onFillFromSelection={onFillFromSelection}
-      {...props}
+      armedLabel={armedLabel}
     />
   );
 };
@@ -87,13 +90,13 @@ describe('DocumentSelectionFloatingMenu', () => {
     cy.get('@addToToC').should('have.been.calledOnce');
   });
 
-  it('portals into document.body with fixed chrome host', () => {
+  it('portals into the page container next to the clear control', () => {
     mountMenu({ armedLabel: 'Title' });
 
-    cy.get('body > [data-testid="document-selection-floating-menu"]')
+    cy.get('#page-1-container > [data-testid="document-selection-floating-menu"]')
       .should('have.class', 'tw-content')
       .and('have.class', 'tw-content--chrome')
-      .and('have.css', 'position', 'fixed')
+      .and('have.css', 'position', 'absolute')
       .then($menu => {
         const rect = $menu[0].getBoundingClientRect();
         expect(rect.width).to.be.greaterThan(0);
@@ -102,7 +105,7 @@ describe('DocumentSelectionFloatingMenu', () => {
   });
 
   it('stays inside the viewport near the page right edge', () => {
-    ensurePageContainer(200, 80, 400, 400);
+    ensurePageContainer({ left: 200, top: 80, width: 400, height: 400 });
     cy.viewport(800, 600);
     mountMenu({ selection: nearRightSelection, armedLabel: 'Date' });
 

@@ -356,6 +356,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     themeCustomization: featureFlags?.themeCustomization,
     aiAssistant: featureFlags?.aiAssistant,
     translationService: featureFlags?.translationService,
+    experimentalFeatures: featureFlags?.experimentalFeatures,
   };
   const settingsWithFeatureFlags = {
     ...settings,
