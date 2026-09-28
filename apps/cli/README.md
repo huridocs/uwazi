@@ -130,8 +130,11 @@ drops a flag it does not know about — removing one means sending it as `null`.
 > remove one. The two were built against different use cases; check `--schema` when in doubt.
 
 `tenants list` and `tenants get` print the row as stored, including fields uwazi itself never
-reads (`stats`, `healthChecks`, `metadata`), so the output of `get` can be edited and sent back to
-`update`.
+reads (`stats`, `healthChecks`, `metadata`).
+
+Unlike `settings`, the output of `get` is **not** a valid `update` request: `featureFlags`,
+`maintenance`, `stats` and `healthChecks` each have their own command, so `update` rejects them.
+Send only the fields you mean to change.
 
 On an installation with no registry — a single instance configured entirely from the environment —
 `tenants list` prints `[]`. The commands report what is registered, and there the tenant is not.

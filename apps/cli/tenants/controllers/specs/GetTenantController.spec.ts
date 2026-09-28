@@ -1,6 +1,7 @@
 import { Db } from 'mongodb';
 import { config } from '#api/config.js';
 import { TenantNotFound } from '#api/tenants/application/errors.js';
+import { UpdateTenantInputSchema } from '#api/tenants/application/tenantInputs.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { GetTenantController } from '../GetTenantController.js';
 
@@ -34,6 +35,16 @@ describe('GetTenantController', () => {
       dbName: 'cli-get-a',
       metadata: { orgName: 'Acme' },
     });
+  });
+
+  it('should print fields that tenants update refuses, so its output is not a request', async () => {
+    await db
+      .collection('tenants')
+      .updateOne({ name: 'cli-get-a' }, { $set: { featureFlags: { sync: true } } });
+
+    const output = await GetTenantController.handle({ name: 'cli-get-a' });
+
+    expect(() => UpdateTenantInputSchema.parse(output)).toThrow();
   });
 
   it('should fail when there is no such tenant', async () => {

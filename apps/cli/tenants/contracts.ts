@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 /**
- * What `uwazi tenants …` prints: the whole stored row, the operational data other tools keep
- * next to the registry included, so `get` → edit → `update` round-trips. Owned by the CLI, not
- * shared with the HTTP API.
+ * What `uwazi tenants …` prints: the whole stored row, the operational data other tools keep next
+ * to the registry included. Not a valid `update` request: the fields with their own command
+ * (`featureFlags`, `maintenance`, `stats`, `healthChecks`) are rejected there. Owned by the CLI,
+ * not shared with the HTTP API.
  */
 const TenantOutputSchema = z.record(z.unknown());
 
