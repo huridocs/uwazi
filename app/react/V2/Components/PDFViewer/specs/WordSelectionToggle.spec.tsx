@@ -8,8 +8,9 @@ import { WordSelectionToggle } from '../WordSelectionToggle.js';
 
 describe('WordSelectionToggle', () => {
   it('tells the user the temporary word-selection mode is off', () => {
-    render(<WordSelectionToggle checked={false} onToggle={jest.fn()} />);
+    const { container } = render(<WordSelectionToggle checked={false} onToggle={jest.fn()} />);
 
+    expect(container.querySelector('[no-translate]')).toHaveTextContent('Word selection');
     expect(screen.getByRole('checkbox', { name: 'Word selection' })).not.toBeChecked();
   });
 

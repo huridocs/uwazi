@@ -9,7 +9,7 @@ import {
   installPointerFrame,
   renderHarness,
   wordNode,
-} from './useWordSelection.helpers.js';
+} from './useWordSelection.spec.helpers.js';
 
 describe('useWordSelection', () => {
   const originalCaret = document.caretPositionFromPoint;
