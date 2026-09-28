@@ -13,7 +13,7 @@ const BATCH_SIZE = 50;
  * how an unsegmented document is kept out of a training run.
  */
 class TrainingSegmentationsJoin {
-  constructor(private readonly segmentationDirectory: SegmentationDirectory) {}
+  constructor(private readonly deps: { segmentationDirectory: SegmentationDirectory }) {}
 
   async *join(rows: AsyncIterable<RowToJoin>): AsyncGenerator<TrainingFileRow> {
     let batch: RowToJoin[] = [];
@@ -34,7 +34,7 @@ class TrainingSegmentationsJoin {
       return;
     }
 
-    const ready = await this.segmentationDirectory.readyByFileIds(
+    const ready = await this.deps.segmentationDirectory.readyByFileIds(
       batch.map(row => String(row.fileId))
     );
     const byFile = new Map(ready.map(found => [found.fileId, IXSegmentation.fromReadModel(found)]));

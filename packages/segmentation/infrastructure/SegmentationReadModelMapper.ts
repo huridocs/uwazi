@@ -1,4 +1,4 @@
-import { SegmentationReadModel } from '../application/contracts/SegmentationReadModels.js';
+import { SegmentationReadModel } from '../application/contracts/SegmentationDirectory.js';
 import { Segmentation } from '../domain/Segmentation.js';
 
 class SegmentationReadModelMapper {

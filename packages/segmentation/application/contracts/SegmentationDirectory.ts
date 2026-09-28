@@ -1,6 +1,36 @@
-import { SegmentationReadModel, SegmentationStatusReadModel } from './SegmentationReadModels.js';
+import { SegmentationStatus } from '../../domain/SegmentationStatus.js';
+import { SegmentType } from '../../domain/SegmentType.js';
 
-//cc: let's colocate the methods types in this file, reducing amount of files.
+type LayoutPageReadModel = {
+  number: number;
+  width: number;
+  height: number;
+};
+
+type LayoutSegmentReadModel = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  pageNumber: number;
+  text: string;
+  type: SegmentType;
+};
+
+type SegmentationReadModel = {
+  fileId: string;
+  filename: string;
+  xmlFilename: string;
+  layout: {
+    pages: LayoutPageReadModel[];
+    segments: LayoutSegmentReadModel[];
+  };
+};
+
+type SegmentationStatusReadModel = {
+  fileId: string;
+  status: SegmentationStatus;
+};
 
 /** What the segmentation module exposes to other modules. */
 interface SegmentationDirectory {
@@ -17,4 +47,10 @@ interface SegmentationDirectory {
   statusesByFileIds(fileIds: string[]): Promise<SegmentationStatusReadModel[]>;
 }
 
-export type { SegmentationDirectory };
+export type {
+  SegmentationDirectory,
+  LayoutPageReadModel,
+  LayoutSegmentReadModel,
+  SegmentationReadModel,
+  SegmentationStatusReadModel,
+};

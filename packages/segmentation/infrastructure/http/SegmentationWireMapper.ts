@@ -1,34 +1,9 @@
+import type { DownloadFileSegmentationResponse } from '#shared/contracts/Segmentation.js';
 import { Segmentation } from '../../domain/Segmentation.js';
 import { SegmentTypeNames } from '../SegmentTypeNames.js';
 
-/**
- * The segmentation endpoint's response, as clients have always received it: one document-wide
- * page size — the first page's — segments called paragraphs under the service's type names, and
- * the fields of the old record, `documentId` and a null `autoExpire` included.
- */
-type SegmentationWireContract = {
-  id: string;
-  fileId: string;
-  documentId: string;
-  status: string;
-  filename: string;
-  xmlname?: string;
-  autoExpire: null;
-  pageWidth: number;
-  pageHeight: number;
-  paragraphs: {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    pageNumber: number;
-    text: string;
-    type: string;
-  }[];
-};
-
 class SegmentationWireMapper {
-  static toWire(segmentation: Segmentation): SegmentationWireContract {
+  static toWire(segmentation: Segmentation): DownloadFileSegmentationResponse {
     const [firstPage] = segmentation.layout?.pages ?? [];
 
     return {
@@ -55,4 +30,3 @@ class SegmentationWireMapper {
 }
 
 export { SegmentationWireMapper };
-export type { SegmentationWireContract };

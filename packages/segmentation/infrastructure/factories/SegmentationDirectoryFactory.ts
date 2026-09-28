@@ -9,8 +9,8 @@ class SegmentationDirectoryFactory {
     const selected = SegmentationDAOFactory.default();
 
     return selected.backend === 'postgres'
-      ? new PostgresSegmentationDirectory(selected.dao)
-      : new MongoSegmentationDirectory(selected.dao);
+      ? new PostgresSegmentationDirectory({ dao: selected.dao })
+      : new MongoSegmentationDirectory({ dao: selected.dao });
   }
 }
 

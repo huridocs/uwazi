@@ -1,6 +1,6 @@
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { handleError } from '#api/utils/handleError.js';
-import { SegmentationOutcome } from '../../application/contracts/SegmentationOutcome.js';
+import { SegmentationOutcome } from '../../application/contracts/PdfSegmenter.js';
 import { MalformedSegmentationResult } from '../../application/errors/MalformedSegmentationResult.js';
 import { ResultMessageTranslator } from './ResultMessageTranslator.js';
 

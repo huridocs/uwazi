@@ -7,7 +7,7 @@ class SegmentationSchedulerFactory {
   static default(): SegmentationScheduler {
     return new SegmentationScheduler({
       segmentationDS: SegmentationDataSourceFactory.default(),
-      jobs: new SegmentationJobsAdapter(ExecutionContext.jobsDispatcher),
+      jobs: new SegmentationJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
     });
   }
 }

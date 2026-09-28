@@ -81,7 +81,9 @@ export class MongoIXTrainingMaterialsQueryService
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
-    this.segmentations = new TrainingSegmentationsJoin(deps.segmentationDirectory);
+    this.segmentations = new TrainingSegmentationsJoin({
+      segmentationDirectory: deps.segmentationDirectory,
+    });
   }
 
   streamFilesForTraining(query: TrainingMaterialsQuery) {

@@ -1,12 +1,12 @@
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { SegmentationJobs } from '../../application/contracts/SegmentationJobs.js';
-import { SegmentationOutcome } from '../../application/contracts/SegmentationOutcome.js';
+import { SegmentationOutcome } from '../../application/contracts/PdfSegmenter.js';
 import { RequestSegmentationJobHandler } from './RequestSegmentationJobHandler.js';
 import { SaveSegmentationResultJobHandler } from './SaveSegmentationResultJobHandler.js';
 import { SegmentationOutcomeParams } from './SegmentationOutcomeParams.js';
 
 class SegmentationJobsAdapter implements SegmentationJobs {
-  constructor(private readonly jobsDispatcher: JobsDispatcher) {}
+  constructor(private readonly deps: { jobsDispatcher: JobsDispatcher }) {}
 
   async requestSegmentation(
     segmentationIds: string[],
@@ -16,7 +16,7 @@ class SegmentationJobsAdapter implements SegmentationJobs {
       return;
     }
     const options = delayMs ? { lockedUntil: Date.now() + delayMs } : undefined;
-    await this.jobsDispatcher.dispatchMany(dispatch => {
+    await this.deps.jobsDispatcher.dispatchMany(dispatch => {
       segmentationIds.forEach(segmentationId =>
         dispatch(RequestSegmentationJobHandler, { segmentationId }, options)
       );
@@ -25,7 +25,7 @@ class SegmentationJobsAdapter implements SegmentationJobs {
 
   /** Used by the result listener, which is outside the application layer. */
   async saveResult(outcome: SegmentationOutcome): Promise<void> {
-    await this.jobsDispatcher.dispatch(
+    await this.deps.jobsDispatcher.dispatch(
       SaveSegmentationResultJobHandler,
       SegmentationOutcomeParams.from(outcome)
     );

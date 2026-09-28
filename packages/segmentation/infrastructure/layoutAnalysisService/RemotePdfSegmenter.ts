@@ -3,8 +3,11 @@ import type { ReadableStream } from 'stream/web';
 import urljoin from 'url-join';
 import { z } from 'zod';
 import type { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { PdfSegmenter, SegmentationRequest } from '../../application/contracts/PdfSegmenter.js';
-import { OutcomeHandle } from '../../application/contracts/SegmentationOutcome.js';
+import {
+  PdfSegmenter,
+  SegmentationRequest,
+  OutcomeHandle,
+} from '../../application/contracts/PdfSegmenter.js';
 import { MalformedSegmentationResult } from '../../application/errors/MalformedSegmentationResult.js';
 import { SegmentationServiceNotConfigured } from '../../application/errors/SegmentationServiceNotConfigured.js';
 import { DocumentLayout } from '../../domain/DocumentLayout.js';

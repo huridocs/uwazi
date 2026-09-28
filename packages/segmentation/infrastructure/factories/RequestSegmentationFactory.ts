@@ -23,7 +23,7 @@ class RequestSegmentationFactory {
       settingsDS: SettingsDataSourceFactory.default(),
       pdfSegmenter: overrides.pdfSegmenter ?? PdfSegmenterFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      jobs: new SegmentationJobsAdapter(ExecutionContext.jobsDispatcher),
+      jobs: new SegmentationJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
       now: overrides.now ?? Date.now,
       maxBacklog: MAX_BACKLOG,
       retryDelayMs: RETRY_DELAY_MS,

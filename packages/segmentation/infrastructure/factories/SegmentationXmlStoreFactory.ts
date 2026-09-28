@@ -6,10 +6,10 @@ import { FileStorageSegmentationXmlStore } from '../files/FileStorageSegmentatio
 
 class SegmentationXmlStoreFactory {
   static default(): SegmentationXmlStore {
-    return new FileStorageSegmentationXmlStore(
-      FileStorageFactory.default(),
-      new PathManager({ tenant: ExecutionContext.currentTenant })
-    );
+    return new FileStorageSegmentationXmlStore({
+      fileStorage: FileStorageFactory.default(),
+      pathManager: new PathManager({ tenant: ExecutionContext.currentTenant }),
+    });
   }
 }
 

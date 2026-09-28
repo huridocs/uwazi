@@ -6,10 +6,10 @@ import { MongoSegmentationDBO } from './MongoSegmentationDBO.js';
 import { MongoSegmentationMapper } from './MongoSegmentationMapper.js';
 
 class MongoSegmentationDataSource implements SegmentationDataSource {
-  constructor(private readonly dao: MongoSegmentationDAO) {}
+  constructor(private readonly deps: { dao: MongoSegmentationDAO }) {}
 
   async create(segmentation: Segmentation): Promise<boolean> {
-    return this.dao.insertForFile(MongoSegmentationMapper.toDBO(segmentation));
+    return this.deps.dao.insertForFile(MongoSegmentationMapper.toDBO(segmentation));
   }
 
   async getById(id: string): Promise<Segmentation | undefined> {
@@ -21,16 +21,16 @@ class MongoSegmentationDataSource implements SegmentationDataSource {
   }
 
   async getByFilename(filename: string): Promise<Segmentation | undefined> {
-    return MongoSegmentationDataSource.toDomain(await this.dao.findOne({ filename }));
+    return MongoSegmentationDataSource.toDomain(await this.deps.dao.findOne({ filename }));
   }
 
   async save(segmentation: Segmentation): Promise<void> {
-    await this.dao.replaceExisting(MongoSegmentationMapper.toDBO(segmentation));
+    await this.deps.dao.replaceExisting(MongoSegmentationMapper.toDBO(segmentation));
   }
 
   async nextIdleBatch(limit: number, afterId?: string): Promise<Segmentation[]> {
     const [after] = afterId ? MongoSegmentationDAO.objectIds([afterId]) : [];
-    const found = await this.dao.find(
+    const found = await this.deps.dao.find(
       { status: SegmentationStatus.IDLE, ...(after && { _id: { $gt: after } }) },
       { sort: { _id: 1 }, limit }
     );
@@ -38,7 +38,7 @@ class MongoSegmentationDataSource implements SegmentationDataSource {
   }
 
   async staleProcessing(requestedBefore: number, limit: number): Promise<Segmentation[]> {
-    const found = await this.dao.find(
+    const found = await this.deps.dao.find(
       { status: SegmentationStatus.PROCESSING, requestedAt: { $lt: requestedBefore } },
       { limit }
     );
@@ -50,7 +50,7 @@ class MongoSegmentationDataSource implements SegmentationDataSource {
     if (!ids.length) {
       return [];
     }
-    const deleted = await this.dao.deleteMany({ fileID: { $in: ids } });
+    const deleted = await this.deps.dao.deleteMany({ fileID: { $in: ids } });
     return deleted.map(MongoSegmentationMapper.toDomain);
   }
 
@@ -59,7 +59,7 @@ class MongoSegmentationDataSource implements SegmentationDataSource {
     if (!objectId) {
       return undefined;
     }
-    return MongoSegmentationDataSource.toDomain(await this.dao.findOne({ [field]: objectId }));
+    return MongoSegmentationDataSource.toDomain(await this.deps.dao.findOne({ [field]: objectId }));
   }
 
   private static toDomain(dbo: MongoSegmentationDBO | null) {

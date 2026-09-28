@@ -1,8 +1,8 @@
-import { SegmentationDirectory } from '../../application/contracts/SegmentationDirectory.js';
 import {
+  SegmentationDirectory,
   SegmentationReadModel,
   SegmentationStatusReadModel,
-} from '../../application/contracts/SegmentationReadModels.js';
+} from '../../application/contracts/SegmentationDirectory.js';
 import { SegmentationStatus } from '../../domain/SegmentationStatus.js';
 import { SegmentationReadModelMapper } from '../SegmentationReadModelMapper.js';
 import { MongoSegmentationDAO } from './MongoSegmentationDAO.js';
@@ -10,7 +10,7 @@ import { MongoSegmentationDBO } from './MongoSegmentationDBO.js';
 import { MongoSegmentationMapper } from './MongoSegmentationMapper.js';
 
 class MongoSegmentationDirectory implements SegmentationDirectory {
-  constructor(private readonly dao: MongoSegmentationDAO) {}
+  constructor(private readonly deps: { dao: MongoSegmentationDAO }) {}
 
   async readyByFileIds(fileIds: string[]): Promise<SegmentationReadModel[]> {
     const ids = MongoSegmentationDAO.objectIds(fileIds);
@@ -18,7 +18,7 @@ class MongoSegmentationDirectory implements SegmentationDirectory {
       return [];
     }
     return MongoSegmentationDirectory.readModels(
-      await this.dao.find({ fileID: { $in: ids }, status: SegmentationStatus.READY })
+      await this.deps.dao.find({ fileID: { $in: ids }, status: SegmentationStatus.READY })
     );
   }
 
@@ -27,17 +27,17 @@ class MongoSegmentationDirectory implements SegmentationDirectory {
       return [];
     }
     return MongoSegmentationDirectory.readModels(
-      await this.dao.find({ filename: { $in: filenames }, status: SegmentationStatus.READY })
+      await this.deps.dao.find({ filename: { $in: filenames }, status: SegmentationStatus.READY })
     );
   }
 
   async fileIdForXml(xmlFilename: string): Promise<string | undefined> {
-    const found = await this.dao.findOne({ xmlname: xmlFilename });
+    const found = await this.deps.dao.findOne({ xmlname: xmlFilename });
     return found?.fileID.toHexString();
   }
 
   async readyFileIds(): Promise<string[]> {
-    const found = await this.dao.find(
+    const found = await this.deps.dao.find(
       { status: SegmentationStatus.READY },
       { projection: { fileID: 1 } }
     );
@@ -49,7 +49,7 @@ class MongoSegmentationDirectory implements SegmentationDirectory {
     if (!ids.length) {
       return [];
     }
-    const found = await this.dao.find(
+    const found = await this.deps.dao.find(
       { fileID: { $in: ids } },
       { projection: { fileID: 1, status: 1 } }
     );

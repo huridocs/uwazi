@@ -7,7 +7,9 @@ class SegmentationResultListenerFactory {
   static default(): SegmentationResultListener {
     return new SegmentationResultListener({
       saveResult: async outcome =>
-        new SegmentationJobsAdapter(ExecutionContext.jobsDispatcher).saveResult(outcome),
+        new SegmentationJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }).saveResult(
+          outcome
+        ),
     });
   }
 }

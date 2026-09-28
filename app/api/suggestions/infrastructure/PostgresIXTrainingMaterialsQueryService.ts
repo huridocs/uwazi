@@ -68,7 +68,9 @@ export class PostgresIXTrainingMaterialsQueryService
 
   constructor({ segmentationDirectory, ...deps }: Deps) {
     super('ix_suggestions', deps);
-    this.segmentations = new TrainingSegmentationsJoin(segmentationDirectory);
+    this.segmentations = new TrainingSegmentationsJoin({
+      segmentationDirectory: segmentationDirectory,
+    });
   }
 
   streamFilesForTraining(query: TrainingMaterialsQuery): AsyncGenerator<TrainingFileRow> {

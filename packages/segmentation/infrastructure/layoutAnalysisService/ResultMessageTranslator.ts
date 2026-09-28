@@ -1,4 +1,4 @@
-import { SegmentationOutcome } from '../../application/contracts/SegmentationOutcome.js';
+import { SegmentationOutcome } from '../../application/contracts/PdfSegmenter.js';
 import { MalformedSegmentationResult } from '../../application/errors/MalformedSegmentationResult.js';
 import { IdempotencyKey } from '../../domain/IdempotencyKey.js';
 import { SegmentationFailureReason } from '../../domain/SegmentationFailureReason.js';

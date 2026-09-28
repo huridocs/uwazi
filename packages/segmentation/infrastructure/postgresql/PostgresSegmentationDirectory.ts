@@ -1,8 +1,8 @@
-import { SegmentationDirectory } from '../../application/contracts/SegmentationDirectory.js';
 import {
+  SegmentationDirectory,
   SegmentationReadModel,
   SegmentationStatusReadModel,
-} from '../../application/contracts/SegmentationReadModels.js';
+} from '../../application/contracts/SegmentationDirectory.js';
 import { SegmentationStatus } from '../../domain/SegmentationStatus.js';
 import { SegmentationReadModelMapper } from '../SegmentationReadModelMapper.js';
 import { PostgresSegmentationDAO } from './PostgresSegmentationDAO.js';
@@ -10,7 +10,7 @@ import { PostgresSegmentationMapper } from './PostgresSegmentationMapper.js';
 import { PostgresSegmentationRow } from './PostgresSegmentationRow.js';
 
 class PostgresSegmentationDirectory implements SegmentationDirectory {
-  constructor(private readonly dao: PostgresSegmentationDAO) {}
+  constructor(private readonly deps: { dao: PostgresSegmentationDAO }) {}
 
   async readyByFileIds(fileIds: string[]): Promise<SegmentationReadModel[]> {
     if (!fileIds.length) {
@@ -31,7 +31,7 @@ class PostgresSegmentationDirectory implements SegmentationDirectory {
   }
 
   async fileIdForXml(xmlFilename: string): Promise<string | undefined> {
-    const row = await this.dao
+    const row = await this.deps.dao
       .rows()
       .where({ xml_filename: xmlFilename })
       .select(['file_id'])
@@ -48,7 +48,7 @@ class PostgresSegmentationDirectory implements SegmentationDirectory {
     if (!fileIds.length) {
       return [];
     }
-    const rows = await this.dao
+    const rows = await this.deps.dao
       .rows()
       .whereIn('file_id', fileIds)
       .select(['file_id', 'status'])
@@ -57,7 +57,7 @@ class PostgresSegmentationDirectory implements SegmentationDirectory {
   }
 
   private ready() {
-    return this.dao.rows().where({ status: SegmentationStatus.READY });
+    return this.deps.dao.rows().where({ status: SegmentationStatus.READY });
   }
 
   private static readModels(rows: PostgresSegmentationRow[]) {

@@ -8,8 +8,8 @@ class SegmentationDataSourceFactory {
     const selected = SegmentationDAOFactory.default();
 
     return selected.backend === 'postgres'
-      ? new PostgresSegmentationDataSource(selected.dao)
-      : new MongoSegmentationDataSource(selected.dao);
+      ? new PostgresSegmentationDataSource({ dao: selected.dao })
+      : new MongoSegmentationDataSource({ dao: selected.dao });
   }
 }
 
