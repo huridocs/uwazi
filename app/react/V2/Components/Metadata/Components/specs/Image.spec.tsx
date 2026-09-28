@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { Image } from '../Image.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('Image', () => {
