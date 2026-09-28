@@ -22,6 +22,10 @@ import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librar
 import type { LibraryViewMode } from '../../libraryUrlState.js';
 import { LibraryView } from '../LibraryView.js';
 
+jest.mock('#app/Map/MapContainer.js', () => ({
+  Map: () => <div data-testid="library-geolocation-map" />,
+}));
+
 jest.mock('#app/Map/index.js', () => ({
   Map: ({
     markers = [],

@@ -124,11 +124,20 @@ const expectPanelDelete = (footer: HTMLElement, actions: HTMLElement) => {
   expect(divider).toHaveClass('w-px', 'bg-border-soft');
 };
 
+const expectOneTextOnlyEdit = (actions: HTMLElement, footer: HTMLElement) => {
+  const edits = within(footer).getAllByRole('button', { name: 'Edit' });
+  expect(edits).toHaveLength(1);
+  expect(actions).toContainElement(edits[0]);
+  expect(edits[0].querySelector('svg')).toBeNull();
+  expect(edits[0]).toHaveTextContent('Edit');
+};
+
 const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
   const actions = within(leftSide).getByTestId('library-single-select-actions');
   expectNotPushedRight(actions, footer);
   expect(childSequence(actions)).toEqual(['Edit', 'Permissions', 'divider', 'Delete']);
-  expectShownLabel(within(actions).getByRole('button', { name: 'Edit' }), 'Edit');
+  expectOneTextOnlyEdit(actions, footer);
+  expect(within(footer).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
   ['Permissions', 'Delete'].forEach(label => expectIconOnly(actions, label));
   expectPanelDelete(footer, actions);
   expect(within(leftSide).queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
