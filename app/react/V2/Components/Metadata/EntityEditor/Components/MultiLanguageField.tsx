@@ -17,6 +17,12 @@ type MultiLanguageFieldProps = {
   messageSlot?: ReactNode;
   disabled?: boolean;
   serviceUnavailable?: boolean;
+  extra?: {
+    label: string;
+    idPrefix: string;
+    values: Record<string, string>;
+    onChange: (language: string, value: string) => void;
+  };
 };
 
 const MultiLanguageField = React.memo(
@@ -32,6 +38,7 @@ const MultiLanguageField = React.memo(
     messageSlot,
     disabled = false,
     serviceUnavailable = false,
+    extra,
   }: MultiLanguageFieldProps) => {
     const [open, setOpen] = useState(false);
     const { working, machine, translate, markUser } = useFieldTranslate({
@@ -102,26 +109,46 @@ const MultiLanguageField = React.memo(
         {open ? (
           <div id={`${idPrefix}-langs`} className="mt-1 space-y-1">
             {others.map(language => (
-              <MultiLanguageFieldRow
-                key={language}
-                language={language}
-                current={current}
-                label={label}
-                idPrefix={idPrefix}
-                value={values[language] ?? ''}
-                source={source}
-                busy={working.includes(language)}
-                isMachine={Boolean(machine[language]) && !working.includes(language)}
-                multiline={multiline}
-                disabled={disabled}
-                showRetranslate={Boolean(onTranslate)}
-                serviceUnavailable={serviceUnavailable}
-                onChange={onChange}
-                onTranslate={next => {
-                  void translate(next);
-                }}
-                onUserEdit={markUser}
-              />
+              <div key={language} className="space-y-1">
+                <MultiLanguageFieldRow
+                  language={language}
+                  current={current}
+                  label={label}
+                  idPrefix={idPrefix}
+                  value={values[language] ?? ''}
+                  source={source}
+                  busy={working.includes(language)}
+                  isMachine={Boolean(machine[language]) && !working.includes(language)}
+                  multiline={multiline}
+                  disabled={disabled}
+                  showRetranslate={Boolean(onTranslate)}
+                  serviceUnavailable={serviceUnavailable}
+                  onChange={onChange}
+                  onTranslate={next => {
+                    void translate(next);
+                  }}
+                  onUserEdit={markUser}
+                />
+                {extra ? (
+                  <MultiLanguageFieldRow
+                    language={language}
+                    current={current}
+                    label={extra.label}
+                    idPrefix={extra.idPrefix}
+                    sideLabel="URL"
+                    value={extra.values[language] ?? ''}
+                    source=""
+                    busy={false}
+                    isMachine={false}
+                    multiline={false}
+                    disabled={disabled}
+                    showRetranslate={false}
+                    onChange={extra.onChange}
+                    onTranslate={() => undefined}
+                    onUserEdit={() => undefined}
+                  />
+                ) : null}
+              </div>
             ))}
           </div>
         ) : null}

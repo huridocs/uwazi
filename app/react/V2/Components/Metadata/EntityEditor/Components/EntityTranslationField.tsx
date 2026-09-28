@@ -17,6 +17,12 @@ type EntityTranslationFieldProps = {
   linkPart?: LinkPart;
   linkSource?: string;
   autoTranslate?: boolean;
+  paired?: {
+    label: string;
+    idPrefix: string;
+    linkPart: LinkPart;
+    linkSource: string;
+  };
 };
 
 const EntityTranslationField = React.memo(
@@ -31,8 +37,10 @@ const EntityTranslationField = React.memo(
     linkPart,
     linkSource,
     autoTranslate = true,
+    paired,
   }: EntityTranslationFieldProps) => {
     const currentValue = useIdleFormValue(idPrefix);
+    const pairedValue = useIdleFormValue(paired?.idPrefix ?? idPrefix);
     const { languages, current, canAutoTranslate } = useInstalledEntityLanguages();
     const { available } = useTranslationServiceAvailability();
     const showTranslate = autoTranslate && canAutoTranslate;
@@ -45,6 +53,15 @@ const EntityTranslationField = React.memo(
       languages,
       linkPart,
       linkSource,
+    });
+    const pairedHandlers = useTranslationFieldHandlers({
+      propertyName,
+      current,
+      currentValue: pairedValue,
+      sourceField: paired?.idPrefix ?? idPrefix,
+      languages,
+      linkPart: paired?.linkPart,
+      linkSource: paired?.linkSource,
     });
 
     if (!current || languages.length < 2) return messageSlot ?? null;
@@ -62,6 +79,16 @@ const EntityTranslationField = React.memo(
         multiline={multiline}
         messageSlot={messageSlot}
         disabled={disabled}
+        extra={
+          paired
+            ? {
+                label: paired.label,
+                idPrefix: paired.idPrefix,
+                values: pairedHandlers.values,
+                onChange: pairedHandlers.onChange,
+              }
+            : undefined
+        }
       />
     );
   }

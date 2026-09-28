@@ -66,6 +66,28 @@ const Harness = ({
   );
 };
 
+const renderWithExtra = (
+  onChange: (language: string, value: string) => void,
+  onExtra: (language: string, value: string) => void
+) =>
+  render(
+    <MultiLanguageField
+      label="Link"
+      idPrefix="link.label"
+      languages={['en', 'es']}
+      current="en"
+      values={{ en: 'Docs', es: 'Documentos' }}
+      onChange={onChange}
+      onTranslate={jest.fn(async () => 'translated')}
+      extra={{
+        label: 'Link URL',
+        idPrefix: 'link.url',
+        values: { en: 'https://en.example', es: 'https://es.example' },
+        onChange: onExtra,
+      }}
+    />
+  );
+
 describe('MultiLanguageField', () => {
   it('summarizes empty languages and fills only empties on auto-translate', async () => {
     const onTranslate = jest.fn(async (language: string) => `translated-${language}`);
@@ -172,6 +194,21 @@ describe('MultiLanguageField', () => {
     fireEvent.change(input, { target: { value: 'Hola' } });
     fireEvent.blur(input);
     expect(onChange).toHaveBeenCalledWith('es', 'Hola');
+  });
+
+  it('edits an extra value in the same languages section', () => {
+    const onChange = jest.fn();
+    const onExtra = jest.fn();
+    renderWithExtra(onChange, onExtra);
+    expect(screen.getAllByRole('button', { name: /Languages:/ })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+    fireEvent.change(screen.getByLabelText('Español link url'), {
+      target: { value: 'https://nuevo.example' },
+    });
+    fireEvent.blur(screen.getByLabelText('Español link url'));
+    expect(onExtra).toHaveBeenCalledWith('es', 'https://nuevo.example');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getAllByRole('button', { name: /Re-translate/ })).toHaveLength(1);
   });
 
   it('disables auto-translate and shows status when the service is unavailable', () => {

@@ -22,6 +22,7 @@ type MultiLanguageFieldRowProps = {
   multiline: boolean;
   disabled: boolean;
   showRetranslate: boolean;
+  sideLabel?: string;
   serviceUnavailable?: boolean;
   onChange: (language: string, value: string) => void;
   onTranslate: (language: string) => void;
@@ -69,6 +70,7 @@ const MultiLanguageFieldRow = React.memo(
     multiline,
     disabled,
     showRetranslate,
+    sideLabel,
     serviceUnavailable = false,
     onChange,
     onTranslate,
@@ -100,7 +102,7 @@ const MultiLanguageFieldRow = React.memo(
           dir={languageDir(language)}
           className="flex h-8 w-18 shrink-0 items-center truncate text-meta font-medium text-ink-tertiary"
         >
-          {languageLabel(language)}
+          {sideLabel ?? languageLabel(language)}
         </label>
         {multiline ? (
           <textarea

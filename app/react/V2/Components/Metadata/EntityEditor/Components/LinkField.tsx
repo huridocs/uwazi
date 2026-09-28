@@ -101,26 +101,21 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                 </div>
               </div>
               {translatableName ? (
-                <>
-                  <EntityTranslationField
-                    propertyName={translatableName}
-                    label={label}
-                    idPrefix={`${linkSource}.label`}
-                    linkPart="label"
-                    linkSource={linkSource}
-                    messageSlot={translationMessageSlot(showError, message)}
-                    disabled={disabled}
-                  />
-                  <EntityTranslationField
-                    propertyName={translatableName}
-                    label={`${label} URL`}
-                    idPrefix={`${linkSource}.url`}
-                    linkPart="url"
-                    linkSource={linkSource}
-                    autoTranslate={false}
-                    disabled={disabled}
-                  />
-                </>
+                <EntityTranslationField
+                  propertyName={translatableName}
+                  label={label}
+                  idPrefix={`${linkSource}.label`}
+                  linkPart="label"
+                  linkSource={linkSource}
+                  messageSlot={translationMessageSlot(showError, message)}
+                  disabled={disabled}
+                  paired={{
+                    label: `${label} URL`,
+                    idPrefix: `${linkSource}.url`,
+                    linkPart: 'url',
+                    linkSource,
+                  }}
+                />
               ) : (
                 <EntityFieldError showError={showError} message={message} />
               )}
