@@ -17,6 +17,10 @@ class UserAccount extends User {
     this.credentials = props.credentials;
   }
 
+  static create(props: UserAccountProps): UserAccount {
+    return new UserAccount({ ...props, ...User.parseProfile(props) });
+  }
+
   setPassword(password: EncryptedPassword): void {
     this.credentials = this.credentials.withPassword(password);
   }

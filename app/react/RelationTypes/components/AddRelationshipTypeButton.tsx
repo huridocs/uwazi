@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
@@ -7,12 +7,13 @@ import { IStore } from '#app/istore.js';
 import { Modal } from '#app/Layout/Modal.js';
 import { Icon } from '#UI/Icon/Icon.js';
 import { saveRelationType } from '../actions/relationTypeActions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 type FormInputs = {
   relationshipType: string;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       relationshipTypeSave: saveRelationType,

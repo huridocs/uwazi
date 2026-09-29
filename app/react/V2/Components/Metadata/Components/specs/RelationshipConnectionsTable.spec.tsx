@@ -9,7 +9,7 @@ import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { RelationshipConnectionsTable } from '../RelationshipConnectionsTable.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a href={props.to}>{children}</a>
   ),
@@ -66,13 +66,16 @@ describe('RelationshipConnectionsTable layout', () => {
     });
   });
 
-  it('keeps the table visible when it fits and does not use horizontal scroll', () => {
+  it('keeps the table inside the field when it fits', () => {
     const { container } = renderTable();
     expect(screen.getByTestId('relationship-connections')).toBeInTheDocument();
     expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
     expect(container.querySelector('.overflow-x-auto')).toBeNull();
-    const tableClass = container.querySelector('table')?.className ?? '';
-    expect(tableClass.includes('w-max') && !tableClass.includes('w-full')).toBe(true);
+  });
+
+  it('clips the measurement table so it cannot widen the editor', () => {
+    renderTable();
+    expect(screen.getByTestId('relationship-connections').className).toContain('overflow-hidden');
   });
 
   it('puts inherit columns first and the entity last', () => {

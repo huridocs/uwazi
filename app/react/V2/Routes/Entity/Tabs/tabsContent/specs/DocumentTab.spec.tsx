@@ -27,10 +27,6 @@ jest.mock('#V2/Components/Relationships/index.js', () => ({
   RelationshipsDisplay: () => null,
 }));
 
-jest.mock('#V2/CustomHooks/useIsMobile.js', () => ({
-  useIsMobile: () => false,
-}));
-
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
   useEntityLanguage: () => ({ isRtl: false }),
   useEnsureAnchors: () => async () => undefined,

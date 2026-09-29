@@ -251,23 +251,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   /**
-   * Hook called by every terminal method before execution.
-   * Subclasses override to inject permission conditions.
-   *
-   * @param qb    The cloned, transaction-scoped query builder about to be executed.
-   * @param operation  What kind of operation is being performed.
-   * @returns The (possibly modified) query builder.
-   */
-  protected applyPolicy(
-    qb: Knex.QueryBuilder,
-    _operation: 'read' | 'write' | 'raw'
-  ): Knex.QueryBuilder {
-    return qb;
-  }
-
-  /**
    * Gate check for insert/upsert. Subclasses override to block anonymous users.
-   * Unlike applyPolicy, this does NOT need a query builder — it's a pure predicate.
    */
   protected applyInsertPolicy(): void {}
 
@@ -335,29 +319,22 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   async first(): Promise<TRow | undefined> {
-    const row = await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read').first());
+    const row = await this.run(qb => this.withIdentity(qb).first());
     return row ? (this.cleanRow(row) as TRow) : undefined;
   }
 
   async all(): Promise<TRow[]> {
-    const rows = (await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read'))) as Record<
-      string,
-      unknown
-    >[];
+    const rows = (await this.run(qb => this.withIdentity(qb))) as Record<string, unknown>[];
     return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
   async count(): Promise<number> {
-    const result = await this.run(qb =>
-      this.applyPolicy(qb, 'read').count<{ count: string }[]>('* as count').first()
-    );
+    const result = await this.run(qb => qb.count<{ count: string }[]>('* as count').first());
     return parseInt(result?.count ?? '0', 10);
   }
 
   async sum(column: string): Promise<number> {
-    const result = await this.run(qb =>
-      this.applyPolicy(qb, 'read').sum({ total: column }).first()
-    );
+    const result = await this.run(qb => qb.sum({ total: column }).first());
     return Number((result as { total?: unknown })?.total ?? 0);
   }
 
@@ -402,9 +379,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   async update(changes: Record<string, unknown>): Promise<string[]> {
     const serialized = PostgresTable.serialize(changes);
-    const result = await this.run(qb =>
-      this.applyPolicy(qb, 'write').returning(['_id']).update(serialized)
-    );
+    const result = await this.run(qb => qb.returning(['_id']).update(serialized));
     if (this.cfg.syncWriter) {
       await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), false);
     }
@@ -473,7 +448,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   async delete(): Promise<string[]> {
-    const result = await this.run(qb => this.applyPolicy(qb, 'write').returning(['_id']).del());
+    const result = await this.run(qb => qb.returning(['_id']).del());
     if (this.cfg.syncWriter) {
       await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), true);
     }
@@ -488,7 +463,6 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * builder's accumulated WHERE/filter state from the chain.
    */
   async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
-    await this.run(qb => this.applyPolicy(qb, 'raw'));
     return this.cfg.transactionManager.withConnection(async trx =>
       trx.raw(sql, bindings as any)
     ) as Promise<Knex.Raw<TResult>>;

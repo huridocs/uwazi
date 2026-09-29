@@ -21,8 +21,8 @@ import {
  * backends, expectations asserted as explicit literals so a field present on one backend
  * and absent on the other fails rather than passing quietly.
  *
- * The contract is one method (D3) — this is *the settings screen read*, and it is where
- * pagination and sorting will eventually land.
+ * `listUsers` is *the settings screen read*, and it is where pagination and sorting will
+ * eventually land. `findByUsername` serves the CLI, which addresses users by username.
  */
 
 const OTHER_TENANT_ID = 'other-tenant';
@@ -110,6 +110,26 @@ describe('UsersQueryService', () => {
         expect(users).toHaveLength(3);
         users.forEach(expectNoCredentials);
       });
+    });
+
+    describe('findByUsername()', () => {
+      it('should return the view of an active user', async () => {
+        expect(await sut().findByUsername('active1')).toEqual(view.active1);
+      });
+
+      it('should carry no credential fields', async () => {
+        const user = await sut().findByUsername('sensitive');
+
+        expect(user).toEqual(view.sensitive);
+        expectNoCredentials(user!);
+      });
+
+      it.each(['deleted', 'public', 'nobody'])(
+        'should not find %s (soft-deleted, public or unknown)',
+        async username => {
+          expect(await sut().findByUsername(username)).toBeUndefined();
+        }
+      );
     });
 
     describe('countByRole()', () => {

@@ -13,7 +13,7 @@ import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers.js';
-import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { PDFService } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
 import { Dispatcher } from './contracts/Dispatcher.js';
@@ -30,7 +30,7 @@ type Deps = {
   jobsDispatcher: Dispatcher;
   pdfService: PDFService;
   filesIO: FileContentsIO;
-  relV1DS: MongoRelationshipsV1DataSource;
+  relV1DS: RelationshipsV1DataSource;
   transactionManager: TransactionManager;
   eventBus: EventsBus;
   pathManager: PathManager;
@@ -148,7 +148,7 @@ class FilesService {
     const contentFiles = allFilesToDelete.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(allFilesToDelete);
-    await this.deps.relV1DS.deleteByFiles(contentFiles);
+    await this.deps.relV1DS.deleteByFiles(contentFiles.map(f => f.id));
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(FilesDeletedEvent.create(allFilesToDelete));

@@ -1,18 +1,20 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  SelectionRegion,
-  HandleTextSelection,
-  TextSelection,
-} from '@huridocs/react-text-selection-handler';
+import { useAtomValue } from 'jotai';
+import { SelectionRegion, TextSelection } from '@huridocs/react-text-selection-handler';
+import { PdfTextSelection } from './PdfTextSelection.js';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll, pickMostVisiblePage } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { useWordSelection, type WordHighlight } from './hooks/useWordSelection.js';
+import { WordSelectionToggle } from './WordSelectionToggle.js';
+import { WordSelectionHighlight } from './WordSelectionHighlight.js';
 import { waitForElement } from './functions/waitForElement.js';
 import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
@@ -20,6 +22,27 @@ import { PDFPage } from './PDFPage.js';
 import { PageRenderQueue } from './functions/pageRenderQueue.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
+
+const pageContainerForSnippet = (
+  pageRefs: { [key: number]: HTMLDivElement | null },
+  page: number
+) => {
+  const current = pageRefs[page];
+  if (current) return current;
+  const found = document.querySelector(`#page-${page}-container`);
+  if (!(found instanceof HTMLDivElement)) return undefined;
+  pageRefs[page] = found;
+  return found;
+};
+
+const openPdfDocument = (fileUrl: string) =>
+  PDFJS.getDocument({
+    url: fileUrl,
+    cMapUrl: CMAP_URL,
+    cMapPacked: true,
+    wasmUrl: WASM_URL,
+    isEvalSupported: false,
+  });
 
 const PAGE_VISIBILITY_THRESHOLDS = [0, 0.1, 0.25, 0.4, 0.5, 0.75, 1];
 const PRELOAD_ROOT_MARGIN = '500px 0px 500px 0px';
@@ -96,6 +119,11 @@ const PDF = ({
   const [internalHighlights, setInternalHighlights] = useState<
     { [page: number]: TextHighlight[] }[]
   >([]);
+  const settings = useAtomValue(settingsAtom);
+  const wordSelectionAvailable = Boolean(settings.features?.experimentalFeatures);
+  const [wordSelectionMode, setWordSelectionMode] = useState(false);
+  const wordSelectionActive = wordSelectionAvailable && wordSelectionMode;
+  const [wordHighlight, setWordHighlight] = useState<WordHighlight>();
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
@@ -116,6 +144,15 @@ const PDF = ({
     },
     [onSelect, currentScale]
   );
+
+  const { clearSelection } = useWordSelection({
+    enabled: wordSelectionActive,
+    containerRef: pdfContainerRef,
+    layoutKey: currentScale,
+    onSelect: handleSelect,
+    onDeselect,
+    onHighlightChange: setWordHighlight,
+  });
 
   const goToPage = useCallback(
     (page: number) => {
@@ -139,14 +176,7 @@ const PDF = ({
     const deadline = Date.now() + 5000;
 
     const attempt = (): void => {
-      let pageContainer = pageRefsMap.current[snippet.page];
-      if (!pageContainer) {
-        const found = document.querySelector(`#page-${snippet.page}-container`);
-        if (found instanceof HTMLDivElement) {
-          pageRefsMap.current[snippet.page] = found;
-          pageContainer = found;
-        }
-      }
+      const pageContainer = pageContainerForSnippet(pageRefsMap.current, snippet.page);
 
       if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
         return;
@@ -233,28 +263,32 @@ const PDF = ({
     let cancelled = false;
 
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
-      if (cancelled) {
-        return;
-      }
-      if (taskData.percent < 100) {
-        setLoading({ isLoading: true, progress: taskData.percent });
-      } else {
-        setLoading({ isLoading: false, progress: 0 });
-      }
+      if (cancelled) return;
+      setLoading(
+        taskData.percent < 100
+          ? { isLoading: true, progress: taskData.percent }
+          : { isLoading: false, progress: 0 }
+      );
     };
 
-    setPDF(undefined);
-    setError(undefined);
-    setLoading({ isLoading: true, progress: 0 });
+    const resetPdfState = () => {
+      setPDF(undefined);
+      setError(undefined);
+      setLoading({ isLoading: true, progress: 0 });
+    };
 
-    const loadingTask = PDFJS.getDocument({
-      url: fileUrl,
-      cMapUrl: CMAP_URL,
-      cMapPacked: true,
-      wasmUrl: WASM_URL,
-      isEvalSupported: false,
-    });
+    const resetView = () => {
+      const pageVisibility = pageVisibilityRef.current;
+      isReady.current = false;
+      pageVisibility.clear();
+      pageRefsMap.current = {};
+      viewportPagesRef.current.clear();
+      renderingQueueRef.current.prioritize(initialPageRef.current);
+      return pageVisibility;
+    };
 
+    resetPdfState();
+    const loadingTask = openPdfDocument(fileUrl);
     loadingTask.onProgress = handleLoading;
 
     loadingTask.promise
@@ -288,12 +322,7 @@ const PDF = ({
         }
       });
 
-    const pageVisibility = pageVisibilityRef.current;
-    isReady.current = false;
-    pageVisibility.clear();
-    pageRefsMap.current = {};
-    viewportPagesRef.current.clear();
-    renderingQueueRef.current.prioritize(initialPageRef.current);
+    const pageVisibility = resetView();
 
     return () => {
       cancelled = true;
@@ -440,7 +469,7 @@ const PDF = ({
             pageRefsMap.current[regionId] = el;
           }}
           className={[
-            'relative mb-4 border-solid',
+            'relative mb-4 overflow-hidden border-solid',
             `[border-width:${BORDER_WIDTH}px]`,
             'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
           ].join(' ')}
@@ -457,6 +486,14 @@ const PDF = ({
               onScaleChange={handleScaleChange}
               renderingQueue={renderingQueueRef.current}
             />
+            {wordHighlight?.preview || wordHighlight?.committed ? (
+              <WordSelectionHighlight
+                preview={wordHighlight.preview}
+                committed={wordHighlight.committed}
+                regionId={regionId.toString()}
+                onClear={clearSelection}
+              />
+            ) : null}
           </SelectionRegion>
         </div>
       );
@@ -465,6 +502,8 @@ const PDF = ({
     pdf,
     highlights,
     internalHighlights,
+    wordHighlight,
+    clearSelection,
     pdfEventBus,
     intersectionObserver,
     onHighlightClick,
@@ -493,10 +532,18 @@ const PDF = ({
   }
 
   return (
-    <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div
-        className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
-      >
+    <PdfTextSelection
+      onSelect={handleSelect}
+      onDeselect={onDeselect}
+      disabled={wordSelectionActive}
+    >
+      <div className={`flex h-full w-full min-h-0 flex-col gap-2 justify-center p-3 ${className}`}>
+        {wordSelectionAvailable ? (
+          <WordSelectionToggle
+            checked={wordSelectionMode}
+            onToggle={() => setWordSelectionMode(current => !current)}
+          />
+        ) : null}
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
@@ -508,11 +555,17 @@ const PDF = ({
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
         ) : null}
-        <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
+        <div
+          id="pdf-container"
+          className={`pdfViewer min-h-0 w-full min-w-0 flex-1 ${wordSelectionActive ? '[&_.textLayer]:select-none' : ''}`}
+          ref={setPdfContainer}
+          style={viewerStyle}
+          data-word-selection={wordSelectionActive ? 'true' : undefined}
+        >
           {pages}
         </div>
       </div>
-    </HandleTextSelection>
+    </PdfTextSelection>
   );
 };
 

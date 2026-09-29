@@ -62,7 +62,7 @@ const ConfirmationModal = ({
   };
 
   const renderChild = (child: string | React.ReactNode) =>
-    isString(child) ? <Translate>{child}</Translate> : child;
+    isString(child) ? <Translate>{child}</Translate> : <>{child}</>;
 
   const wordForConfirmation = t('System', confirmWord, null, false);
 

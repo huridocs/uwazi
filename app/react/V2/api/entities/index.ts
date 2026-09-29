@@ -16,7 +16,7 @@ const withLanguage = (language: string, headers?: IncomingHttpHeaders) => ({
   'Content-Language': language,
 });
 
-const includePermissions = ['permissions'] as const;
+const includePermissionsAndTranslations = ['permissions', 'translations'] as const;
 
 const isEntity = (value: unknown): value is Entity =>
   typeof value === 'object' &&
@@ -39,7 +39,7 @@ const getById = async ({
 }): Promise<ApiResponse<Entity | undefined>> => {
   const [data, error] = await apiClient.getJson<{ rows: Entity[] }>(
     'entities',
-    { _id, omitRelationships, include: includePermissions },
+    { _id, omitRelationships, include: includePermissionsAndTranslations },
     { headers: withLanguage(language, headers), language }
   );
 
@@ -65,7 +65,7 @@ const getBySharedId = async (
 ): Promise<ApiResponse<Entity[] | undefined>> => {
   const [data, error] = await apiClient.getJson<{ rows: Entity[] }>(
     'entities',
-    { sharedId, omitRelationships, include: includePermissions },
+    { sharedId, omitRelationships, include: includePermissionsAndTranslations },
     { headers: withLanguage(language, headers), language }
   );
 

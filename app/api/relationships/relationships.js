@@ -11,7 +11,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import model from './model.js';
+import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import { generateNames } from '#api/utils/templateUtils.js';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
@@ -37,41 +37,54 @@ const getRelationshipTypesDS = () =>
     transactionManager: TransactionManagerFactory.mongo(),
   });
 
+const getRelationshipsDS = () => RelationshipsV1DataSourceFactory.default();
+
+const toIdString = value => {
+  if (value === null || value === undefined) return value;
+  if (typeof value === 'object' && value._bsontype === 'ObjectId') return value.toString();
+  if (typeof value === 'object' && value._id !== undefined) return toIdString(value._id);
+  return value;
+};
+
+const toQuery = query => {
+  if (!query) return query;
+  return Object.fromEntries(
+    Object.entries(query).map(([key, value]) => {
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const operators = Object.keys(value).filter(operator => operator.startsWith('$'));
+        if (operators.length) {
+          const unsupported = operators.filter(operator => operator !== '$in');
+          if (unsupported.length) {
+            throw new Error(
+              `Unsupported query operator${unsupported.length > 1 ? 's' : ''} in relationships.get: ${unsupported.join(', ')}`
+            );
+          }
+          return [key, value.$in.map(toIdString)];
+        }
+      }
+      return [key, toIdString(value)];
+    })
+  );
+};
+
 export default {
   async get(query, select, pagination) {
-    return model.get(query, select, pagination);
+    return getRelationshipsDS().find(
+      toQuery(query),
+      pagination?.limit ? { limit: pagination.limit } : undefined
+    );
   },
 
   async getById(id) {
-    return model.getById(id);
+    return getRelationshipsDS().findById(id);
   },
 
   async getDocumentHubs(entity, file, onlyTextReferences) {
-    let ownRelations;
-    if (onlyTextReferences) {
-      ownRelations = await model.get(
-        {
-          entity,
-          $and: [{ file: { $exists: true } }, { file }],
-        },
-        {},
-        { limit: 300 }
-      );
-    } else {
-      ownRelations = await model.get({
-        ...(Array.isArray(entity) ? { entity: { $in: entity } } : { entity }),
-        ...(file
-          ? {
-              $or: [
-                { file: { $exists: false } },
-                file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
-              ],
-            }
-          : {}),
-      });
-    }
-    const hubsIds = ownRelations.map(relationship => relationship.hub);
-    return model.get({ hub: { $in: hubsIds } });
+    const entitiesSharedIds = Array.isArray(entity) ? entity : [entity];
+    return getRelationshipsDS().getHubConnections(entitiesSharedIds, {
+      ...(file ? { file } : {}),
+      ...(onlyTextReferences ? { onlyTextReferences } : {}),
+    });
   },
 
   async getByDocument(
@@ -99,13 +112,13 @@ export default {
           return res;
         }, {});
 
-        const relationshipsCollection = processRelationshipCollection(
-          _relationships,
+        const relationshipsCollection = processRelationshipCollection({
+          relationshipArray: _relationships,
           connectedDocuments,
           sharedId,
           unpublished,
-          language
-        );
+          language,
+        });
 
         return relationshipsCollection;
       });
@@ -136,15 +149,15 @@ export default {
   },
 
   async getHub(hub) {
-    return model.get({ hub });
+    return getRelationshipsDS().find({ hub: toIdString(hub) });
   },
 
   async countByRelationType(typeId) {
-    return model.count({ template: typeId });
+    return getRelationshipsDS().count({ template: toIdString(typeId) });
   },
 
   async getAllLanguages(sharedId) {
-    return model.get({ sharedId });
+    return getRelationshipsDS().find({ sharedId });
   },
 
   async bulk(bulkData, language) {
@@ -247,7 +260,7 @@ export default {
       return [];
     }
 
-    const savedRelationships = await model.saveMultiple(
+    const savedRelationships = await getRelationshipsDS().saveMultiple(
       relationships.map(r =>
         r._id
           ? {
@@ -315,32 +328,18 @@ export default {
       return Promise.reject(createError('Cant delete without a condition'));
     }
 
-    const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
-    const relationsToDelete = await model.get(relationQuery, 'hub');
-    const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
+    const ds = getRelationshipsDS();
+    const query = toQuery(relationQuery);
+    const relationsToDelete = await ds.find(query);
+    const hubsAffected = [...new Set(relationsToDelete.map(r => r.hub.toString()))];
+    const entitiesAffected = await ds.getEntitiesAffectedByHubs(hubsAffected);
 
-    const entitiesAffected = await model.db.aggregate([
-      { $match: { hub: { $in: hubsAffected } } },
-      { $group: { _id: '$entity' } },
-    ]);
-
-    const response = await model.delete(relationQuery);
-
-    const hubsToDelete = await model.db.aggregate([
-      { $match: { hub: { $in: hubsAffected } } },
-      { $group: { _id: '$hub', length: { $sum: 1 } } },
-      { $match: { length: { $lt: 2 } } },
-    ]);
-
-    await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
+    const response = await ds.delete(query);
 
     if (updateMetdata) {
       const languages = (await SettingsDataSourceFactory.default().readLanguages()) ?? [];
       await ArrayUtils.sequentialFor(languages, async l =>
-        this.updateEntitiesMetadata(
-          entitiesAffected.map(e => e._id),
-          l.key
-        )
+        this.updateEntitiesMetadata(entitiesAffected, l.key)
       );
     }
 
@@ -348,43 +347,43 @@ export default {
   },
 
   async updateMetadataProperties(template, currentTemplate) {
-    const actions = {};
-    actions.$rename = {};
-    actions.$unset = {};
+    const rename = {};
+    const unset = [];
     template.properties = await generateNames(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {
-        actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
+        rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
       }
     });
     currentTemplate.properties = currentTemplate.properties || [];
     currentTemplate.properties.forEach(property => {
       if (!template.properties.find(p => p.id === property.id)) {
-        actions.$unset[`metadata.${property.name}`] = '';
+        unset.push(`metadata.${property.name}`);
       }
     });
 
-    const noneToUnset = !Object.keys(actions.$unset).length;
-    const noneToRename = !Object.keys(actions.$rename).length;
-
-    if (noneToUnset) {
-      delete actions.$unset;
-    }
-    if (noneToRename) {
-      delete actions.$rename;
-    }
-
-    if (noneToRename && noneToUnset) {
+    if (!Object.keys(rename).length && !unset.length) {
       return Promise.resolve();
     }
 
-    return model.updateMany({ template }, actions);
+    return getRelationshipsDS().updateMany(
+      { template: toIdString(template) },
+      {
+        ...(Object.keys(rename).length ? { rename } : {}),
+        ...(unset.length ? { unset } : {}),
+      }
+    );
   },
 
-  count: model.count.bind(model),
+  async count(query) {
+    return getRelationshipsDS().count(toQuery(query));
+  },
 
   async swapTextReferencesFile(originalFileId, targetFileId) {
-    return model.updateMany({ file: originalFileId }, { $set: { file: targetFileId } });
+    return getRelationshipsDS().updateMany(
+      { file: originalFileId },
+      { set: { file: targetFileId } }
+    );
   },
 };

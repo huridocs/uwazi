@@ -12,7 +12,7 @@ type GeneralAccessSectionProps = {
   disabled: boolean;
   showPublicTip: boolean;
   publicTipId: string;
-  generalAccessRef: React.RefObject<HTMLDivElement>;
+  generalAccessRef: React.RefObject<HTMLDivElement | null>;
   onChange: (next: Visibility) => void;
 };
 

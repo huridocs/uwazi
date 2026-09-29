@@ -3,11 +3,12 @@ import { GeolocationViewer } from '#app/Metadata/components/GeolocationViewer.js
 import { connect, ConnectedProps } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Translate } from '#app/I18N/index.js';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { IStore } from '../../istore.js';
 import { ensure } from '../../../shared/tsUtils.js';
 import { Pill } from './Pill.js';
 import * as actions from '../../Relationships/actions/actions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface GeolocationMarker {
   lat: string;
@@ -53,7 +54,7 @@ const templatesMap = createSelector(
     )
 );
 
-function mapDispatchToProps(dispatch: Dispatch<{}>) {
+function mapDispatchToProps(dispatch: AppDispatch) {
   return bindActionCreators(
     {
       selectConnection: actions.selectConnection,

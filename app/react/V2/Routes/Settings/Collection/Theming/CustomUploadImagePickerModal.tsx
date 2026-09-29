@@ -14,7 +14,7 @@ const ACCEPTED_IMAGE_FILES = {
 const uploadFileTrailing = (
   file: File,
   getFeedback: (f: File) => ImageFeedback | null
-): React.ReactNode => {
+): React.ReactElement | null => {
   const fb = getFeedback(file);
   return fb ? <ImageValidationIconButton feedback={fb} /> : null;
 };

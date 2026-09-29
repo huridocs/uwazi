@@ -8,22 +8,22 @@ import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 import { UpdateUserError } from '../domain/user/errors.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
+/**
+ * A partial update: omitted fields are left untouched. Shape only; the username, email and
+ * role rules belong to the User domain object.
+ */
 const UpdateUserInputSchema = z.object({
   _id: z.string(),
-  username: z
-    .string()
-    .trim()
-    .min(1)
-    .refine(username => !username.includes(' '), 'Usernames can not contain spaces.'),
-  role: z.nativeEnum(UserRole),
-  email: z.string().email(),
+  username: z.string().optional(),
+  role: z.nativeEnum(UserRole).optional(),
+  email: z.string().optional(),
   // optional, not `.default([])`: an update that does not mention groups must leave
   // memberships untouched, while `[]` clears them.
   assignedGroupIds: z.array(z.string()).optional(),
   password: z.string().min(1).optional(),
 });
 
-type Input = z.infer<typeof UpdateUserInputSchema>;
+type Input = z.input<typeof UpdateUserInputSchema>;
 
 type Output = User;
 
@@ -31,36 +31,33 @@ type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, assignedGroupIds, ...profile } = input;
+    const { _id, password, assignedGroupIds, ...patch } = UpdateUserInputSchema.parse(input);
 
-    if (profile._id === PUBLIC_USER_ID.toString()) {
+    if (_id === PUBLIC_USER_ID.toString()) {
       throw new UpdateUserError('Cannot modify system user');
     }
 
-    const user = (await this.deps.usersDS.getAccountById(profile._id)).getDataOrThrow();
+    const user = (await this.deps.usersDS.getAccountById(_id)).getDataOrThrow();
 
     const actor = this.getActor();
-    const isEditingSelf = profile._id === actor._id;
+    const isEditingSelf = _id === actor._id;
     const actorIsAdmin = actor.role === 'admin';
 
     if (!isEditingSelf && !actorIsAdmin) {
       throw new UnauthorizedError();
     }
 
-    if (isEditingSelf && profile.role !== user.role) {
+    if (isEditingSelf && patch.role !== undefined && patch.role !== user.role) {
       throw new UpdateUserError('Cannot change own role');
     }
 
-    const usernameChanged = user.username !== profile.username;
-    const emailChanged = user.email !== profile.email;
+    const { changed } = user.updateProfile(patch);
 
-    user.updateProfile(profile);
-
-    if (usernameChanged) {
+    if (changed.includes('username')) {
       (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
     }
 
-    if (emailChanged) {
+    if (changed.includes('email')) {
       (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
     }
 

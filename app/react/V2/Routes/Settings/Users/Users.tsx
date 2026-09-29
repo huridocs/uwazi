@@ -42,8 +42,8 @@ const Users = () => {
     body: 'Do you want to delete?',
   });
 
-  const password = useRef<string>();
-  const bulkActionIntent = useRef<BulkAction>();
+  const password = useRef<string>(undefined);
+  const bulkActionIntent = useRef<BulkAction>(undefined);
 
   const usersTableColumns = getUsersColumns((user: User) => {
     setShowSidepanel(true);

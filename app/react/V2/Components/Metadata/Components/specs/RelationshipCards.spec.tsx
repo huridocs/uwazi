@@ -11,7 +11,7 @@ import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { RelationshipCards } from '../RelationshipCards.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a href={props.to}>{children}</a>
   ),

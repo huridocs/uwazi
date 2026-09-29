@@ -3,7 +3,7 @@ import ReactModalModule from 'react-modal';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 
 const ReactModal = resolveDefaultExport(ReactModalModule);
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import get from 'lodash/get.js';
@@ -21,6 +21,7 @@ import { validImageFile, validMediaFile } from '../helpers/validator.js';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { ClientFile, IStore } from '#app/istore.js';
 import { Icon } from '#UI/Icon/Icon.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 enum MediaModalType {
   Image,
@@ -59,7 +60,7 @@ const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     { localAttachmentAction: uploadLocalAttachment, rrfChange: formActions.change },
     dispatch

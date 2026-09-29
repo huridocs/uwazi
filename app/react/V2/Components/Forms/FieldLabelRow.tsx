@@ -12,7 +12,7 @@ const FieldLabelRow = ({ label, accessory }: FieldLabelRowProps) =>
       {accessory}
     </div>
   ) : (
-    label
+    <>{label}</>
   );
 
 export { FieldLabelRow };

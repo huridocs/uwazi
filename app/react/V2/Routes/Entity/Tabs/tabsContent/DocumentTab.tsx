@@ -2,7 +2,6 @@ import React from 'react';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import {
   PlainText,
   DocumentViewModeSelect,
@@ -57,7 +56,6 @@ const DocumentTab = ({
     propertySelectionHighlights,
   } = useDocumentPdfView({ mainDocument, entity });
   const { armedPdfFill, requestPdfFillCommit } = useDocumentPdf();
-  const isMobile = useIsMobile();
   const { isRtl } = useEntityLanguage();
   const { pdfScrollRoot, setPdfScrollRoot, pageHeight, railInsetRight, handlePdfReady } =
     useDocumentPdfLayout({
@@ -82,7 +80,7 @@ const DocumentTab = ({
           <div
             ref={setPdfScrollRoot}
             data-testid="pdf-scroll-container"
-            className={`absolute inset-0 overflow-y-auto pl-1 scrollbar-gutter-stable ${
+            className={`absolute inset-0 overflow-auto pl-1 scrollbar-gutter-stable ${
               showRail ? 'pr-15' : ''
             }`}
           >
@@ -101,23 +99,21 @@ const DocumentTab = ({
               initialPage={pageNumber}
             />
           </div>
-          {!isMobile && (
-            <RelationshipsDisplay
-              selfSharedId={entity.sharedId}
-              relationships={relationships}
-              document={mainDocument}
-              currentPage={pageNumber}
-              pageHeight={pageHeight}
-              railInsetRight={railInsetRight}
-              showRail={showRail}
-              activeRelationshipId={activeRelationshipId}
-              onPointClick={handleRailPointClick}
-              onPointHover={handleRailHover}
-              onClusterClick={handleClusterClick}
-              onClusterHover={handleRailHover}
-              onMoreClick={handleClusterMoreClick}
-            />
-          )}
+          <RelationshipsDisplay
+            selfSharedId={entity.sharedId}
+            relationships={relationships}
+            document={mainDocument}
+            currentPage={pageNumber}
+            pageHeight={pageHeight}
+            railInsetRight={railInsetRight}
+            showRail={showRail}
+            activeRelationshipId={activeRelationshipId}
+            onPointClick={handleRailPointClick}
+            onPointHover={handleRailHover}
+            onClusterClick={handleClusterClick}
+            onClusterHover={handleRailHover}
+            onMoreClick={handleClusterMoreClick}
+          />
           {selectedText && pdfSelectionMenuOpen && canWrite && !isRaw ? (
             <DocumentSelectionFloatingMenu
               selection={selectedText}

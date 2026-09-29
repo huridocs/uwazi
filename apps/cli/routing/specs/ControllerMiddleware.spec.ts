@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { CliContext } from '../../pipeline/CliContext.js';
 import { ControllerMiddleware } from '../ControllerMiddleware.js';
 import { Route } from '../Route.js';
@@ -6,10 +7,10 @@ const route = (handle: Route['handle']): Route => ({
   group: 'things',
   name: 'list',
   describe: 'List things',
+  tenancy: 'none',
   needs: { redis: false },
+  request: z.object({}),
   fieldMap: {},
-  options: y => y,
-  toInput: argv => argv,
   handle,
 });
 

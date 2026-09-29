@@ -1,5 +1,9 @@
 import type { UsersQueryService } from '#api/core/application/contracts/UsersQueryService.js';
-import type { RoleCounts, UserProfile } from '#api/core/application/contracts/UserReadModels.js';
+import type {
+  RoleCounts,
+  UserProfile,
+  UserView,
+} from '#api/core/application/contracts/UserReadModels.js';
 import { zeroFilledByRole } from '#api/core/application/contracts/UserReadModels.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
@@ -23,6 +27,12 @@ class MongoUsersQueryService implements UsersQueryService {
 
   async countByRole(): Promise<RoleCounts> {
     return zeroFilledByRole(await this.dao.countByRole());
+  }
+
+  async findByUsername(username: string): Promise<UserView | undefined> {
+    const user = await this.dao.findOne({ username });
+
+    return user ? MongoUsersMapper.toView(user) : undefined;
   }
 }
 

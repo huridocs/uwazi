@@ -103,6 +103,7 @@ const fixtures: DBFixture = {
 
   templates: [
     factory.template('Basic Template', []),
+    factory.template('Image Template', [factory.property('image', 'image')]),
 
     factory.template('Related Template', [factory.property('related_text', 'text')]),
 
@@ -177,6 +178,24 @@ const fixtures: DBFixture = {
         },
         pt: {
           title: 'Entity 1 PT',
+        },
+      }
+    ),
+
+    ...factory.entityInMultipleLanguages(
+      ['en', 'pt'],
+      'image_entity',
+      'Image Template',
+      {},
+      { title: 'Image Entity' },
+      {
+        en: {
+          title: 'Image Entity EN',
+          metadata: { image: [factory.metadataValue('https://example.com/en.jpg')] },
+        },
+        pt: {
+          title: 'Image Entity PT',
+          metadata: { image: [factory.metadataValue('https://example.com/pt.jpg')] },
         },
       }
     ),

@@ -1591,4 +1591,21 @@ describe('PostgresTable', () => {
       expect(row!.name).toBe('original');
     });
   });
+
+  describe('raw', () => {
+    it('executes raw SQL through a single withConnection call', async () => {
+      const manager = managerFor(DEFAULT_TENANT);
+      const withConnectionSpy = jest.spyOn(manager, 'withConnection');
+      const table = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: DEFAULT_TENANT,
+        transactionManager: manager,
+      });
+
+      const result = await table.raw<{ rows: { n: number }[] }>('SELECT ?::int AS n', [42]);
+
+      expect(result.rows).toEqual([{ n: 42 }]);
+      expect(withConnectionSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });

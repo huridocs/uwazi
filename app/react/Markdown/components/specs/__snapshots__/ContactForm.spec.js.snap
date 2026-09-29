@@ -4,7 +4,6 @@ exports[`ContactForm should render the ContactForm 1`] = `
 <LocalForm
   className="contact-form"
   getDispatch={[Function]}
-  initialState={Object {}}
   model="contactform"
   onSubmit={[Function]}
   validators={

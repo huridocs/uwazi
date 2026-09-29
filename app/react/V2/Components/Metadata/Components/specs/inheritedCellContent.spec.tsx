@@ -8,7 +8,7 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { inheritedCellContent } from '../inheritedCellContent.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 
@@ -96,7 +96,7 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('cell').querySelector('.no-tailwind')).toBeTruthy();
+    expect(screen.getByTestId('cell').querySelector('.entity-markdown')).toBeTruthy();
     expect(screen.getByTestId('cell').innerHTML).toContain('<strong>');
   });
 

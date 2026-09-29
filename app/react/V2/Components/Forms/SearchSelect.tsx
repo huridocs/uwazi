@@ -209,7 +209,7 @@ const SearchSelect = ({
       );
     }
 
-    return option.label;
+    return <>{option.label}</>;
   };
 
   const renderFieldControl = () => {

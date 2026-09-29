@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
+import { actions } from '../../BasicReducer/index.js';
+import { showTab } from '../../Entities/actions/uiActions.js';
 import { EntitiesAPI } from '../../Entities/EntitiesAPI.js';
 import { Entity as EntityView } from '../EntityView.js';
 import { PDFViewComponent } from '../PDFView.js';
@@ -10,6 +12,44 @@ import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute.js';
 import { ViewerComponent } from '../components/ViewerComponent.js';
 
 describe('ViewerRoute', () => {
+  describe('tab selection', () => {
+    let dispatch;
+
+    const renderRoute = params => {
+      dispatch = jasmine.createSpy('dispatch');
+      return shallow(<ViewerRoute params={params} location={{ search: '' }} />, {
+        context: { store: { getState: () => ({}), dispatch } },
+      });
+    };
+
+    it('should not write the store while rendering', () => {
+      const selectTab = jest.spyOn(ViewerRoute.prototype, 'selectTab');
+      const component = renderRoute({ tabView: 'references' });
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'references'));
+      selectTab.mockClear();
+      dispatch.calls.reset();
+      void component.instance().render();
+      expect(selectTab).not.toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
+      selectTab.mockRestore();
+    });
+
+    it('should select the route tab after mount', () => {
+      renderRoute({ tabView: 'metadata' });
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'metadata'));
+      expect(dispatch).toHaveBeenCalledWith(showTab('info'));
+    });
+
+    it('should select the route tab when it changes', () => {
+      const component = renderRoute({ tabView: 'metadata' });
+      spyOn(component.instance(), 'getClientState').and.returnValue(Promise.resolve());
+      dispatch.calls.reset();
+      component.setProps({ params: { tabView: 'relationships' } });
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'relationships'));
+      expect(dispatch).toHaveBeenCalledWith(showTab('relationships'));
+    });
+  });
+
   describe('Entity views', () => {
     const entity = {
       _id: 1,
