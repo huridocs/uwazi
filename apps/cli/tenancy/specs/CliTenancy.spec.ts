@@ -45,6 +45,16 @@ describe('CliTenancy', () => {
       });
     });
 
+    it('should fall back to the configured default tenant of a single-tenant instance', async () => {
+      const tenant = await CliTenancy.resolve(config.defaultTenant.name);
+
+      expect(tenant).toMatchObject({
+        name: config.defaultTenant.name,
+        dbName: config.defaultTenant.dbName,
+        indexName: config.defaultTenant.indexName,
+      });
+    });
+
     it('should fail with TenantNotFound for an unknown tenant', async () => {
       await expect(CliTenancy.resolve('does-not-exist')).rejects.toThrow(TenantNotFound);
       await expect(CliTenancy.resolve('does-not-exist')).rejects.toMatchObject({
