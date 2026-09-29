@@ -49,7 +49,7 @@ const mockSaved = [
 ];
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
 }));
 
@@ -106,6 +106,8 @@ const Host = ({
         numeric_prop: [{ value: '' }],
         date_prop: [{ value: null }],
       },
+      translations: {},
+      touchedTranslations: {},
     },
   });
   return (

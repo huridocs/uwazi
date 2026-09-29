@@ -183,7 +183,7 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       <LookupMultiSelect {...(props as LookupMultiSelectProps)} lookup={lookupWithDuplicates} />
     );
     await waitFor(() => expect(lookupWithDuplicates).toHaveBeenCalled());
-    expect(screen.getAllByLabelText('Option1').length).toBe(1);
+    await waitFor(() => expect(screen.getAllByLabelText('Option1').length).toBe(1));
   });
 
   it('should handle onChange with value not in any options', async () => {

@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { IStore } from '#app/istore.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
@@ -9,9 +8,10 @@ import {
 import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 import * as api from '../../PermissionsAPI.js';
 import * as actions from '../actions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 describe('Permissions actions', () => {
-  let dispatch: Dispatch<IStore>;
+  let dispatch: AppDispatch;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');

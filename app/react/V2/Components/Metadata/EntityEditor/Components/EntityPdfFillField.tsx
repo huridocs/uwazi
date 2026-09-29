@@ -14,12 +14,21 @@ type EntityPdfFillFieldProps<TFormValues extends FieldValues> = {
   children: (slot?: EntityPdfFillSlot) => React.ReactNode;
 };
 
-const applyPdfFillFormValue = <TFormValues extends FieldValues>(
-  setValue: UseFormSetValue<TFormValues>,
-  field: Path<TFormValues>,
-  value: string | number
-) => {
-  setValue(field, value as PathValue<TFormValues, Path<TFormValues>>, { shouldDirty: true });
+const applyPdfFillFormValue = <TFormValues extends FieldValues>({
+  setValue,
+  field,
+  value,
+  shouldValidate = false,
+}: {
+  setValue: UseFormSetValue<TFormValues>;
+  field: Path<TFormValues>;
+  value: string | number;
+  shouldValidate?: boolean;
+}) => {
+  setValue(field, value as PathValue<TFormValues, Path<TFormValues>>, {
+    shouldDirty: true,
+    shouldValidate,
+  });
 };
 
 const EntityPdfFillField = <TFormValues extends FieldValues>({
@@ -38,15 +47,15 @@ const EntityPdfFillField = <TFormValues extends FieldValues>({
         label={label}
         disabled={disabled}
         placement={placement}
-        applyValue={value => applyPdfFillFormValue(setValue, field, value)}
+        applyValue={value => applyPdfFillFormValue({ setValue, field, value })}
       >
-        {slot => children(slot)}
+        {slot => <>{children(slot)}</>}
       </EntityPdfFill>
     ) : (
-      children()
+      <>{children()}</>
     )}
   </EntityField>
 );
 
-export { EntityPdfFillField };
+export { EntityPdfFillField, applyPdfFillFormValue };
 export type { PdfFillTarget, PdfFillPlacement };

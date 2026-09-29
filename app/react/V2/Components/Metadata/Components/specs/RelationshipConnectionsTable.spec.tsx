@@ -9,7 +9,7 @@ import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { RelationshipConnectionsTable } from '../RelationshipConnectionsTable.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a href={props.to}>{children}</a>
   ),

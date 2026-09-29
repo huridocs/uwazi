@@ -93,8 +93,8 @@ const CodeEditorComponent = ({
   fallbackElement,
 }: CodeEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
-  const editor = useRef<CodeEditorInstance>();
-  const onChangeRef = useRef<CodeEditorProps['onChange']>();
+  const editor = useRef<CodeEditorInstance>(undefined);
+  const onChangeRef = useRef<CodeEditorProps['onChange']>(undefined);
   const [hasError, setHasError] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
   const [editorReady, setEditorReady] = useState(false);

@@ -46,10 +46,6 @@ SearchButton.propTypes = {
   metadataPanelIsOpen: PropTypes.bool,
 };
 
-SearchButton.contextTypes = {
-  storeKey: PropTypes.string,
-};
-
 export function mapStateToProps(state, props) {
   return {
     open: state[props.storeKey].ui.get('filtersPanel') !== false,

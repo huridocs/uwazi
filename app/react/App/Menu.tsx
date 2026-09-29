@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import Immutable from 'immutable';
 import { wrapDispatch } from '#app/Multireducer/index.js';
@@ -16,6 +16,7 @@ import type { ClientSettingsLinkSchema } from '#app/apiResponseTypes.js';
 import type { IImmutable } from '#shared/types/Immutable.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface MenuProps {
   className: string;
@@ -36,7 +37,7 @@ const mapStateToProps = (state: IStore) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       setSidePanelView: actions.set.bind(null, 'library.sidepanel.view'),

@@ -10,7 +10,7 @@ import type {
 } from '#V2/formatters/types.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 

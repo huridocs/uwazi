@@ -78,27 +78,30 @@ const DatePickerComponent = React.forwardRef(
     {
       labelToday,
       labelClear,
-      label,
-      disabled,
-      placeholder,
-      hasErrors,
-      errorMessage,
+      label = '',
+      disabled = false,
+      placeholder = 'Select a date',
+      hasErrors = false,
+      errorMessage = '',
       value,
-      autoComplete,
+      autoComplete = 'off',
       id = uniqueID(),
       language = 'en',
       dateFormat,
       hideLabel = true,
       inputClassName = '',
       className = '',
-      name = '',
+      name = 'datePicker',
       onChange,
       clearFieldAction = () => {},
     }: DatePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
-    const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-    useImperativeHandle(forwardedRef, () => ref.current);
+    const ref = useRef<HTMLInputElement | null>(null);
+    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+      forwardedRef,
+      () => ref.current
+    );
 
     const showError = Boolean(hasErrors || errorMessage);
     const fieldStyles = showError
@@ -226,25 +229,6 @@ const DatePickerComponent = React.forwardRef(
     );
   }
 );
-
-DatePickerComponent.defaultProps = {
-  id: uniqueID(),
-  label: '',
-  disabled: false,
-  hideLabel: true,
-  placeholder: 'Select a date',
-  hasErrors: false,
-  errorMessage: '',
-  value: undefined,
-  inputClassName: '',
-  className: '',
-  autoComplete: 'off',
-  name: 'datePicker',
-  dateFormat: undefined,
-  clearFieldAction: () => {},
-  onChange: undefined,
-  onBlur: undefined,
-};
 
 export type { DatePickerProps };
 export { DatePickerComponent, datePickerOptionsByLocale, validateLocale };

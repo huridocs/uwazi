@@ -3,10 +3,6 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
-import keyBy from 'lodash/keyBy.js';
-import merge from 'lodash/merge.js';
-import intersectionBy from 'lodash/intersectionBy.js';
-import values from 'lodash/values.js';
 import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
@@ -18,6 +14,7 @@ import { registerTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js'
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
+import { TableLanguages, toTableLanguages } from './toTableLanguages.js';
 import {
   DefaultHeader,
   LabelHeader,
@@ -29,7 +26,6 @@ import {
   LanguageLabel,
 } from './components/TableComponents.js';
 
-type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();
 
 const languagesListLoader =
@@ -46,14 +42,10 @@ const LanguagesList = () => {
   const [showInstallModal, setShowInstallModal] = useState(false);
 
   const availableLanguages = useLoaderData() as LanguageSchema[];
-  const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
   const notInstalledLanguages = availableLanguages.filter(
     l => !collectionLanguages.find(cl => cl.key === l.key)
   );
-
-  const languages: TableLanguages[] = values(
-    merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
-  ).map(lang => ({ ...lang, rowId: lang.key }));
+  const languages = toTableLanguages(availableLanguages, collectionLanguages);
 
   const handleAction =
     (

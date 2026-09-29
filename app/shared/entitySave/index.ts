@@ -9,12 +9,9 @@ export {
 export {
   extractUploadIdFromMediaValue,
   filterReferencedPendingAttachments,
-  findFileLocalIdAttachmentIndex,
-  findUploadedAttachmentIndex,
   isUploadId,
   mapMediaMetadataForSave,
   mapMediaValue,
-  resolveMetadataAttachmentIndex,
 } from './mediaMetadata.js';
 export { mediaContextFromProperties, mediaContextFromTemplate } from './mediaContext.js';
 export { prepareEntityForSave } from './prepareEntityForSave.js';

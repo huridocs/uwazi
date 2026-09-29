@@ -24,7 +24,13 @@ const GeneratedContent = ({ rows }: { rows?: number }) => {
     );
   }
 
-  return <>{contents.map(content => content)}</>;
+  return (
+    <>
+      {contents.map(content => (
+        <>{content}</>
+      ))}
+    </>
+  );
 };
 
 export { GeneratedContent };

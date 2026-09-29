@@ -2056,6 +2056,22 @@ describe('Entity', () => {
         expect(entity.getTranslation('en').getValue('summary').value).toEqual([{ value: 'Text' }]);
       });
 
+      it('should not replace properties that were not assigned', () => {
+        const entity = loadedEntity();
+
+        entity.setTranslatedPropertyAssignments({
+          language: 'en',
+          assignments: [
+            assignment(entity, 'title', 'Updated'),
+            assignment(entity, 'summary', 'Text'),
+          ],
+        });
+
+        expect(entity.getTranslation('en').getValue('country').value).toEqual([
+          { value: 'fr', label: 'France' },
+        ]);
+      });
+
       it('should reject language-independent properties', () => {
         const entity = loadedEntity();
 

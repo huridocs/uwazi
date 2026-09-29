@@ -10,7 +10,7 @@ const mockUpdateEntityUrl: jest.Mock<(args: UpdateEntityUrlOptions) => void> = j
 
 jest.mock('#app/I18N/index.js', () => ({
   t: (_ctx: string, key: string) => key,
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({

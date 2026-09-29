@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
@@ -14,6 +14,7 @@ import { ModalTips } from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { IStore } from '#app/istore.js';
 import { Form } from '#app/Forms/Form.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {
@@ -24,7 +25,7 @@ const mapStateToProps = (state: IStore) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       searchDocuments: searchDocumentsAction,
