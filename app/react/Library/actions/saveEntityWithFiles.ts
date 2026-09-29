@@ -1,5 +1,4 @@
 import superagent, { MultipartValueSingle } from 'superagent';
-import { Dispatch } from 'redux';
 import groupBy from 'lodash/groupBy.js';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from '#app/istore.js';
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
@@ -9,8 +8,9 @@ import { constructFile, readFileAsBase64 } from '#shared/fileUploadUtils.js';
 import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
-const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
+const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: AppDispatch) => {
   const [attachments, supportingFiles] = entity.attachments
     ? entity.attachments.reduce(
         (accumulator, attachmentInfo) => {

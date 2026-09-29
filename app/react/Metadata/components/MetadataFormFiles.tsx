@@ -1,5 +1,5 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Field, actions } from 'react-redux-form';
 import { ClientFile } from '#app/istore.js';
@@ -7,6 +7,7 @@ import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { getFileExtension } from '#app/utils/getFileExtension.js';
 import uniqueID from '#shared/uniqueID.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
@@ -54,7 +55,7 @@ type EntityFilesProps = {
   model: string;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: EntityFilesProps) => {
+const mapDispatchToProps = (dispatch: AppDispatch, ownProps: EntityFilesProps) => {
   const { model, type } = ownProps;
   const path = type === 'attachment' ? `${model}.attachments` : `${model}.documents`;
   return bindActionCreators(

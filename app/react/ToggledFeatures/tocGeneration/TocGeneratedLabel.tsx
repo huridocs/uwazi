@@ -4,7 +4,7 @@ import { FileType } from '#shared/types/fileType.js';
 
 export interface TocGeneratedLabelProps {
   file: FileType;
-  children: React.ReactChild;
+  children: React.ReactElement | number | string;
 }
 
 export const TocGeneratedLabel = ({ file, children }: TocGeneratedLabelProps) => (

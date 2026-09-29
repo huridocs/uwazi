@@ -6,6 +6,9 @@ const isValidTagName = (tagName: string, sanitized: boolean): boolean => {
   return list.some(t => t.toLowerCase() === tagName.toLowerCase());
 };
 
+const isSyncNode = (node: React.ReactNode): node is Exclude<React.ReactNode, Promise<unknown>> =>
+  typeof node !== 'object' || node === null || !('then' in node);
+
 const ValidatedElement = (
   type: string | React.JSXElementConstructor<any>,
   props: (React.Attributes & { children?: React.ReactNode }) | null,
@@ -19,26 +22,26 @@ const ValidatedElement = (
   const validatedChildren = children.map(child => {
     if (Array.isArray(child)) {
       return child.map(c => {
-        const childProps = c.props as React.Attributes & { children?: React.ReactNode };
-        return React.isValidElement(c)
-          ? ValidatedElement(
-              c.type,
-              childProps,
-              React.Children.toArray(childProps.children),
-              sanitized
-            )
-          : c;
+        if (React.isValidElement<{ children?: React.ReactNode }>(c)) {
+          return ValidatedElement(
+            c.type,
+            c.props,
+            React.Children.toArray(c.props.children),
+            sanitized
+          );
+        }
+        return isSyncNode(c) ? c : null;
       });
     }
-    if (React.isValidElement(child)) {
+    if (React.isValidElement<{ children?: React.ReactNode }>(child)) {
       return ValidatedElement(
         child.type,
-        child.props as React.Attributes & { children?: React.ReactNode },
+        child.props,
         React.Children.toArray(child.props.children),
         sanitized
       );
     }
-    return child;
+    return isSyncNode(child) ? child : null;
   });
 
   return React.createElement(type, props, ...validatedChildren);

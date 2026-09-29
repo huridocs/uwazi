@@ -27,7 +27,7 @@ const EntityUrlHashUiContext = createContext('');
 const EntityUrlRawContext = createContext(false);
 
 const useRouterPageAtom = (page: string, store: ReturnType<typeof useStore>) => {
-  const routerPageRef = useRef<string | undefined>();
+  const routerPageRef = useRef<string | undefined>(undefined);
   if (routerPageRef.current !== page) {
     routerPageRef.current = page;
     setEntityPageAtom(page, store);

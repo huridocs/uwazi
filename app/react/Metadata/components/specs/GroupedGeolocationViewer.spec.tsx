@@ -1,4 +1,5 @@
 import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { enzymeProps } from '#app/utils/enzymeNode.js';
 import Immutable from 'immutable';
 import { ShallowWrapper } from 'enzyme';
 import {
@@ -59,12 +60,12 @@ describe('GroupedGeolocationViewer', () => {
     expect(component.find('GeolocationViewer').props().points?.length).toBe(3);
 
     const pills = component.find('Pill');
-    expect(pills.get(0).props.color).toBe('red');
-    expect(pills.get(0).props.children.props.children).toBe('Geolocation Label');
-    expect(pills.get(1).props.color).toBe('blue');
-    expect(pills.get(1).props.children.props.children).toBe('One');
-    expect(pills.get(2).props.color).toBe('blue');
-    expect(pills.get(2).props.children.props.children).toBe('Two');
+    expect(enzymeProps(pills.get(0)).color).toBe('red');
+    expect(enzymeProps(enzymeProps(pills.get(0)).children).children).toBe('Geolocation Label');
+    expect(enzymeProps(pills.get(1)).color).toBe('blue');
+    expect(enzymeProps(enzymeProps(pills.get(1)).children).children).toBe('One');
+    expect(enzymeProps(pills.get(2)).color).toBe('blue');
+    expect(enzymeProps(enzymeProps(pills.get(2)).children).children).toBe('Two');
     expect(pills.length).toBe(3);
   });
 });

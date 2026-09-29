@@ -6,7 +6,7 @@ exports[`Doc when target reference is specified should pass the target reference
   additionalText="passedAdditionalText"
   buttons={
     <div>
-      <Connect(ViewDocButton)
+      <Memo(Connect(ViewDocButton))
         processed={true}
         sharedId="id"
         storeKey="library"
@@ -60,7 +60,7 @@ exports[`Doc when target reference is specified should pass the target reference
             
           </span>
         </div>
-        <Connect(NeedAuthorization)
+        <Memo(Connect(NeedAuthorization))
           roles={
             Array [
               "admin",
@@ -81,7 +81,7 @@ exports[`Doc when target reference is specified should pass the target reference
               />
             </button>
           </ShowIf>
-        </Connect(NeedAuthorization)>
+        </Memo(Connect(NeedAuthorization))>
       </div>
       <div
         className="item-connection"
@@ -97,7 +97,7 @@ exports[`Doc when target reference is specified should pass the target reference
             
           </span>
         </div>
-        <Connect(NeedAuthorization)
+        <Memo(Connect(NeedAuthorization))
           roles={
             Array [
               "admin",
@@ -118,12 +118,12 @@ exports[`Doc when target reference is specified should pass the target reference
               />
             </button>
           </ShowIf>
-        </Connect(NeedAuthorization)>
+        </Memo(Connect(NeedAuthorization))>
       </div>
     </div>
   }
   labels={
-    <Connect(UploadEntityStatus)
+    <Memo(Connect(UploadEntityStatus))
       doc={
         Immutable.Map {
           "_id": "idOne",

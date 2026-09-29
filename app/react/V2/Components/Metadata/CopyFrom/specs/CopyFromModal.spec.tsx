@@ -243,10 +243,10 @@ describe('CopyFromModal', () => {
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByTestId('source-metadata-preview')).not.toBeInTheDocument();
 
-    const region = screen.getByRole('checkbox', { name: /Region/i });
+    const region = await screen.findByRole('checkbox', { name: /Region/i });
     const ratified = screen.getByRole('checkbox', { name: /Ratified ACHR/i });
     const accepts = screen.getByRole('checkbox', { name: /Accepts Court jurisdiction/i });
-    expect(region).toBeChecked();
+    await waitFor(() => expect(region).toBeChecked());
     expect(ratified).toBeChecked();
     expect(accepts).toBeChecked();
     expect(screen.getByText('North America')).toHaveClass('line-through');

@@ -91,6 +91,7 @@ class LoginComponent extends RouteHandler {
   }
 
   componentDidMount() {
+    super.componentDidMount();
     this.setState({ render: true });
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
 import { Icon } from '#app/UI/index.js';
@@ -8,6 +8,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { SelectionRectanglesSchema } from '#shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 type OwnPropTypes = {
   fieldName: string;
@@ -28,11 +29,11 @@ const mapStateToProps = (state: IStore) => ({
     .get('sourceRange') as unknown as Selection,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
+const mapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnPropTypes) => {
   const { fieldName, fieldId, model, fieldType, locale } = ownProps;
   return bindActionCreators(
     {
-      updateField: value => async (dis: Dispatch<{}>) => {
+      updateField: value => async (dis: AppDispatch) => {
         const action = await updateFormField(value, model, fieldType, locale);
         dis(action as ModelAction);
       },

@@ -28,6 +28,17 @@ const DEFAULT_COLOR = '#A4CAFE';
 const getGroupMarkers = (group: RelationshipGroup): RelationshipMarker[] =>
   group.type === 'cluster' ? group.references : [group.reference];
 
+const relationshipGroupKey = (group: RelationshipGroup): string => {
+  if (group.type === 'cluster') {
+    const ids = group.references
+      .map(marker => marker._id)
+      .sort()
+      .join(',');
+    return `cluster-${group.page}-${ids}`;
+  }
+  return `single-${group.reference._id}`;
+};
+
 const PageModeComponent = ({
   markerLayerHeight,
   onPointClick,
@@ -95,8 +106,8 @@ const PageModeComponent = ({
     });
 
   const markers = useMemo(() => {
-    const items = (pageClusters ?? []).map((element, index) => {
-      const key = `page-${element.page}-${element.top}-${index}`;
+    const items = (pageClusters ?? []).map(element => {
+      const key = relationshipGroupKey(element);
       const markerSize =
         element.type === 'cluster'
           ? computeClusterOuterSize(element.references.length)

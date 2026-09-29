@@ -32,7 +32,7 @@ const useWordSelection = ({
   onHighlightChange,
 }: UseWordSelectionArgs) => {
   const startIndexRef = useRef<number | null>(null);
-  const highlightRef = useRef<WordHighlight | undefined>();
+  const highlightRef = useRef<WordHighlight | undefined>(undefined);
   const wordsRef = useRef<PdfWord[]>([]);
   const onSelectRef = useLatest(onSelect);
   const onDeselectRef = useLatest(onDeselect);
