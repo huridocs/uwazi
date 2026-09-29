@@ -1,5 +1,4 @@
 import { ListPagesUseCase } from '#api/pages.v2/application/useCases/ListPages.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PagesDataSourceFactory } from './PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from './PageReleasesDataSourceFactory.js';
@@ -8,7 +7,7 @@ export class ListPagesUseCaseFactory {
   static default() {
     const { actor } = ExecutionContext;
     const tenant = ExecutionContext.currentTenant;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const transactionManager = ExecutionContext.mongoTransactionManager;
 
     return new ListPagesUseCase(
       {

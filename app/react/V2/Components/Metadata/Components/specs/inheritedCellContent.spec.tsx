@@ -8,7 +8,7 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { inheritedCellContent } from '../inheritedCellContent.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 
@@ -96,7 +96,7 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('cell').querySelector('.no-tailwind')).toBeTruthy();
+    expect(screen.getByTestId('cell').querySelector('.entity-markdown')).toBeTruthy();
     expect(screen.getByTestId('cell').innerHTML).toContain('<strong>');
   });
 
@@ -133,7 +133,7 @@ describe('inheritedCellContent', () => {
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '140');
   });
 
-  it('renders image inherited values with default density', () => {
+  it('renders image inherited values with compact density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -148,8 +148,8 @@ describe('inheritedCellContent', () => {
     );
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', '/api/files/photo.png');
-    expect(img.parentElement?.className).toContain('aspect-video');
-    expect(img.className).not.toContain('max-h-32');
+    expect(img).toHaveStyle({ objectFit: 'contain' });
+    expect(img.className).toContain('max-h-32');
   });
 
   it('renders inherited relationship values as entity pills with overlay handler', () => {

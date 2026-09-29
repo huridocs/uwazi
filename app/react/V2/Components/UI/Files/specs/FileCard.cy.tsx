@@ -6,6 +6,7 @@ import { FileCard, EntityFile } from '../FileCard.js';
 import { settingsAtom } from '../../../../../../../app/react/V2/atoms/index.js';
 import { FileType } from '../../../../../../shared/types/fileType.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { mockPdfFile, mockAudioFile } from './testHelpers.js';
 
 describe('FileCard', () => {
@@ -24,12 +25,14 @@ describe('FileCard', () => {
   }) => {
     return (
       <div className="tw-content">
-        <FileCard
-          file={file}
-          index={index}
-          onFileSelect={onFileSelect}
-          translations={translations}
-        />
+        <ThemeProvider>
+          <FileCard
+            file={file}
+            index={index}
+            onFileSelect={onFileSelect}
+            translations={translations}
+          />
+        </ThemeProvider>
       </div>
     );
   };
@@ -56,23 +59,23 @@ describe('FileCard', () => {
   it('should call onFileSelect when clicked', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').click({ force: true });
+    cy.get('[aria-label^="Select "]').click({ force: true });
     cy.get('@onFileSelect').should('have.been.calledWith', Cypress.sinon.match.object);
   });
 
   it('should call onFileSelect when Enter key is pressed', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').focus();
-    cy.get('[role="listitem"]').type('{enter}');
+    cy.get('[aria-label^="Select "]').focus();
+    cy.realPress('Enter');
     cy.get('@onFileSelect').should('have.been.called');
   });
 
   it('should call onFileSelect when Space key is pressed', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').focus();
-    cy.get('[role="listitem"]').type(' ');
+    cy.get('[aria-label^="Select "]').focus();
+    cy.realPress('Space');
     cy.get('@onFileSelect').should('have.been.called');
   });
 
@@ -141,7 +144,7 @@ describe('FileCard', () => {
     mount(
       <FileCardComponent file={mockPdfFile} index={0} onFileSelect={createOnFileSelectStub()} />
     );
-    cy.get('[role="listitem"]')
+    cy.get('[aria-label^="Select "]')
       .should('have.attr', 'aria-label')
       .and('include', 'Select Sample Document.pdf')
       .and('include', 'PDF')

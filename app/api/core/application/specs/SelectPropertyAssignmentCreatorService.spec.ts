@@ -9,7 +9,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { SelectPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
@@ -277,10 +276,12 @@ const fixtures: DBFixture = {
 
 const createSut = () =>
   testingEnvironment.runWithContext(() => {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: ExecutionContext.mongoTransactionManager,
+    });
 
     const sut = new SelectPropertyAssignmentCreatorService({
       thesauriDS,
@@ -606,10 +607,12 @@ describe('SelectPropertyAssignmentCreatorService', () => {
 
   it('should throw when validateRequired is true and a required select property has no value', async () => {
     const { sut } = await testingEnvironment.runWithContext(() => {
-      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+      const { transactionManager } = ExecutionContext;
       const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const settingsDS = SettingsDataSourceFactory.default({
+        transactionManager: ExecutionContext.mongoTransactionManager,
+      });
 
       return {
         sut: new SelectPropertyAssignmentCreatorService(

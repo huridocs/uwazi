@@ -52,7 +52,7 @@ describe('updateLinks', () => {
   it('should move an item from the root to a group', () => {
     const editedLink = { ...existinglinks[0] };
     const result = updateLinks({ ...editedLink, select: 'group1' }, existinglinks);
-    expect(result && result[0]._id).toEqual('link2');
+    expect(result && result[0].id).toEqual('link2');
     expect(result && result[1].subRows).toEqual([editedLink]);
   });
 

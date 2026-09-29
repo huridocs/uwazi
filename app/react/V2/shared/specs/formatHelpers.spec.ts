@@ -1,4 +1,9 @@
-import { formatBytes, getFileNameAndExtension, validEmailFormat } from '../formatHelpers.js';
+import {
+  formatBytes,
+  getFileNameAndExtension,
+  getMimetypeFromUrl,
+  validEmailFormat,
+} from '../formatHelpers.js';
 
 describe('Formatting helpers', () => {
   describe('bytes formatter', () => {
@@ -34,6 +39,16 @@ describe('Formatting helpers', () => {
         expect(extension).toEqual(expectedExtension);
       }
     );
+  });
+
+  describe('getMimetypeFromUrl', () => {
+    it('recognizes mpeg audio stored with the IANA .mpga extension', () => {
+      expect(getMimetypeFromUrl('/api/files/1790078270654848yvqnf86q.mpga')).toBe('audio/mpeg');
+    });
+
+    it('strips query strings before reading the extension', () => {
+      expect(getMimetypeFromUrl('/api/files/hearing.mp3?download=true')).toBe('audio/mpeg');
+    });
   });
 
   describe('validate email format', () => {

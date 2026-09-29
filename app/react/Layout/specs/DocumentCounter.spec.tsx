@@ -1,5 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { enzymeAt, enzymeProps } from '#app/utils/enzymeNode.js';
 import { DocumentCounter, EntityCounterProps } from '#app/Layout/DocumentCounter.js';
 
 describe('DocumentCounter', () => {
@@ -24,10 +25,10 @@ describe('DocumentCounter', () => {
   describe('relationships content', () => {
     it('should show the relationships count', () => {
       render();
-      expect(component.children().get(0).props.children[0]).toBe(3);
-      expect(component.children().get(1).props.children).toBe('relationships');
-      expect(component.children().get(3).props.children[0].props.children[1]).toBe('100');
-      expect(component.children().get(4).props.children).toBe('entities');
+      expect(enzymeAt(component.children().get(0), 0)).toBe(3);
+      expect(enzymeProps(component.children().get(1)).children).toBe('relationships');
+      expect(enzymeAt(enzymeAt(component.children().get(3), 0), 1)).toBe('100');
+      expect(enzymeProps(component.children().get(4)).children).toBe('entities');
     });
   });
 
@@ -35,12 +36,12 @@ describe('DocumentCounter', () => {
     it('should show the number of selected, shown and total entities', () => {
       delete props.totalConnectionsCount;
       render();
-      expect(component.children().get(0).props.children[1]).toBe(1);
-      expect(component.children().get(2).props.children).toBe('selected of');
-      expect(component.children().get(3).props.children[1]).toBe(5);
-      expect(component.children().get(5).props.children).toBe('shown of');
-      expect(component.children().get(6).props.children[1]).toBe('100');
-      expect(component.children().get(7).props.children).toBe('entities');
+      expect(enzymeAt(component.children().get(0), 1)).toBe(1);
+      expect(enzymeProps(component.children().get(2)).children).toBe('selected of');
+      expect(enzymeAt(component.children().get(3), 1)).toBe(5);
+      expect(enzymeProps(component.children().get(5)).children).toBe('shown of');
+      expect(enzymeAt(component.children().get(6), 1)).toBe('100');
+      expect(enzymeProps(component.children().get(7)).children).toBe('entities');
     });
 
     it('should show a + sign next to the total entities when hitsTotalRelation has the gte flag', () => {

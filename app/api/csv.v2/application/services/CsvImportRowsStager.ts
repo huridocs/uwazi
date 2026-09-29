@@ -26,6 +26,7 @@ type RowsAccumulatorParams = {
   emptyRowIndexes: number[];
   onRowProgress: (info: { importId: string; stagedRows: number }) => void;
   insertBatch: (rows: CsvImportRow[]) => Promise<void>;
+  generateId: () => string;
   batchSize: number;
   shouldContinue?: () => Promise<boolean>;
 };
@@ -43,13 +44,25 @@ type AccumulatorContext = {
 const canContinue = async (params: RowsAccumulatorParams) =>
   (await params.shouldContinue?.()) ?? true;
 
+const stopAccumulator = (ctx: AccumulatorContext) => {
+  ctx.stopped = true;
+  ctx.batch.splice(0, ctx.batch.length);
+};
+
+const stopIfCancelled = async (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
+  if (ctx.stopped || !(await canContinue(params))) {
+    stopAccumulator(ctx);
+    return true;
+  }
+  return false;
+};
+
 const flushBatch = async (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
   if (ctx.stopped || !ctx.batch.length) {
     return;
   }
   if (!(await canContinue(params))) {
-    ctx.stopped = true;
-    ctx.batch.splice(0, ctx.batch.length);
+    stopAccumulator(ctx);
     return;
   }
   const rowsToInsert = ctx.batch.splice(0, ctx.batch.length);
@@ -77,16 +90,28 @@ const assertHeaders = (ctx: AccumulatorContext) => {
 const shouldInsertEmptyRow = (ctx: AccumulatorContext) =>
   ctx.sortedEmptyIndexes[ctx.emptyPointer] === ctx.currentIndex;
 
-const addEmptyRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
-  const emptyRow = CsvImportRow.create({
+const createStagedRow = (
+  ctx: AccumulatorContext,
+  params: RowsAccumulatorParams,
+  values: string[]
+) =>
+  CsvImportRow.create({
+    id: params.generateId(),
     importId: params.importId,
     rowIndex: ctx.currentIndex,
     headers: ctx.headers!,
-    values: new Array(ctx.headers!.length).fill(''),
+    values,
   });
-  pushRow(ctx, params, emptyRow);
+
+const addEmptyRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
+  pushRow(ctx, params, createStagedRow(ctx, params, new Array(ctx.headers!.length).fill('')));
   ctx.currentIndex += 1;
   ctx.emptyPointer += 1;
+};
+
+const addDataRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams, values: string[]) => {
+  pushRow(ctx, params, createStagedRow(ctx, params, values));
+  ctx.currentIndex += 1;
 };
 
 const flushEmptyRows = async (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
@@ -119,9 +144,7 @@ const createRowsAccumulator = (params: RowsAccumulatorParams): RowsAccumulator =
       ctx.headers = parsedHeaders;
     },
     handleRow: async (values: string[]) => {
-      if (ctx.stopped || !(await canContinue(params))) {
-        ctx.stopped = true;
-        ctx.batch.splice(0, ctx.batch.length);
+      if (await stopIfCancelled(ctx, params)) {
         return;
       }
       assertHeaders(ctx);
@@ -129,14 +152,7 @@ const createRowsAccumulator = (params: RowsAccumulatorParams): RowsAccumulator =
       if (ctx.stopped) {
         return;
       }
-      const row = CsvImportRow.create({
-        importId: params.importId,
-        rowIndex: ctx.currentIndex,
-        headers: ctx.headers!,
-        values,
-      });
-      pushRow(ctx, params, row);
-      ctx.currentIndex += 1;
+      addDataRow(ctx, params, values);
       await ensureCapacity(ctx, params);
     },
     finalize: async () => {
@@ -166,6 +182,7 @@ export class CsvImportRowsStager {
   constructor(
     private deps: {
       fileStorage: FileStorage;
+      generateId: () => string;
     },
     options?: { batchSize?: number }
   ) {
@@ -185,6 +202,7 @@ export class CsvImportRowsStager {
       emptyRowIndexes,
       onRowProgress: params.onRowProgress,
       insertBatch: params.insertBatch,
+      generateId: this.deps.generateId,
       batchSize: this.batchSize,
       shouldContinue: params.shouldContinue,
     });

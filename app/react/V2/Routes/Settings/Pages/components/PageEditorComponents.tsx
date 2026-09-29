@@ -22,7 +22,7 @@ const HTMLNotification = ({ useLegacyMarkdown = true }: { useLegacyMarkdown?: bo
         </Translate>
         &nbsp;
         <Link
-          className="underline hover:text-primary-800"
+          className="underline hover:text-ink"
           target="_blank"
           to="https://docs.uwazi.io/docs/reference/page-visualization-components/"
           rel="noopener noreferrer"
@@ -48,7 +48,7 @@ const HTMLNotification = ({ useLegacyMarkdown = true }: { useLegacyMarkdown?: bo
         </Translate>
         &nbsp;
         <Link
-          className="underline hover:text-primary-800"
+          className="underline hover:text-ink"
           target="_blank"
           to="https://docs.uwazi.io/docs/reference/page-visualization-components/"
           rel="noopener noreferrer"

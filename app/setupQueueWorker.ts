@@ -5,14 +5,13 @@ import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import {
-  DefaultDispatcher,
+  PostgresRoundRobinQueueAdapter,
   RoundRobinQueueAdapter,
 } from '#api/core/libs/queue/configuration/factories.js';
 import {
@@ -27,18 +26,16 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
 import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJobScheduler.js';
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -72,18 +69,11 @@ function register<T extends Dispatchable>(
     const isSystem = isPrivilegedJob(dispatchable);
 
     await tenants.run(async () => {
-      deps = {
+      deps = ExecutionContextFactory.build({
         tenant: tenants.current(),
-        factories: {
-          transactionManager: TransactionManagerFactory.default,
-          postgresTransactionManager: PostgresTransactionManagerFactory.default,
-          jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
-          eventEmitter: EventEmitterFactory.default,
-          idGenerator: IdGeneratorFactory.default,
-          logger: LoggerFactory.default,
-          telemetryCollector: () => new TelemetryCollector('queue_job'),
-        },
-      };
+        telemetry: { kind: 'queue_job' },
+        overrides: { jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace) },
+      });
 
       const { userId } = job.params as any;
 
@@ -114,6 +104,9 @@ function register<T extends Dispatchable>(
   });
 }
 
+const queueAdapterFor = (backend: typeof config.queueBackend): QueueAdapter =>
+  backend === 'postgres' ? PostgresRoundRobinQueueAdapter() : RoundRobinQueueAdapter();
+
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
@@ -142,7 +135,8 @@ function setupQueueWorker(props?: Props) {
         setupWorkerSockets(redisClient);
       }
       logger.info('Connected to MongoDB');
-      const adapter = RoundRobinQueueAdapter();
+      const adapter = queueAdapterFor(config.queueBackend);
+      logger.info('Polling the job queue', { queueBackend: config.queueBackend });
       const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError);
 
       await tenants.setupTenants();
@@ -151,11 +145,14 @@ function setupQueueWorker(props?: Props) {
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
-      await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
-      logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
+      // 'system' jobs stay in Mongo until release 2, so only the Mongo worker schedules them.
+      if (config.queueBackend === 'mongo') {
+        await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
+        logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
 
-      await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
-      logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+        await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
+        logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+      }
 
       if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);

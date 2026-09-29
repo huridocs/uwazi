@@ -1,8 +1,9 @@
-import React, { useState, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 
 type FacetMode = 'and' | 'or';
 
@@ -72,8 +73,8 @@ const FacetRow = ({
   onExpand,
   reserveGutter = false,
 }: FacetRowProps) => (
-  <label
-    className={`flex cursor-pointer items-center rounded-sm py-1 pe-2 transition-colors hover:bg-warm ${
+  <div
+    className={`flex items-center rounded-sm py-1 pe-2 transition-colors hover:bg-warm ${
       child || expandable || reserveGutter ? 'ps-0' : 'ps-2'
     }`}
   >
@@ -82,10 +83,7 @@ const FacetRow = ({
         {expandable && (
           <button
             type="button"
-            onClick={event => {
-              event.preventDefault();
-              onExpand?.();
-            }}
+            onClick={onExpand}
             aria-label={expanded ? 'Collapse' : 'Expand'}
             className="flex cursor-pointer items-center justify-center rounded text-ink-tertiary hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30"
           >
@@ -96,22 +94,24 @@ const FacetRow = ({
         )}
       </span>
     )}
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onToggle}
-      className={checkboxInputClassName}
-    />
-    <span className="ms-2.5 flex min-w-0 flex-1 items-center gap-1.5">
-      {icon}
-      <span className="truncate text-sm text-ink">{label}</span>
-    </span>
-    <span
-      className={`shrink-0 text-sm tabular-nums ${bold ? 'font-bold text-ink' : 'font-normal text-ink-secondary'}`}
-    >
-      {count}
-    </span>
-  </label>
+    <label className="flex min-w-0 flex-1 cursor-pointer items-center">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        className={checkboxInputClassName}
+      />
+      <span className="ms-2.5 flex min-w-0 flex-1 items-center gap-1.5">
+        {icon}
+        <span className="truncate text-sm text-ink">{label}</span>
+      </span>
+      <span
+        className={`shrink-0 text-sm tabular-nums ${bold ? 'font-bold text-ink' : 'font-normal text-ink-secondary'}`}
+      >
+        {count}
+      </span>
+    </label>
+  </div>
 );
 
 type FacetTreeProps = {
@@ -132,12 +132,10 @@ const FacetTree = ({
   const groups = buckets.filter(bucket => bucket.id !== 'any');
   const reserveGutter = groups.some(bucket => Boolean(bucket.values?.length));
   const anyBucket = reserveGutter ? buckets.find(bucket => bucket.id === 'any') : undefined;
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
-    defaultExpanded
-      ? Object.fromEntries(
-          groups.filter(bucket => bucket.values?.length).map(bucket => [bucket.id, true])
-        )
-      : {}
+  const expandableIds = groups.filter(bucket => bucket.values?.length).map(bucket => bucket.id);
+  const { expanded, toggleExpanded } = useNestedGroupExpansion(
+    expandableIds,
+    defaultExpanded ? expandableIds : []
   );
 
   return (
@@ -156,9 +154,7 @@ const FacetTree = ({
               expandable={hasChildren}
               expanded={isExpanded}
               reserveGutter={reserveGutter}
-              onExpand={() =>
-                setExpanded(current => ({ ...current, [bucket.id]: !current[bucket.id] }))
-              }
+              onExpand={() => toggleExpanded(bucket.id)}
             />
             {hasChildren && isExpanded && (
               <TreeChildren>

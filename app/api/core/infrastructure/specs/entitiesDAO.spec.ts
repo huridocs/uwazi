@@ -369,6 +369,20 @@ describe('EntitiesDAO', () => {
         expect((entities[0] as any).metadata).toBeUndefined();
       });
 
+      /**
+       * Identity is not projectable. A caller that selects a subset still has to know which row
+       * it read, and Mongo returns `_id` on any inclusion projection — Postgres must match, or
+       * the mapper invents an id that belongs to no entity (F49).
+       */
+      it('should return the real _id of the row on a select projection', async () => {
+        const [entity] = await createDao().find(
+          { sharedId: 'entity1', language: 'en' },
+          { select: ['sharedId', 'title'] }
+        );
+
+        expect(entity._id.toString()).toBe(factory.idString('entity1-en'));
+      });
+
       it('should support sort', async () => {
         const entities = await createDao().find(
           {},
@@ -406,6 +420,15 @@ describe('EntitiesDAO', () => {
         );
         expect(entity!.title).toBe('entity1');
         expect((entity as any).metadata).toBeUndefined();
+      });
+
+      it('should return the real _id of the row on a select projection', async () => {
+        const entity = await createDao().findOne(
+          { sharedId: 'entity1', language: 'en' },
+          { select: ['sharedId', 'title'] }
+        );
+
+        expect(entity!._id.toString()).toBe(factory.idString('entity1-en'));
       });
     });
 
@@ -877,34 +900,23 @@ describe('EntitiesDAO', () => {
         expect(cloned).toHaveLength(5);
       });
 
-      it('should be idempotent on Mongo; a second run fails on Postgres (unique index)', async () => {
+      it('should be idempotent', async () => {
         const dao = createDao();
         await dao.cloneForLanguage('en', 'fr');
-        if (usePostgres) {
-          // Plain insert + unique (tenant_id, sharedId, language) index:
-          // re-cloning into a populated language violates the constraint.
-          await expect(dao.cloneForLanguage('en', 'fr')).rejects.toThrow();
-        } else {
-          // Mongo $setOnInsert upsert is a no-op for existing rows.
-          await dao.cloneForLanguage('en', 'fr');
-          expect(await createDao().find({ language: 'fr' })).toHaveLength(5);
-        }
+        await dao.cloneForLanguage('en', 'fr');
+        expect(await createDao().find({ language: 'fr' })).toHaveLength(5);
       });
 
-      it('should reject on Postgres when the target language already has entities; preserves them on Mongo', async () => {
+      it('should preserve existing target-language rows', async () => {
         const existing = factory.entity('entity1', 't1', {}, { language: 'fr', title: 'existing' });
         const fixtures = createFixtures();
         await testingEnvironment.setFixtures({
           ...fixtures,
           entities: [...(fixtures.entities || []), existing],
         });
-        if (usePostgres) {
-          await expect(createDao().cloneForLanguage('en', 'fr')).rejects.toThrow();
-        } else {
-          await createDao().cloneForLanguage('en', 'fr');
-          const entity1fr = await createDao().findOne({ sharedId: 'entity1', language: 'fr' });
-          expect(entity1fr!.title).toBe('existing');
-        }
+        await createDao().cloneForLanguage('en', 'fr');
+        const entity1fr = await createDao().findOne({ sharedId: 'entity1', language: 'fr' });
+        expect(entity1fr!.title).toBe('existing');
       });
 
       it('should call onBatch with cloned entities having the target language and no _id', async () => {

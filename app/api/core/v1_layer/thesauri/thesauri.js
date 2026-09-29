@@ -4,8 +4,6 @@ import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
-import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
@@ -105,7 +103,10 @@ const thesauri = {
   async templateToThesauri(template, language, countPerTemplate) {
     const _entities = await EntitiesDAOFactory.default().find(
       { template: template._id.toString(), language },
-      { select: ['title', 'icon', 'file', 'sharedId'], limit: preloadOptionsLimit() }
+      // `entitiesToThesauri` reads exactly these three. `file` used to ride along from the
+      // pre-V2 query and is not a field of an entity in either store; Mongo ignored it, Postgres
+      // answers `column "file" does not exist` for the whole request (F51).
+      { select: ['title', 'icon', 'sharedId'], limit: preloadOptionsLimit() }
     );
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, {
@@ -147,13 +148,6 @@ const thesauri = {
 
   async dictionaries() {
     return ThesauriDAOFactory.default().get();
-  },
-
-  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    if (isPostgresCoreActive()) {
-      return;
-    }
-    return denormalizeThesauriLabelInMetadata(valueId, newLabel, thesaurusId, language);
   },
 };
 

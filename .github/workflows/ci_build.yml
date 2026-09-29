@@ -64,6 +64,7 @@ jobs:
           path: |
             ./prod/dist
             ./prod/app
+            ./prod/apps
             ./prod/database
             ./prod/scripts
             ./prod/public

@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongodb';
 import { Knex } from 'knex';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
@@ -259,5 +260,17 @@ export class PostgresTransactionManager implements TransactionManager {
       this.persistentOnRetryHandlers.push(handler);
     }
     return this;
+  }
+
+  /**
+   * TEMPORARY migration bridge (part of the TransactionManager contract):
+   * Mongo-backed data sources (settings, pages, ...) call getSession() on
+   * whatever transaction manager they receive. Postgres has no session, so
+   * this returns undefined and their writes run session-less (auto-commit).
+   * Remove from the contract once those data sources migrate to Postgres.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  getSession(): ClientSession | undefined {
+    return undefined;
   }
 }

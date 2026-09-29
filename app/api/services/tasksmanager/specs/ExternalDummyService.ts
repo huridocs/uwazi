@@ -42,6 +42,13 @@ export class ExternalDummyService {
 
   private errorSimulation: { type?: string; status?: number; code?: string } = {};
 
+  // Number of times each endpoint has been hit, so specs can assert on retry behaviour
+  // rather than only on end state.
+  requestCounts: { resultsData: number } = { resultsData: 0 };
+
+  // When set, the next `remaining` results requests fail with `status`, then it succeeds.
+  private transientResultsFailure: { remaining: number; status: number } | undefined;
+
   public actualPort: number | undefined;
 
   constructor(port = 1234, serviceName = 'dummy', urlOptions = {}) {
@@ -110,6 +117,15 @@ export class ExternalDummyService {
 
     this.app.get(urls.resultsData, async (req, res) => {
       try {
+        this.requestCounts.resultsData += 1;
+
+        if (this.transientResultsFailure && this.transientResultsFailure.remaining > 0) {
+          const { status } = this.transientResultsFailure;
+          this.transientResultsFailure.remaining -= 1;
+          res.status(status).json({ error: `Simulated transient ${status} error` });
+          return;
+        }
+
         if (this.errorSimulation.type) {
           const error = new Error(`Simulated ${this.errorSimulation.type} error`);
           (error as any).code = this.errorSimulation.type;
@@ -264,6 +280,13 @@ export class ExternalDummyService {
     this.filesNames = [];
     this.materials = [];
     this.errorSimulation = {};
+    this.requestCounts = { resultsData: 0 };
+    this.transientResultsFailure = undefined;
+  }
+
+  /** Fail the next `times` results requests with `status`, then serve normally. */
+  failNextResultsRequests(times: number, status = 503) {
+    this.transientResultsFailure = { remaining: times, status };
   }
 
   simulateConnectionError(type: string) {

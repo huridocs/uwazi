@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayerModule, { ReactPlayerProps } from 'react-player';
+import { PlayIcon } from '@heroicons/react/20/solid';
+import { Translate } from '#app/I18N/index.js';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 
 const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
-import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -15,7 +15,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
     url?: string;
     fileName?: string;
   };
-  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer>>;
+  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer> | null>;
   className?: string;
 }
 
@@ -32,26 +32,56 @@ const verifyUrl = (url: string): MediaType => {
 };
 
 const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
-  const overlayBackgroundStyle = thumbnail?.url
-    ? {
-        backgroundImage: `url("${thumbnail.url}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
-    : { background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 6%, rgba(156,163,175,0.6) 50%)' };
-
-  const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';
+  if (thumbnail?.url) {
+    return (
+      <div
+        className="relative h-full w-full"
+        style={{
+          backgroundImage: `url("${thumbnail.url}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <p className="overflow-hidden p-4 text-left font-normal text-ellipsis whitespace-nowrap text-gray-100">
+          {thumbnail.fileName}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full h-full" style={overlayBackgroundStyle}>
-      <p
-        className={`overflow-hidden p-4 font-normal text-left text-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
-      >
+    <div className="relative h-full w-full bg-warm">
+      <p className="overflow-hidden p-4 text-left font-normal text-ellipsis whitespace-nowrap text-ink-muted">
         {thumbnail?.fileName}
       </p>
     </div>
   );
 };
+
+const filePlayerConfig = (
+  objectFit: React.CSSProperties['objectFit'] | undefined,
+  config: ReactPlayerProps['config'],
+  playerHeight: number
+): ReactPlayerProps['config'] => ({
+  ...config,
+  facebook: { attributes: { 'data-height': playerHeight }, ...config?.facebook },
+  ...(objectFit
+    ? {
+        file: {
+          ...config?.file,
+          attributes: {
+            ...config?.file?.attributes,
+            style: {
+              width: '100%',
+              height: '100%',
+              objectFit,
+              ...config?.file?.attributes?.style,
+            },
+          },
+        },
+      }
+    : {}),
+});
 
 const MediaPlayer = ({
   url,
@@ -60,20 +90,28 @@ const MediaPlayer = ({
   thumbnail,
   playerRef,
   className,
+  style,
+  config,
   ...props
 }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const [playerHeight, setPlayerHeight] = useState(0);
+  const [loadError, setLoadError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const mediaType: MediaType = verifyUrl(url);
 
   const playIconColor = thumbnail?.url
     ? 'text-gray-100 hover:text-white'
-    : 'text-gray-500 hover:text-gray-700';
+    : 'text-ink-muted hover:text-ink';
 
   const renderThumbnail =
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
+
+  useEffect(() => {
+    setLoadError(false);
+    setPlaying(false);
+  }, [url]);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -106,8 +144,17 @@ const MediaPlayer = ({
         </div>
       )}
 
-      {mediaType !== 'invalid' && playerHeight ? (
+      {mediaType !== 'invalid' && loadError && (
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full">
+          <p className="text-center">
+            <Translate>Error loading your media</Translate>
+          </p>
+        </div>
+      )}
+
+      {mediaType !== 'invalid' && playerHeight && !loadError ? (
         <ReactPlayer
+          key={url}
           ref={playerRef}
           className="absolute top-0 left-0"
           width="100%"
@@ -116,9 +163,7 @@ const MediaPlayer = ({
           url={url}
           playing={playing}
           light={renderThumbnail}
-          config={{
-            facebook: { attributes: { 'data-height': playerHeight } },
-          }}
+          config={filePlayerConfig(style?.objectFit, config, playerHeight)}
           playIcon={
             <PlayIcon
               className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`}
@@ -128,6 +173,7 @@ const MediaPlayer = ({
           onClickPreview={() => !playing && setPlaying(true)}
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...props}
+          onError={() => setLoadError(true)}
         />
       ) : (
         <div />

@@ -6,16 +6,36 @@ import {
 } from '#shared/utils/contrast.js';
 
 describe('getTemplatePillColors', () => {
-  it('uses accent as foreground when a light tint meets AA', () => {
-    const { background, foreground, ratio } = getTemplatePillColors('#2B56C1', '#F5F0E8');
-    expect(foreground).toBe('#2B56C1');
+  it('keeps a light tint and mixes accent toward ink in light theme', () => {
+    const { background, foreground, ratio } = getTemplatePillColors(
+      '#2B56C1',
+      '#F5F0E8',
+      '#1A1A1A'
+    );
+    expect(getRelativeLuminanceFromHex(background)).toBeGreaterThan(0.7);
+    expect(foreground).not.toBe('#2B56C1');
     expect(checkContrast(background, foreground).passesAA).toBe(true);
     expect(ratio).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('adjusts foreground when accent on tint cannot reach AA', () => {
-    const { background, foreground, ratio } = getTemplatePillColors('#9eb0fd', '#F5F0E8');
-    expect(foreground).not.toBe('#9eb0fd');
+  it('does not invert pastel accents into a dark chip on a light tint', () => {
+    const { background, foreground, ratio } = getTemplatePillColors(
+      '#AC94FA',
+      '#F5F0E8',
+      '#1A1A1A'
+    );
+    expect(getRelativeLuminanceFromHex(background)).toBeGreaterThan(0.7);
+    expect(checkContrast(background, foreground).passesAA).toBe(true);
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('keeps a dark tint in dark theme', () => {
+    const { background, foreground, ratio } = getTemplatePillColors(
+      '#AC94FA',
+      '#2A2A2A',
+      '#F5F0E8'
+    );
+    expect(getRelativeLuminanceFromHex(background)).toBeLessThan(0.3);
     expect(checkContrast(background, foreground).passesAA).toBe(true);
     expect(ratio).toBeGreaterThanOrEqual(4.5);
   });

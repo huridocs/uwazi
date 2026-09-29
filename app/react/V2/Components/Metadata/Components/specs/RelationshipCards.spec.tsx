@@ -11,7 +11,7 @@ import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { RelationshipCards } from '../RelationshipCards.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a href={props.to}>{children}</a>
   ),
@@ -166,8 +166,8 @@ describe('RelationshipCards multi-inherit grouping', () => {
 
     expect(screen.getByText('People involved')).toBeInTheDocument();
     expect(screen.queryByText('Role field')).not.toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Country' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Role' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Role/ })).toBeInTheDocument();
     expect(screen.getByText(/inherits/)).toHaveTextContent('Country, Role');
     expect(screen.getByText('Kenya')).toBeInTheDocument();
     expect(screen.getByText('Witness')).toBeInTheDocument();
@@ -202,7 +202,7 @@ describe('RelationshipCards multi-inherit grouping', () => {
     );
 
     const card = screen.getByText('People involved').closest('div.overflow-hidden') as HTMLElement;
-    expect(within(card).getByRole('columnheader', { name: 'Country' })).toBeInTheDocument();
+    expect(within(card).getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
     expect(within(card).getAllByRole('columnheader')).toHaveLength(2);
     expect(within(card).getByText('Kenya')).toBeInTheDocument();
   });

@@ -105,7 +105,7 @@ describe('Filters helpers', () => {
   });
 
   describe('sanitizeFilters', () => {
-    it('should remove _id from root items moved into groups, rowIds and transform subrows into items', () => {
+    it('should strip mongoose _id from the payload', () => {
       const result = sanitizeFilters([
         {
           id: 'randomGroupId',
@@ -139,7 +139,6 @@ describe('Filters helpers', () => {
       expect(result).toEqual([
         {
           id: 'randomGroupId',
-          _id: '1',
           name: 'Group 1',
           items: [
             {
@@ -154,7 +153,6 @@ describe('Filters helpers', () => {
         },
         {
           id: 'template_id1',
-          _id: '2',
           name: 'Template 1',
         },
       ]);
@@ -180,7 +178,6 @@ describe('Filters helpers', () => {
       expect(result).toEqual([
         {
           id: 'template_id1',
-          _id: '2',
           name: 'Template 1',
         },
       ]);

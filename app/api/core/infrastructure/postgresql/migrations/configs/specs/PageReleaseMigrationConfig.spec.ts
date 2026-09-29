@@ -101,6 +101,7 @@ describe('PageReleaseMigrationConfig copy', () => {
     const migrator = new MigrateCollectionToPostgres(testingDB.db(testingDB.dbName), TENANT);
     expect(await migrator.migrate(PageReleaseMigrationConfig)).toEqual({
       migrated: 1,
+      orphansSkipped: 0,
       skipped: false,
     });
 

@@ -130,7 +130,7 @@ function formatInnerLinkGeoMedia(
     return formatGeolocationProperty({ ...field, propertyGroup: undefined }, entity, d.templates);
   }
   if (t === 'media') {
-    return formatMediaProperty(field, d.meta);
+    return formatMediaProperty(field, d.meta, d.entityTemplate);
   }
   return null;
 }
@@ -141,7 +141,7 @@ function formatInnerImageRelationship(
 ): MetadataProperty | null {
   const t = field.type;
   if (IMAGE_INNER.has(t)) {
-    return formatImageProperty(field, d.meta, d.entityTemplate);
+    return formatImageProperty(field, d.meta, { template: d.entityTemplate });
   }
   if (t === 'relationship') {
     return formatRelationshipProperty(field, d.meta, d.entity.relations);
@@ -163,16 +163,12 @@ function formatDenormalizedNewRelationship(ctx: DenormCtx): MetadataProperty | n
     return null;
   }
   const innerType = findPropertyTypeByName(field.denormalizedProperty, templates);
-  if (!innerType) {
+  const flat = innerType ? flattenInheritedValues(metadata, field.name) : [];
+  if (!innerType || flat.length === 0) {
     return null;
   }
-  const flat = flattenInheritedValues(metadata, field.name);
-  if (flat.length === 0) {
-    return null;
-  }
-  const denormalizedMetadata: Entity['metadata'] = { [field.name]: flat };
   return formatByInnerType(innerField(field, innerType), {
-    meta: denormalizedMetadata,
+    meta: { [field.name]: flat },
     entity,
     templates,
     entityTemplate,

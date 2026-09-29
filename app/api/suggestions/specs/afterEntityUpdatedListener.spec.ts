@@ -95,6 +95,31 @@ describe('AfterEntityUpdatedListener', () => {
     expect(updateSuggestionsAfterEntityUpdate.execute).not.toHaveBeenCalled();
   });
 
+  it('should hand the previous entities to UpdateSuggestionsAfterEntityUpdate, so it can tell what changed', async () => {
+    const { updateSuggestionsAfterEntityUpdate, eventBus } = createSut();
+
+    const entities = factory.entityInMultipleLanguages(['en', 'es'], 'any_entity', 'template_a', {
+      text: [{ value: 'before' }],
+    });
+    const entitiesChanged = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'any_entity',
+      'template_a',
+      {
+        text: [{ value: 'after' }],
+      }
+    );
+
+    await eventBus.emit(
+      new EntityUpdatedEvent({ before: entities, after: entitiesChanged, targetLanguageKey: 'en' })
+    );
+
+    expect(updateSuggestionsAfterEntityUpdate.execute).toHaveBeenCalledWith({
+      entities: entitiesChanged,
+      previousEntities: entities,
+    });
+  });
+
   it('should call ProcessSuggestionsAfterTemplateChanged if template changed', async () => {
     const { processSuggestionsAfterTemplateChanged, eventBus } = createSut();
 
@@ -113,5 +138,52 @@ describe('AfterEntityUpdatedListener', () => {
     );
 
     expect(processSuggestionsAfterTemplateChanged.execute).toHaveBeenCalled();
+  });
+
+  it('should call UpdateSuggestionsAfterEntityUpdate once when the title changed in a changed language other than the target language', async () => {
+    const { updateSuggestionsAfterEntityUpdate, eventBus } = createSut();
+
+    const entities = factory.entityInMultipleLanguages(['en', 'es'], 'any_entity', 'template_a');
+    const entitiesChanged = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'any_entity',
+      'template_a',
+      {},
+      {},
+      { es: { title: 'título' } }
+    );
+
+    await eventBus.emit(
+      new EntityUpdatedEvent({
+        before: entities,
+        after: entitiesChanged,
+        targetLanguageKey: 'en',
+        changedLanguages: ['es'],
+      })
+    );
+
+    expect(updateSuggestionsAfterEntityUpdate.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not treat a changed language without a previous row as a template change', async () => {
+    const { processSuggestionsAfterTemplateChanged, eventBus } = createSut();
+
+    const entities = factory.entityInMultipleLanguages(['en'], 'any_entity', 'template_a');
+    const entitiesChanged = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'any_entity',
+      'template_a'
+    );
+
+    await eventBus.emit(
+      new EntityUpdatedEvent({
+        before: entities,
+        after: entitiesChanged,
+        targetLanguageKey: 'en',
+        changedLanguages: ['es'],
+      })
+    );
+
+    expect(processSuggestionsAfterTemplateChanged.execute).not.toHaveBeenCalled();
   });
 });

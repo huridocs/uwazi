@@ -2,18 +2,18 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t } from '#app/I18N/index.js';
 import type { ClientRelationshipType, Template } from '#app/apiResponseTypes.js';
-import { searchByTitle } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { FileType } from '#shared/types/fileType.js';
 import { getEntityPdfFiles } from './getEntityPdfFiles.js';
 import { runEntitySearch } from './runEntitySearch.js';
 import type { CreateRelationshipStep } from './createRelationshipModalTypes.js';
+import type { SearchService } from '#V2/services/contracts/SearchService.js';
 
 type UseCreateRelationshipModalStateParams = {
   selection: TextSelection | undefined;
   relationshipTypes: ClientRelationshipType[];
   templates: Template[];
-  searchFunction: (search: string) => ReturnType<typeof searchByTitle>;
+  searchFunction: SearchService['search'];
 };
 
 function useCreateRelationshipModalState({

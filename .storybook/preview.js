@@ -15,7 +15,7 @@ import {
   translationsAtom,
   userAtom,
 } from '../app/react/V2/atoms/index.js';
-import { checkContrast, parseColorToHex } from '../app/shared/utils/contrast.ts';
+import { checkContrast, parseColorToHex, WCAG_AA_LARGE_UI } from '../app/shared/utils/contrast.ts';
 import {
   buildStorybookThemeVars,
   getStorybookContrastChecks,
@@ -120,10 +120,12 @@ const decorators = [
           const checks = [];
 
           if (background && color) {
+            const { ratio } = checkContrast(background, color);
             checks.push({
               id: `button-text-${index}`,
               label: `${label} text`,
-              ...checkContrast(background, color),
+              ratio,
+              passesAA: ratio >= WCAG_AA_LARGE_UI,
             });
           }
 

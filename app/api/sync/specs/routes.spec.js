@@ -247,12 +247,14 @@ describe('sync', () => {
     });
 
     describe('when namespace is settings', () => {
-      it('should replace the incomming id with the local id', async () => {
-        const settings = {
+      it('should save inbound settings through the registered handler', async () => {
+        const handler = {
           save: jest.fn(),
-          get: async () => Promise.resolve([{ _id: 'slaveId' }]),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
         };
-        models.settings = () => settings;
+        SyncHandlerRegistry.register('settings', () => handler);
 
         req.body = {
           namespace: 'settings',
@@ -260,7 +262,7 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(settings.save).toHaveBeenCalledWith({ _id: 'slaveId', languages: 'ln' });
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'masterId', languages: 'ln' });
       });
     });
 

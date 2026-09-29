@@ -24,7 +24,7 @@ const privateInstanceMiddleware = async (req: Request, res: Response, next: Next
 
     const settings = await SettingsDataSourceFactory.default().get();
 
-    if (settings.private && !req.url.match(allowedApiMatch)) {
+    if (settings.isPrivate && !req.url.match(allowedApiMatch)) {
       if (req.url.match(forbiddenRoutesMatch)) {
         res.status(401);
         res.json({ error: 'Unauthorized' });

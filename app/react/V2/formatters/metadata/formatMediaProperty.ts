@@ -1,6 +1,8 @@
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import type { BaseMetadataProperty, MediaMetadataProperty, Timelink } from '../types';
+import { imageLayoutFromTemplate } from './formatImageProperty.js';
 import {
   resolvePropertyMetadataValues,
   resolvePropertyType,
@@ -29,7 +31,8 @@ const getFileType = (mimetype: string): string => {
 
 const formatMediaProperty = (
   property: BaseMetadataProperty,
-  metadata?: Entity['metadata']
+  metadata?: Entity['metadata'],
+  template?: ClientTemplateSchema
 ): MediaMetadataProperty | null => {
   const metadataValues = resolvePropertyMetadataValues(property, metadata);
   const type = resolvePropertyType(property, metadata);
@@ -37,6 +40,8 @@ const formatMediaProperty = (
   if (!isMediaType(type)) {
     return null;
   }
+
+  const { style, fullWidth } = imageLayoutFromTemplate(property, template);
 
   const formattedProperty: MediaMetadataProperty = {
     _id: property._id,
@@ -46,6 +51,8 @@ const formatMediaProperty = (
     label: property.label,
     inherited: property.inherited,
     inheritedType: property.inheritedType,
+    style,
+    fullWidth,
   };
 
   // eslint-disable-next-line max-statements
@@ -60,8 +67,8 @@ const formatMediaProperty = (
       const match = value.match(/^\(([^,]+),\s*({.*})\)$/);
 
       if (match) {
-        const fileUrl = match[1];
-        const timelinksData = JSON.parse(match[2]);
+        const [, fileUrl, timelinksJson] = match;
+        const timelinksData = JSON.parse(timelinksJson);
         const timelinks = processTimelines(timelinksData.timelinks);
         const fileName = fileUrl.split('/').pop() || 'Unknown file';
         const mimetype = getMimetypeFromUrl(fileUrl);

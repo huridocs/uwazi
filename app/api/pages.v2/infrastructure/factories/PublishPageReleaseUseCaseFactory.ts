@@ -1,6 +1,5 @@
 import { PublishPageReleaseUseCase } from '#api/pages.v2/application/useCases/PublishPageRelease.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PagesDataSourceFactory } from './PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from './PageReleasesDataSourceFactory.js';
@@ -9,7 +8,7 @@ export class PublishPageReleaseUseCaseFactory {
   static default() {
     const { actor } = ExecutionContext;
     const tenant = ExecutionContext.currentTenant;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const transactionManager = ExecutionContext.mongoTransactionManager;
 
     return new PublishPageReleaseUseCase(
       {

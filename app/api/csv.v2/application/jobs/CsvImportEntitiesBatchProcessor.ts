@@ -80,6 +80,7 @@ const processFailedRow = async (params: {
     csvImport: params.context.csvImport,
     row: params.row,
     error: params.error,
+    generateId: () => params.deps.idGenerator.generate(),
   });
   const rowError = failedState.errors[failedState.errors.length - 1];
 

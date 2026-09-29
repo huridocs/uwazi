@@ -17,7 +17,7 @@ export class MongoThesauriSyncHandler
   protected collectionName = 'dictionaries';
 
   constructor() {
-    super(getConnection(), TransactionManagerFactory.default(), { useSyncedCollection: false });
+    super(getConnection(), TransactionManagerFactory.mongo(), { useSyncedCollection: false });
   }
 
   async getById(id: string): Promise<ThesaurusDocument | null> {

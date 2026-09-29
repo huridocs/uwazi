@@ -1,47 +1,10 @@
 import { config } from '#api/config.js';
 import { handleError } from '#api/utils/index.js';
 import { appContext } from '#api/utils/AppContext.js';
-import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
+import type { Tenant } from './tenant.js';
+import { TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;
-
-type Tenant = {
-  name: string;
-  dbName: string;
-  indexName: string;
-  uploadedDocuments: string;
-  attachments: string;
-  customUploads: string;
-  activityLogs: string;
-  domain: string;
-  featureFlags?: {
-    s3Storage?: boolean;
-    esReplicas?: number;
-    sync?: boolean;
-    deactivateTestJob?: boolean;
-    paragraphExtraction?: boolean;
-    fileCacheHeaders?: boolean;
-    themeCustomization?: boolean;
-    newHeader?: boolean;
-    featureFlagEntityViewerv2?: boolean;
-    featureFlagLibraryV2?: boolean;
-    postgresCore?: boolean;
-    postgresPages?: boolean;
-    aiAssistant?: boolean;
-    aiAssistantServiceUrl?: string;
-    telemetry?: {
-      enabled?: boolean;
-      sampleRate?: number;
-    };
-    prometheus?: {
-      enabled?: boolean;
-      sampleRate?: number;
-    };
-  };
-  globalMatomo?: { id: string; url: string };
-  ciMatomoActive?: boolean;
-  maintenance?: boolean;
-};
 
 class Tenants {
   tenants: { [k: string]: Tenant };
@@ -76,7 +39,7 @@ class Tenants {
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
-    tenants.forEach((tenant: TenantDocument) => {
+    tenants.forEach((tenant: DBTenant) => {
       this.add(tenant);
     });
   }

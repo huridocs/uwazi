@@ -4,7 +4,7 @@ import {
   MongoDataSource,
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
@@ -21,7 +21,7 @@ import { MongoTemplatesDAO } from './MongoTemplatesDAO.js';
 
 type MongoTemplatesDataSourceDeps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   dao: MongoTemplatesDAO;
   options?: MongoDSOptions;
 };

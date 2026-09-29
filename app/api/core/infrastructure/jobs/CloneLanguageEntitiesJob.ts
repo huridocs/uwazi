@@ -16,6 +16,7 @@ import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Pair = {
   from: LanguageISO6391;
@@ -34,6 +35,7 @@ type JobDependencies = {
   settingsDS: SettingsDataSource;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 * 60 })
 @PrivilegedJob()
 class CloneLanguageEntitiesJob extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {
@@ -71,12 +73,16 @@ class CloneLanguageEntitiesJob extends UwaziJobHandler<Params> {
             });
           }
         }
-        await this.deps.settingsDS.setLanguageInstalling(to, false);
+        const settings = await this.deps.settingsDS.get();
+        settings.setLanguageInstalling(to, false);
+        await this.deps.settingsDS.update(settings);
       }
     } catch (e) {
       if (isLastAttempt) {
         for (const { to } of params.pairs) {
-          await this.deps.settingsDS.setLanguageInstalling(to, false);
+          const settings = await this.deps.settingsDS.get();
+          settings.setLanguageInstalling(to, false);
+          await this.deps.settingsDS.update(settings);
         }
       }
       throw e;

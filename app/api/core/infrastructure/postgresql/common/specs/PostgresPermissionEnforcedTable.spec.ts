@@ -525,6 +525,46 @@ describe('PostgresPermissionEnforcedTable', () => {
         table.upsert({ _id: 'ent-upsert-anon', name: 'nope', published: true, permissions: '[]' })
       ).rejects.toThrow('Anonymous users cannot insert');
     });
+
+    describe('ignoring conflicts', () => {
+      const conflict = { columns: ['_id', 'tenant_id'], ignore: true };
+
+      it('should insert new rows and leave conflicting rows untouched', async () => {
+        const table = createEnforcedTable(AccessContext.forActor(editor));
+
+        await table.upsert(
+          [
+            { _id: 'ent-none', name: 'overwritten', published: false, permissions: '[]' },
+            { _id: 'ent-ignored-new', name: 'new-row', published: false, permissions: '[]' },
+          ],
+          conflict
+        );
+
+        const existing = await adminTable().where({ _id: 'ent-none' }).first();
+        const inserted = await adminTable().where({ _id: 'ent-ignored-new' }).first();
+        expect(existing!.name).toBe('private-none');
+        expect(inserted!.name).toBe('new-row');
+      });
+
+      it('should not let anonymous insert', async () => {
+        const table = createEnforcedTable(AccessContext.forActor(anon));
+        await expect(
+          table.upsert(
+            { _id: 'ent-ignored-anon', name: 'nope', published: true, permissions: '[]' },
+            conflict
+          )
+        ).rejects.toThrow('Anonymous users cannot insert');
+      });
+    });
+
+    it('should reject conflict options it does not support', async () => {
+      await expect(
+        adminTable().upsert(
+          { _id: 'ent-none', name: 'nope', published: false, permissions: '[]' },
+          { columns: ['_id', 'tenant_id'], merge: ['name'] }
+        )
+      ).rejects.toThrow('upsert only supports the default conflict target');
+    });
   });
 
   describe('group permissions — read', () => {

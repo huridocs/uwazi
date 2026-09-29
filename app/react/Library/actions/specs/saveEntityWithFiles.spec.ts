@@ -8,6 +8,8 @@ import { APIURL } from '#app/config.js';
 import { readFileAsBase64, saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import { contentForFiles } from './fixtures.js';
 import { ClientEntitySchema } from '#app/istore.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 
 describe('saveEntityWithFiles', () => {
   const dispatch = jasmine.createSpy('dispatch');
@@ -113,6 +115,16 @@ describe('saveEntityWithFiles', () => {
       expect(mockUpload.field).toHaveBeenLastCalledWith('entity', JSON.stringify(entity));
 
       expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
+    });
+
+    it('should send the current UI locale as Content-Language', async () => {
+      getStore().set(localeAtom, 'es');
+      const mockUpload = mockSuperAgent();
+      jest.spyOn(mockUpload, 'set');
+
+      await saveEntityWithFiles({ title: 'Hola mundo', documents: [] }, dispatch);
+
+      expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
     });
 
     describe('Entity with main documents', () => {

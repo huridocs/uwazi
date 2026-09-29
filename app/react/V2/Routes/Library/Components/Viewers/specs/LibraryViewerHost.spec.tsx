@@ -9,6 +9,7 @@ import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js'
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LibraryViewerHost } from '../LibraryViewerHost.js';
+import { libraryTableColumns } from '../../libraryTableColumns.js';
 
 jest.mock('#app/Map/index.js', () => ({
   Map: ({ markers }: { markers?: unknown[] }) => (
@@ -23,10 +24,11 @@ const rows: LibrarySearchHit[] = [
     language: 'en',
     title: 'The State v. Example',
     template: 'template1',
+    creationDate: 1704067200000,
   },
 ];
 
-const renderViewer = (view: 'cards' | 'list' | 'map' | 'table' | 'timeline') =>
+const renderViewer = (view: 'cards' | 'map' | 'table') =>
   render(
     <MemoryRouter>
       <TestAtomStoreProvider
@@ -45,6 +47,8 @@ const renderViewer = (view: 'cards' | 'list' | 'map' | 'table' | 'timeline') =>
           onLoadMore={() => undefined}
           showThumbnail
           showMetadata
+          tableColumns={libraryTableColumns(templates, ['template1'])}
+          tableDensity="compact"
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
@@ -62,8 +66,10 @@ describe('LibraryViewerHost', () => {
     expect(screen.queryByText('Map view is not available yet.')).not.toBeInTheDocument();
   });
 
-  it('renders placeholders for views that are not implemented yet', () => {
+  it('renders the table viewer for the table view', () => {
     renderViewer('table');
-    expect(screen.getByText('Table view is not available yet.')).toBeInTheDocument();
+    expect(screen.getByTestId('library-table')).toBeInTheDocument();
+    expect(screen.getByText('The State v. Example')).toBeInTheDocument();
+    expect(screen.queryByText('Table view is not available yet.')).not.toBeInTheDocument();
   });
 });

@@ -51,7 +51,7 @@ describe('UsersMigrationConfig', () => {
       });
 
     const result = await makeMigrator().migrate(UsersMigrationConfig);
-    expect(result).toEqual({ migrated: 1, skipped: false });
+    expect(result).toEqual({ migrated: 1, orphansSkipped: 0, skipped: false });
 
     const rows = await testingPG.getAllFrom<UserPgRow>('users');
     expect(rows).toHaveLength(1);
@@ -107,6 +107,6 @@ describe('UsersMigrationConfig', () => {
 
     const result = await makeMigrator().migrate(UsersMigrationConfig);
 
-    expect(result).toEqual({ migrated: 0, skipped: true });
+    expect(result).toEqual({ migrated: 0, orphansSkipped: 0, skipped: true });
   });
 });

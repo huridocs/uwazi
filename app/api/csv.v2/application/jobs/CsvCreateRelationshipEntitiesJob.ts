@@ -184,6 +184,7 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
       importId,
       titlesByTemplate,
       chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
+      generateId: () => this.idGenerator.generate(),
       shouldContinue,
     });
 

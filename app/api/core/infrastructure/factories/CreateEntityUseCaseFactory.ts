@@ -9,7 +9,6 @@ import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { User } from '#api/users.v2/model/User.js';
 
@@ -32,7 +31,7 @@ class CreateEntityUseCaseFactory {
       actor = User.createFrom(permissionsContext.getUserInContext()!);
     }
 
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const idGenerator = IdGeneratorFactory.default();
 
     const settingsDS = SettingsDataSourceFactory.default();

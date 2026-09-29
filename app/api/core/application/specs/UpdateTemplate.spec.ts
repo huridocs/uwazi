@@ -438,7 +438,7 @@ describe('UpdateTemplateUseCase', () => {
     });
 
     if (postgresCore) {
-      it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
+      it('should revert the PG write when the transaction rolls back', async () => {
         const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
           updateTemplateTranslation: jest.fn().mockRejectedValue(new Error('Update failed')),
         });
@@ -464,7 +464,7 @@ describe('UpdateTemplateUseCase', () => {
         ).rejects.toThrow('Update failed');
 
         const templates = await getTemplates();
-        expect(templates.some((t: any) => t.name === 'Failing Update')).toBe(true);
+        expect(templates.some((t: any) => t.name === 'Failing Update')).toBe(false);
       });
     }
   });

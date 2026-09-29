@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
@@ -19,15 +19,12 @@ import {
   PropertyValue,
 } from './ixMaterials.js';
 import { IXServices } from './IXServices.js';
-import { IXModelsModel } from './IXModelsModel.js';
+import ixmodels from './ixmodels.js';
 import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {
-  const pairs = await IXSuggestionsModel.db
-    .find({ extractorId, useForTraining: true })
-    .select({ entityId: 1, language: 1 })
-    .lean();
+  const pairs = await IXSuggestionsDAOFactory.default().getTrainingMarked(extractorId);
   const unique = Array.from(new Set(pairs.map(p => `${p.entityId}::${p.language || ''}`)))
     .map(key => {
       const [sharedId, language] = key.split('::');
@@ -41,7 +38,7 @@ const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
 
 const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
-  const [model] = await IXModelsModel.get({ extractorId });
+  const model = await ixmodels.getByExtractorId(extractorId);
   const samplePolicy = model?.processRun?.samplePolicy;
   const pairs = await getMarkedEntityPairs(extractorId);
 
@@ -75,10 +72,7 @@ const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractor
 };
 
 async function getMarkedFileIds(extractorId: ObjectId) {
-  const marked = await IXSuggestionsModel.db
-    .find({ extractorId, useForTraining: true })
-    .select({ fileId: 1, entityId: 1, language: 1 })
-    .lean();
+  const marked = await IXSuggestionsDAOFactory.default().getTrainingMarked(extractorId);
   // Prefer fileId when present
   const fileIds = marked.map(m => m.fileId).filter((id): id is ObjectId => !!id);
   return Array.from(new Set(fileIds.map(id => id.toString()))).map(id => new ObjectId(id));
@@ -166,7 +160,7 @@ const buildPdfMaterialsForFiles = async (
 
 const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
-  const [model] = await IXModelsModel.get({ extractorId });
+  const model = await ixmodels.getByExtractorId(extractorId);
   const samplePolicy = model?.processRun?.samplePolicy;
   // Stage A: marked files
   const stageAFileIds = await getMarkedFileIds(extractorId);

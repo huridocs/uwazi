@@ -4,7 +4,6 @@ import { PostgresFilesDataSource } from '../postgresql/files/PostgresFilesDataSo
 import { FileStorageFactory } from '../files/FileStorageFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
 type Overrides = {
   transactionManager?: TransactionManager;
@@ -15,8 +14,7 @@ export class FilesDataSourceFactory {
     const db = getConnection();
     const { tenant } = ExecutionContext;
 
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
 
     if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.postgresTransactionManager;

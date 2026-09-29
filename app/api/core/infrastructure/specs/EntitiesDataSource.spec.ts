@@ -16,8 +16,10 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import {
+  EntityNotFoundError,
+  EntityTemplateDoesNotExistError,
+} from '#api/core/domain/entity/errors.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
@@ -477,6 +479,84 @@ describe('EntitiesDataSource', () => {
         ]);
       });
 
+      describe('when the entity gained a translation', () => {
+        const permissions: PermissionSchema[] = [
+          { refId: 'user-abc', type: 'user', level: 'write' },
+        ];
+
+        const setUpEntity = async (languages: LanguageISO6391[]) =>
+          testingEnvironment.setFixtures({
+            settings: [
+              {
+                languages: [
+                  { default: true, key: 'en', label: 'English' },
+                  { key: 'es', label: 'Spanish' },
+                  { key: 'pt', label: 'Portuguese' },
+                ],
+              },
+            ],
+            templates: [
+              factory.template('Template1', [
+                factory.property('text', 'text'),
+                factory.property('numeric', 'numeric'),
+              ]),
+            ],
+            entities: languages.map(language =>
+              factory.entity(
+                'translated',
+                'Template1',
+                {},
+                { language, title: `Stored ${language}`, published: true, permissions }
+              )
+            ),
+          });
+
+        const loadEnglishAndSpanishWithPortuguese = () => {
+          const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
+          const entity = createEntityWithIds('translated', ['en', 'es'], template);
+          entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+          entity.setPropertyAssignments(
+            [template.createPropertyAssignment('title', { value: [{ value: 'Saved pt' }] })],
+            'pt'
+          );
+          return entity;
+        };
+
+        const storedRows = async () =>
+          (await testingEnvironment.db.getAllFrom('entities'))
+            .filter(row => row.sharedId === 'translated')
+            .sort((a, b) => a.language.localeCompare(b.language));
+
+        it('should insert its row with the permissions of the entity', async () => {
+          await setUpEntity(['en', 'es']);
+          const { sut, transactionManager } = createSut();
+
+          await transactionManager.run(async () => {
+            await sut.update(loadEnglishAndSpanishWithPortuguese());
+          });
+
+          expect(await storedRows()).toMatchObject([
+            { language: 'en' },
+            { language: 'es' },
+            { language: 'pt', title: 'Saved pt', published: true, permissions },
+          ]);
+        });
+
+        it('should write onto the row created meanwhile by the language clone', async () => {
+          await setUpEntity(['en', 'es', 'pt']);
+          const { sut, transactionManager } = createSut();
+
+          await transactionManager.run(async () => {
+            await sut.update(loadEnglishAndSpanishWithPortuguese());
+          });
+
+          const rows = await storedRows();
+          expect(rows).toHaveLength(3);
+          expect(rows[2]).toMatchObject({ language: 'pt', title: 'Saved pt' });
+          expect(rows[2]._id.toString()).toBe(factory.idString('translated-pt'));
+        });
+      });
+
       it('should unset preview when the entity has no preview', async () => {
         const { sut, transactionManager } = createSut();
 
@@ -817,27 +897,324 @@ describe('EntitiesDataSource', () => {
     });
 
     describe('getSharedIdsUsingThesaurus', () => {
-      it('should return sharedIds of entities with non-empty metadata using thesaurus templates', async () => {
+      it('should return only sharedIds of entities referencing the given thesaurus values', async () => {
         await testingEnvironment.setFixtures({
           settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
           templates: [
-            factory.template('ThesaurusTemplate', [factory.relationshipProp('rel', 'thesaurus1')]),
+            factory.template('SelectTemplate', [
+              factory.property('select', 'select', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+              factory.property('multiselect', 'multiselect', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+            ]),
+            factory.template('InheritTemplate', [
+              factory.inherit('rel', 'SelectTemplate', 'select'),
+            ]),
             factory.template('OtherTemplate', [factory.property('text', 'text')]),
           ],
           entities: [
-            factory.entity('with-metadata', 'ThesaurusTemplate', {
-              rel: [{ value: 'value1', label: 'value1' }],
+            factory.entity('ref-value1', 'SelectTemplate', {
+              select: [{ value: 'value1', label: 'value1' }],
             }),
-            factory.entity('empty-metadata', 'ThesaurusTemplate', {}),
+            factory.entity('ref-value2', 'SelectTemplate', {
+              select: [{ value: 'value2', label: 'value2' }],
+            }),
+            factory.entity('ref-multiselect', 'SelectTemplate', {
+              multiselect: [{ value: 'value1', label: 'value1' }],
+            }),
+            factory.entity('empty-select', 'SelectTemplate', {}),
+            factory.entity('ref-inherited', 'InheritTemplate', {
+              rel: [
+                {
+                  value: 'ref-value1',
+                  label: 'ref-value1',
+                  inheritedValue: [{ value: 'value1', label: 'value1' }],
+                },
+              ],
+            }),
             factory.entity('other-template', 'OtherTemplate', { text: [{ value: 'x' }] }),
           ],
         });
 
         const { sut } = createSut();
 
-        const sharedIds = await sut.getSharedIdsUsingThesaurus(factory.id('thesaurus1').toString());
+        const sharedIds = await sut.getSharedIdsUsingThesaurus(
+          factory.id('thesaurus1').toString(),
+          ['value1']
+        );
 
-        expect(sharedIds).toEqual(['with-metadata']);
+        expect([...sharedIds].sort()).toEqual(['ref-inherited', 'ref-multiselect', 'ref-value1']);
+      });
+
+      it('should return no sharedIds when no value ids are provided', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('SelectTemplate', [
+              factory.property('select', 'select', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('ref-value1', 'SelectTemplate', {
+              select: [{ value: 'value1', label: 'value1' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsUsingThesaurus(
+          factory.id('thesaurus1').toString(),
+          []
+        );
+
+        expect(sharedIds).toEqual([]);
+      });
+    });
+
+    describe('getSharedIdsReferencing', () => {
+      it('should return sharedIds of entities whose relationship properties reference the given sharedIds', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [factory.template('RefTemplate', [factory.relationshipProp('rel')])],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('entity-b', 'RefTemplate', {}),
+            factory.entity('referencer-1', 'RefTemplate', {
+              rel: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-2', 'RefTemplate', {
+              rel: [{ value: 'entity-b', label: 'entity-b' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsReferencing(['entity-a']);
+
+        expect(sharedIds).toEqual(['referencer-1']);
+      });
+
+      it('should match relationship properties only, not select or multiselect', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('MixedTemplate', [
+              factory.property('select_prop', 'select'),
+              factory.property('multiselect_prop', 'multiselect'),
+              factory.relationshipProp('rel'),
+            ]),
+          ],
+          entities: [
+            factory.entity('target', 'MixedTemplate', {}),
+            factory.entity('select-matcher', 'MixedTemplate', {
+              select_prop: [{ value: 'target', label: 'target' }],
+            }),
+            factory.entity('multiselect-matcher', 'MixedTemplate', {
+              multiselect_prop: [{ value: 'target', label: 'target' }],
+            }),
+            factory.entity('relationship-matcher', 'MixedTemplate', {
+              rel: [{ value: 'target', label: 'target' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsReferencing(['target']);
+
+        expect(sharedIds).toEqual(['relationship-matcher']);
+      });
+
+      it('should return each referencing entity only once', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel1'),
+              factory.relationshipProp('rel2'),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('entity-b', 'RefTemplate', {}),
+            factory.entity('referencer-both-props', 'RefTemplate', {
+              rel1: [{ value: 'entity-a', label: 'entity-a' }],
+              rel2: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-both-targets', 'RefTemplate', {
+              rel1: [{ value: 'entity-a', label: 'entity-a' }],
+              rel2: [{ value: 'entity-b', label: 'entity-b' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsReferencing(['entity-a', 'entity-b']);
+
+        expect(sharedIds.sort()).toEqual(['referencer-both-props', 'referencer-both-targets']);
+      });
+
+      it('should return no sharedIds when no sharedIds are provided', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [factory.template('RefTemplate', [factory.relationshipProp('rel')])],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('referencer-1', 'RefTemplate', {
+              rel: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        expect(await sut.getSharedIdsReferencing([])).toEqual([]);
+      });
+
+      it('should return no sharedIds when no template has relationship properties', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [factory.template('PlainTemplate', [factory.property('text_prop', 'text')])],
+          entities: [
+            factory.entity('entity-a', 'PlainTemplate', {}),
+            factory.entity('other', 'PlainTemplate', { text_prop: [{ value: 'x' }] }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        expect(await sut.getSharedIdsReferencing(['entity-a'])).toEqual([]);
+      });
+    });
+
+    describe('getSharedIdsInheritingRelationshipFrom', () => {
+      it('should return sharedIds of entities whose relationship property inherits a relationship and references the given sharedIds', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel_inherit', 'target', {
+                inherit: { property: 'rel_target_prop', type: 'relationship' },
+              }),
+              factory.relationshipProp('rel_plain'),
+              factory.relationshipProp('rel_text_inherit', 'target', {
+                inherit: { property: 'text_target_prop', type: 'text' },
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('referencer-inherit', 'RefTemplate', {
+              rel_inherit: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-plain', 'RefTemplate', {
+              rel_plain: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-text-inherit', 'RefTemplate', {
+              rel_text_inherit: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsInheritingRelationshipFrom(['entity-a']);
+
+        expect(sharedIds).toEqual(['referencer-inherit']);
+      });
+
+      it('should return each referencing entity only once', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel_inherit1', 'target', {
+                inherit: { property: 'rel_target_prop', type: 'relationship' },
+              }),
+              factory.relationshipProp('rel_inherit2', 'target', {
+                inherit: { property: 'rel_target_prop', type: 'relationship' },
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('entity-b', 'RefTemplate', {}),
+            factory.entity('referencer-both-props', 'RefTemplate', {
+              rel_inherit1: [{ value: 'entity-a', label: 'entity-a' }],
+              rel_inherit2: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-both-targets', 'RefTemplate', {
+              rel_inherit1: [{ value: 'entity-a', label: 'entity-a' }],
+              rel_inherit2: [{ value: 'entity-b', label: 'entity-b' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsInheritingRelationshipFrom([
+          'entity-a',
+          'entity-b',
+        ]);
+
+        expect(sharedIds.sort()).toEqual(['referencer-both-props', 'referencer-both-targets']);
+      });
+
+      it('should return no sharedIds when no sharedIds are provided', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel_inherit', 'target', {
+                inherit: { property: 'rel_target_prop', type: 'relationship' },
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('referencer-inherit', 'RefTemplate', {
+              rel_inherit: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        expect(await sut.getSharedIdsInheritingRelationshipFrom([])).toEqual([]);
+      });
+
+      it('should return no sharedIds when no relationship property inherits a relationship', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel_plain'),
+              factory.relationshipProp('rel_text_inherit', 'target', {
+                inherit: { property: 'text_target_prop', type: 'text' },
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {}),
+            factory.entity('referencer-plain', 'RefTemplate', {
+              rel_plain: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+            factory.entity('referencer-text-inherit', 'RefTemplate', {
+              rel_text_inherit: [{ value: 'entity-a', label: 'entity-a' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        expect(await sut.getSharedIdsInheritingRelationshipFrom(['entity-a'])).toEqual([]);
       });
     });
 

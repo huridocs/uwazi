@@ -1,3 +1,4 @@
+// oxlint-disable max-statements
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
@@ -12,7 +13,7 @@ import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { PDFDocument } from '../domain/files/PDFDocument.js';
-import { EntitiesService } from './EntitiesService.js';
+import { EntitiesService, TranslationsInput } from './EntitiesService.js';
 
 type Input = {
   sharedId: string;
@@ -28,6 +29,7 @@ type Input = {
     fileId: string;
     selections: PropertySelectionSchema[];
   };
+  translations?: TranslationsInput;
 };
 
 type Output = Entity;
@@ -44,6 +46,13 @@ type Deps = {
 
 class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
+    if (input.translations) {
+      await this.deps.entitiesService.validateTranslationLanguages({
+        targetLanguage: input.language,
+        translations: input.translations,
+      });
+    }
+
     const entity = (await this.deps.entitiesDS.getById(input.sharedId)).getDataOrThrow();
 
     entity.update({
@@ -58,10 +67,24 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       entity.changeTemplate(newTemplate);
     }
 
+    if (input.translations) {
+      const [languages, defaultLanguage] = await Promise.all([
+        this.deps.settingsDS.getLanguageKeys(),
+        this.deps.settingsDS.getDefaultLanguageKey(),
+      ]);
+      entity.ensureTranslations(languages, defaultLanguage);
+    }
+
+    const attachments = input.uploadedFiles?.filter(file => file.isAttachment()) ?? [];
+
+    if (input.translations) {
+      await this.applyTranslations(entity, input.translations, attachments);
+    }
+
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
       input.propertyAssignments,
       entity.template,
-      input?.uploadedFiles?.filter(f => f.isAttachment()),
+      attachments,
       entity
     );
 
@@ -127,6 +150,27 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     return entity;
+  }
+
+  private async applyTranslations(
+    entity: Entity,
+    translations: TranslationsInput,
+    attachments: InputFile[]
+  ) {
+    await Promise.all(
+      Object.entries(translations).map(async ([language, values]) => {
+        const assignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
+          values ?? [],
+          entity.template,
+          attachments,
+          entity
+        );
+        entity.setTranslatedPropertyAssignments({
+          language: language as LanguageISO6391,
+          assignments,
+        });
+      })
+    );
   }
 }
 

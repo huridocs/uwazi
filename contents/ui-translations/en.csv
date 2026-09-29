@@ -100,6 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
+Already the same value.,Already the same value.
 Amount,Amount
 An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -115,6 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Any entity
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -131,7 +133,6 @@ Are you sure you want to delete this item?,Are you sure you want to delete this 
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
-Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -139,9 +140,11 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Attachments
 Authentication code,Authentication code
+Auto,Auto
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,auto-created
+Auto-translate,Auto-translate
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
 Available default translation,Available default translation
@@ -169,9 +172,9 @@ Cancelled,Cancelled
 Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
-Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
-The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
-header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
+Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA.
+The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a
+header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or
 malicious content."
 Cards,Cards
 Cards view,Cards view
@@ -193,6 +196,7 @@ Chart type uses a custom view,Chart type uses a custom view
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose PDF files,Choose PDF files
 Choose relation type,Choose relation type
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
@@ -219,8 +223,11 @@ Collection,Collection
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+Columns,Columns
 combine or exclude terms,combine or exclude terms
+Comfortable,Comfortable
 Common sources,Common sources
+Compact,Compact
 Completed,Completed
 Completed with errors,Completed with errors
 Config,Config
@@ -257,6 +264,8 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,Copy From
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,Copy Highlighted
 Copy link,Copy link
@@ -297,6 +306,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+Creation date,Creation date
 CSS,CSS
 csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
@@ -370,7 +380,6 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Density,Density
-Descending,Descending
 Description,Description
 Deselect all,Deselect all
 Details,Details
@@ -420,6 +429,7 @@ Each series uses the template brand color when comparing data sources.,Each seri
 Earlier,Earlier
 Edit,Edit
 Edit at source,Edit at source
+Edit date,Edit date
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -461,8 +471,10 @@ Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
+Error loading your media,Error loading your media
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
@@ -580,7 +592,6 @@ ID:,ID:
 "If you want to continue, please type","If you want to continue, please type"
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Import
-Import / Export CSV,Import / Export CSV
 Import asset,Import asset
 Import CSV,Import CSV
 Import failed. Review details below.,Import failed. Review details below.
@@ -632,12 +643,12 @@ Label,Label
 Labeled,Labeled
 Landing page,Landing page
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
-      
+
 A page: */page/dicxg0oagy3xgr7ixef80k9*
 A filtered view in Uwazi: */library/?searchTerm=test*
 An entity: */entity/9htbkgpkyy7j5rk9*
 A document: */document/4y9i99fadjp833di*
-      
+
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,Language
 Language Code,Language Code
@@ -684,6 +695,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,low
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Manage relationship types
 Manage site settings and configuration,Manage site settings and configuration
 Manage types,Manage types
@@ -698,10 +710,10 @@ Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Map view
 Mapbox,Mapbox
-Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
+Mapping conflict error,"A reindex of your collection is necessary. The reason may vary
         -- from certain changes made to a template's property to new fields
-        that need to be populated across entities. 
-        This process will not negatively affect the data in your collection. 
+        that need to be populated across entities.
+        This process will not negatively affect the data in your collection.
         It can last a few minutes and some parts of your collection might take
         some time to reappear in the Library, but this is temporary. Do you want to continue?"
 Maps,Maps
@@ -747,6 +759,7 @@ Months,Months
 More,More
 more,more
 more options.,more options.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
 Multiple date range,Multiple date range
@@ -895,6 +908,7 @@ Open the two-factor Authenticator app on your device,Open the two-factor Authent
 Options,Options
 or,or
 or drag and drop here,or drag and drop here
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,or drop your files here.
 Or paste a URL,Or paste a URL
 Order,Order
@@ -937,6 +951,7 @@ Permission on entities explicitly shared with the user,Permission on entities ex
 Permissions,Permissions
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,Plain text
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
@@ -1080,6 +1095,7 @@ Return to login,Return to login
 Review,Review
 Reviewed,Reviewed
 Role,Role
+Room around every row,Room around every row
 Route,Route
 Row,Row
 Row density,Row density
@@ -1104,6 +1120,7 @@ Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,Search
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search by title,Search by title
 Search entities...,Search entities...
 Search entities…,Search entities…
 Search item,Search item
@@ -1210,7 +1227,6 @@ Something went wrong,Something went wrong
 Sort,Sort
 Sort ascending,Sort ascending
 Sort descending,Sort descending
-Sort order,Sort order
 Sort:,Sort:
 sorted by,sorted by
 Source,Source
@@ -1361,6 +1377,7 @@ This table of contents was automatically created by the system.,This table of co
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Thumbnail,Thumbnail
+Thumbnail frame,Thumbnail frame
 Time,Time
 Time (UTC),Time (UTC)
 Timeline,Timeline
@@ -1388,7 +1405,9 @@ Training,Training
 Training model,Training model
 Training sample,Training sample
 Translate,Translate
+Translating,Translating
 Translation,Translation
+Translation service is unavailable,Translation service is unavailable
 Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
@@ -1435,6 +1454,7 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
+Upload,Upload
 Upload and select file,Upload and select file
 Upload from computer,Upload from computer
 Upload image,Upload image
@@ -1481,6 +1501,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
+"values are staged, not saved","values are staged, not saved"
 Verify,Verify
 Verifying...,Verifying...
 via,via

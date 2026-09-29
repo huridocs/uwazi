@@ -3,6 +3,8 @@
 
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer utilities;
 
 .tw-content {
@@ -27,6 +29,12 @@
   --text-8xl: calc(6rem * var(--v2-text-scale));
   --text-9xl: calc(8rem * var(--v2-text-scale));
   color-scheme: light;
+  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary));
+  --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
+  --color-border: var(--color-theme-border-primary);
+  --color-paper: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
+  --color-ink-tertiary: var(--color-theme-text-tertiary);
+  --color-carbon: var(--color-theme-accent-supporting);
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
@@ -34,18 +42,6 @@
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
-}
-
-@media (min-width: 1920px) {
-  .tw-content {
-    --v2-text-scale: 1.125;
-  }
-}
-
-@media (min-width: 180rem) {
-  .tw-content {
-    --v2-text-scale: 1.25;
-  }
 }
 
 /* Beat Bootstrap/vendor.css h1–h6/p margins; :where() stays overrideable by utilities */
@@ -67,6 +63,10 @@
 
 /* Portals (.fixed) and header chrome embeds reuse .tw-content for theme vars —
    do not paint canvas there or they cover the host surface. */
+.tw-content.dark {
+  color-scheme: dark;
+}
+
 .tw-content:not(.fixed):not(.tw-content--chrome) {
   background: var(--bg-primary, var(--color-theme-bg-primary, #f5f3f0));
 }
@@ -248,10 +248,13 @@
   --spacing-micro: 11px;
   --border-width-arrow: 7px;
 
-  /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (ink currentColor). */
-  --color-border: var(--color-theme-border-primary, #e0d9c8);
+  /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (OS dark → Canvas). */
+  --color-border: var(--color-theme-border-primary, #ede7db);
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
-  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917));
+  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a));
+  --color-paper: var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff));
+  --color-ink-tertiary: var(--color-theme-text-tertiary, #555555);
+  --color-carbon: var(--color-theme-accent-supporting, #00b4f0);
 }
 
 @layer theme {
@@ -269,7 +272,7 @@
 }
 
 @utility bg-paper {
-  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff));
+  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
 }
 
 @utility min-w-56 {
@@ -298,7 +301,7 @@
 @utility bg-ink-70 {
   background-color: color-mix(
     in srgb,
-    var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917)) 70%,
+    var(--color-theme-action-primary, var(--color-theme-text-primary)) 70%,
     transparent
   );
 }
@@ -306,7 +309,7 @@
 @utility bg-warm-30 {
   background-color: color-mix(
     in srgb,
-    var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8)) 30%,
+    var(--color-theme-surface-warm, var(--color-theme-bg-warm)) 30%,
     transparent
   );
 }
@@ -387,6 +390,10 @@
 }
 
 @utility bg-emphasis-solid {
+  background-color: var(--color-theme-accent-emphasis-solid);
+}
+
+@utility bg-seal-fill {
   background-color: var(--color-theme-accent-emphasis-solid);
 }
 
@@ -478,17 +485,25 @@
   background-color: var(--color-theme-accent-emphasis-tint);
 }
 
+@utility bg-seal-tint-40 {
+  background-color: color-mix(in srgb, var(--color-theme-accent-emphasis-tint) 40%, transparent);
+}
+
+@utility text-seal-label {
+  color: var(--color-theme-accent-emphasis-label);
+}
+
 @utility border-ink {
   border-color: var(--color-theme-border-interactive, var(--color-theme-text-primary));
 }
 
 @utility border-border {
-  border-color: var(--color-theme-border-primary, #e0d9c8);
+  border-color: var(--color-theme-border-primary);
 }
 
 /* TW opacity modifiers cannot mix nested theme vars — explicit soft chrome for cards. */
 @utility border-border-40 {
-  border-color: color-mix(in srgb, var(--color-theme-border-primary, #e0d9c8) 40%, transparent);
+  border-color: color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent);
 }
 
 @utility border-border-soft {
@@ -1025,4 +1040,14 @@ header button svg:not([class*='notification-kind-icon']),
   .flash-highlight {
     animation: none !important;
   }
+}
+
+.entity-markdown,
+.entity-markdown *:not([style]) {
+  all: revert !important;
+}
+
+.entity-markdown *:is(h1, h2, h3, h4, h5, h6, p):not([style]) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }

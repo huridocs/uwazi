@@ -8,6 +8,7 @@ import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Params = UwaziJobParams & {
   language: LanguageISO6391;
@@ -18,6 +19,7 @@ type JobDependencies = {
   webSockets: WebSockets;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 * 60 })
 @PrivilegedJob()
 class DeleteLanguageEntitiesJob extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {

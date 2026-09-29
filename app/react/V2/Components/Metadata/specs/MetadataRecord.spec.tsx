@@ -11,11 +11,12 @@ import { focusMetadataFieldAtom } from '../focusMetadataFieldAtom.js';
 import {
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
+  MEDIA_METADATA_FIELD_LAYOUT,
 } from '../metadataPropertyLayout.js';
 import { MetadataRecord } from '../MetadataRecord';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({
     children,
     to,
@@ -261,7 +262,7 @@ describe('MetadataRecord', () => {
   });
 
   // eslint-disable-next-line max-statements
-  it('packs image without fullWidth as compact in the masonry wrap', () => {
+  it('packs image without fullWidth as a media masonry cell', () => {
     const imageTemplate = {
       ...template,
       properties: [
@@ -308,8 +309,57 @@ describe('MetadataRecord', () => {
     expect(headings.indexOf('Summary')).toBeLessThan(headings.indexOf('Image'));
     expect(headings).not.toContain('Details');
     expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
-    expect(fieldEl('photo').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('photo').className).toContain(MEDIA_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('photo').className).not.toContain('flex-1');
+    expect(fieldEl('photo').className).not.toContain('basis-full');
     expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+  });
+
+  it('packs image with fullWidth inside the card, not as a pane block', () => {
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+          fullWidth: true,
+        },
+        { _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+        code: [{ value: 'ABC' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(fieldEl('photo').className).toContain(MEDIA_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('photo').className).not.toContain('flex-1');
+    expect(fieldEl('photo').className).not.toContain('basis-full');
+    expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'contain' });
+    expect(screen.getByRole('img').className).toContain('w-full');
+    expect(screen.getByRole('img').className).toContain('h-full');
+    expect(screen.getByRole('img').className).not.toContain('max-h-96');
+    expect(screen.getByRole('img').className).not.toContain('max-h-48');
+    expect(fieldEl('photo').closest('[data-property-row]')?.className).toContain('items-stretch');
+    expect(fieldEl('photo').closest('[data-property-row]')?.className).toContain('max-h-48');
   });
 
   // eslint-disable-next-line max-statements
@@ -379,6 +429,66 @@ describe('MetadataRecord', () => {
         fieldEl('photo').closest('[data-property-row]')?.getAttribute('data-property-row')
       ).toBe('photo clip');
     });
+    expect(fieldEl('photo').closest('[data-property-row]')?.className).toContain('grid-cols-2');
+    expect(fieldEl('photo').closest('[data-property-row]')?.className).toContain('items-stretch');
+    expect(fieldEl('photo').closest('[data-property-row]')?.className).toContain('max-h-96');
+    expect(fieldEl('photo').className).not.toContain('flex-1');
+    expect(fieldEl('clip').className).not.toContain('flex-1');
+  });
+
+  it('left-aligns leftover media on a 3-track row', () => {
+    mockClientWidth = 2560;
+    const imageTemplate = {
+      ...template,
+      properties: [
+        { _id: 'p-1', name: 'one', type: 'image' as const, label: 'One', style: 'cover' as const },
+        { _id: 'p-2', name: 'two', type: 'image' as const, label: 'Two', style: 'cover' as const },
+        {
+          _id: 'p-3',
+          name: 'three',
+          type: 'image' as const,
+          label: 'Three',
+          style: 'cover' as const,
+        },
+        {
+          _id: 'p-4',
+          name: 'four',
+          type: 'image' as const,
+          label: 'Four',
+          style: 'cover' as const,
+        },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        one: [{ value: '/1.jpg', alt: '1' }],
+        two: [{ value: '/2.jpg', alt: '2' }],
+        three: [{ value: '/3.jpg', alt: '3' }],
+        four: [{ value: '/4.jpg', alt: '4' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(fieldEl('one').closest('[data-property-row]')?.className).toContain('grid-cols-3');
+    expect(fieldEl('four').closest('[data-property-row]')?.className).toContain('grid-cols-3');
+    expect(fieldEl('four').closest('[data-property-row]')?.getAttribute('data-property-row')).toBe(
+      'four'
+    );
+    expect(fieldEl('four').className).toContain(MEDIA_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('four').className).not.toContain('flex-1');
+    expect(fieldEl('four').className).not.toContain('basis-full');
   });
 
   it('scrolls and flashes a masonry field when focusMetadataFieldAtom matches', () => {
@@ -551,7 +661,7 @@ describe('MetadataRecord', () => {
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
     expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Previewg'));
     expect(headings.indexOf('Previewg')).toBeLessThan(headings.indexOf('Relationshipc'));
-    expect(fieldEl('previewg').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('previewg').className).toContain(MEDIA_METADATA_FIELD_LAYOUT);
   });
 
   it('shows inheriting connections in template order without a Relationships heading', () => {
@@ -575,11 +685,12 @@ describe('MetadataRecord', () => {
     renderRecord();
 
     const rela = sectionForLabel('Relationshipa');
+    const table = within(rela).getByRole('table');
     expect(rela).toHaveTextContent('Inherited long text content for relationship a');
-    expect(within(rela).getByTestId('map')).toBeInTheDocument();
-    expect(within(rela).getByRole('link', { name: /A1/i })).toBeInTheDocument();
-    expect(within(rela).getByRole('columnheader', { name: 'Body text' })).toBeInTheDocument();
-    expect(within(rela).getByRole('columnheader', { name: 'Location' })).toBeInTheDocument();
+    expect(within(table).getByTestId('map')).toBeInTheDocument();
+    expect(within(table).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(within(table).getByRole('columnheader', { name: /Body text/ })).toBeInTheDocument();
+    expect(within(table).getByRole('columnheader', { name: /Location/ })).toBeInTheDocument();
 
     expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();

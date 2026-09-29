@@ -2,6 +2,8 @@ import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent'
 import { APIURL } from '#app/config.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 
 type Endpoint = 'attachment' | 'custom' | 'document' | 'createFromPDF';
 
@@ -19,10 +21,13 @@ class UploadService {
 
   private route: string;
 
+  private createsEntities: boolean;
+
   private extraFields: Record<string, string>;
 
   constructor(endpoint: Endpoint, extraFields: Record<string, string> = {}) {
-    if (endpoint === 'createFromPDF') {
+    this.createsEntities = endpoint === 'createFromPDF';
+    if (this.createsEntities) {
       this.route = `${APIURL}entities/create-from-pdf`;
     } else {
       this.route = `${APIURL}files/upload/${endpoint}`;
@@ -57,6 +62,10 @@ class UploadService {
     Object.entries(restFields).forEach(([key, value]) => {
       request.field(key, value);
     });
+
+    if (this.createsEntities) {
+      request.set('Content-Language', getStore().get(localeAtom));
+    }
 
     this.requests.push(request);
 

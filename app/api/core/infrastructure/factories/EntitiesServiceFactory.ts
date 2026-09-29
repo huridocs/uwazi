@@ -6,13 +6,12 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSourceFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
@@ -22,27 +21,27 @@ class EntitiesServiceFactory {
 
     return new EntitiesService({
       eventEmitter,
-      dispatcher: new DispatcherAdapter(jobsDispatcher),
+      dispatcher: DispatcherFactory.default(jobsDispatcher),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default(),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
       entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
-        transactionManager: transactionManager as MongoTransactionManager,
+        transactionManager,
       }),
       ...deps,
     });
   }
 
   static forTesting(_deps?: Partial<EntitiesServiceDeps>) {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
 
     const deps: EntitiesServiceDeps = {
       eventEmitter: EventEmitterFactory.forTesting(),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
-      dispatcher: new DispatcherAdapter(
+      dispatcher: DispatcherFactory.default(
         DefaultDispatcher(tenants.current().name, transactionManager)
       ),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),

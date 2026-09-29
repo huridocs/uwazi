@@ -330,7 +330,10 @@ describe('Entity edit', () => {
       cy.contains('Maria Rodriguez - Witness').should('exist');
       cy.contains('button', 'Add entity').should('exist');
       cy.contains('label', 'Related residents').should('not.exist');
-      cy.contains('Owner').closest('div.space-y-1\\.5').find('.overflow-x-auto').should('exist');
+      cy.contains('Owner')
+        .closest('div.space-y-1\\.5')
+        .find('[data-testid="relationship-connections"]')
+        .should('exist');
       cy.contains('Owner').closest('div.space-y-1\\.5').find('table').should('have.class', 'w-max');
     });
 

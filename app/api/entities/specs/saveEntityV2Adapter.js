@@ -6,8 +6,6 @@ import templates from '#api/core/v1_layer/templates/templates.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { User } from '#api/users.v2/model/User.js';
-import ID from '#shared/uniqueID.js';
-import { denormalizeMetadata } from '../denormalize.js';
 import { normalizeLegacyEntityForFacade, sanitizeForTemplate } from '../legacyMutationCommon.js';
 
 const getEntityWithDocs = async ({ sharedId, language }) => {
@@ -140,18 +138,4 @@ const saveEntityV2Adapter = async (doc, { user, language }, runWithContextOption
   );
 };
 
-const denormalizeEntityV2Adapter = async (_doc, { user, language }) =>
-  testingEnvironment.runWithContext(async () => {
-    const doc = initializeEntityForSave({ doc: _doc, user });
-    doc.sharedId = doc.sharedId || ID();
-    const [template, defaultTemplate] = await Promise.all([
-      getEntityTemplate(doc, language),
-      templates.getDefaultTemplate(),
-    ]);
-    const docTemplate = doc.template ? template : defaultTemplate;
-    const entity = sanitizeForTemplate(doc, docTemplate);
-    entity.metadata = await denormalizeMetadata(entity.metadata, entity.language, docTemplate);
-    return entity;
-  });
-
-export { denormalizeEntityV2Adapter, getEntityTemplate, saveEntityV2Adapter, toActorFromUser };
+export { getEntityTemplate, saveEntityV2Adapter, toActorFromUser };

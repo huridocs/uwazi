@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -589,6 +590,21 @@ describe('PostgresFilesDAO', () => {
 
       expect(files.length).toBeGreaterThanOrEqual(1);
       expect(files.every(f => ['entity_a', 'entity_x'].includes(f.entity!))).toBe(true);
+    });
+
+    /**
+     * Callers written against the Mongo DAO pass ObjectIds; the ids are stored as hex strings, so
+     * an ObjectId must match its hex id rather than silently matching nothing.
+     */
+    it('matches ids given as ObjectIds, in $in and in plain equality', async () => {
+      const dao = createSut();
+      const id = factory.idString('doc_x_en');
+
+      const byIn = await dao.getByQuery({ _id: { $in: [new ObjectId(id)] } });
+      const byEquality = await dao.getByQuery({ _id: new ObjectId(id) });
+
+      expect(byIn.map(f => f._id)).toEqual([id]);
+      expect(byEquality.map(f => f._id)).toEqual([id]);
     });
 
     it('returns matching files for a $nin query', async () => {

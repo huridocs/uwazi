@@ -1,4 +1,5 @@
 import { Entity } from '#V2/api/entities/types.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { BaseMetadataProperty } from '../../types.js';
 import { formatMediaProperty } from '../formatMediaProperty.js';
 
@@ -33,6 +34,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [
         {
           value: '/api/files/17774660700503j7omunsid6.mp4',
@@ -76,6 +79,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [
         {
           value: '/api/files/1777466473694conud25rxzq.webm',
@@ -105,6 +110,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [
         {
           value: '/api/files/video-one.mp4',
@@ -150,6 +157,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [
         {
           value: 'https://www.youtube.com/watch?v=RpJBHCc9VwM',
@@ -169,6 +178,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [],
       label: 'Media',
       inherited: undefined,
@@ -181,6 +192,8 @@ describe('formatMediaProperty', () => {
       _id: '1.15',
       name: 'media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [],
       label: 'Media',
       inherited: undefined,
@@ -214,6 +227,8 @@ describe('formatMediaProperty', () => {
       _id: '1.16',
       name: 'inherited_media',
       type: 'media',
+      style: 'cover',
+      fullWidth: false,
       values: [
         {
           value: '/api/files/inherited-video.mp4',
@@ -234,6 +249,26 @@ describe('formatMediaProperty', () => {
       label: 'Inherited Media',
       inherited: true,
       inheritedType: 'relationship',
+    });
+  });
+
+  it('uses template contain as Fit independent of fullWidth', () => {
+    const template = {
+      properties: [{ name: 'media', style: 'contain', fullWidth: true }],
+    } as ClientTemplateSchema;
+
+    expect(
+      formatMediaProperty(mediaProperty, { media: [{ value: '/api/files/photo.png' }] }, template)
+    ).toEqual({
+      _id: '1.15',
+      name: 'media',
+      type: 'media',
+      style: 'contain',
+      fullWidth: true,
+      values: [{ value: '/api/files/photo.png', timelinks: [] }],
+      label: 'Media',
+      inherited: undefined,
+      inheritedType: undefined,
     });
   });
 });

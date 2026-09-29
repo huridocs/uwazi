@@ -35,11 +35,7 @@ const hiddenStyle = (width?: number): CSSProperties => ({
 
 const getThemedPortalRoot = (from: HTMLElement | null) => {
   if (typeof document === 'undefined') return null;
-  return (
-    from?.closest<HTMLElement>('.tw-content') ||
-    document.querySelector<HTMLElement>('.tw-content') ||
-    document.body
-  );
+  return from?.closest<HTMLElement>('.tw-content') || document.body;
 };
 
 const sameStyle = (a: CSSProperties, b: CSSProperties) =>
@@ -49,12 +45,14 @@ const sameStyle = (a: CSSProperties, b: CSSProperties) =>
   a.minWidth === b.minWidth &&
   a.visibility === b.visibility;
 
-const placePanel = (
-  anchor: DOMRect,
-  panel: DOMRect,
-  prefer: 'start' | 'end',
-  width?: number
-): CSSProperties => {
+type PanelPlacement = {
+  anchor: DOMRect;
+  panel: DOMRect;
+  prefer: 'start' | 'end';
+  width?: number;
+};
+
+const placePanel = ({ anchor, panel, prefer, width }: PanelPlacement): CSSProperties => {
   const w = width ?? panel.width;
   let left = prefer === 'end' ? anchor.right - w : anchor.left;
   left = Math.min(Math.max(PAD, left), window.innerWidth - PAD - w);
@@ -73,6 +71,39 @@ const placePanel = (
     minWidth: width ? undefined : panel.width,
     zIndex: 60,
     visibility: 'visible',
+  };
+};
+
+type PanelBinding = {
+  panelRef: RefObject<HTMLDivElement | null>;
+  anchorRef: RefObject<HTMLElement | null>;
+  prefer: 'start' | 'end';
+  width?: number;
+  setStyle: React.Dispatch<React.SetStateAction<CSSProperties>>;
+};
+
+const bindPanelPlacement = ({ panelRef, anchorRef, prefer, width, setStyle }: PanelBinding) => {
+  const update = () => {
+    const anchor = anchorRef.current?.getBoundingClientRect();
+    const panel = panelRef.current?.getBoundingClientRect();
+    if (!anchor || !panel) return;
+    const next = placePanel({ anchor, panel, prefer, width });
+    setStyle(current => (sameStyle(current, next) ? current : next));
+  };
+
+  update();
+  window.addEventListener('resize', update);
+  window.addEventListener('scroll', update, true);
+
+  const panelEl = panelRef.current;
+  const observer =
+    panelEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
+  if (panelEl) observer?.observe(panelEl);
+
+  return () => {
+    window.removeEventListener('resize', update);
+    window.removeEventListener('scroll', update, true);
+    observer?.disconnect();
   };
 };
 
@@ -98,28 +129,7 @@ const AnchoredPortal = ({
       return undefined;
     }
 
-    const update = () => {
-      const anchor = anchorRef.current?.getBoundingClientRect();
-      const panel = panelRef.current?.getBoundingClientRect();
-      if (!anchor || !panel) return;
-      const next = placePanel(anchor, panel, prefer, width);
-      setStyle(current => (sameStyle(current, next) ? current : next));
-    };
-
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-
-    const panelEl = panelRef.current;
-    const observer =
-      panelEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
-    if (panelEl) observer?.observe(panelEl);
-
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
-      observer?.disconnect();
-    };
+    return bindPanelPlacement({ panelRef, anchorRef, prefer, width, setStyle });
   }, [open, anchorRef, prefer, width]);
 
   if (!open) return null;
@@ -133,7 +143,7 @@ const AnchoredPortal = ({
   return createPortal(
     <>
       <div
-        className={needsThemeScope ? 'tw-content fixed inset-0 z-50' : 'fixed inset-0 z-50'}
+        className={`${needsThemeScope ? 'tw-content ' : ''}fixed inset-0 z-50`}
         aria-hidden
         onClick={onClose}
       />

@@ -153,6 +153,86 @@ describe('RequestEntityTranslation', () => {
     });
   });
 
+  describe('when the client provided some translations', () => {
+    beforeEach(async () => {
+      const languageFromEntity = {
+        ...fixtures.entities?.find(e => e.language === 'en'),
+      } as EntitySchema;
+      languageFromEntity._id = languageFromEntity?._id?.toString();
+      languageFromEntity.template = languageFromEntity?.template?.toString();
+
+      await requestEntityTranslation.execute(languageFromEntity, {
+        providedTranslations: { es: ['title', 'text1'], pt: ['text1'] },
+      });
+    });
+
+    it('should not mark the provided values as pending', async () => {
+      const entities =
+        (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity1' }).toArray()) ||
+        [];
+      expect(entities.find(e => e.language === 'es')).toMatchObject({
+        title: 'entity1',
+        metadata: {
+          text1: [{ value: 'original text1' }],
+          text2: [{ value: `${RequestEntityTranslation.AITranslationPendingText} markdown text` }],
+        },
+      });
+      expect(entities.find(e => e.language === 'pt')).toMatchObject({
+        title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
+        metadata: { text1: [{ value: 'original text1' }] },
+      });
+    });
+
+    it('should only request the languages that were not provided', () => {
+      expect(taskManager.startTask).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'entity1', languages_to: ['pt'] })
+      );
+      expect(taskManager.startTask).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'markdown text', languages_to: ['es', 'pt'] })
+      );
+      expect(taskManager.startTask).not.toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'original text1' })
+      );
+    });
+  });
+
+  it('should not mark as pending the languages the translation service does not support', async () => {
+    await testingEnvironment.setFixtures({
+      ...fixtures,
+      entities: factory.entityInMultipleLanguages(['en', 'es', 'sw'], 'entity1', 'template1', {
+        text1: [{ value: 'original text1' }],
+      }),
+      settings: [
+        {
+          ...fixtures.settings![0],
+          languages: [
+            { label: 'en', key: 'en' as LanguageISO6391, default: true },
+            { label: 'es', key: 'es' as LanguageISO6391 },
+            { label: 'sw', key: 'sw' as LanguageISO6391 },
+          ],
+        },
+      ],
+    });
+    const languageFromEntity = {
+      ...factory.entity('entity1', 'template1', { text1: [{ value: 'original text1' }] }),
+    } as EntitySchema;
+    languageFromEntity._id = languageFromEntity._id?.toString();
+    languageFromEntity.template = languageFromEntity.template?.toString();
+
+    await requestEntityTranslation.execute(languageFromEntity);
+
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity1' }).toArray()) ||
+      [];
+    expect(entities.find(e => e.language === 'sw')).toMatchObject({
+      title: 'entity1',
+      metadata: { text1: [{ value: 'original text1' }] },
+    });
+    expect(entities.find(e => e.language === 'es')).toMatchObject({
+      title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
+    });
+  });
+
   it('should do nothing if entity.language is not supported', async () => {
     const entityWithNotSupportedLanguage = factory.entity(
       'entity2',

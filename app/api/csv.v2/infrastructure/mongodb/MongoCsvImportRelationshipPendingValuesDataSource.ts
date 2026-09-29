@@ -1,8 +1,9 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Db } from 'mongodb';
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
+import { fromMongoIdentity, toMongoIdentity } from './mongoIdentity.js';
 
 type RelationshipPendingValuesDBO = {
   importId: string;
@@ -17,7 +18,7 @@ class MongoCsvImportRelationshipPendingValuesDataSource
 {
   protected collectionName = 'csv_import_relationships_pending_values';
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager);
   }
 
@@ -29,19 +30,12 @@ class MongoCsvImportRelationshipPendingValuesDataSource
     if (!docs.length) {
       return;
     }
-    await this.getCollection().insertMany(docs.map(doc => doc.toPersistence()));
+    await this.getCollection().insertMany(docs.map(doc => toMongoIdentity(doc.toPersistence())));
   }
 
   async getByImport(importId: string): Promise<CsvImportRelationshipPendingValues[]> {
     const docs = await this.getCollection().find({ importId }).toArray();
-    return docs.map(doc =>
-      CsvImportRelationshipPendingValues.create({
-        importId: doc.importId,
-        templateId: doc.templateId,
-        titles: doc.titles,
-        createdAt: doc.createdAt,
-      })
-    );
+    return docs.map(doc => CsvImportRelationshipPendingValues.create(fromMongoIdentity(doc)));
   }
 }
 

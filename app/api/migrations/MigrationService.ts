@@ -7,7 +7,7 @@ import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
@@ -16,10 +16,9 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructure/writers/MigrationHumanReadableWriter.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import {
   JobRegistry,
   SyncJobsDispatcher,
@@ -79,13 +78,9 @@ type MigrationServiceDeps = {
   idGeneratorFactory: () => any;
 };
 
-const MIGRATION_LOCK_WINDOW_MS = 1000 * 60 * 60; // 1 hour
-
 const createDefaultDispatcher: DispatcherFactory = async (options: { async: boolean }) => {
   if (options.async) {
-    return DefaultDispatcher('system', TransactionManagerFactory.createForSharedDataBase(), {
-      lockWindow: MIGRATION_LOCK_WINDOW_MS,
-    });
+    return JobsDispatcherFactory.system();
   }
 
   const registry: JobRegistry = {};
@@ -117,7 +112,7 @@ const defaultDeps: MigrationServiceDeps = {
   createDispatcher: createDefaultDispatcher,
   createLogger: createDefaultLogger,
   pgMigratorFactory: createDefaultPgMigrator,
-  transactionManagerFactory: TransactionManagerFactory.default,
+  transactionManagerFactory: TransactionManagerFactory.mongo,
   postgresTransactionManagerFactory: PostgresTransactionManagerFactory.default,
   eventEmitterFactory: EventEmitterFactory.default,
   idGeneratorFactory: IdGeneratorFactory.default,
@@ -147,16 +142,17 @@ class MigrationService {
       }
     }
 
-    await ExecutionContext.run(
+    await ExecutionContextFactory.run(
       {
-        factories: {
+        telemetry: { kind: 'migration' },
+        overrides: {
           transactionManager: this.deps.transactionManagerFactory,
+          mongoTransactionManager: this.deps.transactionManagerFactory,
           postgresTransactionManager: this.deps.postgresTransactionManagerFactory,
           jobsDispatcher: () => dispatcher,
           eventEmitter: this.deps.eventEmitterFactory,
           idGenerator: this.deps.idGeneratorFactory,
           logger: () => logger,
-          telemetryCollector: () => new TelemetryCollector('migration'),
         },
       },
       async () => {

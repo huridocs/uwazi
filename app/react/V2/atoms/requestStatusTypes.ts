@@ -18,10 +18,12 @@ interface StatusTask {
   label: string;
   progress?: number;
   status: TaskStatus;
+  /** Why the task failed, as reported by whatever was watching it. Shown on a failed task. */
+  details?: string;
 }
 
 type TaskListenerUpdate = { label?: string; progress?: number };
-type TaskUpdate = TaskListenerUpdate & { status?: TaskStatus };
+type TaskUpdate = TaskListenerUpdate & { status?: TaskStatus; details?: string };
 type NotifyArgs = [NotificationType, string, string?, string?, Date?];
 
 type TaskListenerSetup = (

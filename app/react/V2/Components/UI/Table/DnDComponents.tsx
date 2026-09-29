@@ -17,17 +17,19 @@ const inactiveGradientStyle: CSSProperties = {
   transform: 'translate(-50%,-50%)',
   width: '16px',
   height: '80%',
-  background: 'radial-gradient(circle, #c5cae9 25%, transparent 26%) 0% 0% / 8px 10px',
+  background:
+    'radial-gradient(circle, var(--color-theme-accent-supporting) 25%, transparent 26%) 0% 0% / 8px 10px',
 };
 
 const activeGradientStyle: CSSProperties = {
   ...inactiveGradientStyle,
-  background: 'radial-gradient(circle, #303f9f 25%, transparent 26%) 0% 0% / 8px 10px',
+  background:
+    'radial-gradient(circle, var(--color-theme-accent-primary) 25%, transparent 26%) 0% 0% / 8px 10px',
 };
 
 const getSytles = (expanded: boolean, isOver: boolean, isDndDisable: boolean) => {
   const expandedGroupStyles = expanded
-    ? 'bg-primary-100 border-indigo-100 hover:bg-primary-200 hover:border-indigo-200'
+    ? 'bg-warm border-border hover:bg-parchment hover:border-border'
     : '';
   const dndHoverStyles = isOver && !isDndDisable ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;
@@ -47,7 +49,7 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
     if (canExpand && expanded && isDragging) {
       row.toggleExpanded();
     }
-  }, [isDragging]);
+  }, [isDragging, canExpand, expanded, row]);
 
   if (row.original.disableRowDnD) {
     return (

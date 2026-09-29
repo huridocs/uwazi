@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -10,10 +9,11 @@ import {
   createBlankSuggestionsForPartialExtractor,
 } from '#api/suggestions/blankSuggestions.js';
 import { Subset } from '#shared/tsUtils.js';
-import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { ObjectIdSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { IXExtractorModel as model } from './IXExtractorModel.js';
+import { IXExtractorsDAOFactory } from './infrastructure/IXExtractorsDAOFactory.js';
 import { IXErrorCode, IXValidationError } from './IXValidationError.js';
+import { ExtractorNotFound, ModelNotReadyError } from './errors.js';
 
 type AllowedPropertyTypes =
   | Subset<
@@ -54,7 +54,11 @@ const checkTypeIsAllowed = (type: string) => {
   return type;
 };
 
-const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
+const templatePropertyExistenceCheck = async (
+  propertyName: string,
+  templateIds: string[],
+  role: 'property' | 'source property' = 'property'
+) => {
   const tArray = await templates.get(templateIds);
   const usedTemplates = objectIndex(
     tArray,
@@ -77,7 +81,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     if (!property) {
       throw new IXValidationError(
         IXErrorCode.PROPERTY_MISSING,
-        `property "${propertyName}" does not exist in template "${id}"`
+        `${role} "${propertyName}" does not exist in template "${id}"`
       );
     }
 
@@ -85,8 +89,44 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
   });
 };
 
+/**
+ * Only the target property used to be checked. An extractor could therefore be saved with a
+ * source that can never produce text — a property missing from the templates, or a `source` that
+ * is neither `pdf` nor `property`, which the route schema permits because it declares no
+ * `required` inside `source`. The latter left the model stuck at `processing` (see the job's
+ * `UntrainableExtractorSource`); this rejects it at the point the user can still fix it.
+ */
+const extractorValidityCheck = async ({
+  source,
+  property,
+  templates: templateIds,
+}: Pick<NewExtractorType, 'source' | 'property'> & { templates: string[] }) => {
+  if (!templateIds.length) {
+    throw new IXValidationError(
+      IXErrorCode.TEMPLATES_REQUIRED,
+      'an extractor must target at least one template'
+    );
+  }
+
+  await templatePropertyExistenceCheck(property, templateIds);
+
+  if (source.pdf) {
+    return;
+  }
+
+  if (source.property) {
+    await templatePropertyExistenceCheck(source.property, templateIds, 'source property');
+    return;
+  }
+
+  throw new IXValidationError(
+    IXErrorCode.SOURCE_REQUIRED,
+    'an extractor source must be either a pdf or a property'
+  );
+};
+
 const handlePropertyUpdate = async (updatedExtractor: IXExtractorType) => {
-  await Suggestions.delete({ extractorId: updatedExtractor._id });
+  await Suggestions.deleteByExtractorId(updatedExtractor._id);
   await createBlankSuggestionsForExtractor(updatedExtractor);
 };
 
@@ -94,18 +134,22 @@ const handleTemplateUpdate = async (
   oldExtractor: IXExtractorType,
   newExtractor: IXExtractorType
 ) => {
-  const templatesRemoved = oldExtractor.templates
-    .filter(templateId => !newExtractor.templates.includes(templateId.toString()))
-    .map(templateId => templateId.toString());
+  // Both sides are normalised to strings before diffing. `templates` reaches here as ObjectIds
+  // on a plain array, so comparing an ObjectId against a string silently reports *every*
+  // template as both removed and added — which deleted every suggestion and recreated it blank
+  // on any update that left the templates alone, a rename included. Mongoose's arrays used to
+  // cast on `includes`, which is why this only surfaced once the DAO replaced the model.
+  const oldTemplateIds = oldExtractor.templates.map(templateId => templateId.toString());
+  const newTemplateIds = newExtractor.templates.map(templateId => templateId.toString());
 
-  const templatesAdded = newExtractor.templates.filter(
-    templateId => !oldExtractor.templates.find(template => template.toString() === templateId)
+  const templatesRemoved = oldTemplateIds.filter(
+    templateId => !newTemplateIds.includes(templateId)
   );
+  const templatesAdded = newTemplateIds.filter(templateId => !oldTemplateIds.includes(templateId));
 
-  await Suggestions.delete({
-    entityTemplate: { $in: templatesRemoved },
-    extractorId: oldExtractor._id,
-  });
+  if (templatesRemoved.length) {
+    await Suggestions.deleteByTemplatesAndExtractors(templatesRemoved, [oldExtractor._id]);
+  }
 
   if (templatesAdded.length) {
     await createBlankSuggestionsForPartialExtractor(newExtractor, templatesAdded);
@@ -118,21 +162,27 @@ class MissingExtractorError extends DomainError {
   }
 }
 
+const dao = () => IXExtractorsDAOFactory.default();
+
 const Extractors = {
-  get: model.get.bind(model),
-  getById: model.getById.bind(model),
-  get_all: async () => model.get({}),
+  getById: async (id: ObjectIdSchema) => dao().getById(id),
+  getByTemplate: async (templateId: ObjectIdSchema) => dao().getByTemplate(templateId),
+  getPropertySourceExtractorsForTemplate: async (templateId: ObjectIdSchema) =>
+    dao().getPropertySourceExtractorsForTemplate(templateId),
+  getPdfSourceExtractorsForTemplate: async (templateId: ObjectIdSchema) =>
+    dao().getPdfSourceExtractorsForTemplate(templateId),
+  get_all: async () => dao().getAll(),
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
-    const extractors = await model.get({ _id: { $in: ids } });
+    const extractors = await dao().getByIds(ids);
     if (extractors.length !== ids.length) throw new MissingExtractorError();
-    await model.delete({ _id: { $in: ids } });
-    await Suggestions.delete({ extractorId: { $in: ids } });
+    await dao().deleteByIds(ids);
+    await Suggestions.deleteByExtractorIds(ids);
   },
   create: async (extractor: NewExtractorType) => {
     const { name, source, property, templates: templateIds } = extractor;
-    await templatePropertyExistenceCheck(property, templateIds);
-    const saved = await model.save({
+    await extractorValidityCheck({ source, property, templates: templateIds });
+    const saved = await dao().create({
       name,
       source,
       property,
@@ -143,11 +193,11 @@ const Extractors = {
   },
   update: async (extractor: ExtractorType) => {
     const { _id, name, source, property, templates: templateIds } = extractor;
-    const [curentExtractor] = await model.get({ _id });
+    const curentExtractor = await dao().getById(_id);
     if (!curentExtractor) throw new MissingExtractorError();
-    await templatePropertyExistenceCheck(property, templateIds);
+    await extractorValidityCheck({ source, property, templates: templateIds });
 
-    const updated = await model.save({
+    const updated = await dao().update({
       ...curentExtractor,
       name,
       source,
@@ -168,31 +218,19 @@ const Extractors = {
     templateId: string,
     propertyNamesToKeep: string[]
   ) => {
-    const extractorsToUpdate = await model.get({
-      templates: templateId,
-      property: { $nin: propertyNamesToKeep },
-    });
+    const extractorsToUpdate = await dao().getByTemplateExcludingProperties(
+      templateId,
+      propertyNamesToKeep
+    );
 
     const extractorIds = extractorsToUpdate.map(extractor => extractor._id);
 
-    await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });
+    await dao().removeTemplateFromExtractors(extractorIds, templateId);
 
-    await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
-    await model.delete({ _id: { $in: extractorIds }, templates: { $size: 0 } });
+    await Suggestions.deleteByTemplatesAndExtractors([templateId], extractorIds);
+    await dao().deleteEmptyByIds(extractorIds);
   },
 };
-
-class ExtractorNotFound extends Error {
-  constructor(extractorId: string) {
-    super(`Extractor with ID ${extractorId} not found.`);
-  }
-}
-
-class ModelNotReadyError extends Error {
-  constructor(extractorId: string) {
-    super(`Model for extractor with ID ${extractorId} is not ready.`);
-  }
-}
 
 export type { AllowedPropertyTypes };
 export {

@@ -5,6 +5,11 @@ type Props = {
   field?: string;
 };
 
+/**
+ * The table's sort request, defaulted. It no longer emits a mongo sort document: translating a
+ * field and a direction into a store's ordering is the store's job, behind
+ * `IXSuggestionsTableQueryService`.
+ */
 export class Sorter {
   field: string;
 
@@ -13,25 +18,5 @@ export class Sorter {
   constructor(props: Props) {
     this.field = props.field ?? '';
     this.order = props.order ?? 'asc';
-  }
-
-  get orderAsNumber() {
-    if (this.order === 'asc') {
-      return 1;
-    }
-
-    return -1;
-  }
-
-  get isActive() {
-    return !!this.order && !!this.field?.length;
-  }
-
-  get $sort(): { date: 1; state: 1 } | Record<string, 1 | -1> {
-    if (!this.isActive) {
-      return { entityTitle: 1 };
-    }
-
-    return { [this.field]: this.orderAsNumber };
   }
 }

@@ -135,7 +135,7 @@ describe('upload routes', () => {
         .field('entity', 'non_existent_shared_id')
         .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
 
-      expect(response).toHaveStatus(422);
+      expect(response).toHaveStatus(404);
     });
 
     it('should upload the file', async () => {

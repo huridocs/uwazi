@@ -52,6 +52,7 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         actor: this.getActor(),
         targetLanguage: defaultLanguage,
         authorize: false,
+        denormalizeRelationships: false,
       });
 
       await ArrayUtils.sequentialFor(withRelationships, async entity => {
@@ -71,6 +72,7 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         actor: this.getActor(),
         targetLanguage: defaultLanguage,
         authorize: false,
+        denormalizeRelationships: false,
       });
     });
   }

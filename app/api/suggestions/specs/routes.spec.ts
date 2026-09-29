@@ -11,10 +11,12 @@ import {
   fixtures,
   shared6enId,
   stateFilterFixtures,
+  suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from '#api/suggestions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
+import { ModelNotReadyError } from '#api/services/informationextraction/errors.js';
 import { Suggestions } from '../suggestions.js';
 
 jest.mock(
@@ -25,11 +27,16 @@ jest.mock(
   }
 );
 
+/** Shared so a case can decide what training answers; `mock` prefix is what jest.mock allows. */
+const mockTrainModel = jest.fn();
+
 jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   InformationExtraction: class IXMock {
     status = jest.fn().mockResolvedValue({ status: 'ready' });
 
-    trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
+    // Delegates at call time: the instance is built while importing the routes, before the
+    // `const` above is initialised.
+    trainModel = (...args: unknown[]) => mockTrainModel(...args);
 
     testModel = jest.fn().mockResolvedValue({ status: 'processing' });
   },
@@ -39,6 +46,7 @@ let user: { _id: string; username: string; role: string } | undefined;
 const getUser = () => user;
 
 beforeEach(async () => {
+  mockTrainModel.mockResolvedValue({ status: 'processing' });
   user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
   jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 });
@@ -58,13 +66,25 @@ afterAll(async () => {
 describe('suggestions routes', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    await Suggestions.updateStates({});
+    await testingEnvironment.runWithContext(async () => Suggestions.recomputeAllStates());
   });
 
   describe('validation', () => {
     it('should return a validation error if params are not valid', async () => {
       const invalidQuery = { additionParam: true };
       const response = await request(app).get('/api/suggestions/').query(invalidQuery);
+      expect(response.status).toBe(400);
+    });
+
+    /** The sort order reaches the Postgres ORDER BY, so only a known direction may pass. */
+    it('should return a validation error for a sort order that is not asc or desc', async () => {
+      const response = await request(app)
+        .get('/api/suggestions/')
+        .query({
+          filter: JSON.stringify({ extractorId: factory.id('age_extractor').toString() }),
+          sort: JSON.stringify({ property: 'entityTitle', order: 'asc, (select 1/0)' }),
+        });
+
       expect(response.status).toBe(400);
     });
   });
@@ -98,6 +118,21 @@ describe('POST /api/suggestions/train', () => {
       .send({ extractorId: factory.id('super_powers_extractor').toString(), suggestionsToFind: 1 });
     expect(response.status).toBe(202);
     expect(response.body).toMatchObject({ status: 'processing' });
+  });
+
+  /**
+   * A run already in flight is a conflict the user can act on, not a server failure — and the
+   * route used to answer 500 for everything it caught (F52, F36's counterpart for training).
+   */
+  it('should answer 409 when a run already holds the model', async () => {
+    mockTrainModel.mockRejectedValueOnce(new ModelNotReadyError('super_powers_extractor'));
+
+    const response = await request(app)
+      .post('/api/suggestions/train')
+      .send({ extractorId: factory.id('super_powers_extractor').toString() });
+
+    expect(response.status).toBe(409);
+    await expect(response.body.error).toMatch(/not ready|processing|training/i);
   });
 
   it('should accept options.samplePolicy', async () => {
@@ -236,6 +271,32 @@ describe('POST /api/suggestions/accept', () => {
       );
 
       expect(iosocket.emit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it.each([
+    {
+      case: 'a suggestion that does not exist',
+      suggestions: [{ _id: new ObjectId().toString(), sharedId: 'shared6', entityId: shared6enId }],
+      message: 'Suggestion(s) not found.',
+    },
+    {
+      case: 'a batch spanning two extractors',
+      suggestions: [
+        { _id: suggestionSharedId6Title.toString(), sharedId: 'shared6', entityId: shared6enId },
+        { _id: suggestionSharedId6Enemy.toString(), sharedId: 'shared6', entityId: shared6enId },
+      ],
+      message: 'All suggestions must come from the same extractor',
+    },
+  ])('should emit the reason "$message" for $case', async ({ suggestions, message }) => {
+    await request(app).post('/api/suggestions/accept').send({ suggestions }).expect(202);
+
+    await waitForExpect(() => {
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'ACCEPT_SUGGESTION_ERROR',
+        TestEmitSources.session,
+        message
+      );
     });
   });
 });

@@ -41,7 +41,7 @@ describe('PasswordRecoveryMigrationConfig', () => {
       });
 
     const result = await makeMigrator().migrate(PasswordRecoveryMigrationConfig);
-    expect(result).toEqual({ migrated: 1, skipped: false });
+    expect(result).toEqual({ migrated: 1, orphansSkipped: 0, skipped: false });
 
     const rows = await testingPG.getAllFrom<PasswordRecoveryPgRow>('password_recoveries');
     expect(rows).toHaveLength(1);
@@ -77,6 +77,6 @@ describe('PasswordRecoveryMigrationConfig', () => {
     const migrator = makeMigrator();
     const result = await migrator.migrate(PasswordRecoveryMigrationConfig);
 
-    expect(result).toEqual({ migrated: 0, skipped: true });
+    expect(result).toEqual({ migrated: 0, orphansSkipped: 0, skipped: true });
   });
 });

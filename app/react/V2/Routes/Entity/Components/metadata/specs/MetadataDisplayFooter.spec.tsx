@@ -80,6 +80,48 @@ const renderFooters = async (deleteFn: jest.Mock) => {
   });
 };
 
+const expectButtons = (name: string, disabled: boolean) => {
+  screen.getAllByRole('button', { name }).forEach(button => {
+    if (disabled) {
+      expect(button).toBeDisabled();
+      return;
+    }
+    expect(button).not.toBeDisabled();
+  });
+};
+
+const expectFooterActions = (disabled: boolean) => {
+  expectButtons('Edit', disabled);
+  expectButtons('Share', disabled);
+  expectButtons('Delete', disabled);
+};
+
+const confirmDeletes = (...indexes: number[]) => {
+  const deletes = screen.getAllByRole('button', { name: 'Delete' });
+  indexes.forEach(index => fireEvent.click(deletes[index]));
+  const accepts = screen.getAllByTestId('accept-button');
+  expect(accepts).toHaveLength(indexes.length);
+  accepts.forEach(accept => fireEvent.click(accept));
+};
+
+const deferredDelete = () => {
+  let resolveDelete: (value: [undefined]) => void = () => undefined;
+  const deleteFn = jest.fn(
+    async () =>
+      new Promise<[undefined]>(resolve => {
+        resolveDelete = resolve;
+      })
+  );
+  return {
+    deleteFn,
+    resolve: async () => {
+      await act(async () => {
+        resolveDelete([undefined]);
+      });
+    },
+  };
+};
+
 describe('MetadataDisplayFooter', () => {
   let invalidateSpy: jest.SpyInstance;
 
@@ -97,7 +139,19 @@ describe('MetadataDisplayFooter', () => {
     expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Share' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
+    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
+      expect(button.className).toContain('text-seal-label');
+      expect(button.className).toContain('bg-seal-tint-40');
+    });
     expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
+  });
+
+  it('shows Copy from with Cancel and Save while editing', async () => {
+    await renderFooters(jest.fn().mockResolvedValue([undefined]));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+    expect(await screen.findByRole('button', { name: /Copy from/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
   it('opens a danger confirmation with locked copy and cancels without deleting', async () => {
@@ -126,57 +180,25 @@ describe('MetadataDisplayFooter', () => {
   it('deletes, notifies, invalidates, records the atom, and navigates away', async () => {
     const deleteFn = jest.fn().mockResolvedValue([undefined]);
     await renderFooters(deleteFn);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
-    fireEvent.click(screen.getByTestId('accept-button'));
-    await waitFor(() => {
-      expect(deleteFn).toHaveBeenCalledWith(['s1']);
-    });
+    confirmDeletes(0);
+    await waitFor(() => expect(deleteFn).toHaveBeenCalledWith(['s1']));
     expect(screen.getByTestId('notification-success')).toHaveTextContent('Entity deleted');
     expect(invalidateSpy).toHaveBeenCalledWith('s1');
     expect(screen.getByTestId('deleted-entity').textContent).toBe('s1');
     expect(mockNavigate).toHaveBeenCalledWith(-1);
     expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
-    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
-      expect(button).not.toBeDisabled();
-    });
-    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
-      expect(button).not.toBeDisabled();
-    });
+    expectButtons('Edit', false);
   });
 
   it('shares in-flight across twin hosts so overlapping delete cannot run', async () => {
-    let resolveDelete: (value: [undefined]) => void = () => undefined;
-    const deleteFn = jest.fn(
-      async () =>
-        new Promise<[undefined]>(resolve => {
-          resolveDelete = resolve;
-        })
-    );
+    const { deleteFn, resolve } = deferredDelete();
     await renderFooters(deleteFn);
-    const deletes = screen.getAllByRole('button', { name: 'Delete' });
-    fireEvent.click(deletes[0]);
-    fireEvent.click(deletes[1]);
-    const accepts = screen.getAllByTestId('accept-button');
-    expect(accepts).toHaveLength(2);
-    fireEvent.click(accepts[0]);
-    fireEvent.click(accepts[1]);
+    confirmDeletes(0, 1);
     await waitFor(() => expect(deleteFn).toHaveBeenCalledTimes(1));
-    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
-      expect(button).toBeDisabled();
-    });
-    screen.getAllByRole('button', { name: 'Share' }).forEach(button => {
-      expect(button).toBeDisabled();
-    });
-    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
-      expect(button).toBeDisabled();
-    });
-    await act(async () => {
-      resolveDelete([undefined]);
-    });
+    expectFooterActions(true);
+    await resolve();
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
-    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
-      expect(button).not.toBeDisabled();
-    });
+    expectButtons('Edit', false);
   });
 
   it('disables the modal while delete is in flight', async () => {

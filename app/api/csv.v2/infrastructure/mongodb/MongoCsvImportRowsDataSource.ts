@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { fromMongoIdentity, toMongoIdentity } from './mongoIdentity.js';
 
 type CsvImportRowDBO = {
   _id?: ObjectId;
@@ -19,7 +20,7 @@ export class MongoCsvImportRowsDataSource
 
   async insertMany(rows: CsvImportRow[]): Promise<void> {
     if (!rows.length) return;
-    await this.getCollection().insertMany(rows.map(row => row.toObject()));
+    await this.getCollection().insertMany(rows.map(row => toMongoIdentity(row.toObject())));
   }
 
   async countByImport(importId: string): Promise<number> {
@@ -30,10 +31,7 @@ export class MongoCsvImportRowsDataSource
     const cursor = this.getCollection().find({ importId }).sort({ rowIndex: 1 }).skip(offset);
     if (limit > 0) cursor.limit(limit);
     const results = await cursor.toArray();
-    return results.map(doc => {
-      const { _id, ...rest } = doc;
-      return CsvImportRow.fromObject(rest);
-    });
+    return results.map(doc => CsvImportRow.fromObject(fromMongoIdentity(doc)));
   }
 
   async getByImportAndIndexes(importId: string, indexes: number[]): Promise<CsvImportRow[]> {
@@ -42,10 +40,7 @@ export class MongoCsvImportRowsDataSource
       .find({ importId, rowIndex: { $in: indexes } })
       .sort({ rowIndex: 1 })
       .toArray();
-    return results.map(doc => {
-      const { _id, ...rest } = doc;
-      return CsvImportRow.fromObject(rest);
-    });
+    return results.map(doc => CsvImportRow.fromObject(fromMongoIdentity(doc)));
   }
 
   async deleteByImport(importId: string): Promise<void> {

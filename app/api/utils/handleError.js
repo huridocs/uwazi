@@ -9,11 +9,14 @@ import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { config } from '#api/config.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { FileNotFound } from '#api/files/FileNotFound.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { legacyLogger } from '#api/log/index.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { ModelNotReadyError } from '#api/services/informationextraction/errors.js';
+import { SuggestionAcceptanceError } from '#api/suggestions/errors.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { createError } from '#api/utils/index.js';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
@@ -140,6 +143,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 400, message: error.message, logLevel: 'debug' };
   }
 
+  if (error instanceof EntityNotFoundError) {
+    result = { code: 404, message: error.message, logLevel: 'debug' };
+  }
+
   if (error instanceof UnauthorizedError) {
     result = { code: 401, message: error.message, logLevel: 'debug' };
   }
@@ -152,6 +159,20 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   // (see app/react/Users/Login.jsx), matching the legacy `createError(..., 409)` behavior.
   if (error instanceof TwoFactorTokenRequired) {
     result = { code: 409, message: error.message, logLevel: 'debug' };
+  }
+
+  // A concurrent process/train run is a user-caused conflict, not a server failure.
+  if (error instanceof ModelNotReadyError) {
+    result = { code: 409, message: error.message, logLevel: 'debug' };
+  }
+
+  // Accepting a suggestion fails on the request, not the server: unknown ids, a mixed batch, a
+  // suggestion carrying an extraction error, or a value the target property rejects. 422 keeps it
+  // out of Sentry and — the point of the mapping — out of the `code >= 500` branch below, which
+  // replaces the reason with 'A server side error has occurred'. The accept route answers 202 and
+  // reports over the websocket, so that generic text was all the user ever saw.
+  if (error instanceof SuggestionAcceptanceError) {
+    result = { code: 422, message: error.message, logLevel: 'debug' };
   }
 
   // Failed authentication answers 401, not the generic DomainError 400: both API clients

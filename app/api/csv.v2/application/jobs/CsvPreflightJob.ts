@@ -65,11 +65,13 @@ type Callbacks = BaseCallbacks & {
 const DEFAULT_SCAN_BATCH_SIZE = 1000;
 
 export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
-  private static groupPendingEntries(
-    importId: string,
-    entries: CsvThesauriPendingEntry[],
-    createdAt: number
-  ): CsvImportThesauriValues[] {
+  private static groupPendingEntries(params: {
+    importId: string;
+    entries: CsvThesauriPendingEntry[];
+    createdAt: number;
+    generateId: () => string;
+  }): CsvImportThesauriValues[] {
+    const { importId, entries, createdAt, generateId } = params;
     const grouped = new Map<string, CsvThesauriPendingEntry[]>();
     entries.forEach(entry => {
       const list = grouped.get(entry.thesaurusId) || [];
@@ -79,6 +81,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
 
     return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) =>
       CsvImportThesauriValues.create({
+        id: generateId(),
         importId,
         thesaurusId,
         createdAt,
@@ -121,32 +124,58 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
     totalRows: number;
     callbacks: Callbacks;
   }) {
-    const { importId, totalRows, callbacks } = params;
     const rows: CsvImportRow[] = [];
-    let processedRows = 0;
-    let cancelled = false;
-    for (let offset = 0; offset < totalRows; offset += DEFAULT_SCAN_BATCH_SIZE) {
+    const scan = { processedRows: 0, cancelled: false };
+    for (let offset = 0; offset < params.totalRows; offset += DEFAULT_SCAN_BATCH_SIZE) {
       // eslint-disable-next-line no-await-in-loop
-      if (await this.deps.csvImportsDS.isCancelled(importId)) {
-        cancelled = true;
-        break;
-      }
-      // eslint-disable-next-line no-await-in-loop
-      const batch = await this.deps.rowsDS.getByImport(importId, offset, DEFAULT_SCAN_BATCH_SIZE);
-      if (!batch.length) {
-        break;
-      }
-      processedRows = CsvPreflightJob.appendScanBatch({
+      const shouldStop = await this.consumeScanBatch({
         rows,
-        batch,
-        totalRows,
-        importId,
-        processedRows,
-        callbacks,
+        scan,
+        importId: params.importId,
+        totalRows: params.totalRows,
+        callbacks: params.callbacks,
         offset,
       });
+      if (shouldStop) {
+        break;
+      }
     }
-    return { rows, totalRows, processedRows, cancelled };
+    return { rows, totalRows: params.totalRows, ...scan };
+  }
+
+  private async consumeScanBatch(params: {
+    rows: CsvImportRow[];
+    scan: { processedRows: number; cancelled: boolean };
+    importId: string;
+    totalRows: number;
+    callbacks: Callbacks;
+    offset: number;
+  }) {
+    const batch = await this.nextScanBatch(params.importId, params.offset);
+    if (batch === 'cancelled') {
+      params.scan.cancelled = true;
+      return true;
+    }
+    if (!batch.length) {
+      return true;
+    }
+    params.scan.processedRows = CsvPreflightJob.appendScanBatch({
+      rows: params.rows,
+      batch,
+      totalRows: params.totalRows,
+      importId: params.importId,
+      processedRows: params.scan.processedRows,
+      callbacks: params.callbacks,
+      offset: params.offset,
+    });
+    return false;
+  }
+
+  private async nextScanBatch(importId: string, offset: number) {
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return 'cancelled' as const;
+    }
+    return this.deps.rowsDS.getByImport(importId, offset, DEFAULT_SCAN_BATCH_SIZE);
   }
 
   private static appendScanBatch(params: {
@@ -173,12 +202,13 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
     return templateRes.getData();
   }
 
-  private async analyzeHeaders(
-    csvImport: CsvImport,
-    headers: string[],
-    template: Template,
-    options: AnalyzerOptions
-  ): Promise<HeaderAnalysis> {
+  private async analyzeHeaders(params: {
+    csvImport: CsvImport;
+    headers: string[];
+    template: Template;
+    options: AnalyzerOptions;
+  }): Promise<HeaderAnalysis> {
+    const { csvImport, headers, template, options } = params;
     try {
       return CsvHeaderAnalyzer.analyze(headers, template, options);
     } catch (error) {
@@ -199,7 +229,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
             this.withCleanupPendingIfFailed(failed, failed.status)
           );
         });
-        throw new NonRetryableJobError(new Error('Header validation failed'));
+        throw error;
       }
       throw error;
     }
@@ -261,12 +291,26 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
       ]);
       const newNameGeneration = Boolean(settings?.newNameGeneration);
 
-      const { headers } = stagedRows[0];
-      const headerAnalysis = await this.analyzeHeaders(csvImport, headers, template, {
-        availableLanguages,
-        defaultLanguage,
-        newNameGeneration,
-      });
+      const [{ headers }] = stagedRows;
+      let headerAnalysis: HeaderAnalysis;
+      try {
+        headerAnalysis = await this.analyzeHeaders({
+          csvImport,
+          headers,
+          template,
+          options: {
+            availableLanguages,
+            defaultLanguage,
+            newNameGeneration,
+          },
+        });
+      } catch (error) {
+        if (error instanceof CsvHeaderAnalyzerError) {
+          failureRecorded = true;
+          throw new NonRetryableJobError(new Error('Header validation failed'));
+        }
+        throw error;
+      }
       const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(headers, newNameGeneration);
 
       const { pendingValues, issues: pendingIssues } = CsvThesauriPendingValuesBuilder.build({
@@ -309,26 +353,29 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
         throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
       }
 
-      const groupedPendingValues = CsvPreflightJob.groupPendingEntries(
+      const groupedPendingValues = CsvPreflightJob.groupPendingEntries({
         importId,
-        pendingValues.entries,
-        pendingValues.createdAt
-      );
-      await this.deps.thesauriValuesDS.replacePendingValues(importId, groupedPendingValues);
-
+        entries: pendingValues.entries,
+        createdAt: pendingValues.createdAt,
+        generateId: () => this.idGenerator.generate(),
+      });
       const relationshipPendingDocs = Array.from(titlesByTemplate.entries()).map(
         ([templateId, titles]) =>
           CsvImportRelationshipPendingValues.create({
+            id: this.idGenerator.generate(),
             importId,
             templateId,
             titles: Array.from(titles),
             createdAt: pendingValues.createdAt,
           })
       );
-      await this.deps.relationshipPendingValuesDS.replacePendingValues(
-        importId,
-        relationshipPendingDocs
-      );
+      await this.transactionManager.run(async () => {
+        await this.deps.thesauriValuesDS.replacePendingValues(importId, groupedPendingValues);
+        await this.deps.relationshipPendingValuesDS.replacePendingValues(
+          importId,
+          relationshipPendingDocs
+        );
+      });
 
       if (await this.deps.csvImportsDS.isCancelled(importId)) {
         return { importId, status: CsvImportStatus.Cancelled };

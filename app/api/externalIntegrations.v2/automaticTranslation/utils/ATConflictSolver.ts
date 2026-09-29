@@ -1,5 +1,8 @@
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
-import { UpdateEntityRequest } from '#api/core/infrastructure/express/entity/Schemas.js';
+import {
+  EntityTranslationsRequest,
+  UpdateEntityRequest,
+} from '#api/core/infrastructure/express/entity/Schemas.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { RequestEntityTranslation } from '../RequestEntityTranslation.js';
@@ -34,10 +37,7 @@ export class ATConflictSolver {
       if (propName === 'title') {
         const newValue = resolved.title || '';
         const currentValue = current.title || '';
-        if (
-          newValue.startsWith(RequestEntityTranslation.AITranslationPendingText) &&
-          currentValue.startsWith(SaveEntityTranslations.AITranslatedText)
-        ) {
+        if (ATConflictSolver.isStalePendingValue(newValue, currentValue)) {
           this.logger.info(
             `[AT] property ${propName} conflict resolved for entity ${current.sharedId}`
           );
@@ -49,10 +49,7 @@ export class ATConflictSolver {
         const newValue = `${resolved.metadata?.[propName]?.[0]?.value ?? ''}`;
         const currentValue = `${current.metadata[propName]?.[0]?.value ?? ''}`;
 
-        if (
-          newValue.startsWith(RequestEntityTranslation.AITranslationPendingText) &&
-          currentValue.startsWith(SaveEntityTranslations.AITranslatedText)
-        ) {
+        if (ATConflictSolver.isStalePendingValue(newValue, currentValue)) {
           this.logger.info(
             `[AT] property ${propName} conflict resolved for entity ${current.sharedId}`
           );
@@ -65,5 +62,51 @@ export class ATConflictSolver {
     }
 
     return resolved;
+  }
+
+  /**
+   * Same rule as `execute`, for the other languages of an update sent with translations: a value
+   * still holding the pending marker must not overwrite a finished AI translation.
+   */
+  async resolveTranslations(
+    currentRows: EntityDBO[],
+    templateId: string,
+    translations: EntityTranslationsRequest
+  ): Promise<EntityTranslationsRequest> {
+    const atConfig = await this.atConfigDS.get();
+    const properties = atConfig.active ? atConfig.propertiesByTemplate(templateId) : [];
+    if (!properties.length) return translations;
+
+    return Object.fromEntries(
+      Object.entries(translations).map(([language, values]) => {
+        const current = currentRows.find(row => row.language === language);
+        if (!current) return [language, values];
+
+        const resolved = { ...values };
+        properties.forEach(({ name }) => {
+          const [first] = resolved[name] ?? [];
+          const newValue = `${first?.value ?? ''}`;
+          const currentValue = `${
+            name === 'title' ? (current.title ?? '') : (current.metadata[name]?.[0]?.value ?? '')
+          }`;
+
+          if (first && ATConflictSolver.isStalePendingValue(newValue, currentValue)) {
+            this.logger.info(
+              `[AT] property ${name} conflict resolved for entity ${current.sharedId} in ${language}`
+            );
+            resolved[name] = [{ ...first, value: currentValue }];
+          }
+        });
+
+        return [language, resolved];
+      })
+    );
+  }
+
+  private static isStalePendingValue(newValue: string, currentValue: string) {
+    return (
+      newValue.startsWith(RequestEntityTranslation.AITranslationPendingText) &&
+      currentValue.startsWith(SaveEntityTranslations.AITranslatedText)
+    );
   }
 }

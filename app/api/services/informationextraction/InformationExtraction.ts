@@ -7,8 +7,7 @@ import { ObjectId } from 'mongodb';
 import moment from 'moment';
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -16,7 +15,7 @@ import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
@@ -32,7 +31,7 @@ import {
   BATCH_SIZE_FOR_PROPERTY,
   FileWithAggregation,
   getEntitiesForSuggestions,
-  getFilesForSuggestions,
+  getFilesForSuggestionsBatch,
   propertyTypeIsWithoutPropertySelections,
 } from '#api/services/informationextraction/ixMaterials.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -41,13 +40,11 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
 import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import ixmodels from './ixmodels.js';
-import { IXModelsModel } from './IXModelsModel.js';
 import { Extractors } from './ixextractors.js';
 import {
   CommonSuggestion,
@@ -59,8 +56,23 @@ import {
 import { ExtractionKey } from './ExtractionKey.js';
 import { IXTrainModelJob } from './TrainModelJob.js';
 import { IXServices } from './IXServices.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const defaultTrainingLanguage = 'en';
+
+const NOT_SEGMENTED_MESSAGE =
+  'Documents are not segmented yet. Try again once PDF segmentation has finished.';
+
+/**
+ * What an attempt to send the next batch of a find run actually did. A run that stopped has
+ * already emitted its terminal status; callers answering a request must report the same thing.
+ */
+type SuggestionsBatchOutcome = { started: true } | { started: false; message: string };
+
+/** Marks a terminal `ready` status as a run that ended without doing its work. */
+type ReadyStatusData = { error: true };
+
+const suggestionsDao = () => IXSuggestionsDAOFactory.default();
 
 type TaskTypes = 'suggestions' | 'create_model';
 
@@ -177,23 +189,7 @@ class InformationExtraction {
       }
 
       if (currentModel?.findingSuggestions) {
-        await IXSuggestionsModel.updateMany(
-          {
-            extractorId: message.params!.id,
-            status: 'processing',
-          },
-          {
-            $set: {
-              status: 'failed',
-              error: errorMessage,
-              'state.processing': false,
-              'state.error': true,
-              'state.match': null,
-              'state.withSuggestion': false,
-              'state.hasContext': false,
-            },
-          }
-        );
+        await suggestionsDao().markProcessingAsFailed(message.params!.id, errorMessage);
       }
 
       emitToTenantAdminsAndEditors(
@@ -211,23 +207,7 @@ class InformationExtraction {
     await this.stopModel(message.params!.id);
 
     if (currentModel?.findingSuggestions) {
-      await IXSuggestionsModel.updateMany(
-        {
-          extractorId: message.params!.id,
-          status: 'processing',
-        },
-        {
-          $set: {
-            status: 'failed',
-            error: errorMessage,
-            'state.processing': false,
-            'state.error': true,
-            'state.match': null,
-            'state.withSuggestion': false,
-            'state.hasContext': false,
-          },
-        }
-      );
+      await suggestionsDao().markProcessingAsFailed(message.params!.id, errorMessage);
     }
 
     // Inform UI the run ended without flipping model to error
@@ -236,7 +216,8 @@ class InformationExtraction {
       'ix_model_status',
       message.params!.id.toString(),
       'ready',
-      'Suggestions run failed'
+      'Suggestions run failed',
+      { error: true }
     );
   }
 
@@ -360,12 +341,10 @@ class InformationExtraction {
     );
 
     if (type === 'prediction_data') {
-      const suggestions = await IXSuggestionsModel.db
-        .find({
-          fileId: { $in: files.map(f => f._id) },
-          extractorId: extractor._id,
-        })
-        .lean();
+      const suggestions = await suggestionsDao().getByFileIds(
+        extractor._id,
+        files.map(f => f._id)
+      );
 
       await Suggestions.saveMultiple(
         suggestions.map(suggestion =>
@@ -407,12 +386,8 @@ class InformationExtraction {
         language_iso: extractionKey.language,
         id: extractor._id.toString(),
         tenant: tenants.current().name,
-        source_text: (entity.metadata?.[extractor.source.property]?.[0]?.value as string) || '',
+        source_text: IXServices.extractSourceText({ entity, extractor }),
       };
-
-      if (extractor.source.property === 'title') {
-        data.source_text = entity.title || '';
-      }
 
       if (type === 'labeled_data') {
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {
@@ -452,15 +427,10 @@ class InformationExtraction {
     });
 
     if (type === 'prediction_data') {
-      const suggestions = await IXSuggestionsModel.db
-        .find({
-          extractorId: extractor._id,
-          $or: entitiesForTraining.map(e => ({
-            entityId: e.sharedId,
-            language: e.language,
-          })),
-        })
-        .lean();
+      const suggestions = await suggestionsDao().getByEntityLanguagePairs(
+        extractor._id,
+        entitiesForTraining.map(e => ({ sharedId: e.sharedId!, language: e.language! }))
+      );
 
       await Suggestions.saveMultiple(
         suggestions.map(suggestion =>
@@ -477,10 +447,10 @@ class InformationExtraction {
     });
 
     if (!entity) {
-      const defaultLanguage = await settings.getDefaultLanguage();
+      const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
-        language: defaultLanguage?.key,
+        language: defaultLanguageKey,
       });
     }
     return entity;
@@ -510,9 +480,9 @@ class InformationExtraction {
     extractor: EnforcedWithId<IXExtractorType>,
     currentSuggestion: EnforcedWithId<IXSuggestionType>
   ) {
-    const [model] = await ixmodels.get({ extractorId: extractor._id });
+    const model = await ixmodels.getByExtractorId(extractor._id);
 
-    if (model.processRun?.suggestionsRunTimestamp) {
+    if (model?.processRun?.suggestionsRunTimestamp) {
       return {
         ...currentSuggestion,
         modelData: {
@@ -539,11 +509,19 @@ class InformationExtraction {
 
       const extractionKey = new ExtractionKey(rawSuggestion.entity_name);
 
-      const [originalSuggestion] = await IXSuggestionsModel.get({
-        entityId: extractionKey.entitySharedId,
+      const originalSuggestion = await suggestionsDao().getOneForEntity({
         extractorId: extractor._id,
+        entityId: extractionKey.entitySharedId,
         language: extractionKey.language,
       });
+
+      // The batch comes from a destructive read on the ML service, so one entry we cannot
+      // place must not abort the rest of it. Without a blank suggestion to update there is
+      // no linkage (entityId / extractorId / language) to write, and saving anyway inserts
+      // the malformed rows migration 196 has to delete. Matches the pdf source path.
+      if (!originalSuggestion) {
+        return;
+      }
 
       const currentSuggestion = await this.appendSuggestionModelData(extractor, originalSuggestion);
 
@@ -580,10 +558,10 @@ class InformationExtraction {
           return Promise.resolve();
         }
 
-        const [originalSuggestion] = await IXSuggestionsModel.get({
-          entityId: entity.sharedId,
+        const originalSuggestion = await suggestionsDao().getOneForFile({
           extractorId: extractor._id,
-          fileId: segmentation.fileID,
+          entityId: entity.sharedId!,
+          fileId: segmentation.fileID!,
         });
 
         if (!originalSuggestion) {
@@ -610,7 +588,7 @@ class InformationExtraction {
 
   saveSuggestionsManager = async (message: InternalIXResultsMessage) => {
     const [extractor, rawSuggestions] = await Promise.all([
-      Extractors.getById({ _id: message.params?.id }),
+      Extractors.getById(message.params!.id),
       this.requestResults(message),
     ]);
 
@@ -626,8 +604,9 @@ class InformationExtraction {
   };
 
   serviceUrl = async () => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     if (!serviceUrl) {
       throw new Error('No url for metadata extraction service');
     }
@@ -653,20 +632,13 @@ class InformationExtraction {
     // where 'date' may not be updated (e.g., re-suggesting obsolete items).
     let processedSuggestions = 0;
     if (model.processRun?.suggestionsRunTimestamp) {
-      processedSuggestions = await IXSuggestionsModel.db.countDocuments({
+      processedSuggestions = await suggestionsDao().countProcessedInRun(
         extractorId,
-        status: 'ready',
-        date: { $ne: null },
-        'state.obsolete': { $ne: true },
-        'state.error': { $ne: true },
-        'modelData.suggestionsRunTimestamp': model.processRun.suggestionsRunTimestamp,
-      });
+        model.processRun.suggestionsRunTimestamp
+      );
     } else {
       const since = model.creationDate;
-      processedSuggestions = await IXSuggestionsModel.count({
-        extractorId,
-        $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
-      });
+      processedSuggestions = await suggestionsDao().countProcessedSince(extractorId, since);
     }
     const status = {
       total: model.totalSuggestionsToFind,
@@ -676,7 +648,7 @@ class InformationExtraction {
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, passedModel: IXModelType) => {
-    const [currentModel] = await IXModelsModel.get({ _id: passedModel._id });
+    const currentModel = passedModel._id ? await ixmodels.getById(passedModel._id) : undefined;
     const suggestionsStatus = await this.getSuggestionsStatus(
       message.params!.id,
       currentModel || passedModel
@@ -708,14 +680,19 @@ class InformationExtraction {
     return batchSize;
   };
 
-  stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
+  stopModelAndEmitReadyMessage = async (
+    extractorId: ObjectIdSchema,
+    message: string,
+    data?: ReadyStatusData
+  ) => {
     await this.stopModel(extractorId);
     emitToTenantAdminsAndEditors(
       tenants.current().name,
       'ix_model_status',
       extractorId,
       'ready',
-      message
+      message,
+      ...(data ? [data] : [])
     );
   };
 
@@ -729,29 +706,40 @@ class InformationExtraction {
     model: IXModelType;
     targetProperty: PropertySchema;
     computedBatch: boolean;
-  }) => {
+  }): Promise<SuggestionsBatchOutcome> => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'pdf', computedBatch);
-    const filesForSuggestions = await getFilesForSuggestions(extractorId, batchSize);
+    const { files: filesForSuggestions, awaitingSegmentation } = await getFilesForSuggestionsBatch(
+      extractorId,
+      batchSize
+    );
 
     if (!filesForSuggestions.length) {
-      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
-      return [];
+      return this.stopRun(extractorId, awaitingSegmentation);
     }
 
     try {
       await this.sendMaterialsForPDF(filesForSuggestions, extractor, targetProperty);
     } catch (error) {
       if (error.message === 'No files with segmentations to be used for training') {
-        await this.stopModelAndEmitReadyMessage(
-          extractorId,
-          'No files with segmentations to be used for training'
-        );
-        return [];
+        return this.stopRun(extractorId, true);
       }
       throw error;
     }
-    return filesForSuggestions;
+    return { started: true };
+  };
+
+  private stopRun = async (
+    extractorId: ObjectIdSchema,
+    awaitingSegmentation: boolean
+  ): Promise<SuggestionsBatchOutcome> => {
+    if (awaitingSegmentation) {
+      await this.stopModelAndEmitReadyMessage(extractorId, NOT_SEGMENTED_MESSAGE, { error: true });
+      return { started: false, message: NOT_SEGMENTED_MESSAGE };
+    }
+
+    await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+    return { started: false, message: 'Completed' };
   };
 
   getAndSendMaterialsForProperty = async ({
@@ -764,14 +752,13 @@ class InformationExtraction {
     model: IXModelType;
     targetProperty: PropertySchema;
     computedBatch: boolean;
-  }) => {
+  }): Promise<SuggestionsBatchOutcome> => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'property', computedBatch);
     const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
     if (!entitiesForSuggestions.length) {
-      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
-      return [];
+      return this.stopRun(extractorId, false);
     }
 
     await this.sendMaterialsForProperty(
@@ -782,7 +769,7 @@ class InformationExtraction {
       'prediction_data'
     );
 
-    return entitiesForSuggestions;
+    return { started: true };
   };
 
   startSuggestionsTask = async (extractor: EnforcedWithId<IXExtractorType>) => {
@@ -804,28 +791,29 @@ class InformationExtraction {
     extractor: EnforcedWithId<IXExtractorType>,
     model: IXModelType,
     computedBatch: boolean = true
-  ) => {
+  ): Promise<SuggestionsBatchOutcome> => {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
     const processingParams = { extractor, model, targetProperty, computedBatch };
 
     if (extractor.source.pdf) {
-      const filesForSuggestions = await this.getAndSendMaterialsForPDF(processingParams);
-      if (!filesForSuggestions.length) return;
+      const outcome = await this.getAndSendMaterialsForPDF(processingParams);
+      if (!outcome.started) return outcome;
     }
 
     if (extractor.source.property) {
-      const entitiesForSuggestions = await this.getAndSendMaterialsForProperty(processingParams);
-      if (!entitiesForSuggestions.length) return;
+      const outcome = await this.getAndSendMaterialsForProperty(processingParams);
+      if (!outcome.started) return outcome;
     }
 
     await this.startSuggestionsTask(extractor);
+    return { started: true };
   };
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
-    const [extractor] = await Extractors.get({ _id: extractorId });
+    const extractor = await Extractors.getById(extractorId);
     if (!extractor) return;
 
-    const [model] = await IXModelsModel.get({ extractorId });
+    const model = (await ixmodels.getByExtractorId(extractorId))!;
 
     if (model?.totalSuggestionsToFind === 0) {
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
@@ -865,9 +853,7 @@ class InformationExtraction {
       'processing_model'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
-      lockWindow: 1000 * 60 * 20,
-    });
+    const dispatcher = ExecutionContext.jobsDispatcher;
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
@@ -875,7 +861,7 @@ class InformationExtraction {
   };
 
   status = async (extractorId: ObjectIdSchema) => {
-    const [currentModel] = await ixmodels.get({ extractorId });
+    const currentModel = await ixmodels.getByExtractorId(extractorId);
 
     if (!currentModel) {
       return { status: 'ready', message: 'Ready' };
@@ -896,7 +882,12 @@ class InformationExtraction {
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
-      if (suggestionStatus.processed === suggestionStatus.total) {
+      // `>=`, not `===`, to match the find loop's own termination test. `processed` is a count
+      // query while the batch is drawn per entity or file, and one of those can yield several
+      // suggestion rows, so the count can step over an odd remainder without landing on it.
+      // The loop then stops and nothing is left to advance the count — `===` reported that as
+      // "finding suggestions" for as long as the run flag stayed set.
+      if (suggestionStatus.total != null && suggestionStatus.processed >= suggestionStatus.total) {
         // If auto-accept is enabled for this process run, transition status to
         // processing_auto_accept instead of ready to avoid UI flicker and clearly
         // indicate the next phase. Provide progress snapshot if available.
@@ -927,27 +918,41 @@ class InformationExtraction {
   };
 
   stopModel = async (extractorId: ObjectIdSchema) => {
-    const res = await IXModelsModel.db.findOneAndUpdate(
-      { extractorId },
-      { $set: { findingSuggestions: false, status: ModelStatus.ready } },
-      {}
-    );
+    const model = await ixmodels.markReady(extractorId);
 
-    if (res) {
-      const [model] = await IXModelsModel.get({ extractorId });
-      // TEST!!!
-      if (model?._id) {
-        await ixmodels.unsetFindSuggestionsData(model._id);
-      }
-      return { status: 'ready', message: 'Ready' };
+    if (!model) {
+      return { status: 'error', message: 'No model found' };
     }
 
-    return { status: 'error', message: 'No model found' };
+    return { status: 'ready', message: 'Ready' };
+  };
+
+  /**
+   * User-initiated cancel, as opposed to `stopModel`, which the run's own completion and failure
+   * paths use. The ML service has no cancel protocol — nothing can call a dispatched task back —
+   * so cancelling means making the run stop affecting this tenant's data: release the model, drop
+   * the run configuration, and release the rows the run had marked in flight. `processResults`
+   * then discards whatever the service eventually returns for it.
+   *
+   * `processRun` is cleared here and not in `stopModel` on purpose: the completion path still has
+   * to read `processRun.autoAccept` after the find phase ends.
+   */
+  cancelModel = async (extractorId: ObjectIdSchema) => {
+    const model = await ixmodels.markReady(extractorId);
+
+    if (!model) {
+      return { status: 'error', message: 'No model found' };
+    }
+
+    await ixmodels.unsetProcessRun(extractorId.toString());
+    await suggestionsDao().markProcessingAsObsolete(extractorId);
+
+    return { status: 'ready', message: 'Ready' };
   };
 
   startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
     const tenant = tenants.current();
-    const [model] = await IXModelsModel.get({ extractorId: new ObjectId(extractorId) });
+    const model = await ixmodels.getByExtractorId(new ObjectId(extractorId));
     if (!model) {
       return false;
     }
@@ -970,9 +975,7 @@ class InformationExtraction {
       'processing_auto_accept'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
-      lockWindow: 1000 * 60 * 10,
-    });
+    const dispatcher = ExecutionContext.jobsDispatcher;
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });
@@ -986,51 +989,38 @@ class InformationExtraction {
   };
 
   processResults = async (_message: IXResultsMessage): Promise<void> => {
-    await tenants.run(async () => {
-      const message: InternalIXResultsMessage = {
-        ..._message,
-        params: { ..._message.params, id: new ObjectId(_message.params!.id) },
-      };
+    // TaskManager already opens runInJobContext; do not wrap tenants.run / ExecutionContext.run here.
+    const message: InternalIXResultsMessage = {
+      ..._message,
+      params: { ..._message.params, id: new ObjectId(_message.params!.id) },
+    };
 
-      const [currentModel] = await IXModelsModel.get({
-        extractorId: message.params!.id,
-      });
+    const currentModel = await ixmodels.getByExtractorId(message.params!.id);
 
-      try {
-        if (message.task === 'create_model' && message.success) {
-          await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
-            computeTotalSuggestions: true,
-          });
+    try {
+      if (message.task === 'create_model' && message.success) {
+        await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
+          computeTotalSuggestions: true,
+        });
 
-          const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+        const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
 
-          await this.updateSuggestionStatus(message, updatedModel);
-        }
+        await this.updateSuggestionStatus(message, updatedModel!);
+      }
 
-        if (!message.success) {
-          await this.handleFailedStatus(message, currentModel);
-          return;
-        }
+      if (!message.success) {
+        await this.handleFailedStatus(message, currentModel);
+        return;
+      }
 
-        if (message.task === 'suggestions') {
-          await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel);
+      if (message.task === 'suggestions') {
+        // A run only clears `findingSuggestions` when it is cancelled or already over, so
+        // reaching here without it means these results belong to a run that no longer exists.
+        // Writing them is what made "Cancel" a lie: the batch already in flight landed anyway.
+        // Discard it, release anything the run had left marked in flight, and stop.
+        if (!currentModel?.findingSuggestions) {
+          await suggestionsDao().markProcessingAsObsolete(message.params!.id);
 
-          // If a process run requested auto-accept and the find phase just completed,
-          // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
-          const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-          const autoAccept = freshModel?.processRun?.autoAccept;
-          if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
-            const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
-            if (status.processed >= freshModel.totalSuggestionsToFind) {
-              await this.startAutoAcceptIfEnabled(message.params!.id.toString());
-              return;
-            }
-          }
-        }
-
-        const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-        if (!updatedModel.findingSuggestions) {
           emitToTenantAdminsAndEditors(
             message.tenant,
             'ix_model_status',
@@ -1040,12 +1030,39 @@ class InformationExtraction {
           );
           return;
         }
-      } catch (_) {
-        await this.handleFailedStatus(message, currentModel);
+
+        await this.saveSuggestionsManager(message);
+        await this.updateSuggestionStatus(message, currentModel!);
+
+        // If a process run requested auto-accept and the find phase just completed,
+        // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
+        const freshModel = await ixmodels.getByExtractorId(message.params!.id);
+        const autoAccept = freshModel?.processRun?.autoAccept;
+        if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
+          const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+          if (status.processed >= freshModel.totalSuggestionsToFind) {
+            await this.startAutoAcceptIfEnabled(message.params!.id.toString());
+            return;
+          }
+        }
       }
 
-      await this.getSuggestions(message.params!.id);
-    }, _message.tenant);
+      const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
+      if (!updatedModel!.findingSuggestions) {
+        emitToTenantAdminsAndEditors(
+          message.tenant,
+          'ix_model_status',
+          _message.params!.id,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+    } catch (_) {
+      await this.handleFailedStatus(message, currentModel);
+    }
+
+    await this.getSuggestions(message.params!.id);
   };
 }
 

@@ -11,6 +11,8 @@ import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import * as types from '#app/Uploads/actions/actionTypes.js';
 import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
 import { mockID } from '#shared/uniqueID.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -136,6 +138,21 @@ describe('uploadsActions', () => {
           body: 'ok',
           status: 200,
         });
+      });
+
+      it.each([
+        ['public', false],
+        ['remotepublic', true],
+      ])('should send the current UI locale as Content-Language to %s', async (path, remote) => {
+        getStore().set(localeAtom, 'es');
+        const mockUpload = mockSuperAgent(`${APIURL}${path}`);
+        jest.spyOn(mockUpload, 'set');
+
+        const submitted = store.dispatch(actions.publicSubmit(formData, remote));
+        emitProgressAndResponse(mockUpload, { text: '{}', body: 'ok', status: 200 });
+        await submitted;
+
+        expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
       });
 
       it('should send data to remotepublic if remote is set to true', done => {

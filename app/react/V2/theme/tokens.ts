@@ -269,13 +269,14 @@ const DEFAULT_DARK_SOURCE: EditableThemeVars = {
 };
 
 const LEGACY_LIGHT_SOURCE: EditableThemeVars = {
-  ...DEFAULT_LIGHT_SOURCE,
   '--color-theme-accent-primary': '#2B56C1',
   '--color-theme-accent-supporting': '#2196F3',
   '--color-theme-accent-emphasis': '#D9534F',
   '--color-theme-bg-primary': '#FFFFFF',
   '--color-theme-bg-surface': '#FFFFFF',
   '--color-theme-bg-muted': '#F3F4F6',
+  '--color-theme-success': '#059669',
+  '--color-theme-warning': '#F59E0B',
   '--color-theme-text-primary': '#101828',
   '--color-theme-text-secondary': '#475467',
   '--color-theme-text-tertiary': '#667085',
@@ -284,18 +285,84 @@ const LEGACY_LIGHT_SOURCE: EditableThemeVars = {
 };
 
 const LEGACY_DARK_SOURCE: EditableThemeVars = {
-  ...DEFAULT_DARK_SOURCE,
   '--color-theme-accent-primary': '#93C5FD',
   '--color-theme-accent-supporting': '#60A5FA',
   '--color-theme-accent-emphasis': '#F87171',
   '--color-theme-bg-primary': '#111827',
   '--color-theme-bg-surface': '#1F2937',
   '--color-theme-bg-muted': '#374151',
+  '--color-theme-success': '#059669',
+  '--color-theme-warning': '#F59E0B',
   '--color-theme-text-primary': '#F9FAFB',
   '--color-theme-text-secondary': '#E5E7EB',
   '--color-theme-text-tertiary': '#CBD5E1',
   '--color-theme-text-muted': '#94A3B8',
   '--color-theme-border-primary': '#374151',
+};
+
+const LEGACY_LIGHT_DERIVED: DerivedThemeVars = {
+  '--color-theme-bg-warm': '#F9FAFB',
+  '--color-theme-border-soft': '#E5E7EB',
+  '--color-theme-bg-overlay': '#00000066',
+  '--color-theme-bg-selected': '#F2F2F4',
+  '--color-theme-border-primary-64': '#E5E7EBA3',
+  '--color-theme-border-soft-64': '#E5E7EBA3',
+  '--color-theme-accent-supporting-tint': '#DBEAFE',
+  '--color-theme-accent-emphasis-tint': '#FEE2E2',
+  '--color-theme-success-light': '#D1FAE5',
+  '--color-theme-warning-light': '#FEF3C7',
+  '--color-theme-danger': '#D9534F',
+  '--color-theme-danger-light': '#FEE2E2',
+  '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground(
+    LEGACY_LIGHT_SOURCE['--color-theme-success'],
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
+  ).foreground,
+  '--color-theme-feedback-danger-fg': getAccessibleForegroundOnBackground(
+    LEGACY_LIGHT_SOURCE['--color-theme-accent-emphasis'],
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
+  ).foreground,
+  '--color-theme-highlight-yellow': '#FEF3C7',
+  '--color-theme-highlight-yellow-active': '#FDE68A',
+  '--color-theme-highlight-blue': '#DBEAFE',
+  '--color-theme-shadow-sm': '0 1px 2px rgba(0, 0, 0, 0.05)',
+  '--color-theme-shadow-md':
+    '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+  '--color-theme-shadow-lg':
+    '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05)',
+  '--color-theme-shadow-xl':
+    '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+  '--color-theme-card-shadow': '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+  '--color-theme-card-radius': UWAZI_DESIGN_LIGHT.radiusMd,
+};
+
+const LEGACY_DARK_DERIVED: DerivedThemeVars = {
+  '--color-theme-bg-warm': '#243041',
+  '--color-theme-border-soft': '#4B5563',
+  '--color-theme-bg-overlay': '#000000AA',
+  '--color-theme-bg-selected': '#243041',
+  '--color-theme-border-primary-64': '#374151A3',
+  '--color-theme-border-soft-64': '#4B5563A3',
+  '--color-theme-accent-supporting-tint': '#1E3A8A',
+  '--color-theme-accent-emphasis-tint': '#7F1D1D',
+  '--color-theme-success-light': '#14532D',
+  '--color-theme-warning-light': '#78350F',
+  '--color-theme-danger': '#F87171',
+  '--color-theme-danger-light': '#7F1D1D',
+  '--color-theme-feedback-success-fg': LEGACY_LIGHT_DERIVED['--color-theme-feedback-success-fg'],
+  '--color-theme-feedback-danger-fg': LEGACY_LIGHT_DERIVED['--color-theme-feedback-danger-fg'],
+  '--color-theme-highlight-yellow': '#78350F',
+  '--color-theme-highlight-yellow-active': '#92400E',
+  '--color-theme-highlight-blue': '#1E3A8A',
+  '--color-theme-shadow-sm': '0 1px 2px rgba(0, 0, 0, 0.2)',
+  '--color-theme-shadow-md': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2)',
+  '--color-theme-shadow-lg':
+    '0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2)',
+  '--color-theme-shadow-xl':
+    '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.25)',
+  '--color-theme-card-shadow': '0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15)',
+  '--color-theme-card-radius': UWAZI_DESIGN_DARK.radiusMd,
 };
 
 const PRESET_SOURCE_MODES: Record<ThemePresetId, Record<ThemeMode, EditableThemeVars>> = {
@@ -321,25 +388,8 @@ const PRESET_DEFINITIONS: Record<ThemePresetId, ThemePresetDefinition> = {
     description: 'Keeps the existing Uwazi feel with paired light and dark tokens.',
     sourceModes: PRESET_SOURCE_MODES.legacy,
     modes: {
-      light: withPresetDerivedVars(LEGACY_LIGHT_SOURCE, {
-        ...DEFAULT_LIGHT_DERIVED,
-        '--color-theme-bg-warm': '#F9FAFB',
-        '--color-theme-border-soft': '#E5E7EB',
-        '--color-theme-bg-selected': '#F2F2F4',
-        '--color-theme-border-primary-64': '#E5E7EBA3',
-        '--color-theme-border-soft-64': '#E5E7EBA3',
-        '--color-theme-accent-supporting-tint': '#DBEAFE',
-      }),
-      dark: withPresetDerivedVars(LEGACY_DARK_SOURCE, {
-        ...DEFAULT_DARK_DERIVED,
-        '--color-theme-bg-warm': '#243041',
-        '--color-theme-border-soft': '#4B5563',
-        '--color-theme-bg-selected': '#243041',
-        '--color-theme-border-primary-64': '#374151A3',
-        '--color-theme-border-soft-64': '#4B5563A3',
-        '--color-theme-accent-supporting-tint': '#1E3A8A',
-        '--color-theme-accent-emphasis-tint': '#7F1D1D',
-      }),
+      light: withPresetDerivedVars(LEGACY_LIGHT_SOURCE, LEGACY_LIGHT_DERIVED),
+      dark: withPresetDerivedVars(LEGACY_DARK_SOURCE, LEGACY_DARK_DERIVED),
     },
   },
   custom: {

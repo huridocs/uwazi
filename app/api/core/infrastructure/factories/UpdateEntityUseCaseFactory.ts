@@ -7,7 +7,6 @@ import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
@@ -18,7 +17,7 @@ class UpdateEntityUseCaseFactory {
   ) {
     const { tenant } = ExecutionContext;
 
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const { idGenerator, eventEmitter } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.default();

@@ -3,7 +3,6 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { PDFService } from '../services/PDFService.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
@@ -12,7 +11,7 @@ import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class PDFPostProcessJobFactory {
   static default(overrides: Partial<ConstructorParameters<typeof PDFPostProcessJob>[0]> = {}) {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     return new PDFPostProcessJob({
       transactionManager,
       filesDS: FilesDataSourceFactory.default(),

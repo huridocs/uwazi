@@ -76,7 +76,9 @@ const fetchEntitiesDataForBatch = async (
       ...(defaultLanguage && { language: defaultLanguage }),
     },
     {
-      select: ['sharedId', 'title', 'language', 'metadata', 'template'],
+      // `_id` becomes the suggestion's `entityLanguageId`, which accept reads back to load the
+      // entity. Asked for explicitly so the need is visible here, not inferred from the DAO.
+      select: ['_id', 'sharedId', 'title', 'language', 'metadata', 'template'],
       sort: [{ field: '_id', direction: 'asc' }],
     }
   );

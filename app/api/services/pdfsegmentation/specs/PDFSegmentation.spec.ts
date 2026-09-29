@@ -17,6 +17,7 @@ import { storage } from '#api/files/index.js';
 import path from 'path';
 
 import { tenants } from '#api/tenants/tenantContext.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { DB } from '#api/odm/index.js';
 import { Db } from 'mongodb';
 import request from '#shared/JSONRequest.js';
@@ -580,14 +581,32 @@ describe('PDFSegmentation', () => {
       await deleteFolder(segmentationFolder);
     });
 
+    it('should not re-enter tenant context (TaskManager already opened it)', async () => {
+      await runInJobContext(tenantOne.name, async () => {
+        const spy = jest.spyOn(tenants, 'run');
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: true,
+        });
+        expect(spy).not.toHaveBeenCalled();
+        spy.mockRestore();
+      });
+    });
+
     it('should store the segmentation', async () => {
-      await segmentPdfs.processResults({
-        tenant: tenantOne.name,
-        params: { filename: 'documentA.pdf' },
-        data_url: 'http://localhost:1235/results',
-        file_url: 'http://localhost:1235/file',
-        task: 'segmentation',
-        success: true,
+      await runInJobContext(tenantOne.name, async () => {
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: true,
+        });
       });
 
       await tenants.run(async () => {
@@ -608,13 +627,15 @@ describe('PDFSegmentation', () => {
     });
 
     it('should store the xml file', async () => {
-      await segmentPdfs.processResults({
-        tenant: tenantOne.name,
-        params: { filename: 'documentA.pdf' },
-        data_url: 'http://localhost:1235/results',
-        file_url: 'http://localhost:1235/file',
-        task: 'segmentation',
-        success: true,
+      await runInJobContext(tenantOne.name, async () => {
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: true,
+        });
       });
       await tenants.run(async () => {
         const fileContent = await storage.fileContents('segmentation/documentA.xml', 'document');
@@ -627,13 +648,15 @@ describe('PDFSegmentation', () => {
 
     describe('if the segmentation fails', () => {
       it('should store it as failed', async () => {
-        await segmentPdfs.processResults({
-          tenant: tenantOne.name,
-          params: { filename: 'documentA.pdf' },
-          data_url: 'http://localhost:1235/results',
-          file_url: 'http://localhost:1235/file',
-          task: 'segmentation',
-          success: false,
+        await runInJobContext(tenantOne.name, async () => {
+          await segmentPdfs.processResults({
+            tenant: tenantOne.name,
+            params: { filename: 'documentA.pdf' },
+            data_url: 'http://localhost:1235/results',
+            file_url: 'http://localhost:1235/file',
+            task: 'segmentation',
+            success: false,
+          });
         });
 
         await tenants.run(async () => {

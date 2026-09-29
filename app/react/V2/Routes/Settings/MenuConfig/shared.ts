@@ -8,23 +8,40 @@ type Link = Omit<ClientSettingsLinkSchema, 'sublinks'> & {
 
 const createRowId = () => `tmp_${uniqueID()}`;
 
+const dropTemporaryAndMongooseIds = <T extends { id?: string; _id?: string }>(
+  item: T
+): Omit<T, '_id' | 'id'> & { id?: string } => {
+  const { _id: _mongooseId, id, ...rest } = item;
+  if (id && !id.startsWith('tmp_')) {
+    return { ...rest, id };
+  }
+  return rest;
+};
+
 const sanitizeIds = (_link: Link): ClientSettingsLinkSchema => {
-  const { rowId: _deletedRowId, ...link } = { ..._link };
-  const sanitizedLink: ClientSettingsLinkSchema = link;
-  if (link._id?.startsWith('tmp_')) {
-    delete sanitizedLink._id;
+  const { rowId: _deletedRowId, subRows, ...link } = { ..._link };
+  const sanitizedLink: ClientSettingsLinkSchema = dropTemporaryAndMongooseIds(link);
+  if (subRows) {
+    sanitizedLink.sublinks = subRows.map(sublink => {
+      const { rowId: _deletedSubrowId, ...rest } = sublink;
+      return dropTemporaryAndMongooseIds(rest);
+    });
   }
-  if (link.subRows) {
-    const sublinks =
-      link.subRows.map(sublink => {
-        const { rowId: _deletedSubrowId, ...rest } = sublink;
-        return rest;
-      }) || [];
-    sanitizedLink.sublinks = sublinks;
-  }
-  delete link.subRows;
   return sanitizedLink;
 };
 
+const formatMenuLinks = (links: ClientSettingsLinkSchema[]): Link[] =>
+  (links || []).map(link => {
+    const { _id: _mongooseId, sublinks, ...rest } = link;
+    const tableLink: Link = { ...rest, rowId: rest.id! };
+    if (sublinks) {
+      tableLink.subRows = sublinks.map(sublink => {
+        const { _id: _subMongooseId, ...subRest } = sublink;
+        return { ...subRest, rowId: subRest.id! };
+      });
+    }
+    return tableLink;
+  });
+
 export type { Link };
-export { createRowId, sanitizeIds };
+export { createRowId, formatMenuLinks, sanitizeIds };

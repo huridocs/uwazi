@@ -1,9 +1,9 @@
 import { ixStatus } from './types.js';
 
-type IXModelStatusData = {
-  processed: number;
-  total: number;
-};
+type IXModelStatusData =
+  | { processed: number; total: number; error?: never }
+  // A `ready` status for a run that ended without doing its work; the message says why.
+  | { error: true; processed?: never; total?: never };
 
 type IXModelStatusCallback = (
   extractorId: string,

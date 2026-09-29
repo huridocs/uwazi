@@ -11,7 +11,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.j
 export class PXEntityStatusManagerFactory {
   static createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,

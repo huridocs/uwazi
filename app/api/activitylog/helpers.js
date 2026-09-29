@@ -145,12 +145,12 @@ const loadAllowedUsersAndGroups = data => {
 const loadSuggestionData = async data => {
   const suggestion = await Suggestions.getById(data.suggestion._id);
   const entity = await entities.getById(data.suggestion.entityId);
-  const [extractor] = await Extractors.get({ _id: suggestion.extractorId });
+  const extractor = await Extractors.getById(suggestion.extractorId);
   return { ...data, ...suggestion, title: entity?.title, extractorName: extractor.name };
 };
 
 const loadExtractorData = async data => {
-  const [extractor] = await Extractors.get({ _id: data.extractorId });
+  const extractor = await Extractors.getById(data.extractorId);
   return { ...data, ...extractor };
 };
 

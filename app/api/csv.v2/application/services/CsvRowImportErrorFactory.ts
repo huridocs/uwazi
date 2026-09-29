@@ -15,6 +15,7 @@ type BuildRowErrorInput = {
   importId: string;
   rowIndex: number;
   error: unknown;
+  generateId: () => string;
 };
 
 const toDetails = (
@@ -34,6 +35,7 @@ const mapFileNotFoundError = (input: BuildRowErrorInput) => {
   }
 
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.FileNotFound,
@@ -55,6 +57,7 @@ const mapRelationshipResolutionError = (input: BuildRowErrorInput) => {
   const hasAmbiguous = error.unresolved.some(unresolved => unresolved.reason === 'ambiguous');
   const selected = error.unresolved[0];
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: hasAmbiguous ? RowErrorCode.RelationshipAmbiguous : RowErrorCode.RelationshipNotFound,
@@ -76,6 +79,7 @@ const mapEntityNotFoundInTemplateError = (input: BuildRowErrorInput) => {
   }
 
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.IdNotFoundInTemplate,
@@ -95,6 +99,7 @@ const mapEmptyRowError = (input: BuildRowErrorInput) => {
   }
 
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.RowEmptyOrMalformed,
@@ -122,6 +127,7 @@ const mapValueRequiredError = (input: BuildRowErrorInput) => {
   }
 
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.ValueRequired,
@@ -144,6 +150,7 @@ const mapPropertyValidationError = (input: BuildRowErrorInput) => {
   const validationSource = error.cause;
   const validationMessage = getValidationMessage(validationSource);
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.ValueInvalidFormat,
@@ -167,6 +174,7 @@ const mapZodError = (input: BuildRowErrorInput) => {
 
   const validationMessage = getValidationMessage(error);
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.ValueInvalidFormat,
@@ -185,6 +193,7 @@ const mapDomainError = (input: BuildRowErrorInput) => {
   }
 
   return CsvImportRowError.create({
+    id: input.generateId(),
     importId,
     rowIndex,
     code: RowErrorCode.ValueInvalidFormat,
@@ -225,6 +234,7 @@ class CsvRowImportErrorFactory {
     }
 
     return CsvImportRowError.create({
+      id: input.generateId(),
       importId: input.importId,
       rowIndex: input.rowIndex,
       code: RowErrorCode.InternalError,

@@ -8,6 +8,11 @@ import { Validator } from './infrastructure/Validator.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
+type ExecuteOptions = {
+  /** Properties per language the client already translated; they are not translated again. */
+  providedTranslations?: Partial<Record<string, string[]>>;
+};
+
 export type ATTaskMessage = {
   key: string[];
   text: string;
@@ -50,7 +55,10 @@ export class RequestEntityTranslation {
   }
 
   // eslint-disable-next-line max-statements
-  async execute(entityInputModel: EntityInputModel | unknown) {
+  async execute(
+    entityInputModel: EntityInputModel | unknown,
+    { providedTranslations = {} }: ExecuteOptions = {}
+  ) {
     this.inputValidator.ensure(entityInputModel);
     const { atTemplateConfig, languagesTo, atConfig, languageFrom } =
       await this.getConfig(entityInputModel);
@@ -69,8 +77,6 @@ export class RequestEntityTranslation {
     }
     const entity = entityResult.getDataOrThrow();
 
-    const targetLanguages = entity.languages.filter(l => l !== languageFrom);
-
     for (const property of atTemplateConfig.properties) {
       const templateProperty = entity.template.getPropertyById(property.id);
       // eslint-disable-next-line no-continue
@@ -85,9 +91,17 @@ export class RequestEntityTranslation {
       // eslint-disable-next-line no-continue
       if (!rawValue) continue;
 
+      const propertyLanguagesTo = languagesTo.filter(
+        language => !providedTranslations[language]?.includes(templateProperty.name)
+      );
+      // eslint-disable-next-line no-continue
+      if (!propertyLanguagesTo.length) continue;
+
       const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${rawValue}`;
 
-      for (const targetLanguage of targetLanguages) {
+      for (const targetLanguage of entity.languages.filter(language =>
+        propertyLanguagesTo.includes(language)
+      )) {
         const propertyAssignment = entity.template.createPropertyAssignment(templateProperty.name, {
           value: [{ value: pendingText }],
         });
@@ -104,14 +118,14 @@ export class RequestEntityTranslation {
         key: [getTenant().name, entityInputModel.sharedId, templateProperty.id],
         text: rawValue,
         language_from: languageFrom,
-        languages_to: languagesTo,
+        languages_to: propertyLanguagesTo,
       });
 
       this.logger.info(
         `[AT] - Translation requested - ${JSON.stringify({
           entityId: entityInputModel._id,
           languageFrom,
-          languagesTo,
+          languagesTo: propertyLanguagesTo,
           [templateProperty.name]: rawValue,
         })}`
       );

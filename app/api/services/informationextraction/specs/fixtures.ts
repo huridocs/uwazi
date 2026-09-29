@@ -411,8 +411,9 @@ const fixtures: DBFixture = {
     ),
     factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameE, 'eng'),
     factory.fileDeprecated('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
-    factory.fileDeprecated('F15', 'A15', 'document', fixturesPdfNameA, 'eng', '', [], 'ready'),
-    factory.fileDeprecated('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
+    // Filenames are unique per tenant: F15 and F16 no longer reuse F1's and F3's.
+    factory.fileDeprecated('F15', 'A15', 'document', 'documentA15.pdf', 'eng', '', [], 'ready'),
+    factory.fileDeprecated('F16', 'A16', 'document', 'documentC16.pdf', 'eng'),
     factory.fileDeprecated('F17', 'A17', 'document', fixturesPdfNameG, 'eng', '', [], 'ready'),
     factory.fileDeprecated('F18', 'A18', 'document', fixturesPdfNameH, 'eng', '', [], 'ready'),
     factory.fileDeprecated('F19', 'A19', 'document', fixturesPdfNameI, 'eng', '', [], 'ready'),
@@ -551,7 +552,8 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('S16'),
-      filename: fixturesPdfNameA,
+      // Matched to its file by filename: F15's.
+      filename: 'documentA15.pdf',
       xmlname: 'documentA.xml',
       fileID: factory.id('F15'),
       status: 'ready',
@@ -904,8 +906,9 @@ const fixtures: DBFixture = {
         error: false,
       },
     },
+    // Ready suggestions of earlier runs, each on its own file: one suggestion per pdf file.
     {
-      fileId: factory.id('F4'),
+      fileId: factory.id('F4-ready-1'),
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
@@ -931,7 +934,7 @@ const fixtures: DBFixture = {
       },
     },
     {
-      fileId: factory.id('F4'),
+      fileId: factory.id('F4-ready-2'),
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
@@ -957,7 +960,7 @@ const fixtures: DBFixture = {
       },
     },
     {
-      fileId: factory.id('F4'),
+      fileId: factory.id('F4-ready-3'),
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
@@ -983,7 +986,7 @@ const fixtures: DBFixture = {
       },
     },
     {
-      fileId: factory.id('F4'),
+      fileId: factory.id('F4-ready-4'),
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
@@ -1852,12 +1855,6 @@ const fixtures: DBFixture = {
       extractorId: factory.id('prop3extractor'),
       creationDate: 200,
       status: 'processing',
-      findingSuggestions: true,
-    },
-    {
-      extractorId: factory.id('prop4extractor'),
-      creationDate: 200,
-      status: 'ready',
       findingSuggestions: true,
     },
     {

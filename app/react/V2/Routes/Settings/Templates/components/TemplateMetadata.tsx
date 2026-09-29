@@ -63,7 +63,7 @@ export const TemplateMetadata = ({
         placeholder={t('System', 'Template name', null, false)}
         value={value.name}
         onChange={e => onChange({ ...value, name: e.target.value })}
-        className="grow min-w-[120px]"
+        className="grow min-w-30"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
         hasErrors={!!nameError}
         errorMessage={
@@ -72,7 +72,7 @@ export const TemplateMetadata = ({
       />
       <div className="flex items-center h-10 gap-2 ml-4">
         {!pages.length && (
-          <Translate className="text-sm font-medium text-gray-900">
+          <Translate className="text-sm font-medium text-ink">
             There are no pages enabled for entity view
           </Translate>
         )}

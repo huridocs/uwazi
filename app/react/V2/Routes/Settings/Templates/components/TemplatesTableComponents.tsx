@@ -13,11 +13,11 @@ const columnHelper = createColumnHelper<TemplateRow>();
 const NameCell = ({ cell }: CellContext<TemplateRow, string>) => (
   <div className="flex items-center gap-2">
     {cell.row.original.synced ? (
-      <span className="text-primary-700 cursor-not-allowed">{cell.getValue()}</span>
+      <span className="text-ink cursor-not-allowed">{cell.getValue()}</span>
     ) : (
       <I18NLink
         to={`/settings/templates/edit/${cell.row.original._id}`}
-        className="text-primary-700 hover:underline cursor-pointer"
+        className="text-ink hover:underline cursor-pointer"
       >
         {cell.getValue()}
       </I18NLink>

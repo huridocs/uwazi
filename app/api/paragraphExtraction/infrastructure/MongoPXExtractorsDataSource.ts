@@ -1,5 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
@@ -32,7 +32,7 @@ export class MongoPXExtractorsDataSource
 
   constructor(
     db: Db,
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     extractorsQueryService: PXExtractorsQueryService,
     templatesDAO: TemplatesDAO
   ) {

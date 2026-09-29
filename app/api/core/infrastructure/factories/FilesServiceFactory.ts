@@ -9,12 +9,10 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FileContentsIO } from '../files/FileContentIO.js';
 import { PathManager } from '../files/PathManager.js';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { PDFService } from '../services/PDFService.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
+import { RelationshipsV1DataSourceFactory } from './RelationshipsV1DataSourceFactory.js';
 
 class FilesServiceFactory {
   static default(deps: Partial<FilesServiceDeps> = {}, context?: FilesServiceContext) {
@@ -24,17 +22,11 @@ class FilesServiceFactory {
       {
         transactionManager,
         filesDS: FilesDataSourceFactory.default(),
-        relV1DS:
-          deps.relV1DS ??
-          new MongoRelationshipsV1DataSource(
-            getConnection(),
-            transactionManager,
-            EntitiesDAOFactory.default()
-          ),
+        relV1DS: deps.relV1DS ?? RelationshipsV1DataSourceFactory.default(),
         pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
         idGenerator: IdGeneratorFactory.default(),
         fileStorage: FileStorageFactory.default(),
-        jobsDispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
+        jobsDispatcher: DispatcherFactory.default(),
         pdfService: new PDFService(),
         filesIO: new FileContentsIO(),
         eventBus: applicationEventsBus,

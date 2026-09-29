@@ -34,22 +34,26 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
     if (mainDocument?.filename) {
       items.push({
         id: MAIN_TAB.DOCUMENT,
+        name: 'Document',
         label: <TabLabel text="Document" />,
       });
     }
 
     items.push({
       id: MAIN_TAB.METADATA,
+      name: 'Metadata',
       label: <TabLabel text="Metadata" dirty={isDirty} />,
     });
 
     items.push({
       id: MAIN_TAB.RELATIONSHIPS,
+      name: 'Relationships',
       label: <TabLabel text="Relationships" count={relationshipsCount} />,
     });
 
     items.push({
       id: MAIN_TAB.FILES,
+      name: 'Files',
       label: <TabLabel text="Files" count={filesCount} />,
     });
 
@@ -67,7 +71,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <div className="min-w-0 overflow-x-auto">
+      <div className="min-w-0 flex-1">
         <TabButtons
           groupId="entity-main"
           buttons={buttons}

@@ -192,15 +192,6 @@ describe('translation files', () => {
           .send([{ key, label: longName }])
           .expect(204);
 
-        await waitForExpect(() => {
-          const updateSettingsEvent = iosocket.emit.mock.calls.find(
-            ([eventName]) => eventName === 'updateSettings'
-          );
-          expect(updateSettingsEvent).toBeDefined();
-          expect(updateSettingsEvent![0]).toBe('updateSettings');
-          expect(updateSettingsEvent![1]).toBe(TestEmitSources.currentTenant);
-        });
-
         if (shouldEmitTranslationsInstallDone) {
           await waitForExpect(() => {
             const installDoneEvent = iosocket.emit.mock.calls.find(

@@ -6,7 +6,8 @@ import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js'
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
-import { PostgresTransactionManager } from '../infrastructure/postgresql/common/PostgresTransactionManager.js';
+import type { PostgresTransactionManager } from '../infrastructure/postgresql/common/PostgresTransactionManager.js';
+import type { MongoTransactionManager } from '../infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TelemetryCollector } from './logger/TelemetryCollector.js';
 
 type DependencyFactories = {
@@ -16,6 +17,7 @@ type DependencyFactories = {
 type Dependencies = {
   eventEmitter: EventEmitter;
   transactionManager: TransactionManager;
+  mongoTransactionManager: MongoTransactionManager;
   postgresTransactionManager: PostgresTransactionManager;
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
@@ -68,6 +70,10 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get transactionManager(): TransactionManager {
     return this.getOrInitialize('transactionManager');
+  }
+
+  get mongoTransactionManager(): MongoTransactionManager {
+    return this.getOrInitialize('mongoTransactionManager');
   }
 
   get telemetryCollector(): TelemetryCollector {
@@ -151,4 +157,4 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 const executionContext = new ExecutionContext();
 
 export { executionContext as ExecutionContext };
-export type { Context as ExecutionContextDeps };
+export type { Context as ExecutionContextDeps, DependencyFactories };

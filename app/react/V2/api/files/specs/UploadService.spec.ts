@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 import superagent from 'superagent';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import { UploadService } from '../UploadService.js';
 
 const file1 = new File(['File 1 contents'], 'file1.txt', {
@@ -101,4 +103,32 @@ describe('Upload service', () => {
     expect(mock.field).toHaveBeenCalledWith('originalname', 'file2.txt');
     expect(mock.attach).toHaveBeenCalledWith('file', file2);
   }, 30000);
+
+  describe('Content-Language', () => {
+    beforeEach(() => {
+      getStore().set(localeAtom, 'es');
+    });
+
+    it('should send the current UI locale when creating entities from PDFs', async () => {
+      const mock = mockSuperAgent();
+      jest.spyOn(mock, 'set');
+
+      await new UploadService('createFromPDF').upload([file1]);
+
+      expect(mock.set).toHaveBeenCalledWith('Content-Language', 'es');
+    }, 30000);
+
+    it.each(['attachment', 'document', 'custom'] as const)(
+      'should not send it when uploading a %s',
+      async endpoint => {
+        const mock = mockSuperAgent();
+        jest.spyOn(mock, 'set');
+
+        await new UploadService(endpoint).upload([file1]);
+
+        expect(mock.set).not.toHaveBeenCalledWith('Content-Language', expect.anything());
+      },
+      30000
+    );
+  });
 });

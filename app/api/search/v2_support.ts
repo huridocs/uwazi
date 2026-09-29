@@ -5,7 +5,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   return settingsDataSource.readNewRelationshipsAllowed();
@@ -42,9 +42,7 @@ async function createObsoleteMetadataResponseProcessor(
     return () => undefined;
   }
 
-  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(
-    TransactionManagerFactory.default()
-  );
+  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(TransactionManagerFactory.mongo());
 
   const obsoleteMetadataByEntity = await entitiesDataSource
     .getObsoleteMetadata(

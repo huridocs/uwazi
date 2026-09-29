@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -13,7 +13,7 @@ const asStrings = (ids: (string | ObjectId)[]): string[] => ids.map(asString);
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
@@ -198,23 +198,76 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return result.map((doc: any) => doc._id);
   }
 
-  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+  async findRelationshipPropertyNames(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        { $match: { 'properties.type': 'relationship' } },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  async findRelationshipPropertyNamesInheritingRelationship(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': 'relationship',
+            'properties.inherit.type': 'relationship',
+          },
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  async findPropertyNamesUsingThesaurus(thesaurusId: string): Promise<{
+    selectPropertyNames: string[];
+    inheritedPropertyNames: string[];
+  }> {
     const directTemplates = await this.getCollection()
       .find({ 'properties.content': thesaurusId })
-      .project({ _id: 1 })
       .toArray();
+
+    const selectPropertyNames = directTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(property => property.content === thesaurusId)
+        .map(property => property.name)
+    );
+
+    const directTemplateIds = directTemplates.map(template => template._id.toString());
 
     const relatedTemplates = await this.getCollection()
       .find({
         'properties.type': 'relationship',
-        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+        'properties.content': { $in: directTemplateIds },
       })
-      .project({ _id: 1 })
       .toArray();
 
-    const allTemplates = [...directTemplates, ...relatedTemplates];
+    const inheritedPropertyNames = relatedTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(
+          property =>
+            property.type === 'relationship' && directTemplateIds.includes(property.content || '')
+        )
+        .map(property => property.name)
+    );
 
-    return Array.from(new Set(allTemplates.map(t => t._id)));
+    return { selectPropertyNames, inheritedPropertyNames };
   }
 }
 

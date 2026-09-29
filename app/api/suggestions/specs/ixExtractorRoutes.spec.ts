@@ -81,10 +81,12 @@ const fixtures: DBFixture = {
       fixturesFactory.property('text_property', 'text'),
       fixturesFactory.property('number_property', 'numeric'),
       fixturesFactory.property('other_text_property', 'text'),
+      fixturesFactory.property('rich_text', 'markdown'),
     ]),
     fixturesFactory.template('template2', [
       fixturesFactory.property('text_property', 'text'),
       fixturesFactory.property('number_property', 'numeric'),
+      fixturesFactory.property('rich_text', 'markdown'),
     ]),
   ],
   ixextractors: existingExtractors,

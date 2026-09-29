@@ -5,6 +5,7 @@ import {
 } from '../../domain/CsvImportThesauriValues.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
 import { CsvImportThesauriValuesDBO } from '../schemas/CsvImportThesauriValuesTypes.js';
+import { fromMongoIdentity, toMongoIdentity } from './mongoIdentity.js';
 
 export class MongoCsvImportThesauriValuesDataSource
   extends MongoDataSource<CsvImportThesauriValuesDBO>
@@ -20,25 +21,13 @@ export class MongoCsvImportThesauriValuesDataSource
     if (!pendingValues.length) {
       return;
     }
-    const docs: CsvImportThesauriValuesDBO[] = pendingValues.map(pendingDoc =>
-      pendingDoc.toObject()
-    );
+    const docs = pendingValues.map(pendingDoc => toMongoIdentity(pendingDoc.toObject()));
     await this.getCollection().insertMany(docs);
   }
 
   async getByImport(importId: string): Promise<CsvImportThesauriValues[]> {
     const docs = await this.getCollection().find({ importId }).toArray();
-    return docs.map(doc =>
-      CsvImportThesauriValues.create({
-        importId: doc.importId,
-        thesaurusId: doc.thesaurusId,
-        createdAt: doc.createdAt,
-        entries: doc.entries,
-        appliedAt: doc.appliedAt,
-        appliedValues: doc.appliedValues,
-        stats: doc.stats,
-      })
-    );
+    return docs.map(doc => CsvImportThesauriValues.create(fromMongoIdentity(doc)));
   }
 
   async deleteByImport(importId: string): Promise<void> {

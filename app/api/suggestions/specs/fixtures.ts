@@ -360,6 +360,8 @@ const fixtures: DBFixture = {
       entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       extractorId: factory.id('age_extractor'),
+      // A second English file of shared3: one suggestion per file, as for any pdf extractor.
+      fileId: factory.id('F7-processing'),
       suggestedValue: 24,
       segment: 'Alfred 67 years old processing',
       language: 'en',
@@ -425,9 +427,10 @@ const fixtures: DBFixture = {
       status: 'ready',
       error: '',
     },
+    // Each language variant of a pdf-sourced suggestion is on that language's own file.
     {
       _id: suggestionSharedId6EnemyEs,
-      fileId: factory.id('F4'),
+      fileId: factory.id('F4-es'),
       entityId: 'shared6',
       entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
@@ -471,7 +474,7 @@ const fixtures: DBFixture = {
       error: '',
     },
     {
-      fileId: factory.id('F5'),
+      fileId: factory.id('F5-es'),
       _id: testingDB.id(),
       entityId: 'shared7',
       entityTemplate: heroTemplateId.toString(),
@@ -486,7 +489,7 @@ const fixtures: DBFixture = {
       error: '',
     },
     {
-      fileId: factory.id('F5'),
+      fileId: factory.id('F5-pr'),
       _id: testingDB.id(),
       entityId: 'shared7',
       entityTemplate: heroTemplateId.toString(),
@@ -860,7 +863,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.fileDeprecated('F6', 'shared8', 'document', 'documentRiddler.pdf', 'eng', '', []),
+    factory.fileDeprecated('F6', 'shared8', 'document', 'documentRiddler2.pdf', 'eng', '', []),
     factory.fileDeprecated('F7', 'shared3', 'document', 'documentAlfred.pdf', 'eng', '', [
       {
         name: 'super_powers',

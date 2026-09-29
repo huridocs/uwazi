@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ImageMetadataProperty } from '#V2/formatters/types.js';
 
@@ -6,27 +6,33 @@ type ImageProps = {
   values: ImageMetadataProperty['values'];
   imageStyle?: 'contain' | 'cover';
   density?: 'default' | 'compact';
-  frame?: 'natural' | 'video';
+  fullWidth?: boolean;
 };
 
-const Image = ({ values, imageStyle, density = 'default', frame = 'natural' }: ImageProps) => {
-  const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
-  const videoFrame = frame === 'video';
-  const maxHeightClass = density === 'compact' ? 'max-h-32' : 'max-h-96';
+const MEDIA_SURFACE =
+  'w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)';
 
-  if (!values?.length || !values[0].value) {
+const Image = ({
+  values,
+  imageStyle = 'cover',
+  density = 'default',
+  fullWidth = false,
+}: ImageProps) => {
+  const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
+  const cover = imageStyle === 'cover';
+  const compact = density === 'compact';
+  const srcKey = values.map(image => image.value).join('\0');
+
+  useEffect(() => {
+    setErrorIndices(new Set());
+  }, [srcKey]);
+
+  if (!values.length || !values[0].value) {
     return null;
   }
 
-  let imgClassName = `m-auto ${maxHeightClass} max-w-full`;
-  if (videoFrame) {
-    imgClassName = 'absolute inset-0 h-full w-full';
-  } else if (density === 'compact') {
-    imgClassName = `block w-full ${maxHeightClass}`;
-  }
-
   return (
-    <div className={`flex w-full min-w-0 flex-col gap-2${videoFrame ? ' min-h-0 flex-1' : ''}`}>
+    <div className={`flex w-full min-w-0 flex-col gap-2${compact ? '' : ' h-full min-h-0 flex-1'}`}>
       {values.map((image, index) => {
         const hasError = errorIndices.has(index);
 
@@ -41,18 +47,16 @@ const Image = ({ values, imageStyle, density = 'default', frame = 'natural' }: I
         return (
           <div
             key={image.value || index}
-            className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
-              videoFrame ? 'relative min-h-0 flex-1 aspect-video' : ''
-            }`.trim()}
+            className={`${MEDIA_SURFACE}${compact ? '' : ' h-full min-h-0'}`}
           >
             <img
-              className={imgClassName}
-              style={{
-                objectFit: imageStyle ?? (density === 'compact' ? 'contain' : 'fill'),
-              }}
+              className={`${cover ? 'block ' : ''}${cover || fullWidth ? 'w-full' : 'm-auto max-w-full'} ${
+                compact ? 'max-h-32' : 'h-full min-h-0'
+              }`}
+              style={{ objectFit: cover ? 'cover' : 'contain' }}
               src={image.value}
               alt={image.alt}
-              onError={() => setErrorIndices(prevErrors => prevErrors.add(index))}
+              onError={() => setErrorIndices(prevErrors => new Set(prevErrors).add(index))}
             />
           </div>
         );
@@ -61,4 +65,4 @@ const Image = ({ values, imageStyle, density = 'default', frame = 'natural' }: I
   );
 };
 
-export { Image };
+export { Image, MEDIA_SURFACE };

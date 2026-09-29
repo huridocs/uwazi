@@ -13,6 +13,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { DBFixture } from '#api/utils/testing_db.js';
+import { MissingTranslationLanguageError } from '#api/core/application/errors.js';
+import { MissingTranslatedPropertyError } from '#api/core/domain/entity/errors.js';
 import { User } from '#api/users.v2/model/User.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
@@ -112,8 +114,9 @@ describe('UpdateEntityUseCase', () => {
     return file ? { ...file, _id: file._id.toHexString() } : null;
   };
 
-  const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
-  const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
+  const getAllJobs = async (postgresCore: boolean) =>
+    testingEnvironment.jobs.getAll({ postgresCore, mongoDb: getConnection() });
+  const clearJobs = async () => testingEnvironment.jobs.clear(getConnection());
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -1046,7 +1049,7 @@ describe('UpdateEntityUseCase', () => {
         propertyAssignments: [{ name: 'title', value: [{ value: 'Entity Updated EN' }] }],
       });
 
-      const jobs = await getAllJobs();
+      const jobs = await getAllJobs(postgresCore);
 
       expect(jobs.length).toBeGreaterThanOrEqual(1);
 
@@ -1060,10 +1063,203 @@ describe('UpdateEntityUseCase', () => {
               before: expect.any(Object),
               userId: expect.any(String),
               targetLanguage: 'en',
+              changedLanguages: ['en'],
             }),
           }),
         ])
       );
+    });
+
+    describe('with translations', () => {
+      it('should save the target language and each translation in its own language', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Updated EN' }] }],
+          translations: { pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }] },
+        });
+
+        expect(
+          (await getAllEntities('entity1')).map(({ language, title }) => ({ language, title }))
+        ).toEqual([
+          { language: 'en', title: 'Updated EN' },
+          { language: 'pt', title: 'Atualizado PT' },
+        ]);
+      });
+
+      it('should fill in a language still being installed from the default language', async () => {
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          settings: [
+            {
+              languages: [
+                { default: true, key: 'en', label: 'English' },
+                { key: 'pt', label: 'Portuguese' },
+                { key: 'es', label: 'Spanish', installing: true },
+              ],
+            },
+          ],
+        });
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Updated EN' }] }],
+          translations: { pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }] },
+        });
+
+        expect(
+          (await getAllEntities('entity1')).map(({ language, title }) => ({ language, title }))
+        ).toEqual([
+          { language: 'en', title: 'Updated EN' },
+          { language: 'es', title: 'Entity 1 EN' },
+          { language: 'pt', title: 'Atualizado PT' },
+        ]);
+      });
+
+      it('should reject translations missing an installed language', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await expect(
+          sut.execute({
+            language: 'en',
+            sharedId: 'entity1',
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Updated EN' }] }],
+            translations: {},
+          })
+        ).rejects.toThrow(new MissingTranslationLanguageError('pt'));
+
+        expect((await getAllEntities('entity1')).map(({ title }) => title)).toEqual([
+          'Entity 1 EN',
+          'Entity 1 PT',
+        ]);
+      });
+
+      it('should reject a translation missing a translatable property', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await expect(
+          sut.execute({
+            language: 'en',
+            sharedId: 'image_entity',
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Image Entity EN' }] }],
+            translations: {
+              pt: [{ name: 'title', value: [{ value: 'Atualizado PT' }] }],
+            },
+          })
+        ).rejects.toThrow(new MissingTranslatedPropertyError('pt', 'image'));
+
+        expect(
+          (await getAllEntities('image_entity')).map(({ language, title, metadata }) => ({
+            language,
+            title,
+            image: metadata.image,
+          }))
+        ).toEqual([
+          {
+            language: 'en',
+            title: 'Image Entity EN',
+            image: [{ value: 'https://example.com/en.jpg' }],
+          },
+          {
+            language: 'pt',
+            title: 'Image Entity PT',
+            image: [{ value: 'https://example.com/pt.jpg' }],
+          },
+        ]);
+      });
+
+      it('should link different uploaded images per language', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'image_entity',
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Image Entity EN' }] },
+            { name: 'image', value: [{ value: '', attachment: 0 }] },
+          ],
+          translations: {
+            pt: [
+              { name: 'title', value: [{ value: 'Image Entity PT' }] },
+              { name: 'image', value: [{ value: '', attachment: 1 }] },
+            ],
+          },
+          uploadedFiles: [
+            inputFile('attachments[0]', 'en.png', 'en.png', 'image/png', 'attachment'),
+            inputFile('attachments[1]', 'pt.png', 'pt.png', 'image/png', 'attachment'),
+          ],
+        });
+
+        expect(
+          (await getAllEntities('image_entity')).map(({ language, metadata }) => ({
+            language,
+            image: metadata.image,
+          }))
+        ).toEqual([
+          { language: 'en', image: [{ value: '/api/files/en.png' }] },
+          { language: 'pt', image: [{ value: '/api/files/pt.png' }] },
+        ]);
+      });
+    });
+
+    describe('EntityUpdatedEvent changed languages', () => {
+      const listenerJobsChangedLanguages = async () =>
+        (await getAllJobs(postgresCore))
+          .filter(job => job.name === 'EntityUpdatedEvent:SampleListener')
+          .map(job => job.params.changedLanguages);
+
+      it('should not emit when the saved values are unchanged', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Entity 1 EN' }] }],
+        });
+
+        expect(await listenerJobsChangedLanguages()).toEqual([]);
+      });
+
+      it('should emit once, listing only the language of a changed translatable property', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'pt',
+          sharedId: 'entity1',
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Entidade 1' }] }],
+        });
+
+        expect(await listenerJobsChangedLanguages()).toEqual([['pt']]);
+      });
+
+      it('should emit once, listing every language, when a language-independent property changes', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          language: 'en',
+          sharedId: 'full_entity',
+          propertyAssignments: [{ name: 'numeric', value: [{ value: 43 }] }],
+        });
+
+        expect(await listenerJobsChangedLanguages()).toEqual([['en', 'pt']]);
+      });
+
+      it('should emit once, listing every language, when the template changes', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          sharedId: 'entity1',
+          language: 'en',
+          templateId: factory.id('Full Template').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Entity 1 EN' }] }],
+        });
+
+        expect(await listenerJobsChangedLanguages()).toEqual([['en', 'pt']]);
+      });
     });
 
     it('should change entity template', async () => {

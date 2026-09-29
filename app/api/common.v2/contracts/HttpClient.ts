@@ -14,6 +14,7 @@ type GetInput = {
 type PostJsonInput = {
   url: string;
   body: string | object;
+  timeoutMs?: number;
 };
 
 type DeleteJsonInput = {

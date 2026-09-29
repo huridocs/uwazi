@@ -1,14 +1,14 @@
 import { Db } from 'mongodb';
 
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
 
 type Props = {
   connection: Db;
-  mongoTransactionManager: MongoTransactionManager;
+  mongoTransactionManager: TransactionManager;
 };
 
 export class PXEntitiesStatusDataSourceFactory {

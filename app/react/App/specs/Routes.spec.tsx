@@ -87,14 +87,13 @@ describe('Routes', () => {
             <LibraryMap />
           </LibraryRoot>
         );
-        const el = element as React.ReactElement | null | undefined;
-        const child = el?.props?.children;
-        expect(
-          child &&
-            typeof child === 'object' &&
-            'props' in child &&
-            (child as { props: { params?: unknown } }).props.params
-        ).toMatchObject({
+        const child = React.isValidElement<{ children?: React.ReactNode }>(element)
+          ? element.props.children
+          : undefined;
+        const params = React.isValidElement<{ params?: { q?: string } }>(child)
+          ? child.props.params
+          : undefined;
+        expect(params).toMatchObject({
           q: "(searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032'))",
         });
       });

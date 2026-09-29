@@ -4,6 +4,7 @@ import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { DenormalizeRelationshipsUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeRelationshipsUseCaseFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { EntityPreviewBatchHandlerFactory } from '#api/core/infrastructure/factories/EntityPreviewBatchFactory.js';
 import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factories/CloneLanguageEntitiesJobFactory.js';
@@ -11,27 +12,26 @@ import { DeleteLanguageEntitiesJobFactory } from '#api/core/infrastructure/facto
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
-import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler.js';
-import { DenormalizeThesaurusEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
+import { DenormalizeEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeEntitiesChunkHandler.js';
+import { DenormalizeEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeEntitiesHandler.js';
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { CloneLanguageEntitiesJob } from '#api/core/infrastructure/jobs/CloneLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJob } from '#api/core/infrastructure/jobs/DeleteLanguageEntitiesJob.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { BroadcastSettingsChanged } from '#api/core/infrastructure/listeners/BroadcastSettingsChanged.js';
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
@@ -41,7 +41,6 @@ import {
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { CsvCreateThesauriValuesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
@@ -54,7 +53,6 @@ import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jo
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
-import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
 import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
@@ -71,14 +69,12 @@ import { IXTaskService } from '#api/services/informationextraction/TaskService.j
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
 import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
-import settings from '#api/settings/index.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructure/jobHandlers/DatavizScheduledRefreshJobHandler.js';
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 import { SendWelcomeEmailFactory } from '#api/core/infrastructure/factories/SendWelcomeEmailFactory.js';
 import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.js';
@@ -162,19 +158,15 @@ export function registerJobs(register: Register) {
     });
   });
 
-  register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
+  register(CreateParagraphExtractionEntityStatusesJob, async () => {
     const batchSize = 50;
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
-      lockWindow: 1000 * 60,
-    });
-
     return new CreateParagraphExtractionEntityStatusesJob(
       {
         createEntityStatusesUseCase: useCase,
-        dispatcher,
+        dispatcher: ExecutionContext.jobsDispatcher,
       },
       batchSize
     );
@@ -182,8 +174,9 @@ export function registerJobs(register: Register) {
 
   const informationExtraction = new InformationExtraction();
   register(IXTrainModelJob, async (tenantName: string) => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     const iXTaskService = new IXTaskService({
       tenantName,
       taskManager: informationExtraction.taskManager,
@@ -224,19 +217,15 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default(),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+        entitiesDS: EntitiesDataSourceFactory.default(),
         filesDS: FilesDataSourceFactory.default(),
-        relationshipsV1DS: new MongoRelationshipsV1DataSource(
-          getConnection(),
-          transactionManager,
-          EntitiesDAOFactory.default()
-        ),
-        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+        relationshipsV1DS: RelationshipsV1DataSourceFactory.default(),
+        templatesDS: TemplatesDataSourceFactory.default(),
         transactionManager,
       }),
     });
@@ -301,30 +290,24 @@ export function registerJobs(register: Register) {
   );
 
   register(
-    DenormalizeThesaurusEntitiesChunkHandler,
+    DenormalizeEntitiesChunkHandler,
     async () =>
-      new DenormalizeThesaurusEntitiesChunkHandler({ DenormalizeThesaurusEntitiesUseCaseFactory })
+      new DenormalizeEntitiesChunkHandler({
+        DenormalizeThesaurusEntitiesUseCaseFactory,
+        DenormalizeRelationshipsUseCaseFactory,
+      })
   );
 
-  register(DenormalizeThesaurusEntitiesHandler, async () => {
+  register(DenormalizeEntitiesHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
 
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const jobsDispatcher = UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
-    return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
+    return new DenormalizeEntitiesHandler({
+      entitiesDS,
+      jobsDispatcher: ExecutionContext.jobsDispatcher,
+    });
   });
-
-  register(
-    DenormalizeEntityUpdatedListener.asJob(),
-    async () =>
-      new DenormalizeEntityUpdatedListener({
-        denormalizeRelated,
-        templatesDS: TemplatesDataSourceFactory.default({
-          transactionManager: TransactionManagerFactory.default(),
-        }),
-      })
-  );
 
   register(
     ProcessRelationshipAfterEntityUpdatedListener.asJob(),
@@ -334,6 +317,15 @@ export function registerJobs(register: Register) {
   register(
     AddLanguagePagesListener.asJob(),
     async () => new AddLanguagePagesListener({ settingsDS: SettingsDataSourceFactory.default() })
+  );
+
+  register(
+    BroadcastSettingsChanged.asJob(),
+    async () =>
+      new BroadcastSettingsChanged({
+        settingsQuery: SettingsQueryServiceFactory.default(),
+        sockets: new V1WebSocketsWrapper(),
+      })
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));

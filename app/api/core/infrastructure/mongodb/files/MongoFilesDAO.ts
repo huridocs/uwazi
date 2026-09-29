@@ -1,6 +1,6 @@
 import { Db, Document, FindOptions, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
-import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { FileDBO } from './schemas/FilesTypes.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
@@ -10,7 +10,7 @@ import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 const defaultProjection: Document = { fullText: 0 };

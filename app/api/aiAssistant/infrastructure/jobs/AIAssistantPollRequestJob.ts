@@ -7,6 +7,7 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../../application/contracts/AIAssistantService.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Params = {
   sessionId: string;
@@ -21,6 +22,7 @@ type Dependencies = {
 const isLastRetry = (jobInfo?: JobInfo) =>
   Boolean(jobInfo && jobInfo.retryCount >= jobInfo.maxRetries);
 
+@QueueOptions({ lockWindow: 10_000, maxRetries: 60 })
 @PrivilegedJob()
 class AIAssistantPollRequestJob implements Dispatchable {
   constructor(private deps: Dependencies) {}

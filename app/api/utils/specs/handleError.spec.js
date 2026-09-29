@@ -10,12 +10,14 @@ import { IXValidationError } from '#api/services/informationextraction/IXValidat
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import {
   AccountLocked,
   InvalidCredentials,
   TwoFactorTokenInvalid,
 } from '#api/core/domain/user/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { ModelNotReadyError } from '#api/services/informationextraction/errors.js';
 import { handleError, prettifyError } from '../handleError.js';
 
 const contextRequestId = '1234';
@@ -77,6 +79,25 @@ describe('handleError', () => {
         const error = handleError(errorInstance);
         expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
         expect(legacyLogger.debug.mock.calls[0][0]).toContain('segmentation files not found');
+      });
+    });
+    describe('and is instance of EntityNotFoundError', () => {
+      it('should be a 404 debug logLevel', () => {
+        const error = handleError(new EntityNotFoundError('sharedId'));
+        expect(error).toMatchObject({ code: 404, logLevel: 'debug' });
+      });
+    });
+
+    describe('and is instance of ModelNotReadyError', () => {
+      it('should be a 409 debug logLevel with the plain message, not a stack trace', () => {
+        const errorInstance = new ModelNotReadyError('extractor1');
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({
+          code: 409,
+          logLevel: 'debug',
+          prettyMessage: '\nModel for extractor with ID extractor1 is not ready.',
+        });
+        expect(error.originalError).toBeUndefined();
       });
     });
     describe('and is instance of S3Error', () => {

@@ -36,12 +36,14 @@ const trackFailedRow = (params: {
   csvImport: CsvImport;
   row: CsvImportRow;
   error: unknown;
+  generateId: () => string;
 }): RowProcessingState => {
-  const { state, csvImport, row, error } = params;
+  const { state, csvImport, row, error, generateId } = params;
   const rowError = CsvRowImportErrorFactory.fromException({
     importId: csvImport.id,
     rowIndex: row.rowIndex,
     error,
+    generateId,
   });
   const consecutiveFailures = state.consecutiveFailures + 1;
   return {

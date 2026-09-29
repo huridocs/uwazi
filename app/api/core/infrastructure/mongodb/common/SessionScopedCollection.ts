@@ -35,15 +35,15 @@ import {
 } from 'mongodb';
 
 import { CollectionWrapper } from './CollectionWrapper.js';
-import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 export class SessionScopedCollection<TSchema extends Document = Document>
   extends CollectionWrapper<TSchema>
   implements Collection<TSchema>
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
-  constructor(collection: Collection<TSchema>, transactionManager: MongoTransactionManager) {
+  constructor(collection: Collection<TSchema>, transactionManager: TransactionManager) {
     super(collection);
     this.transactionManager = transactionManager;
   }

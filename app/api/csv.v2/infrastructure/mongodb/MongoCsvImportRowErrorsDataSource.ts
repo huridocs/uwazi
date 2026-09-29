@@ -2,6 +2,7 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { CsvImportRowErrorsDataSource } from '../../application/contracts/CsvImportRowErrorsDataSource.js';
 import { CsvImportRowError } from '../../domain/CsvImportRowError.js';
 import { CsvImportRowErrorDBO } from '../schemas/CsvImportRowErrorsTypes.js';
+import { fromMongoIdentity, toMongoIdentity } from './mongoIdentity.js';
 
 export class MongoCsvImportRowErrorsDataSource
   extends MongoDataSource<CsvImportRowErrorDBO>
@@ -11,7 +12,7 @@ export class MongoCsvImportRowErrorsDataSource
 
   async insertMany(errors: CsvImportRowError[]): Promise<void> {
     if (!errors.length) return;
-    await this.getCollection().insertMany(errors.map(error => error.toObject()));
+    await this.getCollection().insertMany(errors.map(error => toMongoIdentity(error.toObject())));
   }
 
   async countByImport(importId: string): Promise<number> {
@@ -20,10 +21,7 @@ export class MongoCsvImportRowErrorsDataSource
 
   async getByImport(importId: string): Promise<CsvImportRowError[]> {
     const results = await this.getCollection().find({ importId }).sort({ rowIndex: 1 }).toArray();
-    return results.map(doc => {
-      const { _id, ...rest } = doc;
-      return CsvImportRowError.fromObject(rest);
-    });
+    return results.map(doc => CsvImportRowError.fromObject(fromMongoIdentity(doc)));
   }
 
   async deleteByImport(importId: string): Promise<void> {

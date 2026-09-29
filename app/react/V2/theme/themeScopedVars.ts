@@ -22,7 +22,7 @@ const getScopedThemeVars = (
     ...getThemeRoleVars(roles),
     ...toCompatibilityVars(resolved),
     ...getDerivedThemeVars(roles.chrome),
-    ...getActionThemeVars(roles),
+    ...getActionThemeVars(presetId, roles),
     ...getButtonThemeVars(presetId, resolved, roles),
     ...getControlThemeVars(presetId, resolved, roles),
     ...getSurfaceThemeVars(presetId, resolved, roles),

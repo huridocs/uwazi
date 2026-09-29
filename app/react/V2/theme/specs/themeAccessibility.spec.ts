@@ -30,3 +30,12 @@ describe('preset palettes accessibility (WCAG AA text)', () => {
     });
   });
 });
+
+describe('preset palettes lockstep hex', () => {
+  it('Uwazi Design dark ink and borders clear AA on vellum', () => {
+    const resolved = PRESET_DEFINITIONS.default.modes.dark;
+    expect(resolved['--color-theme-text-tertiary']).toBe('#ADA79E');
+    expect(resolved['--color-theme-border-primary']).toBe('#514E48');
+    assertAaTextOnBg(resolved['--color-theme-bg-muted'], resolved['--color-theme-text-tertiary']);
+  });
+});

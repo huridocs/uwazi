@@ -66,6 +66,31 @@ describe('library loader', () => {
     expect(searchLibrary).not.toHaveBeenCalled();
   });
 
+  it('redirects a trailing-slash V1 library bookmark', async () => {
+    const result = await runLoader(
+      'http://localhost/en/library/?q=(allAggregations:!f,from:0,includeUnpublished:!f,limit:30,order:desc,searchTerm:%27arroz%27,sort:_score,treatAs:number,unpublished:!f)'
+    );
+
+    expect(result).toBeInstanceOf(Response);
+    const location = (result as Response).headers.get('Location');
+    expect(location).toBe('/en/library?filters=(status:(published))&search=arroz&sort=_score');
+    expect(searchLibrary).not.toHaveBeenCalled();
+  });
+
+  it('redirects /library/table rison URLs to view=table', async () => {
+    const result = await runLoader(
+      'http://localhost/en/library/table?q=(from:0,limit:30,order:asc,sort:title,unpublished:!f)'
+    );
+
+    expect(result).toBeInstanceOf(Response);
+    const location = (result as Response).headers.get('Location');
+    expect(location).toContain('/en/library?');
+    expect(location).toContain('view=table');
+    expect(location).toContain('sort=title');
+    expect(location).toContain('order=asc');
+    expect(searchLibrary).not.toHaveBeenCalled();
+  });
+
   it('passes AND properties to searchLibrary', async () => {
     await runLoader(
       'http://localhost/en/libraryv2?filters=(descriptores:(d1,d2))&andFilters=(descriptores)'

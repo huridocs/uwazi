@@ -66,6 +66,18 @@ class EntityTranslation {
     };
   }
 
+  /** A copy with a new id; language-scoped values are re-stamped with the new language. */
+  copyForLanguage(language: LanguageISO6391) {
+    const metadata = Object.fromEntries(
+      Object.entries(this.metadata).map(([name, assignment]) => [
+        name,
+        'language' in assignment ? { ...assignment, language } : { ...assignment },
+      ])
+    );
+
+    return new EntityTranslation({ language, metadata, preview: this.preview });
+  }
+
   mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
     Object.values(this.metadata).forEach(propertyAssignment => {
       const ofSameName = newMetadata[propertyAssignment.name];
@@ -93,7 +105,7 @@ class EntityTranslation {
       );
     }
 
-    if (stringify(currentValue) === stringify(propertyValue)) {
+    if (EntityTranslation.isSameAssignment(currentValue, propertyValue)) {
       return;
     }
 
@@ -109,8 +121,20 @@ class EntityTranslation {
     this.refreshEditDate();
   }
 
+  // Assignments loaded from storage carry the row language; newly created ones only do for
+  // language-scoped types, so the key is not part of the comparison.
+  private static isSameAssignment(a: PropertyAssignment, b: PropertyAssignment) {
+    const withoutLanguage = ({
+      language: _language,
+      ...rest
+    }: PropertyAssignment & { language?: string }) => rest;
+    return stringify(withoutLanguage(a)) === stringify(withoutLanguage(b));
+  }
+
+  // Replaces the assignment instead of mutating it: it is shared with the props the previous
+  // version of the entity is rebuilt from.
   refreshEditDate(value = date.currentUTC()) {
-    this.editDate.value = [{ value }];
+    this.metadata = { ...this.metadata, editDate: { ...this.editDate, value: [{ value }] } };
   }
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {

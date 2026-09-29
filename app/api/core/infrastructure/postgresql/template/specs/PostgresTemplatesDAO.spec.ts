@@ -178,4 +178,173 @@ describe('PostgresTemplatesDAO', () => {
     expect(found).toHaveLength(1);
     expect(found[0].name).toBe('withRelationship');
   });
+
+  it('should find only relationship property names', async () => {
+    const dao = createDao();
+
+    const template = factory.template('withRelationships', [
+      factory.property('text1', 'text'),
+      factory.property('select1', 'select'),
+      factory.property('multiselect1', 'multiselect'),
+      factory.relationshipProp('rel1'),
+      factory.relationshipProp('rel2'),
+    ]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    const names = await dao.findRelationshipPropertyNames();
+    expect(names.sort()).toEqual(['rel1', 'rel2']);
+  });
+
+  it('should deduplicate relationship property names across templates', async () => {
+    const dao = createDao();
+
+    const template1 = factory.template('t1', [factory.relationshipProp('rel1')]);
+    const template2 = factory.template('t2', [factory.relationshipProp('rel1')]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template1._id.toHexString(),
+          name: template1.name,
+          properties: template1.properties,
+          commonProperties: template1.commonProperties,
+          default: false,
+        },
+        {
+          _id: template2._id.toHexString(),
+          name: template2.name,
+          properties: template2.properties,
+          commonProperties: template2.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    expect(await dao.findRelationshipPropertyNames()).toEqual(['rel1']);
+  });
+
+  it('should return an empty array when no template has relationship properties', async () => {
+    const dao = createDao();
+
+    const template = factory.template('noRelationships', [
+      factory.property('text1', 'text'),
+      factory.property('select1', 'select'),
+    ]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    expect(await dao.findRelationshipPropertyNames()).toEqual([]);
+  });
+
+  it('should find only relationship property names that inherit a relationship', async () => {
+    const dao = createDao();
+
+    const template = factory.template('withInheritedRelationships', [
+      factory.relationshipProp('relInherit', 'target', {
+        inherit: { property: 'relTargetProp', type: 'relationship' },
+      }),
+      factory.relationshipProp('relPlain'),
+      factory.relationshipProp('relTextInherit', 'target', {
+        inherit: { property: 'textTargetProp', type: 'text' },
+      }),
+      factory.property('text1', 'text'),
+    ]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    const names = await dao.findRelationshipPropertyNamesInheritingRelationship();
+    expect(names.sort()).toEqual(['relInherit']);
+  });
+
+  it('should deduplicate inherited relationship property names across templates', async () => {
+    const dao = createDao();
+
+    const template1 = factory.template('t1', [
+      factory.relationshipProp('relInherit', 'target', {
+        inherit: { property: 'relTargetProp', type: 'relationship' },
+      }),
+    ]);
+    const template2 = factory.template('t2', [
+      factory.relationshipProp('relInherit', 'target', {
+        inherit: { property: 'relTargetProp', type: 'relationship' },
+      }),
+    ]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template1._id.toHexString(),
+          name: template1.name,
+          properties: template1.properties,
+          commonProperties: template1.commonProperties,
+          default: false,
+        },
+        {
+          _id: template2._id.toHexString(),
+          name: template2.name,
+          properties: template2.properties,
+          commonProperties: template2.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    expect(await dao.findRelationshipPropertyNamesInheritingRelationship()).toEqual(['relInherit']);
+  });
+
+  it('should return an empty array when no relationship property inherits a relationship', async () => {
+    const dao = createDao();
+
+    const template = factory.template('noInheritedRelationships', [
+      factory.relationshipProp('relPlain'),
+      factory.relationshipProp('relTextInherit', 'target', {
+        inherit: { property: 'textTargetProp', type: 'text' },
+      }),
+    ]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    expect(await dao.findRelationshipPropertyNamesInheritingRelationship()).toEqual([]);
+  });
 });

@@ -22,7 +22,6 @@ const createSut = () => {
   const jobsDispatcher = DefaultDispatcher(
     tenants.current().name,
     transactionManager,
-    undefined,
     DefaultTestingQueueAdapter(transactionManager)
   );
 

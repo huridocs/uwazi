@@ -80,7 +80,8 @@ const updateTaskState = (setState: SetRequestStatusState, id: string, updates: T
 const endTaskState = (
   setState: SetRequestStatusState,
   id: string,
-  finalStatus: 'completed' | 'failed' = 'completed'
+  finalStatus: 'completed' | 'failed' = 'completed',
+  details?: string
 ) => {
   setState(prev => ({
     ...prev,
@@ -90,6 +91,7 @@ const endTaskState = (
             ...task,
             status: finalStatus,
             progress: finalStatus === 'completed' ? 100 : task.progress,
+            ...(details !== undefined && { details }),
           }
         : task
     ),
@@ -131,7 +133,9 @@ const registerTaskListeners = (
     setupListeners(
       updates => updateTaskState(setState, id, updates),
       () => endTaskState(setState, id, 'completed'),
-      () => endTaskState(setState, id, 'failed')
+      // `fail` is declared as `(details?: string) => void` and callers do pass a reason; it used
+      // to be dropped here, which is why every failed task read only "Failed".
+      details => endTaskState(setState, id, 'failed', details)
     )
   );
 };
@@ -158,8 +162,8 @@ const getRequestStatusActions = (setState: SetRequestStatusState) => ({
     registerTaskListeners(setState, id, setupListeners);
   },
   updateTask: (id: string, updates: TaskUpdate) => updateTaskState(setState, id, updates),
-  endTask: (id: string, finalStatus: 'completed' | 'failed' = 'completed') =>
-    endTaskState(setState, id, finalStatus),
+  endTask: (id: string, finalStatus: 'completed' | 'failed' = 'completed', details?: string) =>
+    endTaskState(setState, id, finalStatus, details),
   removeTask: (id: string) => {
     clearTaskCleanup(id);
     setState(prev => ({ ...prev, tasks: prev.tasks.filter(t => t.id !== id) }));

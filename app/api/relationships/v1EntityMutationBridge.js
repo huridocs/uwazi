@@ -1,11 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import {
   normalizeAttachments,
@@ -61,21 +56,7 @@ const runWithV2Context = async (actor, callback) => {
   }
 
   const tenant = tenants.current();
-  await ExecutionContext.run(
-    {
-      tenant,
-      actor,
-      factories: {
-        transactionManager: TransactionManagerFactory.default,
-        postgresTransactionManager: PostgresTransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
-        eventEmitter: EventEmitterFactory.default,
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-      },
-    },
-    callback
-  );
+  await ExecutionContextFactory.run({ tenant, actor, telemetry: { kind: 'v1_bridge' } }, callback);
 };
 
 const reentrantTransactionManager = base => {

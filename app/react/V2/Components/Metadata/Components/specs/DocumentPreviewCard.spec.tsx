@@ -9,7 +9,7 @@ import type { MetadataProperty } from '#V2/formatters/types.js';
 import { DocumentPreviewCard } from '../DocumentPreviewCard';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 
@@ -47,6 +47,7 @@ const previewField = (src: string, label = 'Preview'): MetadataProperty => ({
   label,
   type: 'preview',
   style: 'cover',
+  fullWidth: false,
   values: [{ value: src, alt: 'preview' }],
 });
 

@@ -3,7 +3,7 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -26,7 +26,7 @@ export class MongoDeprecatedEntitiesDataSource
     db: Db,
     templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     accessContext?: AccessContext
   ) {
     super(db, transactionManager, { accessContext });

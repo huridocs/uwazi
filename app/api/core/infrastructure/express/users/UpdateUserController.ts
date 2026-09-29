@@ -3,9 +3,19 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { UpdateUserInputSchema } from '#api/core/application/UpdateUser.js';
 import { UpdateUserUseCaseFactory } from '../../factories/UpdateUserUseCaseFactory.js';
 
+/**
+ * The settings form always posts the whole profile, and this endpoint's contract requires it:
+ * the use case accepts partial updates, the HTTP API does not.
+ */
+const UpdateUserRequestSchema = UpdateUserInputSchema.required({
+  username: true,
+  email: true,
+  role: true,
+});
+
 class UpdateUserController extends AbstractController<UpdateUserRequest> {
   protected async handle(): Promise<void> {
-    const parsed = UpdateUserInputSchema.parse({
+    const parsed = UpdateUserRequestSchema.parse({
       ...this.request.body,
       assignedGroupIds: this.request.body.groups?.map(g => g._id),
     });

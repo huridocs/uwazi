@@ -12,7 +12,9 @@ import {
   isInheritingRelationship,
   isLongField,
   isRelationshipProperty,
+  mediaMasonryRowClass,
   metadataGridClassForProperty,
+  packClassForProperty,
   packPropertyRows,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
@@ -38,6 +40,13 @@ const fieldCard = (field: MetadataProperty, layoutClass: string, children: React
   </div>
 );
 
+const masonryRowClassName = (fields: MetadataProperty[], widthPx: number): string => {
+  const [first] = fields;
+  return first && packClassForProperty(first) === 'media'
+    ? mediaMasonryRowClass(widthPx, fields)
+    : 'flex w-full min-w-0 items-stretch gap-3';
+};
+
 type InheritingCardArgs = {
   field: RelationshipMetadataProperty;
   inheritingCardsByGroupKey: Map<string, ReactNode>;
@@ -61,13 +70,18 @@ const propertyCardContent = (
   templatePropertyById: Map<string, ClientProperty>,
   onOpenEntity?: (target: OpenEntityTarget) => void
 ) => {
+  let content: ReactNode;
   if (isRelationshipProperty(field)) {
-    return connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+  } else if (isLongField(field)) {
+    content = renderScalarContent(field, true);
+  } else {
+    content = renderFieldContent(field, { onOpenEntity });
   }
-  if (isLongField(field)) {
-    return renderScalarContent(field, true);
+  if (!content) {
+    return null;
   }
-  return renderFieldContent(field, { onOpenEntity });
+  return <>{content}</>;
 };
 
 const standardPropertyCard = ({
@@ -218,7 +232,7 @@ const MetadataRecord = ({
         <div
           key={row.fields.map(field => field._id).join('-')}
           data-property-row={row.fields.map(field => field.name).join(' ')}
-          className="flex w-full min-w-0 items-stretch gap-3"
+          className={masonryRowClassName(row.fields, panelWidth ?? 0)}
         >
           {row.fields.map(renderPropertyCard)}
         </div>

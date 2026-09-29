@@ -27,6 +27,7 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
     const body = RequestBodySchema.parse({ ...this.request.body, file: this.request.inputFile });
     const sessionId = cookie.parse(this.request.get('cookie') || '')['connect.sid'];
     const useCase = CreateEntityFromPDFUseCaseFactory.default({
+      targetLanguage: this.language,
       ...(sessionId ? { sessionId } : {}),
     });
     const output = await useCase.execute({ templateId: body.templateId, inputFile: body.file });

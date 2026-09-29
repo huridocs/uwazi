@@ -28,9 +28,9 @@ const LabelCell =
         <button
           type="button"
           onClick={() => handleEditProperty(property)}
-          className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+          className="flex items-center gap-2 text-left text-ink cursor-pointer font-medium"
         >
-          <LockClosedIcon className="w-4 h-4 text-primary-700" />
+          <LockClosedIcon className="w-4 h-4 text-ink" />
           {cell.getValue()}
         </button>
       );
@@ -39,7 +39,7 @@ const LabelCell =
       <button
         type="button"
         onClick={() => handleEditProperty(property)}
-        className="text-left text-primary-700 cursor-pointer font-medium"
+        className="text-left text-ink cursor-pointer font-medium"
       >
         {cell.getValue()}
       </button>

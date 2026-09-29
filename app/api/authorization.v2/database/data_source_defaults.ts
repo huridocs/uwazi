@@ -5,7 +5,7 @@ import { MongoPermissionsDataSource } from './MongoPermissionsDataSource.js';
 
 const DefaultPermissionsDataSource = (_transactionManager?: MongoTransactionManager) => {
   const connection = getConnection();
-  const transactionManager = _transactionManager || TransactionManagerFactory.default();
+  const transactionManager = _transactionManager || TransactionManagerFactory.mongo();
   return new MongoPermissionsDataSource(connection, transactionManager);
 };
 

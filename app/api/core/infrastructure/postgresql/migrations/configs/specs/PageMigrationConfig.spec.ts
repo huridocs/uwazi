@@ -124,10 +124,12 @@ describe('PageMigrationConfig copy', () => {
 
     expect(await makeMigrator().migrate(PageMigrationConfig)).toEqual({
       migrated: 1,
+      orphansSkipped: 0,
       skipped: false,
     });
     expect(await makeMigrator().migrate(PageLocalesMigrationConfig)).toEqual({
       migrated: 1,
+      orphansSkipped: 0,
       skipped: false,
     });
 

@@ -25,7 +25,7 @@ const inheritedField = (
   label: '',
   type,
   inheritedType: type,
-  ...(type === 'image' ? { style: 'contain' as const } : {}),
+  ...(type === 'image' || type === 'preview' || type === 'media' ? { style: 'contain' } : {}),
 });
 
 const inheritedMetadata = (values: MetadataValue[]): NonNullable<Entity['metadata']> => ({
@@ -75,7 +75,7 @@ const formatInheritedCellProperty = (
       return formatMediaProperty(field, metadata);
     case 'image':
     case 'preview':
-      return formatImageProperty(field, metadata, undefined, entity);
+      return formatImageProperty(field, metadata, { entity });
     case 'select':
     case 'multiselect':
       return formatSelectProperty(field, metadata);

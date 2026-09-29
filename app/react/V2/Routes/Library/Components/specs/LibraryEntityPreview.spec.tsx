@@ -88,7 +88,12 @@ let mediaMock = setupMatchMediaMock();
 
 const adminUser = { _id: '1', role: 'admin', name: 'admin' };
 
-const renderPreview = (sharedId: string, onClose = jest.fn(), user?: typeof adminUser) =>
+const renderPreview = (
+  sharedId: string,
+  onClose = jest.fn(),
+  user?: typeof adminUser,
+  focusFieldKey?: string
+) =>
   render(
     <TestRouterContext>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
@@ -101,7 +106,12 @@ const renderPreview = (sharedId: string, onClose = jest.fn(), user?: typeof admi
             ...(user ? [[userAtom, user] as const] : []),
           ]}
         >
-          <LibraryEntityPreview sharedId={sharedId} entityBasePath="/entityv2" onClose={onClose} />
+          <LibraryEntityPreview
+            sharedId={sharedId}
+            entityBasePath="/entityv2"
+            onClose={onClose}
+            focusFieldKey={focusFieldKey}
+          />
         </TestAtomStoreProvider>
       </ServicesProvider>
     </TestRouterContext>
@@ -146,6 +156,14 @@ describe('LibraryEntityPreview', () => {
     expect(documentTab).toHaveAttribute('aria-selected', 'false');
   });
 
+  it('opens the Metadata tab when a table cell asks to focus a property', async () => {
+    renderPreview(entityWithDocument.sharedId, jest.fn(), undefined, 'title');
+    expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
+
   it('hides the Document tab when the entity has no document', async () => {
     renderPreview(entityWithoutDocument.sharedId);
 
@@ -181,7 +199,7 @@ describe('LibraryEntityPreview', () => {
     expect(link).toHaveAttribute('href', '/en/entityv2/shared-doc');
   });
 
-  it('shows Edit on Metadata, then Cancel, Save and a no-op Copy from when editing', async () => {
+  it('shows Edit on Metadata, then Copy from, Cancel and Save when editing', async () => {
     renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
@@ -313,6 +331,7 @@ describe('LibraryView preview pane', () => {
               [templatesAtom, templates],
               [translationsAtom, translations],
               [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
+              [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
             <LibraryView {...viewProps} selectedId={selectedId} />
@@ -332,5 +351,20 @@ describe('LibraryView preview pane', () => {
     expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
     expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+  });
+
+  it('opens an empty entity form in the right panel', async () => {
+    renderView();
+    fireEvent.click(await screen.findByRole('button', { name: 'Create entity' }));
+    expect(await screen.findByTestId('library-create-entity')).toBeInTheDocument();
+    expect(screen.getByText('New entity')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Title/)).toHaveValue('');
+    expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+  });
+
+  it('opens the upload PDF dialog', async () => {
+    renderView();
+    fireEvent.click(await screen.findByRole('button', { name: 'Upload PDF' }));
+    expect(await screen.findByRole('dialog', { name: 'Upload PDF' })).toBeInTheDocument();
   });
 });

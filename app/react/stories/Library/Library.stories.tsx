@@ -36,6 +36,9 @@ const templates = [
     ...fixtureTemplates[0]!,
     properties: [
       { _id: 'prop-country', type: 'select' as const, label: 'Country', name: 'country' },
+      { _id: 'prop-type', type: 'select' as const, label: 'Type', name: 'type' },
+      { _id: 'prop-geo', type: 'geolocation' as const, label: 'Location', name: 'location' },
+      { _id: 'prop-media', type: 'media' as const, label: 'Video', name: 'video' },
     ],
   },
   ...fixtureTemplates.slice(1),
@@ -48,10 +51,15 @@ const rows: Entity[] = [
     language: 'en',
     title: 'The State v. Example',
     template: 'template1',
-    creationDate: 1,
+    creationDate: 1704067200000,
     user: 'u1',
     documents: [{ _id: 'd1', filename: '1.pdf', type: 'document', mimetype: 'application/pdf' }],
-    metadata: { country: [{ value: 'ES', label: 'Spain' }] },
+    metadata: {
+      country: [{ value: 'ES', label: 'Spain' }],
+      type: [{ value: 'court', label: 'Court case' }],
+      location: [{ value: { lat: -34.6, lon: -58.4 }, label: '' }],
+      video: [{ value: '/api/files/hearing.mp4' }],
+    },
   },
   {
     _id: '2',
@@ -59,13 +67,13 @@ const rows: Entity[] = [
     language: 'en',
     title: 'Person 1',
     template: 'template2',
-    creationDate: 2,
+    creationDate: 1672531200000,
     user: 'u1',
     metadata: { country: [{ value: 'FR', label: 'France' }] },
   },
 ];
 
-const LibraryPreview = () => {
+const LibraryPreview = ({ initialView = 'cards' }: { initialView?: LibraryViewMode }) => {
   const store = createStore();
   store.set(localeAtom, 'en');
   store.set(templatesAtom, templates);
@@ -74,7 +82,7 @@ const LibraryPreview = () => {
   store.set(userAtom, { _id: 'admin1', role: 'admin', email: 'admin@uwazi.io', username: 'admin' });
 
   const [search, setSearch] = useState('');
-  const [view, setView] = useState<LibraryViewMode>('cards');
+  const [view, setView] = useState<LibraryViewMode>(initialView);
   const [filters, setFilters] = useState<LibraryFiltersState>({});
   const [andFilters, setAndFilters] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
@@ -149,5 +157,9 @@ type Story = StoryObj<typeof LibraryPreview>;
 
 const Composition: Story = {};
 
+const Table: Story = {
+  args: { initialView: 'table' },
+};
+
 export default meta;
-export { Composition };
+export { Composition, Table };

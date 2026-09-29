@@ -156,4 +156,48 @@ describe('ATConflictSolver', () => {
 
     expect(result.metadata!.prop1[0].value).toBe('user manual edit');
   });
+
+  describe('resolveTranslations', () => {
+    const pending = (text: string) =>
+      `${RequestEntityTranslation.AITranslationPendingText} ${text}`;
+    const translated = (text: string) => `${SaveEntityTranslations.AITranslatedText} ${text}`;
+
+    it('should keep AI translated values that the translations still send as pending', async () => {
+      const currentRows = [
+        buildCurrentEntity({
+          language: 'es',
+          title: translated('título'),
+          metadata: { prop1: [{ value: translated('texto') }], prop2: [{ value: 'mío' }] },
+        }),
+      ];
+
+      const result = await resolver.resolveTranslations(currentRows, factory.idString('template'), {
+        es: {
+          title: [{ value: pending('title') }],
+          prop1: [{ value: pending('text') }],
+          prop2: [{ value: 'editado' }],
+        },
+      });
+
+      expect(result).toEqual({
+        es: {
+          title: [{ value: translated('título') }],
+          prop1: [{ value: translated('texto') }],
+          prop2: [{ value: 'editado' }],
+        },
+      });
+    });
+
+    it('should leave languages without a stored row unchanged', async () => {
+      const translations = { pt: { title: [{ value: pending('title') }] } };
+
+      const result = await resolver.resolveTranslations(
+        [],
+        factory.idString('template'),
+        translations
+      );
+
+      expect(result).toEqual(translations);
+    });
+  });
 });

@@ -312,4 +312,24 @@ describe('DenormalizeThesaurusEntities', () => {
       );
     });
   });
+
+  it('should not trigger relationship denormalization for its own updates', async () => {
+    const entitiesService = { update: jest.fn().mockResolvedValue([]) };
+
+    const { sut } = testingEnvironment.runWithContext(() => ({
+      sut: DenormalizeThesaurusEntitiesUseCaseFactory.default({
+        entitiesService: entitiesService as any,
+      }),
+    }));
+
+    await sut.execute({
+      thesaurusId: factory.id('countries').toString(),
+      sharedIds: ['entity_1'],
+    });
+
+    expect(entitiesService.update).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ denormalizeRelationships: false })
+    );
+  });
 });

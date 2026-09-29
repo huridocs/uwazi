@@ -34,7 +34,9 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   const install = async () => {
     setShowModal(false);
     const response = await I18NApi.addLanguage(
-      new RequestParams(languages.filter(l => selected.includes(l.key)))
+      new RequestParams(
+        languages.filter(l => selected.includes(l.key)).map(l => ({ key: l.key, label: l.label }))
+      )
     );
     if (response instanceof FetchResponseError) {
       bridgeNotify(t('System', 'An error occurred', null, false), 'error', response.message);

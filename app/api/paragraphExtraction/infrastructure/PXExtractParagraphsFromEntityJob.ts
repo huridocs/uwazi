@@ -6,9 +6,11 @@ import { PXExtractParagraphsFromEntityInput } from '../application/PXExtractPara
 import { PXExtractParagraphsFromEntityFactory } from './PXExtractParagraphsFromEntityFactory.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Params = UwaziJobParams & PXExtractParagraphsFromEntityInput & { tenantName: string };
 
+@QueueOptions({ lockWindow: 1000 * 60 })
 @PrivilegedJob()
 class PXExtractParagraphsFromEntityJob extends UwaziJobHandler<Params> {
   async handle(_heartBeatCallBack: HeartbeatCallback, params: Params, jobInfo: JobInfo) {

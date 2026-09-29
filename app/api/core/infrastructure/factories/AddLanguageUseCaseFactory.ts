@@ -4,44 +4,37 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { ImportPredefinedTranslationsService } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
+
+const createAddLanguageJobsDispatcher = (): JobsDispatcher => {
+  if (process.env.NODE_ENV !== 'test') {
+    return ExecutionContext.jobsDispatcher;
+  }
+
+  const innerDispatcher = new SyncDispatcherForTests({});
+  const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
+  return new SyncDispatcherForTests({
+    [CloneLanguageEntitiesJob.name]: async () => cloneJob,
+  });
+};
 
 class AddLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>
   ): AddLanguageUseCase {
-    const { actor, tenant, eventEmitter } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const importPredefinedTranslations = ImportPredefinedTranslationsService;
-
-    const minutes60 = 60 * 60 * 1000;
-    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
-      lockWindow: minutes60,
-    });
-    if (process.env.NODE_ENV === 'test') {
-      const innerDispatcher = new SyncDispatcherForTests({});
-      const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
-      jobsDispatcher = new SyncDispatcherForTests({
-        [CloneLanguageEntitiesJob.name]: async () => cloneJob,
-      });
-    }
-    const dispatcher = new DispatcherAdapter(jobsDispatcher);
+    const { actor, tenant, eventEmitter, transactionManager } = ExecutionContext;
 
     return new AddLanguageUseCase(
       {
         transactionManager,
-        settingsDS,
-        translationsDS,
-        importPredefinedTranslations,
+        settingsDS: SettingsDataSourceFactory.default(),
+        translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
+        importPredefinedTranslations: ImportPredefinedTranslationsService,
         eventEmitter,
-        dispatcher,
+        dispatcher: DispatcherFactory.default(createAddLanguageJobsDispatcher()),
         ...overrides,
       },
       { actor, tenant }

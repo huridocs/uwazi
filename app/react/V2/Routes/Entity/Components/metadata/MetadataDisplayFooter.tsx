@@ -8,6 +8,7 @@ import {
   useMetadataEditing,
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
 import { ShareEntityModal } from '#V2/Routes/Entity/Components/share/index.js';
 import { useDeleteEntity } from './useDeleteEntity.js';
 
@@ -28,7 +29,8 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   return (
     <EntityWriteAuthorization>
       {showSaveCancel ? (
-        <div className="flex w-full items-center gap-3">
+        <div className="flex w-full flex-wrap items-center gap-3">
+          <CopyFromTrigger disabled={isSaving} />
           <div className="flex-1" />
           <Button type="button" variant="warm" onClick={() => requestDiscard('discard')}>
             <Translate>Cancel</Translate>
@@ -38,8 +40,8 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
           </Button>
         </div>
       ) : (
-        <div className="flex w-full items-center gap-3">
-          <div className="flex gap-2">
+        <div className="flex w-full flex-wrap items-center gap-3">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="warm"
               className="inline-flex items-center"

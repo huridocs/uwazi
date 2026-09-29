@@ -4,7 +4,6 @@ import { randomUUID } from 'crypto';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -144,14 +143,17 @@ describe('DeleteThesaurusUseCase', () => {
     const createSut = () =>
       testingEnvironment.runWithContext(
         () => {
-          const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+          const { transactionManager } = ExecutionContext;
 
           const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
           const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
           const templatesDS = new MongoTemplatesDataSource({
             db: getConnection(),
             transactionManager,
-            dao: new MongoTemplatesDAO({ db: getConnection(), transactionManager }),
+            dao: new MongoTemplatesDAO({
+              db: getConnection(),
+              transactionManager,
+            }),
           });
 
           const sut = new DeleteThesaurusUseCase(

@@ -5,7 +5,7 @@ import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesData
 import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesService } from './FilesService.js';
-import { EntityNotFoundError } from './errors.js';
+import { EntityNotFoundError } from '../domain/entity/errors.js';
 
 type Output = FileDTO;
 

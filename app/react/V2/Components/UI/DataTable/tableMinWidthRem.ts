@@ -5,7 +5,13 @@ const GAP_REM = 0.75;
 const PADDING_REM = 2;
 
 const parseColumnWidthRem = (width?: string): number => {
-  if (!width?.endsWith('rem')) return DEFAULT_COLUMN_REM;
+  if (!width) return DEFAULT_COLUMN_REM;
+  const minmaxMin = width.match(/minmax\(\s*([\d.]+)rem/i);
+  if (minmaxMin) {
+    const rem = parseFloat(minmaxMin[1]);
+    return Number.isNaN(rem) ? DEFAULT_COLUMN_REM : rem;
+  }
+  if (!width.endsWith('rem')) return DEFAULT_COLUMN_REM;
   const rem = parseFloat(width);
   return Number.isNaN(rem) ? DEFAULT_COLUMN_REM : rem;
 };

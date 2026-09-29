@@ -6,17 +6,14 @@ import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
-import { testingDB } from '#api/utils/testing_db.js';
 import entities from '#api/entities/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
-import settings from '#api/settings/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
@@ -24,7 +21,10 @@ import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { filesModel } from '#api/files/filesModel.js';
+import { testConfigs } from '#api/suggestions/domain/specs/IXSuggestionsContractFixtures.js';
 import { factory, fixtures } from './fixtures.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { ixTestAccess } from './ixTestAccess.js';
 import {
   CommonSuggestion,
   IXResultsMessage,
@@ -34,8 +34,7 @@ import {
   ValuesSelectionSuggestion,
 } from '../InformationExtraction.js';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
-import { IXModelsModel } from '../IXModelsModel.js';
-import { Extractors } from '../ixextractors.js';
+import ixmodels from '../ixmodels.js';
 import { IXWebSocketEvents } from '../WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';
 
@@ -43,6 +42,7 @@ let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'),
   DefaultQueueAdapter: jest.fn(),
   DefaultDispatcher: () => {
     const {
@@ -83,25 +83,26 @@ jest.mock('api/core/infrastructure/jobs/UwaziDispatcherFactory', () => ({
   },
 }));
 
-const _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggregation) => {
-  let [entity] = await entities.getUnrestricted({
-    sharedId: file.entity,
-    language: LanguageUtils.fromISO639_3(file.language!)?.ISO639_1,
-  });
-
-  if (!entity) {
-    const defaultLanguage = await settings.getDefaultLanguage();
-    [entity] = await entities.getUnrestricted({
+const _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggregation) =>
+  testingEnvironment.runWithContext(async () => {
+    let [entity] = await entities.getUnrestricted({
       sharedId: file.entity,
-      language: defaultLanguage?.key,
+      language: LanguageUtils.fromISO639_3(file.language!)?.ISO639_1,
     });
-  }
-  return entity;
-};
+
+    if (!entity) {
+      const defaultLanguageKey = await SettingsDSWithContext.default().getDefaultLanguageKey();
+      [entity] = await entities.getUnrestricted({
+        sharedId: file.entity,
+        language: defaultLanguageKey,
+      });
+    }
+    return entity;
+  });
 
 const _saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXExtractorType) => {
   const entity = await _getEntityFromFile(file);
-  const [existingSuggestions] = await IXSuggestionsModel.get({
+  const existingSuggestions = await ixTestAccess.readOneSuggestion({
     entityId: entity.sharedId,
     extractorId: extractor._id,
     fileId: file._id,
@@ -109,6 +110,9 @@ const _saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXEx
 
   const suggestion: IXSuggestionType = {
     ...existingSuggestions,
+    // Every stored suggestion names its entity's template; Postgres requires it.
+    entityTemplate: existingSuggestions?.entityTemplate ?? entity.template?.toString(),
+    suggestedValue: existingSuggestions?.suggestedValue ?? '',
     entityId: entity.sharedId!,
     fileId: file._id,
     language: LanguageUtils.fromISO639_3(file.language)?.ISO639_1 || 'other',
@@ -130,7 +134,15 @@ const readDocument = async (letter: string, xmlName?: string) => {
 };
 
 let informationExtraction: InformationExtraction;
-describe('InformationExtraction', () => {
+const trainModel = async (...args: Parameters<InformationExtraction['trainModel']>) =>
+  testingEnvironment.runWithContext(async () => informationExtraction.trainModel(...args));
+const getSuggestions = async (...args: Parameters<InformationExtraction['getSuggestions']>) =>
+  testingEnvironment.runWithContext(async () => informationExtraction.getSuggestions(...args));
+const processResults = async (...args: Parameters<InformationExtraction['processResults']>) =>
+  testingEnvironment.runWithContext(async () => informationExtraction.processResults(...args));
+
+/** Over both stores: the IX factories pick the one the tenant's `postgresCore` flag selects. */
+describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
   let IXExternalService: ExternalDummyService;
 
   const setIXServiceResults = (
@@ -172,6 +184,95 @@ describe('InformationExtraction', () => {
     IXExternalService.setResults(IXResults);
   };
 
+  const fileColumns = [
+    '_id',
+    'originalname',
+    'filename',
+    'mimetype',
+    'size',
+    'creationDate',
+    'type',
+    'entity',
+    'status',
+    'totalPages',
+    'language',
+    'generatedToc',
+    'url',
+    'toc',
+    'propertySelections',
+    'fullText',
+  ];
+
+  /**
+   * A file write as the case means it: in Mongo and, on the Postgres run, in `files` too, which is
+   * where the tenant's file reads go under postgresCore.
+   */
+  const saveFile = async (file: Parameters<typeof filesModel.save>[0]) => {
+    await filesModel.save(file);
+    if (!usePostgres) return;
+
+    const row: Record<string, unknown> = {
+      originalname: file.filename,
+      mimetype: 'application/pdf',
+      ...file,
+      _id: String(file._id),
+    };
+    const columns = fileColumns.filter(column => row[column] !== undefined);
+    const values = columns.map(column =>
+      typeof row[column] === 'object' && row[column] !== null
+        ? JSON.stringify(row[column])
+        : row[column]
+    );
+    const quoted = columns.map(column => `"${column}"`);
+    const placeholders = [...columns, 'tenant_id'].map((_column, index) => `$${index + 1}`);
+    const updates = quoted
+      .filter(column => column !== '"_id"')
+      .map(column => `${column} = EXCLUDED.${column}`);
+
+    await testingEnvironment.pg.pool!.query(
+      `INSERT INTO files (${[...quoted, '"tenant_id"'].join(', ')})
+       VALUES (${placeholders.join(', ')})
+       ON CONFLICT ("_id", "tenant_id") DO UPDATE SET ${updates.join(', ')}`,
+      [...values, testingTenants.current().name]
+    );
+  };
+
+  const removeAllFiles = async () => {
+    await filesModel.delete({});
+    if (usePostgres) {
+      await testingEnvironment.pg.pool!.query('DELETE FROM files');
+    }
+  };
+
+  /**
+   * Stored suggestions always carry a template, a property, a language and a suggested value, as
+   * blank ones are created; Postgres requires them. The defaults are prop1extractor's.
+   */
+  const writeSuggestion = async (suggestion: Partial<IXSuggestionType>) =>
+    ixTestAccess.writeSuggestion({
+      entityTemplate: factory.id('templateToSegmentA').toString(),
+      propertyName: 'property1',
+      language: 'en',
+      suggestedValue: '',
+      ...suggestion,
+    });
+
+  /**
+   * Runs every method inside the context, as a request or a job does. Jest mocks pass through
+   * unwrapped, so a case can still spy on a method and assert on the spy.
+   */
+  const inContext = <T extends object>(target: T): T =>
+    new Proxy(target, {
+      get(object, property, receiver) {
+        const value = Reflect.get(object, property, receiver);
+        if (typeof value !== 'function' || jest.isMockFunction(value)) {
+          return value;
+        }
+        return (...args: unknown[]) =>
+          testingEnvironment.runWithContext(() => value.apply(object, args));
+      },
+    });
+
   beforeEach(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
@@ -179,12 +280,16 @@ describe('InformationExtraction', () => {
       resultsData: '/suggestions_results',
     });
     await IXExternalService.start();
-    informationExtraction = new InformationExtraction();
-    await testingEnvironment.setUp(fixtures);
+    informationExtraction = inContext(new InformationExtraction());
+    // The tenant is renamed before the fixtures load, so the Postgres copies carry the tenant the
+    // factories read.
+    await testingEnvironment.setUp({}, { postgres: true });
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
+      featureFlags: { postgresCore: usePostgres },
     });
+    await testingEnvironment.setFixtures(fixtures);
     IXExternalService.reset();
     jest.clearAllMocks();
     // eslint-disable-next-line no-empty-function
@@ -195,8 +300,11 @@ describe('InformationExtraction', () => {
     await IXExternalService.stop();
   });
 
+  // A teardown closes the Mongo client for good, so it runs once, after the last store's run.
   afterAll(async () => {
-    await testingEnvironment.tearDown();
+    if (usePostgres) {
+      await testingEnvironment.tearDown();
+    }
   });
 
   const saveSuggestionProcess = async (
@@ -208,7 +316,7 @@ describe('InformationExtraction', () => {
     // eslint-disable-next-line max-params
   ) => {
     const extractorId = factory.id(extractorName);
-    const [extractor] = await Extractors.get({ _id: extractorId });
+    const extractor = (await ixTestAccess.readExtractor(extractorId))!;
     await _saveSuggestionProcess(
       {
         _id: factory.id(id),
@@ -235,18 +343,31 @@ describe('InformationExtraction', () => {
     });
 
     it('should return status: ready', async () => {
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
       model.findingSuggestions = false;
-      await IXModelsModel.save(model);
+      await ixTestAccess.writeModel(model);
 
       const resp = await informationExtraction.status(factory.id('prop1extractor'));
       expect(resp.status).toEqual('ready');
+    });
+
+    // The find loop stops on `processed >= total`, so a run whose count stepped *over* its cap is
+    // finished by the only definition that drives the loop. Testing `===` here instead reported
+    // such a run as still finding suggestions with nothing left to advance it.
+    it('should return status: ready when processed has stepped over the total', async () => {
+      const model = await ixTestAccess.readModel(factory.id('prop2extractor'));
+      model.totalSuggestionsToFind = 1;
+      await ixTestAccess.writeModel(model);
+
+      const resp = await informationExtraction.status(factory.id('prop2extractor'));
+
+      expect(resp).toMatchObject({ status: 'ready' });
     });
   });
 
   describe('trainModel', () => {
     it('should send xmls', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await trainModel(factory.id('prop1extractor'));
 
       const xmlA = await readDocument('A');
 
@@ -266,7 +387,7 @@ describe('InformationExtraction', () => {
 
     it('should send xmls (multiselect)', async () => {
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+        trainModel(factory.id('extractorWithMultiselect'))
       );
 
       const xmlG = await readDocument('G');
@@ -286,7 +407,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send xmls (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await trainModel(factory.id('extractorWithRelationship'));
 
       const xmlK = await readDocument('K');
       const xmlL = await readDocument('L');
@@ -305,7 +426,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await trainModel(factory.id('prop1extractor'));
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
@@ -332,11 +453,14 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled (target Property has value and no property selections)', async () => {
-      await informationExtraction.trainModel(factory.id('extractor_source_pdf_target_text'));
+      await trainModel(factory.id('extractor_source_pdf_target_text'));
 
       expect(IXExternalService.materials.length).toBe(2);
 
-      expect(IXExternalService.materials).toMatchObject([
+      // Neither store orders the training walk, so the materials are compared by file.
+      expect(
+        sortByStrings(IXExternalService.materials, [(material: any) => material.xml_file_name])
+      ).toMatchObject([
         {
           xml_file_name: 'extractor_source_pdf_target_text_entity_1_f1_en.xml',
           id: expect.any(String),
@@ -368,7 +492,7 @@ describe('InformationExtraction', () => {
 
     it('should send labeled data (multiselect)', async () => {
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+        trainModel(factory.id('extractorWithMultiselect'))
       );
 
       expect(IXExternalService.materials.length).toBe(2);
@@ -400,7 +524,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await trainModel(factory.id('extractorWithRelationship'));
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentL.xml')).toEqual({
@@ -443,7 +567,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should sanitize dates before sending', async () => {
-      await informationExtraction.trainModel(factory.id('prop2extractor'));
+      await trainModel(factory.id('prop2extractor'));
 
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentD.xml')).toEqual({
         xml_file_name: 'documentD.xml',
@@ -465,15 +589,12 @@ describe('InformationExtraction', () => {
       const xml2 = 'extractor_target_rich_text_source_pdf_entity_1_f1_es.xml';
 
       // Mark the Spanish file as curated for training (Stage A)
-      await IXSuggestionsModel.updateMany(
-        {
-          extractorId,
-          fileId: factory.id('extractor_target_rich_text_source_pdf_entity_1_f1_es'),
-        },
-        { $set: { useForTraining: true } }
-      );
+      await ixTestAccess.markUseForTraining({
+        extractorId,
+        fileId: factory.id('extractor_target_rich_text_source_pdf_entity_1_f1_es'),
+      });
 
-      await informationExtraction.trainModel(extractorId);
+      await trainModel(extractorId);
 
       const [seg1, seg2] = await Promise.all([readDocument('', xml1), readDocument('', xml2)]);
 
@@ -519,7 +640,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await trainModel(factory.id('prop1extractor'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -538,7 +659,7 @@ describe('InformationExtraction', () => {
 
     it('should start the task to train the model (multiselect)', async () => {
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+        trainModel(factory.id('extractorWithMultiselect'))
       );
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
@@ -579,7 +700,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await trainModel(factory.id('extractorWithRelationship'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -611,82 +732,85 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (relationship to any template)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationshipToAny'));
+      await trainModel(factory.id('extractorWithRelationshipToAny'));
+
+      // The options are a set: neither store orders the entities they are read from.
+      const expectedOptions = [
+        {
+          id: 'P1sharedId',
+          label: 'P1',
+        },
+        {
+          id: 'P2sharedId',
+          label: 'P2',
+        },
+        {
+          id: 'P3sharedId',
+          label: 'P3',
+        },
+        {
+          id: 'extractor_target_title_source_text_entity',
+          label: 'extractor_target_title_source_text_entity',
+        },
+        {
+          id: 'extractor_target_numeric_source_text_entity',
+          label: 'extractor_target_numeric_source_text_entity',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_1',
+          label: 'extractor_target_select_source_text_entity_1',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_2',
+          label: 'extractor_target_select_source_text_entity_2',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_3',
+          label: 'extractor_target_select_source_text_entity_3',
+        },
+        {
+          id: 'A1',
+          label: 'A1',
+        },
+        {
+          id: 'entity_without_label_data',
+          label: 'entity_without_label_data',
+        },
+        ...Array.from({ length: 22 }, (_, i) => ({
+          id: `A${i + 2}`,
+          label: `A${i + 2}`,
+        })),
+        {
+          id: 'entityWithoutSegmentation',
+          label: 'entityWithoutSegmentation',
+        },
+        {
+          id: 'extractor_target_rich_text_source_text_entity_1',
+          label: 'extractor_target_rich_text_source_text_entity_1',
+        },
+        {
+          id: 'extractor_target_rich_text_source_text_entity_2',
+          label: 'extractor_target_rich_text_source_text_entity_2',
+        },
+        {
+          id: 'extractor_target_rich_text_source_pdf_entity_1',
+          label: 'extractor_target_rich_text_source_pdf_entity_1',
+        },
+        {
+          id: 'extractor_source_pdf_target_text_entity_1',
+          label: 'extractor_source_pdf_target_text_entity_1',
+        },
+        {
+          id: 'extractor_source_pdf_target_text_entity_2',
+          label: 'extractor_source_pdf_target_text_entity_2',
+        },
+      ];
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('extractorWithRelationshipToAny').toString(),
           multi_value: true,
-          options: [
-            {
-              id: 'P1sharedId',
-              label: 'P1',
-            },
-            {
-              id: 'P2sharedId',
-              label: 'P2',
-            },
-            {
-              id: 'P3sharedId',
-              label: 'P3',
-            },
-            {
-              id: 'extractor_target_title_source_text_entity',
-              label: 'extractor_target_title_source_text_entity',
-            },
-            {
-              id: 'extractor_target_numeric_source_text_entity',
-              label: 'extractor_target_numeric_source_text_entity',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_1',
-              label: 'extractor_target_select_source_text_entity_1',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_2',
-              label: 'extractor_target_select_source_text_entity_2',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_3',
-              label: 'extractor_target_select_source_text_entity_3',
-            },
-            {
-              id: 'A1',
-              label: 'A1',
-            },
-            {
-              id: 'entity_without_label_data',
-              label: 'entity_without_label_data',
-            },
-            ...Array.from({ length: 22 }, (_, i) => ({
-              id: `A${i + 2}`,
-              label: `A${i + 2}`,
-            })),
-            {
-              id: 'entityWithoutSegmentation',
-              label: 'entityWithoutSegmentation',
-            },
-            {
-              id: 'extractor_target_rich_text_source_text_entity_1',
-              label: 'extractor_target_rich_text_source_text_entity_1',
-            },
-            {
-              id: 'extractor_target_rich_text_source_text_entity_2',
-              label: 'extractor_target_rich_text_source_text_entity_2',
-            },
-            {
-              id: 'extractor_target_rich_text_source_pdf_entity_1',
-              label: 'extractor_target_rich_text_source_pdf_entity_1',
-            },
-            {
-              id: 'extractor_source_pdf_target_text_entity_1',
-              label: 'extractor_source_pdf_target_text_entity_1',
-            },
-            {
-              id: 'extractor_source_pdf_target_text_entity_2',
-              label: 'extractor_source_pdf_target_text_entity_2',
-            },
-          ],
+          options: expect.arrayContaining(expectedOptions),
           metadata: {
             extractor_name: 'extractorWithRelationshipToAny',
             property: 'property_relationship_to_any',
@@ -696,10 +820,19 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
         task: 'create_model',
       });
+      const [[{ params }]] = (informationExtractionForJob.taskManager!.startTask as jest.Mock).mock
+        .calls;
+      expect(params.options).toHaveLength(expectedOptions.length);
     });
 
     it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
-      const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
+      // The fixture leaves this model mid-run, for the `status()` case above. A new run may not
+      // claim a model another run holds (F52), so release it first — what is under test here is
+      // the failure once training starts, not the claim.
+      const held = await ixTestAccess.readModel(factory.id('prop3extractor'));
+      await ixTestAccess.writeModel({ ...held, status: 'ready', findingSuggestions: false });
+
+      const promise1 = trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         2,
@@ -707,12 +840,10 @@ describe('InformationExtraction', () => {
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
+      const model = await ixTestAccess.readModel(factory.id('prop3extractor'));
       expect(model.findingSuggestions).toBe(false);
 
-      const promise2 = informationExtraction.trainModel(
-        factory.id('extractorWithMultiselectWithoutTrainingData')
-      );
+      const promise2 = trainModel(factory.id('extractorWithMultiselectWithoutTrainingData'));
       await expect(promise2).rejects.toThrow();
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         4,
@@ -720,14 +851,12 @@ describe('InformationExtraction', () => {
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
-      const [multiSelectModel] = await IXModelsModel.get({
-        extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
-      });
+      const multiSelectModel = await ixTestAccess.readModel(
+        factory.id('extractorWithMultiselectWithoutTrainingData')
+      );
       expect(multiSelectModel.findingSuggestions).toBe(false);
 
-      const promise3 = informationExtraction.trainModel(
-        factory.id('extractorWithEmptyRelationship')
-      );
+      const promise3 = trainModel(factory.id('extractorWithEmptyRelationship'));
       await expect(promise3).rejects.toThrow();
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         6,
@@ -735,18 +864,16 @@ describe('InformationExtraction', () => {
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
-      const [relationshipModel] = await IXModelsModel.get({
-        extractorId: factory.id('extractorWithEmptyRelationship'),
-      });
+      const relationshipModel = await ixTestAccess.readModel(
+        factory.id('extractorWithEmptyRelationship')
+      );
       expect(relationshipModel.findingSuggestions).toBe(false);
     });
 
     it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files', async () => {
-      const promise = informationExtraction.trainModel(factory.id('extractorWithoutSegmentations'));
+      const promise = trainModel(factory.id('extractorWithoutSegmentations'));
       await expect(promise).rejects.toThrow();
-      const [model] = await IXModelsModel.get({
-        extractorId: factory.id('extractorWithoutSegmentations'),
-      });
+      const model = await ixTestAccess.readModel(factory.id('extractorWithoutSegmentations'));
       expect(model.findingSuggestions).toBe(false);
 
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
@@ -757,13 +884,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files (select/multiselect/relationship)', async () => {
-      const promise = informationExtraction.trainModel(
-        factory.id('selectExtractorWithoutSegmentations')
-      );
+      const promise = trainModel(factory.id('selectExtractorWithoutSegmentations'));
       await expect(promise).rejects.toThrow();
-      const [model] = await IXModelsModel.get({
-        extractorId: factory.id('selectExtractorWithoutSegmentations'),
-      });
+      const model = await ixTestAccess.readModel(factory.id('selectExtractorWithoutSegmentations'));
 
       expect(model.findingSuggestions).toBe(false);
 
@@ -777,7 +900,7 @@ describe('InformationExtraction', () => {
 
   describe('train with limited finding suggestions', () => {
     it('should send xmls', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'), 1);
+      await trainModel(factory.id('prop1extractor'), 1);
 
       const xmlA = await readDocument('A');
 
@@ -801,7 +924,7 @@ describe('InformationExtraction', () => {
         .spyOn(informationExtraction, 'getSuggestions')
         .mockImplementation(async () => Promise.resolve());
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'create_model',
@@ -813,7 +936,7 @@ describe('InformationExtraction', () => {
 
       getSuggestionsSpy.mockClear();
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('extractorWithMultiselect').toString() },
         tenant: 'tenant1',
         task: 'create_model',
@@ -829,8 +952,8 @@ describe('InformationExtraction', () => {
     it('should not start suggestions when suggestionsToFind is 0', async () => {
       const extractorId = factory.id('prop1extractor');
 
-      const [existing] = await IXModelsModel.get({ extractorId });
-      await IXModelsModel.save({
+      const existing = await ixTestAccess.readModel(extractorId);
+      await ixTestAccess.writeModel({
         ...existing,
         findingSuggestions: true,
         totalSuggestionsToFind: 0,
@@ -838,7 +961,7 @@ describe('InformationExtraction', () => {
 
       const startTaskSpy = jest.spyOn(informationExtraction as any, 'startSuggestionsTask');
 
-      await informationExtraction.getSuggestions(extractorId);
+      await getSuggestions(extractorId);
 
       expect(startTaskSpy).not.toHaveBeenCalled();
     });
@@ -846,7 +969,7 @@ describe('InformationExtraction', () => {
 
   describe('getSuggestions()', () => {
     it('should send the materials for the suggestions', async () => {
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       const xmlA = await readDocument('A');
 
@@ -883,7 +1006,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send the materials for the suggestions (multiselect)', async () => {
-      await informationExtraction.getSuggestions(factory.id('extractorWithMultiselect'));
+      await getSuggestions(factory.id('extractorWithMultiselect'));
 
       const [xmlG, xmlH, xmlI] = await Promise.all(
         ['G', 'H', 'I'].map(async letter => readDocument(letter))
@@ -962,7 +1085,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send the materials for the suggestions (relationship)', async () => {
-      await informationExtraction.getSuggestions(factory.id('extractorWithRelationship'));
+      await getSuggestions(factory.id('extractorWithRelationship'));
 
       const [xmlK, xmlL, xmlM] = await Promise.all(
         ['K', 'L', 'M'].map(async letter => readDocument(letter))
@@ -1048,7 +1171,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should avoid sending materials for failed suggestions because no segmentation for instance', async () => {
-      await informationExtraction.getSuggestions(factory.id('extractorWithOneFailedSegmentation'));
+      await getSuggestions(factory.id('extractorWithOneFailedSegmentation'));
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('extractorWithOneFailedSegmentation')}`,
@@ -1087,7 +1210,7 @@ describe('InformationExtraction', () => {
         xmlname: 'documentC.xml',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
       expect(IXExternalService.files.length).toBe(1);
@@ -1098,9 +1221,9 @@ describe('InformationExtraction', () => {
 
     it('should mark suggestions as failed when their segmentations fail', async () => {
       await SegmentationModel.delete({});
-      await IXSuggestionsModel.delete({});
+      await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
         type: 'document',
@@ -1109,7 +1232,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'documentB.pdf',
         type: 'document',
@@ -1118,7 +1241,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         fileId: factory.id('F1'),
         entityId: 'entity1',
         language: 'en',
@@ -1137,7 +1260,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         fileId: factory.id('F2'),
         entityId: 'entity2',
         language: 'en',
@@ -1168,9 +1291,9 @@ describe('InformationExtraction', () => {
         status: 'failed',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         extractorId: factory.id('prop1extractor'),
       });
       expect(suggestions.length).toBe(2);
@@ -1214,7 +1337,7 @@ describe('InformationExtraction', () => {
         xmlname: 'documentC.xml',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
       expect(IXExternalService.files.length).toBe(1);
@@ -1254,7 +1377,7 @@ describe('InformationExtraction', () => {
         xmlname: 'documentC.xml',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
       expect(IXExternalService.files.length).toBe(1);
@@ -1265,9 +1388,9 @@ describe('InformationExtraction', () => {
 
     it('should handle error when no files have ready segmentations', async () => {
       await SegmentationModel.delete({});
-      await IXSuggestionsModel.delete({});
+      await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
         type: 'document',
@@ -1276,7 +1399,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F3'),
         filename: 'documentC.pdf',
         type: 'document',
@@ -1285,7 +1408,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         fileId: factory.id('F1'),
         entityId: 'entity1',
         language: 'en',
@@ -1304,7 +1427,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         fileId: factory.id('F3'),
         entityId: 'entity3',
         language: 'en',
@@ -1336,9 +1459,9 @@ describe('InformationExtraction', () => {
         status: 'processing',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
       expect(model.findingSuggestions).toBe(false);
 
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
@@ -1350,12 +1473,46 @@ describe('InformationExtraction', () => {
       );
     });
 
+    it('should report the pending segmentation, not a completed run, when no pending file has been segmented at all', async () => {
+      await SegmentationModel.delete({});
+
+      await getSuggestions(factory.id('prop1extractor'));
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      expect(model.findingSuggestions).toBe(false);
+
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledTimes(1);
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'Documents are not segmented yet. Try again once PDF segmentation has finished.',
+        { error: true }
+      );
+    });
+
+    it('should report a completed run when a pdf extractor has nothing left to find', async () => {
+      await ixTestAccess.removeSuggestions();
+
+      await getSuggestions(factory.id('prop1extractor'));
+
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledTimes(1);
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'Completed'
+      );
+    });
+
     it('should avoid non-ready segmentations when duplicates exist for the same file', async () => {
       await SegmentationModel.delete({});
-      await IXSuggestionsModel.delete({});
-      await filesModel.delete({});
+      await ixTestAccess.removeSuggestions();
+      await removeAllFiles();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'document1.pdf',
         type: 'document',
@@ -1364,7 +1521,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'document2.pdf',
         type: 'document',
@@ -1403,7 +1560,7 @@ describe('InformationExtraction', () => {
       });
 
       // Suggestion placeholders for both files
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         _id: factory.id('S1'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
@@ -1414,7 +1571,7 @@ describe('InformationExtraction', () => {
         state: { error: false } as any,
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         _id: factory.id('S2'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
@@ -1465,7 +1622,7 @@ describe('InformationExtraction', () => {
         status: 'failed',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       // Should only process the ready segmentation
       expect(IXExternalService.filesNames).toEqual(['documentA.xml']);
@@ -1477,9 +1634,9 @@ describe('InformationExtraction', () => {
 
     it('should fetch more files when many have failed segmentations to ensure batch size', async () => {
       await SegmentationModel.delete({});
-      await IXSuggestionsModel.delete({});
+      await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'document1.pdf',
         type: 'document',
@@ -1488,7 +1645,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'document2.pdf',
         type: 'document',
@@ -1524,7 +1681,7 @@ describe('InformationExtraction', () => {
         xmlname: 'document2.xml',
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         _id: factory.id('S1'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
@@ -1542,7 +1699,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await IXSuggestionsModel.save({
+      await writeSuggestion({
         _id: factory.id('S2'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
@@ -1592,10 +1749,10 @@ describe('InformationExtraction', () => {
         status: 'failed',
       });
 
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       // Should create suggestions for both files regardless of segmentation status
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         extractorId: factory.id('prop1extractor'),
       });
       expect(suggestions.length).toBe(2);
@@ -1606,7 +1763,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should create the task for the suggestions', async () => {
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await getSuggestions(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -1623,8 +1780,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should create the suggestions placeholder with status processing', async () => {
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-      const suggestions = await IXSuggestionsModel.get({
+      await getSuggestions(factory.id('prop1extractor'));
+      const suggestions = await ixTestAccess.readSuggestions({
         extractorId: factory.id('prop1extractor'),
       });
       expect(suggestions.length).toBe(2);
@@ -1647,62 +1804,47 @@ describe('InformationExtraction', () => {
     });
 
     it('should stop the model when all the suggestions are done', async () => {
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await getSuggestions(factory.id('sourceTextExtractor1'));
 
       // Make second call have no eligible materials (mark seen in this run)
-      const [m] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
+      const m = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
       const runTs = m?.processRun?.suggestionsRunTimestamp || Date.now();
-      await IXSuggestionsModel.updateMany(
+      await ixTestAccess.markProcessedInRun(
         { extractorId: factory.id('sourceTextExtractor1') },
-        {
-          $set: {
-            date: 1,
-            'state.obsolete': false,
-            'state.error': false,
-            'modelData.suggestionsRunTimestamp': runTs,
-          },
-        }
+        runTs
       );
 
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await getSuggestions(factory.id('sourceTextExtractor1'));
 
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
+      const model = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
       expect(model.findingSuggestions).toBe(false);
     });
 
     describe('Limited runs', () => {
+      // `testRun` and `testRunSuggestionsToFind` used to be set here as well; nothing reads either.
       beforeEach(async () => {
-        await testingDB.mongodb
-          ?.collection('ixmodels')
-          .updateOne(
-            { extractorId: factory.id('sourceTextExtractor1') },
-            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
-          );
-        await testingDB.mongodb
-          ?.collection('ixmodels')
-          .updateOne(
-            { extractorId: factory.id('prop1extractor') },
-            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
-          );
+        const limitToOneSuggestion = async (extractorName: string) => {
+          const model = await ixTestAccess.readModel(factory.id(extractorName));
+          model.totalSuggestionsToFind = 1;
+          await ixTestAccess.writeModel(model);
+        };
 
-        await testingDB.mongodb?.collection('ixsuggestions').updateMany(
-          {
-            extractorId: factory.id('sourceTextExtractor1'),
-            entityId: 'A1',
-          },
-          { $set: { trainingSample: true } }
-        );
+        await limitToOneSuggestion('sourceTextExtractor1');
+        await limitToOneSuggestion('prop1extractor');
+
+        await ixTestAccess.markTrainingSample({
+          extractorId: factory.id('sourceTextExtractor1'),
+          entityId: 'A1',
+        });
       });
 
       it('should only process a subset of suggestions', async () => {
-        await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
-        await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
-        const [model] = await IXModelsModel.get({
-          extractorId: factory.id('sourceTextExtractor1'),
-        });
+        await getSuggestions(factory.id('sourceTextExtractor1'));
+        await getSuggestions(factory.id('sourceTextExtractor1'));
+        const model = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
         expect(model.findingSuggestions).toBe(false);
 
-        const suggestionsInProcessing = await IXSuggestionsModel.get({
+        const suggestionsInProcessing = await ixTestAccess.readSuggestions({
           extractorId: factory.id('sourceTextExtractor1'),
           status: 'processing',
         });
@@ -1719,8 +1861,8 @@ describe('InformationExtraction', () => {
       });
 
       it('should work with PDF based extractors', async () => {
-        await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-        const suggestions = await IXSuggestionsModel.get({
+        await getSuggestions(factory.id('prop1extractor'));
+        const suggestions = await ixTestAccess.readSuggestions({
           extractorId: factory.id('prop1extractor'),
           status: 'processing',
         });
@@ -1730,10 +1872,36 @@ describe('InformationExtraction', () => {
   });
 
   describe('processResults', () => {
-    it('should not continue sending suggestions if flag is not set', async () => {
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop2extractor') });
+    it('should not open a nested job context', async () => {
+      const model = await ixTestAccess.readModel(factory.id('prop2extractor'));
       model.findingSuggestions = false;
-      await IXModelsModel.save(model);
+      await ixTestAccess.writeModel(model);
+
+      await testingEnvironment.runWithContext(async () => {
+        const runSpy = jest.spyOn(ExecutionContext, 'run');
+        // Unwrapped: `informationExtraction` runs each call in its own context, which is the
+        // nesting this case asserts processResults does not do.
+        await new InformationExtraction().processResults({
+          // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
+          task: 'any_task',
+          data_url: 'some/url',
+          error_message: '',
+          params: {
+            id: factory.id('prop2extractor').toString(),
+          },
+          tenant: 'tenant1',
+          file_url: '',
+          success: true,
+        });
+        expect(runSpy).not.toHaveBeenCalled();
+        runSpy.mockRestore();
+      });
+    });
+
+    it('should not continue sending suggestions if flag is not set', async () => {
+      const model = await ixTestAccess.readModel(factory.id('prop2extractor'));
+      model.findingSuggestions = false;
+      await ixTestAccess.writeModel(model);
 
       const message: IXResultsMessage = {
         // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
@@ -1748,7 +1916,7 @@ describe('InformationExtraction', () => {
         success: true,
       };
 
-      await informationExtraction.processResults(message);
+      await processResults(message);
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         message.tenant,
         'ix_model_status',
@@ -1757,6 +1925,91 @@ describe('InformationExtraction', () => {
         'Canceled'
       );
       expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
+    });
+
+    it('should discard the results of a run that was cancelled while it was in flight', async () => {
+      setIXServiceResults([
+        { text: 'text_from_cancelled_run', segment_text: 'segment_from_cancelled_run' },
+        {
+          text: 'more_text_from_cancelled_run',
+          xml_file_name: 'documentC.xml',
+          segment_text: 'more_segment_from_cancelled_run',
+        },
+      ]);
+
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'prop1extractor');
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      model.findingSuggestions = false;
+      await ixTestAccess.writeModel(model);
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+      });
+
+      expect(suggestions.map(suggestion => suggestion.suggestedValue)).not.toContain(
+        'text_from_cancelled_run'
+      );
+      expect(suggestions.map(suggestion => suggestion.segment)).not.toContain(
+        'segment_from_cancelled_run'
+      );
+      expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
+    });
+
+    it('should leave no suggestion processing after a cancelled run reports back', async () => {
+      setIXServiceResults([{ text: 'suggestion_text_1', segment_text: 'segment_text_1' }]);
+
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      model.findingSuggestions = false;
+      await ixTestAccess.writeModel(model);
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const stillProcessing = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+        status: 'processing',
+      });
+
+      expect(stillProcessing).toEqual([]);
+    });
+  });
+
+  describe('cancelModel', () => {
+    it('should release the model, clear the run and leave nothing processing', async () => {
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      await ixmodels.setProcessRun(factory.id('prop1extractor').toString(), {
+        mode: 'process_extractor',
+      } as any);
+
+      await informationExtraction.cancelModel(factory.id('prop1extractor'));
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      expect(model.findingSuggestions).toBe(false);
+      expect(model.status).toBe('ready');
+      expect(model.processRun).toBeUndefined();
+
+      const suggestions = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+      });
+      expect(suggestions.every(suggestion => suggestion.status !== 'processing')).toBe(true);
+      expect(suggestions.every(suggestion => !suggestion.state?.processing)).toBe(true);
     });
   });
 
@@ -1773,7 +2026,7 @@ describe('InformationExtraction', () => {
 
       await saveSuggestionProcess('F3', 'A3', 'eng', 'prop1extractor');
       await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -1781,7 +2034,7 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         status: 'ready',
         extractorId: factory.id('prop1extractor'),
       });
@@ -1848,7 +2101,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F1', 'A1', 'other', 'prop1extractor');
       await saveSuggestionProcess('F4', 'A1', 'eng', 'prop1extractor');
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -1856,7 +2109,7 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         status: 'ready',
         extractorId: factory.id('prop1extractor'),
       });
@@ -1912,7 +2165,7 @@ describe('InformationExtraction', () => {
 
       await saveSuggestionProcess('F5', 'A5', 'eng', 'prop1extractor');
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -1920,7 +2173,7 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         status: 'ready',
         extractorId: factory.id('prop1extractor'),
       });
@@ -1939,13 +2192,13 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await IXSuggestionsModel.delete({
+      await ixTestAccess.removeSuggestions({
         extractorId: factory.id('prop1extractor'),
         entityId: 'A1',
         fileId: factory.id('F1'),
       });
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -1953,13 +2206,11 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const malformedSuggestions = await testingDB
-        .mongodb!.collection('ixsuggestions')
-        .find({
-          suggestedValue: orphanSuggestionText,
-          extractorId: { $exists: false },
-        })
-        .toArray();
+      // Postgres cannot hold a suggestion without an extractor, so the check is that no stored
+      // suggestion carries the orphan result at all.
+      const malformedSuggestions = (await ixTestAccess.readSuggestions()).filter(
+        suggestion => suggestion.suggestedValue === orphanSuggestionText
+      );
 
       expect(malformedSuggestions).toHaveLength(0);
     });
@@ -1972,7 +2223,7 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -1981,7 +2232,7 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         status: 'failed',
         extractorId: factory.id('prop2extractor'),
       });
@@ -2025,7 +2276,7 @@ describe('InformationExtraction', () => {
 
         await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
 
-        await informationExtraction.processResults({
+        await processResults({
           params: { id: factory.id('prop1extractor').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
@@ -2033,7 +2284,7 @@ describe('InformationExtraction', () => {
           data_url: 'http://localhost:1234/suggestions_results',
         });
 
-        const suggestionsText = await IXSuggestionsModel.get({
+        const suggestionsText = await ixTestAccess.readSuggestions({
           status: 'ready',
           extractorId: factory.id('prop1extractor'),
         });
@@ -2053,7 +2304,7 @@ describe('InformationExtraction', () => {
 
         await saveSuggestionProcess('F3', 'A3', 'eng', 'prop2extractor');
 
-        await informationExtraction.processResults({
+        await processResults({
           params: { id: factory.id('prop2extractor').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
@@ -2061,7 +2312,7 @@ describe('InformationExtraction', () => {
           data_url: 'http://localhost:1234/suggestions_results',
         });
 
-        const suggestions = await IXSuggestionsModel.get({
+        const suggestions = await ixTestAccess.readSuggestions({
           status: 'ready',
           extractorId: factory.id('prop2extractor'),
           entityId: 'A3',
@@ -2103,7 +2354,7 @@ describe('InformationExtraction', () => {
         await saveSuggestionProcess('SUG18B', 'A18', 'eng', 'extractorWithSelect');
         await saveSuggestionProcess('SUG19B', 'A19', 'eng', 'extractorWithSelect');
 
-        await informationExtraction.processResults({
+        await processResults({
           params: { id: factory.id('extractorWithSelect').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
@@ -2111,7 +2362,7 @@ describe('InformationExtraction', () => {
           data_url: 'http://localhost:1234/suggestions_results',
         });
 
-        const suggestions = await IXSuggestionsModel.get({
+        const suggestions = await ixTestAccess.readSuggestions({
           status: 'ready',
           extractorId: factory.id('extractorWithSelect'),
         });
@@ -2125,7 +2376,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_select',
           extractorId: factory.id('extractorWithSelect'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {
@@ -2206,7 +2456,7 @@ describe('InformationExtraction', () => {
         await saveSuggestionProcess('SUG18', 'A18', 'eng', 'extractorWithMultiselect');
         await saveSuggestionProcess('SUG19', 'A19', 'eng', 'extractorWithMultiselect');
 
-        await informationExtraction.processResults({
+        await processResults({
           params: { id: factory.id('extractorWithMultiselect').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
@@ -2214,7 +2464,7 @@ describe('InformationExtraction', () => {
           data_url: 'http://localhost:1234/suggestions_results',
         });
 
-        const suggestions = await IXSuggestionsModel.get({
+        const suggestions = await ixTestAccess.readSuggestions({
           status: 'ready',
           extractorId: factory.id('extractorWithMultiselect'),
         });
@@ -2228,7 +2478,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_multiselect',
           extractorId: factory.id('extractorWithMultiselect'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {
@@ -2316,7 +2565,7 @@ describe('InformationExtraction', () => {
         await saveSuggestionProcess('SUG22', 'A22', 'eng', 'extractorWithRelationship');
         await saveSuggestionProcess('SUG23', 'A23', 'eng', 'extractorWithRelationship');
 
-        await informationExtraction.processResults({
+        await processResults({
           params: { id: factory.id('extractorWithRelationship').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
@@ -2324,7 +2573,7 @@ describe('InformationExtraction', () => {
           data_url: 'http://localhost:1234/suggestions_results',
         });
 
-        const suggestions = await IXSuggestionsModel.get({
+        const suggestions = await ixTestAccess.readSuggestions({
           status: 'ready',
           extractorId: factory.id('extractorWithRelationship'),
         });
@@ -2338,7 +2587,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_relationship',
           extractorId: factory.id('extractorWithRelationship'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {

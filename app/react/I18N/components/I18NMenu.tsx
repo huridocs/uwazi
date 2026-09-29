@@ -3,11 +3,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Location, useLocation } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import { LanguageUtils } from '#shared/language/index.js';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
+
+const languageAutonym = (language: { key: string; label?: string }) =>
+  LanguageUtils.fromISO639_1(language.key).localized_label || language.label;
 
 const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
@@ -107,33 +111,26 @@ const I18NMenu = () => {
             type="button"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            <span>{selectedLanguage?.localized_label}</span>
+            <span>{selectedLanguage && languageAutonym(selectedLanguage)}</span>
             &nbsp;
             {dropdownOpen ? <ChevronUpIcon width={22} /> : <ChevronDownIcon width={22} />}
           </button>
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
-            {languageList?.map(
-              (language: {
-                _id?: string;
-                key: string;
-                label?: string;
-                localized_label?: string;
-              }) => {
-                const url = `/${language.key}${path}${
-                  path.match('document') ? '' : urlLocation.search
-                }`;
+            {languageList?.map(language => {
+              const url = `/${language.key}${path}${
+                path.match('document') ? '' : urlLocation.search
+              }`;
 
-                return (
-                  <li
-                    key={language._id as string}
-                    className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
-                  >
-                    <a href={url}>{language.localized_label || language.label}</a>
-                  </li>
-                );
-              }
-            )}
+              return (
+                <li
+                  key={language.key}
+                  className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
+                >
+                  <a href={url}>{languageAutonym(language)}</a>
+                </li>
+              );
+            })}
 
             <NeedAuthorization roles={['admin']}>
               <li className="menuNav-item">

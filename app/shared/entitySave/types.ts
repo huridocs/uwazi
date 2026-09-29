@@ -16,6 +16,7 @@ type EntitySaveMetadata = Record<string, MetadataObjectSchema[] | undefined>;
 
 type EntityWithSaveMetadata = {
   metadata?: EntitySaveMetadata;
+  translations?: Record<string, EntitySaveMetadata>;
   attachments?: ReadonlyArray<{
     fileLocalID?: string;
     serializedFile?: string;

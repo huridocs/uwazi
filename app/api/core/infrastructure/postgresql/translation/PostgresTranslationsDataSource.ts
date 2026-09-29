@@ -10,6 +10,7 @@ import { TranslationContextDiff } from '#api/core/domain/translation/Translation
 import { TranslationContextModel } from '#api/core/domain/translation/TranslationContextModel.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 import { PostgresTranslationMapper, TranslationRow } from './PostgresTranslationMapper.js';
 
@@ -48,8 +49,8 @@ export class PostgresTranslationsDataSource
     );
   }
 
-  private async load(query = this.table): Promise<Translation[]> {
-    const rows = await query.all();
+  private async load(query?: PostgresTable<TranslationRow>): Promise<Translation[]> {
+    const rows = await (query ?? this.table).all();
     return rows.map(PostgresTranslationMapper.toDomain);
   }
 
@@ -145,16 +146,25 @@ export class PostgresTranslationsDataSource
   }
 
   async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
-    let batch: TranslationRow[] = [];
-    for await (const row of this.table.where({ language: from }).stream()) {
-      batch.push(row);
-      if (batch.length >= CLONE_BATCH_SIZE) {
-        await this.insertClonedBatch(batch, to);
-        batch = [];
+    // Do not stream+write on the same connection: inside an outer `run()` the
+    // stream holds the shared transaction open, and a mid-stream upsert deadlocks
+    // (pg will not run a second query on a busy connection). Paginated reads
+    // complete before each write.
+    let offset = 0;
+    for (;;) {
+      // eslint-disable-next-line no-await-in-loop -- batches must run sequentially in one transaction
+      const batch = await this.table
+        .where({ language: from })
+        .orderBy('_id')
+        .limit(CLONE_BATCH_SIZE)
+        .offset(offset)
+        .all();
+      if (batch.length === 0) {
+        return;
       }
-    }
-    if (batch.length > 0) {
+      // eslint-disable-next-line no-await-in-loop -- batches must run sequentially in one transaction
       await this.insertClonedBatch(batch, to);
+      offset += batch.length;
     }
   }
 

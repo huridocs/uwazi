@@ -6,10 +6,11 @@ import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 const inheritingRelationshipCard = (label: string) =>
   cy.contains(label).parents('.rounded-lg.border-border-40').first();
 
-const assertInheritedTableScroll = (card: Cypress.Chainable<JQuery<HTMLElement>>) => {
+const assertInheritedTableLayout = (card: Cypress.Chainable<JQuery<HTMLElement>>) => {
   card.within(() => {
-    cy.get('.overflow-x-auto').should('exist').and('not.have.class', 'max-h-60');
-    cy.get('table').should('have.class', 'w-max').and('have.class', 'min-w-full');
+    cy.get('[data-testid="relationship-connections"]').should('exist');
+    cy.get('.overflow-x-auto').should('not.exist');
+    cy.get('table').should('have.class', 'w-max');
   });
 };
 
@@ -79,13 +80,13 @@ describe('MetadataDisplay', () => {
       multiselectInherit.within(() => {
         cy.contains('via').should('exist');
         cy.contains('inherits Multiselect from events').should('exist');
-        cy.contains('th', 'Entity').should('exist');
+        cy.contains('th', 'Event Report').should('exist');
         cy.contains('th', 'Multiselect from events').should('exist');
         cy.contains('Maria Rodriguez - Witness').should('exist');
         cy.contains('Again').should('exist');
         cy.contains('Acknowledging').should('exist');
       });
-      assertInheritedTableScroll(multiselectInherit);
+      assertInheritedTableLayout(multiselectInherit);
 
       cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
     });
@@ -110,10 +111,14 @@ describe('MetadataDisplay', () => {
         'src',
         '/short-video-thumbnail.jpg'
       );
-      compactField('selected_image');
-      compactField('video_of_event');
-      cy.get('[data-field-key="selected_image"] .aspect-video').should('exist');
-      cy.get('[data-field-key="video_of_event"] .aspect-video').should('exist');
+      cy.get('[data-field-key="selected_image"]')
+        .should('not.have.class', 'flex-1')
+        .should('not.have.class', 'basis-full');
+      cy.get('[data-field-key="video_of_event"]')
+        .should('not.have.class', 'flex-1')
+        .should('not.have.class', 'basis-full');
+      cy.get('[data-field-key="selected_image"] img').should('have.css', 'object-fit', 'cover');
+      cy.get('[data-field-key="video_of_event"] .aspect-video').should('not.exist');
       cy.get('[data-field-key="selected_image"]')
         .closest('[data-property-row]')
         .invoke('attr', 'data-property-row')

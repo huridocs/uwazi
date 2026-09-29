@@ -17,7 +17,7 @@ class TilesViewerComponent extends React.Component<TilesViewerProps> {
           <Doc
             doc={doc}
             storeKey={this.props.storeKey}
-            key={doc?.get('_id')}
+            key={String(doc?.get('_id') ?? '')}
             onClick={this.props.clickOnDocument}
             onSnippetClick={this.props.onSnippetClick}
             deleteConnection={this.props.deleteConnection}

@@ -121,7 +121,7 @@ const TemplatesEditor = () => {
     if (loadedTemplate.processing?.active) {
       notifyTemplateProcessing();
     }
-  }, [loadedTemplate]);
+  }, [loadedTemplate, notifyTemplateProcessing]);
 
   const getCurrentStatus = useCallback((): ClientTemplateSchema => {
     const cleanedCommonProperties = commonProperties.map(cleanProperty);
@@ -277,12 +277,12 @@ const TemplatesEditor = () => {
   const progressBar = (
     <div className="w-full flex flex-col gap-2">
       <div className="flex justify-between mb-1">
-        <div className="font-medium text-gray-500 text-xs">
+        <div className="font-medium text-ink-muted text-xs">
           <Translate>Updating template properties across</Translate>
           <span> {entityCount} </span>
           <Translate>entities</Translate> ...
         </div>
-        <span className="text-sm font-medium text-gray-500">{progress.percent.toFixed(2)}%</span>
+        <span className="text-sm font-medium text-ink-muted">{progress.percent.toFixed(2)}%</span>
       </div>
       <ProgressBar progress={progress.percent} color="gray" />
     </div>

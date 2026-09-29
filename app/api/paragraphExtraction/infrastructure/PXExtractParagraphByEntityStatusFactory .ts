@@ -12,7 +12,7 @@ type Props = {
 export class PXExtractParagraphsByEntityStatusFactory {
   static async createDefault({ tenantName }: Props) {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,

@@ -1,6 +1,5 @@
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { CleanupExpiredCaptchasJob } from './CleanupExpiredCaptchasJob.js';
 
 type Deps = {
@@ -12,10 +11,7 @@ class CleanupExpiredCaptchasJobScheduler {
 
   static default(): CleanupExpiredCaptchasJobScheduler {
     return new CleanupExpiredCaptchasJobScheduler({
-      jobsDispatcher: DefaultDispatcher(
-        'system',
-        TransactionManagerFactory.createForSharedDataBase()
-      ),
+      jobsDispatcher: JobsDispatcherFactory.system(),
     });
   }
 

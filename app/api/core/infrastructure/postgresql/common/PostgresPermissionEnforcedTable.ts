@@ -1,6 +1,6 @@
 import type { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PostgresTable, type TableConfig } from './PostgresTable.js';
+import { PostgresTable, type QueryState, type TableConfig } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -14,6 +14,7 @@ type ForParams = {
   accessContext: AccessContext;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
 };
 
 class PermissionDeniedError extends Error {
@@ -43,9 +44,13 @@ class PermissionDeniedError extends Error {
 class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
   private readonly accessContext: AccessContext;
 
-  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder, accessContext: AccessContext) {
-    super(cfg, qb);
-    this.accessContext = accessContext;
+  protected constructor(
+    cfg: TableConfig,
+    qb: Knex.QueryBuilder,
+    scope: { accessContext: AccessContext; state?: QueryState }
+  ) {
+    super(cfg, qb, scope.state);
+    this.accessContext = scope.accessContext;
   }
 
   static for<TRow = Record<string, unknown>>(
@@ -58,16 +63,18 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      identityColumn: params.identityColumn,
     };
-    return new PostgresPermissionEnforcedTable<TRow>(
-      cfg,
-      knexInstance(params.tableName),
-      params.accessContext
-    );
+    return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName), {
+      accessContext: params.accessContext,
+    });
   }
 
-  protected chain(qb: Knex.QueryBuilder): this {
-    return new PostgresPermissionEnforcedTable(this.cfg, qb, this.accessContext) as any as this;
+  protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
+    return new PostgresPermissionEnforcedTable(this.cfg, qb, {
+      accessContext: this.accessContext,
+      state,
+    }) as any as this;
   }
 
   /**
@@ -80,8 +87,22 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
    * this single statement and add the write-permission condition manually to
    * the ON CONFLICT DO UPDATE WHERE clause — exactly like the pre-RLS version,
    * but using the array overlap operator.
+   *
+   * An insert-or-ignore touches no existing row, so it needs no write-permission condition. It
+   * still runs with the actor's permission context: ON CONFLICT makes RLS apply the read policy
+   * to the inserted rows. Any other conflict target is not supported here.
    */
-  async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
+  async upsert(
+    doc: Record<string, unknown> | Record<string, unknown>[],
+    conflict: Parameters<PostgresTable['upsert']>[1] = {}
+  ): Promise<void> {
+    if (conflict.ignore && conflict.columns) {
+      return this.insertIgnoringConflicts(doc, conflict.columns);
+    }
+    if (conflict.ignore || conflict.columns || conflict.targetRaw || conflict.merge) {
+      throw new Error(`${this.cfg.tableName}: upsert only supports the default conflict target`);
+    }
+
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
     const result = await this.cfg.transactionManager.withConnection(
@@ -106,6 +127,29 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
         false
       );
     }
+  }
+
+  private async insertIgnoringConflicts(
+    doc: Record<string, unknown> | Record<string, unknown>[],
+    conflictColumns: string[]
+  ): Promise<void> {
+    this.applyInsertPolicy();
+    const rows = this.rowsWithTenant(doc);
+    if (rows.length === 0) return;
+
+    const result = await this.cfg.transactionManager.withConnection(
+      async trx =>
+        trx(this.cfg.tableName)
+          .insert(rows)
+          .onConflict(conflictColumns)
+          .ignore()
+          .returning(['_id']),
+      this.buildPermissionContext()
+    );
+    await this.notifySync(
+      PostgresTable.idsOf(result).map(_id => ({ _id })),
+      false
+    );
   }
 
   private upsertWriteCondition(): { sql: string; bindings: (string | string[])[] } | null {

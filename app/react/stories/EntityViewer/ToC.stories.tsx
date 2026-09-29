@@ -10,6 +10,7 @@ import {
   normalizeToc,
   findItemsWithChildren,
 } from '#V2/Routes/Entity/Components/ToC/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
 
 const meta = preview.meta({
   title: 'EntityViewer/ToC',
@@ -159,51 +160,29 @@ const ToCWithControls = ({
   };
 
   return (
-    <div className="tw-content max-w-md">
+    <div className="tw-content max-w-md" data-storybook-theme-checks>
       <div className="flex flex-col gap-4">
         <div className="flex gap-2">
           {!isEditMode ? (
             <>
-              <button
-                type="button"
-                onClick={handleExpandAll}
-                disabled={isAllExpanded}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              >
+              <Button size="medium" onClick={handleExpandAll} disabled={isAllExpanded}>
                 Expand All
-              </button>
-              <button
-                type="button"
-                onClick={handleCollapseAll}
-                disabled={isAllCollapsed}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              >
+              </Button>
+              <Button size="medium" onClick={handleCollapseAll} disabled={isAllCollapsed}>
                 Collapse All
-              </button>
-              <button
-                type="button"
-                onClick={handleEdit}
-                className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              >
+              </Button>
+              <Button variant="secondary" size="medium" onClick={handleEdit}>
                 Edit Mode
-              </button>
+              </Button>
             </>
           ) : (
             <>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              >
+              <Button size="medium" onClick={handleSave}>
                 Save
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              >
+              </Button>
+              <Button variant="secondary" size="medium" onClick={handleCancel}>
                 Cancel
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -227,7 +206,7 @@ const ToCWithControls = ({
 const ToCWrapper = ({ toc }: { toc?: TocSchema[] }) => {
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   return (
-    <div className="tw-content max-w-md">
+    <div className="tw-content max-w-md" data-storybook-theme-checks>
       <div className="flex flex-col gap-2">
         <ToC
           toc={toc}

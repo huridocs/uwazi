@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { Switcher } from '#app/ReactReduxForms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
@@ -10,6 +10,7 @@ import { withRouter } from '#app/componentWrappers.js';
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 import { filterDocumentTypes } from '../actions/filterActions.js';
 import { DocumentTypesListConnected } from './DocumentTypesList.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -26,7 +27,7 @@ const mapStateToProps = (state: IStore) => ({
   libraryFilters: state.library.filters,
 });
 
-function mapDispatchToProps(dispatch: Dispatch<IStore>) {
+function mapDispatchToProps(dispatch: AppDispatch) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 

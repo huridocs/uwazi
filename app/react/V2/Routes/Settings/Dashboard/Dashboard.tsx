@@ -32,50 +32,50 @@ const Dashboard = () => {
             <Card title={<Translate>Users</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats?.users.total}</span>{' '}
-                  <Translate className="text-lg font-medium text-gray-500">total users</Translate>
+                  <span className="text-5xl font-black text-ink">{stats?.users.total}</span>{' '}
+                  <Translate className="text-lg font-medium text-ink-muted">total users</Translate>
                 </div>
                 <div>
-                  <span className="text-gray-700">{stats?.users.admin}</span>{' '}
-                  <Translate className="mr-4 text-gray-500">Admins</Translate>
-                  <span className="mr-4 text-gray-200">|</span>
-                  <span className="text-gray-700">{stats?.users.editor}</span>{' '}
-                  <Translate className="mr-4 text-gray-500">Editors</Translate>
-                  <span className="mr-4 text-gray-200">|</span>
-                  <span className="text-gray-700">{stats?.users.collaborator}</span>{' '}
-                  <Translate className="text-gray-500">Collaborators</Translate>
+                  <span className="text-ink">{stats?.users.admin}</span>{' '}
+                  <Translate className="mr-4 text-ink-muted">Admins</Translate>
+                  <span className="mr-4 text-ink-muted">|</span>
+                  <span className="text-ink">{stats?.users.editor}</span>{' '}
+                  <Translate className="mr-4 text-ink-muted">Editors</Translate>
+                  <span className="mr-4 text-ink-muted">|</span>
+                  <span className="text-ink">{stats?.users.collaborator}</span>{' '}
+                  <Translate className="text-ink-muted">Collaborators</Translate>
                 </div>
               </div>
             </Card>
             <Card title={<Translate>Storage</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{storageValue}</span>{' '}
-                  <Translate className="text-lg font-medium text-gray-500">
+                  <span className="text-5xl font-black text-ink">{storageValue}</span>{' '}
+                  <Translate className="text-lg font-medium text-ink-muted">
                     {storageUnits}
                   </Translate>
                 </div>
-                <Translate className="text-gray-500">Files and database usage</Translate>
+                <Translate className="text-ink-muted">Files and database usage</Translate>
               </div>
             </Card>
             <Card title={<Translate>Entities</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats?.entities.total}</span>{' '}
-                  <Translate className="text-lg font-medium text-gray-500">
+                  <span className="text-5xl font-black text-ink">{stats?.entities.total}</span>{' '}
+                  <Translate className="text-lg font-medium text-ink-muted">
                     total entities
                   </Translate>
                 </div>
-                <Translate className="text-gray-500">Entities across all languages</Translate>
+                <Translate className="text-ink-muted">Entities across all languages</Translate>
               </div>
             </Card>
             <Card title={<Translate>Files</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats?.files.total}</span>{' '}
-                  <Translate className="text-lg font-medium text-gray-500">total files</Translate>
+                  <span className="text-5xl font-black text-ink">{stats?.files.total}</span>{' '}
+                  <Translate className="text-lg font-medium text-ink-muted">total files</Translate>
                 </div>
-                <Translate className="text-gray-500">
+                <Translate className="text-ink-muted">
                   Total files from main documents, supporting files and uploads
                 </Translate>
               </div>

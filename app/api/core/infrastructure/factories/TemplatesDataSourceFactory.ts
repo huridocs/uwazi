@@ -1,6 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { PostgresTemplatesDataSource } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDataSource.js';
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
@@ -19,8 +18,7 @@ export class TemplatesDataSourceFactory {
   static default(overrides?: Overrides) {
     const tenant = ExecutionContext.currentTenant;
     const db = getConnection();
-    const mongoTM = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const mongoTM = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     if (tenant.featureFlags?.postgresCore) {
@@ -46,8 +44,7 @@ export class TemplatesDataSourceFactory {
   static cached(overrides?: Overrides) {
     const tenant = ExecutionContext.currentTenant;
     const db = getConnection();
-    const mongoTM = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const mongoTM = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     if (tenant.featureFlags?.postgresCore) {

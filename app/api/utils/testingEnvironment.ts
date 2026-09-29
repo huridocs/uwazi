@@ -5,7 +5,7 @@ import { copyFile } from 'fs/promises';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
@@ -17,8 +17,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -30,10 +29,18 @@ import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
+import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
+  IXExtractorsMigrationConfig,
+  IXModelsMigrationConfig,
+  IXSuggestionsMigrationConfig,
   PageLocalesMigrationConfig,
   PageMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
@@ -60,6 +67,18 @@ const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
   ]);
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
+
+// `mimetype` and `type` are NOT NULL in 003-create_files_table.sql, but `factory.file` sets
+// neither, and plain `factory.file` fixtures carry no `type`.
+const FILE_POSTGRES_DEFAULTS = {
+  mimetype: 'application/pdf',
+  type: 'document',
+};
+
+const sanitizeFileForPostgres = (file: Record<string, unknown>) => ({
+  ...FILE_POSTGRES_DEFAULTS,
+  ...file,
+});
 
 // `password` and `using2fa` are NOT NULL in 009-create-users-table.sql but optional in
 // Mongo fixtures. The password sentinel is deliberately not a hash: a fixture that omits
@@ -99,6 +118,32 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
   };
 };
 
+const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
+  PostgresSettingsMapper.toRow(settings as SettingsType);
+
+const toPostgresId = (value: unknown): string | null => {
+  if (value === undefined || value === null) return null;
+  return value instanceof ObjectId ? value.toHexString() : String(value);
+};
+
+const toPostgresJsonb = (value: unknown): unknown | null => {
+  if (value === undefined || value === null) return null;
+  return typeof value === 'object' ? value : JSON.stringify(value);
+};
+
+const sanitizeConnectionForPostgres = (connection: Record<string, unknown>) => ({
+  _id: toPostgresId(connection._id),
+  entity: connection.entity ?? null,
+  hub: toPostgresId(connection.hub),
+  template: toPostgresId(connection.template),
+  file: toPostgresId(connection.file),
+  metadata: connection.metadata ?? {},
+  reference: connection.reference ?? null,
+  sharedId: toPostgresId(connection.sharedId),
+  filename: connection.filename ?? null,
+  range: toPostgresJsonb(connection.range),
+});
+
 // A mongo pages document holds its locales nested; in postgres they are their own table.
 const PG_FANOUT_BY_MONGO_COLLECTION: Record<
   string,
@@ -112,10 +157,16 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   (row: Record<string, unknown>) => Record<string, unknown>
 > = {
   entities: sanitizeEntityForPostgres,
+  files: sanitizeFileForPostgres,
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
+  settings: sanitizeSettingsForPostgres,
+  connections: sanitizeConnectionForPostgres,
   pages: PageMigrationConfig.mapDocument,
+  ixextractors: IXExtractorsMigrationConfig.mapDocument,
+  ixmodels: IXModelsMigrationConfig.mapDocument,
+  ixsuggestions: IXSuggestionsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -128,13 +179,23 @@ const MIRRORED_COLLECTIONS = [
   'users',
   'usergroups',
   'translationsV2',
+  'ixextractors',
+  'ixmodels',
+  'ixsuggestions',
+  'settings',
+  'connections',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
   translationsV2: 'translations',
+  ixextractors: 'ix_extractors',
+  ixmodels: 'ix_models',
+  ixsuggestions: 'ix_suggestions',
 };
+
+type JobsBackend = { postgresCore: boolean; mongoDb?: Db };
 
 type SetUpOptions = {
   elasticIndex?: string | boolean;
@@ -351,16 +412,9 @@ const testingEnvironment = {
     });
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
-      transactionManager: TransactionManagerFactory.default,
-      postgresTransactionManager: PostgresTransactionManagerFactory.default,
+      ...transactionManagerFactories(),
       eventEmitter: EventEmitterFactory.forTesting,
-      jobsDispatcher: () =>
-        UwaziDispatcherFactory(
-          tenant.name,
-          ExecutionContext.transactionManager,
-          undefined,
-          DefaultTestingQueueAdapter(ExecutionContext.transactionManager)
-        ),
+      jobsDispatcher: () => JobsDispatcherFactory.default(DefaultTestingQueueAdapter),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
       telemetryCollector: () => new TelemetryCollector('test'),
@@ -408,6 +462,16 @@ const testingEnvironment = {
         if (['files', 'templates', 'thesauri'].includes(collectionName)) {
           return testingPG.getAllFrom(collectionName);
         }
+        if (collectionName === 'connections') {
+          const rows = await testingPG.getAllFrom<Record<string, unknown>>('connections');
+          return rows.map(row => ({
+            ...row,
+            ...(row._id ? { _id: new ObjectId(String(row._id)) } : {}),
+            ...(row.hub ? { hub: new ObjectId(String(row.hub)) } : {}),
+            ...(row.template ? { template: new ObjectId(String(row.template)) } : {}),
+            ...(row.sharedId ? { sharedId: new ObjectId(String(row.sharedId)) } : {}),
+          }));
+        }
       }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');
@@ -417,6 +481,60 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  /**
+   * Dispatched jobs, in the backend a tenant's postgresCore flag sends them to: Postgres when it
+   * is on, Mongo otherwise. Reading only that backend makes a job dispatched to the wrong one fail
+   * the test. Pass `mongoDb` when the jobs went through the shared database (production
+   * dispatchers) instead of the testing adapter's tenant database.
+   */
+  jobs: {
+    async getAll({ postgresCore, mongoDb }: JobsBackend): Promise<any[]> {
+      if (postgresCore) {
+        if (!testingEnvironment.pgEnabled) {
+          throw new Error('Postgres jobs requested, but the spec did not set up Postgres');
+        }
+        return testingPG.getAllFrom('jobs');
+      }
+      const db = mongoDb ?? testingDB.mongodb;
+      if (!db) throw new Error('Testing mongodb not connected');
+      return db.collection('jobs').find().toArray();
+    },
+
+    /** Seeds jobs in that backend. Postgres rows take the Mongo `_id` as their `id`. */
+    async insert(jobs: Record<string, any>[], { postgresCore }: JobsBackend): Promise<void> {
+      if (!postgresCore) {
+        await testingDB.mongodb!.collection('jobs').insertMany(jobs);
+        return;
+      }
+      await Promise.all(
+        jobs.map(async ({ _id, params, options, ...job }) => {
+          const row: Record<string, unknown> = {
+            ...job,
+            id: String(_id),
+            params: JSON.stringify(params ?? {}),
+            options: JSON.stringify(options),
+          };
+          const columns = Object.keys(row);
+          await testingPG.pool!.query(
+            `INSERT INTO jobs (${columns.map(column => `"${column}"`).join(', ')})
+             VALUES (${columns.map((_column, index) => `$${index + 1}`).join(', ')})`,
+            Object.values(row)
+          );
+        })
+      );
+    },
+
+    /** Clears both backends, so nothing leaks between a suite's Mongo and Postgres variants. */
+    async clear(mongoDb?: Db): Promise<void> {
+      const db = mongoDb ?? testingDB.mongodb;
+      if (!db) throw new Error('Testing mongodb not connected');
+      await db.collection('jobs').deleteMany({});
+      if (testingEnvironment.pgEnabled) {
+        await testingPG.clear(['jobs']);
+      }
     },
   },
 
@@ -433,4 +551,40 @@ const testingEnvironment = {
   },
 };
 
-export { testingEnvironment };
+function settingsDataSourceWithContext(create: () => SettingsDataSource): SettingsDataSource {
+  return new Proxy({} as SettingsDataSource, {
+    get(_target, property) {
+      if (property === 'then' || typeof property === 'symbol') {
+        return undefined;
+      }
+
+      return async (...args: unknown[]) =>
+        testingEnvironment.runWithContext(async () => {
+          const dataSource = create();
+          const member = dataSource[property as keyof SettingsDataSource];
+          if (typeof member !== 'function') {
+            return member;
+          }
+          return (member as (...methodArgs: unknown[]) => unknown).call(dataSource, ...args);
+        });
+    },
+  });
+}
+
+const SettingsDSWithContext = {
+  default(overrides?: Parameters<typeof SettingsDataSourceFactory.default>[0]) {
+    return settingsDataSourceWithContext(() => SettingsDataSourceFactory.default(overrides));
+  },
+  cached(overrides?: Parameters<typeof SettingsDataSourceFactory.cached>[0]) {
+    return settingsDataSourceWithContext(() => SettingsDataSourceFactory.cached(overrides));
+  },
+};
+
+const mutatePersistedSettings = async (mutate: (settings: Settings) => void) => {
+  const dataSource = SettingsDSWithContext.default();
+  const settings = await dataSource.get();
+  mutate(settings);
+  await dataSource.update(settings);
+};
+
+export { testingEnvironment, SettingsDSWithContext, mutatePersistedSettings };

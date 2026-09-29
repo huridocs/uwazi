@@ -1,6 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDataSource.js';
 import { CachedMongoThesauriDataSource } from '../mongodb/thesauri/CachedMongoThesauriDataSource.js';
@@ -24,8 +23,7 @@ export class ThesauriDataSourceFactory {
       });
     }
 
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new MongoThesauriDataSource(db, tm);
   }
 
@@ -43,8 +41,7 @@ export class ThesauriDataSourceFactory {
       });
     }
 
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new CachedMongoThesauriDataSource(db, tm);
   }
 }

@@ -13,7 +13,7 @@ const inheritedTypeLayout = (inheritedType?: string): InheritedTypeLayout => {
       return { density: 'compact', minWidthClass: 'min-w-64' };
     case 'image':
     case 'preview':
-      return { density: 'default', minWidthClass: 'min-w-48' };
+      return { density: 'compact', minWidthClass: 'min-w-48' };
     default:
       return { minWidthClass: 'min-w-0' };
   }

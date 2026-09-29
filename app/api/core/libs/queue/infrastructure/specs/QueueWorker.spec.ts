@@ -172,16 +172,17 @@ it('should finish the in-progress job before stopping', async () => {
 
 it('should retry job when it fails', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 1 });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const dispatchOptions = { lockWindow: 1 };
   const onError = jest.fn();
 
   const { worker, signals, jobArguments } = await setUpWorker(onError);
 
-  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 1 }, dispatchOptions);
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   worker.start();
-  await dispatcher.dispatch(TestJob, { aNumber: 2 });
-  await dispatcher.dispatch(TestJob, { aNumber: 3 });
+  await dispatcher.dispatch(TestJob, { aNumber: 2 }, dispatchOptions);
+  await dispatcher.dispatch(TestJob, { aNumber: 3 }, dispatchOptions);
 
   await signals.signaled('ending-2');
   TestJob.shouldFail = true;
@@ -199,17 +200,15 @@ it('should retry job when it fails', async () => {
 
 it('should have a maximum number of retries', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, {
-    lockWindow: 0,
-    maxRetries: 2,
-  });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const dispatchOptions = { lockWindow: 0, maxRetries: 2 };
 
   const { worker, signals } = await setUpWorker();
 
-  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 1 }, dispatchOptions);
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   worker.start();
-  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher.dispatch(TestJob, { aNumber: 2 }, dispatchOptions);
 
   await signals.signaled('ending-1');
   TestJob.shouldFail = true;
@@ -222,15 +221,16 @@ it('should have a maximum number of retries', async () => {
 
 it('should not retry jobs that throw a NonRetryableJobError', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 0 });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const dispatchOptions = { lockWindow: 0 };
   const onError = jest.fn();
 
   const { worker, signals } = await setUpWorker(onError);
 
-  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 1 }, dispatchOptions);
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   worker.start();
-  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher.dispatch(TestJob, { aNumber: 2 }, dispatchOptions);
 
   await signals.signaled('ending-1');
   TestJob.shouldFailNonRetryable = true;
@@ -302,10 +302,8 @@ it('should log errors by default when no onError callback is passed', async () =
 it('should double the lockWindow time on every retry', async () => {
   const initialLockWindow = 1;
   const maxRetries = 3;
-  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter(), {
-    lockWindow: initialLockWindow,
-    maxRetries,
-  });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter());
+  const dispatchOptions = { lockWindow: initialLockWindow, maxRetries };
 
   const { adapter, worker, signals } = await setUpWorker();
   const lockWindows: number[] = [];
@@ -319,7 +317,7 @@ it('should double the lockWindow time on every retry', async () => {
     return job;
   };
 
-  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 1 }, dispatchOptions);
   TestJob.shouldFail = true;
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -337,15 +335,13 @@ it('should not update lock window when job reaches max retries', async () => {
 
   const { adapter, worker, signals } = await setUpWorker();
 
-  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, {
-    lockWindow: initialLockWindow,
-    maxRetries,
-  });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const dispatchOptions = { lockWindow: initialLockWindow, maxRetries };
 
   const updateLockWindowSpy = jest.spyOn(adapter, 'updateLockWindow');
   const markJobAsFailedSpy = jest.spyOn(adapter, 'markJobAsFailed');
 
-  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 1 }, dispatchOptions);
   TestJob.shouldFail = true;
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises

@@ -103,19 +103,15 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
 
     await this.transactionManager.run(async () => {
       await this.deps.translationsService.saveEntries(prepared.flatMap(item => item.entries));
-    });
-
-    await Promise.all(
-      prepared.map(async item =>
-        this.deps.propagateThesaurusTranslation.propagate({
-          locale: item.locale,
+      await this.deps.propagateThesaurusTranslation.propagate(
+        prepared.map(item => ({
           contextId,
           type: item.type,
           previous: item.previous,
           next: item.next,
-        })
-      )
-    );
+        }))
+      );
+    });
 
     return prepared.map(item => item.locale);
   }

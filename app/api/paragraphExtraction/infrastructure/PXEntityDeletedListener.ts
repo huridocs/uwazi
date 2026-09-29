@@ -22,7 +22,7 @@ export class PXEntityDeletedListener {
   private setupDependencies() {
     if (!this.dependencies) {
       const connection = getConnection();
-      const mongoTransactionManager = TransactionManagerFactory.default();
+      const mongoTransactionManager = TransactionManagerFactory.mongo();
       const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
         mongoTransactionManager,

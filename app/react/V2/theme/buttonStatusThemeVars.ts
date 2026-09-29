@@ -1,5 +1,4 @@
 import type { ButtonThemeContext } from '#V2/theme/buttonThemeContext.js';
-import { LEGACY_BUTTON_VALUES } from '#V2/theme/buttonThemeContext.js';
 import { setRoleTripletVars, setRoleVar } from '#V2/theme/themeRoleVarSetters.js';
 import {
   BUTTON_DANGER_BG,
@@ -86,9 +85,7 @@ const getStatusButtonThemeVars = (context: ButtonThemeContext): Record<string, s
     BUTTON_DANGER_SUBTLE_FG,
     {
       border: 'transparent',
-      bg: context.isLegacy
-        ? LEGACY_BUTTON_VALUES.dangerTint
-        : context.resolved['--color-theme-accent-emphasis-tint'],
+      bg: context.resolved['--color-theme-accent-emphasis-tint'],
       fg: context.dangerOnDangerTint,
     }
   );
@@ -100,9 +97,7 @@ const getStatusButtonThemeVars = (context: ButtonThemeContext): Record<string, s
     BUTTON_SUCCESS_SUBTLE_FG,
     {
       border: 'transparent',
-      bg: context.isLegacy
-        ? LEGACY_BUTTON_VALUES.successTint
-        : context.resolved['--color-theme-success-light'],
+      bg: context.resolved['--color-theme-success-light'],
       fg: context.successOnSuccessTint,
     }
   );

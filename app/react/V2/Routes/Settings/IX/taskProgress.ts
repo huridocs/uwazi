@@ -28,6 +28,19 @@ const getProgress = (data?: IXModelStatusData): number | undefined => {
   return Math.round((data.processed / data.total) * 100);
 };
 
+/** A `ready` status ends the task; it fails when the run ended without doing its work. */
+const endTask = (
+  { message, data }: { message: string; data?: IXModelStatusData },
+  complete: () => void,
+  fail: (details?: string) => void
+) => {
+  if (data?.error) {
+    fail(message);
+  } else {
+    complete();
+  }
+};
+
 const initialTaskLabel = ({
   taskType,
   extractorName,
@@ -45,7 +58,7 @@ const createIXTaskListenerSetup =
     labels,
   }: CreateIXTaskListenerSetupParams): TaskListenerSetup =>
   (update, complete, fail) => {
-    const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, data) => {
+    const handleStatus: IXModelStatusCallback = (evtId, modelStatus, message, data) => {
       if (evtId !== extractorId) return;
 
       if (taskType === 'train' && modelStatus === ixStatus.processing_model) {
@@ -71,7 +84,7 @@ const createIXTaskListenerSetup =
       }
 
       if (modelStatus === ixStatus.ready) {
-        complete();
+        endTask({ message, data }, complete, fail);
       }
     };
 

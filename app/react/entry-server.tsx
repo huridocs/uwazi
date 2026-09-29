@@ -5,14 +5,8 @@ import type { Request as ExpressRequest, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {
-  createStaticHandler,
-  createStaticRouter,
-  matchRoutes,
-  RouteObject,
-  StaticHandlerContext,
-  StaticRouterProvider,
-} from 'react-router';
+import { matchRoutes, RouteObject, StaticRouterProvider } from 'react-router';
+import { prepareRouteData } from './ssr/prepareRouteData.js';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -32,8 +26,8 @@ import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import settingsApi from '../api/settings/settings.js';
-import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { shapeSettingsForSSR } from '#api/core/application/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
@@ -181,10 +175,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  // Active locale, without Thesaurus: template/RT/UI labels must hydrate; thesauri stay out of the HTML blob.
+  // Active locale, all contexts: thesaurus labels are translated client-side (entity form, template editor).
   const translations = await TranslationsQueryServiceFactory.default().getLegacy({
     locale: locale as LanguageISO6391,
-    excludeContextTypes: ['Thesaurus'],
   });
 
   const [
@@ -214,7 +207,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       : [];
 
   // Match GET /api/settings: non-admins only get the public whitelist.
-  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any, req.user);
+  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any);
   // Keep customCSS/JS in Redux for <head> inlining; omit them from the atom blob.
   const atomSettings = omitInlineCustomization(shapedSettings as Record<string, unknown>);
 
@@ -250,6 +243,33 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
+type RequestStateLoader = (requestParams: RequestParams, state: IStore) => Promise<unknown>;
+
+type RouteElementProps = {
+  params?: Record<string, string | undefined>;
+  children?: React.ReactElement<RouteElementProps>;
+  allowedRoles?: string[];
+};
+
+const isRequestStateLoader = (value: unknown): value is RequestStateLoader =>
+  typeof value === 'function';
+
+const requestStateOf = (type: React.ReactElement['type'] | undefined) => {
+  if (
+    typeof type === 'function' &&
+    'requestState' in type &&
+    isRequestStateLoader(type.requestState)
+  ) {
+    return type.requestState;
+  }
+  return undefined;
+};
+
+const isRouteElement = (
+  element: React.ReactNode
+): element is React.ReactElement<RouteElementProps> =>
+  React.isValidElement<RouteElementProps>(element);
+
 const setReduxState = async (
   req: ExpressRequest,
   reduxState: IStore,
@@ -259,21 +279,21 @@ const setReduxState = async (
   const dataLoaders = matched
     ?.map(({ route, params }) => {
       routeParams = { ...routeParams, ...params };
-      if (route.element) {
-        const component = route.element as React.ReactElement & {
-          type: { requestState: Function };
-        };
+      if (isRouteElement(route.element)) {
+        const component = route.element;
         routeParams = { ...routeParams, ...component.props.params };
-        if (component.props.children?.type?.requestState) {
-          return component.props.children.type.requestState;
+        const childLoader = requestStateOf(component.props.children?.type);
+        if (childLoader) {
+          return childLoader;
         }
-        if (component.type.requestState) {
-          return component.type.requestState;
+        const loader = requestStateOf(component.type);
+        if (loader) {
+          return loader;
         }
       }
       return null;
     })
-    .filter(v => v);
+    .filter((loader): loader is RequestStateLoader => loader != null);
   const initialStore = createReduxStore(reduxState);
   let loadingError: FetchResponseError | undefined;
   if (dataLoaders && dataLoaders.length > 0) {
@@ -330,25 +350,28 @@ const prepareStoreData = async (
   };
 };
 
-const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+const sendLoaderResponse = (res: Response, response: globalThis.Response) => {
+  const location = response.headers.get('Location');
+  if (location) {
+    res.redirect(response.status, location);
+    return;
+  }
+  res.status(response.status).end();
+};
 
-  return {
-    staticHandleContext,
-    router,
-    ssrError,
-  };
+const loadStaticRoute = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const prepared = await prepareRouteData(fetchRequest, routes);
+  return { ...prepared, ssrError };
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await withSpan('settings_and_assets', async () =>
-    Promise.all([settingsApi.get() as Promise<ClientSettings>, getAssets()])
-  );
+  const [settings, assets] = await withSpan('settings_and_assets', async () => {
+    const query = SettingsQueryServiceFactory.default();
+    return Promise.all([query.get() as Promise<ClientSettings>, getAssets()]);
+  });
   const { connection, ...headers } = req.headers;
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
@@ -360,6 +383,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     featureFlagLibraryV2: featureFlags?.featureFlagLibraryV2,
     themeCustomization: featureFlags?.themeCustomization,
     aiAssistant: featureFlags?.aiAssistant,
+    translationService: featureFlags?.translationService,
+    experimentalFeatures: featureFlags?.experimentalFeatures,
   };
   const settingsWithFeatureFlags = {
     ...settings,
@@ -427,7 +452,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
 
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const lastRouteElement = isRouteElement(lastRouteMatched?.route.element)
+    ? lastRouteMatched.route.element
+    : undefined;
   const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
   const routeName = lastRouteMatched?.route?.path || 'library';
 
@@ -463,9 +490,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { staticHandleContext, router, ssrError } = await withSpan('prepare_route_data', async () =>
-    prepareRouteData(req, routes)
+  const preparedRoute = await withSpan('prepare_route_data', async () =>
+    loadStaticRoute(req, routes)
   );
+
+  if (preparedRoute.kind === 'response') {
+    sendLoaderResponse(res, preparedRoute.response);
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = preparedRoute;
 
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);

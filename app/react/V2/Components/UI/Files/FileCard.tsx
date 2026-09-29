@@ -33,110 +33,110 @@ const getFileTypeLabel = (file: EntityFile) => {
     : t('System', 'Attachment', null, false);
 };
 
-const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: FileCardProps) => {
+const getFileCardModel = (file: EntityFile, duration: number | undefined) => {
   const fileUrl = file.url || (file.filename ? `/api/files/${file.filename}` : '');
-  const downloadUrl = file.filename ? `${fileUrl}?download=true` : fileUrl;
-  const fileSize = file.size ? formatBytes(file.size) : 'n/a';
-  const isSelected = false;
-  const fileName = file.originalname || file.url || 'Untitled';
-  const fileTypeLabel = getFileTypeLabel(file);
   const isMediaFile = file.fileType === 'media' || /^(audio|video)\//.test(file.mimetype || '');
   const isExternalUrl = fileUrl.startsWith('http://') || fileUrl.startsWith('https://');
-  const [duration, setDuration] = useState<number | undefined>(file.duration);
-  const { languages } = useAtomValue(settingsAtom);
-
-  const handleDuration = (dur: number) => {
-    if (dur && Number.isFinite(dur) && dur > 0) {
-      setDuration(dur);
-    }
-  };
-
+  const fileName = file.originalname || file.url || 'Untitled';
+  const fileTypeLabel = getFileTypeLabel(file);
+  const fileSize = file.size ? formatBytes(file.size) : 'n/a';
   let fileDuration: string | null = null;
   if (isMediaFile) {
     fileDuration = isExternalUrl ? 'n/a' : formatDuration(duration);
   }
-  const ariaLabel = `Select ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}${isSelected ? ', selected' : ''}`;
+  return {
+    fileUrl,
+    downloadUrl: file.filename ? `${fileUrl}?download=true` : fileUrl,
+    isMediaFile,
+    isExternalUrl,
+    fileName,
+    fileTypeLabel,
+    fileSize,
+    fileDuration,
+    ariaLabel: `Select ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}`,
+  };
+};
+
+const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: FileCardProps) => {
+  const [duration, setDuration] = useState<number | undefined>(file.duration);
+  const { languages } = useAtomValue(settingsAtom);
+  const card = getFileCardModel(file, duration);
 
   return (
     <div
       key={`${file._id || file.filename || index}`}
       role="listitem"
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
-      onClick={() => onFileSelect(file)}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onFileSelect(file);
-        }
-      }}
-      aria-label={ariaLabel}
-      className={`border border-gray-100 rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors 
-                            overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 
-                            focus-visible:ring-inset ${
-                              isSelected
-                                ? 'border-indigo-200 bg-indigo-50'
-                                : 'border-gray-100 hover:border-gray-200 bg-white'
-                            }`}
+      className="relative overflow-hidden rounded-lg border border-border bg-paper"
     >
-      <div className="relative w-full h-48 overflow-hidden" aria-hidden="true">
-        <FilePreview
-          className="w-full h-full object-cover"
-          file={file}
-          onDuration={isMediaFile && !isExternalUrl && !file.duration ? handleDuration : undefined}
-        />
-      </div>
-      <div className="p-4 flex flex-col gap-2 items-start justify-start w-full">
-        <div className="text-gray-900 text-sm font-bold truncate w-full text-ellipsis whitespace-nowrap">
-          {fileName}
+      <button
+        type="button"
+        aria-label={card.ariaLabel}
+        onClick={() => onFileSelect(file)}
+        className="flex w-full cursor-pointer flex-col items-start justify-start gap-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset"
+      >
+        <div className="relative h-48 w-full overflow-hidden" aria-hidden="true">
+          <FilePreview
+            className="h-full w-full object-cover"
+            file={file}
+            onDuration={
+              card.isMediaFile && !card.isExternalUrl && !file.duration
+                ? dur => {
+                    if (dur && Number.isFinite(dur) && dur > 0) {
+                      setDuration(dur);
+                    }
+                  }
+                : undefined
+            }
+          />
         </div>
-        <div className="flex flex-row gap-1 items-end justify-end w-full">
-          <div className="flex flex-row gap-6 items-center justify-start flex-1">
-            <div className="flex flex-col gap-0 items-start">
-              <div className="text-gray-500 text-xs">
+        <div className="flex w-full flex-col items-start justify-start gap-2 p-4 pr-12">
+          <div className="w-full truncate text-ellipsis whitespace-nowrap text-sm font-bold text-ink">
+            {card.fileName}
+          </div>
+          <div className="flex w-full flex-1 flex-row items-center justify-start gap-6">
+            <div className="flex flex-col items-start gap-0">
+              <div className="text-xs text-ink-muted">
                 <Translate>Type</Translate>
               </div>
-              <div className="text-gray-800 text-sm font-medium truncate max-w-[100px]">
-                {fileTypeLabel}
+              <div className="max-w-25 truncate text-sm font-medium text-ink">
+                {card.fileTypeLabel}
               </div>
             </div>
-            <div className="flex flex-col gap-0 items-start">
-              <div className="text-gray-500 text-xs">
+            <div className="flex flex-col items-start gap-0">
+              <div className="text-xs text-ink-muted">
                 <Translate>Size</Translate>
               </div>
-              <div className="text-gray-800 text-sm font-medium">{fileSize}</div>
+              <div className="text-sm font-medium text-ink">{card.fileSize}</div>
             </div>
-            {isMediaFile && (
-              <div className="flex flex-col gap-0 items-start">
-                <div className="text-gray-500 text-xs">
+            {card.isMediaFile && (
+              <div className="flex flex-col items-start gap-0">
+                <div className="text-xs text-ink-muted">
                   <Translate>Duration</Translate>
                 </div>
-                <div className="text-gray-800 text-sm font-medium">{fileDuration}</div>
+                <div className="text-sm font-medium text-ink">{card.fileDuration}</div>
               </div>
             )}
-            {translations && translations.length > 0 && (
-              <div className="flex flex-col gap-0 items-start">
-                <div className="text-gray-500 text-xs">
+            {translations.length > 0 && (
+              <div className="flex flex-col items-start gap-0">
+                <div className="text-xs text-ink-muted">
                   <Translate>Translations</Translate>
                 </div>
-                <div className="text-gray-800 text-sm font-medium">
+                <div className="text-sm font-medium text-ink">
                   {translations.length}/{languages?.length}
                 </div>
               </div>
             )}
           </div>
-          <a
-            href={downloadUrl}
-            download={!file.url}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-            aria-label={`Download ${fileName}`}
-            className="text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-inset rounded"
-          >
-            <ArrowDownTrayIcon className="w-5 h-5" aria-hidden="true" />
-          </a>
         </div>
-      </div>
+      </button>
+      <a
+        href={card.downloadUrl}
+        download={!file.url}
+        aria-label={`Download ${card.fileName}`}
+        className="absolute right-4 bottom-4 z-10 rounded text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset"
+      >
+        <ArrowDownTrayIcon className="h-5 w-5" aria-hidden="true" />
+      </a>
     </div>
   );
 };

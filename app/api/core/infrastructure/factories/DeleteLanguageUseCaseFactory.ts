@@ -3,41 +3,35 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { DeleteLanguageEntitiesJob } from '../jobs/DeleteLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJobFactory } from './DeleteLanguageEntitiesJobFactory.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatcherFactory } from '#api/core/infrastructure/factories/DispatcherFactory.js';
+
+const createDeleteLanguageJobsDispatcher = (): JobsDispatcher => {
+  if (process.env.NODE_ENV !== 'test') {
+    return ExecutionContext.jobsDispatcher;
+  }
+
+  const deleteJob = DeleteLanguageEntitiesJobFactory.default();
+  return new SyncDispatcherForTests({
+    [DeleteLanguageEntitiesJob.name]: async () => deleteJob,
+  });
+};
 
 class DeleteLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof DeleteLanguageUseCase>[0]>
   ): DeleteLanguageUseCase {
-    const { actor, tenant, eventEmitter } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-
-    const minutes60 = 60 * 60 * 1000;
-    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
-      lockWindow: minutes60,
-    });
-    if (process.env.NODE_ENV === 'test') {
-      const deleteJob = DeleteLanguageEntitiesJobFactory.default();
-      jobsDispatcher = new SyncDispatcherForTests({
-        [DeleteLanguageEntitiesJob.name]: async () => deleteJob,
-      });
-    }
-    const dispatcher = new DispatcherAdapter(jobsDispatcher);
+    const { actor, tenant, eventEmitter, transactionManager } = ExecutionContext;
 
     return new DeleteLanguageUseCase(
       {
         transactionManager,
-        settingsDS,
-        translationsDS,
+        settingsDS: SettingsDataSourceFactory.default(),
+        translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
         eventEmitter,
-        dispatcher,
+        dispatcher: DispatcherFactory.default(createDeleteLanguageJobsDispatcher()),
         ...overrides,
       },
       { actor, tenant }

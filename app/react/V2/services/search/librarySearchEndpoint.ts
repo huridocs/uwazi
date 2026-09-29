@@ -20,6 +20,7 @@ const HIDDEN_AGGREGATION_KEYS = new Set([
 type NestedFilterValue = { values?: string[]; any?: boolean };
 
 type SearchEndpointFilterValue =
+  | string
   | { values: string[]; and?: boolean }
   | { from: number; to: number }
   | { properties: Record<string, NestedFilterValue> };
@@ -36,6 +37,7 @@ type SearchEndpointQuery = {
   unpublished: boolean;
   aggregatePublishingStatus: true;
   include: ['permissions'];
+  fields?: string[];
   geolocation?: boolean;
 };
 
@@ -73,12 +75,33 @@ const statusToEndpointFlags = (status: LibraryPublishedStatus | undefined) => {
   return { includeUnpublished: true, unpublished: false };
 };
 
-const toEndpointFilterValue = (values: string[], and = false): SearchEndpointFilterValue => {
-  if (values.length === 2 && values.every(value => NUMERIC_VALUE.test(value))) {
-    return { from: Number(values[0]), to: Number(values[1]) };
+const usableFilterValues = (values: string[]): string[] =>
+  values.map(value => value.trim()).filter(Boolean);
+
+const toEndpointFilterValue = (
+  values: string[],
+  and = false
+): SearchEndpointFilterValue | undefined => {
+  const usable = usableFilterValues(values);
+  if (!usable.length) {
+    return undefined;
   }
-  return and ? { values, and: true } : { values };
+  if (usable.length === 2 && usable.every(value => NUMERIC_VALUE.test(value))) {
+    return { from: Number(usable[0]), to: Number(usable[1]) };
+  }
+  if (and) {
+    return { values: usable, and: true };
+  }
+  if (usable.length === 1) {
+    return usable[0];
+  }
+  return { values: usable };
 };
+
+const isNestedFilterValue = (
+  value: SearchEndpointFilterValue
+): value is { properties: Record<string, NestedFilterValue> } =>
+  typeof value === 'object' && 'properties' in value;
 
 const setNestedFilter = (
   filters: Record<string, SearchEndpointFilterValue>,
@@ -87,16 +110,29 @@ const setNestedFilter = (
   values: string[]
 ) => {
   const current = filters[parent];
-  const properties =
-    current && 'properties' in current
-      ? { ...current.properties }
-      : ({} as Record<string, NestedFilterValue>);
+  const properties = isNestedFilterValue(current)
+    ? { ...current.properties }
+    : ({} as Record<string, NestedFilterValue>);
   if (values.length === 1 && values[0] === 'any') {
     properties[child] = { any: true };
   } else {
-    properties[child] = { values: values.filter(value => value !== 'any') };
+    const usable = usableFilterValues(values).filter(value => value !== 'any');
+    if (!usable.length) {
+      return;
+    }
+    properties[child] = { values: usable };
   }
   filters[parent] = { properties };
+};
+
+const projectedFields = (query: LibrarySearchQuery) => {
+  if (!query.fields?.length) {
+    return undefined;
+  }
+  if (!query.includeFiles) {
+    return query.fields;
+  }
+  return [...new Set([...query.fields, 'documents', 'attachments'])];
 };
 
 const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery => {
@@ -112,8 +148,12 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
       setNestedFilter(filters, key.slice(0, separator), key.slice(separator + 1), values);
       return;
     }
-    filters[key] = toEndpointFilterValue(values, andKeys.has(key));
+    const next = toEndpointFilterValue(values, andKeys.has(key));
+    if (next !== undefined) {
+      filters[key] = next;
+    }
   });
+  const fields = projectedFields(query);
 
   return {
     searchTerm: query.searchTerm || '',
@@ -127,6 +167,7 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     unpublished,
     aggregatePublishingStatus: true,
     include: ['permissions'],
+    ...(fields?.length ? { fields } : {}),
     ...(query.geolocation ? { geolocation: true } : {}),
   };
 };

@@ -30,9 +30,7 @@ class PXCreateExtractorController extends AbstractController<RequestBodySchema> 
   protected async handle(): Promise<void> {
     const dto: RequestBodySchema = RequestSchema.parse(this.request.body);
 
-    const useCase = await PXCreateExtractorFactory.createDefault({
-      tenantName: this.tenantName,
-    });
+    const useCase = await PXCreateExtractorFactory.createDefault();
 
     const output = await useCase.execute(dto);
 

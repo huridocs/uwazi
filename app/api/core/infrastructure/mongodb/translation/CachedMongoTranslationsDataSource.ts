@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoTranslationsDataSource } from './MongoTranslationsDataSource.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -11,7 +11,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 export class CachedMongoTranslationsDataSource extends MongoTranslationsDataSource {
   private cache = new Map<string, Translation[]>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager);
     transactionManager.onCommitted(async () => {
       this.cache.clear();

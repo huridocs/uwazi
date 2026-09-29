@@ -4,6 +4,7 @@ exports[`PDFPage render should pass pass proper height when state.height 1`] = `
 <div
   className="pdf-page"
   id="page-2"
+  ref={[Function]}
   style={
     Object {
       "height": 25,
@@ -17,6 +18,7 @@ exports[`PDFPage render should render a div as pageContainer 1`] = `
 <div
   className="pdf-page"
   id="page-2"
+  ref={[Function]}
   style={
     Object {
       "height": 1100,

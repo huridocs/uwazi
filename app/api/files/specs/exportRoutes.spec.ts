@@ -97,7 +97,7 @@ describe('export routes', () => {
         .expect(200);
       expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
-      expect(search.search).toHaveBeenCalledWith(queryParams, 'somelanguage', {
+      expect(search.search).toHaveBeenCalledWith(queryParams, 'es', {
         username: 'someuser',
         role: 'admin',
         _id: 'admin',
@@ -109,7 +109,7 @@ describe('export routes', () => {
         ['types'],
         {
           dateFormat: 'yyyy-MM-dd',
-          language: 'somelanguage',
+          language: 'es',
         },
       ]);
     });

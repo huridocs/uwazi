@@ -39,7 +39,7 @@ const ActionCell = ({ cell }: CellContext<LogEntry, string>) => (
 );
 
 const UserCell = ({ cell }: CellContext<LogEntry, string>) => (
-  <span className="text-primary-700">{cell.getValue()}</span>
+  <span className="text-ink">{cell.getValue()}</span>
 );
 
 const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType>) => {

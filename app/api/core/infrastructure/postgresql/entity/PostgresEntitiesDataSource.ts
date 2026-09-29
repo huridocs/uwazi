@@ -1,13 +1,15 @@
 /* eslint-disable max-lines */
 import { Db } from 'mongodb';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import {
+  EntityNotFoundError,
+  EntityTemplateDoesNotExistError,
+} from '#api/core/domain/entity/errors.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
@@ -15,9 +17,10 @@ import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresResultSet } from '../common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '../../mongodb/entity/MongoEntityMapper.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntityRow } from './PostgresEntityRow.js';
 import { PostgresEntityMapper } from './PostgresEntityMapper.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -25,7 +28,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = PostgresDataSourceDeps & {
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   templatesDAO: TemplatesDAO;
   settingsDataSource: SettingsDataSource;
   mongoDb: Db;
@@ -37,7 +40,7 @@ export class PostgresEntitiesDataSource
   extends PostgresDataSource<EntityRow>
   implements EntitiesDataSource
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
   private pgTransactionManager: PostgresTransactionManager;
 
@@ -137,22 +140,138 @@ export class PostgresEntitiesDataSource
     const allRows = entities.flatMap(entity => PostgresEntityMapper.toDBO(entity));
     if (allRows.length === 0) return;
 
-    await this.table.bulkUpdate(allRows.map(row => this.toUpdateRow(row)));
+    const storedIds = await this.insertNewTranslations(entities);
+
+    await this.table.bulkUpdate(
+      allRows.map(row =>
+        this.toUpdateRow({
+          ...row,
+          _id: storedIds.get(`${row.sharedId}:${row.language}`) ?? row._id,
+        })
+      )
+    );
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  async getSharedIdsUsingThesaurus(thesaurusId: string) {
+  /**
+   * Inserts the rows of translations added since the entity was loaded, with the entity's access
+   * fields. Returns the stored row id of each, which differs when the language clone job created
+   * the row meanwhile.
+   */
+  private async insertNewTranslations(entities: Entity[]) {
+    const withNewLanguages = entities.filter(entity => entity.newLanguages.length > 0);
+    if (withNewLanguages.length === 0) return new Map<string, string>();
+
+    const sharedIds = withNewLanguages.map(entity => entity.sharedId);
+    const accessRows = await this.table
+      .whereIn('sharedId', sharedIds)
+      .select(['sharedId', 'published', 'permissions'])
+      .all();
+    const accessBySharedId = new Map(
+      accessRows.map(({ sharedId, published, permissions }) => [
+        sharedId,
+        { published, permissions },
+      ])
+    );
+
+    const newRows = withNewLanguages.flatMap(entity =>
+      PostgresEntityMapper.toDBO(entity)
+        .filter(row => entity.newLanguages.includes(row.language as LanguageISO6391))
+        .map(row => ({ ...row, ...accessBySharedId.get(entity.sharedId) }))
+    );
+    await this.table.upsert(newRows, {
+      columns: ['tenant_id', 'sharedId', 'language'],
+      ignore: true,
+    });
+
+    const stored = await this.table
+      .whereIn('sharedId', sharedIds)
+      .select(['_id', 'sharedId', 'language'])
+      .all();
+    return new Map(stored.map(row => [`${row.sharedId}:${row.language}`, row._id]));
+  }
+
+  async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {
+    if (valueIds.length === 0) {
+      return [];
+    }
+
     const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
-    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
-    const templateIdStrings = uniqueTemplateIds.map(id => id.toHexString());
+    const { selectPropertyNames, inheritedPropertyNames } =
+      await this.templatesDAO.findPropertyNamesUsingThesaurus(thesaurusId);
+
+    const conditions = [
+      ...selectPropertyNames.flatMap(name => valueIds.map(id => ({ [name]: [{ value: id }] }))),
+      ...inheritedPropertyNames.flatMap(name =>
+        valueIds.map(id => ({ [name]: [{ inheritedValue: [{ value: id }] }] }))
+      ),
+    ];
+
+    if (conditions.length === 0) {
+      return [];
+    }
 
     const rows = await this.table
       .where({ language: defaultLanguage })
-      .whereIn('template', templateIdStrings)
-      .whereRaw(
-        'EXISTS (SELECT 1 FROM jsonb_each(metadata) AS e WHERE jsonb_array_length(e.value) > 0)'
-      )
+      .whereJsonSupersetOfAny('metadata', conditions)
+      .select(['sharedId'])
+      .all();
+
+    return rows.map(r => r.sharedId);
+  }
+
+  async getSharedIdsReferencing(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
+    const relationshipPropertyNames = await this.templatesDAO.findRelationshipPropertyNames();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  async getSharedIdsInheritingRelationshipFrom(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
+    const relationshipPropertyNames =
+      await this.templatesDAO.findRelationshipPropertyNamesInheritingRelationship();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  private async findSharedIdsByRelationshipValues({
+    defaultLanguage,
+    relationshipPropertyNames,
+    sharedIds,
+  }: {
+    defaultLanguage: string;
+    relationshipPropertyNames: string[];
+    sharedIds: string[];
+  }) {
+    const conditions = relationshipPropertyNames.flatMap(name =>
+      sharedIds.map(id => ({ [name]: [{ value: id }] }))
+    );
+
+    if (conditions.length === 0) {
+      return [];
+    }
+
+    const rows = await this.table
+      .where({ language: defaultLanguage })
+      .whereJsonSupersetOfAny('metadata', conditions)
       .select(['sharedId'])
       .all();
 

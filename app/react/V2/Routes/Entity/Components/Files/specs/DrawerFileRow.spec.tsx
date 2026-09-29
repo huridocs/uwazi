@@ -7,11 +7,11 @@ import { DrawerFileRow } from '../DrawerFileRow.js';
 import type { EntityFileRow } from '../types.js';
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
-  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => children,
+  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_ctx: string, key: string) => key,
 }));
 

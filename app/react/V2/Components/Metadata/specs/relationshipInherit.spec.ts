@@ -64,6 +64,7 @@ describe('buildInheritColumns', () => {
       {
         label: 'Inherited label',
         cellsByEntityId: { 'entity-1': 'Nested' },
+        sortKeyByEntityId: { 'entity-1': 'Nested' },
       },
     ]);
   });
@@ -78,6 +79,10 @@ describe('buildInheritColumns', () => {
       'entity-1': undefined,
       'entity-2': undefined,
     });
+    expect(columns[0].sortKeyByEntityId).toEqual({
+      'entity-1': '',
+      'entity-2': '',
+    });
   });
 
   it('should keep an empty cellsByEntityId when source metadata is missing', () => {
@@ -85,6 +90,7 @@ describe('buildInheritColumns', () => {
       {
         label: 'Inherited label',
         cellsByEntityId: {},
+        sortKeyByEntityId: {},
       },
     ]);
   });
@@ -185,6 +191,8 @@ describe('buildInheritColumns', () => {
 
     expect(columns.map(column => column.label)).toEqual(['Country', 'Role']);
     expect(columns[0].cellsByEntityId?.e1).toBe('Kenya');
+    expect(columns[0].sortKeyByEntityId?.e1).toBe('Kenya');
     expect(columns[1].cellsByEntityId?.e1).toBe('Witness');
+    expect(columns[1].sortKeyByEntityId?.e1).toBe('Witness');
   });
 });

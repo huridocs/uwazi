@@ -52,5 +52,8 @@ type EntityFieldErrorProps = {
 const EntityFieldError = ({ showError, message }: EntityFieldErrorProps) =>
   showError && message ? <InputError>{message}</InputError> : null;
 
-export { EntityFieldError, EntityFieldLabel, getFieldErrorState };
+const translationMessageSlot = (showError: boolean, message?: React.ReactNode) =>
+  showError && message ? <span className="text-meta text-seal">{message}</span> : undefined;
+
+export { EntityFieldError, EntityFieldLabel, getFieldErrorState, translationMessageSlot };
 export type { FieldErrorState };

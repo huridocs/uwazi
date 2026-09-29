@@ -33,7 +33,7 @@ class GetPublicDatavizEmbedUseCase extends AbstractUseCase<Input, Output, Deps> 
     }
 
     const dataviz = datavizResult.getData();
-    if (settings.private && this.getActor().isAnonymous() && !dataviz.embedPublic) {
+    if (settings.isPrivate && this.getActor().isAnonymous() && !dataviz.embedPublic) {
       throw new DatavizUnauthorizedError();
     }
 

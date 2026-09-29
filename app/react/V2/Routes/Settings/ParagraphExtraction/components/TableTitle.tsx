@@ -10,12 +10,12 @@ const TableTitle = ({
 }) => (
   <div className="flex items-center justify-between gap-2">
     <div className="flex items-center gap-2">
-      <div className="bg-primary-200 size-[28px] justify-center items-center rounded-full flex">
+      <div className="bg-vellum size-7 justify-center items-center rounded-full flex">
         <DocumentTextIcon className="w-5" />
       </div>
       <div>
-        <Translate className="text-base font-semibold text-gray-900">Paragraphs</Translate>{' '}
-        <Translate className="text-base italic text-gray-900">for</Translate>
+        <Translate className="text-base font-semibold text-ink">Paragraphs</Translate>{' '}
+        <Translate className="text-base italic text-ink">for</Translate>
       </div>
       {items.map(item => (
         <DisplayPill key={(item?._id || '') + (item?.name || '')} color={item?.color}>

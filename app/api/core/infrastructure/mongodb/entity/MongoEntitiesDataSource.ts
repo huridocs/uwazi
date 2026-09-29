@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Db, Filter, ObjectId } from 'mongodb';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {
@@ -8,7 +8,7 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
@@ -18,6 +18,7 @@ import { Entity } from '../../../domain/entity/Entity.js';
 import { EntityTemplateDoesNotExistError } from '../../../domain/entity/errors.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
@@ -26,7 +27,7 @@ type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   templatesDAO: TemplatesDAO;
   options?: MongoDSOptions;
 };
@@ -95,20 +96,37 @@ export class MongoEntitiesDataSource
   }
 
   private async bulkUpdate(entities: Entity[]): Promise<void> {
-    const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
+    const accessBySharedId = await this.getAccessOfEntitiesWithNewLanguages(entities);
 
-    const updates = allDbos.map(dbo => {
-      const { published, permissions, ...contentDbo } = dbo;
-      return {
-        updateOne: {
-          filter: { _id: dbo._id },
-          update: {
-            $set: contentDbo,
-            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
+    const updates = entities.flatMap(entity =>
+      MongoEntityMapper.toDBO(entity).map(dbo => {
+        const { published, permissions, ...contentDbo } = dbo;
+        const unsetPreview = dbo.preview === undefined ? { $unset: { preview: '' } } : {};
+
+        if (!entity.newLanguages.includes(dbo.language as LanguageISO6391)) {
+          return {
+            updateOne: {
+              filter: { _id: dbo._id },
+              update: { $set: contentDbo, ...unsetPreview },
+            },
+          };
+        }
+
+        // The language clone job may have created the row meanwhile: write onto it.
+        const { _id, ...content } = contentDbo;
+        return {
+          updateOne: {
+            filter: { sharedId: dbo.sharedId, language: dbo.language },
+            update: {
+              $set: content,
+              $setOnInsert: { _id, ...accessBySharedId.get(entity.sharedId) },
+              ...unsetPreview,
+            },
+            upsert: true,
           },
-        },
-      };
-    });
+        };
+      })
+    );
 
     if (updates.length > 0) {
       await this.getCollection().bulkWrite(updates as any, { ignoreUndefined: true });
@@ -117,7 +135,29 @@ export class MongoEntitiesDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  async getSharedIdsUsingThesaurus(thesaurusId: string) {
+  private async getAccessOfEntitiesWithNewLanguages(entities: Entity[]) {
+    const sharedIds = entities
+      .filter(entity => entity.newLanguages.length > 0)
+      .map(entity => entity.sharedId);
+    if (sharedIds.length === 0) return new Map<string, Partial<EntityDBO>>();
+
+    const rows = await this.getCollection()
+      .find(
+        { sharedId: { $in: sharedIds } },
+        { projection: { sharedId: 1, published: 1, permissions: 1 } }
+      )
+      .toArray();
+
+    return new Map(
+      rows.map(({ sharedId, published, permissions }) => [sharedId, { published, permissions }])
+    );
+  }
+
+  async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {
+    if (valueIds.length === 0) {
+      return [];
+    }
+
     const settings = await this.getCollection<SettingsType>('settings').findOne();
     const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
 
@@ -125,40 +165,109 @@ export class MongoEntitiesDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
+    const { selectPropertyNames, inheritedPropertyNames } =
+      await this.templatesDAO.findPropertyNamesUsingThesaurus(thesaurusId);
+
+    return this.findSharedIdsByThesaurusValues({
+      defaultLanguage,
+      selectPropertyNames,
+      inheritedPropertyNames,
+      valueIds,
+    });
+  }
+
+  private async findSharedIdsByThesaurusValues({
+    defaultLanguage,
+    selectPropertyNames,
+    inheritedPropertyNames,
+    valueIds,
+  }: {
+    defaultLanguage: string;
+    selectPropertyNames: string[];
+    inheritedPropertyNames: string[];
+    valueIds: string[];
+  }) {
+    const orConditions = [
+      ...selectPropertyNames.map(name => ({ [`metadata.${name}.value`]: { $in: valueIds } })),
+      ...inheritedPropertyNames.map(name => ({
+        [`metadata.${name}.inheritedValue.value`]: { $in: valueIds },
+      })),
+    ];
+
+    if (orConditions.length === 0) {
+      return [];
+    }
 
     const entities = await this.getCollection()
-      .aggregate([
-        {
-          $match: {
-            language: defaultLanguage,
-            template: { $in: uniqueTemplateIds },
-          },
-        },
-        {
-          $addFields: {
-            hasNonEmptyMetadata: {
-              $anyElementTrue: {
-                $map: {
-                  input: { $objectToArray: '$metadata' },
-                  as: 'field',
-                  in: { $gt: [{ $size: '$$field.v' }, 0] },
-                },
-              },
-            },
-          },
-        },
-        {
-          $match: {
-            hasNonEmptyMetadata: true,
-          },
-        },
-        {
-          $project: {
-            sharedId: 1,
-          },
-        },
-      ])
+      .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
+      .toArray();
+
+    return entities.map(e => e.sharedId);
+  }
+
+  async getSharedIdsReferencing(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.getDefaultLanguage();
+    const relationshipPropertyNames = await this.templatesDAO.findRelationshipPropertyNames();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  async getSharedIdsInheritingRelationshipFrom(sharedIds: string[]) {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const defaultLanguage = await this.getDefaultLanguage();
+    const relationshipPropertyNames =
+      await this.templatesDAO.findRelationshipPropertyNamesInheritingRelationship();
+
+    return this.findSharedIdsByRelationshipValues({
+      defaultLanguage,
+      relationshipPropertyNames,
+      sharedIds,
+    });
+  }
+
+  private async getDefaultLanguage() {
+    const settings = await this.getCollection<SettingsType>('settings').findOne();
+    const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
+
+    if (!defaultLanguage) {
+      throw new Error(
+        'Default language not found in settings when trying to find referencing entities'
+      );
+    }
+
+    return defaultLanguage;
+  }
+
+  private async findSharedIdsByRelationshipValues({
+    defaultLanguage,
+    relationshipPropertyNames,
+    sharedIds,
+  }: {
+    defaultLanguage: string;
+    relationshipPropertyNames: string[];
+    sharedIds: string[];
+  }) {
+    const orConditions = relationshipPropertyNames.map(name => ({
+      [`metadata.${name}.value`]: { $in: sharedIds },
+    }));
+
+    if (orConditions.length === 0) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
       .toArray();
 
     return entities.map(e => e.sharedId);

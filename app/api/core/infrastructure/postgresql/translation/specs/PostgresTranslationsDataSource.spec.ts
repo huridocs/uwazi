@@ -42,12 +42,12 @@ const makeDS = (tenantId = TENANT_ID) =>
     idGenerator: IdGeneratorFactory.default(),
   });
 
-const translation = (
-  key: string,
-  value: string,
-  language: 'en' | 'es',
-  context: TranslationContext = entityContext
-) => new Translation(key, value, language, context);
+const translation = (args: {
+  key: string;
+  value: string;
+  language: 'en' | 'es';
+  context?: TranslationContext;
+}) => new Translation(args.key, args.value, args.language, args.context ?? entityContext);
 
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });
@@ -70,9 +70,9 @@ describe('PostgresTranslationsDataSource', () => {
   it('should insert and read by language, context, and natural key', async () => {
     const ds = makeDS();
     await ds.insert([
-      translation('Case', 'Case', 'en'),
-      translation('Case', 'Caso', 'es'),
-      translation('Search', 'Search', 'en', systemContext),
+      translation({ key: 'Case', value: 'Case', language: 'en' }),
+      translation({ key: 'Case', value: 'Caso', language: 'es' }),
+      translation({ key: 'Search', value: 'Search', language: 'en', context: systemContext }),
     ]);
 
     const english = await ds.getByLanguage('en');
@@ -82,15 +82,15 @@ describe('PostgresTranslationsDataSource', () => {
     expect(contextRows).toHaveLength(2);
 
     const scoped = await ds.getByLanguageAndContext('es', entityContext.id);
-    expect(scoped).toEqual([translation('Case', 'Caso', 'es')]);
+    expect(scoped).toEqual([translation({ key: 'Case', value: 'Caso', language: 'es' })]);
   });
 
   it('should omit excluded context types', async () => {
     const ds = makeDS();
     await ds.insert([
-      translation('Search', 'Buscar', 'es', systemContext),
-      translation('Case', 'Caso', 'es'),
-      translation('Apple', 'Manzana', 'es', thesaurusContext),
+      translation({ key: 'Search', value: 'Buscar', language: 'es', context: systemContext }),
+      translation({ key: 'Case', value: 'Caso', language: 'es' }),
+      translation({ key: 'Apple', value: 'Manzana', language: 'es', context: thesaurusContext }),
     ]);
 
     const rows = await ds.getByLanguageExcludingContextTypes('es', ['Thesaurus']);
@@ -99,12 +99,12 @@ describe('PostgresTranslationsDataSource', () => {
 
   it('should upsert by natural key without duplicating rows', async () => {
     const ds = makeDS();
-    await ds.insert([translation('Title', 'Title', 'en')]);
+    await ds.insert([translation({ key: 'Title', value: 'Title', language: 'en' })]);
     const originalId = (await testingPG.getAllFrom('translations'))[0]._id;
 
     await ds.upsert([
-      translation('Title', 'Title updated', 'en'),
-      translation('Title', 'Título', 'es'),
+      translation({ key: 'Title', value: 'Title updated', language: 'en' }),
+      translation({ key: 'Title', value: 'Título', language: 'es' }),
     ]);
 
     const rows = await testingPG.getAllFrom('translations');
@@ -115,79 +115,16 @@ describe('PostgresTranslationsDataSource', () => {
 
   it('should throw DuplicatedKeyError when inserting an existing natural key', async () => {
     const ds = makeDS();
-    await ds.insert([translation('Title', 'Title', 'en')]);
+    await ds.insert([translation({ key: 'Title', value: 'Title', language: 'en' })]);
 
-    await expect(ds.insert([translation('Title', 'Other', 'en')])).rejects.toBeInstanceOf(
-      DuplicatedKeyError
-    );
-  });
-
-  it('should clone a language without overwriting existing keys', async () => {
-    const ds = makeDS();
-    await ds.insert([
-      translation('Title', 'Title', 'en'),
-      translation('Title', 'Título', 'es'),
-      translation('Name', 'Name', 'en'),
-    ]);
-
-    await ds.cloneForLanguage('en', 'es');
-
-    const spanish = await ds.getByLanguage('es');
-    expect(spanish).toEqual(
-      expect.arrayContaining([
-        translation('Title', 'Título', 'es'),
-        translation('Name', 'Name', 'es'),
-      ])
-    );
-    expect(spanish).toHaveLength(2);
-  });
-
-  it('should clone in batches of CLONE_BATCH_SIZE', async () => {
-    const ds = makeDS();
-    await ds.insert(
-      Array.from({ length: CLONE_BATCH_SIZE + 1 }, (_, i) =>
-        translation(`key-${i}`, `key-${i}`, 'en')
-      )
-    );
-
-    const upsertSpy = jest.spyOn(PostgresTable.prototype, 'upsert');
-    await ds.cloneForLanguage('en', 'es');
-
-    const cloneCalls = upsertSpy.mock.calls.filter(([rows]) => Array.isArray(rows));
-    expect(cloneCalls.map(([rows]) => (rows as unknown[]).length)).toEqual([CLONE_BATCH_SIZE, 1]);
-    expect(await ds.getByLanguage('es')).toHaveLength(CLONE_BATCH_SIZE + 1);
-    upsertSpy.mockRestore();
-  });
-
-  it('should leave earlier batches committed when clone fails without an outer run()', async () => {
-    const ds = makeDS();
-    await ds.insert(
-      Array.from({ length: CLONE_BATCH_SIZE + 1 }, (_, i) =>
-        translation(`key-${i}`, `key-${i}`, 'en')
-      )
-    );
-
-    const originalUpsert = PostgresTable.prototype.upsert;
-    jest.spyOn(PostgresTable.prototype, 'upsert').mockImplementation(async function failLaterBatch(
-      this: PostgresTable,
-      doc,
-      conflict
-    ) {
-      const rows = Array.isArray(doc) ? doc : [doc];
-      if (rows.length < CLONE_BATCH_SIZE) {
-        throw new Error('second clone batch failed');
-      }
-      return originalUpsert.call(this, doc, conflict);
-    });
-
-    await expect(ds.cloneForLanguage('en', 'es')).rejects.toThrow('second clone batch failed');
-    expect(await ds.getByLanguage('es')).toHaveLength(CLONE_BATCH_SIZE);
-    jest.restoreAllMocks();
+    await expect(
+      ds.insert([translation({ key: 'Title', value: 'Other', language: 'en' })])
+    ).rejects.toBeInstanceOf(DuplicatedKeyError);
   });
 
   it('should calculate missing keys across languages', async () => {
     const ds = makeDS();
-    await ds.insert([translation('Title', 'Title', 'en')]);
+    await ds.insert([translation({ key: 'Title', value: 'Title', language: 'en' })]);
 
     await expect(ds.calculateNonexistentKeys(entityContext.id, ['Title', 'Name'])).resolves.toEqual(
       ['Name']
@@ -199,9 +136,110 @@ describe('PostgresTranslationsDataSource', () => {
     const tenantA = makeDS('tenant-a');
     const tenantB = makeDS('tenant-b');
 
-    await tenantA.insert([translation('Title', 'Title', 'en')]);
+    await tenantA.insert([translation({ key: 'Title', value: 'Title', language: 'en' })]);
 
     expect(await tenantA.getByLanguage('en')).toHaveLength(1);
     expect(await tenantB.getByLanguage('en')).toEqual([]);
+  });
+
+  describe('cloneForLanguage', () => {
+    const insertEnglishKeys = async (ds: PostgresTranslationsDataSource, count: number) => {
+      await ds.insert(
+        Array.from({ length: count }, (_, i) =>
+          translation({ key: `key-${i}`, value: `key-${i}`, language: 'en' })
+        )
+      );
+    };
+
+    const makeManagedDs = () => {
+      const manager = managerFor(TENANT_ID);
+      const ds = new PostgresTranslationsDataSource({
+        tenantId: TENANT_ID,
+        mongoDb: getConnection(),
+        pgTransactionManager: manager,
+        idGenerator: IdGeneratorFactory.default(),
+      });
+      return { manager, ds };
+    };
+
+    const failOnSecondBatch = () => {
+      const originalUpsert = PostgresTable.prototype.upsert;
+      jest
+        .spyOn(PostgresTable.prototype, 'upsert')
+        .mockImplementation(async function failLaterBatch(this: PostgresTable, doc, conflict) {
+          const rows = Array.isArray(doc) ? doc : [doc];
+          if (rows.length < CLONE_BATCH_SIZE) {
+            throw new Error('second clone batch failed');
+          }
+          return originalUpsert.call(this, doc, conflict);
+        });
+    };
+
+    it('should clone a language without overwriting existing keys', async () => {
+      const ds = makeDS();
+      await ds.insert([
+        translation({ key: 'Title', value: 'Title', language: 'en' }),
+        translation({ key: 'Title', value: 'Título', language: 'es' }),
+        translation({ key: 'Name', value: 'Name', language: 'en' }),
+      ]);
+
+      await ds.cloneForLanguage('en', 'es');
+
+      const spanish = await ds.getByLanguage('es');
+      expect(spanish).toEqual(
+        expect.arrayContaining([
+          translation({ key: 'Title', value: 'Título', language: 'es' }),
+          translation({ key: 'Name', value: 'Name', language: 'es' }),
+        ])
+      );
+      expect(spanish).toHaveLength(2);
+    });
+
+    it('should clone in batches of CLONE_BATCH_SIZE', async () => {
+      const ds = makeDS();
+      await insertEnglishKeys(ds, CLONE_BATCH_SIZE + 1);
+
+      const upsertSpy = jest.spyOn(PostgresTable.prototype, 'upsert');
+      await ds.cloneForLanguage('en', 'es');
+
+      const cloneCalls = upsertSpy.mock.calls.filter(([rows]) => Array.isArray(rows));
+      expect(cloneCalls.map(([rows]) => (rows as unknown[]).length)).toEqual([CLONE_BATCH_SIZE, 1]);
+      expect(await ds.getByLanguage('es')).toHaveLength(CLONE_BATCH_SIZE + 1);
+      upsertSpy.mockRestore();
+    });
+
+    it('should leave earlier batches committed when clone fails without an outer run()', async () => {
+      const ds = makeDS();
+      await insertEnglishKeys(ds, CLONE_BATCH_SIZE + 1);
+      failOnSecondBatch();
+
+      await expect(ds.cloneForLanguage('en', 'es')).rejects.toThrow('second clone batch failed');
+      expect(await ds.getByLanguage('es')).toHaveLength(CLONE_BATCH_SIZE);
+    });
+
+    it('should clone multiple batches inside an outer transaction manager run()', async () => {
+      const { manager, ds } = makeManagedDs();
+      await insertEnglishKeys(ds, CLONE_BATCH_SIZE + 1);
+
+      await manager.run(async () => {
+        await ds.cloneForLanguage('en', 'es');
+      });
+
+      expect(await ds.getByLanguage('es')).toHaveLength(CLONE_BATCH_SIZE + 1);
+    });
+
+    it('should roll back every clone batch when the outer run fails', async () => {
+      const { manager, ds } = makeManagedDs();
+      await insertEnglishKeys(ds, CLONE_BATCH_SIZE + 1);
+      failOnSecondBatch();
+
+      await expect(
+        manager.run(async () => {
+          await ds.cloneForLanguage('en', 'es');
+        })
+      ).rejects.toThrow('second clone batch failed');
+
+      expect(await ds.getByLanguage('es')).toHaveLength(0);
+    });
   });
 });

@@ -112,6 +112,40 @@ describe('GET /api/entities', () => {
     });
   });
 
+  describe('Translations inclusion', () => {
+    it('should return the other languages with their translatable properties', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+
+      const entity = await getEntity(app, 'shared', { include: ['translations'], language: 'es' });
+
+      expect(entity).toMatchObject({ language: 'es', title: 'Penguin almost done' });
+      expect(entity.translations).toEqual({
+        en: {
+          title: [{ value: 'Batman finishes' }],
+          text: [{ value: 'textvalue' }],
+          property1: [{ value: 'value1' }],
+          property2: [{ value: 'value2' }],
+          description: [{ value: 'descriptionvalue' }],
+        },
+        pt: {
+          title: [{ value: 'Penguin almost done' }],
+          text: [{ value: 'test' }],
+          property1: [],
+          property2: [],
+          description: [],
+        },
+      });
+    });
+
+    it('should not return translations unless requested', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+
+      const entity = await getEntity(app, 'shared', { language: 'es' });
+
+      expect(entity.translations).toBeUndefined();
+    });
+  });
+
   describe('Permissions inclusion', () => {
     it('should return entity with permissions when requested via include parameter', async () => {
       // a collaborator with a WRITE grant on sharedPerm (permissions refId 'userId')

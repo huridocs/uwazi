@@ -19,7 +19,7 @@ export class ATEntityCreationListener {
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
       const { active } = await this.ATFactory.defaultATConfigDataSource(
-        TransactionManagerFactory.default()
+        TransactionManagerFactory.mongo()
       ).get();
 
       if (active) {
@@ -28,7 +28,9 @@ export class ATEntityCreationListener {
         entityFrom._id = entityFrom._id?.toString();
         entityFrom.template = entityFrom.template?.toString();
 
-        await this.ATFactory.defaultRequestEntityTranslation().execute(entityFrom);
+        await this.ATFactory.defaultRequestEntityTranslation().execute(entityFrom, {
+          providedTranslations: event.providedTranslations,
+        });
       }
     });
   }

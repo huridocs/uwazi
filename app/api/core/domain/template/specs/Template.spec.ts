@@ -1,4 +1,5 @@
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import {
   DefaultTemplateConflictError,
   TemplateWithDuplicatedPropertyError,
@@ -752,5 +753,21 @@ it('should cleanup Relationship properties on Template delete', () => {
   expect(withRelationship.onTemplateDeleted(toBeDeleted)).toEqual({
     ...withRelationship,
     properties: [],
+  });
+});
+
+describe('translatableProperties', () => {
+  it('should list the title and the translatable template properties', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'template' })
+      .withProperties([
+        new TextProperty({ id: 'text', template: 'template', label: 'Summary' }),
+        new NumericProperty({ id: 'numeric', template: 'template', label: 'Amount' }),
+      ])
+      .build();
+
+    expect(template.translatableProperties.map(property => property.name)).toEqual([
+      'title',
+      'summary',
+    ]);
   });
 });

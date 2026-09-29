@@ -7,6 +7,7 @@ export const THEME_ACTIVE_BG = '--color-theme-brand-surface-active-bg';
 export const THEME_ACTIVE_FG = '--color-theme-brand-surface-active-fg';
 export const EMPHASIS_SOLID_BG = '--color-theme-accent-emphasis-solid';
 export const EMPHASIS_SOLID_FG = '--color-theme-accent-emphasis-solid-foreground';
+export const EMPHASIS_LABEL = '--color-theme-accent-emphasis-label';
 export const BUTTON_PRIMARY_BORDER = '--color-theme-button-primary-border';
 export const BUTTON_PRIMARY_BG = '--color-theme-button-primary-bg';
 export const BUTTON_PRIMARY_FG = '--color-theme-button-primary-fg';

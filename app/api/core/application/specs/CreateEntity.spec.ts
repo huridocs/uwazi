@@ -10,10 +10,15 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import {
+  TargetLanguageInTranslationsError,
+  UnknownTargetLanguageError,
+} from '#api/core/application/errors.js';
 
 const factory = getFixturesFactory();
 
@@ -140,6 +145,7 @@ const fixtures: DBFixture = {
 
   templates: [
     factory.template('Document B', [factory.property('text_1', 'text')]),
+    factory.template('Document Image', [factory.property('image', 'image')]),
 
     factory.template('Document', [
       factory.property('text', 'text'),
@@ -541,6 +547,134 @@ describe('CreateEntityUseCase', () => {
           ],
         })
       ).rejects.toThrow('Text Property is required');
+    });
+
+    it.each`
+      case                 | translations
+      ${'translations'}    | ${{ es: [{ name: 'title', value: [{ value: 'Título ES' }] }] }}
+      ${'no translations'} | ${undefined}
+    `('should reject a target language that is not installed ($case)', async ({ translations }) => {
+      const { sut } = createSut({ targetLanguage: 'xx' as LanguageISO6391 }, postgresCore);
+      const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
+
+      await expect(
+        sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Title XX' }] }],
+          translations,
+        })
+      ).rejects.toThrow(new UnknownTargetLanguageError('xx'));
+
+      expect(await testingEnvironment.db.getAllFrom('entities')).toEqual(entitiesBefore);
+    });
+
+    describe('with translations', () => {
+      const rows = async (sharedId: string) =>
+        (await testingEnvironment.db.getAllFrom('entities'))
+          .filter(row => row.sharedId === sharedId)
+          .map(row => ({ language: row.language, title: row.title, text_1: row.metadata.text_1 }))
+          .sort((a, b) => a.language.localeCompare(b.language));
+
+      it('should save the target language values and each translation in its own language', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        const entity = await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Title EN' }] },
+            { name: 'text_1', value: [{ value: 'Text EN' }] },
+          ],
+          translations: {
+            es: [
+              { name: 'title', value: [{ value: 'Título ES' }] },
+              { name: 'text_1', value: [{ value: 'Texto ES' }] },
+            ],
+          },
+        });
+
+        expect(await rows(entity.sharedId)).toEqual([
+          { language: 'en', title: 'Title EN', text_1: [{ value: 'Text EN' }] },
+          { language: 'es', title: 'Título ES', text_1: [{ value: 'Texto ES' }] },
+        ]);
+      });
+
+      it('should link different uploaded images per language', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+        const entity = await sut.execute({
+          templateId: factory.id('Document Image').toHexString(),
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Title EN' }] },
+            { name: 'image', value: [{ value: '', attachment: 0 }] },
+          ],
+          translations: {
+            es: [
+              { name: 'title', value: [{ value: 'Título ES' }] },
+              { name: 'image', value: [{ value: '', attachment: 1 }] },
+            ],
+          },
+          inputFiles: [
+            inputFile('attachments[0]', 'en.png', 'en.png', 'image/png', 'attachment'),
+            inputFile('attachments[1]', 'es.png', 'es.png', 'image/png', 'attachment'),
+          ],
+        });
+
+        const images = (await testingEnvironment.db.getAllFrom('entities'))
+          .filter(row => row.sharedId === entity.sharedId)
+          .map(row => ({ language: row.language, image: row.metadata.image }))
+          .sort((a, b) => a.language.localeCompare(b.language));
+
+        expect(images).toEqual([
+          { language: 'en', image: [{ value: '/api/files/en.png' }] },
+          { language: 'es', image: [{ value: '/api/files/es.png' }] },
+        ]);
+      });
+
+      it('should tell automatic translation which translations were provided', async () => {
+        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
+          translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
+        });
+
+        const createdEvent = emitSpy.mock.calls
+          .map(([event]) => event)
+          .filter(event => event instanceof EntityCreatedEvent)
+          .pop();
+        expect(createdEvent?.getData().providedTranslations).toEqual({ es: ['title'] });
+      });
+
+      it('should keep the target language values for the translations left out', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        const entity = await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Title EN' }] },
+            { name: 'text_1', value: [{ value: 'Text EN' }] },
+          ],
+          translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
+        });
+
+        expect(await rows(entity.sharedId)).toEqual([
+          { language: 'en', title: 'Title EN', text_1: [{ value: 'Text EN' }] },
+          { language: 'es', title: 'Título ES', text_1: [{ value: 'Text EN' }] },
+        ]);
+      });
+
+      it('should reject the target language inside translations', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        await expect(
+          sut.execute({
+            templateId: factory.id('Document B').toHexString(),
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
+            translations: { en: [], es: [] },
+          })
+        ).rejects.toThrow(new TargetLanguageInTranslationsError('en'));
+      });
     });
   });
 });

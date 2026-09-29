@@ -89,7 +89,7 @@ describe('TranslationsMigrationConfig copy', () => {
 
     const result = await makeMigrator().migrate(TranslationsMigrationConfig);
 
-    expect(result).toEqual({ migrated: 1, skipped: false });
+    expect(result).toEqual({ migrated: 1, orphansSkipped: 0, skipped: false });
 
     const rows = (await testingPG.getAllFrom('translations')).filter(r => r.tenant_id === TENANT);
     expect(rows).toHaveLength(1);

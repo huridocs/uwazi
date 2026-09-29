@@ -4,8 +4,8 @@ const Steppers = ({
   step,
   steps,
   isDisabled,
-  activeColor = 'bg-primary-700',
-  inactiveColor = 'bg-gray-200',
+  activeColor = 'bg-ink',
+  inactiveColor = 'bg-warm',
 }: {
   step: number;
   steps: number;

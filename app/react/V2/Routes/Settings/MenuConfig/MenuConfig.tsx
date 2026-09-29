@@ -14,7 +14,7 @@ import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Compon
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm.js';
 import { columns } from './components/TableComponents.js';
-import { Link, sanitizeIds } from './shared.js';
+import { Link, formatMenuLinks, sanitizeIds } from './shared.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const menuConfigloader =
@@ -22,16 +22,7 @@ const menuConfigloader =
   async () => {
     const [links] = await SettingsAPI.getLinks(headers);
 
-    const tableRows = (links || []).map(link => {
-      const linkWithRowId: Link = { ...link, rowId: link._id! };
-      if (link.sublinks) {
-        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
-          ...sublink,
-          rowId: `${link._id}-${index}`,
-        }));
-      }
-      return linkWithRowId;
-    });
+    const tableRows = formatMenuLinks(links || []);
     return tableRows;
   };
 

@@ -3,6 +3,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type SpecificJobParams = UwaziJobParams & {
   extractorId: string;
@@ -14,6 +15,7 @@ interface Dependencies {
   dispatcher: JobsDispatcher;
 }
 
+@QueueOptions({ lockWindow: 1000 * 60 })
 @PrivilegedJob()
 class CreateParagraphExtractionEntityStatusesJob extends UwaziJobHandler<SpecificJobParams> {
   private dependencies: Dependencies;

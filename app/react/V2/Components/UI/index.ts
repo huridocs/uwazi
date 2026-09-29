@@ -6,6 +6,7 @@ export { Table } from './Table/index.js';
 export { DataTable } from './DataTable/index.js';
 export type { DataTableProps, DataTableColumn } from './DataTable/index.js';
 export type {
+  DataTableDensity,
   DataTableSort,
   DataTableSelection,
   DataTableReorder,
@@ -81,14 +82,20 @@ export { QuerySearchBar } from './QuerySearchBar.js';
 export type { QuerySearchBarProps } from './QuerySearchBar.js';
 export { AccentDot } from './AccentDot.js';
 export type { AccentDotProps } from './AccentDot.js';
-export { DisplayMenu, DisplayMenuRow } from './DisplayMenu.js';
-export type { DisplayMenuProps, DisplayMenuRowProps, DisplayMenuSize } from './DisplayMenu.js';
+export { DisplayMenu, DisplayMenuCheckRow, DisplayMenuRow } from './DisplayMenu.js';
+export type {
+  DisplayMenuCheckRowProps,
+  DisplayMenuProps,
+  DisplayMenuRowProps,
+  DisplayMenuSize,
+} from './DisplayMenu.js';
 export { SelectControls } from './SelectControls.js';
 export type { SelectControlsProps } from './SelectControls.js';
 export { AnchoredPortal } from './AnchoredPortal.js';
 export type { AnchoredPortalProps } from './AnchoredPortal.js';
 export { ColorDot } from './ColorDot.js';
 export { TemplatePill } from './TemplatePill.js';
+export { EntityTypeChip } from './EntityTypeChip.js';
 export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
 export { IconButton } from './IconButton.js';
 

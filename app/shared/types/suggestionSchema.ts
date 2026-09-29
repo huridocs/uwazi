@@ -102,7 +102,7 @@ export const IXSuggestionsModelDataSchema = {
   additionalProperties: false,
   title: 'IXSuggestionsModelData',
   properties: {
-    findSuggestionsRunTimestamp: { type: 'number' },
+    suggestionsRunTimestamp: { type: 'number' },
   },
 };
 

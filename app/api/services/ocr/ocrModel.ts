@@ -16,6 +16,7 @@ const props = {
   language: { type: String },
   status: { type: String, enum: OcrStatus, default: 'processing' },
   lastUpdated: { type: Number },
+  sessionId: { type: String },
 };
 
 interface OcrRecord {
@@ -25,6 +26,7 @@ interface OcrRecord {
   language: string;
   status: OcrStatus;
   lastUpdated: number;
+  sessionId?: string;
 }
 
 const mongoSchema = new mongoose.Schema(props, {

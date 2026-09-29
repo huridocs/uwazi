@@ -62,6 +62,12 @@ const TaskItem = ({ task, onRemove }: TaskItemProps) => {
         </button>
       </div>
 
+      {task.status === 'failed' && task.details && (
+        <p className="pl-6 text-[11px] leading-snug break-words text-ink-secondary">
+          {task.details}
+        </p>
+      )}
+
       {task.progress !== undefined && (
         <div className="flex items-center gap-2">
           <ProgressBar

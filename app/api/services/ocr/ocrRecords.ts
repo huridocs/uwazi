@@ -4,12 +4,13 @@ import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel.js';
 
-const createForFile = async (file: FileType) =>
+const createForFile = async (file: FileType, sessionId?: string) =>
   OcrModel.save({
     sourceFile: file._id,
     language: file.language,
     status: OcrStatus.PROCESSING,
     lastUpdated: Date.now(),
+    ...(sessionId ? { sessionId } : {}),
   });
 
 const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) => {

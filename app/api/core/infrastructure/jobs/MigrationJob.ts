@@ -13,6 +13,7 @@ import {
   TenantMigrationResult,
   TenantMigrationRunner,
 } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
+import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type MigrationJobResults = {
   appliedDataDeltas: number[];
@@ -34,6 +35,7 @@ type MigrationJobDeps = {
   tenantsManager: Tenants;
 };
 
+@QueueOptions({ lockWindow: 1000 * 60 * 60 })
 @PrivilegedJob()
 class MigrationJob implements Dispatchable {
   constructor(private deps: MigrationJobDeps) {}

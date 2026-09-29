@@ -4,12 +4,14 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { tenants } from '#api/tenants/index.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factories/CloneLanguageEntitiesJobFactory.js';
 import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
 import { search } from '#api/search/index.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 
 const f = getFixturesFactory();
 
@@ -19,6 +21,8 @@ const fixtures: DBFixture = {
       languages: [
         { default: true, key: 'en', label: 'English' },
         { key: 'es', label: 'Spanish' },
+        { key: 'ja', label: 'Japanese', installing: true },
+        { key: 'zh', label: 'Chinese', installing: true },
       ],
     },
   ],
@@ -40,12 +44,30 @@ const fixtures: DBFixture = {
   ],
 };
 
+const createSettingsDSMock = () => {
+  const settings = new Settings({
+    languages: [
+      { key: 'en', label: 'English', default: true },
+      { key: 'ja', label: 'Japanese', installing: true },
+      { key: 'zh', label: 'Chinese', installing: true },
+    ],
+  });
+  jest.spyOn(settings, 'setLanguageInstalling');
+  return {
+    settings,
+    ds: {
+      get: jest.fn().mockResolvedValue(settings),
+      update: jest.fn().mockImplementation(async value => value),
+    } as jest.Mocked<Pick<SettingsDataSource, 'get' | 'update'>>,
+  };
+};
+
 const heartbeat = jest.fn();
 
 const createSUT = (
   mockWebSockets: jest.Mocked<WebSockets>,
   innerDispatcher: SyncDispatcherForTests = new SyncDispatcherForTests({}),
-  mockSettingsDS?: jest.Mocked<Pick<SettingsDataSource, 'setLanguageInstalling'>>
+  mockSettingsDS?: jest.Mocked<Pick<SettingsDataSource, 'get' | 'update'>>
 ) =>
   testingEnvironment.runWithContext(() =>
     CloneLanguageEntitiesJobFactory.default({
@@ -107,6 +129,47 @@ describe('CloneLanguageEntitiesJob', () => {
       await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
 
       expect(heartbeat).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe.each([
+    { name: 'Mongo', postgresCore: false },
+    { name: 'Postgres', postgresCore: true },
+  ])('when an entity already has a row for the target language ($name)', ({ postgresCore }) => {
+    const existingTranslationFixtures: DBFixture = {
+      ...fixtures,
+      entities: [
+        ...f.entityInMultipleLanguages(
+          ['en', 'ja'],
+          'entity1',
+          'template1',
+          {},
+          {},
+          {
+            ja: { title: 'entity1 already in japanese' },
+          }
+        ),
+        ...f.entityInMultipleLanguages(['en'], 'entity2', 'template1'),
+      ],
+    };
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp(existingTranslationFixtures, { postgres: true });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
+    it('should keep the existing row and clone the remaining entities', async () => {
+      await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
+
+      const japanese = (await testingEnvironment.db.getAllFrom('entities'))
+        .filter(entity => entity.language === 'ja')
+        .map(entity => ({ sharedId: entity.sharedId, title: entity.title }))
+        .sort((a, b) => a.sharedId.localeCompare(b.sharedId));
+
+      expect(japanese).toEqual([
+        { sharedId: 'entity1', title: 'entity1 already in japanese' },
+        { sharedId: 'entity2', title: 'entity2' },
+      ]);
     });
   });
 
@@ -213,22 +276,23 @@ describe('CloneLanguageEntitiesJob', () => {
 
   describe('installing flag management', () => {
     it('should clear installing flag for each target language on success', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
 
-      await dispatch(createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS), [
+      await dispatch(createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds), [
         { from: 'en', to: 'ja' },
         { from: 'en', to: 'zh' },
       ]);
 
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('zh', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('zh', false);
+      expect(ds.update).toHaveBeenCalledWith(settings);
     });
 
     it('should clear installing flag on final retry failure', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
       jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
 
-      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds);
       await expect(
         job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
           namespace: tenants.current().name,
@@ -237,14 +301,14 @@ describe('CloneLanguageEntitiesJob', () => {
         })
       ).rejects.toThrow('index failed');
 
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
     });
 
     it('should NOT clear installing flag on non-final retry failure', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
       jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
 
-      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds);
       await expect(
         job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
           namespace: tenants.current().name,
@@ -253,7 +317,7 @@ describe('CloneLanguageEntitiesJob', () => {
         })
       ).rejects.toThrow('index failed');
 
-      expect(mockSettingsDS.setLanguageInstalling).not.toHaveBeenCalled();
+      expect(settings.setLanguageInstalling).not.toHaveBeenCalled();
     });
   });
 });

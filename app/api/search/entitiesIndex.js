@@ -82,7 +82,7 @@ const entityFiltersFromQuery = query => {
 };
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {

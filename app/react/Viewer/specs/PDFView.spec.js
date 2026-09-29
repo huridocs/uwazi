@@ -85,7 +85,6 @@ describe('PDFView', () => {
   const render = () => {
     RouteHandler.renderedFromServer = true;
     component = renderConnectedMount(PDFView, state, props, true);
-    component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
   beforeEach(() => {
@@ -279,6 +278,7 @@ describe('PDFView', () => {
   const shallowComponent = searchParams =>
     shallow(
       <PDFViewComponent
+        store={context.store}
         searchParams={searchParams}
         location={{ pathname: 'pathname' }}
         entity={Immutable.fromJS({})}

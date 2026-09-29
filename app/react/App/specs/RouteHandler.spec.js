@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import React from 'react';
+import React, { act } from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -42,7 +42,7 @@ describe('RouteHandler', () => {
 
   const context = { store: { getState: () => state, dispatch: jest.fn() } };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.spyOn(api, 'locale');
     jest.spyOn(I18NUtils, 'saveLocale');
 
@@ -71,6 +71,9 @@ describe('RouteHandler', () => {
 
     instance = component.instance();
     instance.constructor = TestController;
+    await act(async () => {
+      instance.componentDidMount();
+    });
   });
 
   afterEach(() => {
@@ -119,7 +122,7 @@ describe('RouteHandler', () => {
       it('should request the clientState', () => {
         jest.spyOn(instance, 'getClientState');
         component.setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
 
       it('should call emptyState', () => {
@@ -138,7 +141,7 @@ describe('RouteHandler', () => {
           matches: [{ path: '' }, { path: 'subpath' }],
         };
         component.setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
     });
 

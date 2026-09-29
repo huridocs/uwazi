@@ -1,0 +1,231 @@
+import type { Readable, Writable } from 'stream';
+import yargs, { Argv } from 'yargs';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+import { config } from '#api/config.js';
+import { ErrorMapper } from './errors/ErrorMapper.js';
+import { ExitCode } from './errors/ExitCode.js';
+import { UsageError } from './errors/UsageError.js';
+import { Presenter } from './output/Presenter.js';
+import { AuditMiddleware } from './pipeline/AuditMiddleware.js';
+import type { CliContext } from './pipeline/CliContext.js';
+import { Pipeline } from './pipeline/Pipeline.js';
+import { ControllerMiddleware } from './routing/ControllerMiddleware.js';
+import { RequestInput } from './routing/RequestInput.js';
+import type { CliArgv, Route } from './routing/Route.js';
+import { CliConfig, Env } from './runtime/CliConfig.js';
+import { CliConnections, ConnectionNeeds } from './runtime/CliConnections.js';
+import { ConsoleRedirect } from './runtime/ConsoleRedirect.js';
+import { InterruptGuard } from './runtime/InterruptGuard.js';
+import { TenantOptions } from './tenancy/TenantOptions.js';
+import { TenantResultsOutcome } from './tenancy/TenantResultsOutcome.js';
+
+type Connections = {
+  open(needs: ConnectionNeeds): Promise<void>;
+  close(): Promise<void>;
+};
+
+type CliApplicationOptions = {
+  routes: Route[];
+  connections?: Connections;
+  stdout?: Writable;
+  stderr?: Writable;
+  stdin?: Readable;
+  env?: Env;
+};
+
+/**
+ * The `uwazi` binary: parses the command line and runs one route through the pipeline. Owns
+ * the per-command lifecycle, so routes only map input to a use case.
+ */
+class CliApplication {
+  private readonly routes: Route[];
+
+  private readonly connections: Connections;
+
+  private readonly stdout?: Writable;
+
+  private readonly stderr?: Writable;
+
+  private readonly stdin: Readable;
+
+  private readonly env: Env;
+
+  constructor({
+    routes,
+    connections = CliConnections,
+    stdout,
+    stderr,
+    stdin,
+    env,
+  }: CliApplicationOptions) {
+    this.routes = routes;
+    this.connections = connections;
+    this.stdout = stdout;
+    this.stderr = stderr;
+    this.stdin = stdin ?? process.stdin;
+    this.env = env ?? process.env;
+  }
+
+  async run(argv: string[]): Promise<ExitCode> {
+    let exitCode = ExitCode.Ok;
+
+    try {
+      await this.parser(argv, code => {
+        exitCode = code;
+      }).parseAsync();
+    } catch (error) {
+      const presenter = this.presenter(argv.includes('--pretty'), argv.includes('--verbose'));
+      presenter.error(ErrorMapper.toPayload(error, {}), error);
+      return ErrorMapper.toExitCode(error);
+    }
+
+    return exitCode;
+  }
+
+  private parser(argv: string[], onExit: (code: ExitCode) => void): Argv {
+    const parser = yargs(argv)
+      .scriptName('uwazi')
+      .usage('$0 <command>')
+      .option('pretty', {
+        type: 'boolean',
+        default: false,
+        describe: 'Human-readable output instead of JSON',
+      })
+      .option('verbose', { type: 'boolean', default: false, describe: 'Print stack traces' })
+      .demandCommand(1, 'Choose a command')
+      .strict()
+      .help()
+      .version(config.VERSION)
+      .exitProcess(false)
+      .fail((message, error) => {
+        throw error ?? new UsageError(message);
+      });
+
+    return this.registerRoutes(parser, onExit);
+  }
+
+  private registerRoutes(parser: Argv, onExit: (code: ExitCode) => void): Argv {
+    // Reached only when no known command matched: with no routes registered, yargs would
+    // otherwise accept any word as a positional argument and exit successfully.
+    parser.command(
+      '$0',
+      false,
+      noOptions => noOptions,
+      () => {
+        throw new UsageError('Choose a command');
+      }
+    );
+
+    this.groups().forEach((routes, group) => {
+      parser.command(group, `Manage ${group}`, groupParser => {
+        routes.forEach(route => {
+          groupParser.command(
+            route.name,
+            route.describe,
+            y =>
+              TenantOptions.options(route.tenancy, y)
+                .option('request', RequestInput.option)
+                .option('schema', {
+                  type: 'boolean',
+                  default: false,
+                  describe: 'Print the JSON schema of --request and exit',
+                }),
+            async args => {
+              onExit(await this.execute(route, args));
+            }
+          );
+        });
+        return groupParser.demandCommand(1, `Choose a ${group} command`);
+      });
+    });
+
+    return parser;
+  }
+
+  private async execute(route: Route, argv: CliArgv): Promise<ExitCode> {
+    const presenter = this.presenter(Boolean(argv.pretty), Boolean(argv.verbose));
+
+    if (argv.schema) {
+      presenter.result(
+        zodToJsonSchema(route.request, { $refStrategy: 'none', applyRegexFlags: true })
+      );
+      return ExitCode.Ok;
+    }
+
+    const fieldMap = { ...TenantOptions.fieldMap, ...route.fieldMap };
+
+    return this.guarded(async () => {
+      try {
+        const output = await this.handle(route, argv);
+        presenter.result(output);
+        return TenantResultsOutcome.is(output)
+          ? TenantResultsOutcome.exitCode(output)
+          : ExitCode.Ok;
+      } catch (error) {
+        presenter.error(ErrorMapper.toPayload(error, fieldMap), error);
+        return ErrorMapper.toExitCode(error);
+      }
+    });
+  }
+
+  /**
+   * Process-level concerns around one command: console output kept off stdout, Ctrl-C
+   * handled, and connections always closed so the process can exit.
+   */
+  private async guarded<R>(fn: () => Promise<R>): Promise<R> {
+    const redirect = new ConsoleRedirect();
+    const guard = new InterruptGuard(async () => this.connections.close());
+
+    redirect.redirectToStderr();
+    guard.listen();
+
+    try {
+      return await fn();
+    } finally {
+      await this.connections.close();
+      guard.stop();
+      redirect.restore();
+    }
+  }
+
+  /**
+   * Input and configuration are checked before anything connects. The tenancy backend is
+   * loaded only then, so --help, --schema and invalid input stay fast.
+   */
+  private async handle(route: Route, argv: CliArgv): Promise<unknown> {
+    const tenants = TenantOptions.parse(route.tenancy, argv);
+    const input = route.request.parse(await RequestInput.read(argv.request, this.stdin));
+    CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
+    await this.connections.open(route.needs);
+    const { TenantMiddleware } = await import('./tenancy/TenantMiddleware.js');
+
+    const context: CliContext = {
+      route: `${route.group} ${route.name}`,
+      input,
+      json: !argv.pretty,
+      tenants,
+    };
+    const downstream = [new ControllerMiddleware(route)];
+    await new Pipeline([
+      new AuditMiddleware(),
+      new TenantMiddleware(downstream),
+      ...downstream,
+    ]).run(context);
+
+    return context.result;
+  }
+
+  private groups(): Map<string, Route[]> {
+    return this.routes.reduce(
+      (groups, route) => groups.set(route.group, [...(groups.get(route.group) ?? []), route]),
+      new Map<string, Route[]>()
+    );
+  }
+
+  private presenter(pretty: boolean, verbose: boolean): Presenter {
+    return new Presenter({ json: !pretty, verbose, stdout: this.stdout, stderr: this.stderr });
+  }
+}
+
+export { CliApplication };
+export type { CliApplicationOptions, Connections };

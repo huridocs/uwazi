@@ -19,7 +19,7 @@ const StoreShell = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const InteractiveCard = ({ layout, selected }: { layout: 'cards' | 'list'; selected: boolean }) => {
+const InteractiveCard = ({ selected }: { selected: boolean }) => {
   const [isSelected, setSelected] = useState(selected);
   return (
     <div className="tw-content max-w-sm p-4">
@@ -31,8 +31,8 @@ const InteractiveCard = ({ layout, selected }: { layout: 'cards' | 'list'; selec
           { id: 'year', label: 'Year', value: '2021' },
           { id: 'language', label: 'Language', value: 'EN' },
         ]}
+        thumbnailSrc="/api/files/cover.png"
         thumbnailKind="document"
-        layout={layout}
         selected={isSelected}
         onSelect={() => setSelected(current => !current)}
         viewHref="/entityv2/abc"
@@ -56,32 +56,23 @@ const meta: Meta<typeof InteractiveCard> = {
 type Story = StoryObj<typeof InteractiveCard>;
 
 const Cards: Story = {
-  args: { layout: 'cards', selected: false },
+  args: { selected: false },
 };
 
 const CardsSelected: Story = {
-  args: { layout: 'cards', selected: true },
+  args: { selected: true },
 };
 
-const List: Story = {
-  args: { layout: 'list', selected: false },
-  decorators: [
-    Story => (
-      <div className="max-w-3xl">
-        <Story />
-      </div>
-    ),
-  ],
-};
-
-const WithoutThumbnail: Story = {
+const QuietMarkFallback: Story = {
   render: () => (
     <div className="tw-content max-w-sm p-4">
       <EntityCard
         title="Person without files"
         templateId="template2"
-        fields={[{ id: 'country', label: 'Country', value: 'France' }]}
-        layout="cards"
+        fields={[
+          { id: 'country', label: 'Country', value: 'France' },
+          { id: 'recording', label: 'Recording', value: 'hearing.mp4', interactive: true },
+        ]}
         viewHref="/entityv2/person-1"
       />
     </div>
@@ -89,4 +80,4 @@ const WithoutThumbnail: Story = {
 };
 
 export default meta;
-export { Cards, CardsSelected, List, WithoutThumbnail };
+export { Cards, CardsSelected, QuietMarkFallback };

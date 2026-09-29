@@ -83,7 +83,7 @@ describe('AudioPlayer', () => {
 
   it('should handle empty url', () => {
     mount(<AudioPlayerComponent url="" altText="Test Audio" />);
-    cy.get('audio').should('have.attr', 'src', '');
+    cy.get('audio').should('not.have.attr', 'src');
   });
 
   it('should update button label when playing state changes', () => {

@@ -2,18 +2,16 @@
 // eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 import entities from '#api/entities/index.js';
-import * as denormalize from '#api/entities/denormalize.js';
 import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { ListPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/ListPagesUseCaseFactory.js';
-import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
@@ -113,7 +111,7 @@ describe('translations', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, {
       postgres: true,
-      postgresMirror: ['translationsV2'],
+      postgresMirror: ['translationsV2', 'settings', 'dictionaries'],
     });
   });
 
@@ -134,9 +132,18 @@ describe('translations', () => {
       addLanguage,
     } = createHelpers(postgresCore);
 
+    const getJobs = async () => testingEnvironment.jobs.getAll({ postgresCore });
+
     beforeEach(async () => {
       jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+      await testingEnvironment.jobs.clear();
       await testingEnvironment.setFixtures(fixtures);
+      if (postgresCore) {
+        testingTenants.changeCurrentTenant({
+          ...testingTenants.current(),
+          featureFlags: { postgresCore: true },
+        });
+      }
     });
 
     describe('get()', () => {
@@ -174,7 +181,7 @@ describe('translations', () => {
     });
 
     describe('v2StructureSave', () => {
-      it('should save changed translations and propagate the changes', async () => {
+      it('should save changed translations and dispatch denormalization', async () => {
         const translationsToSave = [
           new Translation('Password', 'Changed Password ES', 'es', {
             id: dictionaryId.toString(),
@@ -190,18 +197,16 @@ describe('translations', () => {
           ?.contexts?.find(c => c.id === dictionaryId.toString());
         expect(esContext?.values?.Password).toBe('Changed Password ES');
 
-        if (!postgresCore) {
-          // Entity-label propagation is deferred while postgresCore is on (the Mongo
-          // renamer no-ops and there is no Postgres-side denormalization yet).
-          const initialEntity = (
-            await withContext(async () => entities.get({ language: 'es', sharedId: 'entity1' }))
-          )[0];
-          const updatedEntity = (
-            await withContext(async () => entities.get({ language: 'es', sharedId: 'entity1' }))
-          )[0];
-          initialEntity.metadata!.Dictionary![0].label = 'Changed Password ES';
-          expect(updatedEntity).toEqual(initialEntity);
-        }
+        const jobs = await getJobs();
+        expect(jobs).toMatchObject([
+          {
+            name: 'DenormalizeEntitiesHandler',
+            params: {
+              thesaurusId: dictionaryId.toString(),
+              valueIds: ['1'],
+            },
+          },
+        ]);
       });
     });
 
@@ -235,161 +240,37 @@ describe('translations', () => {
         );
       });
 
-      // Entity-label propagation from thesaurus translations is deferred while
-      // postgresCore is on (the Mongo renamer no-ops), so these assertions only
-      // hold for the Mongo backend.
-      if (!postgresCore) {
-        describe('when saving a dictionary context', () => {
-          afterEach(() => {
-            jest.spyOn(denormalize, 'denormalizeThesauriLabelInMetadata').mockRestore();
-          });
-          it('should propagate translation changes to entities denormalized label', async () => {
-            const renameSpy = jest
-              .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
-              .mockResolvedValue(undefined as never);
-            renameSpy.mockClear();
-
-            await saveLocaleTranslations({
-              locale: 'en',
-              contexts: [
-                {
-                  id: dictionaryId.toString(),
-                  type: 'Thesaurus',
-                  values: {
-                    'dictionary 2': 'new name',
-                    Password: 'Password',
-                    Account: 'Account',
-                    Email: 'E-Mail',
-                    Age: 'Age changed',
-                  },
-                },
-              ],
-            });
-
-            expect(denormalize.denormalizeThesauriLabelInMetadata).toHaveBeenLastCalledWith(
-              'age id',
-              'Age changed',
-              dictionaryId.toString(),
-              'en'
-            );
-          });
-
-          it('should propagate child thesaurus translation changes to entities denormalized label', async () => {
-            await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
-              { _id: dictionaryId },
+      describe('when saving a dictionary context', () => {
+        it('should dispatch denormalization for the changed thesaurus value', async () => {
+          await saveLocaleTranslations({
+            locale: 'en',
+            contexts: [
               {
-                $set: {
-                  values: [
-                    {
-                      id: 'parent_id',
-                      label: 'Parent',
-                      values: [{ id: 'child_id', label: 'Age' }],
-                    },
-                  ],
+                id: dictionaryId.toString(),
+                type: 'Thesaurus',
+                values: {
+                  'dictionary 2': 'new name',
+                  Password: 'Password',
+                  Account: 'Account',
+                  Email: 'E-Mail',
+                  Age: 'Age changed',
                 },
-              }
-            );
-
-            const renameSpy = jest
-              .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
-              .mockResolvedValue(undefined as never);
-            renameSpy.mockClear();
-
-            await saveLocaleTranslations({
-              locale: 'en',
-              contexts: [
-                {
-                  id: dictionaryId.toString(),
-                  type: 'Thesaurus',
-                  values: {
-                    Age: 'Age changed in child',
-                  },
-                },
-              ],
-            });
-
-            expect(denormalize.denormalizeThesauriLabelInMetadata).toHaveBeenCalledWith(
-              'child_id',
-              'Age changed in child',
-              dictionaryId.toString(),
-              'en'
-            );
+              },
+            ],
           });
 
-          it('should propagate duplicated child labels across different parents', async () => {
-            await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
-              { _id: dictionaryId },
-              {
-                $set: {
-                  values: [
-                    {
-                      id: 'in_court',
-                      label: 'in court',
-                      values: [
-                        { id: 'yes_in_court', label: 'Age' },
-                        { id: 'no_in_court', label: 'Email' },
-                      ],
-                    },
-                    {
-                      id: 'in_government',
-                      label: 'in government',
-                      values: [
-                        { id: 'yes_in_government', label: 'Age' },
-                        { id: 'no_in_government', label: 'Email' },
-                      ],
-                    },
-                  ],
-                },
-              }
-            );
-
-            const renameSpy = jest
-              .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
-              .mockResolvedValue(undefined as never);
-            renameSpy.mockClear();
-
-            await saveLocaleTranslations({
-              locale: 'en',
-              contexts: [
-                {
-                  id: dictionaryId.toString(),
-                  type: 'Thesaurus',
-                  values: {
-                    Age: 'Yes changed',
-                    Email: 'No changed',
-                  },
-                },
-              ],
-            });
-
-            expect(renameSpy).toHaveBeenCalledWith(
-              'yes_in_court',
-              'Yes changed',
-              dictionaryId.toString(),
-              'en'
-            );
-            expect(renameSpy).toHaveBeenCalledWith(
-              'yes_in_government',
-              'Yes changed',
-              dictionaryId.toString(),
-              'en'
-            );
-            expect(renameSpy).toHaveBeenCalledWith(
-              'no_in_court',
-              'No changed',
-              dictionaryId.toString(),
-              'en'
-            );
-            expect(renameSpy).toHaveBeenCalledWith(
-              'no_in_government',
-              'No changed',
-              dictionaryId.toString(),
-              'en'
-            );
-            expect(renameSpy).toHaveBeenCalledTimes(4);
-          });
+          const jobs = await getJobs();
+          expect(jobs).toMatchObject([
+            {
+              name: 'DenormalizeEntitiesHandler',
+              params: {
+                thesaurusId: dictionaryId.toString(),
+                valueIds: ['age id'],
+              },
+            },
+          ]);
         });
-      }
+      });
     });
 
     describe('updateEntries', () => {
@@ -620,7 +501,7 @@ describe('translations', () => {
 
           await addLanguage({ key: 'fr', label: 'french' });
 
-          const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
+          const settingsLanguages = await SettingsDSWithContext.default().getLanguageKeys();
           expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
 
           const allTranslations = await getLegacyTranslations();
@@ -643,7 +524,9 @@ describe('translations', () => {
 
     describe('removeLanguage', () => {
       it('should remove translation for the language passed', async () => {
-        await settings.deleteLanguage('es');
+        const settings = await SettingsDSWithContext.default().get();
+        settings.deleteLanguage('es');
+        await SettingsDSWithContext.default().update(settings);
         await withTranslationWrites(async ({ translationsDS }) =>
           translationsDS.deleteByLanguage('es')
         );

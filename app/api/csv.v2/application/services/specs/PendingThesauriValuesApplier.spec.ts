@@ -63,6 +63,7 @@ const buildPendingDoc = ({
     });
   }
   return CsvImportThesauriValues.create({
+    id: 'thesauri-pending-1',
     importId,
     thesaurusId,
     createdAt: Date.now(),
@@ -278,6 +279,7 @@ describe('PendingThesauriValuesApplier', () => {
     });
 
     const pendingDoc = CsvImportThesauriValues.create({
+      id: 'thesauri-pending-2',
       importId: 'imp-3',
       thesaurusId,
       createdAt: Date.now(),

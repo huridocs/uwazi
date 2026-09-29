@@ -27,7 +27,7 @@ export class MongoEntitiesSyncHandler
   protected collectionName = 'entities';
 
   constructor() {
-    super(getConnection(), TransactionManagerFactory.default(), { useSyncedCollection: false });
+    super(getConnection(), TransactionManagerFactory.mongo(), { useSyncedCollection: false });
   }
 
   async getById(id: string): Promise<EntityDBO | null> {
