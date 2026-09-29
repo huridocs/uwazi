@@ -202,7 +202,7 @@
     "is-reachable": "^6.1.0",
     "isomorphic-fetch": "3.0.0",
     "jotai": "2.20.3",
-    "json-schema-to-typescript": "^16.0.0",
+    "json-schema-to-typescript": "^15.0.4",
     "jvent": "1.0.2",
     "knex": "^3.3.0",
     "leaflet": "^1.9.4",

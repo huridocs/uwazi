@@ -29,12 +29,8 @@ describe('mailer', () => {
     envelope: { from: false, to: [] },
     messageId: '<fake@uwazi.test>',
   };
-  const mockedSendMail = (
-    _mailOptions: Mail.Options,
-    callback: (err: Error | null, info: SentMessageInfo) => void
-  ) => {
-    callback(null, sentMessage);
-  };
+  const mockedSendMail = async (_mailOptions: Mail.Options): Promise<SentMessageInfo> =>
+    sentMessage;
 
   describe('non test environment', () => {
     it('should use the transport from nodemailer', async () => {

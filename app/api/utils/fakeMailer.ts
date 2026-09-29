@@ -8,12 +8,9 @@ const sentMessage: SentMessageInfo = {
 
 export class FakeMailer {
   // eslint-disable-next-line class-methods-use-this
-  sendMail(
-    _mailOptions: Mail.Options,
-    callback: (err: Error | null, info: SentMessageInfo) => void
-  ) {
+  async sendMail(_mailOptions: Mail.Options): Promise<SentMessageInfo> {
     console.log('Fake sent of mail with:', _mailOptions);
-    callback(null, sentMessage);
+    return sentMessage;
   }
 }
 

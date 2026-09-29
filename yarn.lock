@@ -28,7 +28,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^11.9.3":
+"@apidevtools/json-schema-ref-parser@npm:^11.5.5":
   version: 11.9.3
   resolution: "@apidevtools/json-schema-ref-parser@npm:11.9.3"
   dependencies:
@@ -7185,7 +7185,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.17.25":
+"@types/lodash@npm:^4.17.7":
   version: 4.17.25
   resolution: "@types/lodash@npm:4.17.25"
   checksum: 10c0/ca2049f16bf527e04d6e27702e3912a484faaff587de77a5c58e0d243b9292a655e1d7f7e5bdf2ffdf49a76da10673097f8dd4901990679058d47ccd99051877
@@ -16230,17 +16230,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^5.2.3":
-  version: 5.4.2
-  resolution: "js-yaml@npm:5.4.2"
-  dependencies:
-    argparse: "npm:^2.0.1"
-  bin:
-    js-yaml: bin/js-yaml.mjs
-  checksum: 10c0/ba7e0f72c93c7a84eca2c3de45d2a9188b16a20e83f036df723a3ac29e841496382d0b0849592f63028d1c640bcc5b65f88800da342f47469b5b99bda5c75bfc
-  languageName: node
-  linkType: hard
-
 "jsbn@npm:~0.1.0":
   version: 0.1.1
   resolution: "jsbn@npm:0.1.1"
@@ -16373,21 +16362,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-to-typescript@npm:^16.0.0":
-  version: 16.0.0
-  resolution: "json-schema-to-typescript@npm:16.0.0"
+"json-schema-to-typescript@npm:^15.0.4":
+  version: 15.0.4
+  resolution: "json-schema-to-typescript@npm:15.0.4"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": "npm:^11.9.3"
+    "@apidevtools/json-schema-ref-parser": "npm:^11.5.5"
     "@types/json-schema": "npm:^7.0.15"
-    "@types/lodash": "npm:^4.17.25"
-    js-yaml: "npm:^5.2.3"
-    lodash: "npm:^4.18.1"
+    "@types/lodash": "npm:^4.17.7"
+    is-glob: "npm:^4.0.3"
+    js-yaml: "npm:^4.1.0"
+    lodash: "npm:^4.17.21"
     minimist: "npm:^1.2.8"
-    prettier: "npm:^3.9.6"
-    tinyglobby: "npm:^0.2.17"
+    prettier: "npm:^3.2.5"
+    tinyglobby: "npm:^0.2.9"
   bin:
     json2ts: dist/src/cli.js
-  checksum: 10c0/a19f849774e5386de86fe97e6a0c1a25e275e4341c47109dc42a65e31d4bef981c782f03d43baa05c7bcd15d9176826c4438e408be9bde180ee947adde71171a
+  checksum: 10c0/1af8a68d5121710f6f2b9998eea062b751ffc45166b0272a17068e64443010b3c6b02360d3446ca696fcb77102bcb82abd717be0869299d1e12bab437287331b
   languageName: node
   linkType: hard
 
@@ -20061,7 +20051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.9.6":
+"prettier@npm:^3.2.5":
   version: 3.9.9
   resolution: "prettier@npm:3.9.9"
   bin:
@@ -23250,7 +23240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyglobby@npm:^0.2.17":
+"tinyglobby@npm:^0.2.9":
   version: 0.2.17
   resolution: "tinyglobby@npm:0.2.17"
   dependencies:
@@ -24343,7 +24333,7 @@ __metadata:
     jest-puppeteer: "npm:6.1.0"
     jotai: "npm:2.20.3"
     jsdom-testing-mocks: "npm:^1.16.0"
-    json-schema-to-typescript: "npm:^16.0.0"
+    json-schema-to-typescript: "npm:^15.0.4"
     jvent: "npm:1.0.2"
     knex: "npm:^3.3.0"
     leaflet: "npm:^1.9.4"
