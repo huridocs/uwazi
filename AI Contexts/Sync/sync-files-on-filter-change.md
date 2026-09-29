@@ -1,7 +1,7 @@
 # Sync files when an entity crosses the sync filter
 
 Date: 2026-09-29
-Status: decided. Option 1 on the Mongo entity log write. Not implemented.
+Status: implemented on Mongo. `SyncedCollection` refreshes `files` update logs on entity insert and update. Entity delete does not. Postgres is a separate issue.
 
 ## Problem
 
