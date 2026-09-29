@@ -19,11 +19,28 @@ if (Object.keys(mailerConfig).length) {
 // eslint-disable-next-line import/no-default-export
 export default {
   async send(mailOptions) {
-    const mailerConfigValue = await SettingsDataSourceFactory.default().readMailerConfig();
-    const transporter = getMailerTransport().createTransport(
-      mailerConfigValue ? JSON.parse(mailerConfigValue) : transporterOptions
-    );
-    await transporter.sendMail(mailOptions);
+    let transporter;
+    return new Promise((resolve, reject) => {
+      SettingsDataSourceFactory.default()
+        .readMailerConfig()
+        .then(mailerConfigValue => {
+          try {
+            transporter = getMailerTransport().createTransport(
+              mailerConfigValue ? JSON.parse(mailerConfigValue) : transporterOptions
+            );
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                reject(error);
+                return;
+              }
+              resolve(info);
+            });
+          } catch (err) {
+            reject(err);
+          }
+        })
+        .catch(reject);
+    });
   },
   createSenderDetails(settingsDetails) {
     const senderEmail =

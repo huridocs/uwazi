@@ -8,7 +8,7 @@ import { z } from 'zod';
 import type { Tenant } from '#api/tenants/tenant.js';
 import uniqueID from '#shared/uniqueID.js';
 
-dotenv.config({ quiet: true });
+dotenv.config();
 
 const PostgresEnvSchema = z
   .object({

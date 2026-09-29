@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 
-require('dotenv').config({ quiet: true });
+require('dotenv').config();
 
 const projectRoot = path.resolve(__dirname, '..');
 
