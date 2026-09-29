@@ -232,6 +232,21 @@ describe('extractUsages', () => {
       ).toEqual(['An error occurred', 'Connection deleted', 'Document updated']);
       expect(byKind(source, 'notify').every(usage => usage.fixable)).toBe(true);
     });
+
+    it('does not flag notification type tokens that are never printed', () => {
+      const source = `
+        notify('success', t('System', 'Updated', null, false));
+        notify('error', error.message);
+        notify('info', 'CSV import cancelled');
+        notify('warning', 'Storage usage above 80%.');
+      `;
+
+      expect(
+        byKind(source, 'notify')
+          .map(usage => usage.text)
+          .sort()
+      ).toEqual(['CSV import cancelled', 'Storage usage above 80%.']);
+    });
   });
 
   describe('no-translate', () => {

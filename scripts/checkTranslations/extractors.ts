@@ -18,6 +18,7 @@ import {
 } from './extractHelpers.js';
 import {
   ALWAYS_UI_OBJECT_PROPS,
+  NOTIFICATION_TYPES,
   NOTIFY_CALLEES,
   OPTION_ONLY_UI_PROPS,
   looksLikeUiCopy,
@@ -109,13 +110,24 @@ const extractTCall = (path: NodePath<CallExpression>, file: string): ExtractedUs
   return extracted ? [extracted] : [];
 };
 
+const stringLiteralArg = (node: CallExpression['arguments'][number] | undefined) =>
+  node && node.type === 'StringLiteral' ? node : undefined;
+
+const notifyMessageLiteral = (args: CallExpression['arguments']) => {
+  const first = stringLiteralArg(args[0]);
+  const second = stringLiteralArg(args[1]);
+  if (first && NOTIFICATION_TYPES.has(first.value)) {
+    return second && !NOTIFICATION_TYPES.has(second.value) ? second : undefined;
+  }
+  return first;
+};
+
 const extractNotify = (path: NodePath<CallExpression>, file: string): ExtractedUsage[] => {
-  const [message] = path.node.arguments;
-  if (
-    !NOTIFY_CALLEES.has(callCalleeName(path.node)) ||
-    !message ||
-    message.type !== 'StringLiteral'
-  ) {
+  if (!NOTIFY_CALLEES.has(callCalleeName(path.node))) {
+    return [];
+  }
+  const message = notifyMessageLiteral(path.node.arguments);
+  if (!message) {
     return [];
   }
   const extracted = usage({

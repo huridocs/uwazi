@@ -54,6 +54,7 @@ const SAFE_LABEL_COMPONENTS = new Set([
   'Confirm',
 ]);
 const NOTIFY_CALLEES = new Set(['notify', 'notifyBridge']);
+const NOTIFICATION_TYPES = new Set(['success', 'warning', 'error', 'info', 'danger']);
 
 const LETTER_RE = /[A-Za-z]/;
 const DATE_FORMAT_RE = /^[dmyY0-9./\s:-]+$/;
@@ -101,6 +102,7 @@ export {
   COMPONENT_ARIA_ATTRS,
   ENTITY_ISH_PROPS,
   NATIVE_TRANSLATABLE_ATTRS,
+  NOTIFICATION_TYPES,
   NOTIFY_CALLEES,
   OPTION_ID_PROPS,
   OPTION_ONLY_UI_PROPS,
