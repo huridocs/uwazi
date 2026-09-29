@@ -37,6 +37,11 @@ jest.mock('../../Notifications/RequestStatus', () => ({
 
 const { useCompactBar } = jest.requireMock('../useCompactBar');
 
+const headerState = {
+  ...defaultState,
+  library: { search: {}, filters: fromJS({ properties: [] }) },
+};
+
 const signedInUser: ClientUserSchema = {
   _id: 'user-1',
   username: 'editor',
@@ -50,10 +55,7 @@ const renderHeader = (compact: boolean, user?: ClientUserSchema) => {
     <TestAtomStoreProvider initialValues={user ? [[userAtom, user]] : []}>
       <Header />
     </TestAtomStoreProvider>,
-    () => ({
-      ...defaultState,
-      library: { search: {}, filters: fromJS({ properties: [] }) },
-    }),
+    () => headerState,
     'MemoryRouter'
   );
 };

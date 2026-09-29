@@ -7,7 +7,7 @@ import { DEFAULT_DEBOUNCE_MS } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { MultiLanguageField } from '../MultiLanguageField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
 }));
 

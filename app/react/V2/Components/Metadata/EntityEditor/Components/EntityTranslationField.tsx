@@ -59,7 +59,7 @@ const EntityTranslationField = React.memo(
       linkSource: paired ? linkSource : undefined,
     });
 
-    if (!current || languages.length < 2) return messageSlot ?? null;
+    if (!current || languages.length < 2) return <>{messageSlot}</>;
 
     return (
       <MultiLanguageField

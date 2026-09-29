@@ -17,7 +17,7 @@ const Account = () => {
   const { users: usersService } = useServices();
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const passwordConfirmation = useRef<string>();
+  const passwordConfirmation = useRef<string>(undefined);
   const formSubmit = useRef<HTMLButtonElement>(null);
   const { notify } = useRequestStatus();
   const revalidator = useRevalidator();

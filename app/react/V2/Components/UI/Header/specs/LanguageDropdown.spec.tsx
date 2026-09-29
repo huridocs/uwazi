@@ -12,7 +12,7 @@ import { LanguageDropdown } from '../LanguageDropdown.js';
 import { followLanguageUrl } from '../followLanguageUrl.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('../followLanguageUrl', () => ({

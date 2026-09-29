@@ -21,7 +21,7 @@ import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorSta
 import { EntityField } from './EntityField.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
-type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
+type PlayerInstance = PlayerRef extends React.RefObject<infer T | null> ? T : never;
 
 type EditableTimelink = {
   hh: string;

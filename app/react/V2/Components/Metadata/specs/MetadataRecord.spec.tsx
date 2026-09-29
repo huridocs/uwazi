@@ -16,7 +16,7 @@ import {
 import { MetadataRecord } from '../MetadataRecord';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   I18NLinkV2: ({
     children,
     to,

@@ -29,7 +29,7 @@ const InputColorPicker = ({
   const inputId = id ?? name ?? generatedId;
   const [displayValue, setDisplayValue] = useState(value);
   const onChangeRef = useRef(onChange);
-  const commitTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const commitTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     onChangeRef.current = onChange;

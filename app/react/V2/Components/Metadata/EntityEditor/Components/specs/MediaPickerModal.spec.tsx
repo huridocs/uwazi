@@ -7,7 +7,7 @@ import { MediaPickerModal } from '../MediaPickerModal.js';
 import type { MediaPickerModalProps } from '../MediaPickerModal.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
 }));
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
+import { enzymeFn, enzymeProps } from '#app/utils/enzymeNode.js';
 import { MemberListItemPermission } from '../MemberListItemPermission.js';
 import { data } from './testData.js';
 
@@ -49,10 +50,9 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={onChangeMock} onDelete={onDeleteMock} />
     );
 
-    component
-      .find('select')
-      .get(0)
-      .props.onChange({ target: { value: AccessLevels.WRITE } });
+    enzymeFn(enzymeProps(component.find('select').get(0)).onChange)({
+      target: { value: AccessLevels.WRITE },
+    });
 
     expect(onChangeMock).toHaveBeenCalledWith({
       ...data[1],
@@ -69,10 +69,9 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={onChangeMock} onDelete={onDeleteMock} />
     );
 
-    component
-      .find('select')
-      .get(0)
-      .props.onChange({ target: { value: 'delete' } });
+    enzymeFn(enzymeProps(component.find('select').get(0)).onChange)({
+      target: { value: 'delete' },
+    });
 
     expect(onDeleteMock).toHaveBeenCalledWith(data[1]);
     expect(onChangeMock).not.toHaveBeenCalled();
@@ -83,6 +82,6 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={() => {}} onDelete={() => {}} disabled />
     );
 
-    expect(component.find('select').get(0).props.disabled).toBe(true);
+    expect(enzymeProps(component.find('select').get(0)).disabled).toBe(true);
   });
 });

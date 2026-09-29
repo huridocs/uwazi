@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { Icon } from '#app/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
@@ -109,7 +110,7 @@ ExportButton.defaultProps = {
   className: '',
 };
 
-function mapDispatchToProps(dispatch: Dispatch<any>, props: Pick<ExportButtonProps, 'storeKey'>) {
+function mapDispatchToProps(dispatch: AppDispatch, props: Pick<ExportButtonProps, 'storeKey'>) {
   return bindActionCreators({ exportDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 

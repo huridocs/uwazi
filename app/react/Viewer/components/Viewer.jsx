@@ -46,13 +46,12 @@ class Viewer extends Component {
   }
 
   componentDidMount() {
-    const { store } = this.context;
-    const { sidepanelTab } = this.props;
-    store.dispatch(openPanel('viewMetadataPanel'));
+    const { sidepanelTab, openPanel: open, loadDefaultViewerMenu: loadMenu, showTab } = this.props;
+    open('viewMetadataPanel');
     if (sidepanelTab === 'connections') {
-      store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+      showTab('');
     }
-    store.dispatch(loadDefaultViewerMenu());
+    loadMenu();
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
@@ -234,6 +233,9 @@ Viewer.defaultProps = {
   user: Immutable.Map({}),
   // relationships v2
   newRelationshipsEnabled: false,
+  openPanel: () => {},
+  loadDefaultViewerMenu: () => {},
+  showTab: () => {},
 };
 Viewer.propTypes = {
   searchTerm: PropTypes.string,
@@ -253,6 +255,8 @@ Viewer.propTypes = {
   selectedConnection: PropTypes.bool,
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
+  openPanel: PropTypes.func,
+  loadDefaultViewerMenu: PropTypes.func,
   page: PropTypes.number,
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
@@ -263,10 +267,6 @@ Viewer.propTypes = {
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
   toggleReferences: PropTypes.func,
-};
-
-Viewer.contextTypes = {
-  store: PropTypes.object,
 };
 
 const mapStateToProps = state => {
@@ -298,6 +298,8 @@ const mapDispatchToProps = dispatch =>
       loadTargetDocument: loadTargetDocumentAction,
       showTab: tab => actions.set('viewer.sidepanel.tab', tab),
       toggleReferences,
+      openPanel,
+      loadDefaultViewerMenu,
     },
     dispatch
   );
