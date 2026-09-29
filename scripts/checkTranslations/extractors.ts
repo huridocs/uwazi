@@ -5,6 +5,7 @@ import {
   attrKind,
   attributeName,
   callCalleeName,
+  collectStringLiterals,
   isEntityLikeObject,
   isInsideSafeWrapper,
   isInsideTranslate,
@@ -222,23 +223,6 @@ const extractComposedTranslate = (path: NodePath<JSXElement>, file: string): Ext
     expression.type === 'TemplateLiteral' ? stringFromTemplate(expression).text : 'composed string';
   const extracted = usage({ kind: 'composed', text, file, node: composed, extras: { key: text } });
   return extracted ? [extracted] : [];
-};
-
-const collectStringLiterals = (
-  node: Node | null | undefined,
-  literals: { value: string; node: Node }[]
-) => {
-  if (!node) {
-    return;
-  }
-  if (node.type === 'StringLiteral') {
-    literals.push({ value: node.value, node });
-    return;
-  }
-  if (node.type === 'ConditionalExpression') {
-    collectStringLiterals(node.consequent, literals);
-    collectStringLiterals(node.alternate, literals);
-  }
 };
 
 const extractLabelVariable = (path: NodePath, file: string): ExtractedUsage[] => {

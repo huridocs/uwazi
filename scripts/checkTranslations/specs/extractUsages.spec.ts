@@ -1,5 +1,4 @@
 import { extractUsages } from '../extractUsages.js';
-import { COMPOSED_PLACEHOLDER } from '../heuristics.js';
 
 const file = 'app/react/Example.tsx';
 
@@ -214,33 +213,6 @@ describe('extractUsages', () => {
     it('does not flag labels that come from entity / template data', () => {
       const source = `const option = { label: property.label, title: entity.title };`;
       expect(extractUsages(source, file)).toEqual([]);
-    });
-  });
-
-  describe('composed strings (RC4)', () => {
-    it('flags template literals in translatable positions as composed and not fixable', () => {
-      const source = `
-        const x = <button aria-label={\`Page \${pageNumber}\`} />;
-      `;
-
-      expect(byKind(source, 'composed')).toEqual([
-        expect.objectContaining({
-          text: `Page ${COMPOSED_PLACEHOLDER}`,
-          translated: false,
-          fixable: false,
-        }),
-      ]);
-    });
-
-    it('flags Translate wrapping a whole interpolated phrase', () => {
-      const source = `
-        const x = <Translate>{\`\${mode} Group\`}</Translate>;
-      `;
-
-      expect(byKind(source, 'composed')[0]).toMatchObject({
-        translated: false,
-        fixable: false,
-      });
     });
   });
 

@@ -19,6 +19,7 @@ import {
   SAFE_OBJECT_WRAPPERS,
   SAFE_TITLE_COMPONENTS,
   looksLikeChromeCopy,
+  looksLikeComposedCopy,
   looksLikeUiCopy,
   normalizeKey,
 } from './heuristics.js';
@@ -153,6 +154,37 @@ const isInsideSafeWrapper = (path: NodePath): boolean => {
   );
 };
 
+const collectStringLiterals = (
+  node: Node | null | undefined,
+  literals: { value: string; node: Node }[]
+): void => {
+  if (!node) {
+    return;
+  }
+  if (node.type === 'StringLiteral') {
+    literals.push({ value: node.value, node });
+    return;
+  }
+  if (node.type === 'ConditionalExpression') {
+    collectStringLiterals(node.consequent, literals);
+    collectStringLiterals(node.alternate, literals);
+  }
+};
+
+const chromeLiteralsFrom = (expressions: TemplateLiteral['expressions']): string[] => {
+  const literals: { value: string; node: Node }[] = [];
+  expressions.forEach(expression => collectStringLiterals(expression, literals));
+  return [...new Set(literals.map(item => item.value).filter(looksLikeChromeCopy))];
+};
+
+const composedPreview = (preview: string, chrome: string[]): string => {
+  const trimmed = preview.trim() || COMPOSED_PLACEHOLDER;
+  if (looksLikeUiCopy(trimmed.replaceAll(COMPOSED_PLACEHOLDER, '')) || !chrome.length) {
+    return trimmed;
+  }
+  return `${trimmed} (${chrome.join(', ')})`;
+};
+
 const stringFromTemplate = (node: TemplateLiteral): { text: string; static: boolean } => {
   if (node.expressions.length === 0) {
     return {
@@ -166,13 +198,15 @@ const stringFromTemplate = (node: TemplateLiteral): { text: string; static: bool
       return index < node.expressions.length ? `${chunk}${COMPOSED_PLACEHOLDER}` : chunk;
     })
     .join('');
-  return { text: preview.trim() || COMPOSED_PLACEHOLDER, static: false };
+  return { text: composedPreview(preview, chromeLiteralsFrom(node.expressions)), static: false };
 };
 
 const usage = ({ kind, text, file, node, extras = {} }: UsageInput): ExtractedUsage | undefined => {
   const normalizedText = normalizeKey(text);
   const key = normalizeKey(extras.key ?? text);
-  if (!looksLikeUiCopy(normalizedText) && kind !== 'composed') {
+  const hasCopy =
+    kind === 'composed' ? looksLikeComposedCopy(normalizedText) : looksLikeUiCopy(normalizedText);
+  if (!hasCopy) {
     return undefined;
   }
   return {
@@ -233,6 +267,7 @@ export {
   attrKind,
   attributeName,
   callCalleeName,
+  collectStringLiterals,
   hasNoTranslate,
   isEntityLikeObject,
   isInsideSafeWrapper,

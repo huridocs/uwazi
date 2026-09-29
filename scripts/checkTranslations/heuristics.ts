@@ -89,6 +89,9 @@ const looksLikeChromeCopy = (text: string): boolean => {
   return !IDENTIFIER_LIKE_RE.test(trimmed) && !ALL_CAPS_TOKEN_RE.test(trimmed);
 };
 
+const looksLikeComposedCopy = (text: string): boolean =>
+  looksLikeUiCopy(text.replaceAll(COMPOSED_PLACEHOLDER, ''));
+
 const isReactUiFile = (file: string): boolean =>
   /(?:^|\/)app\/react\//.test(file.replaceAll('\\', '/'));
 
@@ -107,6 +110,7 @@ export {
   SAFE_TITLE_COMPONENTS,
   isReactUiFile,
   looksLikeChromeCopy,
+  looksLikeComposedCopy,
   looksLikeUiCopy,
   normalizeKey,
 };
