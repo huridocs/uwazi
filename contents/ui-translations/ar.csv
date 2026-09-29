@@ -739,6 +739,7 @@ Members,أعضاء
 Menu,قائمة التحكم
 Message,رسالة
 Message sent,تم إرسال الرسالة
+Meta description,Meta description
 Metadata,البيانات الوصفية
 Metadata Extraction,استخلاص البيانات الوصفية
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -877,6 +878,9 @@ OCR error,خطأ في الOCR
 OCR error tip,لم يتمكن محرك التعرف الضوئي على الحروف (OCR) من قراءة المستند بسبب وجود خلل في تنسيقه. آخر تحديث
 OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,موافق
 OK,موافق
 On this entity,بشأن هذا الكيان
@@ -895,6 +899,7 @@ Only published entities are counted.,يتم احتساب الكيانات الم
 "Only the extractor will be deleted, all created entities will remain on the library.",سيتم حذف المستخرج فقط، وستبقى جميع الكيانات التي تم إنشاؤها في المكتبة.
 Open,فتح
 Open entity,فتح الكيان
+Open Graph,Open Graph
 Open group,فتح المجموعة
 Open link,فتح الرابط
 Open PDF,فتح ملف PDF
@@ -915,6 +920,7 @@ p.,ص.
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
 Page published successfully.,تم نشر الصفحة بنجاح.
+Page title,Page title
 Pages,الصفحات
 Paragrap number extraction property (numeric),خاصية استخراج رقم الفقرة (رقمي)
 Paragraph,فقرة
@@ -1147,6 +1153,7 @@ Select files on your device,اختر الملفات في جهازك
 Select from computer,اختر من جهاز الكمبيوتر
 Select image,اختر صورة
 Select media,اختر وسائط
+Select Open Graph image,Select Open Graph image
 Select relationship,اختر العلاقة
 Select relationship type,اختر نوع العلاقة
 Select site logo image,اختر صورة شعار الموقع
@@ -1168,6 +1175,12 @@ Send recovery email,إرسل بريد الكتروني للاستعادة
 Sending email,البريد الالكتروني المرسل
 Sending email description,هذا هو عنوان البريد الإلكتروني الذي سيظهر كمرسل عند إرسال رسالة بريد إلكتروني من مجموعتك على Uwazi إلى المستخدمين المسجلين. العنوان الافتراضي هو *no-reply@uwazi.io*. يمكنك تعيين عنوان مخصص عن طريق إدخال عنوان البريد الإلكتروني الذي تريده هنا.
 Sending labeled data,إرسال البيانات المُصنَّفة
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,سلسلة
 Services,الخدمات
 Set as default,تعيين كافتراضي

@@ -740,6 +740,7 @@ Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
 Message sent,ส่งข้อความแล้ว
+Meta description,Meta description
 Metadata,เมทาดาทา
 Metadata Extraction,ค้นหาเมตาดาต้า
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -878,6 +879,9 @@ OCR error,ข้อผิดพลาด OCR
 OCR error tip,ระบบ OCR ไม่สามารถอ่านเอกสารได้ เนื่องจากรูปแบบเอกสารไม่ถูกต้อง อัปเดตครั้งสุดท้าย
 OCR PDF,OCR PDF
 of,ของ
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,ตกลง
 OK,ตกลง
 On this entity,เกี่ยวกับเอนทิตีนี้
@@ -896,6 +900,7 @@ Only published entities are counted.,นับเฉพาะเอนทิต�
 "Only the extractor will be deleted, all created entities will remain on the library.",จะลบเฉพาะเครื่องมือสกัดเท่านั้น ส่วนเอนทิตีทั้งหมดที่สร้างขึ้นจะยังคงอยู่ในไลบรารี
 Open,เปิด
 Open entity,เปิดเอนทิตี
+Open Graph,Open Graph
 Open group,เปิดกลุ่ม
 Open link,เปิดลิงก์
 Open PDF,เปิดไฟล์ PDF
@@ -916,6 +921,7 @@ p.,หน้า
 Page,หน้า
 Page not found,ไม่พบหน้า
 Page published successfully.,หน้าได้เผยแพร่สำเร็จแล้ว
+Page title,Page title
 Pages,หน้า
 Paragrap number extraction property (numeric),คุณสมบัติการดึงหมายเลขย่อหน้า (ตัวเลข)
 Paragraph,ย่อหน้า
@@ -1148,6 +1154,7 @@ Select files on your device,เลือกไฟล์บนอุปกรณ�
 Select from computer,เลือกจากคอมพิวเตอร์
 Select image,เลือกภาพ
 Select media,เลือกสื่อ
+Select Open Graph image,Select Open Graph image
 Select relationship,เลือกความสัมพันธ์
 Select relationship type,เลือกประเภทความสัมพันธ์
 Select site logo image,เลือกภาพโลโก้เว็บไซต์
@@ -1169,6 +1176,12 @@ Send recovery email,ส่งอีเมลการกู้คืน
 Sending email,ส่งอีเมล
 Sending email description,นี่คือที่อยู่อีเมลที่จะปรากฏเป็นผู้ส่งเมื่อส่งอีเมลจากคอลเลกชัน Uwazi ของคุณไปยังผู้ใช้ที่ลงทะเบียน ที่อยู่อีเมลเริ่มต้นคือ *no-reply@uwazi.io* คุณสามารถตั้งค่าที่อยู่อีเมลที่กำหนดเองได้โดยใส่ที่อยู่อีเมลที่คุณต้องการที่นี่
 Sending labeled data,การส่งข้อมูลที่มีป้ายกำกับ
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,ซีรีส์
 Services,บริการ
 Set as default,ตั้งเป็นค่าเริ่มต้น

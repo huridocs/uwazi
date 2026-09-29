@@ -731,6 +731,7 @@ Members,အဖွဲ့ဝင်များ
 Menu,မီနူး
 Message,မက်ဆေ့ချ်
 Message sent,မက်ဆေ့ခ်ျ ပို့ပြီးပါပြီ။
+Meta description,Meta description
 Metadata,မီတာဒေတာ
 Metadata Extraction,မီတာဒေတာ ထုတ်ယူခြင်း
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -866,6 +867,9 @@ OCR error,OCR အမှား
 OCR error tip,ဖော်မတ်မမှန်ကန်မှုကြောင့် OCR အင်ဂျင်သည် စာရွက်စာတမ်းကို ဖတ်ရှု၍ မရနိုင်ပါ။ နောက်ဆုံးအပ်ဒိတ်
 OCR PDF,OCR PDF
 of,၏
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,အိုကေ
 OK,အိုကေ
 On this entity,ဤအဖွဲ့အစည်းအပေါ်
@@ -881,6 +885,7 @@ Only published entities are counted.,ထုတ်ဝေထားသော အဖ
 "Only the extractor will be deleted, all created entities will remain on the library.",extractor ကိုသာ ဖျက်မည်၊ ဖန်တီးထားသော အဖွဲ့အစည်းအားလုံးကို စာကြည့်တိုက်တွင် ဆက်လက်သိမ်းဆည်းထားမည်။
 Open,ဖွင့်
 Open entity,အဖွဲ့အစည်းကို ဖွင့်ပါ
+Open Graph,Open Graph
 Open group,အုပ်စုကို ဖွင့်ရန်
 Open link,လင့်ခ်ဖွင့်ပါ
 Open PDF,PDF ဖွင့်ပါ
@@ -901,6 +906,7 @@ p.,စာမျက်နှာ
 Page,စာမျက်နှာ
 Page not found,စာမျက်နှာ မတွေ့ပါ
 Page published successfully.,စာမျက်နှာကို အောင်မြင်စွာ ထုတ်ဝေခဲ့သည်။
+Page title,Page title
 Pages,စာမျက်နှာများ
 Paragrap number extraction property (numeric),ပိုဒ်နံပါတ်ထုတ်ယူခြင်း ဂုဏ်သတ္တိ (ဂဏန်း)
 Paragraph,ပိုဒ်
@@ -1130,6 +1136,7 @@ Select files on your device,သင့်စက်ပေါ်ရှိ ဖို
 Select from computer,ကွန်ပျူတာမှရွေးချယ်ပါ
 Select image,ပုံကိုရွေးပါ
 Select media,မီဒီယာကိုရွေးပါ
+Select Open Graph image,Select Open Graph image
 Select relationship,ဆက်နွယ်မှုကိုရွေးချယ်ပါ
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select site logo image,ဆိုက်လိုဂိုပုံကိုရွေးချယ်ပါ
@@ -1151,6 +1158,12 @@ Send recovery email,ပြန်လည်ရယူရန်အတွက် အ�
 Sending email,အီးမေးလ်ပို့ခြင်း
 Sending email description,ဤသည်မှာ သင့် Uwazi စုစည်းမှုမှ မှတ်ပုံတင်ထားသော အသုံးပြုသူများထံ အီးမေးလ်ပို့သည့်အခါ ပို့သူအဖြစ် ပြသမည့် အီးမေးလ်လိပ်စာဖြစ်သည်။ မူလလိပ်စာမှာ *no-reply@uwazi.io* ဖြစ်သည်။ သင်နှစ်သက်ရာ အီးမေးလ်လိပ်စာကို ဤနေရာတွင် ထည့်သွင်း၍ ကိုယ်ပိုင်လိပ်စာ သတ်မှတ်နိုင်သည်။
 Sending labeled data,အမှတ်အသားတပ်ထားသော ဒေတာ ပို့ခြင်း
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,စီးရီး
 Services,ဝန်ဆောင်မှုများ
 Set as default,နဂိုမူလအဖြစ် သတ်မှတ်ရန်

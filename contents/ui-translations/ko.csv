@@ -732,6 +732,7 @@ Members,멤버
 Menu,메뉴
 Message,메세지
 Message sent,메시지가 전송되었습니다
+Meta description,Meta description
 Metadata,메타데이터
 Metadata Extraction,메타데이터 추출
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -870,6 +871,9 @@ OCR error,OCR 에러
 OCR error tip,문서 형식이 올바르지 않아 OCR 엔진이 문서를 인식하지 못했습니다. 마지막 업데이트
 OCR PDF,PDF OCR 읽기
 of,의
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,확인
 OK,확인
 On this entity,이 엔티티에 관하여
@@ -888,6 +892,7 @@ Only published entities are counted.,공개된 엔티티만 집계됩니다.
 "Only the extractor will be deleted, all created entities will remain on the library.","추출기만 삭제되며, 생성된 모든 엔티티는 라이브러리에 그대로 남아 있습니다."
 Open,열기
 Open entity,엔티티 열기
+Open Graph,Open Graph
 Open group,그룹 펼치기
 Open link,링크 열기
 Open PDF,PDF 열기
@@ -908,6 +913,7 @@ p.,p.
 Page,페이지
 Page not found,페이지를 찾을 수 없습니다
 Page published successfully.,페이지가 성공적으로 게시되었습니다.
+Page title,Page title
 Pages,페이지
 Paragrap number extraction property (numeric),단락 번호 추출 속성 (숫자)
 Paragraph,문단
@@ -1140,6 +1146,7 @@ Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,컴퓨터에서 선택
 Select image,이미지 선택
 Select media,미디어 선택
+Select Open Graph image,Select Open Graph image
 Select relationship,관계 선택
 Select relationship type,연결 유형 선택
 Select site logo image,사이트 로고 이미지 선택
@@ -1161,6 +1168,12 @@ Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,이 이메일 주소는 귀하의 Uwazi 컬렉션에서 등록된 사용자에게 이메일을 보낼 때 발신자로 표시되는 주소입니다. 기본 주소는 *no-reply@uwazi.io*입니다. 여기에 원하는 이메일 주소를 입력하여 사용자 지정 주소를 설정할 수 있습니다.
 Sending labeled data,라벨이 지정된 데이터 전송
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,시리즈
 Services,서비스
 Set as default,기본으로 설정

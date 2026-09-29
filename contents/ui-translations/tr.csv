@@ -739,6 +739,7 @@ Members,Üyeler
 Menu,Menü
 Message,Mesaj
 Message sent,Mesaj gönderildi
+Meta description,Meta description
 Metadata,Meta veri
 Metadata Extraction,Meta veri özütleme
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -877,6 +878,9 @@ OCR error,OKT hatası
 OCR error tip,"OCR motoru, biçim hatası nedeniyle belgeyi okuyamadı. Son güncelleme tarihi"
 OCR PDF,OKT PDF
 of,nın-nin
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Tamam
 OK,TAMAM
 On this entity,Bu varlıkta
@@ -895,6 +899,7 @@ seçim için kullanılabilir."
 "Only the extractor will be deleted, all created entities will remain on the library.","Yalnızca çıkarıcı silinecek, oluşturulan tüm varlıklar kütüphanede kalacaktır."
 Open,Aç
 Open entity,Varlığı aç
+Open Graph,Open Graph
 Open group,Grubu aç
 Open link,Bağlantıyı aç
 Open PDF,PDF'yi aç
@@ -915,6 +920,7 @@ p.,s.
 Page,Sayfa
 Page not found,Sayfa bulunamadı
 Page published successfully.,Sayfa başarıyla yayınlandı.
+Page title,Page title
 Pages,Sayfalar
 Paragrap number extraction property (numeric),Paragraf numarası çıkarma özelliği (sayısal)
 Paragraph,Paragraf
@@ -1147,6 +1153,7 @@ Select files on your device,Cihazınızdaki dosyaları seçin
 Select from computer,Bilgisayardan seçin
 Select image,Resmi seç
 Select media,Medya seçin
+Select Open Graph image,Select Open Graph image
 Select relationship,İlişkiyi seçin
 Select relationship type,İlişki türü seç
 Select site logo image,Site logosu resmini seçin
@@ -1168,6 +1175,12 @@ Send recovery email,Kurtarma e-postası gönder
 Sending email,E-posta gönderme
 Sending email description,"Bu, Uwazi koleksiyonunuzdan kayıtlı kullanıcılara e-posta gönderildiğinde gönderen olarak görünecek e-posta adresidir. Varsayılan adres *no-reply@uwazi.io* şeklindedir. Buraya istediğiniz e-posta adresini girerek özel bir adres belirleyebilirsiniz."
 Sending labeled data,Etiketli veriler gönderiliyor
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Dizi
 Services,Hizmetler
 Set as default,Varsayılan olarak ayarla
