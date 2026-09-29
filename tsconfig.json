@@ -48,6 +48,7 @@
     "playwright",
     "scripts/scripts.v2/*",
     "scripts/elasticSearch/*",
+    "scripts/checkTranslations/**/*",
     ".storybook"
   ],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]

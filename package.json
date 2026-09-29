@@ -49,7 +49,7 @@
     "dev-queue": "tsx --no-experimental-fetch --max-old-space-size=1024 --inspect=9230 ./app/queueWorker.ts",
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "generateAutomaticTranslationConfig": "tsx --no-experimental-fetch ./scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
-    "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
+    "check-translations": "tsx --no-experimental-fetch ./scripts/checkTranslations/index.ts",
     "update-translations-db": "node ./scripts/runner.js ./scripts/updateTranslationsDB.js",
     "update-translations-csv": "node --no-experimental-fetch ./scripts/updateTranslationsCSV.mjs",
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
