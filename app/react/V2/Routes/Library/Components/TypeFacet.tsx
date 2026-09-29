@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -6,6 +6,7 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import { toggleValue } from './NestedFacet.js';
 import { FacetCard, FacetRow, TreeChildren } from './FacetCard.js';
+import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 import {
   toggleTypeGroup,
   typeFilterItems,
@@ -16,24 +17,20 @@ type TypeFacetProps = {
   aggregations: LibraryAggregations;
   typeIds: string[];
   setFilter: (key: string, values: string[]) => void;
-  open: boolean;
+  open?: boolean;
 };
 
 const useTypeGroupExpansion = (items: LibraryTypeFilterItem[], typeIds: string[]) => {
   const reserveGutter = items.some(item => Boolean(item.items?.length));
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(
-      items
-        .filter(item => item.items?.some(child => typeIds.includes(child.id)))
-        .map(item => [item.id, true])
-    )
-  );
-  const toggleExpanded = (id: string) =>
-    setExpanded(current => ({ ...current, [id]: !current[id] }));
+  const groupIds = items.filter(item => item.items?.length).map(item => item.id);
+  const initiallyExpandedIds = items
+    .filter(item => item.items?.some(child => typeIds.includes(child.id)))
+    .map(item => item.id);
+  const { expanded, toggleExpanded } = useNestedGroupExpansion(groupIds, initiallyExpandedIds);
   return { expanded, reserveGutter, toggleExpanded };
 };
 
-const TypeFacet = ({ aggregations, typeIds, setFilter, open }: TypeFacetProps) => {
+const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetProps) => {
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
   const items = typeFilterItems(settings.filters, templates);

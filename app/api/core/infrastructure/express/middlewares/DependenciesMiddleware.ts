@@ -2,13 +2,8 @@ import { randomUUID } from 'crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
-import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
+import { ExecutionContextFactory } from '../../factories/ExecutionContextFactory.js';
 import { getRouteInfo } from '#api/core/infrastructure/express/RouteLabel.js';
 
 const dependenciesContextMiddleware = (
@@ -40,19 +35,12 @@ const dependenciesContextMiddleware = (
   });
 
   return ExecutionContext.run(
-    {
+    ExecutionContextFactory.build({
       tenant,
       actor,
       correlationId,
-      factories: {
-        ...transactionManagerFactories(),
-        jobsDispatcher: JobsDispatcherFactory.default,
-        eventEmitter: EventEmitterFactory.default,
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-        telemetryCollector: () => new TelemetryCollector('http_request', request.startPerfMs),
-      },
-    },
+      telemetry: { kind: 'http_request', startPerfMs: request.startPerfMs },
+    }),
     next
   );
 };

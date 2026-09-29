@@ -15,6 +15,7 @@ import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LoadMore } from '../LoadMore.js';
 import { LibraryTableCell } from '../LibraryTableCell.js';
 import { formatLibraryTableDate, libraryTableCellValue } from '../libraryTableCellValue.js';
+import { nextLibrarySort } from '../librarySort.js';
 import { columnMatchKey, type LibraryTableColumnDef } from '../libraryTableColumns.js';
 import type { LibraryViewerProps } from './types.js';
 
@@ -135,9 +136,8 @@ const TableViewer = ({
           onSort={
             onSortChange
               ? key => {
-                  const currentSort = sort || 'creationDate';
-                  const nextOrder = currentSort === key && order === 'desc' ? 'asc' : 'desc';
-                  onSortChange(key, nextOrder);
+                  const next = nextLibrarySort(sort || '', order, key);
+                  onSortChange(next.sort, next.order);
                 }
               : undefined
           }

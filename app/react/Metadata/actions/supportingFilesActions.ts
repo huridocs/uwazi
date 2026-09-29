@@ -1,8 +1,8 @@
-import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { readFileAsBase64 } from '#shared/fileUploadUtils.js';
 import uniqueID from '#shared/uniqueID.js';
 import * as types from '../../Attachments/actions/actionTypes.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 const uploadLocalAttachment =
   (
@@ -11,7 +11,7 @@ const uploadLocalAttachment =
     storeKeys: { __reducerKey: string; model: string },
     fileLocalID?: string
   ) =>
-  async (dispatch: Dispatch<{}>): Promise<void> => {
+  async (dispatch: AppDispatch): Promise<void> => {
     await readFileAsBase64(file, info => {
       const newFile = {
         originalname: file.name,
@@ -33,7 +33,7 @@ const uploadLocalAttachmentFromUrl =
     formData: { url: string; name: string },
     storeKeys: { __reducerKey: string; model: string }
   ) =>
-  (dispatch: Dispatch<{}>) => {
+  (dispatch: AppDispatch) => {
     const { name, url } = formData;
     const newUrl = {
       originalname: name,
@@ -44,7 +44,7 @@ const uploadLocalAttachmentFromUrl =
     dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
   };
 
-const attachmentCompleted = (entitySharedId: string) => (dispatch: Dispatch<{}>) => {
+const attachmentCompleted = (entitySharedId: string) => (dispatch: AppDispatch) => {
   dispatch({ type: types.ATTACHMENT_LOCAL_COMPLETE, entity: entitySharedId });
 };
 

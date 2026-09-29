@@ -11,11 +11,16 @@ const PaneLayout = ({
   defaultRatios,
   minPaneRatios,
   className = '',
+  requestedPane,
 }: PaneLayoutProps) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    return <PaneLayoutMobile className={className}>{children}</PaneLayoutMobile>;
+    return (
+      <PaneLayoutMobile className={className} requestedPane={requestedPane}>
+        {children}
+      </PaneLayoutMobile>
+    );
   }
 
   return (

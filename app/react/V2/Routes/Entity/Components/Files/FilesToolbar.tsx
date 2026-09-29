@@ -24,8 +24,8 @@ const FilesToolbar = ({
   const allSelected = totalCount > 0 && selectedCount === totalCount;
 
   return (
-    <div className="flex w-full items-center justify-between gap-2">
-      <div className="flex items-center gap-3">
+    <div className="flex w-full flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <EntityWriteAuthorization>
           <Button variant="warm" onClick={onAddFile} className="inline-flex items-center gap-1.5">
             <span className="text-ink-tertiary">+</span>

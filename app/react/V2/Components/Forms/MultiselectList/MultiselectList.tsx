@@ -53,7 +53,7 @@ interface MultiselectListProps {
 }
 
 const WrapChild = ({ children }: { children: string | React.ReactNode }) =>
-  isString(children) ? <Translate>{children}</Translate> : children;
+  isString(children) ? <Translate>{children}</Translate> : <>{children}</>;
 
 const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
   const filtered: MultiselectListOption[] = [];

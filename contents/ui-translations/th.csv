@@ -140,9 +140,11 @@ Attachment renamed,เปลี่ยนชื่อไฟล์แนบแล�
 Attachment uploaded,ไฟล์แนบได้อัปโหลดแล้ว
 Attachments,สิ่งที่แนบมา
 Authentication code,รหัสผ่าน
+Auto,Auto
 auto created,สร้างอัตโนมัติ
 Auto-accept suggestions,ยอมรับข้อเสนอแนะโดยอัตโนมัติ
 auto-created,สร้างขึ้นอัตโนมัติ
+Auto-translate,Auto-translate
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,การแปลตามค่าเริ่มต้นที่มีอยู่
@@ -194,6 +196,7 @@ Chart type uses a custom view,ประเภทกราฟใช้มุม�
 Check to make this instance public (non-logged in users can see public documents and entities),ทำเครื่องหมายเพื่อกำหนดให้อินสแตนซ์นี้เป็นสาธารณะ (ผู้ใช้ที่ยังไม่ได้เข้าสู่ระบบสามารถดูเอกสารและเอนทิตีสาธารณะได้)
 Checking which images fit the requirements,กำลังตรวจสอบภาพใดที่ตรงกับข้อกำหนด...
 Choose,เลือก
+Choose PDF files,Choose PDF files
 Choose relation type,เลือกประเภทความสัมพันธ์
 Choose which data to use for training,เลือกข้อมูลที่จะใช้ในการฝึกอบรม
 Chrome header,ส่วนหัวของ Chrome
@@ -468,8 +471,10 @@ Entity updated,อัปเดตข้อมูลเอนทิตีแล�
 Error,ข้อผิดพลาด
 Error adding thesauri.,เกิดข้อผิดพลาดขณะเพิ่มพจนานุกรมคำพ้องความหมาย
 Error loading your image,เกิดข้อผิดพลาดขณะโหลดภาพของคุณ
+Error loading your media,Error loading your media
 Error saving template.,เกิดข้อผิดพลาดขณะบันทึกแม่แบบ
 Error updating thesauri.,เกิดข้อผิดพลาดในการอัปเดตพจนานุกรมคำพ้องความหมาย
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,หลักฐาน
 exact phrase,วลีที่ตรงกัน
 Expand all,แสดงทั้งหมด
@@ -587,7 +592,6 @@ ID:,ID:
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Image doesn't match the required size.,ภาพไม่ตรงกับขนาดที่กำหนด
 Import,นำเข้า
-Import / Export CSV,นำเข้า / ส่งออก CSV
 Import asset,นำเข้าสินทรัพย์
 Import CSV,นำเข้า CSV
 Import failed. Review details below.,การนำเข้าไม่สำเร็จ โปรดตรวจสอบรายละเอียดด้านล่าง
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,เส้นลองจิจูดต�
 Lookup help,ดูวิธีใช้
 Lost connection to the server. Your changes may be lost,สูญเสียการเชื่อมต่อกับเซิร์ฟเวอร์ การเปลี่ยนแปลงของคุณอาจสูญหาย
 low,ต่ำ
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,จัดการประเภทความสัมพันธ์
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
 Manage types,จัดการประเภท
@@ -898,6 +903,7 @@ Open the two-factor Authenticator app on your device,กรุณาเปิด
 Options,ตัวเลือก
 or,หรือ
 or drag and drop here,หรือลากและวางที่นี่
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
 Or paste a URL,หรือวาง URL ลงมา
 Order,คำสั่ง
@@ -1358,6 +1364,7 @@ This table of contents was automatically created by the system.,สารบั�
 this template,แม่แบบนี้
 This template is in use by existing entities and cannot be deleted.,แม่แบบนี้กำลังถูกใช้โดยเอนทิตีที่มีอยู่และไม่สามารถลบได้
 Thumbnail,ภาพขนาดย่อ
+Thumbnail frame,Thumbnail frame
 Time,เวลา
 Time (UTC),เวลา (UTC)
 Timeline,เส้นเวลา
@@ -1385,7 +1392,9 @@ Training,การฝึกอบรม
 Training model,กำลังฝึกโมเดล
 Training sample,ตัวอย่างการฝึกอบรม
 Translate,แปลภาษา
+Translating,Translating
 Translation,การแปล
+Translation service is unavailable,Translation service is unavailable
 Translations,การแปล
 Translations imported.,ได้นำเข้าการแปลแล้ว
 Translations reset successfully,การตั้งค่าการแปลได้คืนค่าสำเร็จแล้ว
@@ -1432,6 +1441,7 @@ Updated translations,การแปลที่อัปเดตแล้ว
 Updated user,ผู้ใช้ที่อัปเดตแล้ว
 Updating template properties across,อัปเดตคุณสมบัติของเทมเพลตในทุกส่วน
 Updating…,กำลังอัปเดต…
+Upload,Upload
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
 Upload image,อัปโหลดรูปภาพ

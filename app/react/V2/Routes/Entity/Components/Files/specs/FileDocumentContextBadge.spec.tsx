@@ -11,7 +11,7 @@ const mockRequestAddFile = jest.fn();
 let mockPrimaryRows: EntityFileRow[] = [];
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
-  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => children,
+  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('../EntityFilesContext', () => ({

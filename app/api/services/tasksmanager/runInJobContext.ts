@@ -1,30 +1,6 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
-import { tenants } from '#api/tenants/tenantContext.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 
-const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Promise<void> => {
-  await tenants.run(async () => {
-    const tenant = tenants.current();
-    await ExecutionContext.run(
-      {
-        tenant,
-        factories: {
-          ...transactionManagerFactories(),
-          jobsDispatcher: JobsDispatcherFactory.default,
-          eventEmitter: () => EventEmitterFactory.default(),
-          idGenerator: IdGeneratorFactory.default,
-          logger: LoggerFactory.default,
-          telemetryCollector: () => new TelemetryCollector('queue_job'),
-        },
-      },
-      fn
-    );
-  }, tenantName);
-};
+const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Promise<void> =>
+  ExecutionContextFactory.runForTenant(tenantName, { telemetry: { kind: 'queue_job' } }, fn);
 
 export { runInJobContext };

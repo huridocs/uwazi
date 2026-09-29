@@ -5,7 +5,6 @@ import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
@@ -27,11 +26,8 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
-import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
@@ -39,6 +35,7 @@ import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/job
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -72,17 +69,11 @@ function register<T extends Dispatchable>(
     const isSystem = isPrivilegedJob(dispatchable);
 
     await tenants.run(async () => {
-      deps = {
+      deps = ExecutionContextFactory.build({
         tenant: tenants.current(),
-        factories: {
-          ...transactionManagerFactories(),
-          jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace),
-          eventEmitter: EventEmitterFactory.default,
-          idGenerator: IdGeneratorFactory.default,
-          logger: LoggerFactory.default,
-          telemetryCollector: () => new TelemetryCollector('queue_job'),
-        },
-      };
+        telemetry: { kind: 'queue_job' },
+        overrides: { jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace) },
+      });
 
       const { userId } = job.params as any;
 

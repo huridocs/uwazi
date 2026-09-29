@@ -41,6 +41,7 @@
   },
   "include": [
     "app",
+    "apps",
     "external_modules",
     "database",
     "e2e",

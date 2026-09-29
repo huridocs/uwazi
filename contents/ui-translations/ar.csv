@@ -140,9 +140,11 @@ Attachment renamed,تم تغيير اسم المرفق
 Attachment uploaded,تم تحميل المرفق
 Attachments,المرفقات
 Authentication code,رمز المصادقة
+Auto,Auto
 auto created,تم إنشاؤه تلقائيًا
 Auto-accept suggestions,القبول التلقائي للاقتراحات
 auto-created,منشأ تلقائياً
+Auto-translate,Auto-translate
 Automatic Table of Contents,جدول محتويات تلقائي
 Automatically generated,منشأ تلقائياً
 Available default translation,الترجمة الافتراضية المتاحة
@@ -193,6 +195,7 @@ Chart type uses a custom view,يستخدم نوع المخطط طريقة عرض
 Check to make this instance public (non-logged in users can see public documents and entities),حدد هذا الخيار لجعل هذه الحالة عامة (يمكن للمستخدمين غير المسجلين الاطلاع على المستندات والكيانات العامة)
 Checking which images fit the requirements,التحقق من الصور التي تتوافق مع المتطلبات...
 Choose,اختر
+Choose PDF files,Choose PDF files
 Choose relation type,اختر نوع العلاقة
 Choose which data to use for training,اختر البيانات التي تريد استخدامها للتدريب
 Chrome header,الشريط العلوي
@@ -467,8 +470,10 @@ Entity updated,تم تحديث الكيان
 Error,خطأ
 Error adding thesauri.,حدث خطأ أثناء إضافة قواميس المرادفات.
 Error loading your image,حدث خطأ أثناء تحميل صورتك
+Error loading your media,Error loading your media
 Error saving template.,حدث خطأ أثناء حفظ القالب.
 Error updating thesauri.,حدث خطأ أثناء تحديث قوائم المرادفات.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,دليل
 exact phrase,العبارة بالضبط
 Expand all,توسيع كل العناصر
@@ -586,7 +591,6 @@ ID:,رقم التعريف:
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Image doesn't match the required size.,الصورة لا تتوافق مع الحجم المطلوب.
 Import,استيراد
-Import / Export CSV,استيراد / تصدير ملفات CSV
 Import asset,استيراد الأصول
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import failed. Review details below.,فشل الاستيراد. راجع التفاصيل أدناه.
@@ -690,6 +694,7 @@ Longitude must be between -180 and 180,يجب أن يكون خط الطول بي
 Lookup help,مساعدة في البحث
 Lost connection to the server. Your changes may be lost,انقطع الاتصال بالخادم. قد تُفقد التغييرات التي أجريتها
 low,منخفض/ أدنى/ قليل/ صغير
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,إدارة أنواع العلاقات
 Manage site settings and configuration,إدارة إعدادات الموقع
 Manage types,إدارة الأنواع
@@ -897,6 +902,7 @@ Open the two-factor Authenticator app on your device,افتح تطبيق الم�
 Options,خيارات
 or,أو
 or drag and drop here,أو اسحب وأسقط هنا
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,أو أفلت ملفاتك هنا
 Or paste a URL,أو الصق عنوان URL
 Order,ترتيب
@@ -1357,6 +1363,7 @@ This table of contents was automatically created by the system.,تم إنشاء 
 this template,هذا النموذج
 This template is in use by existing entities and cannot be deleted.,هذا القالب قيد الاستخدام من قبل كيانات قائمة ولا يمكن حذفه.
 Thumbnail,صورة مصغرة
+Thumbnail frame,Thumbnail frame
 Time,زمن
 Time (UTC),الوقت (UTC)
 Timeline,الجدول الزمني
@@ -1384,7 +1391,9 @@ Training,التدريب
 Training model,جارٍ تدريب النموذج
 Training sample,نموذج تدريبي
 Translate,ترجم
+Translating,Translating
 Translation,الترجمة
+Translation service is unavailable,Translation service is unavailable
 Translations,الترجمات
 Translations imported.,تم استيراد الترجمات.
 Translations reset successfully,تم إعادة تعيين الترجمات بنجاح
@@ -1431,6 +1440,7 @@ Updated translations,تم تحديث الترجمات
 Updated user,تم تحديث المستخدم
 Updating template properties across,تحديث خصائص القوالب في جميع أنحاء
 Updating…,جاري التحديث…
+Upload,Upload
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب
 Upload image,تحميل صورة
@@ -1477,7 +1487,7 @@ Validating file structure and headers.,التحقق من صحة بنية الم�
 Value,قيمة
 Value cannot be transformed to the correct type,لا يمكن تحويل القيمة إلى النوع الصحيح
 values,القيم
-"values are staged, not saved","القيم قيد التجهيز، لم تُحفظ بعد"
+"values are staged, not saved",القيم قيد التجهيز، لم تُحفظ بعد
 Verify,تحقق
 Verifying...,تحقق..
 via,عبر

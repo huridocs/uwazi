@@ -16,6 +16,7 @@ const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): En
   stageSideTab: noop,
   focusRelationshipsPanel: noop,
   focusDocumentPanel: noop,
+  showSidePane: noop,
   ...overrides,
 });
 

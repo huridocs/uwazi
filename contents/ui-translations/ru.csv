@@ -140,9 +140,11 @@ Attachment renamed,Вложение переименовано
 Attachment uploaded,Вложение загружено
 Attachments,Вложения
 Authentication code,Код аутентификации
+Auto,Auto
 auto created,создано автоматически
 Auto-accept suggestions,Автоматически принимать предложения
 auto-created,автоматически созданный
+Auto-translate,Auto-translate
 Automatic Table of Contents,Автоматическое оглавление
 Automatically generated,Генерируется автоматически
 Available default translation,Доступный перевод по умолчанию
@@ -194,6 +196,7 @@ Chart type uses a custom view,В этом типе диаграммы испол
 Check to make this instance public (non-logged in users can see public documents and entities),"Установите флажок, чтобы сделать этот экземпляр общедоступным (пользователи, не вошедшие в систему, смогут просматривать общедоступные документы и объекты)"
 Checking which images fit the requirements,"Проверка того, какие изображения соответствуют требованиям..."
 Choose,Выберите
+Choose PDF files,Choose PDF files
 Choose relation type,Выберите тип связи
 Choose which data to use for training,"Выберите, какие данные использовать для обучения"
 Chrome header,Заголовок верхней панели
@@ -468,8 +471,10 @@ Entity updated,Объект обновлен
 Error,Ошибка
 Error adding thesauri.,Ошибка при добавлении тезаурусов.
 Error loading your image,Ошибка при загрузке изображения
+Error loading your media,Error loading your media
 Error saving template.,Ошибка при сохранении шаблона.
 Error updating thesauri.,Ошибка при обновлении тезаурусов.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,доказательства
 exact phrase,точная фраза
 Expand all,Развернуть всё
@@ -587,7 +592,6 @@ ID:,ID:
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Image doesn't match the required size.,Изображение не соответствует требуемому размеру.
 Import,Импортировать
-Import / Export CSV,Импорт/экспорт CSV
 Import asset,Импортировать ресурс
 Import CSV,Импортировать CSV
 Import failed. Review details below.,Импорт не удался. Ознакомьтесь с подробностями ниже.
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,Долгота должна находи�
 Lookup help,Справка по поиску
 Lost connection to the server. Your changes may be lost,Связь с сервером прервана. Ваши изменения могут быть утеряны
 low,низкий
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Управление типами связей
 Manage site settings and configuration,Управление сайтом и конфигурация
 Manage types,Управление типами
@@ -896,6 +901,7 @@ Open the two-factor Authenticator app on your device,Откройте прило
 Options,Параметры
 or,или
 or drag and drop here,или перетащите сюда
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,или опустите свои файлы сюда.
 Or paste a URL,Или вставьте URL-адрес
 Order,Последовательность
@@ -1353,6 +1359,7 @@ This table of contents was automatically created by the system.,Данное о�
 this template,этот шаблон
 This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
 Thumbnail,Миниатюра
+Thumbnail frame,Thumbnail frame
 Time,Время
 Time (UTC),Время (UTC)
 Timeline,Хронология
@@ -1380,7 +1387,9 @@ Training,Обучение
 Training model,Обучение модели
 Training sample,Обучающая выборка
 Translate,Перевести
+Translating,Translating
 Translation,Перевод
+Translation service is unavailable,Translation service is unavailable
 Translations,Переводы
 Translations imported.,Переводы импортированы.
 Translations reset successfully,Переводы успешно сброшены
@@ -1427,6 +1436,7 @@ Updated translations,Обновленные переводы
 Updated user,Обновленный пользователь
 Updating template properties across,Обновление свойств шаблонов в
 Updating…,Обновляется…
+Upload,Upload
 Upload and select file,Загрузить и выбрать файл
 Upload from computer,Загрузить с компьютера
 Upload image,Загрузить изображение

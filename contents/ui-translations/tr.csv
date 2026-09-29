@@ -140,9 +140,11 @@ Attachment renamed,Ekin adı değiştirildi
 Attachment uploaded,Ek yüklendi
 Attachments,Ekler
 Authentication code,Kimlik doğrulama kodu
+Auto,Auto
 auto created,otomatik olarak oluşturuldu
 Auto-accept suggestions,Önerileri otomatik olarak kabul et
 auto-created,otomatik oluşturulmuş
+Auto-translate,Auto-translate
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
 Available default translation,Mevcut varsayılan çeviri
@@ -194,6 +196,7 @@ Chart type uses a custom view,"Grafik türü, özel bir görünüm kullanır"
 Check to make this instance public (non-logged in users can see public documents and entities),"Bu örneğin herkese açık olmasını sağlamak için işaretleyin (giriş yapmamış kullanıcılar, herkese açık belgeleri ve varlıkları görebilir)"
 Checking which images fit the requirements,Hangi resimlerin gereksinimlere uygun olduğu kontrol ediliyor...
 Choose,Seç
+Choose PDF files,Choose PDF files
 Choose relation type,İlişki türünü seçin
 Choose which data to use for training,Eğitim için hangi verilerin kullanılacağını seçin
 Chrome header,Başlık çubuğu
@@ -468,8 +471,10 @@ Entity updated,Varlık güncellendi
 Error,Hata
 Error adding thesauri.,Thesaurus eklenirken hata oluştu.
 Error loading your image,Resminiz yüklenirken hata oluştu
+Error loading your media,Error loading your media
 Error saving template.,Şablonu kaydetme hatası.
 Error updating thesauri.,Thesaurus güncellenirken hata oluştu.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,kanıt
 exact phrase,tam ifade
 Expand all,Tümünü genişlet
@@ -587,7 +592,6 @@ ID:,Kimlik:
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Image doesn't match the required size.,"Görsel, istenen boyuta uymuyor."
 Import,İçe aktar
-Import / Export CSV,CSV İçe Aktarma / Dışa Aktarma
 Import asset,Dosya içe aktar
 Import CSV,CSV'yi içe aktar
 Import failed. Review details below.,İçe aktarma başarısız oldu. Aşağıdaki ayrıntıları inceleyin.
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,"Boylam, -180 ile 180 arasında olmalıd�
 Lookup help,Arama yardımı
 Lost connection to the server. Your changes may be lost,Sunucuyla bağlantı kesildi. Yaptığınız değişiklikler kaybolabilir.
 low,düşük
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,İlişki türlerini yönetme
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
 Manage types,Türleri yönet
@@ -897,6 +902,7 @@ Open the two-factor Authenticator app on your device,Cihazınızda iki faktörl�
 Options,Seçenekler
 or,ya da
 or drag and drop here,ya da buraya sürükleyip bırakın
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,veya dosyalarınızı buraya bırakın.
 Or paste a URL,Ya da bir URL yapıştırın
 Order,Düzen
@@ -1357,6 +1363,7 @@ This table of contents was automatically created by the system.,Bu içindekiler 
 this template,bu şablon
 This template is in use by existing entities and cannot be deleted.,"Bu şablon, mevcut varlıklar tarafından kullanılmaktadır ve silinemez."
 Thumbnail,Küçük resim
+Thumbnail frame,Thumbnail frame
 Time,Saat
 Time (UTC),Saat (UTC)
 Timeline,Zaman Çizelgesi
@@ -1384,7 +1391,9 @@ Training,Eğitim
 Training model,Model eğitiliyor
 Training sample,Eğitim örneği
 Translate,Çevir
+Translating,Translating
 Translation,Çeviri
+Translation service is unavailable,Translation service is unavailable
 Translations,Çeviriler
 Translations imported.,Çeviriler içe aktarıldı.
 Translations reset successfully,Çeviriler başarıyla sıfırlandı
@@ -1431,6 +1440,7 @@ Updated translations,Güncellenen çeviriler
 Updated user,Güncellenen kullanıcı
 Updating template properties across,Şablon özellikleri güncelleniyor —
 Updating…,Güncelleniyor…
+Upload,Upload
 Upload and select file,Dosya yükle ve seç
 Upload from computer,Bilgisayardan yükle
 Upload image,Resim yükle

@@ -1,8 +1,9 @@
-import React, { useState, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import nestedPropertyLabels from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
 import { FacetCard, FacetRow, TreeChildren } from './FacetCard.js';
+import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 
 type NestedFacetProps = {
   title: ReactNode;
@@ -43,12 +44,10 @@ const NestedFacet = ({
   defaultExpanded = false,
 }: NestedFacetProps) => {
   const reserveGutter = groups.some(group => Boolean(group.values?.length));
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
-    defaultExpanded
-      ? Object.fromEntries(
-          groups.filter(group => group.values?.length).map(group => [group.id, true])
-        )
-      : {}
+  const expandableIds = groups.filter(group => group.values?.length).map(group => group.id);
+  const { expanded, toggleExpanded } = useNestedGroupExpansion(
+    expandableIds,
+    defaultExpanded ? expandableIds : []
   );
 
   return (
@@ -70,9 +69,7 @@ const NestedFacet = ({
               expandable={children.length > 0}
               expanded={isExpanded}
               reserveGutter={reserveGutter}
-              onExpand={() =>
-                setExpanded(current => ({ ...current, [group.id]: !current[group.id] }))
-              }
+              onExpand={() => toggleExpanded(group.id)}
             />
             {isExpanded && children.length > 0 && (
               <TreeChildren>

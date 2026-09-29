@@ -1,14 +1,13 @@
 /* eslint-disable max-lines */
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
-import MongoStore from 'connect-mongo';
 import * as cookie from 'cookie';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import session, { type SessionData, type Store as SessionStore } from 'express-session';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
-import { DB } from '#api/odm/index.js';
+import { createHttpSessionStore } from '#api/auth/httpSessionStore.js';
 import { handleError } from '#api/utils/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
@@ -44,14 +43,7 @@ const getSessionStore = (): SessionStore => {
   }
 
   try {
-    sessionStore = MongoStore.create({
-      touchAfter: 24 * 3600,
-      dbName: config.SHARED_DB,
-      client: DB.connectionForDB(config.SHARED_DB, {
-        useCache: true,
-        noListener: false,
-      }).getClient(),
-    });
+    sessionStore = createHttpSessionStore();
   } catch (_) {
     // Fallback for environments (such as isolated tests) where DB has not been initialized.
     sessionStore = new session.MemoryStore();

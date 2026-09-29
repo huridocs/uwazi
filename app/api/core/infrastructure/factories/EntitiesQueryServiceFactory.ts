@@ -6,8 +6,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { RelationshipsV1DataSourceFactory } from './RelationshipsV1DataSourceFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
@@ -30,13 +29,7 @@ class EntitiesQueryServiceFactory {
       templatesDAO: deps?.templatesDAO ?? TemplatesDAOFactory.default(),
       entityDAO: deps?.entityDAO ?? EntitiesDAOFactory.default({ user, transactionManager }),
       relationshipsDataSource:
-        deps?.relationshipsDataSource ??
-        new MongoRelationshipsV1DataSource(
-          getConnection(),
-          ExecutionContext.mongoTransactionManager,
-          EntitiesDAOFactory.default({ user, transactionManager }),
-          SettingsDataSourceFactory.default()
-        ),
+        deps?.relationshipsDataSource ?? RelationshipsV1DataSourceFactory.default(),
     });
   }
 }

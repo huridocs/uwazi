@@ -3,9 +3,14 @@
  *
  * Usage:
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> [--force]
+ *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions
  *
- * Migrates the collections gated by the tenant's active Postgres feature flags
+ * --tenant migrates the collections gated by that tenant's active Postgres feature flags
  * (postgresCore, postgresPages, postgresCsv).
+ *
+ * --sessions copies the shared-database `sessions` collection into `http_sessions` once,
+ * for every tenant. It does not take a tenant and it does not write a tenant column.
+ * Re-running leaves rows that are already there.
  *
  * By default a collection is skipped when its PostgreSQL table already contains
  * data for the tenant. Pass --force to migrate anyway (non-destructive: existing
@@ -25,6 +30,7 @@ import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/mig
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
 import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/RelationshipTypesMigrationConfig.js';
+import { ConnectionsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ConnectionsMigrationConfig.js';
 import { UsersMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UsersMigrationConfig.js';
 import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UserGroupsMigrationConfig.js';
 import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
@@ -47,12 +53,14 @@ import { CsvImportRowErrorsMigrationConfig } from '#api/csv.v2/infrastructure/po
 import { CsvImportThesauriValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportThesauriValuesMigrationConfig.js';
 import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipPendingValuesMigrationConfig.js';
 import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
+import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
 
 const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
   files: FilesMigrationConfig,
   relationship_types: RelationshipTypesMigrationConfig,
+  connections: ConnectionsMigrationConfig,
   users: UsersMigrationConfig,
   usergroups: UserGroupsMigrationConfig,
   password_recoveries: PasswordRecoveryMigrationConfig,
@@ -88,6 +96,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'password_recoveries',
     'translations',
     'entities',
+    'connections',
     'ix_extractors',
     'ix_models',
     'ix_suggestions',
@@ -117,7 +126,11 @@ const argv = yargs(hideBin(process.argv))
     alias: 't',
     type: 'string',
     describe: 'Tenant to migrate collections for',
-    demandOption: true,
+  })
+  .option('sessions', {
+    type: 'boolean',
+    describe: 'Copy HTTP sessions from the shared database into http_sessions. Not per tenant.',
+    default: false,
   })
   .option('force', {
     alias: 'f',
@@ -125,6 +138,12 @@ const argv = yargs(hideBin(process.argv))
     describe:
       'Migrate collections even if the PostgreSQL table already contains data (non-destructive)',
     default: false,
+  })
+  .check(args => {
+    if (!args.sessions && !args.tenant) {
+      throw new Error('Missing required argument: tenant (or pass --sessions)');
+    }
+    return true;
   })
   .strict()
   .parseSync();
@@ -172,14 +191,28 @@ function assertKnownTenant(tenantName: string): void {
 async function run(): Promise<void> {
   await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
-  assertKnownTenant(argv.tenant);
 
-  const tenant = tenants.tenants[argv.tenant];
+  if (argv.sessions) {
+    const result = await copyHttpSessions(DB.mongodb_Db(config.SHARED_DB));
+    log(
+      `Copied ${result.copied} http sessions from ${config.SHARED_DB} (${result.alreadyPresent} already present).`
+    );
+    await cleanup();
+    return;
+  }
+
+  const tenantName = argv.tenant;
+  if (!tenantName) {
+    throw new Error('Missing required argument: tenant');
+  }
+  assertKnownTenant(tenantName);
+
+  const tenant = tenants.tenants[tenantName];
   const flags = Object.keys(FLAG_GROUPS) as (keyof typeof FLAG_GROUPS)[];
 
   for (const flag of flags) {
     if (!tenant.featureFlags?.[flag]) {
-      log(`[${argv.tenant}] Skipping ${flag} group: feature flag is not active`);
+      log(`[${tenantName}] Skipping ${flag} group: feature flag is not active`);
     }
   }
 
@@ -188,14 +221,14 @@ async function run(): Promise<void> {
     .flatMap(flag => FLAG_GROUPS[flag]);
 
   if (collectionsToMigrate.length === 0) {
-    log(`[${argv.tenant}] No collections to migrate: no active Postgres feature flags`);
+    log(`[${tenantName}] No collections to migrate: no active Postgres feature flags`);
     await cleanup();
     return;
   }
 
   for (const collectionName of collectionsToMigrate) {
     // eslint-disable-next-line no-await-in-loop
-    await migrateCollection(argv.tenant, collectionName, COLLECTIONS[collectionName]);
+    await migrateCollection(tenantName, collectionName, COLLECTIONS[collectionName]);
   }
 
   log('Migration completed successfully.');

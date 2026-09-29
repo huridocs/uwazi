@@ -10,15 +10,15 @@ import type {
 import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
-import {
-  MongoRelationshipsV1DataSource,
-  type HubConnection,
-} from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import type {
+  HubConnection,
+  RelationshipsV1DataSource,
+} from '#shared/contracts/RelationshipsV1DataSource.js';
 
 type Deps = {
   entitiesDAO: EntitiesDAO;
   filesDAO: MongoFilesDAO;
-  relationshipsDataSource: MongoRelationshipsV1DataSource;
+  relationshipsDataSource: RelationshipsV1DataSource;
 };
 
 type EntityLabel = {

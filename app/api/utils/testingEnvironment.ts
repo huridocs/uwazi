@@ -121,6 +121,29 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
 const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
   PostgresSettingsMapper.toRow(settings as SettingsType);
 
+const toPostgresId = (value: unknown): string | null => {
+  if (value === undefined || value === null) return null;
+  return value instanceof ObjectId ? value.toHexString() : String(value);
+};
+
+const toPostgresJsonb = (value: unknown): unknown | null => {
+  if (value === undefined || value === null) return null;
+  return typeof value === 'object' ? value : JSON.stringify(value);
+};
+
+const sanitizeConnectionForPostgres = (connection: Record<string, unknown>) => ({
+  _id: toPostgresId(connection._id),
+  entity: connection.entity ?? null,
+  hub: toPostgresId(connection.hub),
+  template: toPostgresId(connection.template),
+  file: toPostgresId(connection.file),
+  metadata: connection.metadata ?? {},
+  reference: connection.reference ?? null,
+  sharedId: toPostgresId(connection.sharedId),
+  filename: connection.filename ?? null,
+  range: toPostgresJsonb(connection.range),
+});
+
 // A mongo pages document holds its locales nested; in postgres they are their own table.
 const PG_FANOUT_BY_MONGO_COLLECTION: Record<
   string,
@@ -139,6 +162,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
   settings: sanitizeSettingsForPostgres,
+  connections: sanitizeConnectionForPostgres,
   pages: PageMigrationConfig.mapDocument,
   ixextractors: IXExtractorsMigrationConfig.mapDocument,
   ixmodels: IXModelsMigrationConfig.mapDocument,
@@ -159,6 +183,7 @@ const MIRRORED_COLLECTIONS = [
   'ixmodels',
   'ixsuggestions',
   'settings',
+  'connections',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
@@ -436,6 +461,16 @@ const testingEnvironment = {
         }
         if (['files', 'templates', 'thesauri'].includes(collectionName)) {
           return testingPG.getAllFrom(collectionName);
+        }
+        if (collectionName === 'connections') {
+          const rows = await testingPG.getAllFrom<Record<string, unknown>>('connections');
+          return rows.map(row => ({
+            ...row,
+            ...(row._id ? { _id: new ObjectId(String(row._id)) } : {}),
+            ...(row.hub ? { hub: new ObjectId(String(row.hub)) } : {}),
+            ...(row.template ? { template: new ObjectId(String(row.template)) } : {}),
+            ...(row.sharedId ? { sharedId: new ObjectId(String(row.sharedId)) } : {}),
+          }));
         }
       }
       if (!testingDB.mongodb) {

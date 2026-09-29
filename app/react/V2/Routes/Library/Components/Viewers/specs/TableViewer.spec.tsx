@@ -128,10 +128,17 @@ describe('TableViewer', () => {
     renderTable({ onSortChange, sort: 'title', order: 'desc' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Creation date' }));
-    expect(onSortChange).toHaveBeenCalledWith('creationDate', 'desc');
+    expect(onSortChange).toHaveBeenCalledWith('creationDate', 'asc');
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit date' }));
-    expect(onSortChange).toHaveBeenCalledWith('editDate', 'desc');
+    expect(onSortChange).toHaveBeenCalledWith('editDate', 'asc');
+  });
+
+  it('toggles the same column from ascending to descending', () => {
+    const onSortChange = jest.fn();
+    renderTable({ onSortChange, sort: 'creationDate', order: 'asc' });
+    fireEvent.click(screen.getByRole('button', { name: 'Creation date' }));
+    expect(onSortChange).toHaveBeenCalledWith('creationDate', 'desc');
   });
 
   it('sorts filterable select columns and leaves others unsortable', () => {
@@ -139,7 +146,7 @@ describe('TableViewer', () => {
     renderTable({ onSortChange, sort: 'title', order: 'desc' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Type' }));
-    expect(onSortChange).toHaveBeenCalledWith('metadata.type', 'desc');
+    expect(onSortChange).toHaveBeenCalledWith('metadata.type', 'asc');
 
     expect(screen.queryByRole('button', { name: 'Location' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Video' })).not.toBeInTheDocument();

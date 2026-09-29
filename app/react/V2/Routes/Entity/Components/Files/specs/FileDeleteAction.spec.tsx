@@ -9,7 +9,7 @@ import type { EntityFileRow } from '../types.js';
 const mockRequestDeleteRow = jest.fn();
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
-  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => children,
+  EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('../EntityFilesContext', () => ({
@@ -19,7 +19,7 @@ jest.mock('../EntityFilesContext', () => ({
 }));
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const buildRow = (overrides: Partial<EntityFileRow> = {}): EntityFileRow => ({

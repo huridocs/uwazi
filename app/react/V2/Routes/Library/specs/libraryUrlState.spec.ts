@@ -44,6 +44,12 @@ describe('libraryUrlState', () => {
       });
     });
 
+    it('drops empty and whitespace-only filter values', () => {
+      expect(normalizeFilters({ method: [''], title: ['  '], country: ['ES', ''] })).toEqual({
+        country: ['ES'],
+      });
+    });
+
     it('maps omitted status to all, and single values to published or restricted', () => {
       expect(publishedStatusFromFilters(undefined)).toBe('all');
       expect(publishedStatusFromFilters(['published', 'restricted'])).toBe('all');
@@ -104,6 +110,12 @@ describe('libraryUrlState', () => {
       expect(parseAndFilters('descriptores')).toBeNull();
       expect(serializeAndFilters(['descriptores', 'related'])).toBe('(descriptores,related)');
       expect(serializeAndFilters([])).toBe('');
+    });
+
+    it('keeps existing view params and falls back to cards when none is set', () => {
+      expect(parseLibrarySearchParams(new URLSearchParams()).view).toBe('cards');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=table')).view).toBe('table');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=map')).view).toBe('map');
     });
 
     it('keeps map and table view params and falls back unknown views to cards', () => {

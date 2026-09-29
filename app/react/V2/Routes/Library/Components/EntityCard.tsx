@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { EntityThumbnail, type ThumbnailKind } from './EntityThumbnail.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
+import {
+  DEFAULT_THUMB_FIT,
+  DEFAULT_THUMB_FRAME,
+  type ThumbFit,
+  type ThumbFrame,
+  type ThumbnailKind,
+} from './libraryCardDisplay.js';
+import { EntityThumbnail } from './EntityThumbnail.js';
 
 type EntityCardField = {
   id: string;
   label: string;
   value: string;
+  interactive?: boolean;
 };
 
 type EntityCardProps = {
@@ -16,8 +27,11 @@ type EntityCardProps = {
   fields?: EntityCardField[];
   thumbnailSrc?: string;
   thumbnailKind?: ThumbnailKind;
+  thumbFit?: ThumbFit;
+  thumbFrame?: ThumbFrame;
   selected?: boolean;
   onSelect?: () => void;
+  onFocusProperty?: (fieldKey: string) => void;
   viewHref: string;
   showThumbnail?: boolean;
   showMetadata?: boolean;
@@ -29,12 +43,22 @@ const EntityCard = ({
   fields = [],
   thumbnailSrc,
   thumbnailKind,
+  thumbFit = DEFAULT_THUMB_FIT,
+  thumbFrame = DEFAULT_THUMB_FRAME,
   selected = false,
   onSelect,
+  onFocusProperty,
   viewHref,
   showThumbnail = true,
   showMetadata = true,
 }: EntityCardProps) => {
+  const templates = useAtomValue(templatesAtom);
+  const template = useMemo(
+    () => templates.find(item => item._id === templateId),
+    [templateId, templates]
+  );
+  const { accentHex } = useTemplatePillColors(template?.color);
+
   const viewButton = (
     <I18NLink
       to={viewHref}
@@ -67,12 +91,17 @@ const EntityCard = ({
       }}
       className={`${base} ${surface} flex h-full flex-col gap-2.5 p-3`}
     >
-      {showThumbnail && (thumbnailSrc || thumbnailKind) && (
+      {showThumbnail && (
         <EntityThumbnail
           src={thumbnailSrc}
           kind={thumbnailKind}
+          fit={thumbFit}
+          frame={thumbFrame}
+          tint={accentHex}
           alt=""
-          className="h-24 w-full shrink-0 overflow-hidden rounded border border-border/60"
+          className={`${
+            thumbFrame === 'portrait' ? 'aspect-[3/4]' : 'h-[142px]'
+          } w-full shrink-0 overflow-hidden rounded border border-border/60`}
         />
       )}
       <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{title}</span>
@@ -83,9 +112,23 @@ const EntityCard = ({
               <span className="block text-[10px] leading-tight text-ink-tertiary">
                 {field.label}
               </span>
-              <span className="block line-clamp-1 text-xs leading-snug text-ink">
-                {field.value}
-              </span>
+              {field.interactive ? (
+                <button
+                  type="button"
+                  title={field.value}
+                  className="block w-full truncate text-start text-xs leading-snug text-ink underline-offset-2 hover:underline"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onFocusProperty?.(field.id);
+                  }}
+                >
+                  {field.value}
+                </button>
+              ) : (
+                <span className="block truncate text-xs leading-snug text-ink" title={field.value}>
+                  {field.value}
+                </span>
+              )}
             </div>
           ))}
         </div>

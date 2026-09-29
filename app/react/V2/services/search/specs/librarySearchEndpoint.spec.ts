@@ -128,8 +128,31 @@ describe('librarySearchEndpoint', () => {
     ).toMatchObject({
       filters: {
         causa: { properties: { numero: { values: ['1.1', '2.1'] } } },
-        country: { values: ['ES'] },
+        country: 'ES',
       },
+    });
+  });
+
+  it('omits empty and whitespace-only filter values so GET /api/search is not sent values:[""]', () => {
+    expect(
+      toSearchEndpointQuery({
+        filters: { method: [''], title: ['   '], country: ['ES', ''] },
+      })
+    ).toEqual(
+      expect.objectContaining({
+        filters: { country: 'ES' },
+      })
+    );
+    expect(
+      toSearchEndpointQuery({
+        filters: { method: [''], 'causa.numero': [''] },
+      }).filters
+    ).toEqual({});
+  });
+
+  it('sends a single text value as a string, matching V1 /api/search text filters', () => {
+    expect(toSearchEndpointQuery({ filters: { method: ['oral hearing'] } }).filters).toEqual({
+      method: 'oral hearing',
     });
   });
 
@@ -151,7 +174,7 @@ describe('librarySearchEndpoint', () => {
     ).toMatchObject({
       filters: {
         descriptores: { values: ['d1', 'd2'], and: true },
-        country: { values: ['ES'] },
+        country: 'ES',
       },
     });
   });

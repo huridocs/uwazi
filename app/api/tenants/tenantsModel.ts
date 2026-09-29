@@ -4,8 +4,12 @@ import { ChangeStream, MongoError } from 'mongodb';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
+import { featureFlagsMongoSchema } from './featureFlags.js';
+import { TENANT_FIELDS } from './tenant.js';
+import type { TenantsDataSource } from './application/contracts/TenantsDataSource.js';
+import { TenantsDataSourceFactory } from './infrastructure/TenantsDataSourceFactory.js';
 
-import type { Tenant } from './tenantContext.js';
+import type { Tenant } from './tenant.js';
 
 const schemaValidator = {
   $jsonSchema: {
@@ -29,33 +33,7 @@ const mongoSchema = new mongoose.Schema({
   customUploads: String,
   activityLogs: String,
   domain: String,
-  featureFlags: {
-    s3Storage: Boolean,
-    esReplicas: Number,
-    sync: Boolean,
-    deactivateTestJob: Boolean,
-    paragraphExtraction: Boolean,
-    fileCacheHeaders: Boolean,
-    themeCustomization: Boolean,
-    newHeader: Boolean,
-    featureFlagEntityViewerv2: Boolean,
-    featureFlagLibraryV2: Boolean,
-    postgresCore: Boolean,
-    postgresPages: Boolean,
-    postgresCsv: Boolean,
-    aiAssistant: Boolean,
-    aiAssistantServiceUrl: String,
-    translationService: Boolean,
-    translationServiceUrl: String,
-    telemetry: {
-      enabled: Boolean,
-      sampleRate: Number,
-    },
-    prometheus: {
-      enabled: Boolean,
-      sampleRate: Number,
-    },
-  },
+  featureFlags: featureFlagsMongoSchema,
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
   maintenance: Boolean,
@@ -63,6 +41,12 @@ const mongoSchema = new mongoose.Schema({
 
 type DBTenant = Partial<Tenant> & { name: string };
 type TenantDocument = Document & DBTenant;
+
+/** Keeps operational data written by other tools out of the running process. */
+const toTenant = (record: Record<string, unknown>): DBTenant =>
+  Object.fromEntries(
+    TENANT_FIELDS.filter(field => record[field] !== undefined).map(field => [field, record[field]])
+  ) as DBTenant;
 
 class TenantsModel extends EventEmitter {
   model?: Model<TenantDocument>;
@@ -77,10 +61,13 @@ class TenantsModel extends EventEmitter {
 
   private pendingChanges = false;
 
-  constructor() {
+  private dataSource: TenantsDataSource;
+
+  constructor(dataSource: TenantsDataSource = TenantsDataSourceFactory.default()) {
     super();
     this.collectionName = 'tenants';
     this.tenantsDB = DB.connectionForDB(config.SHARED_DB);
+    this.dataSource = dataSource;
   }
 
   private initializeModel() {
@@ -90,11 +77,14 @@ class TenantsModel extends EventEmitter {
     this.changeStream.on('change', () => {
       this.pendingChanges = true;
       if (this.debounceTimer) clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(async () => {
-        if (this.pendingChanges) {
-          await this.change();
-          this.pendingChanges = false;
+      this.debounceTimer = setTimeout(() => {
+        if (!this.pendingChanges) {
+          return;
         }
+        this.pendingChanges = false;
+        // Nothing awaits this timer, so a failed reload is reported rather than left to reject in
+        // the background: the connection may well be gone by the time it fires.
+        this.change().catch(handleError);
       }, 1000);
     });
 
@@ -144,51 +134,25 @@ class TenantsModel extends EventEmitter {
   }
 
   async get() {
-    if (!this.model) {
-      throw new Error(
-        'tenants model has not been initialized, make sure you called initialize() method'
-      );
-    }
-    return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
+    return (await this.dataSource.all()).map(toTenant);
   }
 
   async setMaintenance(tenantName: string, maintenance: boolean) {
-    if (!this.model) {
-      throw new Error(
-        'tenants model has not been initialized, make sure you called initialize() method'
-      );
-    }
-    await this.model.updateOne({ name: tenantName }, { $set: { maintenance } });
+    await this.dataSource.upsert(tenantName, { maintenance });
   }
 
   async setTelemetryConfig(
     tenantName: string,
     telemetry: { enabled: boolean; sampleRate: number }
   ) {
-    if (!this.model) {
-      throw new Error(
-        'tenants model has not been initialized, make sure you called initialize() method'
-      );
-    }
-    await this.model.updateOne(
-      { name: tenantName },
-      { $set: { 'featureFlags.telemetry': telemetry } }
-    );
+    await this.dataSource.upsert(tenantName, { featureFlags: { telemetry } });
   }
 
   async setPrometheusConfig(
     tenantName: string,
     prometheus: { enabled: boolean; sampleRate: number }
   ) {
-    if (!this.model) {
-      throw new Error(
-        'tenants model has not been initialized, make sure you called initialize() method'
-      );
-    }
-    await this.model.updateOne(
-      { name: tenantName },
-      { $set: { 'featureFlags.prometheus': prometheus } }
-    );
+    await this.dataSource.upsert(tenantName, { featureFlags: { prometheus } });
   }
 }
 

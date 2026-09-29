@@ -1,3 +1,5 @@
+import { normalizeFilters } from './libraryFilterValues.js';
+
 const LIBRARY_VIEW_MODES = ['cards', 'map', 'table'] as const;
 type LibraryViewMode = (typeof LIBRARY_VIEW_MODES)[number];
 
@@ -179,27 +181,6 @@ const parseAndFilters = (raw: string): string[] | null => {
 const serializeAndFilters = (names: string[]): string => {
   const unique = [...new Set(names.filter(Boolean))];
   return unique.length ? `(${unique.join(',')})` : '';
-};
-
-const normalizeFilters = (filters: LibraryFiltersState): LibraryFiltersState => {
-  const next: LibraryFiltersState = {};
-  Object.entries(filters).forEach(([key, values]) => {
-    if (!values.length) {
-      return;
-    }
-    if (key === 'status') {
-      const unique = [...new Set(values)];
-      const hasPublished = unique.includes('published');
-      const hasRestricted = unique.includes('restricted');
-      if (hasPublished && hasRestricted) {
-        return;
-      }
-      next.status = unique.filter(value => value === 'published' || value === 'restricted');
-      return;
-    }
-    next[key] = values;
-  });
-  return next;
 };
 
 const parsePositiveInt = (raw: string | null, fallback: number): number => {

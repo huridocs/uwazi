@@ -50,7 +50,7 @@ describe('PublicForm', () => {
   });
 
   const prepareMocks = () => {
-    instance = component.find(PublicForm).instance();
+    instance = component.find('PublicFormComponent').instance();
     instance.refreshCaptcha = jest.fn();
     instance.formDispatch = jest.fn();
     component.find(LocalForm).props().getDispatch(instance.formDispatch);

@@ -140,9 +140,11 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Attachments
 Authentication code,Authentication code
+Auto,Auto
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,auto-created
+Auto-translate,Auto-translate
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
 Available default translation,Available default translation
@@ -194,6 +196,7 @@ Chart type uses a custom view,Chart type uses a custom view
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose PDF files,Choose PDF files
 Choose relation type,Choose relation type
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
@@ -468,8 +471,10 @@ Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
+Error loading your media,Error loading your media
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
@@ -587,7 +592,6 @@ ID:,ID:
 "If you want to continue, please type","If you want to continue, please type"
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Import
-Import / Export CSV,Import / Export CSV
 Import asset,Import asset
 Import CSV,Import CSV
 Import failed. Review details below.,Import failed. Review details below.
@@ -691,6 +695,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,low
+Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
 Manage relationship types,Manage relationship types
 Manage site settings and configuration,Manage site settings and configuration
 Manage types,Manage types
@@ -898,6 +903,7 @@ Open the two-factor Authenticator app on your device,Open the two-factor Authent
 Options,Options
 or,or
 or drag and drop here,or drag and drop here
+or drag and drop PDF files here,or drag and drop PDF files here
 or drop your files here.,or drop your files here.
 Or paste a URL,Or paste a URL
 Order,Order
@@ -1358,6 +1364,7 @@ This table of contents was automatically created by the system.,This table of co
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Thumbnail,Thumbnail
+Thumbnail frame,Thumbnail frame
 Time,Time
 Time (UTC),Time (UTC)
 Timeline,Timeline
@@ -1385,7 +1392,9 @@ Training,Training
 Training model,Training model
 Training sample,Training sample
 Translate,Translate
+Translating,Translating
 Translation,Translation
+Translation service is unavailable,Translation service is unavailable
 Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
@@ -1432,6 +1441,7 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
+Upload,Upload
 Upload and select file,Upload and select file
 Upload from computer,Upload from computer
 Upload image,Upload image

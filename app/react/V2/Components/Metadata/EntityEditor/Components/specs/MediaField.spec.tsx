@@ -11,7 +11,7 @@ const mockSeekTo = jest.fn();
 const mockGetCurrentTime = jest.fn(() => 125);
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({
@@ -31,28 +31,53 @@ jest.mock('#V2/Components/UI/index.js', () => ({
   MediaPlayer: ({
     playerRef,
     playing,
+    width,
   }: {
     playerRef?: React.MutableRefObject<{
       seekTo: typeof mockSeekTo;
       getCurrentTime: typeof mockGetCurrentTime;
     } | null>;
     playing?: boolean;
+    width?: number | string;
   }) => {
     if (playerRef) {
       playerRef.current = { seekTo: mockSeekTo, getCurrentTime: mockGetCurrentTime };
     }
 
-    return <div data-testid="media-player" data-playing={playing ? 'true' : 'false'} />;
+    return (
+      <div
+        data-testid="media-player"
+        data-playing={playing ? 'true' : 'false'}
+        data-width={width}
+      />
+    );
   },
 }));
 
 jest.mock('../MediaPickerModal', () => ({
-  MediaPickerModal: () => null,
+  MediaPickerModal: ({
+    isOpen,
+    onSelect,
+  }: {
+    isOpen: boolean;
+    onSelect: (url: string, file?: File) => void;
+  }) =>
+    isOpen ? (
+      <button type="button" onClick={() => onSelect('/api/files/other.mp4')}>
+        pick other
+      </button>
+    ) : null,
 }));
 
 type FormValues = { media: string };
 
 const mediaWithTimelink = '(/api/files/video.mp4, {"timelinks":{"00:01:02":"intro"}})';
+
+const expectNumberTimeField = (field: HTMLElement, max?: string) => {
+  expect(field).toHaveAttribute('type', 'number');
+  expect(field).toHaveAttribute('step', '1');
+  if (max) expect(field).toHaveAttribute('max', max);
+};
 
 const Harness = ({ defaultValue }: { defaultValue: string }) => {
   const form = useForm<FormValues>({ defaultValues: { media: defaultValue } });
@@ -82,21 +107,18 @@ describe('MediaField timelinks', () => {
     mockGetCurrentTime.mockReturnValue(125);
   });
 
+  it('sizes the player to the field', () => {
+    render(<Harness defaultValue="/api/files/video.mp4" />);
+
+    expect(screen.getByTestId('media-player')).toHaveAttribute('data-width', '100%');
+  });
+
   it('renders time inputs as number fields with step 1', () => {
     render(<Harness defaultValue={mediaWithTimelink} />);
 
-    const hours = screen.getByLabelText('Hours');
-    const minutes = screen.getByLabelText('Minutes');
-    const seconds = screen.getByLabelText('Seconds');
-
-    expect(hours).toHaveAttribute('type', 'number');
-    expect(hours).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('type', 'number');
-    expect(minutes).toHaveAttribute('step', '1');
-    expect(minutes).toHaveAttribute('max', '59');
-    expect(seconds).toHaveAttribute('type', 'number');
-    expect(seconds).toHaveAttribute('step', '1');
-    expect(seconds).toHaveAttribute('max', '59');
+    expectNumberTimeField(screen.getByLabelText('Hours'));
+    expectNumberTimeField(screen.getByLabelText('Minutes'), '59');
+    expectNumberTimeField(screen.getByLabelText('Seconds'), '59');
   });
 
   it('adds a timelink from the player current time', () => {
@@ -135,5 +157,15 @@ describe('MediaField timelinks', () => {
 
     expect(mockSeekTo).toHaveBeenCalledWith(62, 'seconds');
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-playing', 'true');
+  });
+
+  it('drops timelinks when the media file is changed', async () => {
+    render(<Harness defaultValue={mediaWithTimelink} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('button', { name: 'pick other' }));
+
+    expect(await screen.findByTestId('form-value')).toHaveTextContent(/^\/api\/files\/other\.mp4$/);
+    expect(screen.queryByDisplayValue('intro')).not.toBeInTheDocument();
   });
 });

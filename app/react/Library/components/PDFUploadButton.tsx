@@ -1,4 +1,5 @@
-import React, { ChangeEvent, Dispatch, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
@@ -113,7 +114,7 @@ const PDFUploadButtonComponent = ({ uploadDocument }: PDFUploadButtonProps) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,

@@ -10,7 +10,7 @@ import {
   publishedStatusFromFilters,
   type LibraryUrlState,
 } from './libraryUrlState.js';
-import { isLegacyRisonQuery, translateLegacySearchString } from './risonLegacy.js';
+import { legacyLibraryRedirectUrl } from './risonLegacy.js';
 import type { LoaderResponse } from './types.js';
 
 const MAP_GEO_LIMIT = 9999;
@@ -85,10 +85,9 @@ const createLibraryLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ request }): Promise<LoaderResponse | Response> => {
     const url = new URL(request.url);
-    if (isLegacyRisonQuery(url.searchParams)) {
-      const nextSearch = translateLegacySearchString(url.searchParams);
-      const destination = `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}`;
-      return redirect(destination);
+    const legacyDestination = legacyLibraryRedirectUrl(url);
+    if (legacyDestination) {
+      return redirect(legacyDestination);
     }
 
     const urlState = parseLibrarySearchParams(url.searchParams);

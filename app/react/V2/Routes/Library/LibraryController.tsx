@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { useLoaderData } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import { Translate } from '#app/I18N/index.js';
@@ -69,13 +69,27 @@ const useLibrarySearchInput = (
   });
 };
 
+const useLibrarySelection = () => {
+  const revalidator = useRevalidator();
+  const [selectedId, setSelectedId] = useState<string>();
+  return {
+    selectedId,
+    setSelectedId,
+    onClosePreview: () => setSelectedId(undefined),
+    onEntityCreated: (sharedId?: string) => {
+      void revalidator.revalidate();
+      if (sharedId) setSelectedId(sharedId);
+    },
+  };
+};
+
 const LibraryController = () => {
   const data = useLoaderData() as LoaderResponse;
   const { urlState, updateUrl } = useLibraryUrlState();
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const [selectedId, setSelectedId] = useState<string>();
+  const { selectedId, setSelectedId, onClosePreview, onEntityCreated } = useLibrarySelection();
   const {
     draft: searchInput,
     setDraft: setSearchInput,
@@ -141,11 +155,12 @@ const LibraryController = () => {
       chips={chips}
       selectedId={selectedId}
       onSelect={setSelectedId}
-      onClosePreview={() => setSelectedId(undefined)}
+      onClosePreview={onClosePreview}
       entityBasePath={entityBasePath}
       onLoadMore={amount => {
         updateUrl({ from: data.rows.length, limit: amount });
       }}
+      onEntityCreated={onEntityCreated}
     />
   );
 };

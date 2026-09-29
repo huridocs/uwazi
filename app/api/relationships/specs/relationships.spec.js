@@ -202,6 +202,14 @@ describe('relationships', () => {
     });
   });
 
+  describe('get() with unsupported query operators', () => {
+    it('should throw instead of silently dropping operators', async () => {
+      await expect(relationships.get({ hub: hub1, _id: { $ne: db.id() } })).rejects.toThrow(
+        'Unsupported query operator in relationships.get: $ne'
+      );
+    });
+  });
+
   describe('countByRelationType()', () => {
     it('should return number of relationships using a relationType', async () => {
       const relationsCount = await relationships.countByRelationType(relation2.toString());

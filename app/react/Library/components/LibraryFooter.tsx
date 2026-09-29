@@ -1,5 +1,6 @@
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { connect } from 'react-redux';
 import { newEntity as newEntityAction } from '#app/Uploads/actions/uploadsActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
@@ -80,7 +81,7 @@ const LibraryFooterComponent = ({ storeKey, newEntity, scrollCount }: LibraryFoo
   );
 };
 
-function mapDispatchToProps(dispatch: Dispatch<any>, props: LibraryFooterOwnProps) {
+function mapDispatchToProps(dispatch: AppDispatch, props: LibraryFooterOwnProps) {
   return bindActionCreators({ newEntity: newEntityAction }, wrapDispatch(dispatch, props.storeKey));
 }
 

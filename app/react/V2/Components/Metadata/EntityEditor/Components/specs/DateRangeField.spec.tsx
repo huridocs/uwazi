@@ -8,7 +8,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { DateRangeField } from '../DateRangeField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => children,
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 type FormValues = { range?: { from?: number; to?: number } };

@@ -3,7 +3,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js'; // Todo
 import cloneDeep from 'lodash/cloneDeep.js';
 import { search } from '#api/search/index.js';
@@ -32,7 +32,7 @@ type Output = any;
 
 type Dependencies = {
   entitiesDS: EntitiesDataSource;
-  relationshipsV1DS: MongoRelationshipsV1DataSource;
+  relationshipsV1DS: RelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
   transactionManager: TransactionManager;

@@ -1,16 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { uploadLocalAttachment, uploadLocalAttachmentFromUrl } from '../supportingFilesActions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 const file = new File(['testFile'], 'testFile.txt', {
   type: 'text/plain',
 });
 
 describe('upload supporting files', () => {
-  let dispatch: Dispatch<{}>;
+  let dispatch: AppDispatch;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
