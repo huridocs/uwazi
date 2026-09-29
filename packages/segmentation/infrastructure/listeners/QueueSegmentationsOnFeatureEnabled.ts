@@ -1,6 +1,5 @@
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { QueueIdleSegmentations } from '../../application/QueueIdleSegmentations.js';
@@ -23,7 +22,5 @@ class QueueSegmentationsOnFeatureEnabled extends Listener<SettingsChangedEvent, 
     await this.deps.queueIdleSegmentations.execute({ batchSize: BATCH_SIZE, heartbeat });
   }
 }
-
-EventEmitterFactory.registry.register(QueueSegmentationsOnFeatureEnabled);
 
 export { QueueSegmentationsOnFeatureEnabled };

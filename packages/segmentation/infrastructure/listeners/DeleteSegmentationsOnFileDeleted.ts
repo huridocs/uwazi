@@ -1,6 +1,5 @@
 import { FileDeletedEvent } from '#api/core/domain/files/events/FileDeletedEvent.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DeleteFileSegmentations } from '../../application/DeleteFileSegmentations.js';
@@ -18,7 +17,5 @@ class DeleteSegmentationsOnFileDeleted extends Listener<FileDeletedEvent, Deps> 
     await this.deps.deleteFileSegmentations.execute({ fileIds: [fileId] });
   }
 }
-
-EventEmitterFactory.registry.register(DeleteSegmentationsOnFileDeleted);
 
 export { DeleteSegmentationsOnFileDeleted };

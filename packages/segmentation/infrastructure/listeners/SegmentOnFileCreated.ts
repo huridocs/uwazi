@@ -1,6 +1,5 @@
 import { FileCreatedEvent } from '#api/core/domain/files/events/FileCreatedEvent.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { RegisterFileSegmentation } from '../../application/RegisterFileSegmentation.js';
@@ -23,7 +22,5 @@ class SegmentOnFileCreated extends Listener<FileCreatedEvent, Deps> {
     });
   }
 }
-
-EventEmitterFactory.registry.register(SegmentOnFileCreated);
 
 export { SegmentOnFileCreated };

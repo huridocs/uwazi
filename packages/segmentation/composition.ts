@@ -1,17 +1,11 @@
 import type { Register } from '../../app/queueRegistry.js';
 import type { Application } from 'express';
 import { QueueIdleSegmentationsFactory } from './infrastructure/factories/QueueIdleSegmentationsFactory.js';
-import { QueueSegmentationsOnFeatureEnabledFactory } from './infrastructure/factories/QueueSegmentationsOnFeatureEnabledFactory.js';
 import { SegmentationResultListenerFactory } from './infrastructure/factories/SegmentationResultListenerFactory.js';
 import { RequestSegmentationJobHandler } from './infrastructure/jobs/RequestSegmentationJobHandler.js';
 import { SaveSegmentationResultJobHandler } from './infrastructure/jobs/SaveSegmentationResultJobHandler.js';
-import { QueueSegmentationsOnFeatureEnabled } from './infrastructure/listeners/QueueSegmentationsOnFeatureEnabled.js';
 import { SegmentationRoutes } from './infrastructure/http/SegmentationRoutes.js';
-import { DeleteSegmentationsOnFileDeleted } from './infrastructure/listeners/DeleteSegmentationsOnFileDeleted.js';
-import { SegmentOnFileCreated } from './infrastructure/listeners/SegmentOnFileCreated.js';
 import { listeners } from './infrastructure/listeners.generated.js';
-import { SegmentOnFileCreatedFactory } from './infrastructure/factories/SegmentOnFileCreatedFactory.js';
-import { DeleteSegmentationsOnFileDeletedFactory } from './infrastructure/factories/DeleteSegmentationsOnFileDeletedFactory.js';
 
 /** How the host wires the segmentation module in. */
 class SegmentationComposition {
@@ -19,16 +13,6 @@ class SegmentationComposition {
   static readonly listeners = listeners;
 
   static registerJobs(register: Register) {
-    register(QueueSegmentationsOnFeatureEnabled.asJob(), async () =>
-      QueueSegmentationsOnFeatureEnabledFactory.default()
-    );
-
-    register(SegmentOnFileCreated.asJob(), async () => SegmentOnFileCreatedFactory.default());
-
-    register(DeleteSegmentationsOnFileDeleted.asJob(), async () =>
-      DeleteSegmentationsOnFileDeletedFactory.default()
-    );
-
     register(RequestSegmentationJobHandler, async () => new RequestSegmentationJobHandler());
 
     register(SaveSegmentationResultJobHandler, async () => new SaveSegmentationResultJobHandler());

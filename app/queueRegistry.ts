@@ -25,14 +25,6 @@ import { DeleteLanguageEntitiesJob } from '#api/core/infrastructure/jobs/DeleteL
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { BroadcastSettingsChanged } from '#api/core/infrastructure/listeners/BroadcastSettingsChanged.js';
-import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
-import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
-import { ProcessRelationshipAfterEntityUpdatedListenerFactory } from '#api/core/infrastructure/factories/ProcessRelationshipAfterEntityUpdatedListenerFactory.js';
-import { BroadcastSettingsChangedFactory } from '#api/core/infrastructure/factories/BroadcastSettingsChangedFactory.js';
-import { AddLanguagePagesListenerFactory } from '#api/pages.v2/infrastructure/factories/AddLanguagePagesListenerFactory.js';
-import { DeleteLanguagePagesListenerFactory } from '#api/pages.v2/infrastructure/factories/DeleteLanguagePagesListenerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
@@ -92,6 +84,7 @@ import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { SendAccountLockedEmailHandler } from '#api/core/infrastructure/jobs/SendAccountLockedEmailHandler.js';
 import { SegmentationComposition } from '#segmentation/composition';
+import { ListenerRegistration } from '#api/ListenerRegistration.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -315,17 +308,7 @@ export function registerJobs(register: Register) {
     });
   });
 
-  register(ProcessRelationshipAfterEntityUpdatedListener.asJob(), async () =>
-    ProcessRelationshipAfterEntityUpdatedListenerFactory.default()
-  );
-
-  register(AddLanguagePagesListener.asJob(), async () => AddLanguagePagesListenerFactory.default());
-
-  register(BroadcastSettingsChanged.asJob(), async () => BroadcastSettingsChangedFactory.default());
-
-  register(DeleteLanguagePagesListener.asJob(), async () =>
-    DeleteLanguagePagesListenerFactory.default()
-  );
+  ListenerRegistration.registerJobs(register);
 
   register(DatavizScheduledRefreshJobHandler, async namespace =>
     DatavizFactory.scheduledRefreshJobHandler(namespace)
