@@ -46,6 +46,7 @@ import {
   IXExtractorsMigrationConfig,
   IXModelsMigrationConfig,
   IXSuggestionsMigrationConfig,
+  SegmentationsMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 import { CsvImportsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportsMigrationConfig.js';
 import { CsvImportRowsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRowsMigrationConfig.js';
@@ -69,6 +70,7 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   ix_extractors: IXExtractorsMigrationConfig,
   ix_models: IXModelsMigrationConfig,
   ix_suggestions: IXSuggestionsMigrationConfig,
+  segmentations: SegmentationsMigrationConfig,
   settings: SettingsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
@@ -100,6 +102,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'ix_extractors',
     'ix_models',
     'ix_suggestions',
+    'segmentations',
     'settings',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],

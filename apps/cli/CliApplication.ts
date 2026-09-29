@@ -192,12 +192,25 @@ class CliApplication {
    * Input and configuration are checked before anything connects. The tenancy backend is
    * loaded only then, so --help, --schema and invalid input stay fast.
    */
+  /**
+   * Connects, then registers every V2 listener, so an event a command emits reaches the
+   * listeners of every module, as it does in the server.
+   */
+  private async loadBackend(route: Route) {
+    await this.connections.open(route.needs);
+    const [{ TenantMiddleware }, { ListenerRegistration }] = await Promise.all([
+      import('./tenancy/TenantMiddleware.js'),
+      import('#api/ListenerRegistration.js'),
+    ]);
+    ListenerRegistration.registerEvents();
+    return { TenantMiddleware };
+  }
+
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
     const tenants = TenantOptions.parse(route.tenancy, argv);
     const input = route.request.parse(await RequestInput.read(argv.request, this.stdin));
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
-    await this.connections.open(route.needs);
-    const { TenantMiddleware } = await import('./tenancy/TenantMiddleware.js');
+    const { TenantMiddleware } = await this.loadBackend(route);
 
     const context: CliContext = {
       route: `${route.group} ${route.name}`,

@@ -16,7 +16,7 @@ const property = 'target_text';
 
 const extractors = {
   training: f.id('training extractor'),
-  segmentations: f.id('segmentations extractor'),
+  limitBeforeJoins: f.id('limit before joins extractor'),
   limit: f.id('limit extractor'),
   other: f.id('other training extractor'),
 };
@@ -63,7 +63,13 @@ const segmentation = (name: string, xmlname = `${name}.xml`, status = 'ready') =
   filename: `${name}.pdf`,
   xmlname,
   status,
-  segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
+  segmentation: {
+    page_height: 1,
+    page_width: 2,
+    paragraphs: [
+      { left: 1, top: 2, width: 3, height: 4, page_number: 1, text: name, type: 'Text' },
+    ],
+  },
 });
 
 /** A suggestion of the training extractor with a ready file and a ready segmentation. */
@@ -84,11 +90,7 @@ const excluded = {
 
 const scenarios = [
   trainable('a'),
-  {
-    ixsuggestions: [suggestion('b')],
-    files: [file('b')],
-    segmentations: [segmentation('b', 'b1.xml'), segmentation('b', 'b2.xml')],
-  },
+  trainable('b'),
   {
     ixsuggestions: Object.values(excluded),
     files: ['empty string', 'null value', 'empty array', 'empty item', 'no value'].map(name =>
@@ -112,15 +114,11 @@ const scenarios = [
   },
   {
     ixsuggestions: [
-      suggestion('two segmentations', extractors.segmentations),
-      suggestion('empty before limit', extractors.segmentations, ''),
+      suggestion('empty before limit', extractors.limitBeforeJoins, ''),
+      suggestion('within limit', extractors.limitBeforeJoins),
     ],
-    files: [file('two segmentations'), file('empty before limit')],
-    segmentations: [
-      segmentation('two segmentations', 'first.xml'),
-      segmentation('two segmentations', 'second.xml'),
-      segmentation('empty before limit'),
-    ],
+    files: [file('empty before limit'), file('within limit')],
+    segmentations: [segmentation('empty before limit'), segmentation('within limit')],
   },
   trainable('limit 1', extractors.limit),
   trainable('limit 2', extractors.limit),
@@ -131,11 +129,10 @@ const scenarios = [
 const merged = (key: 'ixsuggestions' | 'files' | 'segmentations') =>
   scenarios.flatMap(scenario => (scenario as Partial<Record<typeof key, unknown[]>>)[key] ?? []);
 
-/** `segmentations` stay in Mongo for both backends: they are not mirrored. */
 const fixtures = {
   ixextractors: [
     f.ixExtractor('training extractor', property, ['template']),
-    f.ixExtractor('segmentations extractor', property, ['template']),
+    f.ixExtractor('limit before joins extractor', property, ['template']),
     f.ixExtractor('limit extractor', property, ['template']),
     f.ixExtractor('other training extractor', property, ['template']),
   ],
@@ -213,11 +210,17 @@ const expectedRow = (name: string, xmlname = `${name}.xml`) => ({
   segmentation: {
     filename: `${name}.pdf`,
     xmlname,
-    segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
+    segmentation: {
+      page_height: 1,
+      page_width: 2,
+      paragraphs: [
+        { left: 1, top: 2, width: 3, height: 4, page_number: 1, text: name, type: 'Text' },
+      ],
+    },
   },
 });
 
-const expectedWalk = [expectedRow('a'), expectedRow('b', 'b1.xml'), expectedRow('b', 'b2.xml')];
+const expectedWalk = [expectedRow('a'), expectedRow('b')];
 
 const xmlnamesOf = (rows: TrainingFileRow[]) => rows.map(row => row.segmentation.xmlname).sort();
 
@@ -228,15 +231,6 @@ const walkCases = (sut: Sut) => {
    */
   it('should yield one row per suggestion with a ready file and a ready segmentation', async () => {
     expect(consumed(await walk(sut))).toEqual(expectedWalk);
-  });
-
-  it('should yield a row per ready segmentation when a file has more than one', async () => {
-    const rows = await walk(sut);
-
-    expect(xmlnamesOf(rows.filter(row => row.fileId.equals(f.id('file b'))))).toEqual([
-      'b1.xml',
-      'b2.xml',
-    ]);
   });
 
   /** Nothing was labeled, so there is nothing to learn from. */
@@ -270,26 +264,27 @@ const limitCases = (sut: Sut) => {
   });
 
   /**
-   * Mongo's `$limit` counts suggestions, after the current value match and before the joins, so a
-   * file with two segmentations yields both rows under a limit of one.
+   * The limit counts suggestions after the current value match, so one without a value does not
+   * take a place.
    */
-  it('should apply limit to suggestions before the joins', async () => {
-    const rows = await walk(sut, { extractorId: extractors.segmentations, limit: 1 });
+  it('should apply limit to the suggestions that have a current value', async () => {
+    const rows = await walk(sut, { extractorId: extractors.limitBeforeJoins, limit: 1 });
 
-    expect(xmlnamesOf(rows)).toEqual(['first.xml', 'second.xml']);
+    expect(xmlnamesOf(rows)).toEqual(['within limit.xml']);
   });
 };
 
 /**
- * Suggestions, entities and files are mirrored into both stores, so every other case would pass
- * against the wrong one. With the other store's copies gone, only the tenant's store can answer.
+ * Suggestions, entities, files and segmentations are mirrored into both stores, so every other case
+ * would pass against the wrong one. With the other store's copies gone, only the tenant's store can
+ * answer.
  */
 const storeCases = (sut: Sut, usePostgres: boolean) => {
-  it("should read suggestions, entities and files from the tenant's store", async () => {
+  it("should read suggestions, entities, files and segmentations from the tenant's store", async () => {
     if (usePostgres) {
-      await testingDB.clear(['ixsuggestions', 'entities', 'files']);
+      await testingDB.clear(['ixsuggestions', 'entities', 'files', 'segmentations']);
     } else {
-      await testingPG.clear(['ix_suggestions', 'entities', 'files']);
+      await testingPG.clear(['ix_suggestions', 'entities', 'files', 'segmentations']);
     }
 
     expect(consumed(await walk(sut))).toEqual(expectedWalk);
@@ -303,7 +298,13 @@ const storeCases = (sut: Sut, usePostgres: boolean) => {
  */
 describe('IXTrainingMaterialsQueryService', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, { postgres: true });
+    await testingEnvironment.setUp(
+      {},
+      {
+        postgres: true,
+        postgresMirror: ['entities', 'files', 'ixextractors', 'ixsuggestions', 'segmentations'],
+      }
+    );
   });
 
   afterAll(async () => testingEnvironment.tearDown());

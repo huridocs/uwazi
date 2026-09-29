@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { FileCreatedEvent } from '#api/core/domain/files/events/FileCreatedEvent.js';
+import { FileCreatedEvent as V1FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { CustomDTO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 
@@ -26,14 +27,15 @@ export class CustomFileUpload extends AbstractUseCase<Input, CustomDTO, Deps> {
 
     await this.deps.fileStorage.storeFile(file);
 
-    await this.transactionManager.run(async () => {
-      await this.deps.filesDS.create(file);
-    });
-
     const dto = file.toDTO();
 
+    await this.transactionManager.run(async () => {
+      await this.deps.filesDS.create(file);
+      await this.eventEmitter.emit(new FileCreatedEvent({ file: dto }));
+    });
+
     await this.eventBus.emit(
-      new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
+      new V1FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
     );
 
     return dto;

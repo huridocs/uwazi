@@ -24,7 +24,7 @@ describe('BroadcastSettingsChanged', () => {
     const { listener, settingsQuery, sockets } = createSut();
 
     await testingEnvironment.runWithContext(async () => {
-      await listener.handle(jest.fn() as never, {}, {} as never);
+      await listener.handle(jest.fn() as never, { changes: { keys: [] } }, {} as never);
       expect(sockets.emitToTenant).toHaveBeenCalledWith(
         ExecutionContext.tenant.name,
         'updateSettings',

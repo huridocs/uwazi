@@ -48,15 +48,16 @@ if [ -z "$MAIN_CSS_BYTES" ] || [ "$MAIN_CSS_BYTES" -lt 100000 ]; then
 fi
 echo "  ✅ main.css size check passed ($((MAIN_CSS_BYTES / 1024))KB)"
 
-echo "🗄️  Step 4: Compiling database, scripts & apps..."
+echo "🗄️  Step 4: Compiling database, scripts, apps & packages..."
 DB_START=$(date +%s)
 yarn babel -D -d prod/database --extensions .js,.ts,.tsx database
 yarn babel -D -d prod/scripts --extensions .js,.ts,.tsx scripts
 yarn babel -D --no-copy-ignored -d prod/apps --extensions .js,.ts,.tsx --ignore "./**/specs/*","./apps/cli/testing/*" apps
 chmod +x prod/apps/cli/bin/uwazi.js
+yarn babel -D --no-copy-ignored -d prod/packages --extensions .js,.ts,.tsx --ignore "./**/specs/*" packages
 yarn babel -D -d prod/ message.js
 DB_TIME=$(($(date +%s) - DB_START))
-echo "  ✅ Database, scripts & apps compiled in ${DB_TIME}s"
+echo "  ✅ Database, scripts, apps & packages compiled in ${DB_TIME}s"
 
 echo "🔧 Step 4.5: Fixing FontAwesome imports for ESM (removing .js to use export map)..."
 FIX_START=$(date +%s)

@@ -11,7 +11,8 @@ import {
 } from '#shared/types/commonTypes.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { SegmentationDirectoryFactory, SegmentationStatus } from '#segmentation';
+import { IXSegmentation } from './IXSegmentation.js';
 import { IXTrainingMaterialsQueryServiceFactory } from '#api/suggestions/infrastructure/IXTrainingMaterialsQueryServiceFactory.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
@@ -109,14 +110,14 @@ const propertyTypeIsMultiValued = (type: string) => multiValuedProperties.has(ty
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
 
-  const segmentationForFiles = (await SegmentationModel.get(
-    { filename: { $in: filesNames }, status: 'ready' },
-    'filename segmentation xmlname status'
-  )) as (SegmentationType & { filename: string })[];
+  const segmentationForFiles =
+    await SegmentationDirectoryFactory.default().readyByFilenames(filesNames);
 
-  const segmentationDictionary = Object.assign(
-    {},
-    ...segmentationForFiles.map(segmentation => ({ [segmentation.filename]: segmentation }))
+  const segmentationDictionary: Record<string, SegmentationType> = Object.fromEntries(
+    segmentationForFiles.map(segmentation => [
+      segmentation.filename,
+      IXSegmentation.fromReadModel(segmentation),
+    ])
   );
 
   return files.map(file => ({
@@ -128,12 +129,6 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
     propertyType: file.propertyType,
     propertyValue: file.propertyValue,
   }));
-}
-
-async function getSegmentedFilesIds() {
-  const segmentations = await SegmentationModel.get({ status: 'ready' }, 'fileID');
-  const result = segmentations.filter(x => x.fileID).map(x => x.fileID) as ObjectIdSchema[];
-  return result;
 }
 
 async function getPropertyType(templates: ObjectIdSchema[], property: string) {
@@ -380,18 +375,17 @@ async function getFileIdsWithReadySegmentations(
 
     if (fileIds.length > 0) {
       // eslint-disable-next-line no-await-in-loop
-      const segmentations = await SegmentationModel.get(
-        { fileID: { $in: fileIds } },
-        'fileID status'
+      const segmentations = await SegmentationDirectoryFactory.default().statusesByFileIds(
+        fileIds.map(id => id.toString())
       );
 
       const readySegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'ready')
-        .map(seg => seg.fileID!);
+        .filter(seg => seg.status === SegmentationStatus.READY)
+        .map(seg => seg.fileId);
 
       const failedSegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'failed')
-        .map(seg => seg.fileID!);
+        .filter(seg => seg.status === SegmentationStatus.FAILED)
+        .map(seg => seg.fileId);
 
       const failedSuggestions = currentBatch.filter(s =>
         failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
@@ -471,12 +465,16 @@ async function filterFileIdsByReadySegmentations(
 ): Promise<ObjectIdSchema[]> {
   if (!fileIds.length) return [];
 
-  const segmentations = await SegmentationModel.get(
-    { fileID: { $in: fileIds }, status: 'ready' },
-    'fileID'
+  const segmentations = await SegmentationDirectoryFactory.default().statusesByFileIds(
+    fileIds.map(id => id.toString())
+  );
+  const ready = new Set(
+    segmentations
+      .filter(segmentation => segmentation.status === SegmentationStatus.READY)
+      .map(segmentation => segmentation.fileId)
   );
 
-  return segmentations.map(s => s.fileID!);
+  return fileIds.filter(id => ready.has(id.toString()));
 }
 
 function createFilesQueryByIds(fileIds: ObjectIdSchema[]) {
@@ -618,7 +616,6 @@ export {
   getFilesForSuggestions,
   getFilesForSuggestionsBatch,
   getEntitiesForSuggestions,
-  getSegmentedFilesIds,
   getPropertyType,
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutPropertySelections,

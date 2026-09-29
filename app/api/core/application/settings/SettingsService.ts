@@ -3,6 +3,7 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { Settings } from '#api/core/domain/settings/Settings.js';
+import { SettingsDiff } from '#api/core/domain/settings/SettingsDiff.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType, SettingsFilterSchema } from '#shared/types/settingsType.js';
@@ -27,21 +28,29 @@ class SettingsService {
 
   async save(incoming: SettingsType, current: Settings) {
     this.ensureTransaction();
-    await this.deps.translations.reconcile(incoming, current.toState());
+    const before = current.toState();
+    await this.deps.translations.reconcile(incoming, before);
     current.apply(incoming, () => this.deps.idGenerator.generate());
     const saved = await this.deps.settingsDS.update(current);
-    await this.deps.eventEmitter.emit(new SettingsChangedEvent({}));
+    await this.emitChanged(before, current);
     return saved;
   }
 
   async saveFilters(filters: SettingsFilterSchema[]) {
     this.ensureTransaction();
     const current = await this.deps.settingsDS.get();
+    const before = current.toState();
     await this.deps.translations.reconcileFilters(filters, current.filters);
     current.apply({ filters }, () => this.deps.idGenerator.generate());
     const saved = await this.deps.settingsDS.update(current);
-    await this.deps.eventEmitter.emit(new SettingsChangedEvent({}));
+    await this.emitChanged(before, current);
     return saved;
+  }
+
+  private async emitChanged(before: SettingsType, after: Settings) {
+    await this.deps.eventEmitter.emit(
+      new SettingsChangedEvent({ changes: SettingsDiff.between(before, after.toState()) })
+    );
   }
 
   async updateFilterName(filterId: ObjectIdSchema, name: string) {

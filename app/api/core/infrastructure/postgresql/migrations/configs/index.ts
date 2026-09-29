@@ -14,3 +14,4 @@ export { PageReleaseMigrationConfig } from './PageReleaseMigrationConfig.js';
 export { IXExtractorsMigrationConfig } from './IXExtractorsMigrationConfig.js';
 export { IXModelsMigrationConfig } from './IXModelsMigrationConfig.js';
 export { IXSuggestionsMigrationConfig } from './IXSuggestionsMigrationConfig.js';
+export { SegmentationsMigrationConfig } from './SegmentationsMigrationConfig.js';
