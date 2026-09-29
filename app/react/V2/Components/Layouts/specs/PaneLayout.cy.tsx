@@ -150,31 +150,53 @@ describe('PaneLayout', () => {
       cy.checkA11y();
     });
 
-    it('should change panes by swiping on the pane count dots', () => {
-      render();
+    it('keeps the first pane on the page and opens later panes as sheets', () => {
+      const Wrapper = () => {
+        const [requestedPane, setRequestedPane] = React.useState<
+          { index: number; id: number } | undefined
+        >();
+        const open = (index: number) =>
+          setRequestedPane(current => ({ index, id: (current?.id ?? 0) + 1 }));
+        return (
+          <div style={{ height: '650px' }} className="tw-content">
+            <button type="button" id="open-pane" onClick={() => open(1)}>
+              open pane
+            </button>
+            <button type="button" id="open-deep" onClick={() => open(2)}>
+              open deep
+            </button>
+            <PaneLayout requestedPane={requestedPane}>
+              <PaneLayout.Pane>
+                <p>Aenean ac purus nulla.</p>
+              </PaneLayout.Pane>
+              <PaneLayout.Pane>
+                <h2>This pane children has a min width</h2>
+              </PaneLayout.Pane>
+              <PaneLayout.Pane>
+                <p>Third pane</p>
+              </PaneLayout.Pane>
+            </PaneLayout>
+          </div>
+        );
+      };
+
+      mount(<Wrapper />);
       cy.contains('Aenean ac purus nulla.').should('be.visible');
-      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
-
-      cy.get('nav').realSwipe('toLeft');
-
-      cy.contains('Aenean ac purus nulla.').should('not.be.visible');
-      cy.contains('h2', 'This pane children has a min width').should('be.visible');
-    });
-
-    it('it should have hidden inputs for accessibility to switch between panes', () => {
-      render();
+      cy.contains('h2', 'This pane children has a min width').should('not.exist');
+      cy.get('button[aria-label="Previous"]').should('not.exist');
+      cy.get('button[aria-label="Next"]').should('not.exist');
+      cy.get('#open-pane').click();
+      cy.get('[role="dialog"]')
+        .contains('h2', 'This pane children has a min width')
+        .should('be.visible');
+      cy.get('[data-part="close"]').click();
+      cy.get('[role="dialog"]').should('not.exist');
       cy.contains('Aenean ac purus nulla.').should('be.visible');
-      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
-
-      cy.get('button[aria-label="Next"]').click({ force: true });
-
-      cy.contains('Aenean ac purus nulla.').should('not.be.visible');
-      cy.contains('h2', 'This pane children has a min width').should('be.visible');
-
-      cy.get('button[aria-label="Previous"]').click({ force: true });
-
+      cy.get('#open-deep').click();
+      cy.get('[role="dialog"]').should('have.length', 2);
+      cy.contains('button', 'Close all').should('be.visible').click();
+      cy.get('[role="dialog"]').should('not.exist');
       cy.contains('Aenean ac purus nulla.').should('be.visible');
-      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
     });
   });
 });

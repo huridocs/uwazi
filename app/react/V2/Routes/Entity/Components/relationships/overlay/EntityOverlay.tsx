@@ -6,14 +6,15 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { EntityOverlaySheet } from './EntityOverlaySheet.js';
 import {
   useEntityOverlayActions,
   useEntityOverlayTarget,
-  useEnsureResolved,
-} from '#V2/Routes/Entity/Components/context/index.js';
+} from '../../context/EntityOverlayContext.js';
+import { useEnsureResolved } from '../../context/RelationshipsQueryProvider.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
-import { useRevealSidePane } from './useRevealSidePane.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entityViewerPaths.js';
 
@@ -83,11 +84,8 @@ const useEntityOverlayState = () => {
   const { target } = useEntityOverlayTarget();
   const { closeEntityOverlay } = useEntityOverlayActions();
   const overlayEntity = useOverlayEntity(target?.sharedId ?? null);
-  const ensureResolved = useEnsureResolved();
-  const entered = useOverlayEnter(target !== null, ensureResolved);
   const panelRef = useRef<HTMLDivElement>(null);
   const { settings, templates, titleId } = useOverlayChrome();
-  useOverlayDismiss(target !== null, closeEntityOverlay, panelRef);
   return {
     ...overlayEntity,
     target,
@@ -96,10 +94,11 @@ const useEntityOverlayState = () => {
     panelRef,
     titleId,
     isOpen: target !== null,
-    entered,
     ...overlayHeading(overlayEntity.entity, target, templates),
   };
 };
+
+type EntityOverlayModel = ReturnType<typeof useEntityOverlayState>;
 
 const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityOverlayState> }) => {
   const {
@@ -111,10 +110,12 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
     entity,
     loading,
     error,
-    entered,
     title,
     templateColor,
   } = overlay;
+  const ensureResolved = useEnsureResolved();
+  const entered = useOverlayEnter(overlay.isOpen, ensureResolved);
+  useOverlayDismiss(overlay.isOpen, closeEntityOverlay, panelRef);
 
   return (
     <>
@@ -217,9 +218,11 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
 
 const EntityOverlay = () => {
   const overlay = useEntityOverlayState();
-  useRevealSidePane(overlay.isOpen);
+  const isMobile = useIsMobile();
   if (!overlay.isOpen) return null;
+  if (isMobile) return <EntityOverlaySheet overlay={overlay} />;
   return <EntityOverlayPanel overlay={overlay} />;
 };
 
+export type { EntityOverlayModel };
 export { EntityOverlay };

@@ -1,6 +1,10 @@
+type PaneSnap = 'half' | 'full';
+
 type PaneProps = React.PropsWithChildren & {
   background?: string;
   className?: string;
+  mobileSnap?: PaneSnap;
+  mobileTitle?: string;
 };
 
 type PaneLayoutProps = {
@@ -12,4 +16,4 @@ type PaneLayoutProps = {
   requestedPane?: { index: number; id: number };
 };
 
-export type { PaneProps, PaneLayoutProps };
+export type { PaneProps, PaneLayoutProps, PaneSnap };

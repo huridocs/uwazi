@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import React, { useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryFilters } from './LibraryFilters.js';
@@ -12,15 +11,9 @@ import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
 import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
 import { LibraryViewerHost } from './Viewers/index.js';
-import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
+import { useLibraryMobilePane } from './useLibraryMobilePane.js';
+import { useLibraryCreateActions, useLibraryTableDisplay } from './libraryViewActions.js';
 import { DEFAULT_THUMB_FRAME } from './libraryCardDisplay.js';
-import {
-  visibleLibraryTableColumns,
-  libraryTableColumnGroups,
-  libraryTableColumns,
-  toggleColumnVisibility,
-  type LibraryTableDensity,
-} from './libraryTableColumns.js';
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -45,94 +38,6 @@ type LibraryViewProps = {
   entityBasePath: string;
   onLoadMore: (amount: number) => void;
   onEntityCreated?: (sharedId?: string) => void;
-};
-
-const useLibraryTableDisplay = (selectedTemplateIds: string[]) => {
-  const templates = useAtomValue(templatesAtom);
-  const [tableDisplay, setTableDisplay] = useAtom(libraryTableDisplayAtom);
-  const tableColumnGroups = useMemo(
-    () => libraryTableColumnGroups(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const tableColumns = useMemo(
-    () => libraryTableColumns(templates, selectedTemplateIds),
-    [selectedTemplateIds, templates]
-  );
-  const visibleTableColumns = useMemo(
-    () => visibleLibraryTableColumns(tableColumns, tableDisplay),
-    [tableColumns, tableDisplay]
-  );
-
-  return {
-    tableColumns,
-    tableColumnGroups,
-    visibleTableColumns,
-    tableDisplay,
-    onToggleTableColumn: (id: string) =>
-      setTableDisplay(current => toggleColumnVisibility(id, current)),
-    onTableDensityChange: (density: LibraryTableDensity) =>
-      setTableDisplay(current => ({ ...current, density })),
-  };
-};
-
-const useLibraryPreviewFocus = (
-  onSelect: (sharedId: string) => void,
-  onClosePreview: () => void
-) => {
-  const [focusFieldKey, setFocusFieldKey] = useState<string>();
-  return {
-    focusFieldKey,
-    selectRow: (sharedId: string) => {
-      setFocusFieldKey(undefined);
-      onSelect(sharedId);
-    },
-    selectProperty: (sharedId: string, fieldKey: string) => {
-      setFocusFieldKey(fieldKey);
-      onSelect(sharedId);
-    },
-    closePreview: () => {
-      setFocusFieldKey(undefined);
-      onClosePreview();
-    },
-  };
-};
-
-const useLibraryCreateActions = (
-  onSelect: (sharedId: string) => void,
-  onClosePreview: () => void,
-  onEntityCreated?: (sharedId?: string) => void
-) => {
-  const [creating, setCreating] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
-  const preview = useLibraryPreviewFocus(
-    sharedId => {
-      setCreating(false);
-      onSelect(sharedId);
-    },
-    () => {
-      setCreating(false);
-      onClosePreview();
-    }
-  );
-  return {
-    ...preview,
-    creating,
-    uploadOpen,
-    openCreate: () => {
-      preview.closePreview();
-      setCreating(true);
-    },
-    openUpload: () => setUploadOpen(true),
-    closeUpload: () => setUploadOpen(false),
-    finishCreated: (sharedId?: string) => {
-      setCreating(false);
-      setUploadOpen(false);
-      onEntityCreated?.(sharedId);
-      if (sharedId) {
-        preview.selectRow(sharedId);
-      }
-    },
-  };
 };
 
 type LibraryRightPaneProps = {
@@ -237,10 +142,19 @@ const LibraryView = ({
     closeUpload,
     finishCreated,
   } = useLibraryCreateActions(onSelect, onClosePreview, onEntityCreated);
+  const { requestedPane, requestPane } = useLibraryMobilePane(selectedId, creating);
+  const openFilters = () => {
+    closePreview();
+    requestPane(1);
+  };
 
   return (
     <div className="h-full min-h-0 bg-warm" data-testid="library-v2">
-      <PaneLayout defaultRatios={[0.72, 0.28]} localStorageKey="library-v2-panes-v2">
+      <PaneLayout
+        defaultRatios={[0.72, 0.28]}
+        localStorageKey="library-v2-panes-v2"
+        requestedPane={requestedPane}
+      >
         <PaneLayout.Pane
           key="results"
           background="var(--color-theme-surface-warm, var(--color-theme-bg-warm))"
@@ -268,6 +182,13 @@ const LibraryView = ({
               onToggleTableColumn={onToggleTableColumn}
               onTableDensityChange={onTableDensityChange}
             />
+            <button
+              type="button"
+              onClick={openFilters}
+              className="mx-3 mb-1 inline-flex h-7 items-center self-start rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink md:hidden"
+            >
+              <Translate>Filters</Translate>
+            </button>
             <div
               className={
                 view === 'map'
@@ -282,7 +203,10 @@ const LibraryView = ({
                 rows={rows}
                 totalRows={totalRows}
                 selectedId={selectedId}
-                onSelect={selectRow}
+                onSelect={sharedId => {
+                  selectRow(sharedId);
+                  requestPane(1);
+                }}
                 entityBasePath={entityBasePath}
                 onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
@@ -292,15 +216,28 @@ const LibraryView = ({
                 sort={sort}
                 order={order}
                 onSortChange={onSortChange}
-                onFocusProperty={selectProperty}
+                onFocusProperty={(sharedId, fieldKey) => {
+                  selectProperty(sharedId, fieldKey);
+                  requestPane(1);
+                }}
                 tableColumns={visibleTableColumns}
                 tableDensity={tableDisplay.density}
               />
             </div>
-            <LibraryResultsFooter onCreateEntity={openCreate} onUploadPdf={openUpload} />
+            <LibraryResultsFooter
+              onCreateEntity={() => {
+                openCreate();
+                requestPane(1);
+              }}
+              onUploadPdf={openUpload}
+            />
           </div>
         </PaneLayout.Pane>
-        <PaneLayout.Pane key="filters" background="transparent">
+        <PaneLayout.Pane
+          key="filters"
+          background="transparent"
+          mobileSnap={creating || selectedId ? 'full' : 'half'}
+        >
           {renderLibraryRightPane({
             creating,
             selectedId,

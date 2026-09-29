@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
@@ -19,6 +20,9 @@ import {
   useEntityLanguage,
   useMetadataEditing,
 } from './Components/index.js';
+import { useEntityOverlayTarget } from './Components/context/index.js';
+import { EntityOverlay } from './Components/relationships/overlay/EntityOverlay.js';
+import { useRevealSidePane } from './Components/relationships/overlay/useRevealSidePane.js';
 import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
 import { ManageRelationTypesModal } from './Components/relationships/create-reference/ManageRelationTypesModal.js';
 import { useResetRelationshipsOnDocumentChange } from './Components/relationships/hooks/useDocumentRelationships.js';
@@ -95,6 +99,12 @@ const EntityMainColumn = React.memo(() => {
   );
 });
 
+const useEntityMobileOverlay = (showSidePane: () => void) => {
+  const { target } = useEntityOverlayTarget();
+  useRevealSidePane(target !== null, showSidePane);
+  return useIsMobile();
+};
+
 const EntityView = () => {
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
@@ -111,6 +121,7 @@ const EntityView = () => {
     mainDocumentId: mainDocument?._id,
     filesSideTabs,
   });
+  const isMobile = useEntityMobileOverlay(entityTabs.showSidePane);
   const { isDirty, isSaving, isEditing, cancelEdit } = useMetadataEditing();
 
   return (
@@ -136,6 +147,7 @@ const EntityView = () => {
             />
           </PaneLayout.Pane>
         </PaneLayout>
+        {isMobile ? <EntityOverlay /> : null}
       </div>
     </EntityMainTabsProvider>
   );

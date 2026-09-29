@@ -175,7 +175,7 @@ const PreviewStatus = ({ children }: { children: React.ReactNode }) => (
 const useEscapeClose = (onClose: () => void) => {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape' && !event.defaultPrevented) onClose();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
