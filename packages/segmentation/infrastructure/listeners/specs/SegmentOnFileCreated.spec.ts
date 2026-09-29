@@ -1,7 +1,5 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { SegmentOnFileCreated } from '../SegmentOnFileCreated.js';
+import { SegmentOnFileCreatedFactory } from '../../factories/SegmentOnFileCreatedFactory.js';
 import {
   f,
   withSegmentations,
@@ -21,20 +19,20 @@ describe('SegmentOnFileCreated', () => {
   });
 
   it('should register the segmentation of a created PDF', async () => {
-    const eventsBus = new EventsBus();
-    SegmentOnFileCreated.register(eventsBus);
-
     await testingEnvironment.runWithContext(async () =>
-      eventsBus.emit(
-        new FileCreatedEvent({
-          newFile: {
-            _id: f.id('created'),
-            filename: 'created.pdf',
-            type: 'document',
-            mimetype: 'application/pdf',
-          },
-        })
-      )
+      SegmentOnFileCreatedFactory.default().handle(jest.fn().mockResolvedValue(undefined), {
+        file: {
+          _id: f.idString('created'),
+          filename: 'created.pdf',
+          originalname: 'created.pdf',
+          type: 'document',
+          mimetype: 'application/pdf',
+          entity: 'entity',
+          size: 1,
+          creationDate: 1,
+          status: 'ready',
+        } as never,
+      })
     );
 
     expect(await storedSegmentations(false)).toEqual([

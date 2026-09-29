@@ -1,7 +1,5 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DeleteSegmentationsOnFilesDeleted } from '../DeleteSegmentationsOnFilesDeleted.js';
+import { DeleteSegmentationsOnFileDeletedFactory } from '../../factories/DeleteSegmentationsOnFileDeletedFactory.js';
 import {
   f,
   idle,
@@ -10,7 +8,7 @@ import {
   storedSegmentations,
 } from '../../../application/specs/SegmentationIntakeFixtures.js';
 
-describe('DeleteSegmentationsOnFilesDeleted', () => {
+describe('DeleteSegmentationsOnFileDeleted', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({}, { postgres: false });
     await testingEnvironment.setupTenantTmpPaths([]);
@@ -22,12 +20,12 @@ describe('DeleteSegmentationsOnFilesDeleted', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should delete the segmentations of the deleted files', async () => {
-    const eventsBus = new EventsBus();
-    DeleteSegmentationsOnFilesDeleted.register(eventsBus);
-
+  it('should delete the segmentation of the deleted file', async () => {
     await testingEnvironment.runWithContext(async () =>
-      eventsBus.emit(new FilesDeletedEvent({ files: [{ _id: f.id('file-a') }] as never }))
+      DeleteSegmentationsOnFileDeletedFactory.default().handle(
+        jest.fn().mockResolvedValue(undefined),
+        { fileId: f.idString('file-a') }
+      )
     );
 
     expect((await storedSegmentations(false)).map(s => s.filename)).toEqual(['b.pdf']);

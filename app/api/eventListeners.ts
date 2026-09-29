@@ -9,12 +9,10 @@ import { PXFilesDeletedListener } from './paragraphExtraction/infrastructure/PXF
 import { PXFileUpdatedListener } from './paragraphExtraction/infrastructure/PXFileUpdatedListener.js';
 import { registerEventListeners as registerOcrListeners } from './services/ocr/eventListeners.js';
 import { Suggestions } from './suggestions/suggestions.js';
-import { SegmentationComposition } from '#segmentation/composition';
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   Suggestions.registerEventListeners(eventsBus);
   registerOcrListeners(eventsBus);
-  SegmentationComposition.registerListeners(eventsBus);
   AutomaticTranslationFactory.defaultATEntityCreationListener(eventsBus).start();
   new PXFileUpdatedListener(eventsBus).start();
   new PXFilesDeletedListener(eventsBus).start();

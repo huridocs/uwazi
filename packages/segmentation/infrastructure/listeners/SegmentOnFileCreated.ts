@@ -1,30 +1,29 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { handleError } from '#api/utils/handleError.js';
-import { AfterCommitContext } from './AfterCommitContext.js';
-import { RegisterFileSegmentationFactory } from '../factories/RegisterFileSegmentationFactory.js';
+import { FileCreatedEvent } from '#api/core/domain/files/events/FileCreatedEvent.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { RegisterFileSegmentation } from '../../application/RegisterFileSegmentation.js';
 
-/**
- * Registers the segmentation of every file created. It runs inline, after the file was committed,
- * so a failure here is reported rather than thrown: the upload itself already succeeded.
- */
-class SegmentOnFileCreated {
-  static register(eventsBus: EventsBus) {
-    eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
-      try {
-        await AfterCommitContext.run(async () =>
-          RegisterFileSegmentationFactory.default().execute({
-            fileId: newFile._id.toString(),
-            filename: newFile.filename!,
-            type: newFile.type,
-            mimetype: newFile.mimetype,
-          })
-        );
-      } catch (error) {
-        handleError(error);
-      }
+type Deps = {
+  registerFileSegmentation: RegisterFileSegmentation;
+};
+
+/** Registers the segmentation of every file created. */
+@PrivilegedJob()
+class SegmentOnFileCreated extends Listener<FileCreatedEvent, Deps> {
+  static eventName = FileCreatedEvent.name;
+
+  async handle(_heartbeat: HeartbeatCallback, { file }: FileCreatedEvent['payload']) {
+    await this.deps.registerFileSegmentation.execute({
+      fileId: file._id,
+      filename: file.filename,
+      type: file.type,
+      mimetype: file.mimetype,
     });
   }
 }
+
+EventEmitterFactory.registry.register(SegmentOnFileCreated);
 
 export { SegmentOnFileCreated };

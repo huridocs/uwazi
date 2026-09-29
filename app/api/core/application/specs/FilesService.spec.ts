@@ -20,7 +20,11 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { FileCreatedEvent } from '#api/core/domain/files/events/FileCreatedEvent.js';
+import { FileDeletedEvent } from '#api/core/domain/files/events/FileDeletedEvent.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
@@ -174,6 +178,27 @@ const createService = (deps?: Partial<FilesServiceDeps>) => {
   );
 };
 
+/**
+ * Runs `fn` inside a transaction of the context's own transaction manager, recording whether each
+ * V2 event was emitted while that transaction was still running.
+ */
+const runInContextTransaction = async (fn: () => Promise<void>) => {
+  const eventEmitter = EventEmitterFactory.forTesting();
+  const emittedWhileRunning: boolean[] = [];
+
+  await testingEnvironment.runWithContext(
+    async () => {
+      jest.mocked(eventEmitter.emit).mockImplementation(async () => {
+        emittedWhileRunning.push(ExecutionContext.transactionManager.isRunning());
+      });
+      await ExecutionContext.transactionManager.run(fn);
+    },
+    { factories: { eventEmitter: () => eventEmitter } }
+  );
+
+  return { eventEmitter, emittedWhileRunning };
+};
+
 describe('FilesService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -252,6 +277,21 @@ describe('FilesService', () => {
             tenantName: tenants.current().name,
           },
         ]);
+      });
+
+      it('should emit a FileCreatedEvent per file inside the transaction', async () => {
+        const { eventEmitter, emittedWhileRunning } = await runInContextTransaction(async () =>
+          FilesServiceFactory.default({ fileStorage, jobsDispatcher }).insert([
+            document,
+            attachment,
+          ])
+        );
+
+        expect(jest.mocked(eventEmitter.emit).mock.calls).toEqual([
+          [new FileCreatedEvent({ file: document.toDTO() })],
+          [new FileCreatedEvent({ file: attachment.toDTO() })],
+        ]);
+        expect(emittedWhileRunning).toEqual([true, true]);
       });
     });
 
@@ -344,6 +384,21 @@ describe('FilesService', () => {
 
         expect(filenames).not.toContain(`${f.idString('del-doc1')}.jpg`);
         expect(filenames).toContain(`${f.idString('del-doc2')}.jpg`);
+      });
+
+      it('should emit a FileDeletedEvent per deleted file inside the transaction', async () => {
+        const { eventEmitter, emittedWhileRunning } = await runInContextTransaction(async () => {
+          const doc1 = (
+            await FilesDataSourceFactory.default().getById(f.idString('del-doc1'))
+          ).getDataOrThrow();
+          await FilesServiceFactory.default({ jobsDispatcher }).delete([doc1]);
+        });
+
+        expect(jest.mocked(eventEmitter.emit).mock.calls).toEqual([
+          [new FileDeletedEvent({ fileId: f.idString('del-doc1') })],
+          [new FileDeletedEvent({ fileId: f.idString('del-doc1-thumb') })],
+        ]);
+        expect(emittedWhileRunning).toEqual([true, true]);
       });
     });
 

@@ -295,7 +295,6 @@
       "files": [
         "app/queueRegistry.ts",
         "app/worker.ts",
-        "app/api/eventListeners.ts",
         "app/api/api.js"
       ],
       "rules": {
