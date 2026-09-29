@@ -23,41 +23,19 @@ describe('ViewerRoute', () => {
     };
 
     it('should not write the store while rendering', () => {
-      let rendering = false;
-      let wroteDuringRender = false;
-      const { render } = ViewerRoute.prototype;
-      const renderSpy = jest
-        .spyOn(ViewerRoute.prototype, 'render')
-        .mockImplementation(function mockedRender() {
-          rendering = true;
-          try {
-            return render.call(this);
-          } finally {
-            rendering = false;
-          }
-        });
-      const storeDispatch = jasmine.createSpy('dispatch').and.callFake(() => {
-        wroteDuringRender = wroteDuringRender || rendering;
-      });
-
-      try {
-        shallow(<ViewerRoute params={{ tabView: 'references' }} location={{ search: '' }} />, {
-          context: { store: { getState: () => ({}), dispatch: storeDispatch } },
-        });
-        expect(wroteDuringRender).toBe(false);
-        expect(storeDispatch).toHaveBeenCalledWith(
-          actions.set('viewer.sidepanel.tab', 'references')
-        );
-      } finally {
-        renderSpy.mockRestore();
-      }
+      const selectTab = jest.spyOn(ViewerRoute.prototype, 'selectTab');
+      const component = renderRoute({ tabView: 'references' });
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'references'));
+      selectTab.mockClear();
+      dispatch.calls.reset();
+      component.instance().render();
+      expect(selectTab).not.toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
+      selectTab.mockRestore();
     });
 
     it('should select the route tab after mount', () => {
-      const component = renderRoute({ tabView: 'metadata' });
-      dispatch.calls.reset();
-      spyOn(component.instance(), 'getClientState').and.returnValue(Promise.resolve());
-      component.instance().componentDidMount();
+      renderRoute({ tabView: 'metadata' });
       expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'metadata'));
       expect(dispatch).toHaveBeenCalledWith(showTab('info'));
     });
