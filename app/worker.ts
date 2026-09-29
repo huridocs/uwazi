@@ -18,6 +18,7 @@ import { tocService } from '#api/toc_generation/tocService.js';
 import { sleep } from '#shared/tsUtils.js';
 import { handleError } from '#api/utils/handleError.js';
 import { SegmentationComposition } from '#segmentation/composition';
+import { ListenerRegistration } from '#api/ListenerRegistration.js';
 
 const systemLogger = LoggerFactory.systemLogger();
 
@@ -33,6 +34,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     await tenants.setupTenants();
     permissionsContext.setCommandContextAsDefault();
+    ListenerRegistration.registerEvents();
     registerSyncHandlers();
     setupWorkerSockets(await Redis.connect());
 

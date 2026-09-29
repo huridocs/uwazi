@@ -295,7 +295,8 @@
       "files": [
         "app/queueRegistry.ts",
         "app/worker.ts",
-        "app/api/api.js"
+        "app/api/api.js",
+        "app/api/ListenerRegistration.ts"
       ],
       "rules": {
         "eslint/no-restricted-imports": [
