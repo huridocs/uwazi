@@ -1,14 +1,20 @@
 {
   "workerIdleMemoryLimit": 0.2,
   "displayName": "Server",
-  "roots": ["<rootDir>", "<rootDir>/../apps", "<rootDir>/../packages"],
+  "roots": [
+    "<rootDir>",
+    "<rootDir>/../apps",
+    "<rootDir>/../packages",
+    "<rootDir>/../scripts/scripts.v2"
+  ],
   "testMatch": [
     "**/app/api/**/specs/*spec.(j|t)s?(x)",
     "**/app/shared/**/specs/*spec.(j|t)s?(x)",
     "**/app/specs/*spec.(j|t)s?(x)",
     "**/app/react/V2/services/server/**/specs/*spec.(j|t)s?(x)",
     "**/apps/**/specs/*spec.(j|t)s?(x)",
-    "**/packages/**/specs/*spec.(j|t)s?(x)"
+    "**/packages/**/specs/*spec.(j|t)s?(x)",
+    "**/scripts/scripts.v2/specs/*spec.(j|t)s?(x)"
   ],
   "testEnvironment": "node",
   "setupFilesAfterEnv": [

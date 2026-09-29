@@ -50,6 +50,7 @@
     "e2e",
     "playwright",
     "scripts/scripts.v2/*",
+    "scripts/scripts.v2/specs/*",
     "scripts/elasticSearch/*",
     ".storybook"
   ],
