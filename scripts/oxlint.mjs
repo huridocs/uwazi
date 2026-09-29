@@ -44,6 +44,18 @@ for (let i = 0; i < args.length; i += 1) {
   }
 }
 
+// The generated V2 listener manifests must match the listeners in the source tree.
+const manifests = spawnSync(
+  './node_modules/.bin/tsx',
+  ['./scripts/scripts.v2/generateListenerManifests.ts', '--check'],
+  { stdio: 'inherit' },
+);
+
+if (manifests.error || manifests.status !== 0) {
+  if (manifests.error) console.error(manifests.error.message);
+  process.exit(1);
+}
+
 // Default paths when none are provided on the CLI.
 const targets = paths.length ? paths : ['app', 'packages', 'e2e', 'cypress'];
 
