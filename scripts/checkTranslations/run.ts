@@ -89,7 +89,8 @@ const parseArgs = (argv: string[]): CheckTranslationsOptions => {
 
 const helpText = `Usage: yarn check-translations [--fix] [--strict] [--unused] [--dir <path>] [--translations-dir <path>]
 
-Checks System UI copy against contents/ui-translations.
+Checks System UI copy against contents/ui-translations and prints a table
+(Texto no traducido | Archivo | Línea) grouped by kind.
 
   --fix                 Wrap static JSX text / native attributes / notify() calls and
                         add missing keys to locale CSVs. Leaves composed strings and
@@ -156,39 +157,43 @@ const applyFixes = async (
 };
 
 const color = {
-  cyan: (text: string) => `\x1b[36m${text}\x1b[0m`,
   red: (text: string) => `\x1b[31m${text}\x1b[0m`,
   yellow: (text: string) => `\x1b[33m${text}\x1b[0m`,
   green: (text: string) => `\x1b[32m${text}\x1b[0m`,
-  dim: (text: string) => `\x1b[2m${text}\x1b[0m`,
+};
+
+const markdownCell = (value: string): string => value.replaceAll('|', '\\|').replaceAll('\n', ' ');
+
+const tableRow = (finding: Finding): string => {
+  const file = finding.file || '(csv)';
+  const line = finding.loc ? String(finding.loc.line) : '';
+  return `| ${markdownCell(finding.text)} | ${markdownCell(file)} | ${line} |`;
+};
+
+const formatKindSection = (kind: Finding['kind'], ofKind: Finding[]): string[] => {
+  const tone = ofKind[0].severity === 'error' ? color.red : color.yellow;
+  return [
+    `=== ${tone(kind)} (${ofKind[0].severity}) ${ofKind.length} ===`,
+    '| Texto no traducido | Archivo | Línea |',
+    '| --- | --- | --- |',
+    ...ofKind.map(tableRow),
+    '',
+  ];
 };
 
 const formatReport = (
   findings: Finding[],
   extras: { fixed: Finding[]; addedKeys: string[] }
 ): string => {
-  const lines: string[] = [];
-  KIND_ORDER.forEach(kind => {
+  const lines = KIND_ORDER.flatMap(kind => {
     const ofKind = findings.filter(finding => finding.kind === kind);
-    if (!ofKind.length) {
-      return;
-    }
-    const tone = ofKind[0].severity === 'error' ? color.red : color.yellow;
-    lines.push(` === ${tone(kind)} (${ofKind[0].severity}) ${ofKind.length} ===`);
-    ofKind.forEach(finding => {
-      const location = finding.loc ? `:${finding.loc.line}` : '';
-      const file = finding.file ? `${finding.file}${location}` : '(csv)';
-      const unfixable = finding.fixable ? '' : color.dim('  [not auto-fixable]');
-      lines.push(` ${color.cyan(file)}  ${finding.text}${unfixable}`);
-    });
-    lines.push('');
+    return ofKind.length ? formatKindSection(kind, ofKind) : [];
   });
-
   if (extras.fixed.length) {
-    lines.push(color.green(` Applied ${extras.fixed.length} source fix(es).`));
+    lines.push(color.green(`Applied ${extras.fixed.length} source fix(es).`));
   }
   if (extras.addedKeys.length) {
-    lines.push(color.green(` Added ${extras.addedKeys.length} missing key(s) to locale CSVs.`));
+    lines.push(color.green(`Added ${extras.addedKeys.length} missing key(s) to locale CSVs.`));
   }
   return `${lines.join('\n')}\n`;
 };

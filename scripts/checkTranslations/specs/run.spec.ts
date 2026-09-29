@@ -2,8 +2,8 @@ import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { parseArgs, runCheckTranslations } from '../run.js';
-import type { CheckTranslationsResult } from '../types.js';
+import { formatReport, parseArgs, runCheckTranslations } from '../run.js';
+import type { CheckTranslationsResult, Finding } from '../types.js';
 
 const makeFixture = async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'check-translations-'));
@@ -100,5 +100,49 @@ describe('runCheckTranslations', () => {
     const source = await readFile(path.join(srcDir, 'Widget.tsx'), 'utf8');
     expectFixedSource(source);
     await expectFixedCsvAndLeftovers(csvDir, after);
+  });
+});
+
+const findingRow = (input: {
+  kind: Finding['kind'];
+  file: string;
+  text: string;
+  line: number;
+  fixable: boolean;
+}): Finding => ({
+  kind: input.kind,
+  severity: 'warning',
+  file: input.file,
+  text: input.text,
+  key: input.text,
+  loc: { line: input.line, column: 0, start: 0, end: 1 },
+  fixable: input.fixable,
+});
+
+describe('formatReport', () => {
+  it('prints a table of untranslated text, file and line', () => {
+    const report = formatReport(
+      [
+        findingRow({
+          kind: 'untranslated-attribute',
+          file: 'app/react/V2/Components/UI/Modal.tsx',
+          text: 'Close modal',
+          line: 108,
+          fixable: true,
+        }),
+        findingRow({
+          kind: 'untranslated-label',
+          file: 'app/react/Metadata/options.ts',
+          text: 'Rich text',
+          line: 12,
+          fixable: false,
+        }),
+      ],
+      { fixed: [], addedKeys: [] }
+    );
+
+    expect(report).toContain('| Texto no traducido | Archivo | Línea |');
+    expect(report).toContain('| Close modal | app/react/V2/Components/UI/Modal.tsx | 108 |');
+    expect(report).toContain('| Rich text | app/react/Metadata/options.ts | 12 |');
   });
 });
