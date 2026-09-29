@@ -9,11 +9,15 @@ import { QueueSegmentationsOnFeatureEnabled } from './infrastructure/listeners/Q
 import { SegmentationRoutes } from './infrastructure/http/SegmentationRoutes.js';
 import { DeleteSegmentationsOnFileDeleted } from './infrastructure/listeners/DeleteSegmentationsOnFileDeleted.js';
 import { SegmentOnFileCreated } from './infrastructure/listeners/SegmentOnFileCreated.js';
+import { listeners } from './infrastructure/listeners.generated.js';
 import { SegmentOnFileCreatedFactory } from './infrastructure/factories/SegmentOnFileCreatedFactory.js';
 import { DeleteSegmentationsOnFileDeletedFactory } from './infrastructure/factories/DeleteSegmentationsOnFileDeletedFactory.js';
 
 /** How the host wires the segmentation module in. */
 class SegmentationComposition {
+  /** The package's V2 listeners, for the host to register in every process. */
+  static readonly listeners = listeners;
+
   static registerJobs(register: Register) {
     register(QueueSegmentationsOnFeatureEnabled.asJob(), async () =>
       QueueSegmentationsOnFeatureEnabledFactory.default()
