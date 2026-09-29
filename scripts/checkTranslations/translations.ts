@@ -53,39 +53,71 @@ const writeLocaleCsv = async (
   await writeFile(path.join(translationsDir, `${locale}.csv`), `${lines.join('\n')}\n`);
 };
 
-const addMissingKeysToCsvs = async (translationsDir: string, keys: string[]): Promise<string[]> => {
-  const uniqueKeys = [...new Set(keys.filter(Boolean))];
-  if (!uniqueKeys.length) {
-    return [];
+type LocaleUpdateInput = {
+  existing: TranslationEntry[];
+  locale: string;
+  toAdd: string[];
+  toRemove: Set<string>;
+};
+
+const nextLocaleEntries = ({
+  existing,
+  locale,
+  toAdd,
+  toRemove,
+}: LocaleUpdateInput): { entries: TranslationEntry[]; added: string[]; removed: string[] } => {
+  const existingKeys = new Set(existing.map(entry => entry.key));
+  const removed = existing.filter(entry => toRemove.has(entry.key)).map(entry => entry.key);
+  const added = toAdd.filter(key => !existingKeys.has(key) && !toRemove.has(key));
+  return {
+    entries: [
+      ...existing.filter(entry => !toRemove.has(entry.key)),
+      ...added.map(key => ({ key, value: key, locale })),
+    ],
+    added,
+    removed,
+  };
+};
+
+const applyCsvKeyUpdates = async (
+  translationsDir: string,
+  addKeys: string[],
+  removeKeys: string[] = []
+): Promise<{ addedKeys: string[]; removedKeys: string[] }> => {
+  const toAdd = [...new Set(addKeys.filter(Boolean))];
+  const toRemove = new Set(removeKeys.filter(Boolean));
+  if (!toAdd.length && !toRemove.size) {
+    return { addedKeys: [], removedKeys: [] };
   }
 
   const locales = await listLocales(translationsDir);
-  const added: string[] = [];
+  const summary = { addedKeys: [] as string[], removedKeys: [] as string[] };
 
   await Promise.all(
     locales.map(async locale => {
       const existing = await loadLocaleCsv(translationsDir, locale);
-      const existingKeys = new Set(existing.map(entry => entry.key));
-      const nextEntries = [...existing];
-      uniqueKeys.forEach(key => {
-        if (!existingKeys.has(key)) {
-          nextEntries.push({ key, value: key, locale });
-          if (locale === 'en') {
-            added.push(key);
-          }
-        }
-      });
-      if (nextEntries.length !== existing.length) {
-        await writeLocaleCsv(translationsDir, locale, nextEntries);
+      const next = nextLocaleEntries({ existing, locale, toAdd, toRemove });
+      if (next.entries.length !== existing.length) {
+        await writeLocaleCsv(translationsDir, locale, next.entries);
+      }
+      if (locale === 'en') {
+        summary.addedKeys = next.added;
+        summary.removedKeys = next.removed;
       }
     })
   );
 
-  return added;
+  return summary;
+};
+
+const addMissingKeysToCsvs = async (translationsDir: string, keys: string[]): Promise<string[]> => {
+  const { addedKeys } = await applyCsvKeyUpdates(translationsDir, keys, []);
+  return addedKeys;
 };
 
 export {
   addMissingKeysToCsvs,
+  applyCsvKeyUpdates,
   listLocales,
   loadEnglishTranslations,
   loadLocaleCsv,
