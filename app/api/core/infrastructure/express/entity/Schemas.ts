@@ -149,6 +149,7 @@ const UpdateEntityWithTranslationsSchema = UpdateEntitySchema.extend({
 export {
   CreateEntitySchema,
   UpdateEntitySchema,
+  EntityTranslationsSchema,
   CreateEntityWithTranslationsSchema,
   UpdateEntityWithTranslationsSchema,
 };

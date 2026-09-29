@@ -23,8 +23,5 @@ const librarySelectionActions = (): LibrarySelectionAction[] => [
   { id: 'delete', label: 'Delete', icon: actionIcon('trash'), danger: true },
 ];
 
-const librarySelectionMenuActions = (): LibrarySelectionAction[] =>
-  librarySelectionActions().filter(action => action.id !== 'edit');
-
 export type { LibraryBulkAction, LibrarySelectionAction };
-export { librarySelectionActions, librarySelectionMenuActions };
+export { librarySelectionActions };

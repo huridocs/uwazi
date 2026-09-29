@@ -9,6 +9,7 @@ import * as formatter from './formatter.js';
 import { Entity } from './types.js';
 import { getPermissions, savePermissions, searchCollaborators } from './permissions.js';
 import { saveWithFiles } from './save/index.js';
+import { multipleUpdate } from './multipleUpdate.js';
 
 const withLanguage = (language: string, headers?: IncomingHttpHeaders) => ({
   ...requestHeaders(headers),
@@ -164,8 +165,10 @@ export {
   formatter,
   getBySharedId,
   saveWithFiles,
+  multipleUpdate,
   remove,
   getPermissions,
   savePermissions,
   searchCollaborators,
 };
+export type { MultipleUpdateRequest } from './multipleUpdate.js';

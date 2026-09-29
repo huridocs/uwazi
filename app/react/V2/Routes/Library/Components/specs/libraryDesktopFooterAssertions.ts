@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 
 const multiSelectLabels = ['Edit', 'Export CSV', 'Permissions', 'Delete'];
 
@@ -11,8 +11,10 @@ const expectNoShareOrTemplate = () => {
   expect(screen.queryByRole('menuitem', { name: 'Change template' })).not.toBeInTheDocument();
 };
 
-const expectShownLabel = (control: HTMLElement, label: string) => {
-  expect(control.querySelector('svg')).toBeTruthy();
+const expectShownLabel = (control: HTMLElement, label: string, icon = true) => {
+  if (icon) {
+    expect(control.querySelector('svg')).toBeTruthy();
+  }
   expect(control).toHaveTextContent(label);
   const text = within(control).getByText(label);
   const parentClass = text.parentElement?.className ?? '';
@@ -32,23 +34,6 @@ const childSequence = (root: HTMLElement) =>
 
 const selectionPanelFooter = () =>
   within(screen.getByTestId('library-selection-panel')).getByTestId('library-selection-footer');
-
-const panelBarSequence = (footer: HTMLElement) =>
-  [...footer.children].flatMap(child => {
-    const text = child.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    return text ? [text] : [];
-  });
-
-const expectPanelBar = () => {
-  const footer = selectionPanelFooter();
-  ['Share', 'Change template', 'Permissions', 'Delete'].forEach(name => {
-    expect(within(footer).queryByRole('button', { name })).not.toBeInTheDocument();
-  });
-  expect(within(footer).queryByRole('link', { name: 'View entity' })).not.toBeInTheDocument();
-  expect(panelBarSequence(footer)).toEqual(['Close', 'Edit', 'Actions']);
-  expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toBeTruthy();
-  expect(within(footer).getByRole('button', { name: 'Close' }).querySelector('svg')).toBeNull();
-};
 
 const expectPersistentActions = (footer: HTMLElement) => {
   const left = within(footer).getByTestId('library-results-actions');
@@ -130,6 +115,7 @@ const expectOneTextOnlyEdit = (actions: HTMLElement, footer: HTMLElement) => {
   expect(actions).toContainElement(edits[0]);
   expect(edits[0].querySelector('svg')).toBeNull();
   expect(edits[0]).toHaveTextContent('Edit');
+  expect(edits[0]).toHaveClass('bg-warm');
 };
 
 const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
@@ -142,6 +128,25 @@ const expectActionCluster = (leftSide: HTMLElement, footer: HTMLElement) => {
   expectPanelDelete(footer, actions);
   expect(within(leftSide).queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   expect(within(leftSide).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
+};
+
+const expectPanelDismiss = (rightSide: HTMLElement) => {
+  ['Edit', 'Permissions', 'Delete'].forEach(name => {
+    expect(within(rightSide).queryByRole('button', { name })).not.toBeInTheDocument();
+  });
+  expect(childSequence(rightSide)).toEqual(['Close']);
+  expect(within(rightSide).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
+  expect(within(rightSide).getByRole('button', { name: 'Close' }).querySelector('svg')).toBeNull();
+};
+
+const expectPanelBar = () => {
+  const footer = selectionPanelFooter();
+  expect(within(footer).queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('button', { name: 'Export CSV' })).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
+  const { leftSide, rightSide } = panelBarSides(footer);
+  expectActionCluster(leftSide, footer);
+  expectPanelDismiss(rightSide);
 };
 
 const expectDismissCluster = (rightSide: HTMLElement) => {
@@ -241,29 +246,9 @@ const expectFooterLabels = () => {
   expectNoShareOrTemplate();
 };
 
-const menuSequence = (menu: HTMLElement) =>
-  [...menu.children].flatMap(child => {
-    if (child.tagName === 'HR') {
-      return ['divider'];
-    }
-    const text = child.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    return text ? [text] : [];
-  });
-
-const expectMenuItems = (menu: HTMLElement) => {
-  expect(menuSequence(menu)).toEqual(['Export CSV', 'Permissions', 'divider', 'Delete']);
-  const deleteItem = within(menu).getByRole('menuitem', { name: 'Delete' });
-  expectDividerOnlyBeforeDelete(menu, deleteItem);
-  expect(deleteItem).toHaveTextContent('Delete');
-  ['Edit', 'Share', 'Change template'].forEach(name => {
-    expect(within(menu).queryByRole('menuitem', { name })).not.toBeInTheDocument();
-  });
-};
-
 const expectActionsMenu = () => {
   expectPanelBar();
-  fireEvent.click(within(selectionPanelFooter()).getByRole('button', { name: 'Actions' }));
-  expectMenuItems(screen.getByRole('menu', { name: 'Selection actions' }));
+  expect(screen.queryByRole('menu', { name: 'Selection actions' })).not.toBeInTheDocument();
   expectNoShareOrTemplate();
 };
 

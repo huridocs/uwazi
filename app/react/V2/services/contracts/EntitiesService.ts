@@ -3,6 +3,7 @@ import type { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { FileType } from '#shared/types/fileType.js';
 import type { PermissionsDataSchema } from '#shared/types/permissionType.js';
+import type { MultipleUpdateRequest } from '#V2/api/entities/multipleUpdate.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
@@ -18,6 +19,10 @@ type EntitySaveInput = Omit<EntityWithFilesSchema, 'documents' | 'attachments'> 
 type EntityReadOptions = ServiceRequestOptions & {
   language: string;
   omitRelationships?: boolean;
+};
+
+type MultipleUpdateOptions = ServiceRequestOptions & {
+  language: string;
 };
 
 /**
@@ -39,6 +44,10 @@ interface EntitiesService {
     options?: ServiceRequestOptions
   ): Promise<ApiResponse<Entity | undefined>>;
   delete(sharedIds: string[], options?: ServiceRequestOptions): Promise<ApiResponse<void>>;
+  multipleUpdate(
+    request: MultipleUpdateRequest,
+    options: MultipleUpdateOptions
+  ): Promise<ApiResponse<unknown>>;
   getPermissions(
     sharedIds: string[],
     options?: ServiceRequestOptions
@@ -53,4 +62,4 @@ interface EntitiesService {
   ): Promise<ApiResponse<MemberWithPermission[]>>;
 }
 
-export type { EntitiesService, EntityReadOptions, EntitySaveInput };
+export type { EntitiesService, EntityReadOptions, EntitySaveInput, MultipleUpdateOptions };
