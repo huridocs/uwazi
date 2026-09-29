@@ -1,3 +1,4 @@
+import './findDOMNodePolyfill.js';
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';

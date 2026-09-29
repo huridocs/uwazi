@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
+import './findDOMNodePolyfill.js';
 import type { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
