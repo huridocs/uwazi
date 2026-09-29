@@ -1,3 +1,4 @@
+import { SegmentTypeNames } from '#segmentation';
 import { ExtractParagraphInput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
 import { ExtractionDTO } from './types.js';
@@ -12,14 +13,14 @@ class PXExtractionMapper {
         return {
           language,
           is_main_language: language === input.mainLanguage,
-          xml_file_name: segmentation.xmlname!,
-          xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
-            left: paragraph.left,
-            top: paragraph.top,
-            page_number: paragraph.pageNumber,
-            segment_type: paragraph.type,
-            width: paragraph.width,
-            height: paragraph.height,
+          xml_file_name: segmentation.xmlFilename,
+          xml_segments_boxes: segmentation.layout.segments.map(segment => ({
+            left: segment.left,
+            top: segment.top,
+            page_number: segment.pageNumber,
+            segment_type: SegmentTypeNames.toName(segment.type),
+            width: segment.width,
+            height: segment.height,
           })),
         };
       }),

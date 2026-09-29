@@ -26,6 +26,7 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
+import { ListenerRegistration } from '#api/ListenerRegistration.js';
 import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
@@ -143,6 +144,7 @@ function setupQueueWorker(props?: Props) {
       logger.info('Set tenants up');
 
       registerJobs(register.bind(queueWorker));
+      ListenerRegistration.registerEvents();
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
       // 'system' jobs stay in Mongo until release 2, so only the Mongo worker schedules them.

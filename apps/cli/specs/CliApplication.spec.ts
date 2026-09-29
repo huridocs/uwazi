@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import { z } from 'zod';
 import { ConflictError } from '#api/core/domain/error/ConflictError.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { CliApplication } from '../CliApplication.js';
 import { ExitCode } from '../errors/ExitCode.js';
 import { Route } from '../routing/Route.js';
@@ -53,6 +54,24 @@ describe('CliApplication', () => {
     expect(stderr.text).toBe('');
     expect(connections.open).toHaveBeenCalledWith({ redis: true });
     expect(connections.close).toHaveBeenCalledTimes(1);
+  });
+
+  it('should register every V2 listener before running a command', async () => {
+    const registered = (eventName: string) =>
+      [...(EventEmitterFactory.registry.getListeners(eventName) ?? [])].map(l => l.name).sort();
+    let whileRunning: string[] = [];
+    const handle = jest.fn().mockImplementation(async () => {
+      whileRunning = registered('SettingsChangedEvent');
+      return [];
+    });
+    const { app } = setUp(listThings(handle));
+
+    await app.run(['things', 'list', ...request({ name: 'a' })]);
+
+    expect(whileRunning).toEqual([
+      'BroadcastSettingsChanged',
+      'QueueSegmentationsOnFeatureEnabled',
+    ]);
   });
 
   it('should read the request from stdin with --request -', async () => {

@@ -19,7 +19,8 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { SegmentationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { filesModel } from '#api/files/filesModel.js';
 import { testConfigs } from '#api/suggestions/domain/specs/IXSuggestionsContractFixtures.js';
 import { factory, fixtures } from './fixtures.js';
@@ -37,6 +38,45 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import ixmodels from '../ixmodels.js';
 import { IXWebSocketEvents } from '../WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';
+
+/**
+ * Arranges segmentations the way the old model did — in Mongo, `processing` unless told otherwise —
+ * and mirrors them into Postgres, which Postgres tenants read. Postgres holds one segmentation per
+ * file, so where a spec leaves duplicates the file's ready one is mirrored.
+ */
+const segmentationFixtures = {
+  collection() {
+    return testingEnvironment.db.getCollection('segmentations')!;
+  },
+
+  async save(doc: Record<string, unknown>) {
+    await this.collection().insertOne({ _id: new ObjectId(), status: 'processing', ...doc });
+    await this.mirror();
+  },
+
+  async delete(filter: Record<string, unknown>) {
+    await this.collection().deleteMany(filter);
+    await this.mirror();
+  },
+
+  async mirror() {
+    if (!testingEnvironment.pgEnabled) {
+      return;
+    }
+    const byFile = new Map<string, Record<string, unknown>>();
+    (await this.collection().find().toArray()).forEach(doc => {
+      const kept = byFile.get(String(doc.fileID));
+      if (!kept || kept.status !== 'ready') {
+        byFile.set(String(doc.fileID), doc);
+      }
+    });
+    await testingPG.setFixtures({
+      segmentations: [...byFile.values()].map(doc =>
+        SegmentationsMigrationConfig.mapDocument(JSON.parse(JSON.stringify(doc)))
+      ),
+    });
+  },
+};
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -441,6 +481,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
             height: 15,
             page_number: 1,
             text: 'something',
+            type: 'Text',
           },
         ],
         page_width: 595,
@@ -466,7 +507,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
           id: expect.any(String),
           tenant: 'tenant1',
           xml_segments_boxes: [
-            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' },
+            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3', type: 'Text' },
           ],
           page_width: 13,
           page_height: 13,
@@ -480,7 +521,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
           id: expect.any(String),
           tenant: 'tenant1',
           xml_segments_boxes: [
-            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' },
+            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3', type: 'Text' },
           ],
           page_width: 13,
           page_height: 13,
@@ -508,6 +549,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
             height: 1,
             page_number: 1,
             text: 'A',
+            type: 'Text',
           },
         ],
         page_width: 13,
@@ -539,6 +581,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
             height: 1,
             page_number: 1,
             text: 'P1',
+            type: 'Text',
           },
           {
             left: 1,
@@ -547,6 +590,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
             height: 1,
             page_number: 1,
             text: 'P2',
+            type: 'Text',
           },
         ],
         page_width: 13,
@@ -574,8 +618,8 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         id: factory.id('prop2extractor').toString(),
         tenant: 'tenant1',
         xml_segments_boxes: [],
-        page_height: 1,
-        page_width: 2,
+        page_height: 0,
+        page_width: 0,
         language_iso: 'en',
         label_text: '2011-03-04',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
@@ -616,7 +660,9 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         id: extractorId.toString(),
         xml_file_name: xml1,
         tenant: 'tenant1',
-        xml_segments_boxes: [{ left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' }],
+        xml_segments_boxes: [
+          { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3', type: 'Text' },
+        ],
         page_width: 13,
         page_height: 13,
         language_iso: 'en',
@@ -629,7 +675,9 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         id: extractorId.toString(),
         xml_file_name: xml2,
         tenant: 'tenant1',
-        xml_segments_boxes: [{ left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' }],
+        xml_segments_boxes: [
+          { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3', type: 'Text' },
+        ],
         page_width: 13,
         page_height: 13,
         language_iso: 'es',
@@ -998,6 +1046,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
             left: 58,
             page_number: 1,
             text: 'something',
+            type: 'Text',
             top: 63,
             width: 457,
           },
@@ -1043,6 +1092,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'A',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1060,6 +1110,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'B',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1068,6 +1119,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'C',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1077,8 +1129,8 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
           xml_file_name: 'documentI.xml',
           id: factory.id('extractorWithMultiselect').toString(),
           tenant: 'tenant1',
-          page_height: 13,
-          page_width: 13,
+          page_height: 0,
+          page_width: 0,
           xml_segments_boxes: [],
         },
       ]);
@@ -1120,6 +1172,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'P1',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1137,6 +1190,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'P1',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1145,6 +1199,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'P2',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1162,6 +1217,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               left: 1,
               page_number: 1,
               text: 'P3',
+              type: 'Text',
               top: 1,
               width: 1,
             },
@@ -1186,23 +1242,31 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should filter out files with failed segmentations to prevent zero-length batches', async () => {
-      await SegmentationModel.delete({ fileID: factory.id('F1') });
+      await segmentationFixtures.delete({ fileID: factory.id('F1') });
 
       // Segmentation with failed status for documentA
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
       });
 
       // Segmentation with ready status for documentC
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'ready',
         segmentation: {
           paragraphs: [
-            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'something' },
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'something',
+              type: 'Text',
+            },
           ],
           page_width: 595,
           page_height: 841,
@@ -1220,7 +1284,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should mark suggestions as failed when their segmentations fail', async () => {
-      await SegmentationModel.delete({});
+      await segmentationFixtures.delete({});
       await ixTestAccess.removeSuggestions();
 
       await saveFile({
@@ -1279,13 +1343,13 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         },
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F2'),
         filename: 'documentB.pdf',
         status: 'failed',
@@ -1313,23 +1377,31 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should filter out files with processing segmentations to prevent zero-length batches', async () => {
-      await SegmentationModel.delete({ fileID: factory.id('F1') });
+      await segmentationFixtures.delete({ fileID: factory.id('F1') });
 
       // Segmentation with processing status for documentA
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'processing',
       });
 
       // Segmentation with ready status for documentC
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'ready',
         segmentation: {
           paragraphs: [
-            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'something' },
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'something',
+              type: 'Text',
+            },
           ],
           page_width: 595,
           page_height: 841,
@@ -1347,16 +1419,16 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should filter out files with missing segmentation status', async () => {
-      await SegmentationModel.delete({ fileID: factory.id('F1') });
+      await segmentationFixtures.delete({ fileID: factory.id('F1') });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         // No status field
       });
 
       // Segmentation with ready status for documentC
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'ready',
@@ -1369,6 +1441,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               height: 15,
               page_number: 1,
               text: 'something',
+              type: 'Text',
             },
           ],
           page_width: 595,
@@ -1387,7 +1460,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should handle error when no files have ready segmentations', async () => {
-      await SegmentationModel.delete({});
+      await segmentationFixtures.delete({});
       await ixTestAccess.removeSuggestions();
 
       await saveFile({
@@ -1447,13 +1520,13 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
       });
 
       // Segmentations with failed status
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'processing',
@@ -1474,7 +1547,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should report the pending segmentation, not a completed run, when no pending file has been segmented at all', async () => {
-      await SegmentationModel.delete({});
+      await segmentationFixtures.delete({});
 
       await getSuggestions(factory.id('prop1extractor'));
 
@@ -1508,7 +1581,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should avoid non-ready segmentations when duplicates exist for the same file', async () => {
-      await SegmentationModel.delete({});
+      await segmentationFixtures.delete({});
       await ixTestAccess.removeSuggestions();
       await removeAllFiles();
 
@@ -1531,20 +1604,28 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
       });
 
       // F1: only non-ready segmentation
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'document1.pdf',
         status: 'processing',
       });
 
       // F2: ready segmentation + a later non-ready duplicate
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F2'),
         filename: 'document2.pdf',
         status: 'ready',
         segmentation: {
           paragraphs: [
-            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'content' },
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'content',
+              type: 'Text',
+            },
           ],
           page_width: 595,
           page_height: 841,
@@ -1552,7 +1633,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         xmlname: 'document2.xml',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F2'),
         filename: 'document2.pdf',
         status: 'processing',
@@ -1592,10 +1673,10 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should handle mixed segmentation statuses correctly', async () => {
-      await SegmentationModel.delete({ fileID: factory.id('F3') });
+      await segmentationFixtures.delete({ fileID: factory.id('F3') });
 
       // Segmentations with different statuses
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'ready',
@@ -1608,6 +1689,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               height: 15,
               page_number: 1,
               text: 'documentA content',
+              type: 'Text',
             },
           ],
           page_width: 595,
@@ -1616,7 +1698,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         xmlname: 'documentA.xml',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'failed',
@@ -1633,7 +1715,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should fetch more files when many have failed segmentations to ensure batch size', async () => {
-      await SegmentationModel.delete({});
+      await segmentationFixtures.delete({});
       await ixTestAccess.removeSuggestions();
 
       await saveFile({
@@ -1654,13 +1736,13 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         propertySelections: [],
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'document1.pdf',
         status: 'failed',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F2'),
         filename: 'document2.pdf',
         status: 'ready',
@@ -1673,6 +1755,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
               height: 15,
               page_number: 1,
               text: 'content',
+              type: 'Text',
             },
           ],
           page_width: 595,
@@ -1726,16 +1809,24 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should create suggestions for all files regardless of segmentation status', async () => {
-      await SegmentationModel.delete({ fileID: factory.id('F3') });
+      await segmentationFixtures.delete({ fileID: factory.id('F3') });
 
       // Segmentations with different statuses
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'ready',
         segmentation: {
           paragraphs: [
-            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'content' },
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'content',
+              type: 'Text',
+            },
           ],
           page_width: 595,
           page_height: 841,
@@ -1743,7 +1834,7 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
         xmlname: 'documentA.xml',
       });
 
-      await SegmentationModel.save({
+      await segmentationFixtures.save({
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'failed',

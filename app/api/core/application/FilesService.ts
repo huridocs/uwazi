@@ -5,8 +5,8 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { FilesDeletedEvent as V1FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { FileCreatedEvent as V1FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
@@ -16,6 +16,9 @@ import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers.js';
 import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { PDFService } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
+import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
+import { FileCreatedEvent } from '../domain/files/events/FileCreatedEvent.js';
+import { FileDeletedEvent } from '../domain/files/events/FileDeletedEvent.js';
 import { Dispatcher } from './contracts/Dispatcher.js';
 import { Result } from '../libs/Result.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
@@ -33,6 +36,7 @@ type Deps = {
   relV1DS: RelationshipsV1DataSource;
   transactionManager: TransactionManager;
   eventBus: EventsBus;
+  eventEmitter: EventEmitter;
   pathManager: PathManager;
 };
 
@@ -64,12 +68,12 @@ class FilesService {
   /**
    * Inserts files into the database and dispatches processing jobs.
    *
-   * IMPORTANT: This method automatically emits FileCreatedEvent for each file
-   * after the transaction commits. Callers do NOT need to emit events manually.
+   * IMPORTANT: This method automatically emits a FileCreatedEvent for each file:
+   * the V2 one inside the transaction, the V1 one after it commits. Callers do NOT
+   * need to emit events manually.
    *
-   * This method should be called within a transaction context using
-   * transactionManager.run(). Events are emitted only after the transaction
-   * successfully commits to ensure data consistency.
+   * This method must be called within a transaction context using
+   * transactionManager.run(): the V2 event can only be emitted inside one.
    *
    * Actor (userId) and tenant (tenantName) are injected at construction time via
    * FilesServiceFactory, which reads them from ExecutionContext. Do not pass them
@@ -100,11 +104,15 @@ class FilesService {
         await this.deps.jobsDispatcher.postProcessPDFs(processingPDFs);
       }
 
+      await ArrayUtils.sequentialFor(files, async file =>
+        this.deps.eventEmitter.emit(new FileCreatedEvent({ file: file.toDTO() }))
+      );
+
       this.deps.transactionManager.onCommitted(async () => {
         await ArrayUtils.sequentialFor(files, async file => {
           const dto = file.toDTO();
           await this.deps.eventBus.emit(
-            new FileCreatedEvent({
+            new V1FileCreatedEvent({
               newFile: { ...dto, _id: new ObjectId(dto._id) },
             })
           );
@@ -150,8 +158,12 @@ class FilesService {
     await this.deps.filesDS.delete(allFilesToDelete);
     await this.deps.relV1DS.deleteByFiles(contentFiles.map(f => f.id));
 
+    await ArrayUtils.sequentialFor(allFilesToDelete, async file =>
+      this.deps.eventEmitter.emit(new FileDeletedEvent({ fileId: file.id }))
+    );
+
     this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.eventBus.emit(FilesDeletedEvent.create(allFilesToDelete));
+      await this.deps.eventBus.emit(V1FilesDeletedEvent.create(allFilesToDelete));
       await this.deps.jobsDispatcher.deleteFilesFromStorage(
         contentFiles.map(file => this.deps.pathManager.createPath(file))
       );

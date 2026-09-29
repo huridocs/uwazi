@@ -1,0 +1,16 @@
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { SegmentationScheduler } from '../../application/SegmentationScheduler.js';
+// eslint-disable-next-line import/no-cycle
+import { SegmentationJobsAdapter } from '../jobs/SegmentationJobsAdapter.js';
+import { SegmentationDataSourceFactory } from './SegmentationDataSourceFactory.js';
+
+class SegmentationSchedulerFactory {
+  static default(): SegmentationScheduler {
+    return new SegmentationScheduler({
+      segmentationDS: SegmentationDataSourceFactory.default(),
+      jobs: new SegmentationJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
+    });
+  }
+}
+
+export { SegmentationSchedulerFactory };
