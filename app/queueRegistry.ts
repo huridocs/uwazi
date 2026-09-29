@@ -12,7 +12,6 @@ import { DeleteLanguageEntitiesJobFactory } from '#api/core/infrastructure/facto
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
@@ -30,6 +29,10 @@ import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrast
 import { BroadcastSettingsChanged } from '#api/core/infrastructure/listeners/BroadcastSettingsChanged.js';
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
+import { ProcessRelationshipAfterEntityUpdatedListenerFactory } from '#api/core/infrastructure/factories/ProcessRelationshipAfterEntityUpdatedListenerFactory.js';
+import { BroadcastSettingsChangedFactory } from '#api/core/infrastructure/factories/BroadcastSettingsChangedFactory.js';
+import { AddLanguagePagesListenerFactory } from '#api/pages.v2/infrastructure/factories/AddLanguagePagesListenerFactory.js';
+import { DeleteLanguagePagesListenerFactory } from '#api/pages.v2/infrastructure/factories/DeleteLanguagePagesListenerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
@@ -312,26 +315,17 @@ export function registerJobs(register: Register) {
     });
   });
 
-  register(
-    ProcessRelationshipAfterEntityUpdatedListener.asJob(),
-    async () => new ProcessRelationshipAfterEntityUpdatedListener({})
+  register(ProcessRelationshipAfterEntityUpdatedListener.asJob(), async () =>
+    ProcessRelationshipAfterEntityUpdatedListenerFactory.default()
   );
 
-  register(
-    AddLanguagePagesListener.asJob(),
-    async () => new AddLanguagePagesListener({ settingsDS: SettingsDataSourceFactory.default() })
-  );
+  register(AddLanguagePagesListener.asJob(), async () => AddLanguagePagesListenerFactory.default());
 
-  register(
-    BroadcastSettingsChanged.asJob(),
-    async () =>
-      new BroadcastSettingsChanged({
-        settingsQuery: SettingsQueryServiceFactory.default(),
-        sockets: new V1WebSocketsWrapper(),
-      })
-  );
+  register(BroadcastSettingsChanged.asJob(), async () => BroadcastSettingsChangedFactory.default());
 
-  register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
+  register(DeleteLanguagePagesListener.asJob(), async () =>
+    DeleteLanguagePagesListenerFactory.default()
+  );
 
   register(DatavizScheduledRefreshJobHandler, async namespace =>
     DatavizFactory.scheduledRefreshJobHandler(namespace)
