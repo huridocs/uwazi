@@ -937,6 +937,10 @@ const search = {
     });
   },
 
+  async refresh() {
+    await elastic.indices.refresh();
+  },
+
   async bulkIndex(docs, action = 'index') {
     return bulkIndex(docs, action);
   },

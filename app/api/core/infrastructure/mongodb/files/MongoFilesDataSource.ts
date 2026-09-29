@@ -56,6 +56,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
         { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
         files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
       );
+      await search.refresh();
       this.filesToReindex = new Set<BaseFile>();
     });
   }
