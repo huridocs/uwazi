@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
-import { Popover } from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import { usePopper } from 'react-popper';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -59,7 +59,7 @@ const ColorPicker = ({
 
   // Popper integration
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
     strategy: 'fixed',
@@ -82,7 +82,7 @@ const ColorPicker = ({
       <Popover className="relative">
         {() => (
           <>
-            <Popover.Button
+            <PopoverButton
               ref={setReferenceElement}
               className="flex h-10.5 w-10.5 cursor-pointer items-center justify-center rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) shadow-md transition focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             >
@@ -92,8 +92,8 @@ const ColorPicker = ({
                 style={{ backgroundColor: localValue }}
               />
               <Translate className="sr-only">Template color</Translate>
-            </Popover.Button>
-            <Popover.Panel
+            </PopoverButton>
+            <PopoverPanel
               ref={setPopperElement}
               style={{
                 ...styles.popper,
@@ -154,7 +154,7 @@ const ColorPicker = ({
                 className="w-full text-center"
                 hasErrors={hasErrors}
               />
-            </Popover.Panel>
+            </PopoverPanel>
           </>
         )}
       </Popover>

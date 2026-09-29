@@ -7,8 +7,8 @@ import type { ClientTranslationContextSchema } from '#app/istore.js';
 const parseMarkdownMarker = (
   line: string,
   regexp: RegExp,
-  wrapper: (text: string) => ReactNode
-): ReactNode | null => {
+  wrapper: (text: string) => React.ReactElement
+): React.ReactElement[] | null => {
   const globalRegexp = new RegExp(regexp.source, 'g');
   const nodes: ReactNode[] = [];
   let lastIndex = 0;

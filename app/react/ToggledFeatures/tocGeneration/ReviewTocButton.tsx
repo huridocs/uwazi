@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { Icon } from '#UI/Icon/Icon.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { ClientFile } from '#app/istore.js';
 import { tocGenerationActions } from './actions.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface ReviewTocButtonProps {
   file: ClientFile;
   children: JSX.Element | string;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators({ onClick: tocGenerationActions.reviewToc }, dispatch);
 
 const connector = connect(null, mapDispatchToProps);

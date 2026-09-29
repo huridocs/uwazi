@@ -308,8 +308,8 @@ const DataTable = <T extends { rowId: string }>({
     const cols = columns.map<ColumnDef<T>>(col => ({
       id: col.id,
       accessorKey: col.sortKey ?? col.id,
-      header: () => col.header,
-      cell: ({ row }) => col.cell(row.original, row.index),
+      header: () => <>{col.header}</>,
+      cell: ({ row }) => <>{col.cell(row.original, row.index)}</>,
       enableSorting: Boolean(col.sortKey),
     }));
     return selection ? [selectionColumn, ...cols] : cols;

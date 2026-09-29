@@ -102,9 +102,9 @@ const hubOverflowHeader = (ctx: HeaderContext) => {
 };
 
 const overviewHeader = (ctx: HeaderContext) => {
-  if (ctx.hideTargetPill && !ctx.isHub) return fallbackLabel(ctx);
+  if (ctx.hideTargetPill && !ctx.isHub) return <>{fallbackLabel(ctx)}</>;
   if (ctx.isHub && ctx.memberCount > 3) return hubOverflowHeader(ctx);
-  return resolveHeader(ctx);
+  return <>{resolveHeader(ctx)}</>;
 };
 
 const compactHeader = (ctx: HeaderContext) => {
@@ -125,8 +125,8 @@ const compactHeader = (ctx: HeaderContext) => {
 };
 
 const detailHeader = (ctx: HeaderContext) => {
-  if (ctx.hideTargetPill) return fallbackLabel(ctx);
-  return resolveHeader(ctx);
+  if (ctx.hideTargetPill) return <>{fallbackLabel(ctx)}</>;
+  return <>{resolveHeader(ctx)}</>;
 };
 
 const resolveCollapsibleRowHeader = (ctx: HeaderContext): ReactNode => {

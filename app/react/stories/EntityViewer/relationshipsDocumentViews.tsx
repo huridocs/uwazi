@@ -68,7 +68,7 @@ const RelationshipsDocumentView = ({
   onClusterClick,
   onPageChange,
 }: RelationshipsDocumentViewProps) => {
-  const documentControls = useRef<PDFControls>();
+  const documentControls = useRef<PDFControls>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);

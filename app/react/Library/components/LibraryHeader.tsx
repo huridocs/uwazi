@@ -2,7 +2,7 @@
 import { Translate } from '#app/I18N/index.js';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { bindActionCreators } from 'redux';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { Icon } from '#UI/index.js';
@@ -18,6 +18,7 @@ import { showFilters as showFiltersAction } from '#app/Entities/actions/uiAction
 import { IStore } from '#app/istore.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;
@@ -37,7 +38,7 @@ const mapStateToProps = (state: IStore) => ({
   rowListZoomLevel: state.library.ui.get('zoomLevel'),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     { zoomIn: zoomInAction, zoomOut: zoomOutAction, showFilters: showFiltersAction },
     wrapDispatch(dispatch, 'library')

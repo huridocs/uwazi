@@ -21,6 +21,7 @@ class UnlockAccountView extends RouteHandler {
   }
 
   componentDidMount() {
+    super.componentDidMount();
     this.unlockAccount();
   }
 

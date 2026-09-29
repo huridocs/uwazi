@@ -85,7 +85,7 @@ const meta = preview.meta({
 });
 
 const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) => {
-  const editorInstance = useRef<CodeEditorInstance>();
+  const editorInstance = useRef<CodeEditorInstance>(undefined);
   const [updatedCode, setUpdatedCode] = useState<string>();
 
   return (
