@@ -2,7 +2,7 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
@@ -11,6 +11,7 @@ import { EntityOverlaySheet } from './EntityOverlaySheet.js';
 import {
   useEntityOverlayActions,
   useEntityOverlayTarget,
+  type OverlayTarget,
 } from '../../context/EntityOverlayContext.js';
 import { useEnsureResolved } from '../../context/RelationshipsQueryProvider.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
@@ -80,9 +81,10 @@ const useOverlayChrome = () => ({
   titleId: useId(),
 });
 
-const useEntityOverlayState = () => {
-  const { target } = useEntityOverlayTarget();
+const useEntityOverlayState = (pinned?: OverlayTarget) => {
+  const { target: top } = useEntityOverlayTarget();
   const { closeEntityOverlay } = useEntityOverlayActions();
+  const target = pinned ?? top;
   const overlayEntity = useOverlayEntity(target?.sharedId ?? null);
   const panelRef = useRef<HTMLDivElement>(null);
   const { settings, templates, titleId } = useOverlayChrome();
@@ -100,7 +102,13 @@ const useEntityOverlayState = () => {
 
 type EntityOverlayModel = ReturnType<typeof useEntityOverlayState>;
 
-const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityOverlayState> }) => {
+const EntityOverlayPanel = ({
+  overlay,
+  onBack,
+}: {
+  overlay: ReturnType<typeof useEntityOverlayState>;
+  onBack?: () => void;
+}) => {
   const {
     target,
     closeEntityOverlay,
@@ -147,6 +155,16 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
           style={{ borderBottom: '1px solid var(--border-primary)' }}
         >
           <div className="flex min-w-0 items-center gap-2">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label={t('System', 'Back', null, false)}
+                className="shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+              >
+                <ArrowLeftIcon className="h-4 w-4 rtl:rotate-180" aria-hidden />
+              </button>
+            ) : null}
             <div
               className="h-2 w-2 shrink-0 rounded-xs"
               style={{ backgroundColor: templateColor }}
@@ -216,13 +234,42 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
   );
 };
 
-const EntityOverlay = () => {
-  const overlay = useEntityOverlayState();
-  const isMobile = useIsMobile();
-  if (!overlay.isOpen) return null;
-  if (isMobile) return <EntityOverlaySheet overlay={overlay} />;
-  return <EntityOverlayPanel overlay={overlay} />;
+const EntityOverlayLevel = ({
+  target,
+  level,
+  onClose,
+}: {
+  target: OverlayTarget;
+  level: number;
+  onClose: () => void;
+}) => {
+  const overlay = useEntityOverlayState(target);
+  return <EntityOverlaySheet overlay={overlay} onClose={onClose} level={level} />;
 };
+
+const EntityOverlayStack = () => {
+  const { stack } = useEntityOverlayTarget();
+  const { closeOverlayFrom } = useEntityOverlayActions();
+  return stack.map((item, level) => (
+    <EntityOverlayLevel
+      key={item.id}
+      target={item}
+      level={level}
+      onClose={() => closeOverlayFrom(level)}
+    />
+  ));
+};
+
+const EntityOverlayDesktop = () => {
+  const overlay = useEntityOverlayState();
+  const { stack } = useEntityOverlayTarget();
+  const { closeOverlayFrom } = useEntityOverlayActions();
+  if (!overlay.isOpen) return null;
+  const onBack = stack.length > 1 ? () => closeOverlayFrom(stack.length - 1) : undefined;
+  return <EntityOverlayPanel overlay={overlay} onBack={onBack} />;
+};
+
+const EntityOverlay = () => (useIsMobile() ? <EntityOverlayStack /> : <EntityOverlayDesktop />);
 
 export type { EntityOverlayModel };
 export { EntityOverlay };

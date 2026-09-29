@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
@@ -20,18 +20,31 @@ const entityHref = (overlay: EntityOverlayModel) =>
       ).replace(/^\//, '')
     : '';
 
-const EntityOverlaySheet = ({ overlay }: { overlay: EntityOverlayModel }) => {
+const EntityOverlaySheet = ({
+  overlay,
+  onClose,
+  level,
+}: {
+  overlay: EntityOverlayModel;
+  onClose: () => void;
+  level: number;
+}) => {
   const { closeEntityOverlay, titleId, entity, loading, error, title, templateColor, target } =
     overlay;
+  const [painted, setPainted] = useState(false);
+  useEffect(() => {
+    setPainted(true);
+  }, []);
+  const showBody = painted && entity && !loading;
 
   return (
     <MobileBottomSheet
       open
       bare
-      order={SHEET_OVERLAY_ORDER}
+      order={SHEET_OVERLAY_ORDER + level}
       ariaLabel={title || 'Entity'}
       defaultSnap="full"
-      onClose={closeEntityOverlay}
+      onClose={onClose}
     >
       {chrome => (
         <div className="flex h-full min-h-0 flex-col bg-(--color-theme-surface-raised)">
@@ -60,7 +73,7 @@ const EntityOverlaySheet = ({ overlay }: { overlay: EntityOverlayModel }) => {
               {chrome.stacked ? <span>{chrome.closeLabel}</span> : null}
             </button>
           </div>
-          {loading && (
+          {!showBody && !error && (
             <div
               aria-live="polite"
               aria-busy="true"
@@ -77,7 +90,7 @@ const EntityOverlaySheet = ({ overlay }: { overlay: EntityOverlayModel }) => {
               <Translate>NO DATA AVAILABLE</Translate>
             </div>
           )}
-          {entity && !loading && (
+          {showBody && entity && (
             <ErrorBoundary>
               <div className="min-h-0 flex-1 overflow-auto">
                 <EntityOverlayContent entity={entity} />
@@ -94,7 +107,7 @@ const EntityOverlaySheet = ({ overlay }: { overlay: EntityOverlayModel }) => {
                 <Translate>Back</Translate>
               </button>
             ) : (
-              <button type="button" onClick={closeEntityOverlay} className={ghost}>
+              <button type="button" onClick={onClose} className={ghost}>
                 <Translate>Close</Translate>
               </button>
             )}

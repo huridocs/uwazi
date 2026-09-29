@@ -31,10 +31,12 @@ const expectPage = (container: HTMLElement) => {
   expect(screen.queryByRole('button', { name: 'Next' })).toBeNull();
 };
 
+const sheetHost = () => document.querySelector('.tw-content:not(.fixed)') ?? document.body;
+
 const expectSheet = (text: string) => {
   expect(dialogs()).toHaveLength(1);
   expect(dialogs()[0]).toHaveTextContent(text);
-  expect(dialogs()[0].parentElement).toBe(document.body);
+  expect(dialogs()[0].parentElement).toBe(sheetHost());
   expect(document.body.style.overflow).toBe('hidden');
 };
 
@@ -59,6 +61,15 @@ const expectPopped = () => {
 describe('PaneLayoutMobile', () => {
   afterEach(() => {
     document.body.style.overflow = '';
+  });
+
+  it('ports the sheet into the themed content root', () => {
+    const host = document.createElement('div');
+    host.className = 'tw-content';
+    document.body.append(host);
+    panes({ index: 1, id: 1 });
+    expect(dialogs()[0].parentElement).toBe(host);
+    host.remove();
   });
 
   it('keeps pane 0 on the page and opens the requested pane as a dialog', () => {

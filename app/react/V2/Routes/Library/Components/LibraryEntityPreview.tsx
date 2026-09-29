@@ -6,6 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -19,6 +20,7 @@ import {
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
+import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
 import { pickMainTab } from '#V2/Routes/Entity/Tabs/entityTabState.js';
@@ -198,6 +200,7 @@ const LibraryPreviewReady = ({
   focusFieldKey?: string;
 }) => {
   const { language } = entity;
+  const isMobile = useIsMobile();
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
   return (
     <ErrorBoundary>
@@ -218,6 +221,7 @@ const LibraryPreviewReady = ({
             />
           </EntityFilesFromEntity>
           <EntityCreateRelationshipModal />
+          {isMobile ? <EntityOverlay /> : null}
         </EntityScopedProvider>
       </EntityUrlSync>
     </ErrorBoundary>

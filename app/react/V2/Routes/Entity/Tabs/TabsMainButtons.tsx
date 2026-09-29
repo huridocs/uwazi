@@ -13,9 +13,15 @@ type TabsMainButtonsProps = {
   entity: EntityType;
   mainDocument?: FileType;
   onTabChange: (tabId: string) => void;
+  groupId?: string;
 };
 
-const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
+const TabsMainButtons = ({
+  entity,
+  mainDocument,
+  onTabChange,
+  groupId = 'entity-main',
+}: TabsMainButtonsProps) => {
   const { isDirty } = useMetadataEditing();
   const relationships = useDirectedRelationships();
   const templates = useAtomValue(templatesAtom);
@@ -73,7 +79,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0 flex-1">
         <TabButtons
-          groupId="entity-main"
+          groupId={groupId}
           buttons={buttons}
           onTabChange={onTabChange}
           tabListAriaLabel="Entity primary"

@@ -24,6 +24,9 @@ type MobileBottomSheetProps = {
   ariaLabel?: string;
 };
 
+const sheetRoot = () =>
+  document.querySelector<HTMLElement>('.tw-content:not(.fixed)') ?? document.body;
+
 const MobileBottomSheet = ({
   open,
   onClose,
@@ -153,7 +156,7 @@ const MobileBottomSheet = ({
         </div>
       </div>
     </>,
-    document.body
+    sheetRoot()
   );
 };
 

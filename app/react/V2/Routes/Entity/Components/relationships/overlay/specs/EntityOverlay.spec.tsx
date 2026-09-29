@@ -36,7 +36,7 @@ jest.mock('../EntityOverlayContent', () => ({
 }));
 
 jest.mock('#V2/Routes/Entity/Components/context/RelationshipsQueryProvider', () => ({
-  useEnsureResolved: () => () => Promise.resolve(),
+  useEnsureResolved: () => async () => undefined,
 }));
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -47,14 +47,20 @@ jest.mock('#app/I18N/index.js', () => ({
   t: (_context: string, key: string) => key,
 }));
 
-const Harness = ({ layout }: { layout: boolean }) => {
+const Harness = ({
+  layout,
+  initialPane,
+}: {
+  layout: boolean;
+  initialPane?: { index: number; id: number };
+}) => {
   const { target } = useEntityOverlayTarget();
   const { openEntityOverlayTarget } = useEntityOverlayActions();
-  const [requestedPane, setRequestedPane] = useState<{ index: number; id: number }>();
+  const [requestedPane, setRequestedPane] = useState(initialPane);
   const showSidePane = useCallback(() => {
     setRequestedPane(current => ({ index: 1, id: (current?.id ?? 0) + 1 }));
   }, []);
-  useRevealSidePane(target !== null, showSidePane);
+  useRevealSidePane(target !== null && !mockMobile, showSidePane);
   const tabs = useMemo(
     () => createStubEntityTabsState({ showSidePane, requestedPane }),
     [requestedPane, showSidePane]
@@ -89,6 +95,14 @@ const Harness = ({ layout }: { layout: boolean }) => {
         >
           open overlay
         </button>
+        <button
+          type="button"
+          onClick={() =>
+            openEntityOverlayTarget({ sharedId: 'b1', title: 'B1', templateId: 'tmpl' })
+          }
+        >
+          open next
+        </button>
       </EntityMainTabsProvider>
     </TestAtomStoreProvider>
   );
@@ -103,6 +117,14 @@ const expectLayers = () => {
   expect(overlay).toHaveAttribute('data-layer', '1');
   expect(overlay).toHaveTextContent('Close all');
   expect(screen.getAllByRole('button', { name: 'Back' })).toHaveLength(2);
+};
+
+const expectStacked = () => {
+  const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+  expect(dialogs).toHaveLength(2);
+  expect(dialogs[0]).toHaveAttribute('data-layer', '0');
+  expect(dialogs[1]).toHaveAttribute('data-layer', '1');
+  expect(dialogs[1]).toHaveTextContent('Close all');
 };
 
 const expectOnlySide = () => {
@@ -130,11 +152,42 @@ describe('EntityOverlay sheets', () => {
     expect(screen.getAllByRole('button', { name: 'Close' })).toHaveLength(2);
   });
 
-  it('stacks the mobile overlay above the side pane and close all clears both', () => {
+  it('opens one mobile sheet and leaves the side pane closed', () => {
     mockMobile = true;
     render(
       <EntityOverlayProvider>
         <Harness layout />
+      </EntityOverlayProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'open overlay' }));
+    const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+    expect(dialogs).toHaveLength(1);
+    expect(dialogs[0]).toHaveTextContent('overlay body');
+    expect(dialogs[0]).not.toHaveTextContent('Side');
+    fireEvent.click(screen.getByRole('button', { name: 'Close Mexico' }));
+    expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(0);
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  it('stacks another relationship above the open overlay', () => {
+    mockMobile = true;
+    render(
+      <EntityOverlayProvider>
+        <Harness layout />
+      </EntityOverlayProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'open overlay' }));
+    fireEvent.click(screen.getByRole('button', { name: 'open next' }));
+    expectStacked();
+    fireEvent.click(screen.getAllByRole('button', { name: /^Back/ })[0]);
+    expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+  });
+
+  it('stacks the mobile overlay above a side pane that is already open', () => {
+    mockMobile = true;
+    render(
+      <EntityOverlayProvider>
+        <Harness layout initialPane={{ index: 1, id: 1 }} />
       </EntityOverlayProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: 'open overlay' }));

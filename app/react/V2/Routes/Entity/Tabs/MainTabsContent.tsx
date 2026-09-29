@@ -23,6 +23,7 @@ type MainTabsContentProps = {
   entity: EntityType;
   mainDocument?: FileType;
   pagePlaintext?: string;
+  groupId?: string;
 };
 
 const mainTabSwitchContent = ({
@@ -64,8 +65,9 @@ const useMainTabsPanel = ({
   entity,
   mainDocument,
   pagePlaintext,
+  groupId,
 }: MainTabsContentProps) => {
-  const activeTabId = useResolvedEntityMainTab(urlActiveTabId);
+  const activeTabId = useResolvedEntityMainTab(urlActiveTabId, groupId);
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
   const { hasEntityPageView } = useEntityPageView();

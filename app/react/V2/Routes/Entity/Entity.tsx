@@ -101,8 +101,9 @@ const EntityMainColumn = React.memo(() => {
 
 const useEntityMobileOverlay = (showSidePane: () => void) => {
   const { target } = useEntityOverlayTarget();
-  useRevealSidePane(target !== null, showSidePane);
-  return useIsMobile();
+  const isMobile = useIsMobile();
+  useRevealSidePane(!isMobile && target !== null, showSidePane);
+  return isMobile;
 };
 
 const EntityView = () => {
