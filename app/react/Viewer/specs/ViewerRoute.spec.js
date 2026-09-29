@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
+import { actions } from '../../BasicReducer/index.js';
+import { showTab } from '../../Entities/actions/uiActions.js';
 import { EntitiesAPI } from '../../Entities/EntitiesAPI.js';
 import { Entity as EntityView } from '../EntityView.js';
 import { PDFViewComponent } from '../PDFView.js';
@@ -10,6 +12,66 @@ import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute.js';
 import { ViewerComponent } from '../components/ViewerComponent.js';
 
 describe('ViewerRoute', () => {
+  describe('tab selection', () => {
+    let dispatch;
+
+    const renderRoute = params => {
+      dispatch = jasmine.createSpy('dispatch');
+      return shallow(<ViewerRoute params={params} location={{ search: '' }} />, {
+        context: { store: { getState: () => ({}), dispatch } },
+      });
+    };
+
+    it('should not write the store while rendering', () => {
+      let rendering = false;
+      let wroteDuringRender = false;
+      const { render } = ViewerRoute.prototype;
+      const renderSpy = jest
+        .spyOn(ViewerRoute.prototype, 'render')
+        .mockImplementation(function mockedRender() {
+          rendering = true;
+          try {
+            return render.call(this);
+          } finally {
+            rendering = false;
+          }
+        });
+      const storeDispatch = jasmine.createSpy('dispatch').and.callFake(() => {
+        wroteDuringRender = wroteDuringRender || rendering;
+      });
+
+      try {
+        shallow(<ViewerRoute params={{ tabView: 'references' }} location={{ search: '' }} />, {
+          context: { store: { getState: () => ({}), dispatch: storeDispatch } },
+        });
+        expect(wroteDuringRender).toBe(false);
+        expect(storeDispatch).toHaveBeenCalledWith(
+          actions.set('viewer.sidepanel.tab', 'references')
+        );
+      } finally {
+        renderSpy.mockRestore();
+      }
+    });
+
+    it('should select the route tab after mount', () => {
+      const component = renderRoute({ tabView: 'metadata' });
+      dispatch.calls.reset();
+      spyOn(component.instance(), 'getClientState').and.returnValue(Promise.resolve());
+      component.instance().componentDidMount();
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'metadata'));
+      expect(dispatch).toHaveBeenCalledWith(showTab('info'));
+    });
+
+    it('should select the route tab when it changes', () => {
+      const component = renderRoute({ tabView: 'metadata' });
+      spyOn(component.instance(), 'getClientState').and.returnValue(Promise.resolve());
+      dispatch.calls.reset();
+      component.setProps({ params: { tabView: 'relationships' } });
+      expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'relationships'));
+      expect(dispatch).toHaveBeenCalledWith(showTab('relationships'));
+    });
+  });
+
   describe('Entity views', () => {
     const entity = {
       _id: 1,

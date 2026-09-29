@@ -66,9 +66,18 @@ class ViewerRouteComponent extends RouteHandler {
     this.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
   }
 
+  componentDidMount() {
+    super.componentDidMount();
+    this.selectTab(this.props.params);
+  }
+
+  componentDidUpdate(prevProps) {
+    super.componentDidUpdate(prevProps);
+    this.selectTab(this.props.params);
+  }
+
   render() {
     trackPage();
-    this.selectTab(this.props.params);
     return (
       <ErrorBoundary error={this.state.loadingError}>
         <ViewerComponent {...this.props} />
