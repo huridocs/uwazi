@@ -106,6 +106,10 @@ describe('entities', () => {
     };
   };
 
+  beforeAll(() => {
+    EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
+  });
+
   beforeEach(async () => {
     jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());

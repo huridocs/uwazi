@@ -12,8 +12,8 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
@@ -106,7 +106,7 @@ const saveEvidence =
         null;
 
       // Set up V2 services
-      const transactionManager = TransactionManagerFactory.mongo();
+      const { transactionManager } = ExecutionContext;
       const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });

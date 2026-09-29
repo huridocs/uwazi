@@ -2,7 +2,9 @@
 import { access, copyFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileCreatedEvent } from '#api/core/domain/files/events/FileCreatedEvent.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { customUploadsPath } from '#api/files/filesystem.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -56,9 +58,7 @@ describe('CustomFileUpload', () => {
       testingTenants.changeCurrentTenant({
         featureFlags: { postgresCore: usePostgres },
       });
-      useCase = testingEnvironment.runWithContext(() =>
-        CustomFileUploadFactory.default(TransactionManagerFactory.fake())
-      );
+      useCase = testingEnvironment.runWithContext(() => CustomFileUploadFactory.default());
     });
 
     it('should create a custom file upload', async () => {
@@ -100,6 +100,27 @@ describe('CustomFileUpload', () => {
         originalname: 'db-test.txt',
         mimetype: 'text/plain',
       });
+    });
+
+    it('should emit a FileCreatedEvent inside the transaction', async () => {
+      const inputFile = await createInputFile('event-test.txt');
+      const eventEmitter = EventEmitterFactory.forTesting();
+      const emittedWhileRunning: boolean[] = [];
+
+      const result = await testingEnvironment.runWithContext(
+        async () => {
+          jest.mocked(eventEmitter.emit).mockImplementation(async () => {
+            emittedWhileRunning.push(ExecutionContext.transactionManager.isRunning());
+          });
+          return CustomFileUploadFactory.default().execute({ uploadedFile: inputFile });
+        },
+        { factories: { eventEmitter: () => eventEmitter } }
+      );
+
+      expect(jest.mocked(eventEmitter.emit).mock.calls).toEqual([
+        [new FileCreatedEvent({ file: result })],
+      ]);
+      expect(emittedWhileRunning).toEqual([true]);
     });
   });
 });

@@ -5,6 +5,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
+import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { search } from '#api/search/index.js';
@@ -174,6 +175,17 @@ describe('DeleteLanguage use case', () => {
         );
         expect(deletedCalls).toHaveLength(1);
         expect(deletedCalls[0][0].payload).toMatchObject({ language: 'es' });
+      });
+
+      it('should name languages as the settings that changed', async () => {
+        const emitSpy = jest.fn().mockResolvedValue(undefined);
+        await createSut({ eventEmitter: { emit: emitSpy } }).execute({ key: 'es' });
+
+        const settingsChanged = emitSpy.mock.calls.filter(
+          ([event]) => event instanceof SettingsChangedEvent
+        );
+        expect(settingsChanged).toHaveLength(1);
+        expect(settingsChanged[0][0].payload).toEqual({ changes: { keys: ['languages'] } });
       });
     });
 
