@@ -7,6 +7,7 @@ import {
   EntityWriteAuthorization,
   useEntityFiles,
   useEntityScopedEntity,
+  useEntityWriteAuthorized,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
@@ -35,6 +36,19 @@ type PreviewBarProps = {
   onClose: () => void;
   href: string;
   tabActions: React.ReactNode;
+};
+
+const usePreviewMetadataEdit = () => {
+  const { selectTab } = useTabGroup('entity-main');
+  const { startEditing } = useMetadataEditing();
+  const canEdit = useEntityWriteAuthorized();
+  if (!canEdit) {
+    return undefined;
+  }
+  return () => {
+    selectTab(MAIN_TAB.METADATA);
+    startEditing('main');
+  };
 };
 
 const previewBar = ({
@@ -105,22 +119,13 @@ const LibraryEntityPreviewFooter = ({
 }: LibraryEntityPreviewFooterProps) => {
   const entity = useEntityScopedEntity();
   const { requestAddFile } = useEntityFiles();
-  const { isEditing, isSaving, formMountHost, formId, requestDiscard, startEditing } =
-    useMetadataEditing();
-  const { selectTab } = useTabGroup('entity-main');
+  const { isEditing, isSaving, formMountHost, formId, requestDiscard } = useMetadataEditing();
   const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
   const editingMetadata = isEditing && formMountHost === 'main';
-  const showEdit = mainTabId === MAIN_TAB.METADATA && !editingMetadata && !onAction;
+  const onEdit = usePreviewMetadataEdit();
   const showAddFile = mainTabId === MAIN_TAB.FILES;
   const tabActions = (
     <>
-      {showEdit ? (
-        <EntityWriteAuthorization>
-          <LibraryFooterButton onClick={() => startEditing('main')}>
-            <Translate>Edit</Translate>
-          </LibraryFooterButton>
-        </EntityWriteAuthorization>
-      ) : null}
       {showAddFile ? (
         <EntityWriteAuthorization>
           <LibraryFooterButton
@@ -148,10 +153,7 @@ const LibraryEntityPreviewFooter = ({
           entityBasePath,
           sharedId: entity.sharedId,
           onAction,
-          onEdit: () => {
-            selectTab(MAIN_TAB.METADATA);
-            startEditing('main');
-          },
+          onEdit,
           onClose,
           href,
           tabActions,

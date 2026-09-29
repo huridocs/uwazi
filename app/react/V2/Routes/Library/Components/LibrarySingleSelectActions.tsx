@@ -16,12 +16,13 @@ const deleteButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-seal transition-colors hover:bg-seal-tint';
 
 type LibrarySingleSelectActionsProps = {
-  entityBasePath: string;
-  sharedId: string;
+  entityBasePath?: string;
+  sharedId?: string;
   onAction?: (action: LibraryBulkAction) => void;
   onEdit?: () => void;
   onClose: () => void;
   leading?: ReactNode;
+  includeViewEntity?: boolean;
 };
 
 const actionById = (id: LibraryBulkAction) =>
@@ -34,6 +35,7 @@ const LibrarySingleSelectActions = ({
   onEdit,
   onClose,
   leading,
+  includeViewEntity = true,
 }: LibrarySingleSelectActionsProps) => (
   <>
     <div className="flex min-w-0 items-center gap-2">
@@ -69,13 +71,15 @@ const LibrarySingleSelectActions = ({
       >
         <Translate>Close</Translate>
       </button>
-      <I18NLinkV2
-        to={`${entityBasePath}/${sharedId}`}
-        className="ms-1 inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-parchment transition-colors hover:bg-ink-70"
-      >
-        <Translate>View entity</Translate>
-        <ArrowRightIcon className="h-3.5 w-3.5" />
-      </I18NLinkV2>
+      {includeViewEntity && entityBasePath && sharedId ? (
+        <I18NLinkV2
+          to={`${entityBasePath}/${sharedId}`}
+          className="ms-1 inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-parchment transition-colors hover:bg-ink-70"
+        >
+          <Translate>View entity</Translate>
+          <ArrowRightIcon className="h-3.5 w-3.5" />
+        </I18NLinkV2>
+      ) : null}
     </div>
   </>
 );

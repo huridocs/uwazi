@@ -98,11 +98,12 @@ type PreviewRenderOptions = {
   user?: typeof adminUser;
   focusFieldKey?: string;
   mobile?: boolean;
+  onAction?: () => void;
 };
 
 const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => {
   const onClose = options.onClose ?? jest.fn();
-  const { user, focusFieldKey, mobile } = options;
+  const { user, focusFieldKey, mobile, onAction } = options;
   return render(
     <TestRouterContext>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
@@ -121,6 +122,7 @@ const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => 
             entityBasePath="/entityv2"
             onClose={onClose}
             focusFieldKey={focusFieldKey}
+            onAction={onAction}
           />
         </TestAtomStoreProvider>
       </ServicesProvider>
@@ -222,24 +224,26 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('shows Edit on Metadata, then Copy from, Cancel and Save when editing', async () => {
-    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser, onAction: jest.fn() });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
-    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toBeNull();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
     expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Copy from/ })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
   it('confirms before canceling dirty metadata edits', async () => {
-    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser, onAction: jest.fn() });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
@@ -257,13 +261,20 @@ describe('LibraryEntityPreview', () => {
     expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
   });
 
-  it('does not offer Edit on Relationships', async () => {
-    renderPreview(entityWithDocument.sharedId, { user: adminUser });
+  it('opens metadata editing from Edit on Relationships', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
-    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
     const panel = screen.getByRole('tabpanel');
     expect(panel).toHaveClass('bg-paper');
     expect(panel).not.toHaveClass('bg-warm');
+
+    const footer = screen.getByTestId('library-entity-preview-footer');
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
+
+    expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
   it('shows file empty copy instead of empty tables when there are no files', async () => {
