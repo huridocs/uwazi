@@ -90,7 +90,7 @@ const parseArgs = (argv: string[]): CheckTranslationsOptions => {
 const helpText = `Usage: yarn check-translations [--fix] [--strict] [--unused] [--dir <path>] [--translations-dir <path>]
 
 Checks System UI copy against contents/ui-translations and prints a table
-(Texto no traducido | Archivo | Línea) grouped by kind.
+(Untranslated text | File | Line) grouped by kind.
 
   --fix                 Wrap static JSX text / native attributes / notify() calls and
                         add missing keys to locale CSVs. Leaves composed strings and
@@ -174,7 +174,7 @@ const formatKindSection = (kind: Finding['kind'], ofKind: Finding[]): string[] =
   const tone = ofKind[0].severity === 'error' ? color.red : color.yellow;
   return [
     `=== ${tone(kind)} (${ofKind[0].severity}) ${ofKind.length} ===`,
-    '| Texto no traducido | Archivo | Línea |',
+    '| Untranslated text | File | Line |',
     '| --- | --- | --- |',
     ...ofKind.map(tableRow),
     '',

@@ -141,7 +141,7 @@ describe('formatReport', () => {
       { fixed: [], addedKeys: [] }
     );
 
-    expect(report).toContain('| Texto no traducido | Archivo | Línea |');
+    expect(report).toContain('| Untranslated text | File | Line |');
     expect(report).toContain('| Close modal | app/react/V2/Components/UI/Modal.tsx | 108 |');
     expect(report).toContain('| Rich text | app/react/Metadata/options.ts | 12 |');
   });
