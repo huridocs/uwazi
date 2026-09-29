@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 
-config();
+config({ quiet: true });
 
 if (process.env.NODE_ENV !== 'production') {
   require('@babel/register')({
