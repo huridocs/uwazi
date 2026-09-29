@@ -109,6 +109,20 @@ describe('settings', () => {
         expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
       });
 
+      it('should persist instance SEO metadata', async () => {
+        const seo = {
+          title: 'Human rights database',
+          description: 'A collection of documents and cases.',
+          ogTitle: 'Share this collection',
+          ogDescription: 'Open data on human rights.',
+          ogImage: '/assets/og-image.png',
+        };
+
+        await saveSettings({ site_name: 'My collection', seo });
+        const result = await getSettings();
+        expect(result.seo).toEqual(seo);
+      });
+
       it('should throw when the singleton does not exist', async () => {
         await db.clear(['settings']);
         if (postgresCore) {

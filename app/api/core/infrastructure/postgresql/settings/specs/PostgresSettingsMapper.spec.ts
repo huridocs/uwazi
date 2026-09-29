@@ -45,6 +45,13 @@ const sampleSettings = (id: string): SettingsType =>
     cookiepolicy: false,
     dateFormat: 'YYYY',
     evidencesVault: { token: 'secret' },
+    seo: {
+      title: 'Human rights database',
+      description: 'A collection of documents and cases.',
+      ogTitle: 'Share this collection',
+      ogDescription: 'Open data on human rights.',
+      ogImage: '/assets/og-image.png',
+    },
   }) as SettingsType;
 
 const toRow = (settings: SettingsType) => PostgresSettingsMapper.toRow(settings);
@@ -85,6 +92,20 @@ describe('PostgresSettingsMapper', () => {
       allowcustomJS: true,
       cookiepolicy: false,
     });
+  });
+
+  it('should map instance SEO onto its own JSONB column', () => {
+    const row = toRow(sampleSettings(sampleId()));
+
+    expect(row.seo).toEqual({
+      title: 'Human rights database',
+      description: 'A collection of documents and cases.',
+      ogTitle: 'Share this collection',
+      ogDescription: 'Open data on human rights.',
+      ogImage: '/assets/og-image.png',
+    });
+    expect(row.extras).not.toHaveProperty('seo');
+    expect(PostgresSettingsMapper.columnForField('seo')).toBe('seo');
   });
 
   it('should drop __v and put unknown keys in extras', () => {

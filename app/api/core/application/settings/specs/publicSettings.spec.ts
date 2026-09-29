@@ -19,6 +19,13 @@ describe('publicSettings', () => {
     customJS: 'console.log(1)',
     allowcustomJS: true,
     features: { newHeader: true, ocr: { url: 'http://ocr' } },
+    seo: {
+      title: 'Public title',
+      description: 'Public description',
+      ogTitle: 'OG title',
+      ogDescription: 'OG description',
+      ogImage: '/assets/og.png',
+    },
   } as unknown as Settings;
 
   describe('getPublicSettingsPayload', () => {
@@ -27,6 +34,7 @@ describe('publicSettings', () => {
       expect(result.site_name).toBe('Uwazi');
       expect(result.customCSS).toBe('body { color: red; }');
       expect(result.allowcustomJS).toBe(true);
+      expect(result.seo).toEqual(fullSettings.seo);
       expect(result.themeCustomization).toBe(true);
       expect((result as Settings).mailerConfig).toBeUndefined();
       expect((result as Settings).contactEmail).toBeUndefined();
