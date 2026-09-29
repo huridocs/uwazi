@@ -5,6 +5,7 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
+import { SettingsDiff } from '#api/core/domain/settings/SettingsDiff.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
@@ -22,6 +23,7 @@ type Deps = {
 class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ languages }: Input): Promise<Output> {
     const settings = await this.deps.settingsDS.get();
+    const before = settings.toState();
     const defaultLanguage = settings.defaultLanguageKey();
     const newLanguages = languages.filter(language => settings.addLanguage(language));
 
@@ -47,7 +49,9 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.dispatcher.cloneLanguageEntities({
         pairs: newLanguages.map(language => ({ from: defaultLanguage, to: language.key })),
       });
-      await this.eventEmitter.emit(new SettingsChangedEvent({}));
+      await this.eventEmitter.emit(
+        new SettingsChangedEvent({ changes: SettingsDiff.between(before, settings.toState()) })
+      );
     });
 
     for (const language of newLanguages) {

@@ -47,6 +47,7 @@ import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 import { HttpServerGracefulShutdown } from '#api/infrastructure/shutdown/HttpServerGracefulShutdown.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { ListenerRegistration } from '#api/ListenerRegistration.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -134,6 +135,7 @@ void DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
 
   app.use(errorHandlingMiddleware);
   registerEventListeners(applicationEventsBus);
+  ListenerRegistration.registerEvents();
 
   if (config.externalServices) {
     await import('./worker.js');

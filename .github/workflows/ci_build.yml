@@ -65,6 +65,7 @@ jobs:
             ./prod/dist
             ./prod/app
             ./prod/apps
+            ./prod/packages
             ./prod/database
             ./prod/scripts
             ./prod/public

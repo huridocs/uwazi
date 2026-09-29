@@ -20,6 +20,7 @@ import {
   clearJobs,
   ensureBroadcastSettingsChangedRegistered,
   expectSettingsChangedJob,
+  settingsChangedJobPayloads,
 } from './settingsChangedJob.js';
 
 const testConfigs = [
@@ -531,6 +532,68 @@ describe('settings', () => {
           SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
         );
         await expectSettingsChangedJob({ postgresCore });
+      });
+
+      it('should name the fields a save changed', async () => {
+        await clearJobs();
+        await withRealEmitter(async () =>
+          SaveSettingsUseCaseFactory.default().execute({ site_name: 'Renamed collection' })
+        );
+
+        expect(await settingsChangedJobPayloads({ postgresCore })).toEqual([
+          expect.objectContaining({ changes: { keys: ['site_name'] } }),
+        ]);
+      });
+
+      it('should name a feature switched on, without its configuration', async () => {
+        const otherFeatures = {
+          'metadata-extraction': true,
+          metadataExtraction: { url: 'http:someurl' },
+        };
+        await saveSettings({ features: otherFeatures });
+        await clearJobs();
+
+        await withRealEmitter(async () =>
+          SaveSettingsUseCaseFactory.default().execute({
+            features: {
+              ...otherFeatures,
+              segmentation: { url: 'http://user:secret@segmentation' },
+            },
+          })
+        );
+
+        const payloads = await settingsChangedJobPayloads({ postgresCore });
+        expect(payloads).toEqual([
+          expect.objectContaining({
+            changes: { keys: ['features'], features: { enabled: ['segmentation'], disabled: [] } },
+          }),
+        ]);
+        expect(JSON.stringify(payloads)).not.toContain('secret');
+      });
+
+      it('should name languages as changed when the default language changes', async () => {
+        await clearJobs();
+        await withRealEmitter(async () =>
+          SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
+        );
+
+        expect(await settingsChangedJobPayloads({ postgresCore })).toEqual([
+          expect.objectContaining({ changes: { keys: ['languages'] } }),
+        ]);
+      });
+
+      it('should name filters as changed when a filter is renamed', async () => {
+        await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
+        await clearJobs();
+        await withRealEmitter(async () =>
+          ExecutionContext.transactionManager.run(async () =>
+            SettingsServiceFactory.default().updateFilterName('123', 'The dark knight')
+          )
+        );
+
+        expect(await settingsChangedJobPayloads({ postgresCore })).toEqual([
+          expect.objectContaining({ changes: { keys: ['filters'] } }),
+        ]);
       });
 
       it('should enqueue BroadcastSettingsChanged when a filter is renamed', async () => {

@@ -1,5 +1,6 @@
 import { ZodError } from 'zod';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { ListenerRegistration } from '#api/ListenerRegistration.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ControllerSpecs } from '../../../testing/ControllerSpecs.js';
 import { SettingsOutputSchema } from '../../contracts.js';
@@ -7,10 +8,7 @@ import { GetSettingsController } from '../GetSettingsController.js';
 import { UpdateSettingsCliInput, UpdateSettingsController } from '../UpdateSettingsController.js';
 import { fixtures } from './fixtures.js';
 
-/**
- * Not imported from the listener module on purpose: importing it registers the listener, which
- * would hide a CLI process that never does.
- */
+/** The CLI registers every listener before a controller runs (see CliApplication.spec). */
 const SETTINGS_CHANGED_JOB = 'SettingsChangedEvent:BroadcastSettingsChanged';
 
 describe.each(ControllerSpecs.backends)('UpdateSettingsController ($name)', ({ postgresCore }) => {
@@ -45,6 +43,8 @@ describe.each(ControllerSpecs.backends)('UpdateSettingsController ($name)', ({ p
   });
 
   it('should queue the settings changed broadcast', async () => {
+    ListenerRegistration.registerEvents();
+
     await ControllerSpecs.asCli(
       async () => UpdateSettingsController.handle({ site_name: 'Renamed' }),
       { eventEmitter: () => EventEmitterFactory.default() }

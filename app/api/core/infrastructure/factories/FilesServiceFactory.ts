@@ -30,6 +30,7 @@ class FilesServiceFactory {
         pdfService: new PDFService(),
         filesIO: new FileContentsIO(),
         eventBus: applicationEventsBus,
+        eventEmitter: ExecutionContext.eventEmitter,
         ...deps,
       },
       context ?? {

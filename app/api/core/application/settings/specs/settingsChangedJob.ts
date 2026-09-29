@@ -40,4 +40,23 @@ const expectSettingsChangedJob = async ({
   );
 };
 
-export { clearJobs, ensureBroadcastSettingsChangedRegistered, expectSettingsChangedJob };
+/** The event payloads the queued BroadcastSettingsChanged jobs carry. */
+const settingsChangedJobPayloads = async ({
+  postgresCore,
+  db = getConnection(),
+}: {
+  postgresCore: boolean;
+  db?: Db;
+}) => {
+  const jobs = await testingEnvironment.jobs.getAll({ postgresCore, mongoDb: db });
+  return jobs
+    .filter(job => job.name === SETTINGS_CHANGED_JOB_NAME)
+    .map(job => (typeof job.params === 'string' ? JSON.parse(job.params) : job.params));
+};
+
+export {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+  settingsChangedJobPayloads,
+};

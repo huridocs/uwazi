@@ -58,7 +58,7 @@ import {
   userId,
 } from './fixtures.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { MongoSegmentationDataSource } from '#api/segmentation.v2/infrastructure/mongodb/MongoSegmentationDataSource.js';
+import { SegmentationDirectoryFactory } from '#segmentation';
 import { User } from '#api/users.v2/model/User.js';
 
 type TestConfig = {
@@ -132,7 +132,7 @@ const createSut = () =>
     });
     const idGenerator = MongoIdHandler;
     const tenantName = tenants.current().name;
-    const segmentationDS = new MongoSegmentationDataSource(connection, mongoTransactionManager);
+    const segmentationDirectory = SegmentationDirectoryFactory.default();
 
     const entitiesService = EntitiesServiceFactory.default({
       transactionManager: mongoTransactionManager,
@@ -152,7 +152,7 @@ const createSut = () =>
         idGenerator,
         logger: createMockLogger(),
         tenantName,
-        segmentationDS,
+        segmentationDirectory,
       },
       { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );
@@ -272,30 +272,28 @@ describe('PXExtractParagraphsFromEntity', () => {
       expect(payload.documents).toMatchObject([{ language: 'en' }, { language: 'es' }]);
     });
 
-    it('should only use Segmentation which have "ready" status', async () => {
+    it.each([
+      ['failed', failedSegmentation],
+      ['processing', processingSegmentation],
+    ])('should not use a %s Segmentation', async (_status, notReady) => {
       const fixtures = createFixtures();
       fixtures.files = [file];
-      fixtures.segmentations = [segmentation, failedSegmentation, processingSegmentation];
+      fixtures.segmentations = [notReady];
       await testingEnvironment.setFixtures(fixtures);
 
       const { extractParagraphs, extractionService } = createSut();
 
-      await extractParagraphs.execute({
+      const promise = extractParagraphs.execute({
         entitySharedId: entity1.sharedId!.toString()!,
         extractorId: extractor._id.toString(),
         userId: new ObjectId().toString(),
         entityStatusId: entityStatus1._id.toString(),
       });
 
-      const [payload] = extractionService.extractParagraphs.mock.lastCall;
-
-      expect(payload.segmentations).toMatchObject([
-        {
-          id: segmentation._id?.toString(),
-          fileId: segmentation.fileID?.toString(),
-          status: 'ready',
-        },
-      ]);
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
+      });
+      expect(extractionService.extractParagraphs).not.toHaveBeenCalled();
     });
 
     it('should use oldest Document if there are Documents with repeated languages', async () => {

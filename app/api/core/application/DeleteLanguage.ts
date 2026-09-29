@@ -3,6 +3,7 @@ import { TranslationsDataSource } from '#api/core/application/contracts/Translat
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
+import { SettingsDiff } from '#api/core/domain/settings/SettingsDiff.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
@@ -19,6 +20,7 @@ type Deps = {
 class DeleteLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ key }: Input): Promise<Output> {
     const settings = await this.deps.settingsDS.get();
+    const before = settings.toState();
     settings.deleteLanguage(key);
 
     await this.transactionManager.run(async () => {
@@ -27,7 +29,9 @@ class DeleteLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.eventEmitter.emit(
         new LanguageDeletedEvent({ language: key, userId: this.actorId })
       );
-      await this.eventEmitter.emit(new SettingsChangedEvent({}));
+      await this.eventEmitter.emit(
+        new SettingsChangedEvent({ changes: SettingsDiff.between(before, settings.toState()) })
+      );
       await this.dispatcher.deleteLanguageEntities({ language: key });
     });
   }

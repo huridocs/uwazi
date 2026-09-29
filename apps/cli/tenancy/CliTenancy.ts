@@ -1,3 +1,4 @@
+import { config } from '#api/config.js';
 import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import type { TenantRecord } from '#api/tenants/application/contracts/TenantsDataSource.js';
@@ -7,14 +8,22 @@ import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 
 class CliTenancy {
+  /**
+   * A registered tenant wins. A single-tenant instance has no registry row: its tenant is the one
+   * configured from the environment (DATABASE_NAME…), resolved by name as the server does.
+   */
   static async resolve(name: string): Promise<Tenant> {
     const stored = await TenantsDataSourceFactory.default().getByName(name);
 
-    if (!stored) {
-      throw new TenantNotFound(name);
+    if (stored) {
+      return CliTenancy.register(stored);
     }
 
-    return CliTenancy.register(stored);
+    if (name === config.defaultTenant.name) {
+      return tenants.tenants[name];
+    }
+
+    throw new TenantNotFound(name);
   }
 
   static async all(): Promise<Tenant[]> {

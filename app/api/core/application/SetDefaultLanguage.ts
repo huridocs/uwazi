@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
+import { SettingsDiff } from '#api/core/domain/settings/SettingsDiff.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 
 const InputSchema = z.object({
@@ -22,11 +23,14 @@ class SetDefaultLanguageUseCase extends AbstractUseCase<Input, void, Deps> {
   async execute(raw: Input): Promise<void> {
     const { key } = SetDefaultLanguageUseCase.InputSchema.parse(raw);
     const settings = await this.deps.settingsDS.get();
+    const before = settings.toState();
     settings.setDefaultLanguage(key);
 
     await this.transactionManager.run(async () => {
       await this.deps.settingsDS.update(settings);
-      await this.eventEmitter.emit(new SettingsChangedEvent({}));
+      await this.eventEmitter.emit(
+        new SettingsChangedEvent({ changes: SettingsDiff.between(before, settings.toState()) })
+      );
     });
   }
 }

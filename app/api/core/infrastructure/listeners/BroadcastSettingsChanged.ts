@@ -1,6 +1,5 @@
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { SettingsQueryService } from '#api/core/application/settings/SettingsQueryService.js';
@@ -28,8 +27,6 @@ class BroadcastSettingsChanged extends Listener<SettingsChangedEvent, Deps> {
     this.deps.sockets.emitToTenant(ExecutionContext.tenant.name, 'updateSettings', payload);
   }
 }
-
-EventEmitterFactory.registry.register(BroadcastSettingsChanged);
 
 export { BroadcastSettingsChanged };
 export type { Deps as BroadcastSettingsChangedDeps };

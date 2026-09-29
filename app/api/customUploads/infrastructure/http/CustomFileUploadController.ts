@@ -3,7 +3,6 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { CustomFileUpload } from '#api/customUploads/application/CustomFileUpload.js';
 import { CustomFileUploadFactory } from '../factories/CustomFileUploadFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 class CustomFileUploadController extends AbstractController {
   static createHandler() {
@@ -23,7 +22,7 @@ class CustomFileUploadController extends AbstractController {
         uploadedFile: this.request.inputFile,
       });
 
-      this.response.json(await this.useCase().execute(input));
+      this.response.json(await CustomFileUploadFactory.default().execute(input));
 
       logger.info('Custom file upload executed successfully', {
         namespace,
@@ -45,15 +44,6 @@ class CustomFileUploadController extends AbstractController {
 
       throw error;
     }
-  }
-
-  private useCase() {
-    const transactionManager =
-      process.env.NODE_ENV === 'test'
-        ? TransactionManagerFactory.fake()
-        : TransactionManagerFactory.mongo();
-
-    return CustomFileUploadFactory.default(transactionManager);
   }
 }
 
