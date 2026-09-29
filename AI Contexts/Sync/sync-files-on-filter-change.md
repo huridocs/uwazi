@@ -1,7 +1,7 @@
 # Sync files when an entity crosses the sync filter
 
 Date: 2026-09-29
-Status: option 1 chosen, not implemented. Challenges below are still open.
+Status: decided. Option 1 on the Mongo entity log write. Not implemented.
 
 ## Problem
 
@@ -128,30 +128,36 @@ Storing "last filter result" on the target or in a new table so we can diff. Mor
 
 ## Decisions (2026-09-29)
 
-Production sync tenants are Mongo. This change fixes that path. Postgres entity saves not writing `updatelogs` is a separate issue, not part of this work. Do not open that issue until the note in "Challenges" is agreed, so the issue text tells the next change to refresh file logs too.
+Production sync tenants are Mongo. This change is that path only.
 
-**Option 1.** When an entity row is written, refresh `files` update logs for files of that `sharedId`, and let the existing `files()` path decide. That is what `EntitiesUpdateLogHelper.upsertLogOne` did on V1 save. V2 entity writes never called it.
+**Option 1.** On an entity insert or update, refresh `files` update logs for the files of that `sharedId`. The existing `files()` path decides sync or delete. That is what `EntitiesUpdateLogHelper.upsertLogOne` did on V1 `save`. V2 entity writes never called it.
 
-Option 3 is out. Not because the save path is unable to read the previous document (it can, in the same write). Because sync's job is to look at current state, and teaching every entity write to evaluate sync configs is a second copy of `entityIsAllowed`. V1 did not do that.
+Option 3 is out. The save path can read the previous document, so this is not because the past is unknowable. Sync's job is current state. Evaluating sync configs inside entity writes would be a second copy of `entityIsAllowed`. V1 did not do that.
 
-Out of scope, same as today: editing the sync config (filter text, template list, `attachments`) does not rewrite logs. A from-scratch resync is the existing remedy.
+Accepted cost: every such write re-queues those file logs for every active config. A passing file with `attachments: true` is uploaded again (metadata always, blob unless `url` is set), including edits that do not cross a filter and touches that only change `editDate`. A file that fails, or whose template has no `attachments: true`, produces a delete call. Templates that are not in the config still spend batch slots, because the log is written before the config is consulted. The batch size stays 50.
 
-Template changes need no extra branch. They are entity writes. The next sync loads the current template and runs `entityIsAllowed`.
+### What gets refreshed
 
-Files, attachments, and thumbnails move with that result only when `attachments: true`. Custom files stay outside the entity filter (`type === 'custom'` returns the file as-is).
+Hook the entity log write in `SyncedCollection` when the collection is `entities`, not `UpdateEntity`. V1 only overrode `upsertLogOne`. `updateMany` did not refresh files. V2 saves through `MongoEntitiesDataSource.bulkUpdate`, and so do thesaurus denormalization, relationship denormalization, `touchEntitiesBySharedIds`, and metadata rewrites. Those can change fields a filter reads. A use-case-only hook misses them.
 
-## Challenges still open
+Do not refresh file logs when the entity log is a delete. Source delete already removes file rows in `FilesService.deleteEntityFiles`, and those writes set `files` logs to `deleted: true`. `EntitiesService.delete` dispatches that cleanup and then `bulkDelete`s the entity. A bump back to `deleted: false` can clear the file-delete log. V1 did not bump files on entity delete.
 
-These are disagreements with a naive reading of option 1, not a request to switch options.
+### How the file is judged
 
-**V1 did not cover every entity write.** `EntitiesUpdateLogHelper` overrides `upsertLogOne` only. `OdmModel.save`, `create`, and `saveMultiple` refresh file logs. `updateMany` does not. V2's normal save is `MongoEntitiesDataSource.bulkUpdate`, which is the `updateMany` shape. Hooking only `UpdateEntity` repeats the miss: thesaurus denormalization, relationship denormalization, `touchEntitiesBySharedIds`, and metadata rewrites also update entity rows through `SyncedCollection` and can change fields a filter reads. The file refresh belongs next to the entity log write in `SyncedCollection` when the collection is `entities`, not in the use case.
+No new filter. `files()` already loads one entity with `find({ sharedId })` and runs `entityIsAllowed`, then the `attachments` flag.
 
-**Do not refresh file logs on entity delete.** Source delete already removes file rows in `FilesService.deleteEntityFiles`, and those writes set `files` logs to `deleted: true`. `EntitiesService.delete` dispatches that cleanup and then `bulkDelete`s the entity. A blanket "entity log written → set file logs `deleted: false`" can run after the file-delete log, or between them, and clear `deleted`. V1 did not bump files on entity delete. Option 1 should run for inserts and updates only.
+Languages stay as they are. A filter can in theory pass for one language row and fail for another, and entity sync already upserts or deletes per language row. Uwazi is not built for an entity to exist in only some of its languages on a target; a filter that produces that split would break more than sync. We do not add a workaround (default language, any language, all languages). Whichever row `find({ sharedId })` returns is the row that decides the files.
 
-**Re-upload is the cost of option 1, including edits that do not cross a filter.** Every refreshed file log is processed by every active config. Pass plus `attachments: true` means POST metadata and, unless `url` is set, upload the blob again. Fail, or `attachments` not true, means a delete call. Entities whose template is not in the config still consume part of the 50-log batch, because the log is written before the config is consulted. V1 accepted this on `save`. It is easy to under-count: a touch that only sets `editDate` goes through `SyncedCollection` too.
+`attachments: true` on that template's sync config is required for documents, attachments, and thumbnails. Missing or false means skip, which deletes on the target. Custom files stay outside this (`type === 'custom'`). The `preview` string on the entity row is part of the entity payload and is not gated by this flag. Thumbnail files are.
 
-**Languages are not one filter result.** Uwazi expects every configured language to have a row, so "row missing in Spanish" is not a case to design for. Both rows can still disagree: `entityIsAllowed` runs on one language document, and a filter on a translated property can pass in English and fail in Spanish. Entity sync already deletes or upserts per language row. Option 1 does not change that. After the bump, `files()` still loads a single entity via `find({ sharedId })` with no language and no sort, and that row decides every file and thumbnail. That lookup is already how file logs work. Treating "the entity" as one pass/fail would be a new rule (for example default language, or any language). This fix should not invent it.
+Template changes are entity writes. Sync loads the current template and runs the same check. No old-versus-new branch.
 
-**Collection order is files, then entities.** Refreshing file logs makes files and thumbnails eligible in the `files` namespace, which the worker drains before `entities`. Inside one tick, blobs are uploaded or deleted before the entity row is. That matches a brand-new entity today. It is the opposite of "thumbnails post-sync after the entity" if that phrase means order rather than "also sync them when the entity is updated". Not changing `COLLECTION_SYNC_ORDER` as part of this unless that order is actually required. Reordering would change every file sync, not just filter crossings.
+Do not change `COLLECTION_SYNC_ORDER`. `files` is drained before `entities`, so refreshed file logs are applied before the entity row in the same tick. That is already how a new entity is synced.
 
-**Postgres follow-up, not this change.** `PostgresEntitiesDataSource` builds a `SyncLogWriter` and then does not pass it to the permission table it writes. When that is fixed, file logs will be missed again if the fix only writes `entities` logs. The follow-up issue should say: entity writes must emit `entities` update logs, and those writes must refresh `files` logs the same way the Mongo choke point does.
+### Out of scope
+
+Editing the sync config (filter text, template list, `attachments`) does not rewrite logs. A from-scratch resync remains the remedy.
+
+Connections are not part of this. They do not go through `entityIsAllowed`.
+
+Postgres entity saves not writing `updatelogs` is a separate issue. `PostgresEntitiesDataSource` builds a `SyncLogWriter` and does not pass it to the permission table it writes. That issue has to require both `entities` logs and the same `files` log refresh. A logging-only fix repeats this bug on Postgres.
