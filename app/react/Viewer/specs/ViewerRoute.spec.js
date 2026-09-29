@@ -28,7 +28,7 @@ describe('ViewerRoute', () => {
       expect(dispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'references'));
       selectTab.mockClear();
       dispatch.calls.reset();
-      component.instance().render();
+      void component.instance().render();
       expect(selectTab).not.toHaveBeenCalled();
       expect(dispatch).not.toHaveBeenCalled();
       selectTab.mockRestore();
