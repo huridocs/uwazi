@@ -90,9 +90,17 @@ const adminUser = { _id: '1', role: 'admin', name: 'admin' };
 
 const renderPreview = (
   sharedId: string,
-  onClose = jest.fn(),
-  user?: typeof adminUser,
-  focusFieldKey?: string
+  {
+    onClose = jest.fn(),
+    user,
+    focusFieldKey,
+    onAction,
+  }: {
+    onClose?: () => void;
+    user?: typeof adminUser;
+    focusFieldKey?: string;
+    onAction?: () => void;
+  } = {}
 ) =>
   render(
     <TestRouterContext>
@@ -111,6 +119,7 @@ const renderPreview = (
             entityBasePath="/entityv2"
             onClose={onClose}
             focusFieldKey={focusFieldKey}
+            onAction={onAction}
           />
         </TestAtomStoreProvider>
       </ServicesProvider>
@@ -157,7 +166,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('opens the Metadata tab when a table cell asks to focus a property', async () => {
-    renderPreview(entityWithDocument.sharedId, jest.fn(), undefined, 'title');
+    renderPreview(entityWithDocument.sharedId, { focusFieldKey: 'title' });
     expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
       'aria-selected',
       'true'
@@ -179,7 +188,7 @@ describe('LibraryEntityPreview', () => {
 
   it('closes from the footer, the header button, and Escape', async () => {
     const onClose = jest.fn();
-    renderPreview(entityWithDocument.sharedId, onClose);
+    renderPreview(entityWithDocument.sharedId, { onClose });
     await screen.findByText('Case 11.481 (Gelman)');
 
     const footer = await screen.findByTestId('library-entity-preview-footer');
@@ -200,24 +209,26 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('shows Edit on Metadata, then Copy from, Cancel and Save when editing', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser, onAction: jest.fn() });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
-    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    expect(within(footer).getByRole('button', { name: 'Edit' }).querySelector('svg')).toBeNull();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
     expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Copy from/ })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
   it('confirms before canceling dirty metadata edits', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser, onAction: jest.fn() });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
@@ -235,13 +246,20 @@ describe('LibraryEntityPreview', () => {
     expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
   });
 
-  it('does not offer Edit on Relationships', async () => {
-    renderPreview(entityWithDocument.sharedId, jest.fn(), adminUser);
+  it('opens metadata editing from Edit on Relationships', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
-    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
     const panel = screen.getByRole('tabpanel');
     expect(panel).toHaveClass('bg-paper');
     expect(panel).not.toHaveClass('bg-warm');
+
+    const footer = screen.getByTestId('library-entity-preview-footer');
+    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
+
+    expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
   it('shows file empty copy instead of empty tables when there are no files', async () => {
@@ -258,7 +276,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('shows Add file on Files and opens the same add-file modal as entity viewer', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
 
     const footer = await screen.findByTestId('library-entity-preview-footer');
@@ -269,7 +287,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('does not offer Add file on Metadata', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     const footer = await screen.findByTestId('library-entity-preview-footer');
     expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
@@ -315,7 +333,7 @@ describe('LibraryView preview pane', () => {
     andFilters: [],
     onAndFiltersChange: jest.fn(),
     chips: [],
-    onSelect: jest.fn(),
+    onSelectedIdsChange: jest.fn(),
     onClosePreview: jest.fn(),
     entityBasePath: '/entityv2',
     onLoadMore: jest.fn(),
@@ -334,7 +352,24 @@ describe('LibraryView preview pane', () => {
               [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
-            <LibraryView {...viewProps} selectedId={selectedId} />
+            <LibraryView
+              {...viewProps}
+              rows={
+                selectedId
+                  ? [
+                      {
+                        _id: entityWithDocument._id,
+                        sharedId: entityWithDocument.sharedId,
+                        language: entityWithDocument.language,
+                        title: entityWithDocument.title,
+                        template: entityWithDocument.template,
+                        metadata: {},
+                      },
+                    ]
+                  : []
+              }
+              selectedIds={selectedId ? [selectedId] : []}
+            />
           </TestAtomStoreProvider>
         </ServicesProvider>
       </TestRouterContext>
@@ -350,6 +385,7 @@ describe('LibraryView preview pane', () => {
     renderView(entityWithDocument.sharedId);
     expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
     expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
+    expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 
@@ -362,9 +398,14 @@ describe('LibraryView preview pane', () => {
     expect(screen.queryByText('Filters')).not.toBeInTheDocument();
   });
 
-  it('opens the upload PDF dialog', async () => {
+  it('opens the native PDF file picker without a modal', async () => {
     renderView();
-    fireEvent.click(await screen.findByRole('button', { name: 'Upload PDF' }));
-    expect(await screen.findByRole('dialog', { name: 'Upload PDF' })).toBeInTheDocument();
+    const upload = await screen.findByRole('button', { name: 'Upload PDF' });
+    const input = document.querySelector('input[type="file"]');
+    expect(input).toBeInstanceOf(HTMLInputElement);
+    const openPicker = jest.spyOn(input as HTMLInputElement, 'click');
+    fireEvent.click(upload);
+    expect(openPicker).toHaveBeenCalled();
+    expect(screen.queryByRole('dialog', { name: 'Upload PDF' })).not.toBeInTheDocument();
   });
 });

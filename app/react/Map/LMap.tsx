@@ -8,7 +8,13 @@ import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
-import { DataMarker, MarkerInput, TemplatesInfo, checkMapInitialization } from './MapHelper.js';
+import {
+  DataMarker,
+  MarkerInput,
+  TemplatesInfo,
+  checkMapInitialization,
+  type MapPointerModifiers,
+} from './MapHelper.js';
 import { getMapProvider } from './TilesProviderFactory.js';
 import { ensureGoogleMaps } from './GoogleMapLayer.js';
 import { addMapMarkers, finishMapSetup, handleMapClick, mapGestureHandlers } from './LMapSetup.js';
@@ -18,8 +24,8 @@ type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 type LMapProps = {
   markers?: MarkerInput[];
   height: number;
-  clickOnMarker?: (marker: DataMarker) => {};
-  clickOnCluster?: (cluster: DataMarker[]) => {};
+  clickOnMarker?: (marker: DataMarker, modifiers?: MapPointerModifiers) => void;
+  clickOnCluster?: (cluster: DataMarker[], modifiers?: MapPointerModifiers) => void;
   onClick?: (event: {}) => {};
   showControls?: boolean;
   startingPoint: GeolocationSchema;

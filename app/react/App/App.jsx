@@ -17,7 +17,7 @@ import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
 import { LegacyHeader } from './LegacyHeader.js';
 import { isEntityPath, isEntityV2Path } from '#app/utils/entityViewerPaths.js';
-import { isLibraryV2Route } from '#app/utils/libraryPaths.js';
+import { isLibraryPath, isLibraryV2MountPath } from '#app/utils/libraryPaths.js';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'flag-icons/sass/flag-icons.scss';
@@ -26,6 +26,51 @@ import 'flowbite';
 import './styles/tailwind.css';
 import './scss/styles.scss';
 
+/** Soft-deploy mounts are always V2 chrome; flags only own the canonical paths. */
+const isV2AppRoute = (pathname, { entityViewerV2, libraryV2 }) =>
+  pathname.includes('/settings') ||
+  isEntityV2Path(pathname) ||
+  (entityViewerV2 && isEntityPath(pathname)) ||
+  isLibraryV2MountPath(pathname) ||
+  (libraryV2 && isLibraryPath(pathname));
+
+const useAppShell = (pathname, settings) => {
+  const shouldShowNewHeader = Boolean(settings.features?.newHeader);
+  const isV2Route = isV2AppRoute(pathname, {
+    entityViewerV2: Boolean(settings.features?.featureFlagEntityViewerv2),
+    libraryV2: Boolean(settings.features?.featureFlagLibraryV2),
+  });
+  const isSettingsRoute = pathname.includes('/settings');
+  return {
+    shouldShowNewHeader,
+    isV2Route,
+    shellSharedTheme: shouldShowNewHeader && isV2Route,
+    settingsThemePath: isSettingsRoute ? 'settings' : undefined,
+  };
+};
+
+const useAppClassName = (pathname, languages, sharedId) => {
+  const possibleLanguages = languages?.map(l => l.key) || [];
+  const shouldAddAppClassName =
+    ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(pathname) ||
+    pathname.match(/\/page\/.*\/.*/g) ||
+    pathname.match(/\/entity\/.*/g);
+  return shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
+};
+
+const renderAppMainTree = (appContext, confirmOptions) => (
+  <NuqsAdapter>
+    <AppMainContext.Provider value={appContext}>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <Confirm {...confirmOptions} />
+      <Outlet />
+      <GoogleAnalytics />
+      <Matomo />
+      <CleanInsights />
+    </AppMainContext.Provider>
+  </NuqsAdapter>
+);
+
 const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
@@ -33,51 +78,11 @@ const App = ({ customParams }) => {
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
-
-  const possibleLanguages = useMemo(
-    () => settings.languages?.map(l => l.key) || [],
-    [settings.languages]
-  );
-  const shouldAddAppClassName =
-    ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
-    location.pathname.match(/\/page\/.*\/.*/g) ||
-    location.pathname.match(/\/entity\/.*/g);
-
-  const shouldShowNewHeader = Boolean(settings.features?.newHeader);
-
-  const appContext = useMemo(
-    () => ({
-      confirm: options => {
-        setConfirmOptions(options);
-      },
-    }),
-    []
-  );
-
-  const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
-
-  const entityViewerV2 = Boolean(settings.features?.featureFlagEntityViewerv2);
-  const libraryV2 = Boolean(settings.features?.featureFlagLibraryV2);
-  const isV2Route =
-    location.pathname.includes('/settings') ||
-    isEntityV2Path(location.pathname) ||
-    (entityViewerV2 && isEntityPath(location.pathname)) ||
-    isLibraryV2Route(location.pathname, libraryV2);
-  const isSettingsRoute = location.pathname.includes('/settings');
-  const shellSharedTheme = shouldShowNewHeader && isV2Route;
-  const settingsThemePath = isSettingsRoute ? 'settings' : undefined;
-
-  const appMainTree = (
-    <NuqsAdapter>
-      <AppMainContext.Provider value={appContext}>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <Confirm {...confirmOptions} />
-        <Outlet />
-        <GoogleAnalytics />
-        <Matomo />
-        <CleanInsights />
-      </AppMainContext.Provider>
-    </NuqsAdapter>
+  const appContext = useMemo(() => ({ confirm: setConfirmOptions }), []);
+  const appClassName = useAppClassName(location.pathname, settings.languages, sharedId);
+  const { shouldShowNewHeader, isV2Route, shellSharedTheme, settingsThemePath } = useAppShell(
+    location.pathname,
+    settings
   );
 
   return (
@@ -96,7 +101,7 @@ const App = ({ customParams }) => {
           >
             <Header />
             <main id="main" className="app-content" style={{ flex: 1, minHeight: 0 }}>
-              {appMainTree}
+              {renderAppMainTree(appContext, confirmOptions)}
             </main>
           </ThemeProvider>
         ) : (
@@ -111,10 +116,10 @@ const App = ({ customParams }) => {
             <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
               {isV2Route ? (
                 <ThemeProvider path={settingsThemePath} style={{ width: '100%', height: '100%' }}>
-                  {appMainTree}
+                  {renderAppMainTree(appContext, confirmOptions)}
                 </ThemeProvider>
               ) : (
-                appMainTree
+                renderAppMainTree(appContext, confirmOptions)
               )}
             </main>
           </>

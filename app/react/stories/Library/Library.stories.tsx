@@ -85,7 +85,7 @@ const LibraryPreview = ({ initialView = 'cards' }: { initialView?: LibraryViewMo
   const [view, setView] = useState<LibraryViewMode>(initialView);
   const [filters, setFilters] = useState<LibraryFiltersState>({});
   const [andFilters, setAndFilters] = useState<string[]>([]);
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const chips = useMemo((): Chip[] => {
     const items: Chip[] = [];
@@ -136,9 +136,9 @@ const LibraryPreview = ({ initialView = 'cards' }: { initialView?: LibraryViewMo
             onFiltersChange={setFilters}
             onAndFiltersChange={setAndFilters}
             chips={chips}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onClosePreview={() => setSelectedId(undefined)}
+            selectedIds={selectedIds}
+            onSelectedIdsChange={setSelectedIds}
+            onClosePreview={() => setSelectedIds([])}
             entityBasePath="/entityv2"
             onLoadMore={() => undefined}
           />
