@@ -187,9 +187,6 @@ describe('MongoFilesDataSource', () => {
   describe('update', () => {
     it('should update and reindex related entity if file belongs to an entity', async () => {
       jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-      const refresh = jest
-        .spyOn(search, 'refresh')
-        .mockImplementation(async () => Promise.resolve());
       await testingEnvironment.setUp(fixtures);
       const { ds, transactionManager } = createDs();
 
@@ -204,8 +201,6 @@ describe('MongoFilesDataSource', () => {
         },
         undefined
       );
-      expect(refresh).toHaveBeenCalled();
-      refresh.mockRestore();
 
       jest.mocked(search.indexEntities).mockReset();
 

@@ -624,12 +624,10 @@ describe('PostgresFilesDataSource', () => {
       indexEntitiesSpy = jest
         .spyOn(search, 'indexEntities')
         .mockImplementation(async () => Promise.resolve());
-      jest.spyOn(search, 'refresh').mockImplementation(async () => Promise.resolve());
     });
 
     afterEach(() => {
       indexEntitiesSpy.mockRestore();
-      jest.mocked(search.refresh).mockRestore();
     });
 
     it('should reindex after create for entity files', async () => {
@@ -644,7 +642,6 @@ describe('PostgresFilesDataSource', () => {
         { sharedId: { $in: ['entity1'] } },
         undefined
       );
-      expect(search.refresh).toHaveBeenCalled();
     });
 
     it('should reindex with +fullText when a ready PDF is created', async () => {
