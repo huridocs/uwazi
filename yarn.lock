@@ -3331,6 +3331,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jas-/asn.1@npm:>=5":
+  version: 5.4.2
+  resolution: "@jas-/asn.1@npm:5.4.2"
+  dependencies:
+    bn.js: "npm:>=5"
+    inherits: "npm:>=2"
+    minimalistic-assert: "npm:>=1"
+    safer-buffer: "npm:>=2"
+  checksum: 10c0/d0ad218311ee3377093f726bfaadaf2aa5e9c7dba7d1547dc7825e72a416de9830a28e2096964a2601d0beea8ed8f51e2554b8b3109e3ce4c9f568ca8a769c77
+  languageName: node
+  linkType: hard
+
 "@jest/console@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/console@npm:29.7.0"
@@ -8721,18 +8733,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asn1.js@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "asn1.js@npm:5.4.1"
-  dependencies:
-    bn.js: "npm:^4.0.0"
-    inherits: "npm:^2.0.1"
-    minimalistic-assert: "npm:^1.0.0"
-    safer-buffer: "npm:^2.1.0"
-  checksum: 10c0/b577232fa6069cc52bb128e564002c62b2b1fe47f7137bdcd709c0b8495aa79cee0f8cc458a831b2d8675900eea0d05781b006be5e1aa4f0ae3577a73ec20324
-  languageName: node
-  linkType: hard
-
 "asn1@npm:~0.2.3":
   version: 0.2.6
   resolution: "asn1@npm:0.2.6"
@@ -9308,6 +9308,13 @@ __metadata:
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 10c0/680de03adc54ff925eaa6c7bb9a47a0690e8b5de60f4792604aae8ed618c65e6b63a7893b57ca924beaf53eee69c5af4f8314148c08124c550fe1df1add897d2
+  languageName: node
+  linkType: hard
+
+"bn.js@npm:>=5":
+  version: 5.2.5
+  resolution: "bn.js@npm:5.2.5"
+  checksum: 10c0/4c47bcb261950086a9d5d311bea97197b5950703e0a80caf6e226f3bb049954a864c80b0fca7f70149c74c2e255cb4a63d0da2c425d7b15f9051a042a4e12095
   languageName: node
   linkType: hard
 
@@ -10425,16 +10432,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-mongo@npm:6.0.0":
-  version: 6.0.0
-  resolution: "connect-mongo@npm:6.0.0"
+"connect-mongo@npm:5.1.0":
+  version: 5.1.0
+  resolution: "connect-mongo@npm:5.1.0"
   dependencies:
-    debug: "npm:^4.4.3"
-    kruptein: "npm:3.0.8"
+    debug: "npm:^4.3.1"
+    kruptein: "npm:^3.0.0"
   peerDependencies:
     express-session: ^1.17.1
-    mongodb: ">=5.0.0"
-  checksum: 10c0/d04ffa29f0b51d62dbbf940e72f3b6d07a8941a08d3a5b5941f032a7dbeff035a24a09fe3b7a1e39129bba62ca6c05378e93dab9b319b5bd7b667a61780c9073
+    mongodb: ">= 5.1.0 < 7"
+  checksum: 10c0/78f34bc09684290f7d3afde447f71793dba33159069a24d929b31dfc517d1ffd52b614dfa34c5eb00700dda5a9d87d7af7d43c2c518c1f6bb6aa3761571a8e70
   languageName: node
   linkType: hard
 
@@ -14886,7 +14893,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inherits@npm:2, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3, inherits@npm:~2.0.4":
+"inherits@npm:2, inherits@npm:>=2, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3, inherits@npm:~2.0.4":
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 10c0/4e531f648b29039fb7426fb94075e6545faa1eb9fe83c29f0b6d9e7263aceb4289d2d4557db0d428188eeb449cc7c5e77b0a0b2c4e248ff2a65933a0dee49ef2
@@ -16783,12 +16790,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kruptein@npm:3.0.8":
-  version: 3.0.8
-  resolution: "kruptein@npm:3.0.8"
+"kruptein@npm:^3.0.0, kruptein@npm:^3.3.0":
+  version: 3.4.0
+  resolution: "kruptein@npm:3.4.0"
   dependencies:
-    asn1.js: "npm:^5.4.1"
-  checksum: 10c0/32e5f36b90ba3d17ea8e618bc4c39d8b819b92ce33c46dce9d063fcf35b17665a40baf526ae5dda7819643f5a513739b21565b4293264dd5c74a645e67388710
+    "@jas-/asn.1": "npm:>=5"
+    kruptein: "npm:^3.3.0"
+  checksum: 10c0/ce7f467b1da441d4800ade291bf93d6c9e394a67f9a397c33bec7a88ceea0a6281dbc68f329f5b2d2a1e805831d303fafd3cb1c4df0dc64beb90eab5a59386a1
   languageName: node
   linkType: hard
 
@@ -17731,7 +17739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimalistic-assert@npm:^1.0.0, minimalistic-assert@npm:^1.0.1":
+"minimalistic-assert@npm:>=1, minimalistic-assert@npm:^1.0.0, minimalistic-assert@npm:^1.0.1":
   version: 1.0.1
   resolution: "minimalistic-assert@npm:1.0.1"
   checksum: 10c0/96730e5601cd31457f81a296f521eb56036e6f69133c0b18c13fe941109d53ad23a4204d946a0d638d7f3099482a0cec8c9bb6d642604612ce43ee536be3dddd
@@ -21971,7 +21979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0, safer-buffer@npm:^2.0.2, safer-buffer@npm:^2.1.0, safer-buffer@npm:~2.1.0":
+"safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0, safer-buffer@npm:>=2, safer-buffer@npm:^2.0.2, safer-buffer@npm:^2.1.0, safer-buffer@npm:~2.1.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: 10c0/7e3c8b2e88a1841c9671094bbaeebd94448111dd90a81a1f606f3f67708a6ec57763b3b47f06da09fc6054193e0e6709e77325415dc8422b04497a8070fa02d4
@@ -24539,7 +24547,7 @@ __metadata:
     clean-webpack-plugin: "npm:4.0.0"
     compression: "npm:^1.8.1"
     concurrently: "npm:^10.0.5"
-    connect-mongo: "npm:6.0.0"
+    connect-mongo: "npm:5.1.0"
     connect-pg-simple: "npm:^10.0.0"
     cookie: "npm:1.1.1"
     cookie-parser: "npm:1.4.7"
