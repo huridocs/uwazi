@@ -1,7 +1,9 @@
 import { config, type TenantsBackend } from '#api/config.js';
 import { DB } from '#api/odm/DB.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import type { TenantsDataSource } from '../application/contracts/TenantsDataSource.js';
 import { MongoTenantsDataSource } from './MongoTenantsDataSource.js';
+import { PostgresTenantsDataSource } from './PostgresTenantsDataSource.js';
 
 /**
  * The registry has no tenant context to resolve from: it is what tells the process which tenants
@@ -11,7 +13,7 @@ import { MongoTenantsDataSource } from './MongoTenantsDataSource.js';
 class TenantsDataSourceFactory {
   static default(backend: TenantsBackend = config.tenantsBackend): TenantsDataSource {
     if (backend === 'postgres') {
-      throw new Error('Postgres tenants data source not implemented (#9683)');
+      return new PostgresTenantsDataSource(() => PostgresDB.knex);
     }
     return new MongoTenantsDataSource(() => DB.mongodb_Db(config.SHARED_DB));
   }
