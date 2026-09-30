@@ -134,16 +134,18 @@ const LibraryView = ({
               onToggleTableColumn={onToggleTableColumn}
               onTableDensityChange={onTableDensityChange}
             />
-            <button
-              type="button"
-              onClick={() => {
-                closePreview();
-                openFilters();
-              }}
-              className="mx-3 mb-1 inline-flex h-7 items-center self-start rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink md:hidden"
-            >
-              <Translate>Filters</Translate>
-            </button>
+            {isMobile ? (
+              <button
+                type="button"
+                onClick={() => {
+                  closePreview();
+                  openFilters();
+                }}
+                className="mx-3 mb-1 inline-flex h-7 items-center self-start rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink md:hidden"
+              >
+                <Translate>Filters</Translate>
+              </button>
+            ) : null}
             <div
               className={
                 view === 'map'

@@ -80,7 +80,7 @@ const useApplyPaneWidths = ({
     defaultRatios,
     localStorageKey,
     minPaneRatios,
-    panes,
+    panes.length,
     ratiosRef,
     setWidths,
     widthsRef,
