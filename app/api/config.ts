@@ -57,6 +57,23 @@ const resolveTenantsBackend = (value: string | undefined): TenantsBackend => {
 
 const tenantsBackend = resolveTenantsBackend(process.env.TENANTS_BACKEND || undefined);
 
+const TenantsPollIntervalSchema = z.coerce.number().positive().default(10);
+
+/** Seconds between registry version checks. Only read when `TENANTS_BACKEND=postgres`. */
+const resolveTenantsPollInterval = (value: string | undefined): number => {
+  const parsed = TenantsPollIntervalSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new Error(
+      `TENANTS_POLL_INTERVAL_SECONDS must be a positive number of seconds, got ${JSON.stringify(value)}`
+    );
+  }
+  return parsed.data;
+};
+
+const tenantsPollIntervalSeconds = resolveTenantsPollInterval(
+  process.env.TENANTS_POLL_INTERVAL_SECONDS || undefined
+);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
@@ -235,6 +252,7 @@ export const config = {
   queueBackend,
   sessionsBackend,
   tenantsBackend,
+  tenantsPollIntervalSeconds,
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,
@@ -251,5 +269,5 @@ export const config = {
   },
 };
 
-export { resolveSessionsBackend, resolveTenantsBackend };
+export { resolveSessionsBackend, resolveTenantsBackend, resolveTenantsPollInterval };
 export type { TenantsBackend };
