@@ -5,7 +5,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
-import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
+import { localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { LanguageDropdown } from '../LanguageDropdown.js';
@@ -36,7 +37,7 @@ const language = ({
   default: isDefault,
 });
 
-const renderDropdown = () =>
+const renderDropdown = (role?: UserRole) =>
   render(
     <MemoryRouter initialEntries={['/en/library']}>
       <TestAtomStoreProvider
@@ -56,6 +57,7 @@ const renderDropdown = () =>
               ],
             },
           ],
+          ...(role ? [[userAtom, { _id: 'user', role, username: 'user', email: '' }]] : []),
         ]}
       >
         <LanguageDropdown />
@@ -73,5 +75,41 @@ describe('LanguageDropdown', () => {
 
     expect(followLanguageUrl).toHaveBeenCalledWith('/es/library');
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('shows live translate inside the open language menu', async () => {
+    const user = userEvent.setup();
+    renderDropdown(UserRole.ADMIN);
+
+    expect(screen.queryByRole('button', { name: 'Live translate' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Language' }));
+    const menu = screen.getByRole('listbox');
+    expect(menu.parentElement).toContainElement(
+      screen.getByRole('button', { name: 'Live translate' })
+    );
+  });
+
+  it('turns live translate on from the menu and off from that button', async () => {
+    const user = userEvent.setup();
+    renderDropdown(UserRole.ADMIN);
+
+    await user.click(screen.getByRole('button', { name: 'Language' }));
+    await user.click(screen.getByRole('button', { name: 'Live translate' }));
+    expect(screen.getByRole('button', { name: 'Live translate' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Live translate' }));
+    expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument();
+  });
+
+  it('does not offer live translate to collaborators', async () => {
+    const user = userEvent.setup();
+    renderDropdown(UserRole.COLLABORATOR);
+
+    await user.click(screen.getByRole('button', { name: 'Language' }));
+
+    expect(screen.queryByRole('button', { name: 'Live translate' })).not.toBeInTheDocument();
   });
 });

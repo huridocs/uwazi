@@ -27,6 +27,56 @@ const languageOptions = (languages: LanguagesListSchema) =>
     iso6391: language.key,
   }));
 
+const stoppedEdit = { inlineEdit: false, translationKey: '', context: '' };
+const startedEdit = { inlineEdit: true, translationKey: '', context: '' };
+
+const liveTranslateLabel = () => (
+  <>
+    <LanguageIcon className="h-3.5 w-3.5" />
+    <Translate>Live translate</Translate>
+  </>
+);
+
+const liveTranslateItem = (onClick: () => void) => (
+  <NeedAuthorization roles={['admin']}>
+    <button
+      type="button"
+      className="header-bar-panel-item flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-xs font-medium"
+      onMouseDown={event => event.preventDefault()}
+      onClick={onClick}
+    >
+      {liveTranslateLabel()}
+    </button>
+  </NeedAuthorization>
+);
+
+const liveTranslateButton = (className: string, onClick: () => void) => (
+  <button
+    type="button"
+    className={`header-bar-button header-bar-button-active flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium ${className}`}
+    aria-pressed
+    onClick={onClick}
+  >
+    {liveTranslateLabel()}
+  </button>
+);
+
+const switchLanguage = (
+  location: { pathname: string; search: string; hash: string },
+  currentKey: string,
+  languageKey: string
+) => {
+  if (languageKey === currentKey) return;
+  followLanguageUrl(
+    buildLanguageSwitchUrl({
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      languageKey,
+    })
+  );
+};
+
 const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const locale = useAtomValue(localeAtom);
@@ -35,54 +85,22 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
   const options = useMemo(() => languageOptions(languageList ?? []), [languageList]);
   const selected = getSelectedLanguage(locale, languageList);
 
-  if (!languageList?.length || !selected) {
-    return null;
+  if (!languageList?.length || !selected || inlineEditState.inlineEdit) {
+    return inlineEditState.inlineEdit
+      ? liveTranslateButton(className, () => setInlineEditState(stoppedEdit))
+      : null;
   }
 
-  const toggleLiveTranslate = () => {
-    setInlineEditState({
-      inlineEdit: !inlineEditState.inlineEdit,
-      translationKey: '',
-      context: '',
-    });
-  };
-
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={className}>
       <LanguageSelect
         value={selected.key}
         options={options}
         align="end"
         aria-label="Language"
-        onChange={languageKey => {
-          if (languageKey === selected.key) return;
-          if (inlineEditState.inlineEdit) {
-            setInlineEditState({ inlineEdit: false, translationKey: '', context: '' });
-          }
-          followLanguageUrl(
-            buildLanguageSwitchUrl({
-              pathname: location.pathname,
-              search: location.search,
-              hash: location.hash,
-              languageKey,
-            })
-          );
-        }}
+        onChange={languageKey => switchLanguage(location, selected.key, languageKey)}
+        footer={liveTranslateItem(() => setInlineEditState(startedEdit))}
       />
-      <NeedAuthorization roles={['admin']}>
-        <button
-          type="button"
-          className={[
-            'header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors',
-            inlineEditState.inlineEdit ? 'header-bar-button-active' : '',
-          ].join(' ')}
-          aria-pressed={inlineEditState.inlineEdit}
-          onClick={toggleLiveTranslate}
-        >
-          <LanguageIcon className="h-3.5 w-3.5" />
-          <Translate>Live translate</Translate>
-        </button>
-      </NeedAuthorization>
     </div>
   );
 };

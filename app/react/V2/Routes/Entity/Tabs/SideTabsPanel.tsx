@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { useEntityFiles } from '../Components/index.js';
 import { SIDE_TAB } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
@@ -28,10 +29,11 @@ const SideTabsPanel = ({ entity, mainDocument, pagePlaintext }: SideTabsPanelPro
     mainDocumentId: mainDocument?._id,
     filesSideTabs,
   });
+  const isMobile = useIsMobile();
 
   return (
     <div className="relative flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden border-l border-border-soft">
-      <EntityOverlay />
+      {isMobile ? null : <EntityOverlay />}
       <div className="shrink-0 px-3 pt-2.5">
         <TabsSideButtons
           buttons={sideTabs.sideButtons}

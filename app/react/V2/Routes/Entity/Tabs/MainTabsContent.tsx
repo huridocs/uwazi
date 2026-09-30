@@ -23,6 +23,7 @@ type MainTabsContentProps = {
   entity: EntityType;
   mainDocument?: FileType;
   pagePlaintext?: string;
+  groupId?: string;
 };
 
 const mainTabSwitchContent = ({
@@ -64,8 +65,9 @@ const useMainTabsPanel = ({
   entity,
   mainDocument,
   pagePlaintext,
+  groupId,
 }: MainTabsContentProps) => {
-  const activeTabId = useResolvedEntityMainTab(urlActiveTabId);
+  const activeTabId = useResolvedEntityMainTab(urlActiveTabId, groupId);
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
   const { hasEntityPageView } = useEntityPageView();
@@ -95,12 +97,13 @@ const useMainTabsPanel = ({
 
 const MainTabsContentComponent = (props: MainTabsContentProps) => {
   const panel = useMainTabsPanel(props);
+  const panelGroupId = props.groupId ?? 'entity-main';
   if (!panel.content && !panel.showMetadataOnMain && !panel.showEntityPageOnMain) return null;
   return (
     <div
       role="tabpanel"
-      id={`entity-main-panel-${panel.activeTabId}`}
-      aria-labelledby={`entity-main-tab-${panel.activeTabId}`}
+      id={`${panelGroupId}-panel-${panel.activeTabId}`}
+      aria-labelledby={`${panelGroupId}-tab-${panel.activeTabId}`}
       className={`flex h-full min-h-0 w-full flex-col ${mainTabPanelSurfaceClass(panel.activeTabId, panel.metadataActive)}`}
     >
       {panel.showMetadataOnMain ? (

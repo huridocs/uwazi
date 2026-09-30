@@ -84,7 +84,8 @@ const TabButtons = ({
             ariaLabel={tabListAriaLabel}
             options={buttons.map(button => ({
               value: button.id,
-              label: button.label,
+              label: button.menuLabel ?? button.label,
+              accessory: button.accessory,
             }))}
             onChange={tabId => {
               selectTab(tabId);
