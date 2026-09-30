@@ -6,6 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -19,6 +20,8 @@ import {
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
+import { useEntityOverlayTarget } from '#V2/Routes/Entity/Components/context/EntityOverlayContext.js';
+import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
 import { pickMainTab } from '#V2/Routes/Entity/Tabs/entityTabState.js';
@@ -81,6 +84,29 @@ const EntityCreateRelationshipModal = () => {
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
+const usePreviewFieldFocus = (sharedId: string, focusFieldKey?: string) => {
+  const { selectTab } = useTabGroup('entity-main');
+  const setFocusField = useSetAtom(focusMetadataFieldAtom);
+  useEffect(() => {
+    if (!focusFieldKey) return undefined;
+    selectTab(MAIN_TAB.METADATA);
+    setFocusField({ fieldKey: focusFieldKey });
+    return undefined;
+  }, [focusFieldKey, selectTab, setFocusField, sharedId]);
+};
+
+const usePreviewEscape = (onClose: () => void) => {
+  const { target } = useEntityOverlayTarget();
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || target) return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose, target]);
+};
+
 const useLibraryPreviewTab = () => {
   const { mainDocument } = useEntityLanguage();
   const hasMainDocument = Boolean(mainDocument?.filename);
@@ -102,38 +128,32 @@ const LibraryEntityPreviewView = ({
   useResetRelationshipsOnDocumentChange();
   const mainTabId = useLibraryPreviewTab();
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
-  const { selectTab } = useTabGroup('entity-main');
-  const setFocusField = useSetAtom(focusMetadataFieldAtom);
-
-  useEffect(() => {
-    if (!focusFieldKey) {
-      return undefined;
-    }
-    selectTab(MAIN_TAB.METADATA);
-    setFocusField({ fieldKey: focusFieldKey });
-    return undefined;
-  }, [entity.sharedId, focusFieldKey, selectTab, setFocusField]);
+  const isMobile = useIsMobile();
+  usePreviewFieldFocus(entity.sharedId, focusFieldKey);
+  usePreviewEscape(onClose);
 
   return (
     <EntityTabsProvider value={entityTabs}>
       <div
-        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
+        className="relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
         dir={isRtl ? 'rtl' : 'ltr'}
         data-testid="library-entity-preview"
       >
         <div className="shrink-0">
           <div className="relative">
-            <div className="pe-8">
+            <div className={isMobile ? undefined : 'pe-8'}>
               <EntityMainPaneHeader entity={entity} showDocumentViewMode={false} />
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-              aria-label={t('System', 'Close', null, false)}
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </button>
+            {isMobile ? null : (
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+                aria-label={t('System', 'Close', null, false)}
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="px-3 pt-2 pb-1">
             <TabsMainButtons
@@ -158,6 +178,7 @@ const LibraryEntityPreviewView = ({
             mainTabId={mainTabId}
           />
         </div>
+        <EntityOverlay />
       </div>
     </EntityTabsProvider>
   );
@@ -172,14 +193,15 @@ const PreviewStatus = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const useEscapeClose = (onClose: () => void) => {
+const useEscapeClose = (onClose: () => void, enabled: boolean) => {
   useEffect(() => {
+    if (!enabled) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape' && !event.defaultPrevented) onClose();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  }, [enabled, onClose]);
 };
 
 const LibraryPreviewReady = ({
@@ -233,7 +255,7 @@ const LibraryEntityPreview = ({
   const { entity, loading, error, reload } = useLibraryPreviewEntity(sharedId);
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-  useEscapeClose(onClose);
+  useEscapeClose(onClose, Boolean(loading || error || !entity));
   if (loading) {
     return (
       <PreviewStatus>

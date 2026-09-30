@@ -15,6 +15,7 @@ import {
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import {
+  isMobileOverrideAtom,
   localeAtom,
   settingsAtom,
   templatesAtom,
@@ -25,6 +26,10 @@ import { templates, translations } from '#app/stories/fixtures/referencesFixture
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import { LibraryEntityPreview } from '../LibraryEntityPreview.js';
 import { LibraryView } from '../LibraryView.js';
+
+jest.mock('#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js', () => ({
+  EntityOverlay: () => <div data-testid="stacked-entity-overlay" />,
+}));
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -88,13 +93,17 @@ let mediaMock = setupMatchMediaMock();
 
 const adminUser = { _id: '1', role: 'admin', name: 'admin' };
 
-const renderPreview = (
-  sharedId: string,
-  onClose = jest.fn(),
-  user?: typeof adminUser,
-  focusFieldKey?: string
-) =>
-  render(
+type PreviewRenderOptions = {
+  onClose?: () => void;
+  user?: typeof adminUser;
+  focusFieldKey?: string;
+  mobile?: boolean;
+};
+
+const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => {
+  const onClose = options.onClose ?? jest.fn();
+  const { user, focusFieldKey, mobile } = options;
+  return render(
     <TestRouterContext>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
         <TestAtomStoreProvider
@@ -104,6 +113,7 @@ const renderPreview = (
             [translationsAtom, translations],
             [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
             ...(user ? [[userAtom, user] as const] : []),
+            ...(mobile ? [[isMobileOverrideAtom, true] as const] : []),
           ]}
         >
           <LibraryEntityPreview
@@ -116,6 +126,7 @@ const renderPreview = (
       </ServicesProvider>
     </TestRouterContext>
   );
+};
 
 describe('LibraryEntityPreview', () => {
   beforeEach(() => {
@@ -157,7 +168,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('opens the Metadata tab when a table cell asks to focus a property', async () => {
-    renderPreview(entityWithDocument.sharedId, jest.fn(), undefined, 'title');
+    renderPreview(entityWithDocument.sharedId, { focusFieldKey: 'title' });
     expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
       'aria-selected',
       'true'
@@ -179,7 +190,7 @@ describe('LibraryEntityPreview', () => {
 
   it('closes from the footer, the header button, and Escape', async () => {
     const onClose = jest.fn();
-    renderPreview(entityWithDocument.sharedId, onClose);
+    renderPreview(entityWithDocument.sharedId, { onClose });
     await screen.findByText('Case 11.481 (Gelman)');
 
     const footer = await screen.findByTestId('library-entity-preview-footer');
@@ -193,6 +204,17 @@ describe('LibraryEntityPreview', () => {
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 
+  it('mounts the entity overlay so a related entity can stack', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    expect(await screen.findByTestId('stacked-entity-overlay')).toBeInTheDocument();
+  });
+
+  it('mounts the entity overlay on mobile so a related entity can stack', async () => {
+    renderPreview(entityWithDocument.sharedId, { mobile: true });
+    expect(await screen.findByTestId('stacked-entity-overlay')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Close' })).toHaveLength(1);
+  });
+
   it('links View entity to the entity viewer path', async () => {
     renderPreview(entityWithDocument.sharedId);
     const link = await screen.findByRole('link', { name: /View entity/ });
@@ -200,7 +222,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('shows Edit on Metadata, then Copy from, Cancel and Save when editing', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
@@ -217,7 +239,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('confirms before canceling dirty metadata edits', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
@@ -236,7 +258,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('does not offer Edit on Relationships', async () => {
-    renderPreview(entityWithDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithDocument.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
     expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
     const panel = screen.getByRole('tabpanel');
@@ -258,7 +280,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('shows Add file on Files and opens the same add-file modal as entity viewer', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
 
     const footer = await screen.findByTestId('library-entity-preview-footer');
@@ -269,7 +291,7 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('does not offer Add file on Metadata', async () => {
-    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
     const footer = await screen.findByTestId('library-entity-preview-footer');
     expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
