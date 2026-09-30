@@ -219,7 +219,7 @@
     "monaco-editor": "^0.56.0",
     "mongodb": "6.13.0",
     "mongoose": "8.10.0",
-    "multer": "^2.3.0",
+    "multer": "^2.4.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^9.0.6",
     "nprogress": "^0.2.0",
