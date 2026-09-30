@@ -30,30 +30,36 @@ const languageOptions = (languages: LanguagesListSchema) =>
 const stoppedEdit = { inlineEdit: false, translationKey: '', context: '' };
 const startedEdit = { inlineEdit: true, translationKey: '', context: '' };
 
-const liveTranslateControl = (onClick: () => void, className?: string) =>
-  className === undefined ? (
-    <NeedAuthorization roles={['admin']}>
-      <button
-        type="button"
-        className="header-bar-panel-item flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-xs font-medium"
-        onMouseDown={event => event.preventDefault()}
-        onClick={onClick}
-      >
-        <LanguageIcon className="h-3.5 w-3.5" />
-        <Translate>Live translate</Translate>
-      </button>
-    </NeedAuthorization>
-  ) : (
+const liveTranslateLabel = () => (
+  <>
+    <LanguageIcon className="h-3.5 w-3.5" />
+    <Translate>Live translate</Translate>
+  </>
+);
+
+const liveTranslateItem = (onClick: () => void) => (
+  <NeedAuthorization roles={['admin']}>
     <button
       type="button"
-      className={`header-bar-button header-bar-button-active flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium ${className}`}
-      aria-pressed
+      className="header-bar-panel-item flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-xs font-medium"
+      onMouseDown={event => event.preventDefault()}
       onClick={onClick}
     >
-      <LanguageIcon className="h-3.5 w-3.5" />
-      <Translate>Live translate</Translate>
+      {liveTranslateLabel()}
     </button>
-  );
+  </NeedAuthorization>
+);
+
+const liveTranslateButton = (className: string, onClick: () => void) => (
+  <button
+    type="button"
+    className={`header-bar-button header-bar-button-active flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium ${className}`}
+    aria-pressed
+    onClick={onClick}
+  >
+    {liveTranslateLabel()}
+  </button>
+);
 
 const switchLanguage = (
   location: { pathname: string; search: string; hash: string },
@@ -81,7 +87,7 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
 
   if (!languageList?.length || !selected || inlineEditState.inlineEdit) {
     return inlineEditState.inlineEdit
-      ? liveTranslateControl(() => setInlineEditState(stoppedEdit), className)
+      ? liveTranslateButton(className, () => setInlineEditState(stoppedEdit))
       : null;
   }
 
@@ -93,7 +99,7 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
         align="end"
         aria-label="Language"
         onChange={languageKey => switchLanguage(location, selected.key, languageKey)}
-        footer={liveTranslateControl(() => setInlineEditState(startedEdit))}
+        footer={liveTranslateItem(() => setInlineEditState(startedEdit))}
       />
     </div>
   );
