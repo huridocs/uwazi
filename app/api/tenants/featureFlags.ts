@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * The one declaration of every tenant feature flag. The `Tenant` type, the mongoose schema and the
+ * The one declaration of every tenant feature flag. The `Tenant` type and the
  * schema the CLI validates against are all derived from it, so a flag is added in one place.
  */
 const FEATURE_FLAGS = {
@@ -65,12 +65,6 @@ const zodTypes = {
   string: z.string(),
 } satisfies Record<FeatureFlagType, z.ZodTypeAny>;
 
-const mongoTypes = {
-  boolean: Boolean,
-  number: Number,
-  string: String,
-} satisfies Record<FeatureFlagType, BooleanConstructor | NumberConstructor | StringConstructor>;
-
 const map = <T>(definition: FeatureFlagDefinition, scalar: (type: FeatureFlagType) => T) =>
   isFeatureFlagGroup(definition)
     ? Object.fromEntries(Object.entries(definition).map(([name, type]) => [name, scalar(type)]))
@@ -111,18 +105,7 @@ const FeatureFlagsPatchSchema = flagsObject(true) as unknown as z.ZodType<
   unknown
 >;
 
-/** The `featureFlags` branch of the tenants mongoose schema. */
-const featureFlagsMongoSchema: Record<string, unknown> = Object.fromEntries(
-  entries.map(([name, definition]) => [name, map(definition, type => mongoTypes[type])])
-);
-
-export {
-  FEATURE_FLAGS,
-  FeatureFlagsPatchSchema,
-  FeatureFlagsSchema,
-  featureFlagsMongoSchema,
-  isFeatureFlagGroup,
-};
+export { FEATURE_FLAGS, FeatureFlagsPatchSchema, FeatureFlagsSchema, isFeatureFlagGroup };
 export type {
   FeatureFlagDefinition,
   FeatureFlagGroup,
