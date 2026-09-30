@@ -182,8 +182,12 @@ const LibraryToolbar = ({
   const sortValue = effectiveLibrarySort(sort);
   const sortSelectOptions = librarySortOptions(tableColumns, search, sortValue).map(option => ({
     value: option.value,
-    label: t(option.translationContext, option.label, null, false),
-    accessory: option.value === sortValue ? sortDirectionArrow(order) : undefined,
+    label: (
+      <span className="inline-flex items-center gap-1">
+        {t(option.translationContext, option.label, null, false)}
+        {option.value === sortValue ? sortDirectionArrow(order) : null}
+      </span>
+    ),
   }));
   const displayModified =
     view === 'table'

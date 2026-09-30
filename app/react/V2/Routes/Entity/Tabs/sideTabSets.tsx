@@ -54,29 +54,35 @@ const getSideTabButtons = ({
     });
   };
 
+  const pushRelationships = () => {
+    buttons.push({
+      id: SIDE_TAB.RELATIONSHIPS,
+      name: 'Relationships',
+      label: relationshipsTabLabel,
+      menuLabel: <Translate>Relationships</Translate>,
+      accessory: relationshipsCount,
+    });
+  };
+
   const pushFilesList = () => {
     buttons.push({
       id: SIDE_TAB.FILES,
       name: 'Files',
       label: <TabLabel text="Files" count={filesCount} />,
+      menuLabel: <Translate>Files</Translate>,
+      accessory: filesCount,
     });
   };
 
   switch (activeMainTab) {
     case MAIN_TAB.DOCUMENT:
       pushMetadata();
-      buttons.push(
-        {
-          id: SIDE_TAB.TOC,
-          name: 'ToC',
-          label: <TabLabel text="ToC" />,
-        },
-        {
-          id: SIDE_TAB.RELATIONSHIPS,
-          name: 'Relationships',
-          label: relationshipsTabLabel,
-        }
-      );
+      buttons.push({
+        id: SIDE_TAB.TOC,
+        name: 'ToC',
+        label: <TabLabel text="ToC" />,
+      });
+      pushRelationships();
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
@@ -86,11 +92,7 @@ const getSideTabButtons = ({
       break;
     case MAIN_TAB.METADATA:
       pushDocument();
-      buttons.push({
-        id: SIDE_TAB.RELATIONSHIPS,
-        name: 'Relationships',
-        label: relationshipsTabLabel,
-      });
+      pushRelationships();
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
@@ -114,6 +116,8 @@ const getSideTabButtons = ({
           id: SIDE_TAB.TRANSLATIONS,
           name: 'Translations',
           label: <TabLabel text="Translations" count={filesSideTabs.translationsCount} />,
+          menuLabel: <Translate>Translations</Translate>,
+          accessory: filesSideTabs.translationsCount,
         });
       }
       break;
