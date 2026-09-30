@@ -4,6 +4,7 @@
  * Usage:
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> [--force]
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions
+ *   TENANTS_BACKEND=mongo node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenants
  *
  * --tenant migrates the collections gated by that tenant's active Postgres feature flags
  * (postgresCore, postgresPages, postgresCsv).
@@ -11,6 +12,10 @@
  * --sessions copies the shared-database `sessions` collection into `http_sessions` once,
  * for every tenant. It does not take a tenant and it does not write a tenant column.
  * Re-running leaves rows that are already there.
+ *
+ * --tenants copies the shared-database `tenants` registry into the `tenants` table once. It does
+ * not take a tenant. Run it with TENANTS_BACKEND=mongo: the registry is read from Mongo. Keys
+ * uwazi does not declare are kept in the `extras` column. Re-running leaves rows already there.
  *
  * By default a collection is skipped when its PostgreSQL table already contains
  * data for the tenant. Pass --force to migrate anyway (non-destructive: existing
@@ -55,6 +60,7 @@ import { CsvImportThesauriValuesMigrationConfig } from '#api/csv.v2/infrastructu
 import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipPendingValuesMigrationConfig.js';
 import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
 import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
+import { copyTenants } from '#api/core/infrastructure/postgresql/migrations/copyTenants.js';
 
 const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
@@ -135,6 +141,11 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Copy HTTP sessions from the shared database into http_sessions. Not per tenant.',
     default: false,
   })
+  .option('tenants', {
+    type: 'boolean',
+    describe: 'Copy the tenant registry from the shared database into tenants. Not per tenant.',
+    default: false,
+  })
   .option('force', {
     alias: 'f',
     type: 'boolean',
@@ -143,8 +154,8 @@ const argv = yargs(hideBin(process.argv))
     default: false,
   })
   .check(args => {
-    if (!args.sessions && !args.tenant) {
-      throw new Error('Missing required argument: tenant (or pass --sessions)');
+    if (!args.sessions && !args.tenants && !args.tenant) {
+      throw new Error('Missing required argument: tenant (or pass --sessions or --tenants)');
     }
     return true;
   })
@@ -199,6 +210,15 @@ async function run(): Promise<void> {
     const result = await copyHttpSessions(DB.mongodb_Db(config.SHARED_DB));
     log(
       `Copied ${result.copied} http sessions from ${config.SHARED_DB} (${result.alreadyPresent} already present).`
+    );
+    await cleanup();
+    return;
+  }
+
+  if (argv.tenants) {
+    const result = await copyTenants(DB.mongodb_Db(config.SHARED_DB));
+    log(
+      `Copied ${result.copied} tenants from ${config.SHARED_DB} (${result.alreadyPresent} already present).`
     );
     await cleanup();
     return;
