@@ -204,6 +204,11 @@ describe('LibraryEntityPreview', () => {
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 
+  it('mounts the entity overlay so a related entity can stack', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    expect(await screen.findByTestId('stacked-entity-overlay')).toBeInTheDocument();
+  });
+
   it('mounts the entity overlay on mobile so a related entity can stack', async () => {
     renderPreview(entityWithDocument.sharedId, { mobile: true });
     expect(await screen.findByTestId('stacked-entity-overlay')).toBeInTheDocument();

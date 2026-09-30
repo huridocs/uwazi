@@ -20,6 +20,7 @@ import {
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
+import { useEntityOverlayTarget } from '#V2/Routes/Entity/Components/context/EntityOverlayContext.js';
 import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
@@ -83,6 +84,29 @@ const EntityCreateRelationshipModal = () => {
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
+const usePreviewFieldFocus = (sharedId: string, focusFieldKey?: string) => {
+  const { selectTab } = useTabGroup('entity-main');
+  const setFocusField = useSetAtom(focusMetadataFieldAtom);
+  useEffect(() => {
+    if (!focusFieldKey) return undefined;
+    selectTab(MAIN_TAB.METADATA);
+    setFocusField({ fieldKey: focusFieldKey });
+    return undefined;
+  }, [focusFieldKey, selectTab, setFocusField, sharedId]);
+};
+
+const usePreviewEscape = (onClose: () => void) => {
+  const { target } = useEntityOverlayTarget();
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || target) return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose, target]);
+};
+
 const useLibraryPreviewTab = () => {
   const { mainDocument } = useEntityLanguage();
   const hasMainDocument = Boolean(mainDocument?.filename);
@@ -104,23 +128,14 @@ const LibraryEntityPreviewView = ({
   useResetRelationshipsOnDocumentChange();
   const mainTabId = useLibraryPreviewTab();
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
-  const { selectTab } = useTabGroup('entity-main');
-  const setFocusField = useSetAtom(focusMetadataFieldAtom);
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (!focusFieldKey) {
-      return undefined;
-    }
-    selectTab(MAIN_TAB.METADATA);
-    setFocusField({ fieldKey: focusFieldKey });
-    return undefined;
-  }, [entity.sharedId, focusFieldKey, selectTab, setFocusField]);
+  usePreviewFieldFocus(entity.sharedId, focusFieldKey);
+  usePreviewEscape(onClose);
 
   return (
     <EntityTabsProvider value={entityTabs}>
       <div
-        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
+        className="relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
         dir={isRtl ? 'rtl' : 'ltr'}
         data-testid="library-entity-preview"
       >
@@ -163,6 +178,7 @@ const LibraryEntityPreviewView = ({
             mainTabId={mainTabId}
           />
         </div>
+        <EntityOverlay />
       </div>
     </EntityTabsProvider>
   );
@@ -177,14 +193,15 @@ const PreviewStatus = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const useEscapeClose = (onClose: () => void) => {
+const useEscapeClose = (onClose: () => void, enabled: boolean) => {
   useEffect(() => {
+    if (!enabled) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && !event.defaultPrevented) onClose();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  }, [enabled, onClose]);
 };
 
 const LibraryPreviewReady = ({
@@ -203,7 +220,6 @@ const LibraryPreviewReady = ({
   focusFieldKey?: string;
 }) => {
   const { language } = entity;
-  const isMobile = useIsMobile();
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
   return (
     <ErrorBoundary>
@@ -224,7 +240,6 @@ const LibraryPreviewReady = ({
             />
           </EntityFilesFromEntity>
           <EntityCreateRelationshipModal />
-          {isMobile ? <EntityOverlay /> : null}
         </EntityScopedProvider>
       </EntityUrlSync>
     </ErrorBoundary>
@@ -240,7 +255,7 @@ const LibraryEntityPreview = ({
   const { entity, loading, error, reload } = useLibraryPreviewEntity(sharedId);
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-  useEscapeClose(onClose);
+  useEscapeClose(onClose, Boolean(loading || error || !entity));
   if (loading) {
     return (
       <PreviewStatus>
