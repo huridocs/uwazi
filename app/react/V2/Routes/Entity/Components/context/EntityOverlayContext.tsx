@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 
 type OverlayTarget = {
@@ -7,10 +7,13 @@ type OverlayTarget = {
   templateId: string;
 };
 
-type EntityOverlayState = { target: OverlayTarget | null };
+type OverlayEntry = OverlayTarget & { id: string };
+
+type EntityOverlayState = { target: OverlayEntry | null; stack: OverlayEntry[] };
 type EntityOverlayActions = {
   openEntityOverlay: (marker: RelationshipMarker) => void;
   openEntityOverlayTarget: (target: OverlayTarget) => void;
+  closeOverlayFrom: (index: number) => void;
   closeEntityOverlay: () => void;
 };
 
@@ -18,10 +21,17 @@ const EntityOverlayStateContext = createContext<EntityOverlayState | null>(null)
 const EntityOverlayActionsContext = createContext<EntityOverlayActions | null>(null);
 
 const EntityOverlayProvider = ({ children }: { children: React.ReactNode }) => {
-  const [target, setTarget] = useState<OverlayTarget | null>(null);
+  const [stack, setStack] = useState<OverlayEntry[]>([]);
+  const nextId = useRef(0);
+  const target = stack[stack.length - 1] ?? null;
 
   const openEntityOverlayTarget = useCallback((next: OverlayTarget) => {
-    setTarget(next);
+    setStack(current => {
+      const top = current[current.length - 1];
+      if (top?.sharedId === next.sharedId) return current;
+      nextId.current += 1;
+      return [...current, { ...next, id: String(nextId.current) }];
+    });
   }, []);
 
   const openEntityOverlay = useCallback(
@@ -35,14 +45,18 @@ const EntityOverlayProvider = ({ children }: { children: React.ReactNode }) => {
     [openEntityOverlayTarget]
   );
 
-  const closeEntityOverlay = useCallback(() => {
-    setTarget(null);
+  const closeOverlayFrom = useCallback((index: number) => {
+    setStack(current => current.slice(0, index));
   }, []);
 
-  const state = useMemo(() => ({ target }), [target]);
+  const closeEntityOverlay = useCallback(() => {
+    setStack([]);
+  }, []);
+
+  const state = useMemo(() => ({ target, stack }), [stack, target]);
   const actions = useMemo(
-    () => ({ openEntityOverlay, openEntityOverlayTarget, closeEntityOverlay }),
-    [closeEntityOverlay, openEntityOverlay, openEntityOverlayTarget]
+    () => ({ openEntityOverlay, openEntityOverlayTarget, closeOverlayFrom, closeEntityOverlay }),
+    [closeEntityOverlay, closeOverlayFrom, openEntityOverlay, openEntityOverlayTarget]
   );
 
   return (
@@ -71,4 +85,5 @@ const useEntityOverlay = () => ({
   ...useEntityOverlayActions(),
 });
 
+export type { OverlayTarget };
 export { EntityOverlayProvider, useEntityOverlay, useEntityOverlayTarget, useEntityOverlayActions };

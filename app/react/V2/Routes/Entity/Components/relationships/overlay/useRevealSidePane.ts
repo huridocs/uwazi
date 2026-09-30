@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
-import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
+import { useState } from 'react';
 
-const useRevealSidePane = (active: boolean) => {
-  const { showSidePane } = useEntityTabNavigation();
-  useEffect(() => {
-    if (active) showSidePane();
-  }, [active, showSidePane]);
+const useRevealSidePane = (active: boolean, showSidePane: () => void) => {
+  const [seen, setSeen] = useState(false);
+  if (active && !seen) {
+    setSeen(true);
+    showSidePane();
+  } else if (!active && seen) {
+    setSeen(false);
+  }
 };
 
 export { useRevealSidePane };

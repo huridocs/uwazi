@@ -5,6 +5,8 @@ type TabButtonDef = {
   id: string;
   name?: string;
   label: React.ReactNode;
+  menuLabel?: React.ReactNode;
+  accessory?: React.ReactNode;
 };
 
 type TabPanelDef = {

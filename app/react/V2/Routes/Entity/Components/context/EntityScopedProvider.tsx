@@ -21,6 +21,7 @@ type EntityScopedProviderProps = {
   pagePlaintext?: string;
   entityPageView?: EntityPageViewData;
   relationshipQuery?: RelationshipQueryPayload;
+  inheritOverlay?: boolean;
   children: React.ReactNode;
 };
 
@@ -31,6 +32,7 @@ const EntityScopedProvider = ({
   pagePlaintext,
   entityPageView,
   relationshipQuery,
+  inheritOverlay = false,
   children,
 }: EntityScopedProviderProps) => (
   <EntityProvider entity={entity}>
@@ -49,7 +51,11 @@ const EntityScopedProvider = ({
                   <DocumentInteractionProvider>
                     <TocProvider>
                       <ToCFileSync />
-                      <EntityOverlayProvider>{children}</EntityOverlayProvider>
+                      {inheritOverlay ? (
+                        children
+                      ) : (
+                        <EntityOverlayProvider>{children}</EntityOverlayProvider>
+                      )}
                     </TocProvider>
                   </DocumentInteractionProvider>
                 </RelationshipsPanelFiltersProvider>
