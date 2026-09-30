@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { MobileBottomSheet } from './MobileBottomSheet.js';
-import { PaneLayoutProps } from './types.js';
+import { PaneLayoutProps, PaneProps } from './types.js';
+
+const isPane = (node: React.ReactNode): node is React.ReactElement<PaneProps> =>
+  typeof node === 'object' && node !== null && 'props' in node;
+
+const flattenPanes = (nodes: React.ReactNode): React.ReactElement<PaneProps>[] => {
+  if (Array.isArray(nodes)) return nodes.flatMap(flattenPanes);
+  return isPane(nodes) ? [nodes] : [];
+};
 
 const LEGACY_MENU_HEIGHT = '50px';
 
@@ -20,7 +28,7 @@ const useRequestedPane = (
 const PaneLayoutMobile = ({ children, className = '', requestedPane }: PaneLayoutProps) => {
   const [openCount, setOpenCount] = useState(0);
   useRequestedPane(requestedPane, setOpenCount);
-  const [page, ...sheets] = children;
+  const [page, ...sheets] = flattenPanes(children);
 
   return (
     <>
@@ -42,7 +50,10 @@ const PaneLayoutMobile = ({ children, className = '', requestedPane }: PaneLayou
             order={index}
             title={child.props.mobileTitle}
             defaultSnap={child.props.mobileSnap ?? 'half'}
-            onClose={() => setOpenCount(current => Math.min(current, index - 1))}
+            onClose={() => {
+              child.props.onMobileClose?.();
+              setOpenCount(current => Math.min(current, index - 1));
+            }}
           >
             {child}
           </MobileBottomSheet>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 type WarmSelectOption<T extends string = string> = {
@@ -24,17 +24,31 @@ const WarmSelect = <T extends string>({
   ariaLabel,
   align = 'start',
   disabled = false,
-  variant = 'warm',
 }: WarmSelectProps<T>) => {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onClick = (event: MouseEvent) => {
+      if (event.target instanceof Node && !ref.current?.contains(event.target)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
   const current = options.find(option => option.value === value) ?? options[0];
   const triggerClass =
-    variant === 'paper'
-      ? 'inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md border border-border bg-paper ps-3 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/35 disabled:cursor-not-allowed disabled:opacity-60'
-      : 'inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex h-8 max-w-full cursor-pointer items-center gap-1 rounded-md border border-border bg-paper ps-3 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/35 disabled:cursor-not-allowed disabled:opacity-60';
 
   return (
-    <div className="relative shrink-0">
+    <div ref={ref} className="relative w-max shrink-0">
       <button
         type="button"
         disabled={disabled}
@@ -45,43 +59,43 @@ const WarmSelect = <T extends string>({
         className={triggerClass}
       >
         <span className="truncate">{current?.label}</span>
-        {current?.accessory}
         <ChevronDownIcon
-          className={`h-3.5 w-3.5 shrink-0 text-ink-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`h-3.5 w-3.5 shrink-0 text-ink-secondary transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden
         />
       </button>
       {open && !disabled && (
-        <>
-          <div className="fixed inset-0 z-10" aria-hidden onClick={() => setOpen(false)} />
-          <div
-            role="listbox"
-            className={`absolute top-full z-20 mt-1 min-w-40 rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
-              align === 'end' ? 'inset-e-0' : 'inset-s-0'
-            }`}
-          >
-            {options.map(option => (
-              <button
-                key={option.value}
-                type="button"
-                role="option"
-                aria-selected={option.value === value}
-                onClick={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                }}
-                className={`flex w-full cursor-pointer items-center gap-1.5 px-3 py-1.5 text-start text-xs transition-colors ${
-                  option.value === value
-                    ? 'bg-vellum font-semibold text-ink'
-                    : 'text-ink-secondary hover:bg-warm'
-                }`}
-              >
-                <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                {option.accessory}
-              </button>
-            ))}
-          </div>
-        </>
+        <div
+          role="listbox"
+          className={`absolute top-full z-30 mt-1 w-max min-w-full rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
+            align === 'end' ? 'end-0' : 'start-0'
+          }`}
+        >
+          {options.map(option => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={option.value === value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`flex w-max min-w-full cursor-pointer items-center gap-2 whitespace-nowrap px-3 py-1.5 text-start text-xs transition-colors ${
+                option.value === value
+                  ? 'bg-vellum font-semibold text-ink'
+                  : 'text-ink-secondary hover:bg-warm'
+              }`}
+            >
+              <span>{option.label}</span>
+              {option.accessory === undefined ? null : (
+                <span className="ms-auto shrink-0 text-meta text-ink-tertiary">
+                  {option.accessory}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );

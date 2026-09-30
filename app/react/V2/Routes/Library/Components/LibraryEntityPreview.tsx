@@ -106,6 +106,7 @@ const LibraryEntityPreviewView = ({
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
   const { selectTab } = useTabGroup('entity-main');
   const setFocusField = useSetAtom(focusMetadataFieldAtom);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!focusFieldKey) {
@@ -125,17 +126,19 @@ const LibraryEntityPreviewView = ({
       >
         <div className="shrink-0">
           <div className="relative">
-            <div className="pe-8">
+            <div className={isMobile ? undefined : 'pe-8'}>
               <EntityMainPaneHeader entity={entity} showDocumentViewMode={false} />
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-              aria-label={t('System', 'Close', null, false)}
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </button>
+            {isMobile ? null : (
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+                aria-label={t('System', 'Close', null, false)}
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="px-3 pt-2 pb-1">
             <TabsMainButtons

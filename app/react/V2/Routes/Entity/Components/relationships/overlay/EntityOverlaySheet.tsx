@@ -43,7 +43,6 @@ const EntityOverlaySheet = ({
       bare
       order={SHEET_OVERLAY_ORDER + level}
       ariaLabel={title || 'Entity'}
-      defaultSnap="full"
       onClose={onClose}
     >
       {chrome => (

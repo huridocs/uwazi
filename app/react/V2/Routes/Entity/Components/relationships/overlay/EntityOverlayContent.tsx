@@ -51,7 +51,12 @@ const EntityOverlayContent = ({ entity }: EntityOverlayContentProps) => {
   const tabs = useMemo(() => overlayTabs(mainTabId), [mainTabId]);
 
   return (
-    <EntityScopedProvider inheritOverlay entity={entity} language={entity.language || 'en'}>
+    <EntityScopedProvider
+      inheritOverlay
+      entity={entity}
+      language={entity.language || 'en'}
+      mainDocument={mainDocument}
+    >
       <EntityFilesProvider entity={entity}>
         <EntityMainTabsProvider value={tabs}>
           <div className="flex h-full min-h-0 flex-col">

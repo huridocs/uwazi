@@ -3,6 +3,7 @@ import { FormProvider } from 'react-hook-form';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
   PdfFillProvider,
@@ -29,6 +30,7 @@ const createPdfFill = (language: string) => ({
 const LibraryCreateEntityPanel = ({ onClose, onCreated }: LibraryCreateEntityPanelProps) => {
   const { entity, form, formId, mediaUpload, saving, saveError, editErrors, onSave } =
     useLibraryCreateEntity(onCreated);
+  const isMobile = useIsMobile();
 
   return (
     <EntityProvider entity={entity}>
@@ -42,14 +44,16 @@ const LibraryCreateEntityPanel = ({ onClose, onCreated }: LibraryCreateEntityPan
               <h2 className="text-sm font-semibold text-ink">
                 <Translate>New entity</Translate>
               </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                className="shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-                aria-label={t('System', 'Close', null, false)}
-              >
-                <XMarkIcon className="h-4 w-4" />
-              </button>
+              {isMobile ? null : (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+                  aria-label={t('System', 'Close', null, false)}
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              )}
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
               {saveError ? (

@@ -97,11 +97,12 @@ type PreviewRenderOptions = {
   onClose?: () => void;
   user?: typeof adminUser;
   focusFieldKey?: string;
+  mobile?: boolean;
 };
 
 const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => {
   const onClose = options.onClose ?? jest.fn();
-  const { user, focusFieldKey } = options;
+  const { user, focusFieldKey, mobile } = options;
   return render(
     <TestRouterContext>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
@@ -112,6 +113,7 @@ const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => 
             [translationsAtom, translations],
             [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
             ...(user ? [[userAtom, user] as const] : []),
+            ...(mobile ? [[isMobileOverrideAtom, true] as const] : []),
           ]}
         >
           <LibraryEntityPreview
@@ -203,28 +205,9 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('mounts the entity overlay on mobile so a related entity can stack', async () => {
-    render(
-      <TestRouterContext>
-        <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
-          <TestAtomStoreProvider
-            initialValues={[
-              [localeAtom, 'en'],
-              [templatesAtom, templates],
-              [translationsAtom, translations],
-              [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
-              [isMobileOverrideAtom, true],
-            ]}
-          >
-            <LibraryEntityPreview
-              sharedId={entityWithDocument.sharedId}
-              entityBasePath="/entityv2"
-              onClose={jest.fn()}
-            />
-          </TestAtomStoreProvider>
-        </ServicesProvider>
-      </TestRouterContext>
-    );
+    renderPreview(entityWithDocument.sharedId, { mobile: true });
     expect(await screen.findByTestId('stacked-entity-overlay')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Close' })).toHaveLength(1);
   });
 
   it('links View entity to the entity viewer path', async () => {

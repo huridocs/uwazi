@@ -3,13 +3,18 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EntityProvider, useEntityContext } from '../../../context/EntityContext.js';
 import { EntityOverlayProvider, useEntityOverlay } from '../../../context/EntityOverlayContext.js';
+import { entityLoaderCache } from '../../../../EntityLoaderCache.js';
 import { EntityOverlayContent } from '../EntityOverlayContent.js';
+
+jest.mock('#V2/Components/PDFViewer', () => ({
+  PDF: () => <div data-testid="mock-pdf" />,
+}));
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -86,28 +91,43 @@ const OverlayTarget = () => {
   return <div data-testid="overlay-target">{target?.sharedId ?? ''}</div>;
 };
 
-const renderContent = () =>
+const renderContent = (entity: Entity = overlayEntity) =>
   render(
-    <TestAtomStoreProvider
-      initialValues={[
-        [templatesAtom, templates],
-        [settingsAtom, { features: {} }],
-      ]}
-    >
-      <EntityProvider entity={hostEntity}>
-        <EntityOverlayProvider>
-          <HostTitle />
-          <OverlayTarget />
-          <EntityOverlayContent entity={overlayEntity} />
-        </EntityOverlayProvider>
-      </EntityProvider>
-    </TestAtomStoreProvider>
+    <TestRouterContext>
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, templates],
+          [settingsAtom, { features: {} }],
+        ]}
+      >
+        <EntityProvider entity={hostEntity}>
+          <EntityOverlayProvider>
+            <HostTitle />
+            <OverlayTarget />
+            <EntityOverlayContent entity={entity} />
+          </EntityOverlayProvider>
+        </EntityProvider>
+      </TestAtomStoreProvider>
+    </TestRouterContext>
   );
 
 describe('EntityOverlayContent', () => {
-  it('renders the standard metadata record for the overlay entity', () => {
+  afterEach(() => {
+    entityLoaderCache.invalidateAll();
+  });
+
+  it('keeps the overlay entity main document available', async () => {
+    renderContent({
+      ...overlayEntity,
+      documents: [{ _id: 'doc-1', filename: 'brief.pdf', language: 'eng' }],
+    });
+    expect(await screen.findByTestId('host-title')).toBeInTheDocument();
+    expect(entityLoaderCache.getMainDocument('person-1', 'en')?._id).toBe('doc-1');
+  });
+
+  it('renders the standard metadata record for the overlay entity', async () => {
     renderContent();
-    expect(screen.getByTestId('metadata-record')).toBeVisible();
+    expect(await screen.findByTestId('metadata-record')).toBeVisible();
     expect(screen.getByText('Male')).toBeVisible();
     expect(screen.queryByText('in this document')).toBeNull();
     expect(screen.queryByText('Properties')).toBeNull();
@@ -116,7 +136,7 @@ describe('EntityOverlayContent', () => {
   it('replaces the overlay target when a related entity is opened', async () => {
     const user = userEvent.setup();
     renderContent();
-    await user.click(screen.getByRole('button', { name: 'Quito' }));
+    await user.click(await screen.findByRole('button', { name: 'Quito' }));
     expect(screen.getByTestId('overlay-target')).toHaveTextContent('quito');
     expect(screen.getByTestId('host-title')).toHaveTextContent('Host document');
   });

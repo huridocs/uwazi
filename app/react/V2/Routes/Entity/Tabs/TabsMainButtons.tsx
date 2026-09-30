@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { Translate } from '#app/I18N/index.js';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -55,12 +56,16 @@ const TabsMainButtons = ({
       id: MAIN_TAB.RELATIONSHIPS,
       name: 'Relationships',
       label: <TabLabel text="Relationships" count={relationshipsCount} />,
+      menuLabel: <Translate>Relationships</Translate>,
+      accessory: relationshipsCount,
     });
 
     items.push({
       id: MAIN_TAB.FILES,
       name: 'Files',
       label: <TabLabel text="Files" count={filesCount} />,
+      menuLabel: <Translate>Files</Translate>,
+      accessory: filesCount,
     });
 
     return items;
