@@ -37,19 +37,23 @@ const RegisterTenantInputSchema = z
   })
   .strict();
 
-/** `null` removes a field, an omitted field is left as it is. */
+/**
+ * `null` removes a field, an omitted field is left as it is. Only the optional fields can be
+ * removed: a tenant cannot run without its database, index and storage paths, so those can be
+ * replaced but never cleared.
+ */
 const UpdateTenantInputSchema = z
   .object({
     name,
-    dbName: z.string().nullish(),
-    indexName: z.string().nullish(),
+    dbName: z.string().optional(),
+    indexName: z.string().optional(),
     domain: z.string().nullish(),
     globalMatomo: globalMatomo.nullish(),
     ciMatomoActive: z.boolean().nullish(),
-    uploadedDocuments: z.string().nullish(),
-    attachments: z.string().nullish(),
-    customUploads: z.string().nullish(),
-    activityLogs: z.string().nullish(),
+    uploadedDocuments: z.string().optional(),
+    attachments: z.string().optional(),
+    customUploads: z.string().optional(),
+    activityLogs: z.string().optional(),
     metadata: TenantMetadataSchema.nullish(),
   })
   .strict();

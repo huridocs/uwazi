@@ -5,6 +5,8 @@ import { z } from 'zod';
  * declares their shape — it never reads them, and `TenantsModel.get()` keeps them out of the
  * running process.
  */
+const FilesBucketSchema = z.object({ count: z.number(), size: z.number() }).strict();
+
 const TenantStatsSchema = z
   .object({
     lastUpdated: z.number(),
@@ -14,7 +16,7 @@ const TenantStatsSchema = z
     entitiesCount: z.number(),
     filesCount: z.number(),
     totalStorage: z.number(),
-    filesByBucket: z.record(z.number()).optional(),
+    filesByBucket: z.record(FilesBucketSchema).optional(),
     userCount: z
       .object({
         admin: z.number(),
