@@ -28,7 +28,9 @@ const toRow = (doc: MongoTenantDocument): Record<string, unknown> => {
   const known = entries.filter(([key]) => COLUMNS.includes(key));
   const extras = entries.filter(([key]) => !COLUMNS.includes(key));
 
+  // A batch insert sends NULL, not the column default, for a key some rows lack.
   return {
+    featureFlags: '{}',
     ...Object.fromEntries(
       known.map(([key, value]) => [
         key,

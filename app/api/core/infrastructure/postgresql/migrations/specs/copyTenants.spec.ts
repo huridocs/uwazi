@@ -144,6 +144,18 @@ describe('copyTenants', () => {
     expect(one.featureFlags).toEqual({});
   });
 
+  it('should copy in one run tenants that do not store the same fields', async () => {
+    const { featureFlags, ...withoutFlags } = tenantDocument('one');
+    await mongo.collection('tenants').insertMany([withoutFlags, tenantDocument('two')]);
+
+    const result = await copyTenants(mongo);
+
+    expect(result).toEqual({ copied: 2, alreadyPresent: 0 });
+    const [one, two] = await rows();
+    expect(one.featureFlags).toEqual({});
+    expect(two.featureFlags).toEqual(featureFlags);
+  });
+
   it('should leave a tenant that postgres already has and copy only the missing one', async () => {
     await mongo.collection('tenants').insertOne(tenantDocument('one'));
     await copyTenants(mongo);
