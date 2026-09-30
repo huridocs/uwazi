@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { matchRoutes, RouteObject, StaticRouterProvider } from 'react-router';
 import { prepareRouteData } from './ssr/prepareRouteData.js';
+import { searchParamsWithChildQuery } from './ssr/routeSearchParams.js';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -275,13 +276,18 @@ const setReduxState = async (
   reduxState: IStore,
   matched: { route: RouteObject; params: {} }[] | null
 ) => {
-  let routeParams = {};
+  let routeParams: Record<string, string | undefined> = {};
+  const urlQuery = typeof req.query.q === 'string' ? req.query.q : undefined;
   const dataLoaders = matched
     ?.map(({ route, params }) => {
       routeParams = { ...routeParams, ...params };
       if (isRouteElement(route.element)) {
         const component = route.element;
-        routeParams = { ...routeParams, ...component.props.params };
+        routeParams = searchParamsWithChildQuery(
+          { ...routeParams, ...component.props.params },
+          component,
+          urlQuery
+        );
         const childLoader = requestStateOf(component.props.children?.type);
         if (childLoader) {
           return childLoader;
