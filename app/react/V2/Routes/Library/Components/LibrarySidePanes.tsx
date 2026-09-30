@@ -1,6 +1,7 @@
 import React from 'react';
 import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import type { PaneProps } from '#V2/Components/Layouts/PaneLayout/types.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState } from '../libraryUrlState.js';
 import type { Chip } from './ActiveFiltersSheet.js';
@@ -97,20 +98,20 @@ const librarySidePanes = ({
   onFiltersDismiss,
   requestPane,
   ...pane
-}: LibrarySidePanesProps) => {
+}: LibrarySidePanesProps): React.ReactElement<PaneProps>[] => {
   if (!isMobile) {
-    return (
+    return [
       <PaneLayout.Pane key="side" background="transparent">
         {renderLibraryRightPane(pane)}
-      </PaneLayout.Pane>
-    );
+      </PaneLayout.Pane>,
+    ];
   }
 
   const popPreview = () => {
     pane.onClosePreview();
     requestPane(filtersOpen ? 1 : 0);
   };
-  const panes: React.ReactElement[] = [];
+  const panes: React.ReactElement<PaneProps>[] = [];
   if (filtersOpen) {
     panes.push(
       <PaneLayout.Pane

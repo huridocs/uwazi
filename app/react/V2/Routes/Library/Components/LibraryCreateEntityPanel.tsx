@@ -62,6 +62,7 @@ const LibraryCreateEntityPanel = ({ onClose, onCreated }: LibraryCreateEntityPan
                 </p>
               ) : null}
               <PdfFillProvider value={createPdfFill(entity.language)}>
+                {/* oxlint-disable-next-line react/jsx-props-no-spreading */}
                 <FormProvider {...form}>
                   <EditEntity
                     formId={formId}

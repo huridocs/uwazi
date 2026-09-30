@@ -34,13 +34,16 @@ const WarmSelect = <T extends string>({
       if (event.target instanceof Node && !ref.current?.contains(event.target)) setOpen(false);
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false);
     };
     document.addEventListener('mousedown', onClick);
-    document.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
     return () => {
       document.removeEventListener('mousedown', onClick);
-      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onKey, true);
     };
   }, [open]);
   const current = options.find(option => option.value === value) ?? options[0];

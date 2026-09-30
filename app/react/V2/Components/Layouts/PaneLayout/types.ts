@@ -9,7 +9,7 @@ type PaneProps = React.PropsWithChildren & {
 };
 
 type PaneLayoutProps = {
-  children: React.ReactElement<PaneProps>[];
+  children: React.ReactNode;
   defaultRatios?: number[];
   minPaneRatios?: number[];
   localStorageKey?: string;

@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MobileBottomSheet } from './MobileBottomSheet.js';
-import { PaneLayoutProps, PaneProps } from './types.js';
-
-const isPane = (node: React.ReactNode): node is React.ReactElement<PaneProps> =>
-  typeof node === 'object' && node !== null && 'props' in node;
-
-const flattenPanes = (nodes: React.ReactNode): React.ReactElement<PaneProps>[] => {
-  if (Array.isArray(nodes)) return nodes.flatMap(flattenPanes);
-  return isPane(nodes) ? [nodes] : [];
-};
+import { flattenPanes } from './paneChildren.js';
+import { PaneLayoutProps } from './types.js';
 
 const LEGACY_MENU_HEIGHT = '50px';
 

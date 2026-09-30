@@ -127,6 +127,9 @@ describe('EntityOverlayContent', () => {
 
   it('renders the standard metadata record for the overlay entity', async () => {
     renderContent();
+    const panel = await screen.findByRole('tabpanel');
+    expect(panel).toHaveAttribute('id', 'entity-overlay-person-1-panel-metadata');
+    expect(panel).toHaveAttribute('aria-labelledby', 'entity-overlay-person-1-tab-metadata');
     expect(await screen.findByTestId('metadata-record')).toBeVisible();
     expect(screen.getByText('Male')).toBeVisible();
     expect(screen.queryByText('in this document')).toBeNull();
