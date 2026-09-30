@@ -50,6 +50,7 @@
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "generateAutomaticTranslationConfig": "tsx --no-experimental-fetch ./scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
     "check-translations": "tsx --no-experimental-fetch ./scripts/checkTranslations/index.ts",
+    "check-untranslated-csv": "tsx --no-experimental-fetch ./scripts/checkTranslations/untranslatedCsvCli.ts",
     "update-translations-db": "node ./scripts/runner.js ./scripts/updateTranslationsDB.js",
     "update-translations-csv": "tsx --no-experimental-fetch ./scripts/checkTranslations/updateCsvCli.ts",
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",

@@ -58,6 +58,7 @@ export type Finding = {
 export type CheckTranslationsOptions = {
   dir: string;
   translationsDir: string;
+  contextFile?: string;
   fix: boolean;
   strict: boolean;
   unused: boolean;

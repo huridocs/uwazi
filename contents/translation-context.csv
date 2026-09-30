@@ -1,4 +1,4 @@
-Key,Component,View,Context
+Key,Component,View,Context,DoNotTranslate
 """Costa Rica""",Search tip example,Entity view,"Monospace example query in the search tips popover, illustrating an exact phrase search."
 """the status""~5",Search tip example,Entity view,"Monospace example query in the search tips popover, illustrating a proximity search."
 *please keep this key secret and don't share it.,Field label (warning note),Settings > Account,"Secondary warning line under the secret-key label, cautioning the user not to share the key."

@@ -3,18 +3,11 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { COMPOSED_PLACEHOLDER } from '../heuristics.js';
+import { loadTranslationContext } from '../translationContext.js';
 import { parseUpdateCsvArgs, runUpdateTranslationsCsv } from '../updateCsv.js';
 import type { UpdateCsvResult } from '../updateCsv.js';
 
-const makeFixture = async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'update-translations-csv-'));
-  const srcDir = path.join(root, 'app', 'react');
-  const csvDir = path.join(root, 'contents', 'ui-translations');
-  await mkdir(srcDir, { recursive: true });
-  await mkdir(csvDir, { recursive: true });
-  await writeFile(
-    path.join(srcDir, 'Widget.tsx'),
-    `import React from 'react';
+const WIDGET_SOURCE = `import React from 'react';
 
 export const Widget = ({ entity }: { entity: { title: string } }) => (
   <section>
@@ -27,17 +20,37 @@ export const Widget = ({ entity }: { entity: { title: string } }) => (
 notify('Document updated', 'success');
 const options = [{ value: 'text', label: 'Rich text' }];
 const page = <button aria-label={\`Page \${n}\`} />;
-`
-  );
+`;
+
+const writeFixtureFiles = async (paths: {
+  srcDir: string;
+  csvDir: string;
+  contextFile: string;
+}) => {
+  await writeFile(path.join(paths.srcDir, 'Widget.tsx'), WIDGET_SOURCE);
   await writeFile(
-    path.join(csvDir, 'en.csv'),
+    path.join(paths.csvDir, 'en.csv'),
     'Key,English\nSave,Save\nObsolete leftover,Obsolete leftover\n'
   );
   await writeFile(
-    path.join(csvDir, 'es.csv'),
+    path.join(paths.csvDir, 'es.csv'),
     'Key,Spanish\nSave,Guardar\nObsolete leftover,Sobra\n'
   );
-  return { root, srcDir, csvDir };
+  await writeFile(
+    paths.contextFile,
+    'Key,Component,View,Context\nSave,Button label,Library,Saves the current entity.\n'
+  );
+};
+
+const makeFixture = async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'update-translations-csv-'));
+  const srcDir = path.join(root, 'app', 'react');
+  const csvDir = path.join(root, 'contents', 'ui-translations');
+  const contextFile = path.join(root, 'contents', 'translation-context.csv');
+  await mkdir(srcDir, { recursive: true });
+  await mkdir(csvDir, { recursive: true });
+  await writeFixtureFiles({ srcDir, csvDir, contextFile });
+  return { root, srcDir, csvDir, contextFile };
 };
 
 const expectAddedFixableKeys = (result: UpdateCsvResult, enCsv: string) => {
@@ -55,13 +68,35 @@ const expectLeftOutNonCsvCopy = (enCsv: string) => {
   expect(enCsv).not.toContain('entity.title');
 };
 
+const expectContextStubs = async (contextFile: string, result: UpdateCsvResult) => {
+  expect(result.addedContextKeys.sort()).toEqual([
+    'Close modal',
+    'Document updated',
+    'Done',
+    'Library',
+  ]);
+  const context = await loadTranslationContext(contextFile);
+  expect(context.find(row => row.key === 'Save')?.context).toBe('Saves the current entity.');
+  expect(context.find(row => row.key === 'Document updated')?.component).toBe('Toast notification');
+  expect(context.find(row => row.key === 'Close modal')?.component).toBe('Accessible label');
+  expect(context.find(row => row.key === 'Done')?.context).toContain('Widget.tsx');
+};
+
 describe('parseUpdateCsvArgs', () => {
   it('parses --dry, --prune and path flags', () => {
     expect(
-      parseUpdateCsvArgs(['--dry', '--prune', '--dir', './src', '--translations-dir=i18n'])
+      parseUpdateCsvArgs([
+        '--dry',
+        '--prune',
+        '--dir',
+        './src',
+        '--translations-dir=i18n',
+        '--context-file=context.csv',
+      ])
     ).toEqual({
       dir: './src',
       translationsDir: 'i18n',
+      contextFile: 'context.csv',
       dry: true,
       prune: true,
     });
@@ -70,10 +105,11 @@ describe('parseUpdateCsvArgs', () => {
 
 describe('runUpdateTranslationsCsv', () => {
   it('adds missing keys from t()/Translate and --fix-able copy, not labels or interpolations', async () => {
-    const { root, srcDir, csvDir } = await makeFixture();
+    const { root, srcDir, csvDir, contextFile } = await makeFixture();
     const result = await runUpdateTranslationsCsv({
       dir: srcDir,
       translationsDir: csvDir,
+      contextFile,
       dry: false,
       prune: false,
       cwd: root,
@@ -81,29 +117,35 @@ describe('runUpdateTranslationsCsv', () => {
     const enCsv = await readFile(path.join(csvDir, 'en.csv'), 'utf8');
     expectAddedFixableKeys(result, enCsv);
     expectLeftOutNonCsvCopy(enCsv);
+    await expectContextStubs(contextFile, result);
   });
 
   it('does not write on --dry', async () => {
-    const { root, srcDir, csvDir } = await makeFixture();
+    const { root, srcDir, csvDir, contextFile } = await makeFixture();
     const before = await readFile(path.join(csvDir, 'en.csv'), 'utf8');
+    const contextBefore = await readFile(contextFile, 'utf8');
     const result = await runUpdateTranslationsCsv({
       dir: srcDir,
       translationsDir: csvDir,
+      contextFile,
       dry: true,
       prune: true,
       cwd: root,
     });
 
     expect(result.addedKeys.length).toBeGreaterThan(0);
+    expect(result.addedContextKeys.length).toBeGreaterThan(0);
     expect(result.removedKeys).toEqual(['Obsolete leftover']);
     expect(await readFile(path.join(csvDir, 'en.csv'), 'utf8')).toBe(before);
+    expect(await readFile(contextFile, 'utf8')).toBe(contextBefore);
   });
 
   it('removes unused keys only with --prune', async () => {
-    const { root, srcDir, csvDir } = await makeFixture();
+    const { root, srcDir, csvDir, contextFile } = await makeFixture();
     const result = await runUpdateTranslationsCsv({
       dir: srcDir,
       translationsDir: csvDir,
+      contextFile,
       dry: false,
       prune: true,
       cwd: root,

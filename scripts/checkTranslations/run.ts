@@ -4,6 +4,7 @@ import path from 'node:path';
 import { applySourceFixes } from './applyFixes.js';
 import { classifyUsages } from './classify.js';
 import { extractUsages } from './extractUsages.js';
+import { addContextStubs, stubsForAddedKeys } from './translationContext.js';
 import { addMissingKeysToCsvs, loadEnglishTranslations } from './translations.js';
 import type { CheckTranslationsOptions, CheckTranslationsResult, Finding } from './types.js';
 import { listSourceFiles } from './walkFiles.js';
@@ -27,9 +28,10 @@ const BOOLEAN_FLAGS: Record<
   '--unused': 'unused',
 };
 
-const PATH_OPTION_BY_FLAG: Record<string, 'dir' | 'translationsDir'> = {
+const PATH_OPTION_BY_FLAG: Record<string, 'dir' | 'translationsDir' | 'contextFile'> = {
   '--dir': 'dir',
   '--translations-dir': 'translationsDir',
+  '--context-file': 'contextFile',
 };
 
 const applyBooleanFlag = (options: CheckTranslationsOptions, arg: string): boolean => {
@@ -68,6 +70,7 @@ const parseArgs = (argv: string[]): CheckTranslationsOptions => {
   const options: CheckTranslationsOptions = {
     dir: './app',
     translationsDir: 'contents/ui-translations',
+    contextFile: 'contents/translation-context.csv',
     fix: false,
     strict: false,
     unused: false,
@@ -87,18 +90,22 @@ const parseArgs = (argv: string[]): CheckTranslationsOptions => {
   return options;
 };
 
-const helpText = `Usage: yarn check-translations [--fix] [--strict] [--unused] [--dir <path>] [--translations-dir <path>]
+const helpText = `Usage: yarn check-translations [--fix] [--strict] [--unused] [--dir <path>] [--translations-dir <path>] [--context-file <path>]
 
 Checks System UI copy against contents/ui-translations and prints a table
 (Untranslated text | File | Line) grouped by kind.
 
   --fix                 Wrap static JSX text / native attributes / notify() calls and
-                        add missing keys to locale CSVs. Leaves composed strings and
-                        option-label maps for a human.
+                        add missing keys to locale CSVs plus translator-brief stubs.
+                        Leaves composed strings and option-label maps for a human.
   --strict              Fail on warnings as well as errors.
   --unused              Also report CSV keys that are never looked up or found as UI copy.
   --dir                 Source root to scan (default: ./app)
   --translations-dir    Locale CSV directory (default: contents/ui-translations)
+  --context-file        Translator brief CSV (default: contents/translation-context.csv)
+
+After adding keys, fill locale values: yarn check-untranslated-csv --only-new
+(see docs/frontend.md). CI does not fail on untranslated locale values.
 
 Not flagged: entity/template/thesaurus copy (separate translation system),
 member expressions such as entity.title, no-translate subtrees, tests/stories.
@@ -122,10 +129,19 @@ const groupByFile = (findings: Finding[]): Map<string, Finding[]> => {
   return grouped;
 };
 
-const applyFixes = async (
-  findings: Finding[],
-  translationsDir: string
-): Promise<{ fixed: Finding[]; leftover: Finding[]; addedKeys: string[] }> => {
+type ApplyFixesInput = {
+  findings: Finding[];
+  translationsDir: string;
+  contextFile: string;
+  cwd: string;
+};
+
+const applyFixes = async ({
+  findings,
+  translationsDir,
+  contextFile,
+  cwd,
+}: ApplyFixesInput): Promise<{ fixed: Finding[]; leftover: Finding[]; addedKeys: string[] }> => {
   const grouped = groupByFile(findings);
   const fixed: Finding[] = [];
   const leftover: Finding[] = findings.filter(finding => !finding.file || !finding.loc);
@@ -149,6 +165,7 @@ const applyFixes = async (
     ...fixed.map(finding => finding.key),
   ];
   const addedKeys = await addMissingKeysToCsvs(translationsDir, keysToAdd);
+  await addContextStubs(contextFile, stubsForAddedKeys(findings, addedKeys, cwd));
   const leftoverWithoutAddedKeys = leftover.filter(
     finding => finding.kind !== 'missing-key' || !addedKeys.includes(finding.key)
   );
@@ -242,12 +259,13 @@ const runCheckTranslations = async (
 ): Promise<CheckTranslationsResult> => {
   const cwd = options.cwd ?? process.cwd();
   const translationsDir = path.resolve(cwd, options.translationsDir);
+  const contextFile = path.resolve(cwd, options.contextFile ?? 'contents/translation-context.csv');
   const files = await listSourceFiles(path.resolve(cwd, options.dir));
   const usages = await collectUsages(files);
   const translations = await loadEnglishTranslations(translationsDir);
   const findings = classifyUsages(usages, translations, { includeUnused: options.unused });
   const applied = options.fix
-    ? await applyFixes(findings, translationsDir)
+    ? await applyFixes({ findings, translationsDir, contextFile, cwd })
     : { leftover: findings, fixed: [], addedKeys: [] };
   return toResult(applied, cwd, options.strict);
 };

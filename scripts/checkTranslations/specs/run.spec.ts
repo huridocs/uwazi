@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { formatReport, parseArgs, runCheckTranslations } from '../run.js';
+import { loadTranslationContext } from '../translationContext.js';
 import type { CheckTranslationsResult, Finding } from '../types.js';
 
 const makeFixture = async () => {
@@ -56,6 +57,7 @@ describe('parseArgs', () => {
     ).toEqual({
       dir: './src',
       translationsDir: 'i18n',
+      contextFile: 'contents/translation-context.csv',
       fix: true,
       strict: true,
       unused: true,
@@ -100,6 +102,11 @@ describe('runCheckTranslations', () => {
     const source = await readFile(path.join(srcDir, 'Widget.tsx'), 'utf8');
     expectFixedSource(source);
     await expectFixedCsvAndLeftovers(csvDir, after);
+    const context = await loadTranslationContext(
+      path.join(root, 'contents', 'translation-context.csv')
+    );
+    expect(context.map(row => row.key).sort()).toEqual(['Close modal', 'Done']);
+    expect(context.find(row => row.key === 'Close modal')?.component).toBe('Accessible label');
   });
 });
 
