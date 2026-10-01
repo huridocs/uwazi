@@ -27,6 +27,43 @@ describe('tenant input schemas', () => {
       ).toThrow();
     });
 
+    it.each(['acme', 'tenant_a', 'acme-2', '0acme'])('should accept the name %j', tenant => {
+      expect(RegisterTenantInputSchema.parse({ name: tenant })).toEqual({ name: tenant });
+    });
+
+    it.each(['Acme', ' ', 'acme corp', '../acme', 'acme.org', '-acme', '_acme', 'a'.repeat(64)])(
+      'should reject the name %j: it becomes a database, an index and folder names',
+      tenant => {
+        expect(() => RegisterTenantInputSchema.parse({ name: tenant })).toThrow();
+      }
+    );
+
+    it.each(['', 'a/b', 'a.b', 'a b', 'a$b', 'a"b', 'a\\b', 'a'.repeat(64)])(
+      'should reject the database name %j',
+      dbName => {
+        expect(() => RegisterTenantInputSchema.parse({ name: 'acme', dbName })).toThrow();
+      }
+    );
+
+    it.each(['', 'Acme', '-acme', '_acme', '+acme', 'a b', 'a,b', 'a#b', 'a*b', 'a:b', '.', '..'])(
+      'should reject the index name %j',
+      indexName => {
+        expect(() => RegisterTenantInputSchema.parse({ name: 'acme', indexName })).toThrow();
+      }
+    );
+
+    it.each(['', '../other/documents', 'acme/../../etc'])('should reject the folder %j', folder => {
+      expect(() =>
+        RegisterTenantInputSchema.parse({ name: 'acme', uploadedDocuments: folder })
+      ).toThrow();
+    });
+
+    it('should accept absolute folders, as single instances configure them', () => {
+      expect(
+        RegisterTenantInputSchema.parse({ name: 'acme', uploadedDocuments: '/data/acme/docs/' })
+      ).toEqual({ name: 'acme', uploadedDocuments: '/data/acme/docs/' });
+    });
+
     it('should not accept null: there is nothing to remove on a new tenant', () => {
       expect(() => RegisterTenantInputSchema.parse({ name: 'acme', domain: null })).toThrow();
     });
@@ -49,6 +86,26 @@ describe('tenant input schemas', () => {
       'activityLogs',
     ])('should reject null for %s: a tenant cannot run without it', field => {
       expect(() => UpdateTenantInputSchema.parse({ name: 'acme', [field]: null })).toThrow();
+    });
+
+    it('should reach an existing tenant whatever its name, as names predate the rules', () => {
+      expect(UpdateTenantInputSchema.parse({ name: 'Legacy.Tenant' })).toEqual({
+        name: 'Legacy.Tenant',
+      });
+      expect(TenantNameInputSchema.parse({ name: 'Legacy.Tenant' })).toEqual({
+        name: 'Legacy.Tenant',
+      });
+    });
+
+    it.each([
+      ['dbName', ''],
+      ['dbName', 'a.b'],
+      ['indexName', ''],
+      ['indexName', 'Upper'],
+      ['activityLogs', ''],
+      ['customUploads', '../x'],
+    ])('should apply the same rules to %s, rejecting %j', (field, value) => {
+      expect(() => UpdateTenantInputSchema.parse({ name: 'acme', [field]: value })).toThrow();
     });
 
     it('should still accept a new value for a required field', () => {

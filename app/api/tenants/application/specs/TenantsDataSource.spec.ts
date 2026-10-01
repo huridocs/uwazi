@@ -45,8 +45,10 @@ const healthChecks = [
 
 type Store = {
   clear(): Promise<void>;
-  write(rows: typeof stored): Promise<void>;
+  write(rows: Record<string, unknown>[]): Promise<void>;
   read(name: string): Promise<Record<string, unknown> | undefined>;
+  /** Fields another tool stored on the row, which uwazi does not declare. */
+  writeUndeclared(name: string, fields: Record<string, unknown>): Promise<void>;
 };
 
 const JSON_COLUMNS = ['featureFlags', 'globalMatomo', 'stats', 'healthChecks', 'metadata'];
@@ -69,6 +71,9 @@ const backends: { name: string; backend: TenantsBackend; store: () => Store }[] 
           await collection.insertMany(structuredClone(rows));
         },
         read: async name => (await collection.findOne({ name })) ?? undefined,
+        writeUndeclared: async (name, fields) => {
+          await collection.updateOne({ name }, { $set: fields });
+        },
       };
     },
   },
@@ -98,6 +103,12 @@ const backends: { name: string; backend: TenantsBackend; store: () => Store }[] 
         read: async name => {
           const { rows } = await pool().query('SELECT * FROM tenants WHERE name = $1', [name]);
           return rows[0];
+        },
+        writeUndeclared: async (name, fields) => {
+          await pool().query('UPDATE tenants SET extras = $2 WHERE name = $1', [
+            name,
+            JSON.stringify(fields),
+          ]);
         },
       };
     },
@@ -254,10 +265,68 @@ describe('TenantsDataSource', () => {
         });
       });
 
+      it('should merge flags into feature flags stored as null', async () => {
+        await store.write([{ name: 'ds-tenant-c', ...newTenant, featureFlags: null }]);
+
+        const result = await sut.upsert('ds-tenant-c', { featureFlags: { sync: true } });
+
+        expect(result.featureFlags).toEqual({ sync: true });
+      });
+
+      it('should turn a flag group stored as a single value into a group', async () => {
+        await store.write([
+          { name: 'ds-tenant-c', ...newTenant, featureFlags: { telemetry: true } },
+        ]);
+
+        const result = await sut.upsert('ds-tenant-c', {
+          featureFlags: { telemetry: { enabled: true } },
+        });
+
+        expect(result.featureFlags).toEqual({ telemetry: { enabled: true } });
+      });
+
+      it('should merge keys into metadata stored as null', async () => {
+        await store.write([{ name: 'ds-tenant-c', ...newTenant, metadata: null }]);
+
+        const result = await sut.upsert('ds-tenant-c', { metadata: { notes: 'n' } });
+
+        expect(result.metadata).toEqual({ notes: 'n' });
+      });
+
       it('should ignore fields sent as undefined', async () => {
         const result = await sut.upsert('ds-tenant-b', { domain: undefined });
 
         expect(result).toEqual(stored[0]);
+      });
+    });
+
+    describe('fields other tools stored', () => {
+      beforeEach(async () => {
+        await store.writeUndeclared('ds-tenant-a', {
+          status: 'ready',
+          telemetry: { legacy: true },
+        });
+      });
+
+      it('should return them with the tenant, as stored', async () => {
+        expect(await sut.getByName('ds-tenant-a')).toEqual({
+          ...stored[1],
+          status: 'ready',
+          telemetry: { legacy: true },
+        });
+        expect((await sut.all()).find(tenant => tenant.name === 'ds-tenant-a')).toMatchObject({
+          status: 'ready',
+        });
+      });
+
+      it('should keep them through an update', async () => {
+        await sut.upsert('ds-tenant-a', { domain: 'a.uwazi.io' });
+
+        expect(await sut.getByName('ds-tenant-a')).toMatchObject({
+          status: 'ready',
+          telemetry: { legacy: true },
+          domain: 'a.uwazi.io',
+        });
       });
     });
 

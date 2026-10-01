@@ -6,7 +6,39 @@ import {
   TenantStatsSchema,
 } from '../operationalData.js';
 
+/** Looks up a tenant that already exists: names registered before the rules below still resolve. */
 const name = z.string().min(1);
+
+/**
+ * A new tenant's name. It becomes the default database, index and folder names, and usually a
+ * subdomain, so it keeps to what all of them accept.
+ */
+const newName = z
+  .string()
+  .regex(
+    /^[a-z0-9][a-z0-9_-]{0,62}$/,
+    'Use up to 63 lowercase letters, digits, "-" or "_", starting with a letter or digit'
+  );
+
+/** What MongoDB accepts as a database name. */
+const dbName = z
+  .string()
+  .regex(/^[^/\\. "$*<>:|?\0]{1,63}$/, 'Use up to 63 characters, none of /\\. "$*<>:|?');
+
+/** What Elasticsearch accepts as an index name. */
+const indexName = z
+  .string()
+  .regex(
+    /^(?![-_+])(?!\.{1,2}$)[^A-Z\\/*?"<>| ,#:]{1,255}$/,
+    'Use lowercase, without \\/*?"<>| ,#: and not starting with -, _ or +'
+  );
+
+/** A storage folder: absolute or relative, but never climbing out through "..". */
+const folder = z
+  .string()
+  .min(1)
+  .refine(path => !path.split(/[\\/]/).includes('..'), 'Must not contain ".."');
+
 const globalMatomo = z.object({ id: z.string(), url: z.string() }).strict();
 
 /** Folder layout is a uwazi convention; callers may still pass their own. */
@@ -18,17 +50,17 @@ const derivedPaths = (tenant: string) => ({
 });
 
 const paths = {
-  uploadedDocuments: z.string().optional(),
-  attachments: z.string().optional(),
-  customUploads: z.string().optional(),
-  activityLogs: z.string().optional(),
+  uploadedDocuments: folder.optional(),
+  attachments: folder.optional(),
+  customUploads: folder.optional(),
+  activityLogs: folder.optional(),
 };
 
 const RegisterTenantInputSchema = z
   .object({
-    name,
-    dbName: z.string().optional(),
-    indexName: z.string().optional(),
+    name: newName,
+    dbName: dbName.optional(),
+    indexName: indexName.optional(),
     domain: z.string().optional(),
     featureFlags: FeatureFlagsSchema.optional(),
     globalMatomo: globalMatomo.optional(),
@@ -45,15 +77,12 @@ const RegisterTenantInputSchema = z
 const UpdateTenantInputSchema = z
   .object({
     name,
-    dbName: z.string().optional(),
-    indexName: z.string().optional(),
+    dbName: dbName.optional(),
+    indexName: indexName.optional(),
     domain: z.string().nullish(),
     globalMatomo: globalMatomo.nullish(),
     ciMatomoActive: z.boolean().nullish(),
-    uploadedDocuments: z.string().optional(),
-    attachments: z.string().optional(),
-    customUploads: z.string().optional(),
-    activityLogs: z.string().optional(),
+    ...paths,
     metadata: TenantMetadataPatchSchema.nullish(),
   })
   .strict();

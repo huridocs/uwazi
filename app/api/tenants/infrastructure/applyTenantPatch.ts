@@ -63,4 +63,4 @@ const applyTenantPatch = (
   return next as TenantRecord;
 };
 
-export { applyTenantPatch };
+export { applyTenantPatch, isGroup, mergeFlags, mergeGroup };

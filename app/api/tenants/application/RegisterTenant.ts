@@ -1,6 +1,7 @@
 import type { UseCase } from '#api/core/libs/UseCase.js';
 import type { TenantsDataSource, TenantRecord } from './contracts/TenantsDataSource.js';
 import { derivedPaths, type RegisterTenantInput } from './tenantInputs.js';
+import type { TenantStorageClaims } from './TenantStorageClaims.js';
 
 /**
  * Writes the registry row. Idempotent: registering a tenant that already exists updates it, which
@@ -9,7 +10,10 @@ import { derivedPaths, type RegisterTenantInput } from './tenantInputs.js';
  * or folder unless it is told to.
  */
 class RegisterTenant implements UseCase<RegisterTenantInput, TenantRecord> {
-  constructor(private readonly tenants: TenantsDataSource) {}
+  constructor(
+    private readonly tenants: TenantsDataSource,
+    private readonly claims: TenantStorageClaims
+  ) {}
 
   async execute({ name, ...rest }: RegisterTenantInput): Promise<TenantRecord> {
     const stored = await this.tenants.getByName(name);
@@ -22,7 +26,11 @@ class RegisterTenant implements UseCase<RegisterTenantInput, TenantRecord> {
       Object.entries(rest).filter(([, value]) => value !== undefined)
     );
 
-    return this.tenants.upsert(name, { ...defaults, ...given });
+    const patch = { ...defaults, ...given };
+
+    await this.claims.ensureFree(name, patch);
+
+    return this.tenants.upsert(name, patch);
   }
 }
 

@@ -3,6 +3,7 @@ import { config } from '#api/config.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { TenantUseCasesFactory } from '../../infrastructure/TenantUseCasesFactory.js';
 import { TenantNotFound } from '../errors.js';
+import { TenantStorageTaken } from '../TenantStorageTaken.js';
 
 const names = ['uc-tenant-a', 'uc-tenant-b', 'uc-tenant-custom', 'uc-tenant-new'];
 
@@ -112,6 +113,27 @@ describe('tenant registry use cases', () => {
       });
     });
 
+    it('should refuse a database another tenant already uses', async () => {
+      await expect(sut().execute({ name: 'uc-tenant-new', dbName: 'custom_db' })).rejects.toThrow(
+        TenantStorageTaken
+      );
+      expect(await db.collection('tenants').findOne({ name: 'uc-tenant-new' })).toBeNull();
+    });
+
+    it('should refuse an index another tenant already uses', async () => {
+      await expect(
+        sut().execute({ name: 'uc-tenant-new', indexName: 'custom_index' })
+      ).rejects.toThrow(TenantStorageTaken);
+    });
+
+    it('should refuse a default that another tenant already uses', async () => {
+      await db
+        .collection('tenants')
+        .updateOne({ name: 'uc-tenant-custom' }, { $set: { dbName: 'uc-tenant-new' } });
+
+      await expect(sut().execute({ name: 'uc-tenant-new' })).rejects.toThrow(TenantStorageTaken);
+    });
+
     it('should still replace a stored value it is explicitly given', async () => {
       await sut().execute({ name: 'uc-tenant-custom', dbName: 'moved_db' });
 
@@ -135,6 +157,28 @@ describe('tenant registry use cases', () => {
       const result = await sut().execute({ name: 'uc-tenant-a', domain: null });
 
       expect(result).not.toHaveProperty('domain');
+    });
+
+    it.each([
+      ['dbName', 'custom_db'],
+      ['indexName', 'custom_index'],
+    ])('should refuse a %s another tenant already uses', async (field, value) => {
+      await expect(sut().execute({ name: 'uc-tenant-a', [field]: value })).rejects.toThrow(
+        TenantStorageTaken
+      );
+      expect(await db.collection('tenants').findOne({ name: 'uc-tenant-a' })).toMatchObject({
+        [field]: 'uc-tenant-a',
+      });
+    });
+
+    it('should accept the database and index the tenant already has', async () => {
+      const result = await sut().execute({
+        name: 'uc-tenant-custom',
+        dbName: 'custom_db',
+        indexName: 'custom_index',
+      });
+
+      expect(result).toMatchObject({ dbName: 'custom_db', indexName: 'custom_index' });
     });
 
     it('should merge metadata key by key, removing only the keys sent as null', async () => {

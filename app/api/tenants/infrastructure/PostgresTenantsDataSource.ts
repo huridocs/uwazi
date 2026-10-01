@@ -56,9 +56,12 @@ class PostgresTenantsDataSource implements TenantsDataSource {
     return knex<TenantRow>('tenants');
   }
 
-  /** A field the row does not have is left out, never `null`: `null` would clobber defaults. */
+  /**
+   * A field the row does not have is left out, never `null`: `null` would clobber defaults. What
+   * other tools stored under `extras` comes back at the top level, as the Mongo row has it.
+   */
   private static toRecord(row: TenantRow): TenantRecord {
-    const record: Record<string, unknown> = {};
+    const record: Record<string, unknown> = { ...row.extras };
 
     TENANT_RECORD_COLUMNS.forEach(column => {
       const value = row[column];
