@@ -33,6 +33,7 @@ describe.each(ControllerSpecs.backends)('UpdateUserController ($name)', ({ postg
 
     expect(UpdatedUserOutputSchema.parse(output)).toEqual({
       user: { id: f.idString('editor'), username: 'editor', email: 'new@test.com', role: 'editor' },
+      ignoredGroups: [],
     });
     expect(await storedUser('editor')).toMatchObject({ email: 'new@test.com', role: 'editor' });
   });
@@ -59,6 +60,18 @@ describe.each(ControllerSpecs.backends)('UpdateUserController ($name)', ({ postg
       UpdateUserController.handle({ username: 'editor', groups: [] })
     );
     expect(await groupsOf('editor')).toEqual([]);
+  });
+
+  it('should report the group ids it ignored because they match no group', async () => {
+    const output = await ControllerSpecs.asCli(async () =>
+      UpdateUserController.handle({
+        username: 'editor',
+        groups: [f.idString('ghost-group'), 'not-an-id', f.idString('Researchers')],
+      })
+    );
+
+    expect(output.ignoredGroups).toEqual([f.idString('ghost-group'), 'not-an-id']);
+    expect(await groupsOf('editor')).toEqual(['Researchers']);
   });
 
   it.each(['gone', 'nobody'])('should not find %s', async username => {
