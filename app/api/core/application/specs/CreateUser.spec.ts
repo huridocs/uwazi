@@ -1,7 +1,6 @@
 import { ZodError } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
-import { UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
 import { CreateUserUseCaseFactory } from '#api/core/infrastructure/factories/CreateUserUseCaseFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -106,15 +105,14 @@ describe('CreateUser', () => {
     expect(group.members).toEqual([{ refId: user._id }]);
   });
 
-  it.each([
-    ['an unknown group', () => f.idString('ghost-group')],
-    ['a malformed group id', () => 'not-an-id'],
-  ])('should reject %s without creating the user', async (_case, groupId) => {
-    await expect(
-      createSut().execute(input({ assignedGroupIds: [f.id('Researchers').toString(), groupId()] }))
-    ).rejects.toThrow(UserGroupNotFound);
+  it('should drop unknown and malformed group ids, assigning the rest', async () => {
+    const user = await createSut().execute(
+      input({
+        assignedGroupIds: [f.idString('ghost-group'), 'not-an-id', f.idString('Researchers')],
+      })
+    );
 
-    const users = await testingEnvironment.db.getAllFrom('users');
-    expect(users.map(user => user.username)).not.toContain('newguy');
+    const [group] = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(group.members).toEqual([{ refId: user._id }]);
   });
 });

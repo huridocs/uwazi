@@ -6,7 +6,6 @@ import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
-import { UserGroupNotFound } from '../domain/userGroup/errors.js';
 
 /**
  * Shape only: the username, email and role rules belong to the User domain object, so every
@@ -40,11 +39,6 @@ class CreateUser extends AbstractUseCase<Input, Output, Deps> {
     (await this.deps.usersDS.checkUniqueUsername(identity)).getDataOrThrow();
 
     (await this.deps.usersDS.checkUniqueEmail(identity)).getDataOrThrow();
-
-    const [missingGroup] = await this.deps.usergroupsDS.findMissing(assignedGroupIds);
-    if (missingGroup) {
-      throw new UserGroupNotFound(missingGroup);
-    }
 
     const user = UserAccount.create({
       ...identity,

@@ -6,7 +6,6 @@ import { UserRole } from '#api/core/domain/user/User.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 import { EmailInUse, IsRemovingLastAdmin, UsernameExists } from '#api/core/domain/user/errors.js';
-import { UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
 
 const f = getFixturesFactory();
 
@@ -199,25 +198,16 @@ describe('UpdateUser', () => {
       expect(await groupsOf('self')).toEqual([]);
     });
 
-    it.each([
-      ['an unknown group', () => f.idString('ghost-group')],
-      ['a malformed group id', () => 'not-an-id'],
-    ])('should reject %s, leaving the user as it was', async (_case, groupId) => {
+    it('should drop unknown and malformed group ids, assigning the rest', async () => {
       const sut = createSut(actorFor('admin', 'admin'));
 
-      await expect(
-        sut.execute(
-          buildInput('self', {
-            role: UserRole.COLLABORATOR,
-            assignedGroupIds: [f.id('Journalists').toString(), groupId()],
-          })
-        )
-      ).rejects.toThrow(UserGroupNotFound);
+      await sut.execute(
+        buildInput('self', {
+          assignedGroupIds: [f.idString('ghost-group'), 'not-an-id', f.idString('Journalists')],
+        })
+      );
 
-      expect(await groupsOf('self')).toEqual(['Researchers']);
-      expect(
-        await testingEnvironment.db.getCollection('users')!.findOne({ _id: f.id('self') })
-      ).toMatchObject({ role: UserRole.EDITOR });
+      expect(await groupsOf('self')).toEqual(['Journalists']);
     });
   });
 

@@ -13,7 +13,10 @@ class MongoUserGroupsDataSource
   protected collectionName = 'usergroups';
 
   async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
-    const targetGroupIds = groupIds.map(id => ObjectId.createFromHexString(id));
+    // An id that is not an ObjectId matches no group: skipped, like any other unknown id.
+    const targetGroupIds = groupIds
+      .filter(id => /^[0-9a-f]{24}$/i.test(id))
+      .map(id => ObjectId.createFromHexString(id));
 
     const collection = this.getCollection();
 
@@ -33,19 +36,6 @@ class MongoUserGroupsDataSource
   async removeUsersFromGroups(userIds: string[]): Promise<void> {
     const collection = this.getCollection();
     await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
-  }
-
-  async findMissing(ids: string[]): Promise<string[]> {
-    const valid = ids.filter(id => ObjectId.isValid(id) && id.length === 24);
-    const found = await this.getCollection()
-      .find(
-        { _id: { $in: valid.map(id => ObjectId.createFromHexString(id)) } },
-        { projection: { _id: 1 } }
-      )
-      .toArray();
-    const foundIds = new Set(found.map(group => group._id.toString()));
-
-    return ids.filter(id => !foundIds.has(id));
   }
 
   async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {

@@ -6,7 +6,6 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 import { IsRemovingLastAdmin, UpdateUserError } from '../domain/user/errors.js';
-import { UserGroupNotFound } from '../domain/userGroup/errors.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
 /**
@@ -75,11 +74,6 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
     }
 
     const groupsToAssign = actorIsAdmin ? assignedGroupIds : undefined;
-
-    const [missingGroup] = await this.deps.usergroupsDS.findMissing(groupsToAssign ?? []);
-    if (missingGroup) {
-      throw new UserGroupNotFound(missingGroup);
-    }
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.update(user);

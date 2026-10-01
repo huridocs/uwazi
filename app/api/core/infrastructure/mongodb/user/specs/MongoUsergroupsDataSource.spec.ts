@@ -40,6 +40,17 @@ describe('MongoGroupsDataSource', () => {
   });
 
   describe('assignGroupsToUser', () => {
+    it('should skip an id that is not an ObjectId, as it matches no group', async () => {
+      const { ds } = createDs();
+
+      await ds.assignGroupsToUser(f.idString('newuser'), ['not-an-id', f.idString('Empty')]);
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups.find(g => g.name === 'Empty')?.members).toEqual([
+        { refId: f.idString('newuser') },
+      ]);
+    });
+
     it('should add a user to a group', async () => {
       const { ds } = createDs();
 
@@ -124,25 +135,6 @@ describe('MongoGroupsDataSource', () => {
       const { ds } = createDs();
 
       expect((await ds.findById(f.id('unknown').toHexString())).isError()).toBe(true);
-    });
-  });
-
-  describe('findMissing', () => {
-    it('should return the ids that match no group, malformed ones included', async () => {
-      const { ds } = createDs();
-
-      const missing = await ds.findMissing([
-        f.idString('Empty'),
-        f.idString('unknown'),
-        'not-an-id',
-        f.idString('With one member'),
-      ]);
-
-      expect(missing).toEqual([f.idString('unknown'), 'not-an-id']);
-    });
-
-    it('should return nothing for no ids', async () => {
-      expect(await createDs().ds.findMissing([])).toEqual([]);
     });
   });
 
