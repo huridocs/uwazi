@@ -93,7 +93,7 @@ yarn uwazi users update --schema
 | ------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `users create`            | `--tenant`                    | `username`, `email`, `role`; optional `groups` (ids, default `[]`), `welcomeEmail` (default `true`)                                    |
 | `users update`            | `--tenant`                    | exactly one of `username` / `id` to name the user; optional `newUsername`, `email`, `role`, `groups` — omitted fields stay as they are |
-| `users delete`            | `--tenant`                    | exactly one of `username` / `id` (soft delete: the username stays taken)                                                               |
+| `users delete`            | `--tenant`                    | exactly one of `username` / `id` (soft delete: the username and email are freed)                                                       |
 | `users list`              | `--tenant` or `--all-tenants` | optional `role` filter                                                                                                                 |
 | `users stats`             | `--tenant` or `--all-tenants` | none                                                                                                                                   |
 | `settings get`            | `--tenant`                    | none — prints the whole settings document as stored, `sync` credentials included                                                       |
@@ -110,7 +110,9 @@ yarn uwazi users update --schema
 | `segmentation queue-idle` | `--tenant`                    | none — requests the tenant's idle segmentations when it has segmentation on                                                            |
 
 `role` is one of `admin`, `editor`, `collaborator`. `groups` in `users update` is the user's whole
-list of groups: it replaces the stored one.
+list of groups: it replaces the stored one. A group id that matches no group fails with
+`usergroup.not_found` (exit 3), and nothing is written. A tenant always keeps an admin: deleting
+the last one, or taking the role away from it, fails with `user.last_admin` (exit 5).
 
 `settings update` replaces each top-level field it is sent and leaves the others as they are.
 Nested objects such as `features` are replaced whole, so a key left out of `features` is
@@ -191,9 +193,9 @@ The result shapes are the CLI's public contract: fields are only ever added.
 | 0    | Success                                                                    |
 | 1    | Unexpected error, or missing configuration                                 |
 | 2    | Validation: bad command line, bad JSON, invalid request, domain validation |
-| 3    | Not found (tenant, user)                                                   |
+| 3    | Not found (tenant, user, group)                                            |
 | 4    | Conflict (e.g. the username already exists, the database is taken)         |
-| 5    | Rule violation (e.g. deleting the last user)                               |
+| 5    | Rule violation (e.g. deleting the last user or the last admin)             |
 | 130  | Interrupted (Ctrl-C)                                                       |
 
 ## Build and release
