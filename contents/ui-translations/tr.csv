@@ -74,8 +74,11 @@ Add to training set,Eğitim kümesine ekle
 Add translation,Çeviri ekle
 Add user,Kullanıcı ekle
 add value,Değer ekle
+Add value,Add value
 Add/delete users and assign roles,Kullanıcı ekleme/silme ve roller atama
 Add/edit translations,Çeviri ekle/düzenle
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Eklenen dil
 Added new user,Yeni kullanıcı eklendi
 "Added relation type ""{name}""","""{name}"" ilişki türü eklendi"
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Captcha'yı atlamaya izin ver
 Allow public embedding without login,Giriş yapmadan herkese açık gömme izni ver
 Already exists,Zaten mevcut
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Zaten aynı değer.
 Amount,Miktar
 An admin needs to add relationship types before you can create a relationship.,Bir ilişki oluşturabilmeniz için önce bir yöneticinin ilişki türlerini eklemesi gerekir.
@@ -272,6 +276,7 @@ Copy link,Bağlantıyı kopyala
 Copy properties to this entity from,Özellikleri şuradan bu varlığa kopyala
 Copy to clipboard,Panoya kopyala
 Could not add media. Please try again.,Medya eklenemedi. Lütfen tekrar deneyin.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,İşlenemedi
 Could not create entity,Varlık oluşturulamadı
 Could not detect the area for the selected text,Seçilen metnin bulunduğu alan tespit edilemedi; lütfen tekrar seçmeyi deneyin.
@@ -791,6 +796,7 @@ New relationship type,Yeni ilişki türü
 New relationships group,Yeni ilişkiler grubu
 New Relationships Migration,Yeni İlişkilerin Taşınması
 New user,Yeni kullanıcı
+New value in,New value in
 Next,Sonraki
 No,Hayır
 No attachments,Ek yok
