@@ -110,11 +110,10 @@ describe('client navigation into the library', () => {
     jest.restoreAllMocks();
   });
 
-  it('requests the library once, after mount', async () => {
-    const reduxStore = seedLibraryStore();
+  const openLibrary = async () => {
     const router = libraryRouter();
     render(
-      <ReduxProvider store={reduxStore}>
+      <ReduxProvider store={seedLibraryStore()}>
         <JotaiProvider store={getStore()}>
           <RouterProvider router={router} />
         </JotaiProvider>
@@ -128,8 +127,19 @@ describe('client navigation into the library', () => {
         setTimeout(resolve, 1200);
       });
     });
+  };
+
+  it('requests the library once, after mount', async () => {
+    await openLibrary();
 
     expect(events.indexOf('search')).toBeGreaterThan(events.indexOf('mount'));
+    expect(fetches).toBe(1);
+  });
+
+  it('requests the library when the hydrated page was not the library', async () => {
+    RouteHandler.renderedFromServer = true;
+    await openLibrary();
+
     expect(fetches).toBe(1);
   });
 });
