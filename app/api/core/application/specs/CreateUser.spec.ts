@@ -1,6 +1,7 @@
 import { ZodError } from 'zod';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
+import { UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
 import { CreateUserUseCaseFactory } from '#api/core/infrastructure/factories/CreateUserUseCaseFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -8,7 +9,16 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 const f = getFixturesFactory();
 
 const fixtures = {
-  users: [f.user({ username: 'existing', role: UserRole.EDITOR, email: 'existing@test.com' })],
+  users: [
+    f.user({ username: 'existing', role: UserRole.EDITOR, email: 'existing@test.com' }),
+    f.user({
+      username: 'gone',
+      role: UserRole.EDITOR,
+      email: 'gone@test.com',
+      deletedAt: new Date(),
+    }),
+  ],
+  usergroups: [f.usergroup('Researchers', [])],
 };
 
 const createSut = () => testingEnvironment.runWithContext(() => CreateUserUseCaseFactory.default());
@@ -78,5 +88,33 @@ describe('CreateUser', () => {
     await expect(createSut().execute(input({ email: 'existing@test.com' }))).rejects.toThrow(
       EmailInUse
     );
+  });
+
+  it('should accept the username and email of a soft deleted user', async () => {
+    await createSut().execute(input({ username: 'gone', email: 'gone@test.com' }));
+
+    const users = await testingEnvironment.db.getAllFrom('users');
+    expect(users.filter(user => user.username === 'gone')).toHaveLength(2);
+  });
+
+  it('should assign the groups it is given', async () => {
+    const user = await createSut().execute(
+      input({ assignedGroupIds: [f.id('Researchers').toString()] })
+    );
+
+    const [group] = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(group.members).toEqual([{ refId: user._id }]);
+  });
+
+  it.each([
+    ['an unknown group', () => f.idString('ghost-group')],
+    ['a malformed group id', () => 'not-an-id'],
+  ])('should reject %s without creating the user', async (_case, groupId) => {
+    await expect(
+      createSut().execute(input({ assignedGroupIds: [f.id('Researchers').toString(), groupId()] }))
+    ).rejects.toThrow(UserGroupNotFound);
+
+    const users = await testingEnvironment.db.getAllFrom('users');
+    expect(users.map(user => user.username)).not.toContain('newguy');
   });
 });

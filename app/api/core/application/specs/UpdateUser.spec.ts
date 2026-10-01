@@ -5,7 +5,8 @@ import { UpdateUserUseCaseFactory } from '#api/core/infrastructure/factories/Upd
 import { UserRole } from '#api/core/domain/user/User.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
-import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
+import { EmailInUse, IsRemovingLastAdmin, UsernameExists } from '#api/core/domain/user/errors.js';
+import { UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
 
 const f = getFixturesFactory();
 
@@ -196,6 +197,49 @@ describe('UpdateUser', () => {
       await sut.execute(buildInput('self', { assignedGroupIds: [] }));
 
       expect(await groupsOf('self')).toEqual([]);
+    });
+
+    it.each([
+      ['an unknown group', () => f.idString('ghost-group')],
+      ['a malformed group id', () => 'not-an-id'],
+    ])('should reject %s, leaving the user as it was', async (_case, groupId) => {
+      const sut = createSut(actorFor('admin', 'admin'));
+
+      await expect(
+        sut.execute(
+          buildInput('self', {
+            role: UserRole.COLLABORATOR,
+            assignedGroupIds: [f.id('Journalists').toString(), groupId()],
+          })
+        )
+      ).rejects.toThrow(UserGroupNotFound);
+
+      expect(await groupsOf('self')).toEqual(['Researchers']);
+      expect(
+        await testingEnvironment.db.getCollection('users')!.findOne({ _id: f.id('self') })
+      ).toMatchObject({ role: UserRole.EDITOR });
+    });
+  });
+
+  describe('the last admin', () => {
+    it('should refuse to take the admin role away from the only admin', async () => {
+      const sut = createSut(actorFor('other', 'admin'));
+
+      await expect(
+        sut.execute({ _id: f.idString('admin'), role: UserRole.EDITOR })
+      ).rejects.toThrow(IsRemovingLastAdmin);
+    });
+
+    it('should allow it once there is another admin', async () => {
+      const sut = createSut(actorFor('admin', 'admin'));
+      await sut.execute({ _id: f.idString('other'), role: UserRole.ADMIN });
+
+      const result = await createSut(actorFor('other', 'admin')).execute({
+        _id: f.idString('admin'),
+        role: UserRole.EDITOR,
+      });
+
+      expect(result.role).toBe(UserRole.EDITOR);
     });
   });
 });

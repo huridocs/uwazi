@@ -127,6 +127,25 @@ describe('MongoGroupsDataSource', () => {
     });
   });
 
+  describe('findMissing', () => {
+    it('should return the ids that match no group, malformed ones included', async () => {
+      const { ds } = createDs();
+
+      const missing = await ds.findMissing([
+        f.idString('Empty'),
+        f.idString('unknown'),
+        'not-an-id',
+        f.idString('With one member'),
+      ]);
+
+      expect(missing).toEqual([f.idString('unknown'), 'not-an-id']);
+    });
+
+    it('should return nothing for no ids', async () => {
+      expect(await createDs().ds.findMissing([])).toEqual([]);
+    });
+  });
+
   describe('create', () => {
     it('should create a group with the given name and members', async () => {
       const { ds } = createDs();

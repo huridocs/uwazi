@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { DomainError } from '../error/DomainError.js';
+import { NotFoundError } from '../error/NotFoundError.js';
 
 class UserGroupNameExists extends DomainError {
   constructor(name: string) {
@@ -13,7 +14,7 @@ class DuplicateMemberIds extends DomainError {
   }
 }
 
-class UserGroupNotFound extends DomainError {
+class UserGroupNotFound extends NotFoundError {
   constructor(id: string) {
     super(`User group "${id}" not found`, 'usergroup.not_found');
   }

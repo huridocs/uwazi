@@ -126,6 +126,31 @@ describe('PostgresUserGroupsDataSource', () => {
     });
   });
 
+  describe('findMissing', () => {
+    it('should return the ids that match no group in the tenant', async () => {
+      await testingPG.setFixtures({
+        usergroups: [
+          { _id: 'empty', tenant_id: TENANT_ID, name: 'Empty', members: [] },
+          { _id: 'with-one-member', tenant_id: TENANT_ID, name: 'One', members: ['existing1'] },
+          { _id: 'elsewhere', tenant_id: 'other-tenant', name: 'Other', members: [] },
+        ],
+      });
+
+      const missing = await makeDS().findMissing([
+        'empty',
+        'unknown',
+        'elsewhere',
+        'with-one-member',
+      ]);
+
+      expect(missing).toEqual(['unknown', 'elsewhere']);
+    });
+
+    it('should return nothing for no ids', async () => {
+      expect(await makeDS().findMissing([])).toEqual([]);
+    });
+  });
+
   describe('create', () => {
     it('should create a group with the given name and members', async () => {
       const ds = makeDS();

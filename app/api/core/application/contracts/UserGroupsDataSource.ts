@@ -6,6 +6,8 @@ interface UserGroupsDataSource {
   assignGroupsToUser(userId: string, groupIds: string[]): Promise<void>;
   removeUsersFromGroups(userIds: string[]): Promise<void>;
   findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>>;
+  /** The ids, among those given, that match no group; a malformed id matches none. */
+  findMissing(ids: string[]): Promise<string[]>;
   create(userGroup: UserGroup): Promise<UserGroup>;
   update(userGroup: UserGroup): Promise<UserGroup>;
   delete(ids: string[]): Promise<void>;

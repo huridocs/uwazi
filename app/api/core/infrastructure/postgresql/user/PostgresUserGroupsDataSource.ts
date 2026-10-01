@@ -58,6 +58,17 @@ class PostgresUserGroupsDataSource
     );
   }
 
+  async findMissing(ids: string[]): Promise<string[]> {
+    if (!ids.length) {
+      return [];
+    }
+
+    const found = await this.table.whereIn('_id', ids).select(['_id']).all();
+    const foundIds = new Set(found.map(group => group._id));
+
+    return ids.filter(id => !foundIds.has(id));
+  }
+
   async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {
     const row = await this.table.where({ _id: id }).first();
     return row

@@ -35,6 +35,19 @@ class MongoUserGroupsDataSource
     await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
   }
 
+  async findMissing(ids: string[]): Promise<string[]> {
+    const valid = ids.filter(id => ObjectId.isValid(id) && id.length === 24);
+    const found = await this.getCollection()
+      .find(
+        { _id: { $in: valid.map(id => ObjectId.createFromHexString(id)) } },
+        { projection: { _id: 1 } }
+      )
+      .toArray();
+    const foundIds = new Set(found.map(group => group._id.toString()));
+
+    return ids.filter(id => !foundIds.has(id));
+  }
+
   async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {
     const collection = this.getCollection();
     const doc = await collection.findOne({ _id: ObjectId.createFromHexString(id) });
