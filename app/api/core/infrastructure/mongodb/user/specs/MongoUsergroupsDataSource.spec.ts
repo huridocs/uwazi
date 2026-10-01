@@ -40,6 +40,17 @@ describe('MongoGroupsDataSource', () => {
   });
 
   describe('assignGroupsToUser', () => {
+    it('should skip an id that is not an ObjectId, as it matches no group', async () => {
+      const { ds } = createDs();
+
+      await ds.assignGroupsToUser(f.idString('newuser'), ['not-an-id', f.idString('Empty')]);
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups.find(g => g.name === 'Empty')?.members).toEqual([
+        { refId: f.idString('newuser') },
+      ]);
+    });
+
     it('should add a user to a group', async () => {
       const { ds } = createDs();
 

@@ -1,28 +1,119 @@
-import { Db } from 'mongodb';
 import { config } from '#api/config.js';
 import { testingDB } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import type { TenantsBackend } from '#api/config.js';
 import type { TenantsDataSource } from '../contracts/TenantsDataSource.js';
 import { TenantsDataSourceFactory } from '../../infrastructure/TenantsDataSourceFactory.js';
 
 const names = ['ds-tenant-a', 'ds-tenant-b', 'ds-tenant-c'];
+
+const paths = (name: string) => ({
+  uploadedDocuments: `${name}/documents`,
+  attachments: `${name}/documents`,
+  customUploads: `${name}/custom_uploads`,
+  activityLogs: `${name}/log`,
+});
 
 const stored = [
   {
     name: 'ds-tenant-b',
     dbName: 'ds-tenant-b',
     indexName: 'ds-tenant-b',
+    ...paths('ds-tenant-b'),
     domain: 'b.uwazi.io',
     featureFlags: { postgresCore: true, fileCacheHeaders: true, telemetry: { enabled: true } },
+    metadata: { orgName: 'Org B', notes: 'first' },
   },
-  { name: 'ds-tenant-a', dbName: 'ds-tenant-a', indexName: 'ds-tenant-a' },
+  {
+    name: 'ds-tenant-a',
+    dbName: 'ds-tenant-a',
+    indexName: 'ds-tenant-a',
+    ...paths('ds-tenant-a'),
+  },
 ];
 
+const newTenant = {
+  dbName: 'ds-tenant-c',
+  indexName: 'ds-tenant-c',
+  ...paths('ds-tenant-c'),
+};
+
+const healthChecks = [
+  { name: 'disk', lastUpdated: 1700000000, warnings: ['almost full'], problems: [], summary: {} },
+  { name: 'files', lastUpdated: 1700000001, warnings: [], problems: ['missing'], summary: null },
+];
+
+type Store = {
+  clear(): Promise<void>;
+  write(rows: Record<string, unknown>[]): Promise<void>;
+  read(name: string): Promise<Record<string, unknown> | undefined>;
+  /** Fields another tool stored on the row, which uwazi does not declare. */
+  writeUndeclared(name: string, fields: Record<string, unknown>): Promise<void>;
+};
+
+const JSON_COLUMNS = ['featureFlags', 'globalMatomo', 'stats', 'healthChecks', 'metadata'];
+
 /**
- * The TenantsDataSource contract suite. One suite per backend; #9683 adds Postgres to
- * `backends`. Fixtures are written and read back through the driver, never through the
- * data source.
+ * The TenantsDataSource contract suite: one suite, every backend. Fixtures are written and read
+ * back through the driver, never through the data source.
  */
-const backends = [{ name: 'Mongo' }];
+const backends: { name: string; backend: TenantsBackend; store: () => Store }[] = [
+  {
+    name: 'Mongo',
+    backend: 'mongo',
+    store: () => {
+      const collection = testingDB.db(config.SHARED_DB).collection('tenants');
+      return {
+        clear: async () => {
+          await collection.deleteMany({ name: { $in: names } });
+        },
+        write: async rows => {
+          await collection.insertMany(structuredClone(rows));
+        },
+        read: async name => (await collection.findOne({ name })) ?? undefined,
+        writeUndeclared: async (name, fields) => {
+          await collection.updateOne({ name }, { $set: fields });
+        },
+      };
+    },
+  },
+  {
+    name: 'Postgres',
+    backend: 'postgres',
+    store: () => {
+      const pool = () => testingEnvironment.pg.pool!;
+      return {
+        clear: async () => {
+          await pool().query('DELETE FROM tenants WHERE name = ANY($1)', [names]);
+        },
+        write: async rows => {
+          await Promise.all(
+            rows.map(async row => {
+              const columns = Object.keys(row);
+              await pool().query(
+                `INSERT INTO tenants (${columns.map(c => `"${c}"`).join(', ')})
+                 VALUES (${columns.map((_c, i) => `$${i + 1}`).join(', ')})`,
+                Object.entries(row).map(([column, value]) =>
+                  JSON_COLUMNS.includes(column) ? JSON.stringify(value) : value
+                )
+              );
+            })
+          );
+        },
+        read: async name => {
+          const { rows } = await pool().query('SELECT * FROM tenants WHERE name = $1', [name]);
+          return rows[0];
+        },
+        writeUndeclared: async (name, fields) => {
+          await pool().query('UPDATE tenants SET extras = $2 WHERE name = $1', [
+            name,
+            JSON.stringify(fields),
+          ]);
+        },
+      };
+    },
+  },
+];
 
 /**
  * `fileCacheHeaders` rather than a flag other suites count globally: these rows live in the real
@@ -31,27 +122,29 @@ const backends = [{ name: 'Mongo' }];
  */
 
 describe('TenantsDataSource', () => {
-  let db: Db;
   let sut: TenantsDataSource;
 
   beforeAll(async () => {
     await testingDB.connect();
-    db = testingDB.db(config.SHARED_DB);
+    await testingEnvironment.setUp({}, { postgres: true });
   });
 
   afterAll(async () => {
-    await testingDB.tearDown();
+    await testingEnvironment.tearDown();
   });
 
-  describe.each(backends)('$name', () => {
+  describe.each(backends)('$name', ({ backend, store: createStore }) => {
+    let store: Store;
+
     beforeEach(async () => {
-      await db.collection('tenants').deleteMany({ name: { $in: names } });
-      await db.collection('tenants').insertMany(structuredClone(stored));
-      sut = TenantsDataSourceFactory.default();
+      store = createStore();
+      await store.clear();
+      await store.write(stored);
+      sut = TenantsDataSourceFactory.default(backend);
     });
 
     afterAll(async () => {
-      await db.collection('tenants').deleteMany({ name: { $in: names } });
+      await store.clear();
     });
 
     describe('all()', () => {
@@ -72,14 +165,20 @@ describe('TenantsDataSource', () => {
       it('should return undefined when there is no such tenant', async () => {
         expect(await sut.getByName('ds-tenant-c')).toBeUndefined();
       });
+
+      it('should leave out the fields the tenant does not have, never returning null', async () => {
+        const result = await sut.getByName('ds-tenant-a');
+
+        expect(Object.keys(result!).sort()).toEqual(Object.keys(stored[1]).sort());
+      });
     });
 
     describe('upsert()', () => {
       it('should insert a tenant that does not exist', async () => {
-        const result = await sut.upsert('ds-tenant-c', { dbName: 'ds-tenant-c' });
+        const result = await sut.upsert('ds-tenant-c', newTenant);
 
-        expect(result).toEqual({ name: 'ds-tenant-c', dbName: 'ds-tenant-c' });
-        expect(await db.collection('tenants').findOne({ name: 'ds-tenant-c' })).toMatchObject({
+        expect(result).toEqual({ name: 'ds-tenant-c', ...newTenant });
+        expect(await store.read('ds-tenant-c')).toMatchObject({
           name: 'ds-tenant-c',
           dbName: 'ds-tenant-c',
         });
@@ -126,6 +225,74 @@ describe('TenantsDataSource', () => {
         expect(result.featureFlags?.telemetry).toEqual({ sampleRate: 0.5 });
       });
 
+      it('should merge metadata key by key, removing the keys sent as null', async () => {
+        const result = await sut.upsert('ds-tenant-b', {
+          metadata: { adminEmail: 'admin@b.org', notes: null },
+        });
+
+        expect(result.metadata).toEqual({ orgName: 'Org B', adminEmail: 'admin@b.org' });
+        expect((await store.read('ds-tenant-b'))?.metadata).toEqual(result.metadata);
+      });
+
+      it('should remove the whole metadata sent as null', async () => {
+        const result = await sut.upsert('ds-tenant-b', { metadata: null });
+
+        expect(result).not.toHaveProperty('metadata');
+      });
+
+      it('should store and return the operational data', async () => {
+        const stats = {
+          lastUpdated: 1700000000,
+          dbStorage: 1,
+          elasticStorage: 2,
+          filesStorage: 3,
+          entitiesCount: 4,
+          filesCount: 5,
+          totalStorage: 6,
+          filesByBucket: { pdf: { count: 3, size: 1200 } },
+          userCount: { admin: 1, editor: 2, collaborator: 3, total: 6 },
+          lastSession: 1700000000,
+        };
+        const metadata = { orgName: 'Acme', status: 'active' as const };
+
+        await sut.upsert('ds-tenant-b', { stats, healthChecks, metadata });
+
+        expect(await sut.getByName('ds-tenant-b')).toEqual({
+          ...stored[0],
+          stats,
+          healthChecks,
+          metadata: { orgName: 'Acme', notes: 'first', status: 'active' },
+        });
+      });
+
+      it('should merge flags into feature flags stored as null', async () => {
+        await store.write([{ name: 'ds-tenant-c', ...newTenant, featureFlags: null }]);
+
+        const result = await sut.upsert('ds-tenant-c', { featureFlags: { sync: true } });
+
+        expect(result.featureFlags).toEqual({ sync: true });
+      });
+
+      it('should turn a flag group stored as a single value into a group', async () => {
+        await store.write([
+          { name: 'ds-tenant-c', ...newTenant, featureFlags: { telemetry: true } },
+        ]);
+
+        const result = await sut.upsert('ds-tenant-c', {
+          featureFlags: { telemetry: { enabled: true } },
+        });
+
+        expect(result.featureFlags).toEqual({ telemetry: { enabled: true } });
+      });
+
+      it('should merge keys into metadata stored as null', async () => {
+        await store.write([{ name: 'ds-tenant-c', ...newTenant, metadata: null }]);
+
+        const result = await sut.upsert('ds-tenant-c', { metadata: { notes: 'n' } });
+
+        expect(result.metadata).toEqual({ notes: 'n' });
+      });
+
       it('should ignore fields sent as undefined', async () => {
         const result = await sut.upsert('ds-tenant-b', { domain: undefined });
 
@@ -133,10 +300,40 @@ describe('TenantsDataSource', () => {
       });
     });
 
+    describe('fields other tools stored', () => {
+      beforeEach(async () => {
+        await store.writeUndeclared('ds-tenant-a', {
+          status: 'ready',
+          telemetry: { legacy: true },
+        });
+      });
+
+      it('should return them with the tenant, as stored', async () => {
+        expect(await sut.getByName('ds-tenant-a')).toEqual({
+          ...stored[1],
+          status: 'ready',
+          telemetry: { legacy: true },
+        });
+        expect((await sut.all()).find(tenant => tenant.name === 'ds-tenant-a')).toMatchObject({
+          status: 'ready',
+        });
+      });
+
+      it('should keep them through an update', async () => {
+        await sut.upsert('ds-tenant-a', { domain: 'a.uwazi.io' });
+
+        expect(await sut.getByName('ds-tenant-a')).toMatchObject({
+          status: 'ready',
+          telemetry: { legacy: true },
+          domain: 'a.uwazi.io',
+        });
+      });
+    });
+
     describe('delete()', () => {
       it('should delete the tenant and report it', async () => {
         expect(await sut.delete('ds-tenant-b')).toBe(true);
-        expect(await db.collection('tenants').findOne({ name: 'ds-tenant-b' })).toBeNull();
+        expect(await store.read('ds-tenant-b')).toBeUndefined();
       });
 
       it('should report that there was nothing to delete', async () => {

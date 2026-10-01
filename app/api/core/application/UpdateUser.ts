@@ -5,7 +5,7 @@ import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
-import { UpdateUserError } from '../domain/user/errors.js';
+import { IsRemovingLastAdmin, UpdateUserError } from '../domain/user/errors.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
 /**
@@ -51,7 +51,15 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
       throw new UpdateUserError('Cannot change own role');
     }
 
+    const wasAdmin = user.role === UserRole.ADMIN;
     const { changed } = user.updateProfile(patch);
+
+    if (wasAdmin && user.role !== UserRole.ADMIN) {
+      const admins = await this.deps.usersDS.getActiveAdminIds();
+      if (admins.every(id => id === _id)) {
+        throw new IsRemovingLastAdmin();
+      }
+    }
 
     if (changed.includes('username')) {
       (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();

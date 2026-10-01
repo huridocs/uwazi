@@ -53,6 +53,7 @@ type SearchSelectProps = {
   disabled?: boolean;
   hasErrors?: boolean;
   hideLabel?: boolean;
+  hideClear?: boolean;
   placeholder?: string;
   className?: string;
   options?: SearchSelectOption[];
@@ -121,6 +122,7 @@ const SearchSelect = ({
   disabled = false,
   hasErrors = false,
   hideLabel = false,
+  hideClear = false,
   placeholder = 'Search',
   className = '',
   options = [],
@@ -138,7 +140,7 @@ const SearchSelect = ({
   const selectedOption = allOptions.find(option => option.value === value);
   const hasSelection = Boolean(value && selectedOption);
   const showClosedSelection = hasSelection && !isOpen;
-  const showClearButton = Boolean(value && selectedOption) && !disabled && showClosedSelection;
+  const showClearButton = hasSelection && !disabled && showClosedSelection && !hideClear;
   const showTrigger = !hasSelection && !isOpen;
 
   const filteredOptions = useMemo(

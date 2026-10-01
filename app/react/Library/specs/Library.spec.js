@@ -154,5 +154,19 @@ describe('Library', () => {
         }
       }
     );
+
+    it('should not empty the library when the page already moved back', async () => {
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        configurable: true,
+        value: { pathname: '/settings' },
+      });
+      component.unmount();
+      window.location.pathname = '/en/library';
+      await new Promise(resolve => {
+        setTimeout(resolve, 0);
+      });
+      expect(instance.emptyState).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,43 +1,50 @@
 import type { Db } from 'mongodb';
-import type { FeatureFlagsPatch } from '../featureFlags.js';
 import type {
   TenantPatch,
   TenantRecord,
   TenantsDataSource,
 } from '../application/contracts/TenantsDataSource.js';
+import { isGroup, mergeFlags, mergeGroup } from './applyTenantPatch.js';
 
 type Update = { $set: Record<string, unknown>; $unset: Record<string, ''> };
 
-const isGroup = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+type Group = Record<string, unknown>;
 
-/** `featureFlags` is merged flag by flag, through dotted paths, so siblings are left alone. */
-const flattenFlags = (flags: FeatureFlagsPatch, update: Update) => {
-  Object.entries(flags).forEach(([flag, value]) => {
-    const path = `featureFlags.${flag}`;
+type Merge = { path: string; stored: unknown; patch: Group; nested: boolean };
+
+/**
+ * Merges a patch into the object stored at `path` through dotted paths, so the keys not sent are
+ * left alone. Mongo cannot write a dotted path into a stored value that is not an object (a flag
+ * group saved as `true`, a `null`), so such a value is replaced by the merged object instead.
+ * `nested` merges one level deeper, as feature flag groups do.
+ */
+const mergeAt = ({ path, stored, patch, nested }: Merge, update: Update) => {
+  if (stored !== undefined && !isGroup(stored)) {
+    update.$set[path] = nested ? mergeFlags(undefined, patch) : mergeGroup(undefined, patch);
+    return;
+  }
+
+  Object.entries(patch).forEach(([key, value]) => {
+    const keyPath = `${path}.${key}`;
 
     if (value === null) {
-      update.$unset[path] = '';
-    } else if (isGroup(value)) {
-      Object.entries(value).forEach(([nested, nestedValue]) => {
-        if (nestedValue === null) {
-          update.$unset[`${path}.${nested}`] = '';
-        } else if (nestedValue !== undefined) {
-          update.$set[`${path}.${nested}`] = nestedValue;
-        }
-      });
+      update.$unset[keyPath] = '';
+    } else if (nested && isGroup(value)) {
+      mergeAt({ path: keyPath, stored: stored?.[key], patch: value, nested: false }, update);
     } else if (value !== undefined) {
-      update.$set[path] = value;
+      update.$set[keyPath] = value;
     }
   });
 };
 
-const toUpdate = (patch: TenantPatch): Update => {
+const toUpdate = (patch: TenantPatch, stored: TenantRecord | undefined): Update => {
   const update: Update = { $set: {}, $unset: {} };
 
   Object.entries(patch).forEach(([field, value]) => {
     if (field === 'featureFlags' && isGroup(value)) {
-      flattenFlags(value as FeatureFlagsPatch, update);
+      mergeAt({ path: field, stored: stored?.featureFlags, patch: value, nested: true }, update);
+    } else if (field === 'metadata' && isGroup(value)) {
+      mergeAt({ path: field, stored: stored?.metadata, patch: value, nested: false }, update);
     } else if (value === null) {
       update.$unset[field] = '';
     } else if (value !== undefined) {
@@ -66,7 +73,7 @@ class MongoTenantsDataSource implements TenantsDataSource {
   }
 
   async upsert(name: string, patch: TenantPatch): Promise<TenantRecord> {
-    const { $set, $unset } = toUpdate(patch);
+    const { $set, $unset } = toUpdate(patch, await this.getByName(name));
     const update = {
       ...(Object.keys($set).length ? { $set } : {}),
       ...(Object.keys($unset).length ? { $unset } : {}),

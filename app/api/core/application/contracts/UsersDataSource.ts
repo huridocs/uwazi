@@ -23,6 +23,7 @@ interface UsersDataSource {
 
   getAccountById(id: string): Promise<ResultType<UserAccount, UserNotFound>>;
   countActiveUsers(): Promise<number>;
+  getActiveAdminIds(): Promise<string[]>;
   checkUniqueUsername(user: User): Promise<ResultType<boolean, UsernameExists>>;
   checkUniqueEmail(user: User): Promise<ResultType<boolean, EmailInUse>>;
   findByUsernameAndUnlockCode(

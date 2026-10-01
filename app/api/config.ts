@@ -42,6 +42,38 @@ const resolveSessionsBackend = (value: string | undefined) => {
 
 const sessionsBackend = resolveSessionsBackend(process.env.SESSIONS_BACKEND || undefined);
 
+const TenantsBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
+
+type TenantsBackend = z.infer<typeof TenantsBackendSchema>;
+
+/** Where this process reads the tenant registry from. One backend for the whole deployment. */
+const resolveTenantsBackend = (value: string | undefined): TenantsBackend => {
+  const parsed = TenantsBackendSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new Error(`TENANTS_BACKEND must be "mongo" or "postgres", got ${JSON.stringify(value)}`);
+  }
+  return parsed.data;
+};
+
+const tenantsBackend = resolveTenantsBackend(process.env.TENANTS_BACKEND || undefined);
+
+const TenantsPollIntervalSchema = z.coerce.number().positive().default(10);
+
+/** Seconds between registry version checks. Only read when `TENANTS_BACKEND=postgres`. */
+const resolveTenantsPollInterval = (value: string | undefined): number => {
+  const parsed = TenantsPollIntervalSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new Error(
+      `TENANTS_POLL_INTERVAL_SECONDS must be a positive number of seconds, got ${JSON.stringify(value)}`
+    );
+  }
+  return parsed.data;
+};
+
+const tenantsPollIntervalSeconds = resolveTenantsPollInterval(
+  process.env.TENANTS_POLL_INTERVAL_SECONDS || undefined
+);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
@@ -219,6 +251,8 @@ export const config = {
   queueName: QUEUE_NAME || 'uwazi_jobs',
   queueBackend,
   sessionsBackend,
+  tenantsBackend,
+  tenantsPollIntervalSeconds,
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,
@@ -235,4 +269,5 @@ export const config = {
   },
 };
 
-export { resolveSessionsBackend };
+export { resolveSessionsBackend, resolveTenantsBackend, resolveTenantsPollInterval };
+export type { TenantsBackend };
