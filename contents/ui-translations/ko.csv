@@ -74,8 +74,11 @@ Add to training set,훈련 데이터 세트에 추가
 Add translation,번역 추가
 Add user,사용자 추가
 add value,값 추가
+Add value,Add value
 Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,언어 추가
 Added new user,새 사용자 추가됨
 "Added relation type ""{name}""","관계 유형 ""{name}""을 추가했습니다."
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,캡차 우회 허용
 Allow public embedding without login,로그인 없이 공개 임베딩 허용
 Already exists,이미 존재합니다
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,이미 동일한 값입니다.
 Amount,수량
 An admin needs to add relationship types before you can create a relationship.,관계를 생성하려면 관리자가 먼저 관계 유형을 추가해야 합니다.
@@ -269,6 +273,7 @@ Copy link,링크 복사
 Copy properties to this entity from,이 엔티티의 속성 복사
 Copy to clipboard,클립보드에 복사
 Could not add media. Please try again.,미디어를 추가할 수 없습니다. 다시 시도해 주세요.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,처리할 수 없습니다
 Could not create entity,엔티티를 생성할 수 없습니다.
 Could not detect the area for the selected text,선택한 텍스트의 영역을 감지할 수 없습니다. 다시 선택해 주십시오.
@@ -784,6 +789,7 @@ New relationship type,새로운 관계 유형
 New relationships group,새로운 관계 그룹
 New Relationships Migration,새로운 관계 마이그레이션
 New user,신규 사용자
+New value in,New value in
 Next,다음
 No,아니오
 No attachments,첨부파일 없음
