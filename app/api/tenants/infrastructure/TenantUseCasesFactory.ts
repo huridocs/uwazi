@@ -2,6 +2,7 @@ import { DeregisterTenant } from '../application/DeregisterTenant.js';
 import { RecordTenantHealthCheck } from '../application/RecordTenantHealthCheck.js';
 import { RegisterTenant } from '../application/RegisterTenant.js';
 import { SetTenantFeatureFlags } from '../application/SetTenantFeatureFlags.js';
+import { TenantStorageClaims } from '../application/TenantStorageClaims.js';
 import { SetTenantMaintenance } from '../application/SetTenantMaintenance.js';
 import { UpdateTenant } from '../application/UpdateTenant.js';
 import { UpdateTenantStats } from '../application/UpdateTenantStats.js';
@@ -13,11 +14,13 @@ import { TenantsDataSourceFactory } from './TenantsDataSourceFactory.js';
  */
 class TenantUseCasesFactory {
   static registerTenant(): RegisterTenant {
-    return new RegisterTenant(TenantsDataSourceFactory.default());
+    const tenants = TenantsDataSourceFactory.default();
+    return new RegisterTenant(tenants, new TenantStorageClaims(tenants));
   }
 
   static updateTenant(): UpdateTenant {
-    return new UpdateTenant(TenantsDataSourceFactory.default());
+    const tenants = TenantsDataSourceFactory.default();
+    return new UpdateTenant(tenants, new TenantStorageClaims(tenants));
   }
 
   static deregisterTenant(): DeregisterTenant {
