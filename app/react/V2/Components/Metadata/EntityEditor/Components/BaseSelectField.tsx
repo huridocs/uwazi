@@ -48,7 +48,13 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   hideFilters?: boolean;
+  hideLabel?: boolean;
+  hideClear?: boolean;
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
+  adornment?: (api: {
+    apply: (ids: string[], options?: MultiselectListOption[]) => void;
+    selectedIds: string[];
+  }) => React.ReactNode;
   getSelectedValues: (value: unknown) => string[];
   onSelectedValuesChange: (selectedValues: string[], options: MultiselectListOption[]) => unknown;
 };
@@ -62,7 +68,10 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
   options,
   singleSelect,
   hideFilters,
+  hideLabel,
+  hideClear,
   lookupSearch,
+  adornment,
   getSelectedValues,
   onSelectedValuesChange,
 }: BaseSelectFieldProps<TFormValues>) => {
@@ -113,32 +122,31 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
         rules={registerOptions}
         render={({ field: fieldController, fieldState }) => {
           const { showError, message } = getFieldErrorState(fieldState);
+          const selectedIds = getSelectedValues(fieldController.value);
+          const currentOptions = lookupSearch ? optionsState : options;
+          const apply = (ids: string[], optionOverride?: MultiselectListOption[]) => {
+            if (disabled) {
+              return;
+            }
+            fieldController.onChange(onSelectedValuesChange(ids, optionOverride ?? currentOptions));
+          };
+          const leading = adornment?.({ apply, selectedIds });
 
           if (singleSelect) {
-            const selectedValue = getSelectedValues(fieldController.value)[0] ?? '';
-
             return (
-              <div>
+              <div className="flex flex-col gap-1.5">
+                {leading}
                 <SearchSelect
                   id={field}
-                  label={labelContent}
+                  label={adornment ? undefined : labelContent}
+                  hideLabel={hideLabel}
+                  hideClear={hideClear}
                   options={searchSelectOptions.options}
                   groups={searchSelectOptions.groups}
-                  value={selectedValue}
+                  value={selectedIds[0] ?? ''}
                   disabled={disabled}
                   hasErrors={showError}
-                  onChange={value => {
-                    if (disabled) {
-                      return;
-                    }
-
-                    fieldController.onChange(
-                      onSelectedValuesChange(
-                        value ? [value] : [],
-                        lookupSearch ? optionsState : options
-                      )
-                    );
-                  }}
+                  onChange={value => apply(value ? [value] : [])}
                 />
                 <EntityFieldError showError={showError} message={message} />
               </div>
@@ -146,12 +154,13 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
           }
 
           return (
-            <div>
+            <div className="flex flex-col gap-1.5">
+              {leading}
               <MultiselectList
                 id={field}
                 panel
                 checkboxes
-                label={labelContent}
+                label={hideLabel ? undefined : labelContent}
                 items={optionsState}
                 onSearch={async search => {
                   if (lookupSearch) {
@@ -162,16 +171,8 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
 
                   setOptionsState(defaultSearch(search, options));
                 }}
-                selectedValues={getSelectedValues(fieldController.value)}
-                onChange={selectedValues => {
-                  if (disabled) {
-                    return;
-                  }
-
-                  fieldController.onChange(
-                    onSelectedValuesChange(selectedValues, lookupSearch ? optionsState : options)
-                  );
-                }}
+                selectedValues={selectedIds}
+                onChange={apply}
                 hasErrors={showError}
                 hideFilters={hideFilters}
               />
