@@ -74,8 +74,11 @@ Add to training set,Добавить в обучающую выборку
 Add translation,Добавить перевод
 Add user,Добавить пользователя
 add value,Добавить значение
+Add value,Add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
 Add/edit translations,Добавить / редактировать переводы
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Добавлен язык
 Added new user,Добавлен новый пользователь
 "Added relation type ""{name}""","Добавлен тип отношения ""{name}"""
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Разрешить обход капчи
 Allow public embedding without login,Разрешить публичную вставку без входа в систему
 Already exists,Уже существует
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Значение уже совпадает.
 Amount,Количество
 An admin needs to add relationship types before you can create a relationship.,"Прежде чем вы сможете создать связь, администратор должен добавить типы связей."
@@ -272,6 +276,7 @@ Copy link,Скопировать ссылку
 Copy properties to this entity from,Скопировать свойства к этому объекту из
 Copy to clipboard,Скопировать в буфер обмена
 Could not add media. Please try again.,"Не удалось добавить медиафайл. Пожалуйста, попробуйте ещё раз."
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,Не получилось обработать
 Could not create entity,Не удалось создать объект
 Could not detect the area for the selected text,"Не удалось определить область для выделенного текста, попробуйте выделить его снова."
@@ -792,6 +797,7 @@ New relationship type,Новый тип отношений
 New relationships group,Группа новых взаимосвязей
 New Relationships Migration,Перенос новых отношений
 New user,Новый пользователь
+New value in,New value in
 Next,Следующий
 No,Нет
 No attachments,Нет вложений

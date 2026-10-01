@@ -74,8 +74,11 @@ Add to training set,Προσθήκη στο σύνολο εκπαίδευσης
 Add translation,Προσθήκη μετάφρασης
 Add user,Προσθήκη χρήστη
 add value,προσθήκη τιμής
+Add value,Add value
 Add/delete users and assign roles,Προσθήκη/διαγραφή χρηστών και ανάθεση ρόλων
 Add/edit translations,Προσθήκη/επεξεργασία μεταφράσεων
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Προστέθηκε γλώσσα
 Added new user,Προστέθηκε νέος χρήστης
 "Added relation type ""{name}""",Προστέθηκε ο τύπος σχέσης «{name}»
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Παράκαμψη CAPTCHA
 Allow public embedding without login,Να επιτρέπεται η δημόσια ενσωμάτωση χωρίς σύνδεση
 Already exists,Υπάρχει ήδη
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Ήδη η ίδια τιμή.
 Amount,Ποσό
 An admin needs to add relationship types before you can create a relationship.,Ο διαχειριστής πρέπει να προσθέσει τύπους σχέσεων προτού μπορέσετε να δημιουργήσετε μια σχέση.
@@ -271,6 +275,7 @@ Copy link,Αντιγραφή συνδέσμου
 Copy properties to this entity from,Αντιγραφή ιδιοτήτων σε αυτή την οντότητα από
 Copy to clipboard,Αντιγραφή στο πρόχειρο
 Could not add media. Please try again.,Δεν ήταν δυνατή η προσθήκη πολυμέσων. Παρακαλώ δοκιμάστε ξανά.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,Δεν ήταν δυνατή η επεξεργασία
 Could not create entity,Δεν ήταν δυνατή η δημιουργία οντότητας
 Could not detect the area for the selected text,Δεν εντοπίστηκε η περιοχή του επιλεγμένου κειμένου. Επιλέξτε ξανά.
@@ -791,6 +796,7 @@ New relationship type,Νέος τύπος σχέσης
 New relationships group,Νέα ομάδα σχέσεων
 New Relationships Migration,Μετεγκατάσταση νέων σχέσεων
 New user,Νέος χρήστης
+New value in,New value in
 Next,Επόμενο
 No,Όχι
 No attachments,Δεν υπάρχουν συνημμένα αρχεία

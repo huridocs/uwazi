@@ -71,6 +71,9 @@ class LibraryRootComponent extends RouteHandler {
   componentWillUnmount() {
     const nextLocation = window?.location?.pathname;
     void import('#app/appRoutes.js').then(({ getAppRoutes }) => {
+      if (window?.location?.pathname !== nextLocation) {
+        return;
+      }
       const matchedRoute = this.findMatchingRoute(nextLocation, getAppRoutes());
       if (!matchedRoute && !nextLocation.includes('library')) {
         this.emptyState();
