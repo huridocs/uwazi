@@ -61,37 +61,68 @@ describe('MongoTenantsChangeFeed', () => {
     });
   });
 
-  describe('on error', () => {
+  describe('with a stubbed stream', () => {
     const stubWatch = () => {
-      let errorEvent: Function = () => {};
-      const stream = {
-        on: (event: string, fn: Function) => {
-          if (event === 'error') errorEvent = fn;
-        },
-        close: jest.fn(),
+      const listeners: Record<string, Function[]> = {};
+      const register = (event: string, fn: Function) => {
+        listeners[event] = [...(listeners[event] ?? []), fn];
       };
+      const stream = { on: register, once: register, close: jest.fn() };
       //@ts-ignore
       jest.spyOn(Collection.prototype, 'watch').mockReturnValue(stream);
-      return { stream, emitError: (error: object) => errorEvent(error) };
+      const emit = (event: string, payload?: object) =>
+        (listeners[event] ?? []).forEach(fn => fn(payload));
+      return { stream, emit, emitError: (error: object) => emit('error', error) };
     };
 
+    it('should resolve start only once the stream is open', async () => {
+      const { emit } = stubWatch();
+      let started = false;
+
+      const starting = feed
+        .start(() => {}, jest.fn())
+        .then(() => {
+          started = true;
+        });
+      await waitForExpect(() => {
+        expect(Collection.prototype.watch).toHaveBeenCalled();
+      });
+      await new Promise(resolve => {
+        setImmediate(resolve);
+      });
+      expect(started).toBe(false);
+
+      emit('resumeTokenChanged');
+      await starting;
+      expect(started).toBe(true);
+    });
+
     it('should close the stream when watch is not supported', async () => {
-      //Change streams are not supported by the Mongo in-memory server used by the tests
+      //Change streams are only supported on replica sets
       const { stream, emitError } = stubWatch();
-      await feed.start(() => {}, jest.fn());
+      const starting = feed.start(() => {}, jest.fn());
+      await waitForExpect(() => {
+        expect(Collection.prototype.watch).toHaveBeenCalled();
+      });
 
       emitError({
         message: 'The $changeStream stage is only supported on replica sets',
         code: 40573,
       });
+      await starting;
 
       expect(stream.close).toHaveBeenCalled();
     });
 
     it('should pass any other stream error to onError', async () => {
-      const { stream, emitError } = stubWatch();
+      const { stream, emit, emitError } = stubWatch();
       const onError = jest.fn();
-      await feed.start(() => {}, onError);
+      const starting = feed.start(() => {}, onError);
+      await waitForExpect(() => {
+        expect(Collection.prototype.watch).toHaveBeenCalled();
+      });
+      emit('resumeTokenChanged');
+      await starting;
 
       emitError({ message: 'something happened' });
 
