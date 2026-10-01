@@ -38,7 +38,8 @@ const mergeFlags = (current: TenantRecord['featureFlags'], patch: Group): Group 
 
 /**
  * The record a tenant becomes once the patch is applied: `undefined` leaves a field alone, `null`
- * removes it, anything else sets it. The same rules as the Mongo adapter's update.
+ * removes it, anything else sets it; `featureFlags` and `metadata` merge key by key. The same
+ * rules as the Mongo adapter's update.
  */
 const applyTenantPatch = (
   current: TenantRecord | undefined,
@@ -50,6 +51,8 @@ const applyTenantPatch = (
   Object.entries(patch).forEach(([field, value]) => {
     if (field === 'featureFlags' && isGroup(value)) {
       next.featureFlags = mergeFlags(current?.featureFlags, value);
+    } else if (field === 'metadata' && isGroup(value)) {
+      next.metadata = mergeGroup(current?.metadata, value);
     } else if (value === null) {
       delete next[field];
     } else if (value !== undefined) {

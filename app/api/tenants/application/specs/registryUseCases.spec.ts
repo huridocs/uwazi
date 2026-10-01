@@ -4,7 +4,7 @@ import { testingDB } from '#api/utils/testing_db.js';
 import { TenantUseCasesFactory } from '../../infrastructure/TenantUseCasesFactory.js';
 import { TenantNotFound } from '../errors.js';
 
-const names = ['uc-tenant-a', 'uc-tenant-b', 'uc-tenant-new'];
+const names = ['uc-tenant-a', 'uc-tenant-b', 'uc-tenant-custom', 'uc-tenant-new'];
 
 describe('tenant registry use cases', () => {
   let db: Db;
@@ -30,6 +30,16 @@ describe('tenant registry use cases', () => {
         featureFlags: { fileCacheHeaders: true },
       },
       { name: 'uc-tenant-b', dbName: 'uc-tenant-b' },
+      {
+        name: 'uc-tenant-custom',
+        dbName: 'custom_db',
+        indexName: 'custom_index',
+        uploadedDocuments: '/data/custom/documents',
+        attachments: '/data/custom/attachments',
+        customUploads: '/data/custom/uploads',
+        activityLogs: '/data/custom/log',
+        metadata: { orgName: 'Custom', notes: 'first' },
+      },
     ]);
   });
 
@@ -74,6 +84,42 @@ describe('tenant registry use cases', () => {
       expect(result.featureFlags).toEqual({ fileCacheHeaders: true });
       expect(await db.collection('tenants').countDocuments({ name: 'uc-tenant-a' })).toBe(1);
     });
+
+    it('should never overwrite a stored value with a default when registering again', async () => {
+      await sut().execute({ name: 'uc-tenant-custom', domain: 'custom.uwazi.io' });
+
+      expect(await db.collection('tenants').findOne({ name: 'uc-tenant-custom' })).toMatchObject({
+        dbName: 'custom_db',
+        indexName: 'custom_index',
+        uploadedDocuments: '/data/custom/documents',
+        attachments: '/data/custom/attachments',
+        customUploads: '/data/custom/uploads',
+        activityLogs: '/data/custom/log',
+        domain: 'custom.uwazi.io',
+      });
+    });
+
+    it('should fill in only the defaults a stored tenant is missing', async () => {
+      await sut().execute({ name: 'uc-tenant-b' });
+
+      expect(await db.collection('tenants').findOne({ name: 'uc-tenant-b' })).toMatchObject({
+        dbName: 'uc-tenant-b',
+        indexName: 'uc-tenant-b',
+        uploadedDocuments: 'uc-tenant-b/documents',
+        attachments: 'uc-tenant-b/documents',
+        customUploads: 'uc-tenant-b/custom_uploads',
+        activityLogs: 'uc-tenant-b/log',
+      });
+    });
+
+    it('should still replace a stored value it is explicitly given', async () => {
+      await sut().execute({ name: 'uc-tenant-custom', dbName: 'moved_db' });
+
+      expect(await db.collection('tenants').findOne({ name: 'uc-tenant-custom' })).toMatchObject({
+        dbName: 'moved_db',
+        indexName: 'custom_index',
+      });
+    });
   });
 
   describe('UpdateTenant', () => {
@@ -89,6 +135,17 @@ describe('tenant registry use cases', () => {
       const result = await sut().execute({ name: 'uc-tenant-a', domain: null });
 
       expect(result).not.toHaveProperty('domain');
+    });
+
+    it('should merge metadata key by key, removing only the keys sent as null', async () => {
+      await sut().execute({
+        name: 'uc-tenant-custom',
+        metadata: { adminEmail: 'admin@custom.org', notes: null },
+      });
+
+      expect(
+        (await db.collection('tenants').findOne({ name: 'uc-tenant-custom' }))?.metadata
+      ).toEqual({ orgName: 'Custom', adminEmail: 'admin@custom.org' });
     });
 
     it('should fail when there is no such tenant', async () => {

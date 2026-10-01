@@ -39,23 +39,35 @@ const TenantHealthCheckSchema = z
   })
   .strict();
 
-const TenantMetadataSchema = z
-  .object({
-    orgName: z.string().optional(),
-    adminEmail: z.string().optional(),
-    notes: z.string().optional(),
-    status: z.enum(['active', 'maintenance', 'unknown']).optional(),
-    createdAt: z.number().optional(),
-    updatedAt: z.number().optional(),
-    domain: z.string().optional(),
-    utcOffset: z.number().optional(),
-    type: z.string().optional(),
-  })
+const metadataFields = {
+  orgName: z.string(),
+  adminEmail: z.string(),
+  notes: z.string(),
+  status: z.enum(['active', 'maintenance', 'unknown']),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  domain: z.string(),
+  utcOffset: z.number(),
+  type: z.string(),
+};
+
+const TenantMetadataSchema = z.object(metadataFields).partial().strict();
+
+/** A change to the stored metadata: a value sets a key, `null` removes it, omitted leaves it. */
+const TenantMetadataPatchSchema = z
+  .object(
+    Object.fromEntries(
+      Object.entries(metadataFields).map(([key, schema]) => [key, schema.nullish()])
+    ) as {
+      [K in keyof typeof metadataFields]: z.ZodOptional<z.ZodNullable<(typeof metadataFields)[K]>>;
+    }
+  )
   .strict();
 
 type TenantStats = z.infer<typeof TenantStatsSchema>;
 type TenantHealthCheck = z.infer<typeof TenantHealthCheckSchema>;
 type TenantMetadata = z.infer<typeof TenantMetadataSchema>;
+type TenantMetadataPatch = z.infer<typeof TenantMetadataPatchSchema>;
 
 /** Everything stored on a tenant row that the running process has no use for. */
 type TenantOperationalData = {
@@ -64,5 +76,16 @@ type TenantOperationalData = {
   metadata?: TenantMetadata;
 };
 
-export { TenantHealthCheckSchema, TenantMetadataSchema, TenantStatsSchema };
-export type { TenantHealthCheck, TenantMetadata, TenantOperationalData, TenantStats };
+export {
+  TenantHealthCheckSchema,
+  TenantMetadataPatchSchema,
+  TenantMetadataSchema,
+  TenantStatsSchema,
+};
+export type {
+  TenantHealthCheck,
+  TenantMetadata,
+  TenantMetadataPatch,
+  TenantOperationalData,
+  TenantStats,
+};

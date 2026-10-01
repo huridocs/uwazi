@@ -32,12 +32,25 @@ const flattenFlags = (flags: FeatureFlagsPatch, update: Update) => {
   });
 };
 
+/** `metadata` is merged key by key, through dotted paths, so the keys not sent are left alone. */
+const flattenMetadata = (metadata: Record<string, unknown>, update: Update) => {
+  Object.entries(metadata).forEach(([key, value]) => {
+    if (value === null) {
+      update.$unset[`metadata.${key}`] = '';
+    } else if (value !== undefined) {
+      update.$set[`metadata.${key}`] = value;
+    }
+  });
+};
+
 const toUpdate = (patch: TenantPatch): Update => {
   const update: Update = { $set: {}, $unset: {} };
 
   Object.entries(patch).forEach(([field, value]) => {
     if (field === 'featureFlags' && isGroup(value)) {
       flattenFlags(value as FeatureFlagsPatch, update);
+    } else if (field === 'metadata' && isGroup(value)) {
+      flattenMetadata(value, update);
     } else if (value === null) {
       update.$unset[field] = '';
     } else if (value !== undefined) {

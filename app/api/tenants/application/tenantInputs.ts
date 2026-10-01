@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { FeatureFlagsPatchSchema, FeatureFlagsSchema } from '../featureFlags.js';
 import {
   TenantHealthCheckSchema,
-  TenantMetadataSchema,
+  TenantMetadataPatchSchema,
   TenantStatsSchema,
 } from '../operationalData.js';
 
@@ -40,7 +40,7 @@ const RegisterTenantInputSchema = z
 /**
  * `null` removes a field, an omitted field is left as it is. Only the optional fields can be
  * removed: a tenant cannot run without its database, index and storage paths, so those can be
- * replaced but never cleared.
+ * replaced but never cleared. `metadata` merges key by key, with the same rules one level down.
  */
 const UpdateTenantInputSchema = z
   .object({
@@ -54,7 +54,7 @@ const UpdateTenantInputSchema = z
     attachments: z.string().optional(),
     customUploads: z.string().optional(),
     activityLogs: z.string().optional(),
-    metadata: TenantMetadataSchema.nullish(),
+    metadata: TenantMetadataPatchSchema.nullish(),
   })
   .strict();
 

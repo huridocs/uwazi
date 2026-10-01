@@ -62,6 +62,18 @@ describe('tenant input schemas', () => {
       expect(() => UpdateTenantInputSchema.parse({ name: 'acme', nope: true })).toThrow();
     });
 
+    it('should accept null for a single metadata key, to remove only that key', () => {
+      expect(
+        UpdateTenantInputSchema.parse({ name: 'acme', metadata: { notes: null, orgName: 'Acme' } })
+      ).toEqual({ name: 'acme', metadata: { notes: null, orgName: 'Acme' } });
+    });
+
+    it('should reject an unknown metadata key', () => {
+      expect(() =>
+        UpdateTenantInputSchema.parse({ name: 'acme', metadata: { nope: 'x' } })
+      ).toThrow();
+    });
+
     it('should not accept feature flags: they have their own command', () => {
       expect(() =>
         UpdateTenantInputSchema.parse({ name: 'acme', featureFlags: { postgresCore: true } })

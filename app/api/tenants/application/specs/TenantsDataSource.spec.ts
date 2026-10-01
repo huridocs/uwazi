@@ -22,6 +22,7 @@ const stored = [
     ...paths('ds-tenant-b'),
     domain: 'b.uwazi.io',
     featureFlags: { postgresCore: true, fileCacheHeaders: true, telemetry: { enabled: true } },
+    metadata: { orgName: 'Org B', notes: 'first' },
   },
   {
     name: 'ds-tenant-a',
@@ -213,6 +214,21 @@ describe('TenantsDataSource', () => {
         expect(result.featureFlags?.telemetry).toEqual({ sampleRate: 0.5 });
       });
 
+      it('should merge metadata key by key, removing the keys sent as null', async () => {
+        const result = await sut.upsert('ds-tenant-b', {
+          metadata: { adminEmail: 'admin@b.org', notes: null },
+        });
+
+        expect(result.metadata).toEqual({ orgName: 'Org B', adminEmail: 'admin@b.org' });
+        expect((await store.read('ds-tenant-b'))?.metadata).toEqual(result.metadata);
+      });
+
+      it('should remove the whole metadata sent as null', async () => {
+        const result = await sut.upsert('ds-tenant-b', { metadata: null });
+
+        expect(result).not.toHaveProperty('metadata');
+      });
+
       it('should store and return the operational data', async () => {
         const stats = {
           lastUpdated: 1700000000,
@@ -234,7 +250,7 @@ describe('TenantsDataSource', () => {
           ...stored[0],
           stats,
           healthChecks,
-          metadata,
+          metadata: { orgName: 'Acme', notes: 'first', status: 'active' },
         });
       });
 
