@@ -6,6 +6,7 @@ import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
 import { MongoUsersDataSource } from '../MongoUsersDataSource.js';
 
 const f = getFixturesFactory();
@@ -45,6 +46,16 @@ describe('MongoUsersDataSource', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
+  });
+
+  describe('getActiveAdminIds', () => {
+    it('should return the admins that are not deleted', async () => {
+      await testingEnvironment.db
+        .getCollection('users')!
+        .updateOne({ _id: f.id('deleted2') }, { $set: { role: UserRole.ADMIN } });
+
+      expect(await createDs().ds.getActiveAdminIds()).toEqual([f.idString('existing1')]);
+    });
   });
 
   describe('validations and checks', () => {
@@ -289,6 +300,61 @@ describe('MongoUsersDataSource', () => {
         .findOne({ _id: existingUser!._id });
 
       expect(updated!.accountUnlockCode).toBeUndefined();
+    });
+  });
+
+  describe('when the unique indexes reject a write', () => {
+    // The indexes migration 198 creates: unique among users that are not soft deleted.
+    beforeEach(async () => {
+      const users = testingEnvironment.db.getCollection('users')!;
+      await users.createIndex(
+        { username: 1 },
+        { unique: true, partialFilterExpression: { deletedAt: null } }
+      );
+      await users.createIndex(
+        { email: 1 },
+        { unique: true, partialFilterExpression: { deletedAt: null } }
+      );
+    });
+
+    const account = (username: string, email: string) =>
+      new UserAccount({
+        _id: new ObjectId().toString(),
+        username,
+        role: UserRole.EDITOR,
+        email,
+        credentials: new Credentials({ password: EncryptedPassword.fromHash('hash') }),
+      });
+
+    it('should report a taken username as UsernameExists', async () => {
+      await expect(
+        createDs().ds.insert(account('existing1', 'fresh@provider.tld'))
+      ).rejects.toThrow(UsernameExists);
+    });
+
+    it('should report a taken email as EmailInUse', async () => {
+      await expect(
+        createDs().ds.insert(account('fresh', 'existing2@provider.tld'))
+      ).rejects.toThrow(EmailInUse);
+    });
+
+    it('should report a rename onto a taken username as UsernameExists', async () => {
+      const user = new User({
+        _id: f.idString('existing2'),
+        username: 'existing1',
+        role: UserRole.EDITOR,
+        email: 'existing2@provider.tld',
+      });
+
+      await expect(createDs().ds.update(user)).rejects.toThrow(UsernameExists);
+    });
+
+    it('should accept the username of a soft deleted user', async () => {
+      await createDs().ds.insert(account('deleted1', 'fresh@provider.tld'));
+
+      expect(
+        await testingEnvironment.db.getCollection('users')!.countDocuments({ username: 'deleted1' })
+      ).toBe(2);
     });
   });
 

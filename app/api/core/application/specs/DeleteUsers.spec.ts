@@ -10,6 +10,7 @@ import {
   IsDeletingSelf,
   IsDeleteOfLastUser,
   IsDeleteOfPublicUser,
+  IsRemovingLastAdmin,
 } from '#api/core/domain/user/errors.js';
 
 const f = getFixturesFactory();
@@ -135,6 +136,38 @@ describe('DeleteUsers', () => {
     it('should report the self delete first, as the v1 flow did', async () => {
       await expect(createSut().execute({ ids: [f.idString('admin')] })).rejects.toThrow(
         IsDeletingSelf
+      );
+    });
+  });
+
+  describe('the last admin', () => {
+    const system = new Actor('system', 'admin', []);
+
+    it('should refuse to delete the only admin, even for the system actor', async () => {
+      await expect(createSut(system).execute({ ids: [f.idString('admin')] })).rejects.toThrow(
+        IsRemovingLastAdmin
+      );
+
+      expect(await activeUsernames()).toEqual(['admin', 'user1', 'user2', 'public']);
+    });
+
+    it('should refuse a bulk delete that would remove every user', async () => {
+      await expect(
+        createSut(system).execute({
+          ids: [f.idString('admin'), f.idString('user1'), f.idString('user2')],
+        })
+      ).rejects.toThrow(IsRemovingLastAdmin);
+
+      expect(await activeUsernames()).toEqual(['admin', 'user1', 'user2', 'public']);
+    });
+
+    it('should not count a soft deleted admin as one left', async () => {
+      await testingEnvironment.db
+        .getCollection('users')!
+        .updateOne({ _id: f.id('deletedUser') }, { $set: { role: UserRole.ADMIN } });
+
+      await expect(createSut(system).execute({ ids: [f.idString('admin')] })).rejects.toThrow(
+        IsRemovingLastAdmin
       );
     });
   });

@@ -1,10 +1,5 @@
 import { config } from '#api/config.js';
-import {
-  FEATURE_FLAGS,
-  FeatureFlagsSchema,
-  featureFlagsMongoSchema,
-  isFeatureFlagGroup,
-} from '../featureFlags.js';
+import { FEATURE_FLAGS, FeatureFlagsSchema, isFeatureFlagGroup } from '../featureFlags.js';
 
 describe('feature flags registry', () => {
   describe('FeatureFlagsSchema', () => {
@@ -50,21 +45,6 @@ describe('feature flags registry', () => {
     it('should reject a flag of the wrong type', () => {
       expect(() => FeatureFlagsSchema.parse({ postgresCore: 'yes' })).toThrow();
       expect(() => FeatureFlagsSchema.parse({ esReplicas: 'two' })).toThrow();
-    });
-  });
-
-  describe('featureFlagsMongoSchema', () => {
-    it('should declare the same flags as the registry', () => {
-      expect(Object.keys(featureFlagsMongoSchema).sort()).toEqual(
-        Object.keys(FEATURE_FLAGS).sort()
-      );
-    });
-
-    it('should map each flag to its mongoose type', () => {
-      expect(featureFlagsMongoSchema.postgresCore).toBe(Boolean);
-      expect(featureFlagsMongoSchema.esReplicas).toBe(Number);
-      expect(featureFlagsMongoSchema.aiAssistantServiceUrl).toBe(String);
-      expect(featureFlagsMongoSchema.telemetry).toEqual({ enabled: Boolean, sampleRate: Number });
     });
   });
 

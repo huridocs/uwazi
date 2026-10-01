@@ -5,6 +5,7 @@ import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { Db } from 'mongodb';
 import { config } from '#api/config.js';
+import { TenantsDataSourceFactory } from '#api/tenants/infrastructure/TenantsDataSourceFactory.js';
 import { FileDocument, MigrationStorageFileType, TenantSnapshot } from './types.js';
 
 const defaultTenantSnapshot = (): TenantSnapshot => config.defaultTenant;
@@ -124,18 +125,10 @@ const getLocalSize = async (file: FileDocument, tenant: TenantSnapshot) => {
 };
 
 const getTenantSnapshot = async (db: Db): Promise<TenantSnapshot> => {
-  const defaultTenant = defaultTenantSnapshot();
-  const { client } = db as unknown as { client: { db: (dbName: string) => Db } };
-  const tenant = await client
-    .db(config.SHARED_DB)
-    .collection('tenants')
-    .findOne({ dbName: db.databaseName });
+  const registry = await TenantsDataSourceFactory.default().all();
+  const tenant = registry.find(({ dbName }) => dbName === db.databaseName);
 
-  if (tenant) {
-    return tenant as any as TenantSnapshot;
-  }
-
-  return defaultTenant;
+  return tenant ? (tenant as TenantSnapshot) : defaultTenantSnapshot();
 };
 
 const createFileSizeResolver = (tenant: TenantSnapshot) => {
