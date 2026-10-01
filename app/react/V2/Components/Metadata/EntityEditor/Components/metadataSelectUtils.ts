@@ -11,24 +11,24 @@ const getMetadataSelectedValues = (value: unknown): string[] => {
     .filter((itemValue): itemValue is string => typeof itemValue === 'string');
 };
 
+const optionText = (option: MultiselectListOption) =>
+  typeof option.label === 'string' ? option.label : option.searchLabel;
+
 const getOptionInfo = (selectedValue: string, options: MultiselectListOption[]) => {
   for (const option of options) {
     if (option.items?.length) {
       const child = option.items.find(item => item.value === selectedValue);
       if (child) {
         return {
-          label: typeof child.label === 'string' ? child.label : undefined,
-          parent:
-            typeof option.label === 'string'
-              ? { label: option.label, value: option.value }
-              : undefined,
+          label: optionText(child),
+          parent: { label: optionText(option), value: option.value },
         };
       }
     }
 
     if (option.value === selectedValue) {
       return {
-        label: typeof option.label === 'string' ? option.label : undefined,
+        label: optionText(option),
         parent: undefined,
       };
     }

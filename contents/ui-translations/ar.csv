@@ -74,8 +74,11 @@ Add to training set,إضافة إلى مجموعة التدريب
 Add translation,إضافة ترجمة
 Add user,إضافة مستخدم
 add value,إضافة قيمة
+Add value,Add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
 Add/edit translations,إضافة / تحرير الترجمات
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,لغة مضافة
 Added new user,تمت إضافة مستخدم جديد
 "Added relation type ""{name}""","تمت إضافة نوع العلاقة ""{name}"""
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,السماح بتجاوز اختبار كابتشا
 Allow public embedding without login,السماح بالتضمين العام دون تسجيل الدخول
 Already exists,موجود بالفعل
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,القيمة نفسها بالفعل.
 Amount,العدد
 An admin needs to add relationship types before you can create a relationship.,يجب على المسؤول إضافة أنواع العلاقات قبل أن تتمكن من إنشاء علاقة.
@@ -271,6 +275,7 @@ Copy link,نسخ الرابط
 Copy properties to this entity from,انسخ الخصائص إلى هذا الكيان (الإدخال) من
 Copy to clipboard,نسخ إلى الحافظة
 Could not add media. Please try again.,تعذر إضافة الملفات. يرجى المحاولة مرة أخرى.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,لا يمكن معالجتها
 Could not create entity,تعذر إنشاء الكيان
 Could not detect the area for the selected text,تعذر تحديد منطقة النص المحدد، يرجى محاولة التحديد مرة أخرى.
@@ -791,6 +796,7 @@ New relationship type,نوع جديد من العلاقات
 New relationships group,مجموعة علاقات جديدة
 New Relationships Migration,ترحيل العلاقات الجديدة
 New user,مستخدم جديد
+New value in,New value in
 Next,التالي
 No,لا
 No attachments,لا توجد مرفقات

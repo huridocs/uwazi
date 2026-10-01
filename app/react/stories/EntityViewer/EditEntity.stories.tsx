@@ -5,12 +5,14 @@ import { storyExtend } from '#app/stories/storyExtend.js';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import {
   localeAtom,
   settingsAtom,
   templatesAtom,
   thesauriAtom,
   translationsAtom,
+  userAtom,
 } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -45,6 +47,7 @@ const EditEntityComponent = ({
   entity,
   onSave,
   locale = 'en',
+  user,
   relationshipLookup,
   templatesForStory = templates,
   errors,
@@ -52,6 +55,7 @@ const EditEntityComponent = ({
   entity: Entity;
   onSave: (savedEntity: EntitySaveInput) => void;
   locale?: string;
+  user?: ClientUserSchema;
   templatesForStory?: typeof templates;
   errors?: EditEntityErrors;
   relationshipLookup?: (params: {
@@ -80,6 +84,9 @@ const EditEntityComponent = ({
     nextStore.set(templatesAtom, templatesForStory);
     nextStore.set(thesauriAtom, thesauri);
     nextStore.set(localeAtom, locale);
+    if (user) {
+      nextStore.set(userAtom, user);
+    }
     nextStore.set(translationsAtom, [
       {
         locale: 'en',
@@ -105,7 +112,7 @@ const EditEntityComponent = ({
       },
     ]);
     return nextStore;
-  }, [locale, templatesForStory]);
+  }, [locale, templatesForStory, user]);
 
   const formId = 'edit-entity-form';
   const mockedRelationshipLookup = async ({
@@ -223,6 +230,7 @@ const Primary = meta.story({
       onSave={args.onSave}
       entity={args.entity}
       locale={args.locale}
+      user={args.user}
       templatesForStory={args.templatesForStory}
       errors={args.errors}
       relationshipLookup={args.relationshipLookup}

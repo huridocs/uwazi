@@ -17,6 +17,8 @@ const setLocale = locale => {
   I18NUtils.saveLocale(locale);
 };
 
+const hydratedPathname = isClient ? window.location.pathname : '';
+
 class RouteHandler extends ReduxStoreComponent {
   static async requestState(_requestParams, _state) {
     return new Promise((resolve, _reject) => {
@@ -40,7 +42,9 @@ class RouteHandler extends ReduxStoreComponent {
   }
 
   componentDidMount() {
-    if ((!this.isRenderedFromServer() || this.props.location?.state?.isClient) && isClient) {
+    const renderedHere =
+      this.isRenderedFromServer() && this.props.location?.pathname === hydratedPathname;
+    if ((!renderedHere || this.props.location?.state?.isClient) && isClient) {
       this.getClientState(this.props).catch(ex => {
         // used in inherited types
         // eslint-disable-next-line react/no-unused-state

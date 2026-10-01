@@ -122,21 +122,25 @@ const EditEntityPropertyField = ({
     );
   }
 
-  if (property.type === 'select') {
-    return (
-      <SelectField<EditEntityFormValues>
-        context={property.content || 'System'}
-        label={property.label}
-        field={field}
-        registerOptions={registerOptions}
-        disabled={disabled}
-        options={thesaurusToOptions(thesauri, property)}
-        hideFilters
-      />
-    );
-  }
+  if (property.type === 'select' || property.type === 'multiselect') {
+    const thesaurus = thesauri.find(item => item._id === property.content);
+    const options = thesaurusToOptions(thesauri, property);
 
-  if (property.type === 'multiselect') {
+    if (property.type === 'select') {
+      return (
+        <SelectField<EditEntityFormValues>
+          context={property.content || 'System'}
+          label={property.label}
+          field={field}
+          registerOptions={registerOptions}
+          disabled={disabled}
+          options={options}
+          thesaurus={thesaurus}
+          hideFilters
+        />
+      );
+    }
+
     return (
       <MultiselectField<EditEntityFormValues>
         context={property.content || 'System'}
@@ -144,7 +148,8 @@ const EditEntityPropertyField = ({
         field={field}
         registerOptions={registerOptions}
         disabled={disabled}
-        options={thesaurusToOptions(thesauri, property)}
+        options={options}
+        thesaurus={thesaurus}
       />
     );
   }
