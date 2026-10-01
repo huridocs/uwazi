@@ -33,6 +33,13 @@ class IsDeleteOfLastUser extends DomainError {
   }
 }
 
+/** A tenant must always keep an admin, or nobody can manage its users again. */
+class IsRemovingLastAdmin extends DomainError {
+  constructor() {
+    super('Cannot remove the last remaining admin', 'user.last_admin');
+  }
+}
+
 class UserNotFound extends NotFoundError {
   constructor(id: string) {
     super(`User ${id} not found`, 'user.not_found');
@@ -99,6 +106,7 @@ export {
   IsDeleteOfPublicUser,
   IsDeletingSelf,
   IsDeleteOfLastUser,
+  IsRemovingLastAdmin,
   UserNotFound,
   UsersGetError,
   UpdateUserError,

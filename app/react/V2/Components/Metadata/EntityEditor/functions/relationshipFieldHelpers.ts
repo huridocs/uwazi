@@ -3,8 +3,8 @@ import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { relationshipGroupKey } from '../../relationshipInherit.js';
 import type { MultiselectListOption } from '../../../Forms/index.js';
-import type { FormMetadataProperty } from './formatMetadataForForm.js';
 import type { DisplayProperty } from './relationshipGrouping.js';
+import { thesaurusFreshLabel } from './thesaurusOptionLabel.js';
 
 type MergeRelationshipLookupArgs = {
   property: DisplayProperty;
@@ -20,20 +20,28 @@ const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
 
 const thesaurusToOptions = (
   thesauri: ClientThesaurus[],
-  property: FormMetadataProperty
-): MultiselectListOption[] =>
-  thesauri
-    .find(thesaurus => thesaurus._id === property.content)
-    ?.values.map(value => ({
-      label: value.label,
-      searchLabel: value.label,
-      value: value.id || value.label,
-      items: value.values?.map(child => ({
-        label: child.label,
-        searchLabel: child.label,
-        value: child.id || child.label,
-      })),
-    })) || [];
+  property: { content?: string },
+  freshIds?: ReadonlySet<string>
+): MultiselectListOption[] => {
+  const thesaurus = thesauri.find(item => item._id === property.content);
+  if (!thesaurus) {
+    return [];
+  }
+
+  const labelFor = (label: string, id?: string) =>
+    id && freshIds?.has(id) ? thesaurusFreshLabel(label, thesaurus._id) : label;
+
+  return thesaurus.values.map(value => ({
+    label: labelFor(value.label, value.id),
+    searchLabel: value.label,
+    value: value.id || value.label,
+    items: value.values?.map(child => ({
+      label: labelFor(child.label, child.id),
+      searchLabel: child.label,
+      value: child.id || child.label,
+    })),
+  }));
+};
 
 const mergeRelationshipLookupOptions = ({
   property,

@@ -2,6 +2,7 @@ import { UserRole } from '#api/core/domain/user/User.js';
 import { CreateUserUseCaseFactory } from '#api/core/infrastructure/factories/CreateUserUseCaseFactory.js';
 import { TenantDomain } from '../../tenancy/TenantDomain.js';
 import type { CreatedUserOutput } from '../contracts.js';
+import { IgnoredGroups } from '../IgnoredGroups.js';
 import { UserOutputs } from '../UserOutputs.js';
 
 type CreateUserCliInput = {
@@ -16,6 +17,8 @@ class CreateUserController {
   static async handle(input: CreateUserCliInput): Promise<CreatedUserOutput> {
     const { username, email, role, groups, welcomeEmail } = input;
 
+    const ignoredGroups = await IgnoredGroups.of(groups);
+
     const user = await CreateUserUseCaseFactory.default().execute({
       username,
       email,
@@ -25,7 +28,7 @@ class CreateUserController {
       sendWelcomeEmail: welcomeEmail,
     });
 
-    return { user: UserOutputs.user(user), welcomeEmailQueued: welcomeEmail };
+    return { user: UserOutputs.user(user), welcomeEmailQueued: welcomeEmail, ignoredGroups };
   }
 }
 

@@ -21,6 +21,21 @@ import type { UserFieldGroup } from './UserReadOptions.js';
 /** Everything UserAccount's Credentials need: password, secret, lockout state and using2fa. */
 const ACCOUNT_FIELDS: UserFieldGroup[] = ['identity', 'status', 'credentials', 'security'];
 
+const UNIQUE_VIOLATION = '23505';
+
+/**
+ * The unique indexes are the last word on a taken username or email: two writes can both pass
+ * the checks before either lands. Their rejection is reported as the same conflict the checks
+ * raise.
+ */
+const asConflict = (error: unknown, user: User): unknown => {
+  const { code, constraint } = (error ?? {}) as { code?: string; constraint?: string };
+  if (code !== UNIQUE_VIOLATION) return error;
+  if (constraint === 'users_username') return new UsernameExists(user.username);
+  if (constraint === 'users_email') return new EmailInUse(user.email);
+  return error;
+};
+
 class PostgresUsersDataSource implements UsersDataSource {
   private dao: PostgresUsersDAO;
 
@@ -92,12 +107,25 @@ class PostgresUsersDataSource implements UsersDataSource {
     return this.dao.count();
   }
 
+  async getActiveAdminIds(): Promise<string[]> {
+    const admins = await this.dao.findMany({ role: 'admin' });
+    return admins.map(admin => admin._id);
+  }
+
   async insert(user: UserAccount): Promise<void> {
-    await this.dao.insertOne(PostgresUsersMapper.toRow(user));
+    try {
+      await this.dao.insertOne(PostgresUsersMapper.toRow(user));
+    } catch (error) {
+      throw asConflict(error, user);
+    }
   }
 
   async update(user: User): Promise<void> {
-    await this.dao.updateOne({ _id: user._id }, PostgresUsersMapper.toRow(user));
+    try {
+      await this.dao.updateOne({ _id: user._id }, PostgresUsersMapper.toRow(user));
+    } catch (error) {
+      throw asConflict(error, user);
+    }
   }
 
   async delete(userIds: string[]): Promise<number> {

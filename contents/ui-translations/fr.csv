@@ -74,8 +74,11 @@ Add to training set,Ajouter à l'ensemble d'apprentissage
 Add translation,Ajouter une traduction
 Add user,Ajouter un utilisateur
 add value,Ajouter une valeur
+Add value,Add value
 Add/delete users and assign roles,Ajouter / Supprimer des utilisateurs et attribuer des rôles
 Add/edit translations,Ajouter / Modifier des traductions
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Langue ajoutée
 Added new user,Ajout d'un nouvel utilisateur
 "Added relation type ""{name}""","Ajout du type de relation ""{name}"""
@@ -100,6 +103,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Autoriser le contournement du captcha
 Allow public embedding without login,Autoriser l'intégration publique sans connexion
 Already exists,Existe déjà
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Déjà la même valeur.
 Amount,Montant
 An admin needs to add relationship types before you can create a relationship.,Un administrateur doit d'abord ajouter des types de relations avant que vous puissiez créer une relation.
@@ -272,6 +276,7 @@ Copy link,Copier le lien
 Copy properties to this entity from,Copier les propriétés de cette entité à partir de
 Copy to clipboard,Copier dans le presse-papiers
 Could not add media. Please try again.,Impossible d'ajouter un fichier multimédia. Veuillez réessayer.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,N'a pas pu être traité
 Could not create entity,Impossible de créer l'entité
 Could not detect the area for the selected text,"Impossible de détecter la zone du texte sélectionné, veuillez réessayer la sélection."
@@ -792,6 +797,7 @@ New relationship type,Nouveau type de relation
 New relationships group,"Groupe ""Nouvelles relations"""
 New Relationships Migration,Migration des nouvelles relations
 New user,Nouvel utilisateur
+New value in,New value in
 Next,Suivant
 No,Non
 No attachments,Pas de pièces jointes

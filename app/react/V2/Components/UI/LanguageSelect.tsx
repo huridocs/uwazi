@@ -23,6 +23,7 @@ type LanguageSelectProps<T extends string = string> = {
   align?: 'start' | 'end';
   appearance?: LanguageSelectAppearance;
   triggerRef?: React.Ref<HTMLButtonElement>;
+  footer?: React.ReactNode;
 };
 
 const triggerClassByAppearance: Record<LanguageSelectAppearance, string> = {
@@ -63,6 +64,7 @@ const LanguageSelect = <T extends string>({
   align = 'start',
   appearance = 'default',
   triggerRef,
+  footer,
 }: LanguageSelectProps<T>) => {
   const [open, setOpen] = useState(false);
   const listboxId = useId();
@@ -117,33 +119,36 @@ const LanguageSelect = <T extends string>({
         onClose={close}
         prefer={align === 'end' ? 'end' : 'start'}
       >
-        <div
-          ref={listboxRef}
-          id={listboxId}
-          role="listbox"
-          tabIndex={-1}
-          aria-label={listAriaLabel}
-          aria-activedescendant={activeDescendantId}
-          className="max-h-60 w-max min-w-40 overflow-y-auto rounded-md border border-border bg-paper shadow-md focus:outline-none"
-        >
-          {options.map((option, index) => (
-            <button
-              key={option.value}
-              id={`${listboxId}-option-${option.value}`}
-              type="button"
-              role="option"
-              tabIndex={-1}
-              aria-selected={option.value === value}
-              onMouseDown={event => event.preventDefault()}
-              onClick={() => selectOption(option.value)}
-              className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
-                index === highlightedIndex,
-                option.value === value
-              )}`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="w-max min-w-40 overflow-hidden rounded-md border border-border bg-paper shadow-md">
+          <div
+            ref={listboxRef}
+            id={listboxId}
+            role="listbox"
+            tabIndex={-1}
+            aria-label={listAriaLabel}
+            aria-activedescendant={activeDescendantId}
+            className="max-h-60 overflow-y-auto focus:outline-none"
+          >
+            {options.map((option, index) => (
+              <button
+                key={option.value}
+                id={`${listboxId}-option-${option.value}`}
+                type="button"
+                role="option"
+                tabIndex={-1}
+                aria-selected={option.value === value}
+                onMouseDown={event => event.preventDefault()}
+                onClick={() => selectOption(option.value)}
+                className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
+                  index === highlightedIndex,
+                  option.value === value
+                )}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          {footer}
         </div>
       </AnchoredPortal>
     </div>
