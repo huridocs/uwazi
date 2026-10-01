@@ -60,16 +60,64 @@ export class SyncedCollection<TSchema extends Document = Document>
   }
 
   private async insertSyncLogs(mongoIds: ObjectId[]) {
-    if (mongoIds.length !== 0) {
-      await this.sessionScopedCollection.insertMany(
-        mongoIds.map(insertedId => ({
-          timestamp: Date.now(),
-          namespace: this.collection.collectionName,
-          mongoId: insertedId,
-          deleted: false,
-        }))
-      );
+    if (mongoIds.length === 0) {
+      return;
     }
+
+    await this.sessionScopedCollection.insertMany(
+      mongoIds.map(insertedId => ({
+        timestamp: Date.now(),
+        namespace: this.collection.collectionName,
+        mongoId: insertedId,
+        deleted: false,
+      }))
+    );
+    await this.refreshFileLogs(await this.sharedIdsOf(mongoIds));
+  }
+
+  private async sharedIdsOf(mongoIds: ObjectId[]) {
+    if (this.collection.collectionName !== 'entities') {
+      return [];
+    }
+
+    const docs = await new SessionScopedCollection<{ _id: ObjectId; sharedId?: string }>(
+      this.db.collection('entities'),
+      this.transactionManager
+    )
+      .find({ _id: { $in: mongoIds } }, { projection: { sharedId: 1 } })
+      .toArray();
+
+    return docs
+      .map(doc => doc.sharedId)
+      .filter((sharedId): sharedId is string => typeof sharedId === 'string');
+  }
+
+  private async refreshFileLogs(sharedIds: string[]) {
+    if (this.collection.collectionName !== 'entities' || sharedIds.length === 0) {
+      return;
+    }
+
+    const files = new SessionScopedCollection(
+      this.db.collection('files'),
+      this.transactionManager
+    ).find({ entity: { $in: sharedIds } }, { projection: { _id: 1 } });
+
+    const stream = new BulkWriteStream(this.sessionScopedCollection);
+    await new MongoResultSet(files, document => document).forEach(async ({ _id }) => {
+      await stream.updateOne(
+        { mongoId: _id },
+        {
+          $set: {
+            timestamp: Date.now(),
+            mongoId: _id,
+            namespace: 'files',
+            deleted: false,
+          },
+        },
+        true
+      );
+    });
+    await stream.flush();
   }
 
   private async upsertSyncLogs(conditions: any[], deleted: boolean = false) {
@@ -77,25 +125,37 @@ export class SyncedCollection<TSchema extends Document = Document>
       return;
     }
 
-    const modifiedDocuments = this.collection.find({ $or: conditions }, { projection: { _id: 1 } });
+    const modifiedDocuments = this.collection.find(
+      { $or: conditions },
+      { projection: { _id: 1, sharedId: 1 } }
+    );
 
     const stream = new BulkWriteStream(this.sessionScopedCollection);
+    const sharedIds: string[] = [];
 
-    await new MongoResultSet(modifiedDocuments, d => d).forEach(async ({ _id }) => {
-      await stream.updateOne(
-        { mongoId: _id },
-        {
-          $set: {
-            timestamp: Date.now(),
-            mongoId: _id,
-            namespace: this.collection.collectionName,
-            deleted,
+    await new MongoResultSet(modifiedDocuments, document => document).forEach(
+      async ({ _id, sharedId }) => {
+        await stream.updateOne(
+          { mongoId: _id },
+          {
+            $set: {
+              timestamp: Date.now(),
+              mongoId: _id,
+              namespace: this.collection.collectionName,
+              deleted,
+            },
           },
-        },
-        true
-      );
-    });
+          true
+        );
+        if (!deleted && typeof sharedId === 'string') {
+          sharedIds.push(sharedId);
+        }
+      }
+    );
     await stream.flush();
+    if (!deleted) {
+      await this.refreshFileLogs(sharedIds);
+    }
   }
 
   async insertOne(
