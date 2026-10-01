@@ -22,6 +22,7 @@ const stats = {
   entitiesCount: 4,
   filesCount: 5,
   totalStorage: 6,
+  filesByBucket: { pdf: { count: 3, size: 1200 }, image: { count: 2, size: 800 } },
   userCount: { admin: 1, editor: 2, collaborator: 3, total: 6 },
   lastSession: 1700000000,
 };

@@ -5,9 +5,10 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { UserRole } from '#api/core/domain/user/User.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
+import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
 import { PostgresUsersDataSource } from '../PostgresUsersDataSource.js';
 
 const TENANT_ID = 'test-tenant';
@@ -52,6 +53,54 @@ afterAll(async () => {
 });
 
 describe('PostgresUsersDataSource', () => {
+  describe('getActiveAdminIds', () => {
+    it('should return the admins that are not deleted, in this tenant only', async () => {
+      await testingPG.setFixtures({
+        users: [
+          {
+            _id: 'admin-1',
+            tenant_id: TENANT_ID,
+            username: 'a1',
+            email: 'a1@t.com',
+            password: 'hash',
+            role: 'admin',
+            using2fa: false,
+          },
+          {
+            _id: 'admin-gone',
+            tenant_id: TENANT_ID,
+            username: 'a2',
+            email: 'a2@t.com',
+            password: 'hash',
+            role: 'admin',
+            using2fa: false,
+            deletedAt: new Date(),
+          },
+          {
+            _id: 'editor-1',
+            tenant_id: TENANT_ID,
+            username: 'e1',
+            email: 'e1@t.com',
+            password: 'hash',
+            role: 'editor',
+            using2fa: false,
+          },
+          {
+            _id: 'admin-other',
+            tenant_id: OTHER_TENANT_ID,
+            username: 'a3',
+            email: 'a3@t.com',
+            password: 'hash',
+            role: 'admin',
+            using2fa: false,
+          },
+        ],
+      });
+
+      expect(await makeDS().getActiveAdminIds()).toEqual(['admin-1']);
+    });
+  });
+
   describe('getTwoFactorStatus', () => {
     it('should return the username and using2fa status', async () => {
       await insertUser(TENANT_ID, { using2fa: true });
@@ -235,6 +284,48 @@ describe('PostgresUsersDataSource', () => {
 
       const result = await makeDS().getByUsername('existinguser');
       expect(result.getData()!.credentials?.accountUnlockCode).toBeUndefined();
+    });
+  });
+
+  describe('when the unique indexes reject a write', () => {
+    const account = (_id: string, username: string, email: string) =>
+      new UserAccount({
+        _id,
+        username,
+        role: UserRole.EDITOR,
+        email,
+        credentials: new Credentials({ password: EncryptedPassword.fromHash('hash') }),
+      });
+
+    beforeEach(async () => {
+      await insertUser(TENANT_ID);
+    });
+
+    it('should report a taken username as UsernameExists', async () => {
+      await expect(
+        makeDS().insert(account('user-2', 'existinguser', 'fresh@test.com'))
+      ).rejects.toThrow(UsernameExists);
+    });
+
+    it('should report a taken email as EmailInUse', async () => {
+      await expect(
+        makeDS().insert(account('user-2', 'fresh', 'existing@test.com'))
+      ).rejects.toThrow(EmailInUse);
+    });
+
+    it('should report a rename onto a taken username as UsernameExists', async () => {
+      await makeDS().insert(account('user-2', 'fresh', 'fresh@test.com'));
+
+      await expect(
+        makeDS().update(
+          new User({
+            _id: 'user-2',
+            username: 'existinguser',
+            role: UserRole.EDITOR,
+            email: 'fresh@test.com',
+          })
+        )
+      ).rejects.toThrow(UsernameExists);
     });
   });
 

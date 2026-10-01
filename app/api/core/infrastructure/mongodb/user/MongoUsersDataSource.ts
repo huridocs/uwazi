@@ -1,6 +1,6 @@
-import { ObjectId } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
-import { User } from '#api/core/domain/user/User.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import {
@@ -17,6 +17,20 @@ import type { UserFieldGroup } from './UserReadOptions.js';
 
 /** Everything UserAccount's Credentials need: password, secret, lockout state and using2fa. */
 const ACCOUNT_FIELDS: UserFieldGroup[] = ['identity', 'status', 'credentials', 'security'];
+
+const DUPLICATE_KEY = 11000;
+
+/**
+ * The unique indexes are the last word on a taken username or email: two writes can both pass
+ * the checks before either lands. Their rejection is reported as the same conflict the checks
+ * raise.
+ */
+const asConflict = (error: unknown, user: User): unknown => {
+  if (!(error instanceof MongoServerError) || error.code !== DUPLICATE_KEY) return error;
+  if (error.keyPattern?.username) return new UsernameExists(user.username);
+  if (error.keyPattern?.email) return new EmailInUse(user.email);
+  return error;
+};
 
 class MongoUsersDataSource implements UsersDataSource {
   private dao: MongoUsersDAO;
@@ -95,11 +109,28 @@ class MongoUsersDataSource implements UsersDataSource {
     return this.dao.count();
   }
 
+  async getActiveAdminIds(): Promise<string[]> {
+    const admins = await this.dao.findMany({ role: UserRole.ADMIN });
+    return admins.map(admin => admin._id.toString());
+  }
+
   async insert(user: UserAccount): Promise<void> {
-    await this.dao.insertOne(MongoUsersMapper.toDBO(user));
+    try {
+      await this.dao.insertOne(MongoUsersMapper.toDBO(user));
+    } catch (error) {
+      throw asConflict(error, user);
+    }
   }
 
   async update(user: User): Promise<void> {
+    try {
+      await this.write(user);
+    } catch (error) {
+      throw asConflict(error, user);
+    }
+  }
+
+  private async write(user: User): Promise<void> {
     const { _id, ...updates } = MongoUsersMapper.toDBO(user);
 
     if (!(user instanceof UserAccount)) {

@@ -13,7 +13,10 @@ class MongoUserGroupsDataSource
   protected collectionName = 'usergroups';
 
   async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
-    const targetGroupIds = groupIds.map(id => ObjectId.createFromHexString(id));
+    // An id that is not an ObjectId matches no group: skipped, like any other unknown id.
+    const targetGroupIds = groupIds
+      .filter(id => /^[0-9a-f]{24}$/i.test(id))
+      .map(id => ObjectId.createFromHexString(id));
 
     const collection = this.getCollection();
 

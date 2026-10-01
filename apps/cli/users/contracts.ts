@@ -18,12 +18,19 @@ const UserListItemSchema = UserOutputSchema.extend({
   accountLocked: z.boolean(),
 });
 
+/** Group ids that match no group: the user is saved without them. */
+const IgnoredGroupsSchema = z.array(z.string());
+
 const CreatedUserOutputSchema = z.object({
   user: UserOutputSchema,
   welcomeEmailQueued: z.boolean(),
+  ignoredGroups: IgnoredGroupsSchema,
 });
 
-const UpdatedUserOutputSchema = z.object({ user: UserOutputSchema });
+const UpdatedUserOutputSchema = z.object({
+  user: UserOutputSchema,
+  ignoredGroups: IgnoredGroupsSchema,
+});
 
 const DeletedUserOutputSchema = z.object({ id: z.string() });
 
