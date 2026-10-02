@@ -318,7 +318,7 @@ CSV Import,CSV İçe Aktarma
 CSV import cancelled,CSV içe aktarma işlemi iptal edildi
 CSV import completed,CSV içe aktarma işlemi tamamlandı
 CSV import failed,CSV içe aktarma işlemi başarısız oldu
-CSV or ZIP up to 50MB,CSV veya ZIP dosyası (en fazla 50 MB)
+CSV or ZIP,CSV veya ZIP dosyası
 Ctrl K,Ctrl K
 Current Value/Suggestion,Mevcut Değer/Öneri
 "Custom colors are not available for this chart type. Use the chart palette or template
