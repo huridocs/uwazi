@@ -40,6 +40,12 @@ describe('ViewerRoute', () => {
       expect(dispatch).toHaveBeenCalledWith(showTab('info'));
     });
 
+    it('should leave the entity tab alone when the route has no tab', () => {
+      renderRoute({});
+      expect(dispatch).not.toHaveBeenCalledWith(showTab('info'));
+      expect(dispatch).not.toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'metadata'));
+    });
+
     it('should select the route tab when it changes', () => {
       const component = renderRoute({ tabView: 'metadata' });
       spyOn(component.instance(), 'getClientState').and.returnValue(Promise.resolve());

@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import { useSetAtom } from 'jotai';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  type ReactNode,
+} from 'react';
+import { useStore } from 'jotai';
+import { getStore } from '#shared/atomStore/index.js';
 import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 import type { EntityPageViewData } from './types.js';
 
@@ -17,19 +25,37 @@ const EntityPageViewProvider = ({
   entityPageView?: EntityPageViewData;
   children: ReactNode;
 }) => {
-  const setEntityPageViewAtom = useSetAtom(entityPageViewAtom);
+  const store = useStore();
+  const published = entityPageView ?? null;
+  const publish = useCallback(
+    (value: EntityPageViewData | null) => {
+      store.set(entityPageViewAtom, value);
+      const globalStore = getStore();
+      if (globalStore !== store) {
+        globalStore.set(entityPageViewAtom, value);
+      }
+    },
+    [store]
+  );
+  if (store.get(entityPageViewAtom) !== published) {
+    publish(published);
+  }
   const value = useMemo(
     () => ({
-      entityPageView: entityPageView ?? null,
-      hasEntityPageView: Boolean(entityPageView),
+      entityPageView: published,
+      hasEntityPageView: Boolean(published),
     }),
-    [entityPageView]
+    [published]
   );
 
-  useEffect(() => {
-    setEntityPageViewAtom(entityPageView ?? null);
-    return () => setEntityPageViewAtom(null);
-  }, [entityPageView, setEntityPageViewAtom]);
+  useLayoutEffect(() => {
+    const snapshot = published;
+    return () => {
+      if (store.get(entityPageViewAtom) === snapshot) {
+        publish(null);
+      }
+    };
+  }, [publish, published, store]);
 
   return <EntityPageViewContext.Provider value={value}>{children}</EntityPageViewContext.Provider>;
 };

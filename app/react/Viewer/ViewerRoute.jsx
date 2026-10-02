@@ -61,7 +61,8 @@ class ViewerRouteComponent extends RouteHandler {
     return super.urlHasChanged(nextProps) || !sameQueryFile;
   }
 
-  selectTab({ tabView = 'metadata' }) {
+  selectTab({ tabView } = {}) {
+    if (!tabView) return;
     this.store.dispatch(actions.set('viewer.sidepanel.tab', tabView));
     this.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
   }

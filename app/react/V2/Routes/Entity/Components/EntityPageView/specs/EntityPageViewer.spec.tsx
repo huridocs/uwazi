@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { Provider as JotaiProvider, createStore } from 'jotai';
+import { Provider as JotaiProvider, createStore, useAtomValue } from 'jotai';
 import { MemoryRouter } from 'react-router';
 import { EntityPageViewProvider, EntityPageViewer } from '../index.js';
 import type { EntityPageViewData } from '../types.js';
@@ -64,6 +64,42 @@ describe('EntityPageViewer', () => {
       'Hello from entity page'
     );
     expect(store.get(entityPageViewAtom)?.pageSharedId).toBe('page1');
+  });
+
+  it('publishes the page atom before children render', () => {
+    const store = createStore();
+    const seen: Array<string | undefined> = [];
+    const Probe = () => {
+      seen.push(useAtomValue(entityPageViewAtom)?.pageSharedId);
+      return null;
+    };
+
+    render(
+      <JotaiProvider store={store}>
+        <EntityPageViewProvider entityPageView={pageViewData}>
+          <Probe />
+        </EntityPageViewProvider>
+      </JotaiProvider>
+    );
+
+    expect(seen[0]).toBe('page1');
+  });
+
+  it('does not clear a page atom another view already replaced', () => {
+    const store = createStore();
+    const { unmount } = render(
+      <JotaiProvider store={store}>
+        <EntityPageViewProvider entityPageView={pageViewData}>
+          <div />
+        </EntityPageViewProvider>
+      </JotaiProvider>
+    );
+    const replacement = { ...pageViewData, pageSharedId: 'page2' };
+    store.set(entityPageViewAtom, replacement);
+
+    unmount();
+
+    expect(store.get(entityPageViewAtom)).toBe(replacement);
   });
 
   it('renders nothing when there is no entity page view', () => {
