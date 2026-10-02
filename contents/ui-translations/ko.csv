@@ -315,7 +315,7 @@ CSV Import,CSV 가져오기
 CSV import cancelled,CSV 가져오기가 취소되었습니다.
 CSV import completed,CSV 가져오기가 완료되었습니다.
 CSV import failed,CSV 가져오기에 실패했습니다.
-CSV or ZIP up to 50MB,CSV 또는 ZIP 파일 (최대 50MB)
+CSV or ZIP,CSV 또는 ZIP 파일
 Ctrl K,Ctrl+K
 Current Value/Suggestion,현재 값/제안 사항
 "Custom colors are not available for this chart type. Use the chart palette or template
