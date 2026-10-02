@@ -5,11 +5,9 @@ import { advancedSort } from '#app/utils/advancedSort.js';
 import { store } from '#app/store.js';
 import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 
-const prepareRelatedEntity = (options, propValue, templates, property) => {
+const prepareRelatedEntity = ({ doc, templates, property }, propValue) => {
   const relation =
-    options.doc && options.doc.relations
-      ? options.doc.relations.find(rel => rel.entity === propValue.value)
-      : undefined;
+    doc && doc.relations ? doc.relations.find(rel => rel.entity === propValue.value) : undefined;
 
   if (relation && relation.entityData) {
     const template = templates.find(t => relation.entityData.template === t.get('_id'));
@@ -99,7 +97,7 @@ const groupByParent = options =>
     return groupedOptions;
   }, []);
 
-const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
+const conformSortedProperty = (metadata, { templates, doc, sortedProperties }) => {
   const sortPropertyInMetadata = metadata.find(p =>
     sortedProperties.includes(`metadata.${p.name}`)
   );
@@ -122,6 +120,77 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
   }
 
   return result;
+};
+
+const hasInheritedChildren = values =>
+  Array.isArray(values) &&
+  values.some(item => Array.isArray(item?.inheritedValue) && item.inheritedValue.length > 0);
+
+const inheritedHopType = values => values.find(item => item?.inheritedType)?.inheritedType;
+
+const isEmptyInherited = (inheritedValue, type) =>
+  !inheritedValue.length ||
+  inheritedValue.every(
+    item => !(item.value || type === null || (type === 'numeric' && item.value === 0))
+  );
+
+const formatInheritedEntries = (
+  formatter,
+  { propertyInfo, type, rows, thesauri, options, templates, property }
+) => {
+  const methodType = formatter[type] ? type : 'default';
+  return rows
+    .map(row => {
+      if (!(row && row.inheritedValue)) {
+        return {};
+      }
+      if (isEmptyInherited(row.inheritedValue, type)) {
+        return null;
+      }
+      const relatedEntity = prepareRelatedEntity({ doc: options.doc, templates, property }, row);
+      return {
+        ...formatter[methodType](propertyInfo, row.inheritedValue, {
+          thesauri,
+          ...options,
+          templates,
+        }),
+        ...(relatedEntity && { relatedEntity }),
+      };
+    })
+    .filter(entry => entry);
+};
+
+const multiInheritedType = type =>
+  ['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type);
+
+const inheritedPropertyValue = (formatter, details) => {
+  const entries = formatInheritedEntries(formatter, details);
+  if (!multiInheritedType(details.type)) {
+    return { type: 'inherit', value: entries };
+  }
+  return {
+    type: details.type,
+    value: formatter.flattenInheritedMultiValue(entries, details.type, {
+      thesaurusValues: details.rows,
+      doc: details.options.doc,
+    }),
+  };
+};
+
+const formattingHop = (values, type) => {
+  if (!hasInheritedChildren(values)) {
+    return { type, values: values || [] };
+  }
+  const nextValues = values.flatMap(item =>
+    Array.isArray(item?.inheritedValue) ? item.inheritedValue : []
+  );
+  if (!hasInheritedChildren(nextValues)) {
+    return { type: inheritedHopType(values) || type, values };
+  }
+  return formattingHop(
+    nextValues,
+    inheritedHopType(nextValues) || inheritedHopType(values) || type
+  );
 };
 
 const propertyValueFormatter = {
@@ -168,10 +237,11 @@ const formater = {
     let parent;
 
     if (option) {
-      value = option.label || option.value;
-      originalValue = option.value;
-      icon = option.icon;
-      parent = option.parent?.label;
+      const { label, value: optionValue, icon: optionIcon, parent: optionParent } = option;
+      value = label || optionValue;
+      originalValue = optionValue;
+      icon = optionIcon;
+      parent = optionParent?.label;
     }
 
     let url;
@@ -261,7 +331,7 @@ const formater = {
     return { ...value, type: 'link' };
   },
 
-  preview(property, _value, _thesauri, { doc }) {
+  preview(property, _value, { doc }) {
     return {
       ...this.multimedia(
         property,
@@ -280,7 +350,7 @@ const formater = {
     return value;
   },
 
-  geolocation(property, value, _thesauri, { onlyForCards }) {
+  geolocation(property, value, { onlyForCards }) {
     return {
       label: property.get('label'),
       name: property.get('name'),
@@ -313,61 +383,33 @@ const formater = {
     };
   },
 
-  inherit(property, propValue, thesauri, options, templates) {
+  inherit(property, propValue, { thesauri, options, templates }) {
+    const { type, values: inheritedValues } = formattingHop(
+      propValue || [],
+      property.get('inherit').get('type')
+    );
     const propertyInfo = Immutable.fromJS({
       label: property.get('label'),
       name: property.get('name'),
-      type: property.get('inherit').get('type'),
+      type,
       noLabel: property.get('noLabel'),
     });
-
-    const type = propertyInfo.get('type');
-    const methodType = this[type] ? type : 'default';
-    let value = (propValue || [])
-      .map(v => {
-        if (v && v.inheritedValue) {
-          if (
-            !v.inheritedValue.length ||
-            v.inheritedValue.every(
-              iv => !(iv.value || type === null || (type === 'numeric' && iv.value === 0))
-            )
-          ) {
-            return null;
-          }
-
-          const relatedEntity = prepareRelatedEntity(options, v, templates, property);
-
-          const formattedValue = this[methodType](
-            propertyInfo,
-            v.inheritedValue,
-            thesauri,
-            options,
-            templates
-          );
-          return {
-            ...formattedValue,
-            ...(relatedEntity && { relatedEntity }),
-          };
-        }
-
-        return {};
-      })
-      .filter(v => v);
-    let propType = 'inherit';
-    if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
-      propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue || [], undefined, {
-        doc: options.doc,
-      });
-    }
-    value = value.filter(v => v);
+    const formatted = inheritedPropertyValue(this, {
+      propertyInfo,
+      type,
+      rows: inheritedValues,
+      thesauri,
+      options,
+      templates,
+      property,
+    });
     return {
       translateContext: options.doc.template,
       ...propertyInfo.toJS(),
       name: property.get('name'),
-      value,
+      value: formatted.value,
       label: property.get('label'),
-      type: propType,
+      type: formatted.type,
       inheritedType: type,
       onlyForCards: Boolean(options.onlyForCards),
       indexInTemplate: property.get('indexInTemplate'),
@@ -375,65 +417,31 @@ const formater = {
   },
 
   // relationship v2
-  newRelationshipWithInherit(property, propValue, thesauri, options, templates) {
-    const label = property.get('label');
+  newRelationshipWithInherit(property, propValue, { thesauri, options, templates }) {
     const name = property.get('name');
-    const denormalizedProperty = property.get('denormalizedProperty');
-    const type = getPropertyType(denormalizedProperty, templates);
-    const noLabel = property.get('noLabel');
+    const type = getPropertyType(property.get('denormalizedProperty'), templates);
     const propertyInfo = Immutable.fromJS({
-      label,
+      label: property.get('label'),
       name,
       type,
-      noLabel,
+      noLabel: property.get('noLabel'),
     });
-
-    const methodType = this[type] ? type : 'default';
-    let value = (propValue || [])
-      .map(v => {
-        if (v && v.inheritedValue) {
-          if (
-            !v.inheritedValue.length ||
-            v.inheritedValue.every(
-              iv => !(iv.value || type === null || (type === 'numeric' && iv.value === 0))
-            )
-          ) {
-            return null;
-          }
-
-          const relatedEntity = prepareRelatedEntity(options, v, templates, property);
-
-          const formattedValue = this[methodType](
-            propertyInfo,
-            v.inheritedValue,
-            thesauri,
-            options,
-            templates
-          );
-          return {
-            ...formattedValue,
-            ...(relatedEntity && { relatedEntity }),
-          };
-        }
-
-        return {};
-      })
-      .filter(v => v);
-    let propType = 'inherit';
-    if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
-      propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue || [], undefined, {
-        doc: options.doc,
-      });
-    }
-    value = value.filter(v => v);
+    const formatted = inheritedPropertyValue(this, {
+      propertyInfo,
+      type,
+      rows: propValue || [],
+      thesauri,
+      options,
+      templates,
+      property,
+    });
     return {
       translateContext: property.get('content'),
       name,
-      value,
-      label,
-      noLabel,
-      type: propType,
+      value: formatted.value,
+      label: property.get('label'),
+      noLabel: property.get('noLabel'),
+      type: formatted.type,
       inheritedType: type,
       onlyForCards: Boolean(options.onlyForCards),
       indexInTemplate: property.get('indexInTemplate'),
@@ -444,9 +452,7 @@ const formater = {
   flattenInheritedMultiValue(
     relationshipValues,
     type,
-    thesaurusValues,
-    templateThesaurus,
-    { doc }
+    { thesaurusValues, templateThesaurus, doc }
   ) {
     const result = relationshipValues.map((relationshipValue, index) => {
       let { value } = relationshipValue;
@@ -465,11 +471,11 @@ const formater = {
     return result.flat();
   },
 
-  newRelationship(property, thesaurusValues, _thesauri, { doc }) {
-    return this.relationship(property, thesaurusValues, _thesauri, { doc });
+  newRelationship(property, thesaurusValues, context) {
+    return this.relationship(property, thesaurusValues, context);
   },
 
-  relationship(property, thesaurusValues, _thesauri, { doc }) {
+  relationship(property, thesaurusValues, { doc }) {
     const thesaurus = Immutable.fromJS({
       type: 'template',
     });
@@ -477,7 +483,7 @@ const formater = {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  markdown(property, [{ value }], _thesauris, { type }) {
+  markdown(property, [{ value }], { type } = {}) {
     return {
       label: property.get('label'),
       name: property.get('name'),
@@ -486,7 +492,7 @@ const formater = {
     };
   },
 
-  nested(property, rows, thesauri) {
+  nested(property, rows) {
     if (!rows[0]) {
       return { label: property.get('label'), name: property.get('name'), value: '' };
     }
@@ -504,7 +510,7 @@ const formater = {
       .map(row => `| ${keys.map(key => (row.value[key] || []).join(', ')).join(' | ')}`)
       .join('|\n')}|`;
 
-    return this.markdown(property, [{ value: result }], thesauri, { type: 'markdown' });
+    return this.markdown(property, [{ value: result }], { type: 'markdown' });
   },
 
   getThesauriValues(thesaurusValues, thesaurus, doc) {
@@ -516,16 +522,20 @@ const formater = {
     );
   },
 
-  prepareMetadataForCard(doc, templates, thesauri, sortedProperty) {
-    return this.prepareMetadata(doc, templates, thesauri, null, {
-      onlyForCards: true,
-      sortedProperties: [sortedProperty],
+  prepareMetadataForCard(doc, templates, sources = {}) {
+    const thesauri = sources.thesauri ?? sources;
+    const sortedProperty = sources.thesauri ? sources.sortedProperty : undefined;
+    return this.prepareMetadata(doc, templates, {
+      thesauri,
+      options: { onlyForCards: true, sortedProperties: [sortedProperty] },
     });
   },
 
-  prepareMetadata(_doc, templates, thesauri, relationships, _options = {}) {
+  prepareMetadata(_doc, templates, sources = {}) {
+    const thesauri = sources.thesauri ?? sources;
+    const relationships = sources.thesauri ? sources.relationships : undefined;
+    const options = { sortedProperties: [], ...(sources.thesauri ? sources.options : {}) };
     const doc = { metadata: {}, ..._doc };
-    const options = { sortedProperties: [], ..._options };
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
     if (!template) {
@@ -551,7 +561,11 @@ const formater = {
         })
       );
 
-    metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperties);
+    metadata = conformSortedProperty(metadata, {
+      templates,
+      doc,
+      sortedProperties: options.sortedProperties,
+    });
 
     return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
@@ -561,18 +575,16 @@ const formater = {
     const showInCard = property.get('showInCard');
 
     if (property.get('inherit')) {
-      return this.inherit(property, value, thesauri, { ...options, doc }, templates);
+      return this.inherit(property, value, { thesauri, options: { ...options, doc }, templates });
     }
 
     //relationship v2
     if (property.get('denormalizedProperty')) {
-      return this.newRelationshipWithInherit(
-        property,
-        value,
+      return this.newRelationshipWithInherit(property, value, {
         thesauri,
-        { ...options, doc },
-        templates
-      );
+        options: { ...options, doc },
+        templates,
+      });
     }
 
     const methodType = this[property.get('type')] ? property.get('type') : 'default';
@@ -581,7 +593,7 @@ const formater = {
       return {
         translateContext: template.get('_id'),
         ...property.toJS(),
-        ...this[methodType](property, value, thesauri, { ...options, doc }),
+        ...this[methodType](property, value, { thesauri, ...options, doc, templates }),
         ...(doc.obsoleteMetadata
           ? { obsolete: doc.obsoleteMetadata.includes(property.get('name')) }
           : {}),
