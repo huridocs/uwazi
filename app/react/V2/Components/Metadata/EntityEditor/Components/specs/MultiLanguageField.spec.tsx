@@ -120,14 +120,22 @@ describe('MultiLanguageField', () => {
     expect(screen.queryByText('Auto')).not.toBeInTheDocument();
   });
 
-  it('disables auto-translate when every other language has a value', () => {
+  it('replaces existing translations on auto-translate', async () => {
+    const onTranslate = jest.fn(async (language: string) => `translated-${language}`);
     render(
       <Harness
-        onTranslate={jest.fn()}
+        onTranslate={onTranslate}
         initial={{ en: 'Hearing', es: 'Audiencia', fr: 'Audience' }}
       />
     );
-    expect(screen.getByRole('button', { name: 'Auto-translate' })).toHaveAttribute('aria-disabled');
+    const button = screen.getByRole('button', { name: 'Auto-translate' });
+    expect(button).not.toHaveAttribute('aria-disabled');
+    fireEvent.click(button);
+    await waitFor(() => {
+      expect(screen.getByLabelText('Español title')).toHaveValue('translated-es');
+    });
+    expect(screen.getByLabelText('Français title')).toHaveValue('translated-fr');
+    expect(onTranslate).toHaveBeenCalledTimes(2);
   });
 
   it('ignores a translation that finishes after the source text changed', async () => {
