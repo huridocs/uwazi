@@ -17,14 +17,13 @@ export { EntityIcon } from './EntityIcon.js';
 export type { EntityIconData } from './EntityIcon.js';
 export { AudioWaveformIcon } from './AudioWaveformIcon.js';
 export { SplineIcon } from './SplineIcon.js';
-export {
-  PencilStrokeIcon,
-  Trash2StrokeIcon,
-  PlusStrokeIcon,
-  CloudUploadStrokeIcon,
-  Settings2StrokeIcon,
-  TextCursorInputStrokeIcon,
-} from './LucideStrokeIcons.js';
+export { PencilStrokeIcon } from './PencilStrokeIcon.js';
+export { Trash2StrokeIcon } from './Trash2StrokeIcon.js';
+export { PlusStrokeIcon } from './PlusStrokeIcon.js';
+export { CloudUploadStrokeIcon } from './CloudUploadStrokeIcon.js';
+export { Settings2StrokeIcon } from './Settings2StrokeIcon.js';
+export { RotateCwStrokeIcon } from './RotateCwStrokeIcon.js';
+export { TextCursorInputStrokeIcon } from './TextCursorInputStrokeIcon.js';
 export {
   CircleDotIcon,
   LayoutListIcon,

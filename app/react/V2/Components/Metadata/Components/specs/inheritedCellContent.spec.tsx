@@ -180,6 +180,59 @@ describe('inheritedCellContent', () => {
     });
   });
 
+  it('renders a second-hop image and geolocation instead of the related title', () => {
+    const { unmount } = render(
+      <TestAtomStoreProvider initialValues={[[localeAtom, 'en']]}>
+        <div data-testid="cell">
+          {inheritedCellContent(
+            [
+              {
+                value: 'ia1',
+                label: 'IA1',
+                inheritedType: 'relationship',
+                inheritedValue: [
+                  {
+                    value: 'case-1',
+                    label: 'Case Velasquez 1',
+                    inheritedType: 'image',
+                    inheritedValue: [{ value: '/api/files/photo.png' }],
+                  },
+                ],
+              },
+            ],
+            'ia1'
+          )}
+        </div>
+      </TestAtomStoreProvider>
+    );
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/files/photo.png');
+    expect(screen.queryByText('IA1')).not.toBeInTheDocument();
+    unmount();
+
+    renderCell(
+      inheritedCellContent(
+        [
+          {
+            value: 'ia1',
+            label: 'IA1',
+            inheritedType: 'relationship',
+            inheritedValue: [
+              {
+                value: 'case-1',
+                label: 'Case Velasquez 1',
+                inheritedType: 'geolocation',
+                inheritedValue: [{ value: { lat: 48.3, lon: 4.15, label: '' } }],
+              },
+            ],
+          },
+        ],
+        'ia1'
+      )
+    );
+    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(screen.queryByText('IA1')).not.toBeInTheDocument();
+  });
+
   it('falls back to labels for select-like values without type rendering gaps', () => {
     renderCell(
       inheritedCellContent(

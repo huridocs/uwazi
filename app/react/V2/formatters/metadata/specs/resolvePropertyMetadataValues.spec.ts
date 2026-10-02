@@ -1,6 +1,7 @@
 import type { Entity } from '#V2/api/entities/types.js';
 import type { BaseMetadataProperty } from '../../types.js';
 import {
+  resolveInheritedRelationship,
   resolvePropertyMetadataValues,
   resolvePropertyType,
 } from '../resolvePropertyMetadataValues.js';
@@ -164,6 +165,34 @@ describe('resolvePropertyMetadataValues', () => {
 
     expect(resolvePropertyMetadataValues(property, metadata)).toEqual(relatedDocs);
     expect(resolvePropertyType(property, metadata)).toBe('relationship');
+  });
+
+  it('should keep the current hop type when leaf values have none', () => {
+    const imageHop = [
+      {
+        value: 'mh1j2hgou7j',
+        label: 'Case Velasquez 1',
+        inheritedType: 'image' as const,
+        inheritedValue: [{ value: '/api/files/photo.png' }],
+      },
+    ];
+    const geolocationHop = [
+      {
+        value: 'mh1j2hgou7j',
+        label: 'Case Velasquez 1',
+        inheritedType: 'geolocation' as const,
+        inheritedValue: [{ value: { lat: 48.3, lon: 4.15, label: '' } }],
+      },
+    ];
+
+    expect(resolveInheritedRelationship(imageHop, 'relationship')).toEqual({
+      inheritedType: 'image',
+      values: [{ value: '/api/files/photo.png' }],
+    });
+    expect(resolveInheritedRelationship(geolocationHop, 'relationship')).toEqual({
+      inheritedType: 'geolocation',
+      values: [{ value: { lat: 48.3, lon: 4.15, label: '' } }],
+    });
   });
 
   it('should resolve as relationship when inherited rows have empty inherited values', () => {

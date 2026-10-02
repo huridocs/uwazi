@@ -46,12 +46,7 @@ const translateHint = ({
 }) => {
   if (!source) return writeSourceFirstHint(current, label);
   if (empties.length === 0) {
-    return t(
-      'System',
-      'Every language has a value — use the re-translate button on a row',
-      null,
-      false
-    );
+    return t('System', `Replace other languages from ${languageLabel(current)}`, null, false);
   }
   return t(
     'System',
@@ -93,11 +88,7 @@ const languageRowSummary = ({
     source,
     empties,
     canTranslate:
-      Boolean(onTranslate) &&
-      serviceAvailable &&
-      source.length > 0 &&
-      empties.length > 0 &&
-      working.length === 0,
+      Boolean(onTranslate) && serviceAvailable && source.length > 0 && working.length === 0,
     setText,
     emptyText,
     summary: empties.length === 0 ? setText : emptyText,
