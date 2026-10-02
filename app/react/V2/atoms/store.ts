@@ -16,6 +16,7 @@ import { translationsAtom, localeAtom } from './translationsAtoms.js';
 import { userAtom } from './userAtom.js';
 import { thesauriAtom } from './thesauriAtom.js';
 import { serverIsMobileAtom } from './isMobileAtom.js';
+import { requestOriginAtom } from './requestOriginAtom.js';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
 
 type AtomStoreData = {
@@ -30,6 +31,7 @@ type AtomStoreData = {
   translations: ClientTranslationSchema[];
   acceptedSuggestions?: Set<string>;
   isMobile?: boolean;
+  origin?: string;
 };
 
 // eslint-disable-next-line max-statements
@@ -41,6 +43,7 @@ const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createSt
   if (data.templates) store.set(templatesAtom, data.templates);
   if (data.relationTypes) store.set(relationshipTypesAtom, data.relationTypes);
   if (data.isMobile !== undefined) store.set(serverIsMobileAtom, data.isMobile);
+  store.set(requestOriginAtom, data.origin || '');
   store.set(userAtom, data.user);
   store.set(translationsAtom, data.translations ?? []);
   store.set(localeAtom, data.locale || 'en');

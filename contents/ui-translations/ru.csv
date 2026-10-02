@@ -744,6 +744,7 @@ Members,Участники
 Menu,Меню
 Message,Сообщение
 Message sent,Сообщение отправлено
+Meta description,Meta description
 Metadata,Метаданные
 Metadata Extraction,Извлечение метаданных
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -883,6 +884,9 @@ OCR error,Ошибка оптического распознавания сим�
 OCR error tip,Механизм OCR не смог прочитать документ из-за некорректного формата. Последнее обновление
 OCR PDF,Оптическое распознавание символов PDF
 of,из
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Окей
 OK,Окей
 On this entity,У этого объекта
@@ -899,6 +903,7 @@ Only published entities are counted.,Учитываются только опу�
 "Only the extractor will be deleted, all created entities will remain on the library.","Будет удален только экстрактор, все созданные объекты останутся в библиотеке."
 Open,Открыть
 Open entity,Открыть объект
+Open Graph,Open Graph
 Open group,Открыть группу
 Open link,Открыть ссылку
 Open PDF,Открыть PDF
@@ -919,6 +924,7 @@ p.,с.
 Page,Страница
 Page not found,Страница не найдена
 Page published successfully.,Страница успешно опубликована.
+Page title,Page title
 Pages,Страницы
 Paragrap number extraction property (numeric),Свойство извлечения номера абзаца (числовое)
 Paragraph,Абзац
@@ -1149,6 +1155,7 @@ Select files on your device,Выбрать файлы на вашем устро
 Select from computer,Выбрать с компьютера
 Select image,Выберите изображение
 Select media,Выбрать медиафайл
+Select Open Graph image,Select Open Graph image
 Select relationship,Выбрать связь
 Select relationship type,Выберите тип взаимосвязей
 Select site logo image,Выберите изображение логотипа сайта
@@ -1170,6 +1177,12 @@ Send recovery email,Отправить письмо для восстановл�
 Sending email,Электронная почта отправителя
 Sending email description,"Это адрес электронной почты, который будет отображаться как отправитель при отправке писем от вашей коллекции Uwazi зарегистрированным пользователям. Адрес по умолчанию — *no-reply@uwazi.io*. Вы можете указать здесь свой собственный адрес."
 Sending labeled data,Отправка размеченных данных
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Серия
 Services,Услуги
 Set as default,Установить по умолчанию

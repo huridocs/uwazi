@@ -20,6 +20,7 @@ import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import { SeoSettingsCard } from './SeoSettingsCard.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
 import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
@@ -112,6 +113,7 @@ const Collection = () => {
       ...formData,
       themeAssets: formData.themeAssets ?? {},
       themeVars: formData.themeVars ?? {},
+      seo: formData.seo ?? {},
     },
     mode: 'onSubmit',
   });
@@ -304,6 +306,12 @@ const Collection = () => {
                 )}
               </div>
             </Card>
+            <SeoSettingsCard
+              register={register}
+              watch={watch}
+              setValue={setValue}
+              customUploadFiles={customUploadFiles}
+            />
             <Card
               className="mb-4"
               title={

@@ -15,6 +15,10 @@ describe('SettingsMigrationConfig', () => {
     contactEmail: 'a@b.c',
     dateFormat: 'YYYY',
     languages: [{ key: 'en', label: 'English', default: true }],
+    seo: {
+      title: 'Human rights database',
+      ogImage: '/assets/og-image.png',
+    },
   });
 
   it('should target the settings collection and preserve the mongo _id', () => {
@@ -34,6 +38,10 @@ describe('SettingsMigrationConfig', () => {
     expect(mapped.custom_css).toBe('body {}');
     expect(mapped.mail).toEqual({ mailerConfig: 'smtp://x', contactEmail: 'a@b.c' });
     expect(mapped.extras).toEqual({ dateFormat: 'YYYY' });
+    expect(mapped.seo).toEqual({
+      title: 'Human rights database',
+      ogImage: '/assets/og-image.png',
+    });
     expect(mapped.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
   });
 

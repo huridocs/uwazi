@@ -140,6 +140,10 @@ class EntityViewer extends Component {
       <div className="row">
         <Helmet>
           <title>{entity.get('title') ? entity.get('title') : 'Entity'}</title>
+          <meta
+            property="og:title"
+            content={entity.get('title') ? entity.get('title') : 'Entity'}
+          />
         </Helmet>
 
         {selectedTab !== 'page' && (
@@ -274,11 +278,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Info', null, false)}
                     component="div"
                   >
-                      <I18NLink
-                        className={this.linkClassNames(['info', ''])}
-                        to={`${entityBasePath}/${rawEntity.sharedId}/info`}
-                        replace
-                      >
+                    <I18NLink
+                      className={this.linkClassNames(['info', ''])}
+                      to={`${entityBasePath}/${rawEntity.sharedId}/info`}
+                      replace
+                    >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                     </I18NLink>
@@ -292,11 +296,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Relationships', null, false)}
                     component="div"
                   >
-                      <I18NLink
-                        className={this.linkClassNames(['relationships'])}
-                        to={`${entityBasePath}/${rawEntity.sharedId}/relationships`}
-                        replace
-                      >
+                    <I18NLink
+                      className={this.linkClassNames(['relationships'])}
+                      to={`${entityBasePath}/${rawEntity.sharedId}/relationships`}
+                      replace
+                    >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>

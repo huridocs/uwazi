@@ -156,6 +156,16 @@ const SaveSettingsInputSchema = z
     __v: z.number().optional(),
     project: z.string().optional(),
     site_name: z.string().optional(),
+    seo: z
+      .object({
+        title: z.string().max(200).optional(),
+        description: z.string().max(320).optional(),
+        ogTitle: z.string().max(200).optional(),
+        ogDescription: z.string().max(320).optional(),
+        ogImage: z.string().max(2048).optional(),
+      })
+      .strict()
+      .optional(),
     favicon: z.string().optional(),
     site_logo: z.string().optional(),
     themeAssets: z
