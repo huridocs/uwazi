@@ -1,9 +1,14 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { act } from 'react';
 import { ReactWrapper } from 'enzyme';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { screen } from '@testing-library/react';
+import Immutable from 'immutable';
+import { renderConnectedContainer, renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import type { EntityPageViewData } from '#V2/Routes/Entity/Components/EntityPageView/types.js';
 import { state } from './fixture/state.js';
 import { EntitySection } from '../EntitySection.js';
 
@@ -69,5 +74,42 @@ describe('EntitySection Markdown', () => {
       testShowIf('{ "metadata.inherited_text": { "$nin": ["here"] }}', '<div>test</div>');
       testShowIf('{ "metadata.inherited_text": { "$in": ["here"] }}', '');
     });
+  });
+
+  it('uses the entity v2 page atom when redux entity is empty', async () => {
+    const pageView: EntityPageViewData = {
+      pageSharedId: 'page1',
+      pageView: { metadata: { content: '' } },
+      itemLists: [],
+      datasets: {},
+      entityRaw: {
+        _id: 'ent1',
+        sharedId: 'shared1',
+        language: 'en',
+        title: 'Entity 1',
+        template: 't1',
+        creationDate: 1234,
+        user: 'user1',
+        metadata: {
+          description: [{ value: 'A long description' }],
+        },
+      },
+    };
+
+    await act(async () => {
+      renderConnectedContainer(
+        <TestAtomStoreProvider initialValues={[[entityPageViewAtom, pageView]]}>
+          <EntitySection show-if='{ "metadata.description": { "$exists": true }}'>
+            <div>from atom</div>
+          </EntitySection>
+        </TestAtomStoreProvider>,
+        () => ({
+          ...state,
+          entityView: { entity: Immutable.fromJS({}) },
+        })
+      );
+    });
+
+    expect(screen.getByText('from atom')).toBeInTheDocument();
   });
 });
