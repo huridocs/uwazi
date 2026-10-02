@@ -1,5 +1,5 @@
 import React, { useCallback, type ChangeEvent } from 'react';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { RotateCwStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { UwaziLoader } from '#V2/Components/UI/index.js';
@@ -184,7 +184,7 @@ const MultiLanguageFieldRow = React.memo(
                         : 'cursor-default text-ink-muted/50'
                     }`}
                   >
-                    <ArrowPathIcon className="h-micro w-micro" aria-hidden />
+                    <RotateCwStrokeIcon className="h-micro w-micro" aria-hidden />
                   </button>
                 ) : null}
               </>

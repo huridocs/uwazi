@@ -1,4 +1,4 @@
-/* eslint-disable max-statements */
+/* eslint-disable max-statements, max-lines */
 
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
@@ -50,13 +50,11 @@ describe('metadata formater', () => {
     let link;
 
     beforeAll(() => {
-      data = formater.prepareMetadata(
-        doc,
-        templates,
-        metadataSelectors.indexedThesaurus({ thesauris }),
+      data = formater.prepareMetadata(doc, templates, {
+        thesauri: metadataSelectors.indexedThesaurus({ thesauris }),
         relationships,
-        { sortedProperties: [] }
-      );
+        options: { sortedProperties: [] },
+      });
       [
         text,
         date,
@@ -240,8 +238,10 @@ describe('metadata formater', () => {
         };
 
         expect(() =>
-          formater.prepareMetadata(emptyDoc, templates, thesauris, relationships, {
-            sortedProperties: [],
+          formater.prepareMetadata(emptyDoc, templates, {
+            thesauri: thesauris,
+            relationships,
+            options: { sortedProperties: [] },
           })
         ).not.toThrow();
       });
@@ -267,13 +267,11 @@ describe('metadata formater', () => {
           },
         };
 
-        const formatted = formater.prepareMetadata(
-          docWithEmptyInherited,
-          templates,
-          thesauris,
+        const formatted = formater.prepareMetadata(docWithEmptyInherited, templates, {
+          thesauri: thesauris,
           relationships,
-          { sortedProperties: [] }
-        );
+          options: { sortedProperties: [] },
+        });
 
         expect(
           formatted.metadata.find(m => m.name === 'relationship3').value.includes(undefined)
@@ -301,19 +299,65 @@ describe('metadata formater', () => {
           },
         };
 
-        const formatted = formater.prepareMetadata(
-          docWithInheritedEmptyValue,
-          templates,
-          thesauris,
+        const formatted = formater.prepareMetadata(docWithInheritedEmptyValue, templates, {
+          thesauri: thesauris,
           relationships,
-          { sortedProperties: [] }
-        );
+          options: { sortedProperties: [] },
+        });
 
         expect(formatted.metadata.find(m => m.name === 'relationship3').value.length).toBe(1);
 
         expect(formatted.metadata.find(m => m.name === 'relationship3').value[0]).toMatchObject({
           value: 'this one has a value',
         });
+      });
+
+      it('should format a second inherit hop as the leaf type', () => {
+        const secondHopTemplates = templates.updateIn([2, 'properties'], properties =>
+          properties.push(
+            Immutable.fromJS({
+              name: 'secondHopImage',
+              type: 'relationship',
+              label: 'Second hop image',
+              inherit: { property: 'img', type: 'relationship' },
+            })
+          )
+        );
+        const secondHopDoc = {
+          _id: 'languageSpecificId',
+          template: 'templateID',
+          title: '2LB1',
+          metadata: {
+            secondHopImage: [
+              {
+                value: 'ia1',
+                label: 'IA1',
+                inheritedType: 'relationship',
+                inheritedValue: [
+                  {
+                    value: 'case-1',
+                    label: 'Case title',
+                    inheritedType: 'image',
+                    inheritedValue: [{ value: '/api/files/photo.png' }],
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        const formatted = formater.prepareMetadata(secondHopDoc, secondHopTemplates, {
+          thesauri: thesauris,
+          relationships,
+          options: { sortedProperties: [] },
+        });
+        const imageHop = formatted.metadata.find(item => item.name === 'secondHopImage');
+
+        expect(imageHop.inheritedType).toBe('image');
+        expect(imageHop.value).toEqual([
+          expect.objectContaining({ value: '/api/files/photo.png' }),
+        ]);
+        expect(JSON.stringify(imageHop.value)).not.toContain('IA1');
       });
 
       it('should append the translated entity title to certain values', () => {
@@ -373,8 +417,10 @@ describe('metadata formater', () => {
       docCopy.metadata.link = null;
 
       expect(() =>
-        formater.prepareMetadata(docCopy, templates, thesauris, relationships, {
-          sortedProperties: [],
+        formater.prepareMetadata(docCopy, templates, {
+          thesauri: thesauris,
+          relationships,
+          options: { sortedProperties: [] },
         })
       ).not.toThrow();
     });
@@ -423,13 +469,11 @@ describe('metadata formater', () => {
 
     it('should return empty value preview if no PDF associated to the entity', () => {
       const adaptedEntity = { ...doc, preview: undefined, defaultDoc: undefined, documents: [] };
-      const formatted = formater.prepareMetadata(
-        adaptedEntity,
-        templates,
-        thesauris,
+      const formatted = formater.prepareMetadata(adaptedEntity, templates, {
+        thesauri: thesauris,
         relationships,
-        { sortedProperties: [] }
-      );
+        options: { sortedProperties: [] },
+      });
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');
 
@@ -437,13 +481,11 @@ describe('metadata formater', () => {
     });
 
     it('should not include the preview field if excludePreview passed', () => {
-      const formatted = formater.prepareMetadata(
-        doc,
-        templates,
-        metadataSelectors.indexedThesaurus({ thesauris }),
+      const formatted = formater.prepareMetadata(doc, templates, {
+        thesauri: metadataSelectors.indexedThesaurus({ thesauris }),
         relationships,
-        { excludePreview: true, sortedProperties: [] }
-      );
+        options: { excludePreview: true, sortedProperties: [] },
+      });
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');
 
@@ -475,9 +517,15 @@ describe('metadata formater', () => {
     describe('when sort property passed', () => {
       let date;
       const prepareMetadata = dateString =>
-        formater.prepareMetadataForCard(doc, templates, thesauris, dateString).metadata;
+        formater.prepareMetadataForCard(doc, templates, {
+          thesauri: thesauris,
+          sortedProperty: dateString,
+        }).metadata;
       it('should process also the sorted property even if its not a "showInCard"', () => {
-        data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+        data = formater.prepareMetadataForCard(doc, templates, {
+          thesauri: thesauris,
+          sortedProperty: 'metadata.date',
+        });
         [text, date, markdown] = data.metadata;
         assessBasicProperties(date, ['Date', 'date', 'templateID']);
         expect(data.metadata.length).toEqual(8);
@@ -485,7 +533,10 @@ describe('metadata formater', () => {
       });
 
       it('should add sortedBy true to the property being sorted', () => {
-        data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+        data = formater.prepareMetadataForCard(doc, templates, {
+          thesauri: thesauris,
+          sortedProperty: 'metadata.date',
+        });
         [text, date, markdown] = data.metadata;
         expect(date.sortedBy).toBe(true);
         expect(text.sortedBy).toBe(false);
@@ -495,7 +546,10 @@ describe('metadata formater', () => {
       describe('when sort property has no value', () => {
         it('should add No Value key and translateContext system to the property', () => {
           doc.metadata.date = '';
-          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+          data = formater.prepareMetadataForCard(doc, templates, {
+            thesauri: thesauris,
+            sortedProperty: 'metadata.date',
+          });
           [text, date] = data.metadata;
           expect(date.value).toBe('No value');
           expect(date.translateContext).toBe('System');
@@ -567,12 +621,10 @@ describe('metadata formater', () => {
             })
           );
 
-          data = formater.prepareMetadataForCard(
-            doc,
-            _templates,
-            thesauris,
-            'metadata.nonexistent'
-          );
+          data = formater.prepareMetadataForCard(doc, _templates, {
+            thesauri: thesauris,
+            sortedProperty: 'metadata.nonexistent',
+          });
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
           assessBasicProperties(nonexistent, ['NonExistentLabel', 'nonexistent', 'otherTemplate']);
           expect(nonexistent.type).toBe(null);
@@ -585,7 +637,10 @@ describe('metadata formater', () => {
             })
           );
 
-          data = formater.prepareMetadataForCard(doc, _templates, thesauris, 'nonexistent');
+          data = formater.prepareMetadataForCard(doc, _templates, {
+            thesauri: thesauris,
+            sortedProperty: 'nonexistent',
+          });
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
           expect(nonexistent).not.toBeDefined();
         });
@@ -603,13 +658,11 @@ describe('metadata formater', () => {
       };
       const metadata = metadataSelectors.formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
-      expect(formater.prepareMetadata).toHaveBeenCalledWith(
-        doc,
-        templates,
-        metadataSelectors.indexedThesaurus(state),
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, {
+        thesauri: metadataSelectors.indexedThesaurus(state),
         relationships,
-        undefined
-      );
+        options: undefined,
+      });
     });
 
     it('should exclude preview if option passed', () => {
@@ -623,13 +676,11 @@ describe('metadata formater', () => {
         excludePreview: true,
       });
       expect(metadata).toBe('metadataFormated');
-      expect(formater.prepareMetadata).toHaveBeenCalledWith(
-        doc,
-        templates,
-        metadataSelectors.indexedThesaurus(state),
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, {
+        thesauri: metadataSelectors.indexedThesaurus(state),
         relationships,
-        { excludePreview: true }
-      );
+        options: { excludePreview: true },
+      });
     });
 
     describe('when passing sortProperty', () => {
@@ -647,12 +698,10 @@ describe('metadata formater', () => {
           relationships
         );
         expect(metadata).toBe('metadataFormated');
-        expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(
-          doc,
-          templates,
-          metadataSelectors.indexedThesaurus(state),
-          'sortProperty'
-        );
+        expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, {
+          thesauri: metadataSelectors.indexedThesaurus(state),
+          sortedProperty: 'sortProperty',
+        });
       });
     });
   });

@@ -86,8 +86,9 @@ const TableRowComponent = ({
     return clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, selectionKeyPressed);
   };
 
-  const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
-    sortedProperties: ['editDate', 'creationDate'],
+  const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, {
+    thesauri: thesauris,
+    options: { sortedProperties: ['editDate', 'creationDate'] },
   });
   const columnValues = new Map();
   formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
