@@ -315,7 +315,7 @@ CSV Import,CSV တင်သွင်းခြင်း
 CSV import cancelled,CSV တင်သွင်းခြင်း ဖျက်သိမ်းခဲ့သည်။
 CSV import completed,CSV တင်သွင်းမှု ပြီးစီးပါပြီ။
 CSV import failed,CSV တင်သွင်းမှု မအောင်မြင်ပါ။
-CSV or ZIP up to 50MB,CSV သို့မဟုတ် ZIP၊ အများဆုံး 50MB
+CSV or ZIP,CSV သို့မဟုတ် ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,လက်ရှိတန်ဖိုး/အကြံပြုချက်
 "Custom colors are not available for this chart type. Use the chart palette or template

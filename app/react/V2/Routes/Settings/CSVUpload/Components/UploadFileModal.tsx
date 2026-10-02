@@ -91,8 +91,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
               'text/csv': ['.csv'],
               'application/zip': ['.zip'],
             }}
-            message={<Translate className="italic text-ink-muted">CSV or ZIP up to 50MB</Translate>}
-            maxSize={52428800}
+            message={<Translate className="italic text-ink-muted">CSV or ZIP</Translate>}
           />
           <Select
             id="template-select"

@@ -317,7 +317,7 @@ CSV Import,استيراد ملف CSV
 CSV import cancelled,تم إلغاء استيراد ملف CSV
 CSV import completed,اكتمل استيراد ملف CSV
 CSV import failed,فشل استيراد ملف CSV
-CSV or ZIP up to 50MB,ملف CSV أو ZIP بحجم يصل إلى 50 ميغابايت
+CSV or ZIP,ملف CSV أو ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,القيمة الحالية/الاقتراح
 "Custom colors are not available for this chart type. Use the chart palette or template

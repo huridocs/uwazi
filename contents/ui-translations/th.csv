@@ -318,7 +318,7 @@ CSV Import,นำเข้าไฟล์ CSV
 CSV import cancelled,การนำเข้า CSV ถูกยกเลิก
 CSV import completed,การนำเข้าไฟล์ CSV เสร็จสิ้นแล้ว
 CSV import failed,การนำเข้าไฟล์ CSV ไม่สำเร็จ
-CSV or ZIP up to 50MB,ไฟล์ CSV หรือ ZIP ขนาดไม่เกิน 50MB
+CSV or ZIP,ไฟล์ CSV หรือ ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,ค่าปัจจุบัน/ข้อเสนอแนะ
 "Custom colors are not available for this chart type. Use the chart palette or template
