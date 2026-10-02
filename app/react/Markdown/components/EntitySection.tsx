@@ -1,7 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
 import React, { type JSX } from 'react';
+import Immutable from 'immutable';
+import { useAtomValue } from 'jotai';
 import { IStore } from '#app/istore.js';
+import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 import { logError } from '../utils.js';
 import { Section } from './Section.js';
 
@@ -61,7 +64,17 @@ export const UnwrapMetadataObject = (MetadataObject: any, Template: any) =>
   }, {});
 
 // eslint-disable-next-line max-statements
-const EntitySection = ({ entity, templates, children, 'show-if': showIf }: ComponentProps) => {
+const EntitySection = ({
+  entity: reduxEntity,
+  templates,
+  children,
+  'show-if': showIf,
+}: ComponentProps) => {
+  const entityPageView = useAtomValue(entityPageViewAtom);
+  const entity = entityPageView?.entityRaw
+    ? Immutable.fromJS(entityPageView.entityRaw)
+    : reduxEntity;
+
   const jsEntity = entity.toJS();
   const template = templates.find(t => t?.get('_id') === jsEntity.template);
   const unwrappedMetadata = UnwrapMetadataObject(jsEntity.metadata, template.toJS());

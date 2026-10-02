@@ -5,12 +5,18 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchAPI as searchApi } from '#app/Search/SearchAPI.js';
 import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
 import { api } from '#app/utils/api.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 
 import markdownDatasets from '../markdownDatasets.js';
 import fixtures from './fixtures.js';
 
 describe('markdownDatasets', () => {
   let requestParams;
+
+  afterEach(() => {
+    getStore().set(entityPageViewAtom, null);
+  });
 
   const getTestState = method => {
     const { dataset1, dataset2 } = fixtures[method];
@@ -152,6 +158,37 @@ describe('markdownDatasets', () => {
         });
       });
     });
+  });
+
+  it('prefers entity v2 page datasets over redux page datasets', () => {
+    getStore().set(entityPageViewAtom, {
+      pageSharedId: 'page1',
+      pageView: {},
+      itemLists: [],
+      datasets: {
+        default: { rows: 'from atom', metadata: { progress: [{ value: 9 }] } },
+      },
+      entityRaw: {
+        _id: 'e',
+        sharedId: 's',
+        language: 'en',
+        title: 't',
+        template: 't',
+        creationDate: 1,
+        user: 'u',
+      },
+    });
+
+    const state = {
+      page: {
+        datasets: Immutable.fromJS({
+          default: { rows: 'from redux', metadata: { progress: [{ value: 1 }] } },
+        }),
+      },
+    };
+
+    expect(markdownDatasets.getRows(state, {})).toBe('from atom');
+    expect(markdownDatasets.getMetadataValue(state, { property: 'progress' })).toBe(9);
   });
 
   describe('getRows', () => {
