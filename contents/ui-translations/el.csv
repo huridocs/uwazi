@@ -317,7 +317,7 @@ CSV Import,Εισαγωγή αρχείου CSV
 CSV import cancelled,Η εισαγωγή CSV ακυρώθηκε
 CSV import completed,Η εισαγωγή CSV ολοκληρώθηκε
 CSV import failed,Η εισαγωγή CSV απέτυχε
-CSV or ZIP up to 50MB,CSV ή ZIP έως 50 MB
+CSV or ZIP,CSV ή ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
 "Custom colors are not available for this chart type. Use the chart palette or template

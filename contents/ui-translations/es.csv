@@ -316,7 +316,7 @@ CSV Import,Importación de CSV
 CSV import cancelled,Importación de CSV cancelada
 CSV import completed,Importación de CSV completada
 CSV import failed,Importación de CSV fallida
-CSV or ZIP up to 50MB,CSV o ZIP de hasta 50 MB
+CSV or ZIP,CSV o ZIP
 Ctrl K,Ctrl+K
 Current Value/Suggestion,Valor actual/Sugerencia
 "Custom colors are not available for this chart type. Use the chart palette or template
