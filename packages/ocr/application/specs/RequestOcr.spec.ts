@@ -44,7 +44,7 @@ describe('RequestOcr', () => {
       testingEnvironment.runWithContext(async () =>
         RequestOcrFactory.default({
           ocrEngine: engine,
-          fileStorage: new FakeFileStorage(existing),
+          fileStorage: FakeFileStorage.holding(existing),
         }).execute({ filename })
       );
 

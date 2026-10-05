@@ -1,12 +1,17 @@
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 
-/** The filesystem, across the one boundary the use case specs substitute: which blobs exist. */
-class FakeFileStorage implements Pick<FileStorage, 'fileExists'> {
-  constructor(private readonly existing: string[]) {}
-
-  async fileExists(file: BaseFile) {
-    return this.existing.includes(file.filename);
+/**
+ * The tenant's file storage, across the one boundary the use case specs substitute: which blobs
+ * exist. Build it inside the test's context.
+ */
+class FakeFileStorage {
+  static holding(existing: string[]): FileStorage {
+    const storage = FileStorageFactory.default();
+    jest
+      .spyOn(storage, 'fileExists')
+      .mockImplementation(async file => existing.includes(file.filename));
+    return storage;
   }
 }
 

@@ -39,7 +39,7 @@ describe('GetOcrStatus', () => {
       testingEnvironment.runWithContext(async () =>
         GetOcrStatusFactory.default({
           ocrEngine: engine,
-          fileStorage: new FakeFileStorage(existing),
+          fileStorage: FakeFileStorage.holding(existing),
         }).execute({ filename })
       );
 
