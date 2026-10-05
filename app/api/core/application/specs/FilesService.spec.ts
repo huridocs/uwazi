@@ -419,21 +419,13 @@ describe('FilesService', () => {
         expect(demoted.entity).toBe('entity1');
       });
 
-      it("should join the caller's transaction instead of opening its own", async () => {
-        const docId = f.idString('dm-doc');
+      it('should leave the transaction to the caller, opening none of its own', async () => {
+        const { service, transactionManager } = createService();
+        const run = jest.spyOn(transactionManager, 'run');
 
-        await testingEnvironment.runWithContext(async () => {
-          const service = FilesServiceFactory.default();
-          await ExecutionContext.transactionManager.run(async () =>
-            service.demoteToAttachment(docId)
-          );
-        });
+        await service.demoteToAttachment(f.idString('dm-doc'));
 
-        const dbFiles = await testingEnvironment.db.getAllFrom('files');
-        const demoted = (dbFiles as Record<string, unknown>[]).find(
-          file => file._id!.toString() === docId
-        )!;
-        expect(demoted.type).toBe('attachment');
+        expect(run).not.toHaveBeenCalled();
       });
 
       it('should throw when file is not found', async () => {

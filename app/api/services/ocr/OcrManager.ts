@@ -168,7 +168,9 @@ const processFiles = async (
         sessionId,
       }
     );
-    await filesService.demoteToAttachment(originalFile._id.toHexString());
+    await ExecutionContext.transactionManager.run(async () =>
+      filesService.demoteToAttachment(originalFile._id.toHexString())
+    );
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);
     await relationships.swapTextReferencesFile(
