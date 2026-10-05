@@ -11,6 +11,7 @@ import { TranslateModal } from '#app/I18N/index.js';
 import { inlineEditAtom } from '#V2/atoms/index.js';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { Header } from '#app/V2/Components/UI/Header/Header.js';
+import { InstanceSeo } from '#app/App/InstanceSeo.js';
 import { BertHost } from '#app/V2/Components/AIAssistant/BertHost.js';
 import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
@@ -82,6 +83,7 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
+      <InstanceSeo />
       <div className="content">
         {shellSharedTheme ? (
           <ThemeProvider

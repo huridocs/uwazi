@@ -10,8 +10,6 @@ import { CustomUploadImagePickerModal } from './CustomUploadImagePickerModal.js'
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
 import { useCustomUploadImagePickerLogic } from './useCustomUploadImagePickerLogic.js';
 
-type AssetField = 'site_logo' | 'favicon';
-
 const defaultPreviewClass =
   'max-h-full max-w-full rounded object-contain [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--color-theme-text-primary)_45%,transparent),0_0_0_2px_color-mix(in_srgb,var(--color-theme-surface-raised,var(--color-theme-bg-surface))_92%,transparent)]';
 
@@ -20,7 +18,7 @@ const defaultPreviewWrapperClass =
 
 type CustomUploadImagePickerProps = {
   id: string;
-  registerProps?: UseFormRegisterReturn<AssetField>;
+  registerProps?: UseFormRegisterReturn<string>;
   value: string | undefined;
   onChange: (url: string) => void;
   files: FileType[];

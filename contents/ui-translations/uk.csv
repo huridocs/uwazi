@@ -810,6 +810,7 @@ Members,Учасники
 Menu,Меню
 Message,Повідомлення
 Message sent,Повідомлення надіслано
+Meta description,Метаопис
 Metadata,Метадані
 Metadata Extraction,Видобування метаданих
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -958,6 +959,9 @@ OCR error,Помилка оптичного розпізнавання симв�
 OCR error tip,модуль оптичного розпізнавання символів не зміг прочитати документ через неправильно сформований формат. Останнє оновлення
 OCR PDF,Оптичне розпізнавання символів PDF
 of,з
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Гаразд
 OK,ГАРАЗД.
 On this entity,На цьому об’єкті
@@ -976,6 +980,7 @@ Only published entities are counted.,До підрахунку беруться 
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
 Open entity,Відкрити об’єкт
+Open Graph,Open Graph
 Open group,Відкрита група
 Open link,Відкрити посилання
 Open PDF,Відкрити PDF
@@ -1001,6 +1006,7 @@ Page embed code,Код вбудовування на сторінку
 Page language,Мова сторінки
 Page not found,Сторінку не знайдено
 Page published successfully.,Сторінка успішно опублікована.
+Page title,Заголовок сторінки
 Pages,Сторінки
 Pagination,Пагінація
 Paragrap number extraction property (numeric),Властивість вилучення номера абзацу (числова)
@@ -1260,6 +1266,7 @@ Select from computer,Виберіть з комп'ютера
 Select icon...,Вибрати піктограму…
 Select image,Виберіть зображення
 Select media,Виберіть медіафайл
+Select Open Graph image,Вибрати зображення Open Graph
 Select page,Вибрати сторінку
 Select property…,Вибрати властивість…
 Select relationship,Вибрати зв'язок
@@ -1287,6 +1294,12 @@ Send recovery email,Відправити лист для відновлення 
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
 Sending labeled data,Відправлення маркованих даних
+SEO,SEO
+SEO meta description,"Короткий опис того, що дає ця колекція. Пошукові системи можуть показувати цей текст у результатах. Орієнтуйтеся на 150–160 символів."
+SEO og description,"Опис для прев’ю в соціальних мережах. Якщо поле порожнє, використовується метаопис."
+SEO og image description,"Зображення в прев’ю соціальних мереж (LinkedIn, Facebook та інших). Рекомендований розмір — 1200×630 пікселів."
+SEO og title description,"Заголовок, який використовується під час поширення цієї колекції в LinkedIn, Facebook та інших соціальних мережах. Якщо поле порожнє, використовується заголовок сторінки."
+SEO page title description,Зрозумілий і описовий заголовок сайту. Використовується як HTML-заголовок за замовчуванням у вкладках браузера та в результатах пошуку.
 Series,Серія
 Server disconnected,Сервер відключено
 Services,Послуги

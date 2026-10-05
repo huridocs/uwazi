@@ -1540,3 +1540,16 @@ Chart palette,Option label,Settings > Dataviz > Appearance tab,Dropdown option t
 Template colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that uses each template brand color when comparing data sources or when the dimension is entity type.,false
 Custom colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that lets the user override colors for specific chart values.,false
 Color mode,Field label,Settings > Dataviz > Appearance tab,Label on the select that chooses how chart series colors are assigned.,false
+SEO,UI text,Settings > Collection,Card title for the instance SEO settings section.,true
+Page title,Field label,Settings > Collection,Label for the HTML page title field used in browser tabs and search results.,false
+Meta description,Field label,Settings > Collection,Label for the short collection description that search engines may show in results.,false
+Open Graph,UI text,Settings > Collection,Section heading for the Open Graph fields used in social media previews.,true
+og:title,Field label,Settings > Collection,Open Graph title protocol property name shown as a field label.,true
+og:description,Field label,Settings > Collection,Open Graph description protocol property name shown as a field label.,true
+og:image,Field label,Settings > Collection,Open Graph image protocol property name shown as a field label.,true
+Select Open Graph image,Button label,Settings > Collection,Button that opens the image picker for the Open Graph share image.,false
+SEO page title description,Tooltip,Settings > Collection,Tooltip explaining the page title field: default HTML title in browser tabs and search results.,false
+SEO meta description,Tooltip,Settings > Collection,"Tooltip explaining the meta description field: a short collection summary for search results, about 150–160 characters.",false
+SEO og title description,Tooltip,Settings > Collection,"Tooltip explaining og:title: the title used when sharing the collection; falls back to the page title if empty.",false
+SEO og description,Tooltip,Settings > Collection,"Tooltip explaining og:description: the social preview description; falls back to the meta description if empty.",false
+SEO og image description,Tooltip,Settings > Collection,"Tooltip explaining og:image: the social preview image, with a recommended size of 1200×630 pixels.",false

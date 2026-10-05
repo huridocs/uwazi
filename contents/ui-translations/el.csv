@@ -809,6 +809,7 @@ Members,Μέλη
 Menu,Μενού
 Message,Μήνυμα
 Message sent,Το μήνυμα στάλθηκε
+Meta description,Meta περιγραφή
 Metadata,Μεταδεδομένα
 Metadata Extraction,Εξαγωγή μεταδεδομένων
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -957,6 +958,9 @@ OCR error,Σφάλμα OCR
 OCR error tip,Η υπηρεσία OCR δεν μπόρεσε να διαβάσει το έγγραφο λόγω εσφαλμένης μορφής. Τελευταία ενημέρωση:
 OCR PDF,OCR PDF
 of,από
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Εντάξει
 OK,Εντάξει
 On this entity,Σε αυτή την οντότητα
@@ -975,6 +979,7 @@ Only published entities are counted.,Λαμβάνονται υπόψη μόνο 
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
 Open entity,Άνοιγμα οντότητας
+Open Graph,Open Graph
 Open group,Άνοιγμα ομάδας
 Open link,Άνοιγμα συνδέσμου
 Open PDF,Άνοιγμα PDF
@@ -1000,6 +1005,7 @@ Page embed code,Κώδικας ενσωμάτωσης σελίδας
 Page language,Γλώσσα σελίδας
 Page not found,Η σελίδα δεν βρέθηκε
 Page published successfully.,Η σελίδα δημοσιεύθηκε με επιτυχία.
+Page title,Τίτλος σελίδας
 Pages,Σελίδες
 Pagination,Σελιδοποίηση
 Paragrap number extraction property (numeric),Ιδιότητα εξαγωγής αριθμού παραγράφου (αριθμός)
@@ -1259,6 +1265,7 @@ Select from computer,Επιλογή από τον υπολογιστή
 Select icon...,Επιλογή εικονιδίου…
 Select image,Επιλογή εικόνας
 Select media,Επιλογή μέσων
+Select Open Graph image,Επιλογή εικόνας Open Graph
 Select page,Επιλογή σελίδας
 Select property…,Επιλογή ιδιότητας…
 Select relationship,Επιλογή σχέσης
@@ -1286,6 +1293,12 @@ Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
 Sending labeled data,Αποστολή επισημασμένων δεδομένων
+SEO,SEO
+SEO meta description,Μια σύντομη περιγραφή του τι παρέχει αυτή η συλλογή. Οι μηχανές αναζήτησης μπορεί να εμφανίσουν αυτό το κείμενο στα αποτελέσματα. Στοχεύστε περίπου 150–160 χαρακτήρες.
+SEO og description,"Περιγραφή που χρησιμοποιείται στις προεπισκοπήσεις κοινωνικών δικτύων. Αν είναι κενή, χρησιμοποιείται η meta περιγραφή."
+SEO og image description,"Εικόνα που εμφανίζεται στις προεπισκοπήσεις κοινωνικών δικτύων (LinkedIn, Facebook και άλλα). Το προτεινόμενο μέγεθος είναι 1200×630 pixel."
+SEO og title description,"Τίτλος που χρησιμοποιείται όταν αυτή η συλλογή κοινοποιείται σε πλατφόρμες όπως LinkedIn, Facebook και άλλα κοινωνικά δίκτυα. Αν είναι κενός, χρησιμοποιείται ο τίτλος σελίδας."
+SEO page title description,Ένας σαφής και περιγραφικός τίτλος για τον ιστότοπο. Χρησιμοποιείται ως προεπιλεγμένος τίτλος HTML στις καρτέλες του προγράμματος περιήγησης και στα αποτελέσματα αναζήτησης.
 Series,Σειρά
 Server disconnected,Ο διακομιστής αποσυνδέθηκε
 Services,Υπηρεσίες

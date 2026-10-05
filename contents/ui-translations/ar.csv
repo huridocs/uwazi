@@ -809,6 +809,7 @@ Members,أعضاء
 Menu,قائمة التحكم
 Message,رسالة
 Message sent,تم إرسال الرسالة
+Meta description,الوصف التعريفي
 Metadata,البيانات الوصفية
 Metadata Extraction,استخلاص البيانات الوصفية
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -957,6 +958,9 @@ OCR error,خطأ في الOCR
 OCR error tip,لم يتمكن محرك التعرف الضوئي على الحروف (OCR) من قراءة المستند بسبب وجود خلل في تنسيقه. آخر تحديث
 OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,موافق
 OK,موافق
 On this entity,بشأن هذا الكيان
@@ -975,6 +979,7 @@ Only published entities are counted.,يتم احتساب الكيانات الم
 "Only the extractor will be deleted, all created entities will remain on the library.",سيتم حذف المستخرج فقط، وستبقى جميع الكيانات التي تم إنشاؤها في المكتبة.
 Open,فتح
 Open entity,فتح الكيان
+Open Graph,Open Graph
 Open group,فتح المجموعة
 Open link,فتح الرابط
 Open PDF,فتح ملف PDF
@@ -1000,6 +1005,7 @@ Page embed code,رمز تضمين الصفحة
 Page language,لغة الصفحة
 Page not found,لم يتم العثور على الصفحة
 Page published successfully.,تم نشر الصفحة بنجاح.
+Page title,عنوان الصفحة
 Pages,الصفحات
 Pagination,ترقيم الصفحات
 Paragrap number extraction property (numeric),خاصية استخراج رقم الفقرة (رقمي)
@@ -1259,6 +1265,7 @@ Select from computer,اختر من جهاز الكمبيوتر
 Select icon...,اختيار أيقونة…
 Select image,اختر صورة
 Select media,اختر وسائط
+Select Open Graph image,اختر صورة Open Graph
 Select page,اختيار صفحة
 Select property…,اختيار خاصية…
 Select relationship,اختر العلاقة
@@ -1286,6 +1293,12 @@ Send recovery email,إرسل بريد الكتروني للاستعادة
 Sending email,البريد الالكتروني المرسل
 Sending email description,هذا هو عنوان البريد الإلكتروني الذي سيظهر كمرسل عند إرسال رسالة بريد إلكتروني من مجموعتك على Uwazi إلى المستخدمين المسجلين. العنوان الافتراضي هو *no-reply@uwazi.io*. يمكنك تعيين عنوان مخصص عن طريق إدخال عنوان البريد الإلكتروني الذي تريده هنا.
 Sending labeled data,إرسال البيانات المُصنَّفة
+SEO,SEO
+SEO meta description,وصف قصير لما تقدمه هذه المجموعة. قد تعرض محركات البحث هذا النص في النتائج. يُفضل حوالي 150–160 حرفاً.
+SEO og description,الوصف المستخدم في معاينات وسائل التواصل الاجتماعي. إذا كان فارغاً، يُستخدم الوصف التعريفي.
+SEO og image description,الصورة المعروضة في معاينات وسائل التواصل الاجتماعي (LinkedIn وFacebook وغيرهما). الحجم الموصى به هو 1200×630 بكسل.
+SEO og title description,العنوان المستخدم عند مشاركة هذه المجموعة على منصات مثل LinkedIn وFacebook وغيرها. إذا كان فارغاً، يُستخدم عنوان الصفحة.
+SEO page title description,عنوان واضح ووصفي للموقع. يُستخدم كعنوان HTML الافتراضي في علامات تبويب المتصفح ونتائج البحث.
 Series,سلسلة
 Server disconnected,انقطع الاتصال بالخادم
 Services,الخدمات
