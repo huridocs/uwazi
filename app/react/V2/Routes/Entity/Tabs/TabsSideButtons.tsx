@@ -1,6 +1,7 @@
 import React from 'react';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { TabButtonDef } from '#V2/Components/UI/index.js';
+import { t } from '#app/I18N/index.js';
 
 type TabsSideButtonsProps = {
   buttons: TabButtonDef[];
@@ -21,7 +22,7 @@ const TabsSideButtons = ({
     activeTabId={activeTabId}
     syncActiveTabId={syncActiveTabId}
     onTabChange={onTabChange}
-    tabListAriaLabel="Side panel tabs"
+    tabListAriaLabel={t('System', 'Side panel tabs', null, false)}
   />
 );
 

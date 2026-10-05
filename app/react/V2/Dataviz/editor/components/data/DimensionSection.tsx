@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import type { ClientTemplateSchema } from '#app/istore.js';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -21,18 +21,18 @@ import {
 } from '#V2/Dataviz/types/definition.js';
 
 const NUMERIC_AGGREGATION_OPTIONS = [
-  { value: 'sum', label: 'Sum' },
-  { value: 'avg', label: 'Avg' },
-  { value: 'min', label: 'Min' },
-  { value: 'max', label: 'Max' },
-  { value: 'count', label: 'Count' },
+  { value: 'sum', label: t('System', 'Sum', null, false) },
+  { value: 'avg', label: t('System', 'Avg', null, false) },
+  { value: 'min', label: t('System', 'Min', null, false) },
+  { value: 'max', label: t('System', 'Max', null, false) },
+  { value: 'count', label: t('System', 'Count', null, false) },
 ] as const;
 
 const DATE_INTERVAL_OPTIONS = [
-  { value: 'year', label: 'Year' },
-  { value: 'month', label: 'Month' },
-  { value: 'week', label: 'Week' },
-  { value: 'computed_years', label: 'Computed years' },
+  { value: 'year', label: t('System', 'Year', null, false) },
+  { value: 'month', label: t('System', 'Month', null, false) },
+  { value: 'week', label: t('System', 'Week', null, false) },
+  { value: 'computed_years', label: t('System', 'Computed years', null, false) },
 ] as const;
 
 type DateIntervalOption = (typeof DATE_INTERVAL_OPTIONS)[number]['value'];
@@ -100,7 +100,7 @@ const DimensionSection = ({
     sources.find(s => s.alias === dimension?.sourceAlias) ||
     sources.find(s => s.templateId) ||
     sources[0];
-  const template = templates.find(t => t._id === activeSource?.templateId);
+  const template = templates.find(tmpl => tmpl._id === activeSource?.templateId);
 
   const availableProperties = useMemo(
     () => getSharedDimensionProperties(sources, templates as ClientTemplateSchema[]),
@@ -112,7 +112,12 @@ const DimensionSection = ({
     const options = [
       { value: '', label: allowNone ? 'None' : 'Select property…' },
       ...(allowTemplateDimension && multiSource
-        ? [{ value: TEMPLATE_DIMENSION_PROPERTY, label: 'Entity type (template)' }]
+        ? [
+            {
+              value: TEMPLATE_DIMENSION_PROPERTY,
+              label: t('System', 'Entity type (template)', null, false),
+            },
+          ]
         : []),
       ...base.map(p => ({ value: p.name, label: p.label })),
     ];
@@ -121,7 +126,7 @@ const DimensionSection = ({
 
   const selectedProperty =
     dimension?.property === TEMPLATE_DIMENSION_PROPERTY
-      ? { type: 'template', label: 'Entity type' }
+      ? { type: 'template', label: t('System', 'Entity type', null, false) }
       : availableProperties.find(p => p.name === dimension?.property) ||
         template?.properties?.find(p => p.name === dimension?.property);
 
@@ -200,7 +205,7 @@ const DimensionSection = ({
       )}
       <Select
         id={`${idPrefix}-property`}
-        label="Property"
+        label={t('System', 'Property', null, false)}
         value={dimension?.property || ''}
         options={propertyOptions}
         onChange={e => handlePropertyChange(e.target.value)}
@@ -209,7 +214,7 @@ const DimensionSection = ({
       {showNumericAggregation && (
         <Select
           id={`${idPrefix}-aggregation`}
-          label="Aggregation"
+          label={t('System', 'Aggregation', null, false)}
           value={numericAggregationValue}
           options={[...NUMERIC_AGGREGATION_OPTIONS]}
           onChange={e => handleNumericAggregationChange(e.target.value)}
@@ -218,7 +223,7 @@ const DimensionSection = ({
       {showDateInterval && (
         <Select
           id={`${idPrefix}-date-interval`}
-          label="Date interval"
+          label={t('System', 'Date interval', null, false)}
           value={toDateIntervalValue(dimension?.dateInterval)}
           options={[...DATE_INTERVAL_OPTIONS]}
           onChange={e => handleDateIntervalChange(e.target.value)}
@@ -227,7 +232,7 @@ const DimensionSection = ({
       {dimension && dimension.property !== TEMPLATE_DIMENSION_PROPERTY && (
         <InputField
           id={`${idPrefix}-max-buckets`}
-          label="Max buckets"
+          label={t('System', 'Max buckets', null, false)}
           type="number"
           value={String(dimension.maxBuckets ?? 10)}
           onChange={e => onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })}

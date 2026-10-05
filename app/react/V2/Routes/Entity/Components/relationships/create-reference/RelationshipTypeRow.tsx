@@ -47,7 +47,7 @@ const trash = ({
   <button
     type="button"
     disabled={blocked}
-    aria-label={`Delete ${name}`}
+    aria-label={`${t('System', 'Delete', null, false)} ${name}`}
     onClick={onAskDelete}
     className={
       blocked
@@ -71,7 +71,7 @@ const RelationshipTypeRowActions = ({
   <div className="flex shrink-0 items-center gap-1">
     <button
       type="button"
-      aria-label={`Delete ${name}`}
+      aria-label={`${t('System', 'Delete', null, false)} ${name}`}
       onClick={onConfirmDelete}
       className="rounded-md bg-button-danger px-2 py-1 text-xs font-medium text-button-danger-fg hover:opacity-90"
     >
@@ -79,7 +79,7 @@ const RelationshipTypeRowActions = ({
     </button>
     <button
       type="button"
-      aria-label={`Cancel deleting ${name}`}
+      aria-label={`${t('System', 'Cancel', null, false)} ${name}`}
       onClick={onCancelDelete}
       className="px-2 py-1 text-xs font-medium text-ink-secondary hover:text-ink"
     >

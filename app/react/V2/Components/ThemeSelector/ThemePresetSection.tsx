@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, NAMED_THEMES } from '#V2/theme/themes.js';
 import type { ThemeMode } from '#V2/theme/themes.js';
 
@@ -29,7 +29,7 @@ const previewPaneStyle = (mode: ThemeMode): React.CSSProperties => ({
 const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: PresetCardProps) => (
   <button
     type="button"
-    title={title}
+    title={t('System', title, null, false)}
     className={`flex min-w-36 flex-1 basis-36 shrink-0 snap-start flex-col gap-2 rounded-lg border p-2 text-left transition-all ${
       selected ? 'border-primary-600 ring-1 ring-primary-500/25' : 'hover:border-gray-300'
     }`}
@@ -66,7 +66,9 @@ const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: Prese
         </div>
       </div>
     </div>
-    <div className="truncate text-xs font-medium leading-snug">{title}</div>
+    <div className="truncate text-xs font-medium leading-snug">
+      <Translate>{title}</Translate>
+    </div>
   </button>
 );
 

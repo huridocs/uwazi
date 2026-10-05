@@ -8,13 +8,13 @@ Key,Burmese
 198?,၁၉၈?
 2FA,နှစ်ဆလုံခြုံရေး
 2FA Enabled,2FA ဖွင့်ထားသည်
+A → Z,A → Z
 A default template cannot be deleted.,မူလပုံစံကို ဖျက်၍ မရပါ။
 A friendly hand for serious work — I'll act in the context shown above.,အရေးကြီးသော အလုပ်များအတွက် မိတ်ဆွေတစ်ဦးလို ကူညီပေးမည့်သူ — အထက်တွင် ပြထားသည့် အကြောင်းအရာအရ ကျွန်ုပ် လုပ်ဆောင်ပါမည်။
 A generated ID will be the default title.,ထုတ်ပေးသည့် ID သည် ပုံသေမူလ ခေါင်းစဉ် ဖြစ်ပါမည်။
 A source template must,အရင်းအမြစ်ပုံစံသည်
 A target template needs to have the following properties,ပစ်မှတ်ပုံစံတစ်ခုတွင် အောက်ပါ အင်္ဂါရပ်များ ပါရှိရမည်။
 A valid email is required,အီးမေးလ် လိုအပ်သည်
-A → Z,A → Z
 Accept,လက်ခံမည်
 Accept all,အားလုံးကိုလက်ခံပါ
 Accepted suggestion on entity,အဖွဲ့အစည်းဆိုင်ရာ အကြံပြုချက်ကို လက်ခံပါသည်။
@@ -91,8 +91,11 @@ Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
 Administrators and Editors always have edit access,အုပ်ချုပ်သူများနှင့် တည်းဖြတ်သူများသည် အမြဲတမ်း တည်းဖြတ်ခွင့် ရှိသည်။
 Admins,အုပ်ချုပ်သူများ
+Advanced,အဆင့်မြင့်
 Advanced colors,အဆင့်မြင့်အရောင်များ
 Advanced ECharts overrides,အဆင့်မြင့် ECharts အစားထိုးခြင်းများ
+Aggregation,ပေါင်းစည်းမှု
+Alias,အမည်ဝှက်
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -137,6 +140,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,ဤမြင်ကွင်းကို ဖျက်လိုပါသလား? ဤလုပ်ဆောင်ချက်ကို ပြန်မလုပ်နိုင်ပါ။
 Are you sure?,သေချာပါသလား?
 Ask Bert,Bert ကိုမေးပါ
+"Ask Bert anything, or describe a task…",Bert ကို မေးချင်တာမေးပါ သို့မဟုတ် တာဝန်တစ်ခု ဖော်ပြပါ…
 Attachment,ပူးတွဲစာရွက်
 Attachment deleted,ပူးတွဲဖိုင် ဖျက်သွားပါပြီ။
 Attachment renamed,ပူးတွဲဖိုင် အမည်ပြောင်းထားသည်။
@@ -151,6 +155,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,အလိုအလျောက် မာတိကာ
 Automatically generated,အလိုအလျောက် ထုတ်လုပ်ထားသည်
 Available default translation,ရရှိနိုင်သည့် မူလဘာသာပြန်ဆိုချက်
+Available files,ရနိုင်သော ဖိုင်များ
+Avg,ပျမ်းမျှ
 Back,နောက်သို့
 Back to,ပြန်သွားရန်
 Back to details,အသေးစိတ်သို့ ပြန်သွား
@@ -191,13 +197,14 @@ Character support process warning,ဤလုပ်ငန်းစဉ်သည် 
 Character support revert warning,ဤရွေးချယ်မှုကိုရွေးချယ်ပြီးနောက် သင်သည် အဟောင်းပိုင်ဆိုင်မှုအမည်ပေးနည်းသို့ ပြန်လည်အသုံးပြု၍ မရတော့ပါ။ သင့်ပုံစံပိုင်ဆိုင်မှုအမည်များတွင် ပြဿနာမရှိပါက ဤရွေးချယ်မှုကို မရွေးထားဘဲ ထားရန် ကျွန်ုပ်တို့ အကြံပြုပါသည်။
 Chart,ဂရပ်ဇယား
 Chart options,ဂရပ်ဇယားရွေးချယ်စရာများ
+Chart palette,ဂရပ်ဇယား အရောင်ပလိတ်
 Chart theme,ဂရပ်ဇယားအသွင်အပြင်
 Chart type,ဂရပ်ဇယားအမျိုးအစား
 Chart type uses a custom view,ဂရပ်ဇယားအမျိုးအစားသည် စိတ်ကြိုက်မြင်ကွင်းကို အသုံးပြုသည်။
 Check to make this instance public (non-logged in users can see public documents and entities),ဤအင်စတန့်ကို အများပြည်သူကြည့်ရှုနိုင်အောင် သတ်မှတ်ထားသည်ကို စစ်ဆေးပါ (ဝင်ရောက်ထားခြင်းမရှိသော အသုံးပြုသူများသည် အများပြည်သူစာရွက်စာတမ်းများနှင့် အဖွဲ့အစည်းများကို ကြည့်ရှုနိုင်ပါသည်)
 Checking which images fit the requirements,လိုအပ်ချက်များနှင့် ကိုက်ညီသည့် ပုံများကို စစ်ဆေးနေပါသည်။
 Choose,ရွေးပါ
-Choose PDF files,Choose PDF files
+Choose PDF files,PDF ဖိုင်များ ရွေးရန်
 Choose relation type,ဆက်နွယ်မှုအမျိုးအစားကိုရွေးပါ
 Choose which data to use for training,လေ့ကျင့်ရန် အသုံးပြုမည့် ဒေတာကို ရွေးပါ။
 Chrome header,ခရိုမ် ခေါင်းစီး
@@ -209,12 +216,18 @@ Clear coordinates,ကိုဩဒိနိတ်များကို ရှင�
 Clear Filters,စစ်ထုတ်မှုများကို ရှင်းလင်းရန်
 Clear PDF selection,ရွေးချယ်ထားသော PDF ရှင်းပါ
 Clear search,ရှာဖွေမှုကို ရှင်းပါ
+Clear selection,ရွေးချယ်မှု ရှင်းရန်
+Clear selection filter,ရွေးချယ်မှု စစ်ထုတ်မှု ရှင်းရန်
+Clear sort,စီရန် ရှင်းရန်
 Click,နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Click to select an image,ပုံတစ်ပုံရွေးရန် နှိပ်ပါ
 Click to select audio or video,အသံ သို့မဟုတ် ဗီဒီယိုကို ရွေးရန် နှိပ်ပါ
 Click to select files,ဖိုင်များရွေးရန် နှိပ်ပါ
 Close,ပိတ်ရန်
+Close filters,စစ်ထုတ်မှုများ ပိတ်ရန်
+Close modal,ဝင်းဒိုး ပိတ်ရန်
+Close side panel,ဘေးဘောင် ပိတ်ရန်
 Code,ကုဒ်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collaborators,ပူးပေါင်းဆောင်ရွက်သူများ
@@ -222,15 +235,19 @@ Collapse all,အားလုံးကို ပိတ်
 Collapse All,အားလုံးကို ပိတ်
 Collection,စုစည်းမှု
 Collection Name,စုစည်းမှုအမည်
+Color mode,အရောင်မုဒ်
 Colors,အရောင်များ
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,အရောင်များသည် ဆာဗာဒေတာအလွှာမှ ရရှိသည်။ Preview သည် ရနိုင်ပါက သတ်မှတ်ထားသော bucket အရောင်များကို ပြသသည်။
 Columns,ကော်လံများ
+Combine counts,အရေအတွက် ပေါင်းရန်
 combine or exclude terms,စကားလုံးများကို ပေါင်းစပ် သို့မဟုတ် ထုတ်ပယ်
 Comfortable,သက်တောင့်သက်သာ
 Common sources,အထွေထွေ ရင်းမြစ်များ
 Compact,သိပ်သည်းသော
+Compare side by side,ဘေးချင်းယှဉ် နှိုင်းယှဉ်ရန်
 Completed,ပြီးစီးပြီးပါပြီ
 Completed with errors,အမှားများပါဝင်ပြီး ပြီးစီးထားသည်။
+Computed years,တွက်ချက်ထားသော နှစ်များ
 Config,ပြင်ဆင်ချက်များ
 Configuration,ပြင်ဆင်မှု
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
@@ -251,7 +268,9 @@ Connect to an entity,အဖွဲ့အစည်းတစ်ခုနှင့�
 Connect to entity,အဖွဲ့အစည်းနှင့် ချိတ်ဆက်ပါ။
 Connected entities,ချိတ်ဆက်ထားသော အဖွဲ့အစည်းများ
 Connected to server,ဆာဗာနှင့် ချိတ်ဆက်ထားသည်
+Connection deleted,ချိတ်ဆက်မှု ဖျက်ပြီး
 Connection type,ချိတ်ဆက်မှု အမျိုးအစား
+Connections,ချိတ်ဆက်မှုများ
 Contact email description,ဒီမှာ သင်သည် ဆက်သွယ်ရန် အီးမေးလ်နှင့် Uwazi က အသုံးပြုသူအား အသိပေးစာ ပို့သည့်အခါ ပြသမည့် အီးမေးလ်ကို စိတ်ကြိုက် သတ်မှတ်နိုင်ပါသည်။
 Contact Form,ဆက်သွယ်ရန် ဖောင်
 Contact form email,ဆက်သွယ်ရန် ဖောင် အီးမေးလ်
@@ -318,6 +337,7 @@ CSV import failed,CSV တင်သွင်းမှု မအောင်မြ
 CSV or ZIP,CSV သို့မဟုတ် ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,လက်ရှိတန်ဖိုး/အကြံပြုချက်
+Custom colors,စိတ်ကြိုက် အရောင်များ
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.",ဒီဂရပ်ဇယားအမျိုးအစားအတွက် စိတ်ကြိုက်အရောင်များ မရနိုင်ပါ။ ဂရပ်ဇယားအရောင်ပလက်တေး သို့မဟုတ် ပုံစံအရောင်များကို အသုံးပြုပါ။
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း markup အမှား- မထောက်ပံ့သော တန်ဖိုးများ! သင့်ဖွဲ့စည်းပုံကို စစ်ဆေးပါ
@@ -326,19 +346,25 @@ Custom Favicon,စိတ်ကြိုက် ဖာဗစ်ကွန်
 Custom JS,စိတ်ကြိုက် JavaScript
 Custom landing page,စိတ်ကြိုက် လန်ဒင်း စာမျက်နှာ
 custom page error warning,ဤ စိတ်ကြိုက် စာမျက်နှာတွင် မမျှော်လင့်ထားသော အမှားတစ်ခု ဖြစ်နေပါသည်။ မှန်ကန်စွာ အလုပ်မလုပ်နိုင်ပါက ဖြစ်နိုင်ပါသည်။ အသေးစိတ်အတွက် အုပ်ချုပ်သူထံ ဆက်သွယ်ပါ။
+Custom pair,စိတ်ကြိုက်အတွဲ
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Customize,စိတ်ကြိုက်ပြင်ဆင်
 Customized,စိတ်ကြိုက်ပြင်ဆင်ထားသော
+Daily,နေ့စဉ်
 Dark,မှောင်
 Dark Theme,အမှောင် အသွင်အပြင်
 Dashboard,ဒက်ရှ်ဘုတ်
+Data,ဒေတာ
 Data may be outdated.,ဒေတာများသည် အဟောင်းဖြစ်နေနိုင်သည်။
 Data source,ဒေတာရင်းမြစ်
 Data sources,ဒေတာရင်းမြစ်များ
 Data visualizations,ဒေတာမြင်ကွင်းများ
 Data was updated recently. You can refresh again in a few seconds.,ဒေတာကို မကြာသေးမီက အပ်ဒိတ်လုပ်ပြီးပါပြီ။ အနည်းငယ် စက္ကန့်အတွင်း ထပ်မံ ပြန်လည်အသစ်ပြုနိုင်ပါသည်။
+Dataviz editor,ဒေတာမြင်ကွင်း တည်းဖြတ်
+Dataviz preview,ဒေတာမြင်ကွင်း အကြိုကြည့်
 Date,ရက်စွဲ
 Date added,ဒေတာ ထည့်ပြီး
+Date interval,ရက်စွဲ အကွာအဝေး
 Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).",ရက်စွဲ သို့မဟုတ် ဂဏန်း × ဂဏန်းသည် scatter နှင့် heatmap ကို အသုံးပြုခွင့်ပြုသည်။ Line၊ area နှင့် bar များသည် အဓိက အတိုင်းအတာပေါ်တွင် တိုင်းတာချက်ကို ဖော်ပြသည် (ဥပမာ – မှတ်ပုံတင်ရက်စွဲအလိုက် အင်ဂျင်အရွယ်အစား အများဆုံး)။
@@ -346,10 +372,12 @@ Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
                 value over time.",Date သို့မဟုတ် နံပါတ် × ရွေးချယ်ခြင်းသည် အချိန်အလိုက် တစ်ခုချင်းစီ ခွဲခြားချက်တန်ဖိုးအတွက် တစ်ကြောင်းစီပါဝင်သည့် လိုင်းနှင့် ဒေသဂရပ်ဇယားများကို ဖွင့်ပေးသည်။
 Date range,ရက်စွဲအကွာအဝေး
 Day,နေ့
+Decrease indentation,အင်တင်း လျှော့ရန်
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.",ထုတ်လုပ်ထားသော ECharts ရွေးချယ်စရာပေါ်တွင် နက်ရှိုင်းစွာ ပေါင်းစည်းထားသည်။ Chart တက်ဘ်တွင် မမြင်သာသေးသော ရွေးချယ်စရာများကို တိကျစွာ ချိန်ညှိရန် အသုံးပြုပါ။
 Default,မူလတန်ဖိုး
 Default date format,မူလ ရက်စွဲ ဖော်မတ်
+Default file,ပုံသေဖိုင်
 Default filter,မူလ စစ်ထုတ်စနစ်
 Default language,မူလဘာသာစကား
 Default language change success,ပုံသေမူလ ဘာသာစကား ပြောင်းလဲမှု အောင်မြင်ပါသည်
@@ -359,6 +387,7 @@ Default View,မူလ ပြသမှု
 Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
 Delete entities and documents,အဖွဲ့အစည်းများနှင့် စာရွက်စာတမ်းများကို ဖျက်ပစ်ပါ။
+Delete entry,မှတ်တမ်း ဖျက်ရန်
 Delete file,ဖိုင်ကို ဖျက်ပါ
 Delete relationship,ဆက်နွယ်မှု ဖျက်ရန်
 Delete relationships,ဆက်နွယ်မှုများကို ဖျက်ရန်
@@ -380,6 +409,7 @@ Deletion success,ဖျက်ခြင်းအောင်မြင်ပါပ
 Density,သိပ်သည်းမှု
 Description,ဖော်ပြချက်
 Deselect all,အားလုံးကိုရွေးချယ်ခြင်းဖျက်ရန်
+Detail,အသေးစိတ်
 Details,အသေးစိတ်အချက်အလက်များ
 Direction,ဦးတည်ချက်
 Disable,ပိတ်
@@ -389,6 +419,7 @@ Discard,ပယ်ပစ်
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,ပြောင်းလဲမှုများကို ဖယ်ရှားမလား?
 Dismiss,ဖယ်ရှား
+Dismiss notification,အကြောင်းကြားချက် ပယ်ရန်
 Display entity view from page,စာမျက်နှာမှ ဖြည့်သွင်းချက် မြင်ကွင်းကို ပြသရန်
 Display options,ပြသရွေးချယ်စရာများ
 Do you want disable 2FA for the following users?,အောက်ပါ အသုံးပြုသူများအတွက် 2FA ကို ပိတ်ချင်ပါသလား?
@@ -396,6 +427,7 @@ Do you want reset the password for the following users?,အောက်ပါ �
 Do you want to delete the following items?,အောက်ပါ အရာများကို ဖျက်လိုပါသလား?
 Document,စာရွက်စာတမ်း
 Document contents,စာရွက်စာတမ်း မာတိကာ
+Document deleted,စာရွက်စာတမ်း ဖျက်ပြီး
 Document OCR trigger,စာရွက်စာတမ်း OCR Trigger လုပ်ဆောင်ချက်
 Document Title,စာရွက်စာတမ်း ခေါင်းစဉ်
 Document updated,စာရွက်စာတမ်းကို အပ်ဒိတ်လုပ်ထားသည်။
@@ -423,16 +455,21 @@ Duplicated name,ပွားထားသော အမည်
 Duplicated username,ပွားထားသော အသုံးပြုသူအမည်
 Duration,ကြာမြင့်ချိန်
 e.g.,ဥပမာအားဖြင့်
+e.g. hombres,ဥပမာ hombres
 Each series uses the template brand color when comparing data sources.,စီးရီးတိုင်းသည် ဒေတာရင်းမြစ်များကို နှိုင်းယှဉ်သည့်အခါ တင်ပုံစံအမှတ်တံဆိပ်အရောင်ကို အသုံးပြုသည်။
 Earlier,ယခင်က
+Echarts configuration,ECharts ပြင်ဆင်မှု
 Edit,တည်းဖြတ်ရန်
 Edit at source,အရင်းအမြစ်တွင် တည်းဖြတ်ပါ
 Edit date,ရက်စွဲ ပြင်ဆင်ပြီး
 Edit Extractor,ထုတ်ယူသူကို တည်းဖြတ်ပါ
 Edit File,ဖိုင် တည်းဖြတ်
 Edit group,အုပ်စုကို တည်းဖြတ်ပါ
+Edit Group,အုပ်စု တည်းဖြတ်ရန်
 Edit item,ပစ္စည်း တည်းဖြတ်ရန်
+Edit Link,လင့် တည်းဖြတ်ရန်
 Edit metadata of entities,အဖွဲ့အစည်းများ၏ မက်တာဒေတာကို တည်းဖြတ်ပါ။
+Edit relationship type,ဆက်သွယ်မှုအမျိုးအစား တည်းဖြတ်ရန်
 Edit theme,အသွင်အပြင် တည်းဖြတ်ရန်
 Edit user,အသုံးပြုသူကို တည်းဖြတ်ပါ
 Edited,ပြင်ဆင်ပြီး
@@ -445,25 +482,29 @@ Embed in pages,စာမျက်နှာများတွင် ထည့်�
 Empty,ဗလာ
 Empty group. Drop here to add,အုပ်စုမရှိပါ။ ထည့်ရန် ဒီမှာ ဆွဲချပါ။
 empty property tip,ဤဂုဏ်သတ္တိသည် ဗလာဖြစ်နေပါက အဖွဲ့အစည်းကို သိမ်းဆည်း၍ မရနိုင်ပါ။
+Empty value label,တန်ဖိုးမရှိ အညွှန်း
 Enable,ဖွင့်ရန်
 Enable public embedding to use this chart in external sites on private instances.,ပုဂ္ဂလိက အင်စတန်စ်များတွင် ပြင်ပဆိုဒ်များ၌ ဤဂရပ်ဇယားကို ထည့်သွင်းအသုံးပြုနိုင်ရန် အများပြည်သူ ထည့်သွင်းခွင့်ကို ဖွင့်ပါ။
 Enable this page to be used as an entity view page:,ဖြည့်သွင်းချက် ကြည့်ရန်အတွက် စာမျက်နှာအဖြစ် သုံးရန် ဤစာမျက်နှာကို ဖွင့်ထားပါ-
 Enter the 6-digit verification code generated by your Authenticator app,သင့် Authenticator အက်ပ်မှ ထုတ်ပေးထားသော ၆ လုံးပါ အတည်ပြုကုဒ်ကို ထည့်ပါ။
 "Enter the full username, email, or group name. Suggestions are not shown.",အသုံးပြုသူအမည်၊ အီးမေးလ် သို့မဟုတ် အုပ်စုအမည်ကို အပြည့်အစုံ ထည့်ပါ။ အကြံပြုချက်များ မပြသပါ။
+Enter title,ခေါင်းစဉ် ရိုက်ထည့်ရန်
 Enter your current password to confirm,အတည်ပြုရန် သင့်လက်ရှိ စကားဝှက်ကို ထည့်ပါ။
 Entities,ဖြည့်သွင်းချက်များ
 entities,ဖြည့်သွင်းချက်များ
+entities · generated,အဖွဲ့အစည်းများ · ထုတ်လုပ်ထားသော
 Entities across all languages,ဘာသာစကားအားလုံးရှိ အဖွဲ့အစည်းများ
 Entities created,အဖွဲ့အစည်းများ ဖန်တီးခဲ့သည်။
 Entities updated,အဖွဲ့အစည်းများ အပ်ဒိတ်လုပ်ပြီးပါပြီ။
-entities · generated,အဖွဲ့အစည်းများ · ထုတ်လုပ်ထားသော
 Entity,ဖြည့်သွင်းချက်
 Entity creation stage completed.,အဖွဲ့အစည်းဖန်တီးခြင်းအဆင့်ပြီးစီးပါပြီ။
 Entity deleted,အဖွဲ့အစည်း ဖျက်သွားပါပြီ။
 Entity Page,အဖွဲ့အစည်းစာမျက်နှာ
+Entity primary,အဓိက အရာဝတ္ထု
 Entity saved,အဖွဲ့အစည်း သိမ်းဆည်းပြီးပါပြီ။
 Entity scope,အဖွဲ့အစည်း၏ အကျယ်အဝန်း
 Entity type,အဖွဲ့အစည်းအမျိုးအစား
+Entity type (template),အရာဝတ္ထု အမျိုးအစား (ပုံစံခွက်)
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,အဖွဲ့အစည်းကို အပ်ဒိတ်လုပ်ခဲ့သည်။
 Error,ချွတ်ယွင်းချက်
@@ -480,6 +521,7 @@ Export CSV,CSV တင်ပို့ရန်
 Exporting entities to CSV,ဖြည့်သွင်းချက်များကို CSV သို့ တင်ပို့နေသည်
 Extension Token,တိုးချဲ့တိုကင်
 External embed,ပြင်ပထည့်သွင်းခြင်း
+External iframe code,ပြင်ပ iframe ကုဒ်
 Extract new paragraphs,အပိုဒ်အသစ်များကို ထုတ်ယူပါ။
 Extract paragraphs,အပိုဒ်များကို ထုတ်ယူပါ
 Extracting files,ဖိုင်များ ထုတ်ယူခြင်း
@@ -505,12 +547,14 @@ file,ဖိုင်
 File deleted,ဖိုင် ဖျက်သွားပါပြီ
 File details,ဖိုင်အသေးစိတ်
 File extraction completed successfully.,ဖိုင်ထုတ်ယူခြင်း အောင်မြင်စွာ ပြီးစီးပါပြီ။
+File language,ဖိုင် ဘာသာစကား
 File name,ဖိုင်အမည်
 File preview unavailable,ဖိုင်ကြိုကြည့်ရှုခြင်း မရနိုင်ပါ။
 File updated,ဖိုင်ကို အပ်ဒိတ်လုပ်ပြီးပါပြီ။
 Files,ဖိုင်များ
 files,ဖိုင်များ
 Files and database usage,ဖိုင်များနှင့် ဒေတာဘေ့စ် အသုံးပြုမှု
+Files list,ဖိုင်စာရင်း
 Fill,ဖြည့်ရန်
 Filter,စစ်ထုတ်
 Filter unauthorized relationships,မူလအနေဖြင့် ကန့်သတ်ထားသော အဖွဲ့အစည်းများဆီသို့ ညွှန်ပြထားသည့် ဆက်နွယ်မှုများကို အမည်မသိအသုံးပြုသူများ မြင်နိုင်သော်လည်း ချိတ်ဆက်၍ မရပါ။ ဖွင့်ထားပါက ဤဆက်နွယ်မှုများအားလုံးကို လုံးဝ ဖျောက်ပစ်ကာ အများပြည်သူအသုံးပြုသူများအား ကန့်သတ်ထားသော အကြောင်းအရာ ရှိကြောင်း မသိစေရန် တားဆီးပေးသည်။
@@ -529,13 +573,16 @@ Find suggestions for selected,ရွေးချယ်ထားသောအတ�
 Finding suggestions,အကြံပြုချက်များ ရှာဖွေခြင်း
 Fit,ကိုက်ညီသော
 Flag,အလံ
+Flags,အလံများ
 for,အတွက်
 For all entities,အဖွဲ့အစည်းအားလုံးအတွက်
 For entities with blank values,တန်ဖိုးမရှိသေးသော အဖွဲ့အစည်းများအတွက်
 Forgot Password or Username?,စကားဝှက် သို့မဟုတ် အသုံးပြုသူအမည် မေ့သွားပါသလား?
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
+Frequency,ကြိမ်နှုန်း
 From,မှ
 From all suggestions,အကြံပြုချက်အားလုံးမှ
+From date,ရက်စွဲမှ
 From previous step,ယခင်အဆင့်မှ
 From selection,ရွေးချယ်မှုမှ
 From:,မှ:
@@ -545,12 +592,14 @@ General,ယေဘုယျ
 General access,အထွေထွေဝင်ရောက်ခွင့်
 General Information,အထွေထွေ အချက်အလက်များ
 Generated ID,ဖန်တီးထားသော ID
+Geolocation,ပထဝီတည်နေရာ
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,ကမ္ဘာလုံးဆိုင်ရာ CSS နှင့် JS
 Global JS,ကမ္ဘာလုံးဆိုင်ရာ JS
 Google,ဂူဂဲလ်
 Google Analytics,ဂူဂဲလ် အန်လိယတစ်စ်
 Google Maps,ဂူဂဲလ် မြေပုံ
+Graph,ဂရပ်
 Group,အုပ်စု
 Group by,အုပ်စုခွဲခြင်းဖြင့်
 group expressions,အုပ်စုဖော်ပြချက်များ
@@ -573,19 +622,25 @@ Hide actions,လုပ်ဆောင်ချက်များကို ဖျ
 Hide details,အသေးစိတ် ဖျောက်ရန်
 Hide label,အမှတ်အသား ဖုံးကွယ်ပါ
 Hide restricted relationships from public,ကန့်သတ်ထားသော ဆက်နွယ်မှုများကို အများပြည်သူထံမှ ဖျောက်ပါ။
+Hide task,တာဝန် ဖုံးရန်
 Hide toolbar,ကိရိယာတန်းကို ဖျောက်ရန်
+Hours,နာရီ
+How to combine sources,ရင်းမြစ်များ ပေါင်းစည်းပုံ
 HTML,HTML
 https://yourdomain,https://yourdomain
 hub,hub
 hubs,ဟတ်ဘ်များ
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,ပေါင်းစပ်
 Icon,အိုင်ကွန်
+Icons,သင်္ကေတများ
 ID,အိုင်ဒီ
 ID:,အိုင်ဒီ:
 "If an account exists with the email you provided, you will receive an email
                         with instructions to reset your password.",သင်ပေးထားသော အီးမေးလ်ဖြင့် အကောင့်တစ်ခု ရှိနေပါက၊ သင့်စကားဝှက် ပြန်လည်သတ်မှတ်ရန် လမ်းညွှန်ချက်များပါဝင်သည့် အီးမေးလ်ကို လက်ခံရရှိမည်ဖြစ်သည်။
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",ပြင်ပ URL ဖြစ်ပါက URL ပုံစံအပြည့်အစုံကို သုံးပါ။ ဥပမာ- http://www.uwazi.io။
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
+Image,ပုံ
 Image doesn't match the required size.,ပုံသည် လိုအပ်သည့် အရွယ်အစားနှင့် မကိုက်ညီပါ။
 Import,ထည့်သွင်းရန်
 Import asset,Asset တင်သွင်းပါ
@@ -605,6 +660,7 @@ In use,အသုံးပြုနေသည်
 Include all entities,အဖွဲ့အစည်းအားလုံးကို ထည့်ပါ။
 Include only public,အများပြည်သူအတွက်သာ ထည့်ပါ။
 Incoming,ဝင်လာမည့်
+Increase indentation,အင်တင်း တိုးရန်
 Info,အချက်အလက်
 Information extraction training,အချက်အလက်ထုတ်ယူခြင်း လေ့ကျင့်ရေး
 Inherit,အမွေခံ
@@ -636,6 +692,7 @@ key,သော့
 Label,တံဆိပ် အမှတ်အသား
 "Label date ""From""","ရက်စွဲ ""မှ"" တံဆိပ်တပ်ပါ"
 "Label date ""to""","ရက်စွဲ ""သို့"" တံဆိပ်တပ်ပါ"
+Label format,အညွှန်း ပုံစံ
 Labeled,အမှတ်တံဆိပ်တပ်ထားသော
 Landing page,ရောက်ရှိမည့် စာမျက်နှာ
 Landing page description,"လန်ဒင်းစာမျက်နှာသည် ဧည့်သည်များ သင့်စုစည်းမှုသို့ ရောက်ရှိလာသည့်အခါ ဦးစွာမြင်ရသော စာမျက်နှာဖြစ်သည်။ မူလ လန်ဒင်းစာမျက်နှာမှာ သင့်စုစည်းမှု၏ စာကြည့်တိုက် ဖြစ်ပါသည်။ ဤနေရာတွင် ၎င်း၏ relative URL ကို ထည့်သွင်းခြင်းဖြင့် မတူညီသော လန်ဒင်းစာမျက်နှာကို သတ်မှတ်နိုင်ပါသည်။ ဥပမာ-
@@ -646,13 +703,14 @@ Uwazi ရှိ စစ်ထုတ်ထားသော မြင်ကွင်
 စာရွက်စာတမ်းတစ်ခု- */document/4y9i99fadjp833di*
 
 အရေးကြီးသည်- သင်သည် relative URL များကိုသာ အသုံးပြုရမည်ဖြစ်သည်။ ၎င်းတို့သည် ရှေ့သို့ ဆွဲထားသော အနားသတ် (/) ဖြင့် စတင်ပြီး ဒိုမိန်းအမည် မပါဝင်ပါ။ ဥပမာ- *https://yoursite.com/landingpage* ဟူသော လိပ်စာတွင် relative URL မှာ /landingpage ဖြစ်ပါသည်"
+Landscape,အလျားလိုက်
 Language,ဘာသာစကား
 Language Code,ဘာသာစကားကုဒ်
 Language deleted,ဘာသာစကား ဖျက်ပြီး
 Language reset success,ဘာသာစကား ပြန်လည်သတ်မှတ်ခြင်း အောင်မြင်ပါပြီ။
 Language uninstalled successfully,ဘာသာစကားကို အောင်မြင်စွာ ဖယ်ရှားပြီးပါပြီ။
-Language(s),ဘာသာစကား(များ)
 Language:,ဘာသာစကား:
+Language(s),ဘာသာစကား(များ)
 Languages,ဘာသာစကားများ
 Languages installed successfully,ဘာသာစကားများ အောင်မြင်စွာ တပ်ဆင်ပြီးပါပြီ။
 Last updated,နောက်ဆုံးအပ်ဒိတ်လုပ်ခဲ့သည်
@@ -663,11 +721,13 @@ Learn how to add and configure a contact form on a webpage.,ဝက်ဘ်ဆ�
 Learn how to build your first collection,သင့်ပထမဆုံး စုစည်းမှုကို မည်သို့ တည်ဆောက်ရမည်ကို လေ့လာပါ။
 Learn more,ပိုမိုလေ့လာရန်
 Learn more about the components.,အစိတ်အပိုင်းများအကြောင်း ပိုမိုလေ့လာပါ။
+Legacy Uwazi,အဟောင်း Uwazi
 Legend,ဒဏ္ဍာရီ
 Lengthy reindex process,ကြာရှည်သော ပြန်လည်ညွှန်ပြခြင်းလုပ်ငန်းစဉ်
 Library,စာကြည့်တိုက်
 library list view,စာကြည့်တိုက် စာရင်း မြင်ကွင်း
 library map view,စာကြည့်တိုက် မြေပုံ မြင်ကွင်း
+Library results,စာကြည့်တိုက် ရလဒ်များ
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
 Light,အလင်းရောင်
 Light Theme,အလင်းရောင် အသွင်အပြင်
@@ -675,6 +735,7 @@ Link,လင့်ခ်
 linked,ချိတ်ဆက်ထားသော
 List,စာရင်း
 List renders as a table. Use the options below to filter empty or zero values.,List ကို အတန်းပုံစံဖြင့် ပြသသည်။ အောက်ပါ ရွေးချယ်စရာများကို အသုံးပြု၍ အလွတ် သို့မဟုတ် သုည တန်ဖိုးများကို စစ်ထုတ်ပါ။
+Live (always up to date),တိုက်ရိုက် (အမြဲလတ်)
 Live preview,တိုက်ရိုက်ကြိုကြည့်
 Live translate,တိုက်ရိုက်ဘာသာပြန်
 Load,တင်ပါ
@@ -695,6 +756,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,ဆက်နွယ်မှုအမျိုးအစားများကို စီမံခန့်ခွဲပါ။
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်
 Manage types,အမျိုးအစားများကို စီမံခန့်ခွဲပါ
+Manual,ကိုယ်တိုင်
 Manual data,လက်စွဲဒေတာ
 Manually set a color,အရောင်ကို လက်ဖြင့် သတ်မှတ်ပါ
 Map,မြေပုံ
@@ -731,6 +793,10 @@ Matches show the passage and the page they are on.,ကိုက်ညီချ�
 Matching,ကိုက်ညီခြင်း
 matching,ကိုက်ညီသော
 Matomo,မက်တိုမို
+Max,အများဆုံး
+Max buckets,အများဆုံး အုပ်စု
+Max number of slices,အများဆုံး အပိုင်းအရေအတွက်
+Media,မီဒီယာ
 Members,အဖွဲ့ဝင်များ
 Menu,မီနူး
 Message,မက်ဆေ့ချ်
@@ -740,7 +806,9 @@ Metadata Extraction,မီတာဒေတာ ထုတ်ယူခြင်း
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
             configure categories, labels, and slices. Use the Appearance tab for colors.",Metric သည် စုစုပေါင်းအရေအတွက် တစ်ခုတည်းကို ပြသသည်။ အမျိုးအစားများ၊ အမှတ်အသားများနှင့် ခွဲခြမ်းပိုင်းများကို စိတ်ကြိုက်ပြင်ဆင်ရန် အထက်တွင် Pie၊ Bar သို့မဟုတ် အခြားဂရပ်ဇယားအမျိုးအစားတစ်ခုကို ရွေးပါ။ အရောင်များအတွက် Appearance တက်ဘ်ကို အသုံးပြုပါ။
 MIGRATE,ရွှေ့ပြောင်း
+Min,အနည်းဆုံး
 Minimum,အနည်းဆုံး
+Minutes,မိနစ်
 Mismatch,မကိုက်ညီခြင်း
 mismatched passwords,စကားဝှက်များ မကိုက်ညီပါ။
 mismatching,မကိုက်ညီခြင်း
@@ -748,6 +816,7 @@ Mixed access,ရောထားသော ဝင်ရောက်သုံးစ
 ML TOC,ML TOC
 Modified,ပြင်ဆင်ထားသော
 Month,လ
+Monthly,လစဉ်
 Months,လများ
 More,ပိုမို
 more,ပို
@@ -756,6 +825,8 @@ More rows per screen; same type size,စာမျက်နှာတွင် တ
 Multi-source mode,အရင်းအမြစ်များစွာ မုဒ်
 Multiple date,တစ်ခုထက်ပိုသော ရက်စွဲ
 Multiple date range,အချိန်ကာလအများအပြား
+Multiple date ranges,ရက်စွဲအပိုင်းအခြား အများအပြား
+Multiple dates,ရက်စွဲ အများအပြား
 Multiple inherited properties warning ([property 1] affects [property 2]),အကျိုးသက်ရောက်သည်
 Multiple matches found,ထပ်တူများစွာတွေ့ရှိခဲ့သည်
 Multiple relationships edit description,ဤပိုင်ဆိုင်မှုကို ပြောင်းလဲခြင်းသည် ဤပုံစံရှိ အခြားပိုင်ဆိုင်မှုများအား ထိခိုက်စေမည်၊ အကြောင်းမှာ အားလုံးသည် တူညီသော ဖွဲ့စည်းမှုနှင့် ဆက်နွယ်နေကြသည်။
@@ -776,12 +847,15 @@ New activity will show up here.,ဒီမှာ လှုပ်ရှားမ�
 New conversation,အသစ်သော စကားပြောဆိုမှု
 New entity,ထည့်သွင်းချက်အသစ်
 New group,အုပ်စုအသစ်
+New Group,အုပ်စုအသစ်
 New language added,ဘာသာစကားအသစ် ထည့်ပြီး
+New Link,လင့်အသစ်
 New page,စာမျက်နှာအသစ်
 New password,စကားဝှက်အသစ်
 New primary doc,အသစ်သော အဓိကစာတမ်း
 New relation type label…,ဆက်နွယ်မှုအမျိုးအစားအသစ် အမှတ်တံဆိပ်…
 New relationship type,ဆက်နွယ်မှုအမျိုးအစားအသစ်
+New Relationships,ဆက်သွယ်မှုအသစ်များ
 New relationships group,ဆက်နွှယ်မှုအသစ်များ အုပ်စု
 New Relationships Migration,ဆက်နွယ်မှုအသစ်များ ရွှေ့ပြောင်းခြင်း
 New user,အသုံးပြုသူအသစ်
@@ -847,8 +921,8 @@ No valid target template available,အသုံးပြုနိုင်သေ
 No value,တန်ဖိုးမရှိပါ
 No Value,တန်ဖိုးမရှိပါ
 No visualization data available.,မြင်ကွင်းဆိုင်ရာ ဒေတာ မရရှိနိုင်ပါ။
-"No, cancel",မဟုတ်ဘူး၊ ပယ်ဖျက်ပါ
 no-toc-description,"စာရွက်စာတမ်းထဲမှ စာသားကို ရွေးပြီး ""Add to ToC"" ခလုတ်ကို နှိပ်ခြင်းဖြင့် စတင်နိုင်ပါသည်။"
+"No, cancel",မဟုတ်ဘူး၊ ပယ်ဖျက်ပါ
 Non processed,မပြင်ဆင်ထားသော
 Non-labeled,အမှတ်မတပ်ထားသော
 Non-latin characters support,လက်တင်မဟုတ်သော အက္ခရာများအတွက် ထောက်ခံမှု
@@ -860,6 +934,7 @@ Not Found,မတွေ့ပါ
 Nothing here yet.,ဒီမှာတော့ မရှိသေးပါဘူး။
 Nothing selected,ရွေးချယ်ထားသောအရာမရှိပါ။
 Notifications,အသိပေးချက်များ
+Numeric,ဂဏန်း
 Obsolete,အသုံးမပြုတော့သော
 obsolete,အသုံးမပြုတော့သော
 OCR,OCR
@@ -890,10 +965,11 @@ Open group,အုပ်စုကို ဖွင့်ရန်
 Open link,လင့်ခ်ဖွင့်ပါ
 Open PDF,PDF ဖွင့်ပါ
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
+Operator,လုပ်ဆောင်ချက်
 Options,ရွေးချယ်စရာများ
 or,သို့မဟုတ်
 or drag and drop here,သို့မဟုတ် ဒီမှာ ဆွဲပြီး ထားပါ။
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,သို့မဟုတ် PDF ဖိုင်များကို ဤနေရာသို့ ဆွဲထည့်ပါ
 or drop your files here.,သို့မဟုတ် သင့်ဖိုင်များကို ဒီမှာ ချပါ။
 Or paste a URL,သို့မဟုတ် URL တစ်ခု ထည့်ပါ။
 Order,အစဉ်
@@ -901,16 +977,22 @@ Other,အခြား
 other,အခြား
 Other users will be affected by this action!,ဤ လှုပ်ရှားမှုကြောင့် အခြားအသုံးပြုသူများ ထိခိုက်ခံရမည်။
 Others,အခြားများ
+Others label,အခြား အညွှန်း
 Outgoing,ထွက်သွားမည့်
+Overview,ခြုံငုံကြည့်ရှု
 p.,စာမျက်နှာ
 Page,စာမျက်နှာ
+Page embed code,စာမျက်နှာ ထည့်သွင်းကုဒ်
+Page language,စာမျက်နှာ ဘာသာစကား
 Page not found,စာမျက်နှာ မတွေ့ပါ
 Page published successfully.,စာမျက်နှာကို အောင်မြင်စွာ ထုတ်ဝေခဲ့သည်။
 Pages,စာမျက်နှာများ
+Pagination,စာမျက်နှာခွဲ
 Paragrap number extraction property (numeric),ပိုဒ်နံပါတ်ထုတ်ယူခြင်း ဂုဏ်သတ္တိ (ဂဏန်း)
 Paragraph,ပိုဒ်
 Paragraph Extraction,အပိုဒ်ထုတ်ယူခြင်း
 Paragraph Extractor added,အပိုဒ်ထုတ်ယူသူ ထည့်သွင်းပြီးပါပြီ။
+Paragraph extractor wizard,စာပိုဒ် ထုတ်ယူ လမ်းညွှန်
 Paragraph text extraction property (rich text),ပိုဒ်စာသားထုတ်ယူခြင်း ဂုဏ်သတ္တိ (Rich Text)
 Paragraphs,အပိုဒ်များ
 Paragraphs deleted,ပိုဒ်များ ဖျက်ထားသည်။
@@ -929,6 +1011,7 @@ PDF,PDF
 Pending,စောင့်ဆိုင်းနေဆဲ
 People and groups,လူများနှင့်အုပ်စုများ
 per page,တစ်စာမျက်နှာလျှင်
+Percentage,ရာခိုင်နှုန်း
 Permission,ခွင့်ပြုချက်
 Permission level,ခွင့်ပြုအဆင့်
 Permission on entities explicitly shared with the user,အသုံးပြုသူနှင့် အတိအလင်း မျှဝေထားသော ဖြည့်သွင်းချက်များအတွက် ခွင့်ပြုချက်
@@ -937,9 +1020,12 @@ Permissions updated,ခွင့်ပြုချက်များ အပ်�
 Pick a color,အရောင်တစ်ခုရွေးပါ
 Pick another,နောက်တစ်ခု ရွေးပါ
 Plain text,ရိုးရိုးစာသား
+Play audio,အသံ ဖွင့်ရန်
+Play video,ဗီဒီယို ဖွင့်ရန်
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,ကျေးဇူးပြု၍ ရိုက်ထည့်ပါ။
 Please type in letters and numbers from the image to start the export.,ကျေးဇူးပြု၍ တင်ပို့မှုကို စတင်ရန် ရုပ်ပုံမှ စာလုံးများနှင့် ဂဏန်းများကို ရိုက်ထည့်ပါ။
+Portrait,ထောင်လိုက်
 Pre-filled from your selection. Edit as needed.,သင်ရွေးချယ်ထားသည့်အတိုင်း ကြိုဖြည့်ထားပါသည်။ လိုအပ်သလို တည်းဖြတ်နိုင်ပါသည်။
 Preflight scan completed.,အစမှစစ်ဆေးမှု ပြီးစီးပါပြီ။
 Preparing required relationships.,လိုအပ်သော ဆက်နွယ်မှုများကို ပြင်ဆင်ခြင်း။
@@ -949,11 +1035,14 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,သင့် Uwazi URL နှင့် TOKEN ကို သိပြီးသားဖြစ်ပါက အောက်ပါ လင့်ခ်ကို နှိပ်ပြီး လိုအပ်သည့် အချက်အလက်များကို ဖြည့်ပါ။
 Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
+Preview mode,အကြိုကြည့် မုဒ်
 Preview updates automatically (300ms debounce),ပြင်ဆင်ချက်များကို အလိုအလျောက် ကြိုကြည့်ရန် (၃၀၀ မီလီစက္ကန့် debounce ပါသည်)
 Preview updates when the JSON is valid.,JSON မှန်ကန်သောအခါ အပ်ဒိတ်များကို ကြိုကြည့်ပါ။
 Previous,ယခင်
 Primary,အဓိက
+Primary action,အဓိက လုပ်ဆောင်ချက်
 Primary button,အဓိက ခလုတ်
+Primary dimension (X-axis / categories),အဓိက မျက်နှာစာ (X ဝင်ရိုး / အမျိုးအစားများ)
 Primary document,အဓိကစာရွက်စာတမ်း
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
 Primary documents,အဓိကစာရွက်စာတမ်းများ
@@ -1006,6 +1095,7 @@ Publish release,ထုတ်ပြန်ချက် ထုတ်ဝေခြင
 Published,ထုတ်ဝေပြီး
 Published and unpublished entities are counted.,ထုတ်ဝေပြီးသောနှင့် မထုတ်ဝေထားသေးသော အဖွဲ့အစည်းများအားလုံးကို ရေတွက်သည်။
 QR Code,QR ကုဒ်
+qr code,QR ကုဒ်
 Query,မေးခွန်း
 Queued,စောင့်နေသည်
 RAW,မပြင်ဆင်ထားသော
@@ -1046,10 +1136,13 @@ remaining,ကျန်ရှိနေခြင်း
 remaining files,ကျန်ရှိသော ဖိုင်များ
 Remote Server Unreachable,အဝေးဆာဗာ မရောက်နိုင်ပါ
 Remove,ဖယ်ရှားရန်
+Remove data source,ဒေတာရင်းမြစ် ဖယ်ရန်
+Remove filter,စစ်ထုတ်မှု ဖယ်ရန်
 Remove from connection,ချိတ်ဆက်မှုမှ ဖယ်ရှားပါ
 Remove from training set,လေ့ကျင့်မှုအစုမှ ဖယ်ရှားပါ
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Remove icon,အိုင်ကွန် ဖယ်ရှားပါ
+Remove timelink,အချိန်လင့် ဖယ်ရန်
 Removed language,ဖယ်ရှားထားသော ဘာသာစကား
 Rename,အမည် ပြန်ပေးရန်
 Renamed attachment,ပြန်အမည်ပေးထားသော ပူးတွဲဖိုင်
@@ -1066,6 +1159,7 @@ Reset default translation,မူလဘာသာပြန်ဆိုမှုက
 Reset language,ဘာသာစကား ပြန်လည်သတ်မှတ်ရန်
 Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ်ရန်
 Reset passwords,စကားဝှက်များ ပြန်လည်သတ်မှတ်ရန်
+Reset Search input,ရှာဖွေမှု ပြန်သတ်မှတ်ရန်
 Resize panels,ပန်နယ်များ၏ အရွယ်အစား ပြောင်းရန်
 Restore,ပြန်လည်ထူထောင်
 Restore previous version,ယခင်ဗားရှင်းကို ပြန်လည်ထူထောင်ပါ။
@@ -1075,10 +1169,12 @@ Retrying,ထပ်မံကြိုးစားနေသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
 Review,ပြန်လည်သုံးသပ်ချက်
 Reviewed,သုံးသပ်ပြီး
+Rich text,ပုံစံချ စာသား
 Role,အခန်းကဏ္ဍ
 Room around every row,တန်းတိုင်းပတ်လည်တွင် နေရာလွတ် ပိုများသည်
 Route,လမ်းကြောင်း
 Row,တန်း
+Row actions,တန်း လုပ်ဆောင်ချက်များ
 Row density,တန်း သိပ်သည်းမှု
 Rows failed,တန်းများ မအောင်မြင်ခဲ့ပါ
 Rows processed,စိစစ်ပြီးစီးသော တန်းများ
@@ -1087,6 +1183,7 @@ Satellite,ဂြိုလ်တု
 Save,သိမ်းဆည်းရန်
 Save & Preview,သိမ်းပြီး ကြိုကြည့်ရန်
 Save changes,အပြောင်းအလဲများကို သိမ်းဆည်းရန်
+Save label,အညွှန်း သိမ်းရန်
 Save password,စကားဝှက် သိမ်းဆည်းရန်
 Save the visualization before refreshing.,ပြန်လည်အသစ်တင်မပြုမီ မြင်ကွင်းကို သိမ်းဆည်းပါ။
 Save the visualization to get embed code.,embed ကုဒ် ရယူရန် visualization ကို သိမ်းဆည်းပါ။
@@ -1101,13 +1198,16 @@ Schedule,အချိန်ဇယား
 Schedules run in UTC (Coordinated Universal Time).,အချိန်ဇယားများကို UTC (ညှိနှိုင်းထားသော ကမ္ဘာလုံးဆိုင်ရာ အချိန်) အရ လည်ပတ်သည်။
 Search,ရှာဖွေရန်
 "Search  •  AND, OR, NOT, ""exact"", wild*","ရှာဖွေ • AND၊ OR၊ NOT၊ ""တိကျသော"", wild*"
+Search button,ရှာဖွေရန် ခလုတ်
 Search by title,ခေါင်းစဉ်ဖြင့် ရှာဖွေရန်
+Search chart types,ဇယားအမျိုးအစား ရှာရန်
 Search entities...,အဖွဲ့အစည်းများကို ရှာဖွေ...
 Search entities…,အဖွဲ့အစည်းများကို ရှာဖွေ…
 Search item,အိုင်တမ် ရှာရန်
 Search related entities or documents,သက်ဆိုင်ရာ ဖြည့်သွင်းချက် သို့မဟုတ် စာရွက်စာတမ်းများကို ရှာရန်
 Search relationships,ဆက်နွယ်မှုများကို ရှာဖွေပါ။
 Search relevance,ရှာဖွေမှု ဆီလျော်ခြင်း
+Search templates,ပုံစံခွက်များ ရှာရန်
 Search text,ရှာဖွေမှု စာသား
 Search text description,ရလဒ်များ ရယူရန် ရှာဖွေရေးဘောက်စ်ထဲတွင် တစ်ခုခု ရိုက်ထည့်ပါ။
 Search this document,ဤစာရွက်စာတမ်းတွင် ရှာဖွေပါ။
@@ -1120,7 +1220,12 @@ Search Tips: proximity,"အနီးအနားရှာဖွေမှုအ�
 Search Tips: wildcard,"ဝိုင်းကတ်ရှာဖွေမှုအတွက် * ကို သုံးပါ။ ဥပမာ- ""ဥပဒေ*"" ဆိုလျှင် ဥပဒေရေးရာလုပ်ပိုင်ခွင့်၊ ဥပဒေဆိုင်ရာ၊ ဥပဒေပညာရှင်၊ ဥပဒေဗေဒ စသော စကားလုံးများနှင့် ကိုက်ညီပါမည်။"
 Search title & metadata,ခေါင်းစဉ်နှင့် မီတာဒေတာ ရှာဖွေခြင်း
 Searching...,ရှာဖွေနေသည်...
+Second dimension (series / stacks),ဒုတိယ မျက်နှာစာ (စီးရီး / စုပုံ)
 Secondary button,ဒုတိယ ခလုတ်
+Secondary button border,ဒုတိယခလုတ် ဘောင်
+Secondary button text,ဒုတိယခလုတ် စာသား
+Secondary text,ဒုတိယ စာသား
+Seconds,စက္ကန့်
 Secret keys,လျှို့ဝှက်သော့များ
 Security,လုံခြုံရေး
 Select,ရွေးချယ်ပါ
@@ -1129,34 +1234,43 @@ Select & Search,ရွေးချယ်၍ ရှာဖွေခြင်း
 Select a document to connect to a specific paragraph,အထူးသတ်မှတ်ထားသော ပိုဒ်တစ်ခုနှင့် ချိတ်ဆက်ရန် စာရွက်စာတမ်းတစ်စောင်ကို ရွေးချယ်ပါ။
 Select a file,ဖိုင်တစ်ခုကိုရွေးပါ
 Select all,အားလုံးကို ရွေးရန်
+Select all files,ဖိုင်အားလုံး ရွေးရန်
 Select an existing image,ရှိပြီးသား ပုံတစ်ပုံကို ရွေးပါ။
 Select favicon image,ကြိုက်နှစ်သက်သော favicon ပုံကို ရွေးပါ။
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,ကွန်ပျူတာမှရွေးချယ်ပါ
+Select icon...,သင်္ကေတ ရွေးရန်…
 Select image,ပုံကိုရွေးပါ
 Select media,မီဒီယာကိုရွေးပါ
+Select page,စာမျက်နှာ ရွေးရန်
+Select property…,ဂုဏ်သတ္တိ ရွေးရန်…
 Select relationship,ဆက်နွယ်မှုကိုရွေးချယ်ပါ
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select site logo image,ဆိုက်လိုဂိုပုံကိုရွေးချယ်ပါ
 Select target document,ပစ်မှတ် စာရွက်စာတမ်းကို ရွေးပါ။
 Select target entity,ပစ်မှတ်အဖွဲ့အစည်းကို ရွေးချယ်ပါ
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
+Select template…,ပုံစံခွက် ရွေးရန်…
 Select text in target document,ပစ်မှတ်စာရွက်တွင် စာသားကို ရွေးချယ်ပါ။
 select text or a value,စာသား သို့မဟုတ် တန်ဖိုးကို ရွေးပါ။
 Select the template to store the extracted paragraphs.,ထုတ်ယူထားသော ပိုဒ်များကို သိမ်းဆည်းရန် ပုံစံကို ရွေးပါ။
 Select the template with the source documents.,မူလစာရွက်စာတမ်းများပါဝင်သည့် ပုံစံကို ရွေးပါ။
+Select values…,တန်ဖိုးများ ရွေးရန်…
 Select...,ရွေးချယ်ရန်...
+Select…,ရွေးရန်…
 Selected,ရွေးချယ်ထားသော
 selected,ရွေးချယ်ပြီး
 selected of,ရွေးချယ်ထားသည်
 Selected or suggested,ရွေးချယ်ထားသော သို့မဟုတ် အကြံပြုထားသော
 Selected templates,ရွေးချယ်ထားသော ပုံစံများ
 Send,ပေးပို့ရန်
+Send message,မက်ဆေ့ချ် ပို့ရန်
 Send recovery email,ပြန်လည်ရယူရန်အတွက် အီးမေးလ် ပို့ရန်
 Sending email,အီးမေးလ်ပို့ခြင်း
 Sending email description,ဤသည်မှာ သင့် Uwazi စုစည်းမှုမှ မှတ်ပုံတင်ထားသော အသုံးပြုသူများထံ အီးမေးလ်ပို့သည့်အခါ ပို့သူအဖြစ် ပြသမည့် အီးမေးလ်လိပ်စာဖြစ်သည်။ မူလလိပ်စာမှာ *no-reply@uwazi.io* ဖြစ်သည်။ သင်နှစ်သက်ရာ အီးမေးလ်လိပ်စာကို ဤနေရာတွင် ထည့်သွင်း၍ ကိုယ်ပိုင်လိပ်စာ သတ်မှတ်နိုင်သည်။
 Sending labeled data,အမှတ်အသားတပ်ထားသော ဒေတာ ပို့ခြင်း
 Series,စီးရီး
+Server disconnected,ဆာဗာ ချိတ်ဆက်မှု ပြတ်
 Services,ဝန်ဆောင်မှုများ
 Set as default,နဂိုမူလအဖြစ် သတ်မှတ်ရန်
 Set default language,မူလဘာသာစကား သတ်မှတ်ပါ
@@ -1164,6 +1278,7 @@ Set default template,မူလပုံစံကို သတ်မှတ်ပ�
 Set the default starting point for your geolocation properties.,သင်၏ ပထဝီတည်နေရာထူးခြားချက်များအတွက် ပုံသေမူလ စမှတ်ကို သတ်မှတ်ပါ။
 Settings,ဆက်တင်များ
 settings,ဆက်တင်များ
+Settings navigation,ဆက်တင်များ လမ်းညွှန်
 Settings navigation active background,ဆက်တင်များ မီနူး လှုပ်ရှားနေသော နောက်ခံ
 Settings sidebar background,ဆက်တင်များ ဘက်ဘား နောက်ခံ
 Settings updated,ဆက်တင်များ အပ်ဒိတ်လုပ်ပြီးပါပြီ။
@@ -1186,6 +1301,7 @@ Show toolbar,ကိရိယာတန်းပြရန်
 Showing,ပြသနေသည်
 Showing the top,ထိပ်ဆုံးကို ပြနေသည်
 shown of,ပြသထားသည််
+Side panel tabs,ဘေးဘောင် တဘ်များ
 Sign in,လက်မှတ်ထိုးဝင်ရန်
 Simple mode,ရိုးရှင်းသော မုဒ်
 Single relationships must have a hub,တစ်ခုချင်း ဆက်နွယ်မှုများတွင် hub တစ်ခုရှိရမည်။
@@ -1196,6 +1312,8 @@ Site logo description,"လိုဂိုကို သင့်စုစည်�
 Site logo no images hint,Custom Uploads မှ ပုံဖိုင်များ မတွေ့ရသေးပါ။ ပထမဦးစွာ PNG၊ SVG သို့မဟုတ် JPEG ပုံများကို ထိုနေရာတွင် ထည့်ပါ။
 Size,အရွယ်အစား
 Skip to main content,အဓိကအကြောင်းအရာသို့ တိုက်ရိုက်သွားပါ
+Snapshot (manual),ရုပ်သံပုံ (ကိုယ်တိုင်)
+Snapshot (scheduled),ရုပ်သံပုံ (အချိန်ဇယား)
 Some tasks may take a while. Bert will reply when it's done.,အချို့တာဝန်တွေက အချိန်ယူနိုင်ပါတယ်။ ပြီးသွားရင် Bert က ပြန်ဖြေကြားပါလိမ့်မယ်။
 Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
@@ -1233,11 +1351,13 @@ Suggestions,အကြံပြုချက်များ
 suggestions,အကြံပြုချက်များ
 Suggestions sent,အကြံပြုချက်များ ပို့ပြီးပါပြီ။
 Suggestions updated,အကြံပြုချက်များ ပြင်ဆင်ပြီးပါပြီ။
+Sum,ပေါင်းလဒ်
 Supported chart types for manual data,လက်ဖြင့် ထည့်သွင်းသော ဒေတာအတွက် ထောက်ပံ့ထားသည့် ဂရပ်ဇယားအမျိုးအစားများ
 Supported chart types for this configuration,ဤပြင်ဆင်မှုအတွက် ထောက်ပံ့ထားသော ဂရပ်ဇယားအမျိုးအစားများ
 Supporting,ထောက်ပံ့ခြင်း
 Supporting file,ထောက်ပံ့ဖိုင်
 Supporting files,အထောက်အကူပြုဖိုင်များ
+Surface text,မျက်နှာပြင် စာသား
 Synced template,ညှိနှိုင်းထားသော ပုံစံ
 Synced Template,ညှိနှိုင်းထားသော ပုံစံ
 Synced templates cannot be deleted.,ညှိနှိုင်းထားသော ပုံစံများကို ဖျက်၍ မရပါ။
@@ -1252,12 +1372,13 @@ Target entity type,ပစ်မှတ်အဖွဲ့အစည်းအမျ�
 Target relationship type,ပစ်မှတ် ဆက်နွယ်မှု အမျိုးအစား
 Target Template,ပစ်မှတ်ပုံစံ
 Target template,ပစ်မှတ်ပုံစံ
-Target's role in the relationship Source-Target.,ဆက်နွယ်မှု Source-Target တွင် Target ၏ အခန်းကဏ္ဍ။
 Target:,ပစ်မှတ်:
+Target's role in the relationship Source-Target.,ဆက်နွယ်မှု Source-Target တွင် Target ၏ အခန်းကဏ္ဍ။
 Tasks,တာဝန်များ
 Template,ပုံစံပြား
 Template changes are being applied to all related entities.,ပုံစံ ပြောင်းလဲမှုများကို ဆက်စပ်အဖွဲ့အစည်းများအားလုံးတွင် အသုံးချနေပါသည်။
 Template color,ပုံစံ အရောင်
+Template colors,ပုံစံ အရောင်များ
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.",ဒေတာရင်းမြစ်များကို နှိုင်းယှဉ်သည့်အခါ သို့မဟုတ် ဒိုင်မင်ရှင်းသည် entity type ဖြစ်သည့်အခါ တင်ပုံစံအရောင်များ သုံးစွဲသည်။ မဟုတ်ပါက ပြန်လည်အသုံးပြုရန် အဖြစ် ဂရပ်ဇယားအရောင်ပလိတ်ကို သုံးစွဲသည်။
 Template conflict,ပုံစံ ပဋိပက္ခ
@@ -1288,6 +1409,7 @@ Theme instance file invalid,Theme instance ဖိုင် မမှန်ကန
 Theme logotype,အသွင်အပြင် အမှတ်တံဆိပ်
 Theme presets,အသွင်အပြင် ကြိုတင်ညှိထားချက်များ
 Theme preview,အသွင်အပြင် ကြိုကြည့်ခြင်း
+Theme preview label,အလှဆင် အကြိုကြည့် အညွှန်း
 Then by,ထို့နောက်ဖြင့်
 There are no pages enabled for entity view,ဖြည့်သွင်းချက် မြင်ကွင်းအတွက် ဖွင့်ထားသော စာမျက်နှာများ မရှိပါ
 There are no untranslated terms,ဘာသာမပြန်ထားသေးသော စကားလုံးများ မရှိပါ။
@@ -1313,6 +1435,7 @@ This chart type cannot display the current data.,ဤဂရပ်ဇယားအ�
             legend, labels, or data filters.",ဤဂရပ်ဇယားအမျိုးအစားတွင် ထပ်ဆောင်းရွေးချယ်စရာများ မရှိပါ။ အကယ်၍ အဓိပ္ပာယ်ဖော်ပြချက်၊ အမှတ်အသားများ သို့မဟုတ် ဒေတာ စစ်ထုတ်စနစ်များ လိုအပ်ပါက အထက်တွင် အခြားဂရပ်ဇယားအမျိုးအစားကို ရွေးချယ်ပါ။
 This content is automatically generated,ဤအကြောင်းအရာကို အလိုအလျောက် ထုတ်လုပ်ထားသည်
 This data visualization name already exists. Enter a unique name.,ဒီ ဒေတာမြင်ကွင်းအမည်သည် ရှိပြီးသားဖြစ်ပါသည်။ ထူးခြားသော အမည်တစ်ခု ထည့်ပါ။
+This document,ဤစာရွက်စာတမ်း
 "This entity has no document, you probably want to see the metadata",ဤဖြည့်သွင်းချက်တွင် စာရွက်စာတမ်းမရှိပါ၊ မီတာဒေတာကို သင်ကြည့်လိုက ကြည့်နိုင်သည်
 This entity is restricted from public view.,ဤဖြည့်သွင်းချက်ကို အများမမြင်နိုင်အောင် ကန့်သတ်ထားသည်။
 This field is required,ဤကွက်ကိုဖြည့်ရန်လိုအပ်ပါသည်။
@@ -1342,7 +1465,7 @@ This table of contents was automatically created by the system.,ဤ အကြေ
 this template,ဤပုံစံ
 This template is in use by existing entities and cannot be deleted.,ဤပုံစံကို လက်ရှိ အဖွဲ့အစည်းများက အသုံးပြုနေပြီး ဖျက်၍ မရပါ။
 Thumbnail,သေးငယ်သောပုံ
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,ပုံသေး ဘောင်
 Time,အချိန်
 Time (UTC),အချိန် (UTC)
 Timeline,အချိန်ကြောင်း
@@ -1352,8 +1475,13 @@ tips,အကြံပြုချက်များ
 Title,ခေါင်းစဉ်
 To,သို့
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
+To date,ရက်စွဲထိ
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Today,ယနေ့
+Toggle dark theme,မှောင် အလှဆင် ဖွင့်ရန်
+Toggle light theme,လင်း အလှဆင် ဖွင့်ရန်
+Toggle navigation menu,လမ်းညွှန်မီနူး ဖွင့်/ပိတ်
+Toggle options menu,ရွေးချယ်စရာမီနူး ဖွင့်/ပိတ်
 Toggle relationship details,ဆက်နွယ်မှုအသေးစိတ် ဖွင့်/ပိတ်
 Toggle timeline mode,အချိန်ကြောင်း မုဒ်ကို ပြောင်းလဲ
 Tools,ကိရိယာများ
@@ -1377,6 +1505,7 @@ Translations,ဘာသာပြန်ဆိုချက်များ
 Translations imported.,ဘာသာပြန်ချက်များ တင်သွင်းပြီးပါပြီ။
 Translations reset successfully,ဘာသာပြန်ချက်များကို အောင်မြင်စွာ ပြန်လည်သတ်မှတ်ပြီးပါပြီ။
 Translations saved,ဘာသာပြန်ဆိုချက်များ သိမ်းပြီး
+Tree,သစ်ပင်ပုံ
 Try a different search or clear filters.,ရှာဖွေမှုကို အခြားတစ်ခုဖြင့် ကြိုးစားပါ သို့မဟုတ် စစ်ထုတ်ကိရိယာများကို ဖျက်ပါ။
 Turn off inline translation,အတွင်းတန်းဘာသာပြန်ဆိုမှုကို ပိတ်ပါ။
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1389,6 +1518,7 @@ Two-factor verification failed,နှစ်ဆင့်ခံ မှန်ကန
 Two-step verification,နှစ်ဆင့်ခံ မှန်ကန်ကြောင်းစစ်ဆေးမှု
 Two-step verification token required,နှစ်ဆအတည်ပြုကုဒ်လိုအပ်ပါသည်။
 Type,အမျိုးအစား
+Type to filter…,စစ်ထုတ်ရန် ရိုက်ပါ…
 U,ယူ
 "Unable to save, failed response",သိမ်းဆည်း၍ မရ၊ တုံ့ပြန်မှု မအောင်မြင်
 Unauthorized,ခွင့်ပြုချက် မရှိပါ
@@ -1418,12 +1548,13 @@ Updated translations,အသစ်ပြင်ဆင်ထားသော ဘာ�
 Updated user,အသစ်ပြင်ဆင်ထားသော အသုံးပြုသူ
 Updating template properties across,ပုံစံ၏ ဂုဏ်သတ္တိများကို တစ်နေရာလုံးတွင် အပ်ဒိတ်လုပ်ခြင်း
 Updating…,အပ်ဒိတ်လုပ်နေပါသည်…
-Upload,Upload
+Upload,တင်ရန်
 Upload and select file,အပ်လုဒ်လုပ်ပြီး ဖိုင်ရွေးချယ်ရန်
 Upload from computer,ကွန်ပျူတာမှ အပ်လုဒ်လုပ်ရန်
 Upload image,ဓာတ်ပုံ တင်ပါ
 Upload PDF,PDF အပ်လုဒ်လုပ်ရန်
 Upload PDF(s) to create,PDF(များ) ဖန်တီးရန်အတွက် အပ်လုဒ်လုပ်ရန်
+Upload progress,တင်နေမှု တိုးတက်မှု
 Uploaded attachment,တင်ထားသော ပူးတွဲဖိုင်
 Uploaded custom file,စိတ်ကြိုက် ဖိုင်ကို တင်လိုက်ပါပြီ။
 Uploaded document,တင်ထားသောစာရွက်စာတမ်း
@@ -1438,9 +1569,9 @@ Use for training,လေ့ကျင့်ရန် အသုံးပြုပ�
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.",ဤ iframe ကို ပြင်ပဆိုဒ်များတွင် အသုံးပြုပါ။ လိုအပ်ပါက URL တွင် locale query parameter ကို ပြောင်းလဲပါ။
 Use URL,URL ကို အသုံးပြုပါ
-Used in templates and {n} refs — cannot delete,ပုံစံများနှင့် {n} ကိုးကားချက်များတွင် အသုံးပြုသည် — ဖျက်၍ မရနိုင်ပါ။
-Used in templates — cannot delete,ပုံစံများတွင် အသုံးပြုထားသည် — ဖျက်၍ မရနိုင်ပါ။
 Used in {n} refs — cannot delete,{n} ကိုးကားချက်များတွင် အသုံးပြုထားသည် — ဖျက်၍ မရနိုင်ပါ။
+Used in templates — cannot delete,ပုံစံများတွင် အသုံးပြုထားသည် — ဖျက်၍ မရနိုင်ပါ။
+Used in templates and {n} refs — cannot delete,ပုံစံများနှင့် {n} ကိုးကားချက်များတွင် အသုံးပြုသည် — ဖျက်၍ မရနိုင်ပါ။
 User,အသုံးပြုသူ
 User Action,အသုံးပြုသူ လုပ်ဆောင်ချက်
 User Role,အသုံးပြုသူ အခန်းကဏ္ဍ
@@ -1456,29 +1587,37 @@ Users & Groups,အသုံးပြုသူများနှင့်အု�
 Using Authenticator,Authenticator ကို အသုံးပြုခြင်း
 Using URLs,URL များကို အသုံးပြုခြင်း
 Uwazi,Uwazi
+Uwazi Design,Uwazi ဒီဇိုင်း
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
+Uwazi label,Uwazi အညွှန်း
 Uwazi UI,Uwazi UI
 Validating,အတည်ပြုခြင်း
 Validating file structure and headers.,ဖိုင်ဖွဲ့စည်းပုံနှင့် ခေါင်းစီးများကို အတည်ပြုခြင်း။
 Value,တန်ဖိုး
+Value and percentage,တန်ဖိုးနှင့် ရာခိုင်နှုန်း
 Value cannot be transformed to the correct type,တန်ဖိုးကို မှန်ကန်သော အမျိုးအစားသို့ ပြောင်းလဲ၍ မရနိုင်ပါ။
 values,တန်ဖိုးများ
 "values are staged, not saved",တန်ဖိုးများ စောင့်ဆိုင်းနေဆဲဖြစ်ပြီး သိမ်းဆည်းမထားသေးပါ။
 Verify,မှန်ကန်ကြောင်း စစ်ဆေးရန်
 Verifying...,မှန်ကန်ကြောင်း စစ်ဆေးဆဲ...
 via,မှတဆင့်
+Video,ဗီဒီယို
 View,ကြည့်ရန်
 view,ကြည့်ရန်
 View entities,အဖွဲ့အစည်းများကို ကြည့်ရှုရန်
 View entity,အဖွဲ့အစည်းကို ကြည့်ရန်
 View in library,စာကြည့်တိုက်တွင် ကြည့်ရန်
 View page,စာမျက်နှာ ကြည့်ရန်
+Vimeo video player,Vimeo ဗီဒီယို ပလေယာ
+Violated articles,ချိုးဖောက်သော ပုဒ်မများ
 Visibility,မြင်သာမှု
 Visualization data updated from your collection.,သင့်စုဆောင်းမှုမှ ဒေတာကို မြင်ကွင်းဖော်ပြချက်အဖြစ် အပ်ဒိတ်လုပ်ထားသည်။
 WARNING,သတိပေးချက်
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
 We can't find the page you're looking for.,သင်ရှာဖွေနေသည့် စာမျက်နှာကို မတွေ့နိုင်ပါ။
+Week,ပတ်
+Weekly,အပတ်စဉ်
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1511,6 +1650,7 @@ You should activate this feature for enhanced account security.,အကောင�
 You won't be able to save an entity if this property is empty.,ဤဂုဏ်သတ္တိသည် ဗလာဖြစ်နေပါက အဖွဲ့အစည်းကို သိမ်းဆည်း၍ မရနိုင်ပါ။
 You're all caught up,သင် လုပ်ဆောင်စရာ အားလုံး ပြီးသွားပါပြီ။
 Your account's security is enhanced with two-factor authentication.,သင့်အကောင့်၏လုံခြုံရေးကို နှစ်ဆအတည်ပြုစနစ်ဖြင့် ပိုမိုတိုးမြှင့်ထားသည်။
+YouTube video player,YouTube ဗီဒီယို ပလေယာ
 Z → A,Z သို့ A
 Zoom in,ချုံ့သည်
 Zoom in library view,စာကြည့်တိုက် မြင်ကွင်းကို ချုံ့သည်

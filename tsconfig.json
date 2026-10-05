@@ -52,6 +52,7 @@
     "scripts/scripts.v2/*",
     "scripts/scripts.v2/specs/*",
     "scripts/elasticSearch/*",
+    "scripts/checkTranslations/**/*",
     ".storybook"
   ],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]

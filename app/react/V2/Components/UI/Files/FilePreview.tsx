@@ -4,6 +4,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { EntityFile } from './FileCard.js';
 import { VideoPlayer } from './VideoPlayer.js';
 import { AudioPlayer } from './AudioPlayer.js';
+import { t } from '#app/I18N/index.js';
 
 type FileIconProps = {
   file: EntityFile;
@@ -91,7 +92,10 @@ const FilePreview = ({ file, className, onDuration }: FileIconProps) => {
     if (file.fileType === 'mainDocument') {
       return (
         <div className={`relative w-full h-full ${className || ''}`}>
-          <div className="absolute left-4 top-4 z-10" aria-label="Default file">
+          <div
+            className="absolute left-4 top-4 z-10"
+            aria-label={t('System', 'Default file', null, false)}
+          >
             <StarIcon className="w-6 h-6 text-primary-500" aria-hidden="true" />
           </div>
           <img className="ml-8" src={`/api/files/${file._id}.jpg`} alt={altText || filename} />

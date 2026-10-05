@@ -8,7 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import type { ContextAddOptionId, ContextChip, ContextScopeMode } from './types.js';
 
@@ -27,21 +27,21 @@ const ADD_MENU_SECTIONS: {
 }[] = [
   {
     title: 'Deepen',
-    options: [{ id: 'page', label: 'Page' }],
+    options: [{ id: 'page', label: t('System', 'Page', null, false) }],
   },
   {
     title: 'Facets',
     options: [
-      { id: 'template', label: 'Template' },
-      { id: 'connections', label: 'Connections' },
-      { id: 'files', label: 'Files' },
+      { id: 'template', label: t('System', 'Template', null, false) },
+      { id: 'connections', label: t('System', 'Connections', null, false) },
+      { id: 'files', label: t('System', 'Files', null, false) },
     ],
   },
   {
     title: 'Attach',
     options: [
-      { id: 'entity', label: 'Entity', suffix: '…' },
-      { id: 'file', label: 'File', suffix: '…' },
+      { id: 'entity', label: t('System', 'Entity', null, false), suffix: '…' },
+      { id: 'file', label: t('System', 'File', null, false), suffix: '…' },
     ],
   },
 ];
@@ -90,8 +90,8 @@ const BertContextBar = ({
             >
               {(
                 [
-                  { id: 'auto', label: 'Auto' },
-                  { id: 'this-document', label: 'This document' },
+                  { id: 'auto', label: t('System', 'Auto', null, false) },
+                  { id: 'this-document', label: t('System', 'This document', null, false) },
                 ] as const
               ).map(option => (
                 <li key={option.id} role="none">
@@ -134,7 +134,7 @@ const BertContextBar = ({
                 type="button"
                 onClick={() => onRemoveChip(chip.id)}
                 className="cursor-pointer rounded p-0.5 hover:bg-primary-200/60"
-                aria-label={`Remove ${chip.label}`}
+                aria-label={`${t('System', 'Remove', null, false)} ${chip.label}`}
               >
                 <XMarkIcon className="h-3 w-3" />
               </button>

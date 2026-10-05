@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { FacetCard } from './FacetCard.js';
@@ -32,7 +32,7 @@ const TextFacet = ({ title, name, value, onChange, open = true }: TextFacetProps
           hideLabel
           label={title}
           value={draft}
-          placeholder="Search"
+          placeholder={t('System', 'Search', null, false)}
           onChange={event => setDraft(event.target.value)}
           clearFieldAction={draft ? () => commitNow('') : undefined}
         />

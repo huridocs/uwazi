@@ -34,7 +34,7 @@ class LibraryFilters extends Component {
                   this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
                 }`}
                 onClick={this.props.hideFilters}
-                aria-label="Close side panel"
+                aria-label={t('System', 'Close side panel', null, false)}
               >
                 <Icon icon="times" />
               </button>

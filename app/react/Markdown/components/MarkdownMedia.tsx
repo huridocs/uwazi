@@ -264,14 +264,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <input
         type="text"
         className="timestamp-label"
-        placeholder="Enter title"
+        placeholder={t('System', 'Enter title', null, false)}
         key={field.id}
         {...register(`timelines.${index}.label`, {
           onChange: _ => updateParentForm(),
         })}
       />
       <button
-        title="Remove timelink"
+        title={t('System', 'Remove timelink', null, false)}
         type="button"
         className="delete-timestamp-btn"
         onClick={() => {

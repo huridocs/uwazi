@@ -6,7 +6,7 @@ import { getRowIcon } from './fileRowIcon.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileRowKebab } from './FileRowKebab.js';
 import { EntityFileRow } from './types.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 type FilesTableColumnsParams = {
   selectedIds: Set<string>;
@@ -48,7 +48,7 @@ const filesDataTableColumns = ({
             checked={allSelected}
             onChange={onToggleAll}
             onClick={stopRowClick}
-            aria-label="Select all files"
+            aria-label={t('System', 'Select all files', null, false)}
           />
         </label>
       ),
@@ -61,14 +61,14 @@ const filesDataTableColumns = ({
             onChange={() => onToggleRow(row.rowId)}
             onClick={stopRowClick}
             disabled={row.status === 'processing'}
-            aria-label={`Select ${row.displayName}`}
+            aria-label={`${t('System', 'Select', null, false)} ${row.displayName}`}
           />
         </label>
       ),
     },
     {
       id: 'displayName',
-      header: 'File name',
+      header: t('System', 'File name', null, false),
       width: '2fr',
       cell: row => (
         <div
@@ -84,13 +84,13 @@ const filesDataTableColumns = ({
     },
     {
       id: 'typeLabel',
-      header: 'Type',
+      header: t('System', 'Type', null, false),
       width: '4.5rem',
       cell: row => <span className="text-xs text-ink-tertiary">{row.typeLabel}</span>,
     },
     {
       id: 'sizeLabel',
-      header: 'Size',
+      header: t('System', 'Size', null, false),
       width: '4.5rem',
       cell: row => (
         <span dir="ltr" className="text-xs text-ink-tertiary">
@@ -112,7 +112,7 @@ const filesDataTableColumns = ({
   columns.push(
     {
       id: 'modifiedLabel',
-      header: 'Modified',
+      header: t('System', 'Modified', null, false),
       width: '5.5rem',
       cell: row => <span className="text-xs text-ink-tertiary">{row.modifiedLabel}</span>,
     },

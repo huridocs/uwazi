@@ -1,5 +1,6 @@
 import React, { FormEvent } from 'react';
 import { ArrowUpIcon } from '@heroicons/react/24/outline';
+import { t } from '#app/I18N/index.js';
 
 type ChatInputProps = {
   value: string;
@@ -32,14 +33,14 @@ const ChatInput = ({ value, onChange, onSubmit, disabled = false }: ChatInputPro
           onChange={event => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder="Ask Bert anything, or describe a task…"
+          placeholder={t('System', 'Ask Bert anything, or describe a task…', null, false)}
           className="min-w-0 flex-1 border-0 bg-warm text-sm text-ink placeholder:text-ink-muted focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={disabled}
           className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors shrink-0 bg-vellum"
-          aria-label="Send message"
+          aria-label={t('System', 'Send message', null, false)}
         >
           <ArrowUpIcon className="h-4 w-4 shrink-0 text-ink" />
         </button>

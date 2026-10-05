@@ -53,7 +53,7 @@ const getFileCardModel = (file: EntityFile, duration: number | undefined) => {
     fileTypeLabel,
     fileSize,
     fileDuration,
-    ariaLabel: `Select ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}`,
+    ariaLabel: `${t('System', 'Select', null, false)} ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}`,
   };
 };
 
@@ -132,7 +132,7 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
       <a
         href={card.downloadUrl}
         download={!file.url}
-        aria-label={`Download ${card.fileName}`}
+        aria-label={`${t('System', 'Download', null, false)} ${card.fileName}`}
         className="absolute right-4 bottom-4 z-10 rounded text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset"
       >
         <ArrowDownTrayIcon className="h-5 w-5" aria-hidden="true" />

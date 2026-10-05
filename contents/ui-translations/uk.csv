@@ -8,13 +8,13 @@ Key,Ukrainian
 198?,198?
 2FA,2FA
 2FA Enabled,2FA Увімкнено
+A → Z,А → Я
 A default template cannot be deleted.,Шаблон за замовчуванням не можна видалити.
 A friendly hand for serious work — I'll act in the context shown above.,Допомога у серйозній роботі — я діятиму відповідно до наведеного вище контексту.
 A generated ID will be the default title.,Згенерований ідентифікатор буде призначено заголовком за замовчуванням
 A source template must,Вихідний шаблон повинен
 A target template needs to have the following properties,Цільовий шаблон повинен мати такі властивості
 A valid email is required,Потрібна дійсна електронна адреса
-A → Z,А → Я
 Accept,Прийняти
 Accept all,Прийняти все
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
@@ -91,8 +91,11 @@ Admin,Адмін
 Administrators and Editors,Адміністратори та Редактори
 Administrators and Editors always have edit access,Адміністратори та редактори завжди мають права на редагування
 Admins,Адміни
+Advanced,Додатково
 Advanced colors,Розширені кольори
 Advanced ECharts overrides,Розширені перевизначення ECharts
+Aggregation,Агрегація
+Alias,Псевдонім
 ALL,ВСІ
 All,ВСІ
 "All changes will be lost, are you sure you want to proceed?","Усі зміни будуть втрачені, ви впевнені, що хочете продовжити?"
@@ -138,6 +141,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,"Ви впевнені, що хочете видалити цю візуалізацію? Цю дію неможливо скасувати."
 Are you sure?,Ти впевнений?
 Ask Bert,Запитай Bert
+"Ask Bert anything, or describe a task…",Запитайте Берта що завгодно або опишіть завдання…
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
 Attachment renamed,Вкладення перейменовано
@@ -152,6 +156,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,Автоматичний зміст
 Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
+Available files,Доступні файли
+Avg,Середнє
 Back,Назад
 Back to,Назад до
 Back to details,Повернутися до детальної інформації
@@ -194,13 +200,14 @@ Character support process warning,"Цей процес може зайняти �
 Character support revert warning,"Вибравши цю опцію, ви не зможете повернутися до використання старих імен властивостей. Якщо у вас немає проблем з іменами властивостей шаблону, ми рекомендуємо не позначати цю опцію."
 Chart,Діаграма
 Chart options,Параметри діаграми
+Chart palette,Палітра діаграми
 Chart theme,Тема діаграми
 Chart type,Тип діаграми
 Chart type uses a custom view,У цьому типі діаграми використовується користувацький вигляд
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
 Checking which images fit the requirements,"Перевірка, які зображення відповідають вимогам..."
 Choose,Виберіть
-Choose PDF files,Choose PDF files
+Choose PDF files,Вибрати файли PDF
 Choose relation type,Виберіть тип зв’язку
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
 Chrome header,Заголовок Chrome
@@ -212,12 +219,18 @@ Clear coordinates,Очистити координати
 Clear Filters,Очистити фільтри
 Clear PDF selection,Очистити вибір PDF
 Clear search,Очистити пошук
+Clear selection,Зняти вибір
+Clear selection filter,Скинути фільтр вибору
+Clear sort,Скинути сортування
 Click,Клац!
 Click to fill,"Натисніть, щоб заповнити"
 Click to select an image,"Натисніть, щоб вибрати зображення"
 Click to select audio or video,"Натисніть, щоб вибрати аудіо- або відеофайл"
 Click to select files,"Натисніть, щоб вибрати файли"
 Close,Закрити
+Close filters,Закрити фільтри
+Close modal,Закрити вікно
+Close side panel,Закрити бічну панель
 Code,Код
 Collaborator,Співкористувач
 Collaborators,Співробітники
@@ -225,15 +238,19 @@ Collapse all,Згорнути все
 Collapse All,Згорнути все
 Collection,Колекція
 Collection Name,Назва колекції
+Color mode,Режим кольору
 Colors,Кольори
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Кольори беруться з рівня даних сервера. У попередньому перегляді відображаються призначені кольори сегментів, якщо вони доступні."
 Columns,Стовпці
+Combine counts,Об’єднати підрахунки
 combine or exclude terms,об’єднати або виключити терміни
 Comfortable,Комфортна
 Common sources,Загальні джерела
 Compact,Компактна
+Compare side by side,Порівняти поряд
 Completed,Завершено
 Completed with errors,Завершено з помилками
+Computed years,Обчислені роки
 Config,Налаштування
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
@@ -254,7 +271,9 @@ Connect to an entity,Підключіться до організації
 Connect to entity,Підключитися до об’єкта
 Connected entities,Пов’язані об’єкти
 Connected to server,Підключено до сервера
+Connection deleted,Зв’язок видалено
 Connection type,Тип зв'язку
+Connections,Зв’язки
 Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
 Contact Form,Форма зворотнього зв'язку
 Contact form email,Контактна форма електронної пошти
@@ -321,6 +340,7 @@ CSV import failed,Імпорт CSV не вдався
 CSV or ZIP,CSV або ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,Поточне значення/пропозиція
+Custom colors,Власні кольори
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Для цього типу діаграми не доступні власні кольори. Замість цього скористайтеся палітрою діаграми або
 кольорами шаблону."
@@ -330,19 +350,25 @@ Custom Favicon,Користувацька іконка
 Custom JS,Спеціальний JS
 Custom landing page,Налаштована цільова сторінка
 custom page error warning,"На цій кастомній сторінці сталася несподівана помилка, вона може не працювати належним чином. Будь ласка, зв'яжіться з адміністратором для уточнення деталей."
+Custom pair,Власна пара
 Custom Uploads,Персоналізовані завантаження
 Customize,Налаштувати
 Customized,Індивідуальний
+Daily,Щодня
 Dark,Темний
 Dark Theme,Темна тема
 Dashboard,Приладова панель
+Data,Дані
 Data may be outdated.,Дані можуть бути застарілими.
 Data source,Джерело даних
 Data sources,Джерела даних
 Data visualizations,Візуалізації даних
 Data was updated recently. You can refresh again in a few seconds.,Дані було нещодавно оновлено. Ви можете спробувати оновити сторінку ще раз через кілька секунд.
+Dataviz editor,Редактор візуалізації
+Dataviz preview,Попередній перегляд візуалізації
 Date,Дата
 Date added,Дата додавання
+Date interval,Інтервал дат
 Date modified,Дату змінено
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Дата або числове значення × числове значення дозволяють створити діаграму розсіювання та теплову карту. Лінійні, площинні та стовпчасті діаграми відображають
@@ -352,11 +378,13 @@ Date modified,Дату змінено
  у динаміці."
 Date range,Діапазон дат
 Day,День
+Decrease indentation,Зменшити відступ
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Глибоко інтегровано в згенеровані параметри ECharts. Використовується для точного налаштування параметрів, які не відображаються на
  вкладці ""Діаграма""."
 Default,За замовчуванням
 Default date format,Формат дати за замовчуванням
+Default file,Файл за замовчуванням
 Default filter,Фільтр за замовчуванням
 Default language,Мова за замовчуванням
 Default language change success,Зміна мови за замовчуванням пройшла успішно
@@ -366,6 +394,7 @@ Default View,Вигляд за замовчуванням
 Delete,Видалити
 DELETE,Видалити
 Delete entities and documents,Видалити документи та об'єкти
+Delete entry,Видалити запис
 Delete file,Видалити файл
 Delete relationship,Видалити зв’язок
 Delete relationships,Видалити зв’язки
@@ -387,6 +416,7 @@ Deletion success,Успішність видалення
 Density,Щільність
 Description,Опис
 Deselect all,Скасувати вибір усіх
+Detail,Детально
 Details,Деталі
 Direction,Напрямок
 Disable,Вимкнути
@@ -396,6 +426,7 @@ Discard,Відхилити
 Discard changes,Відмінити зміни
 Discard changes?,Відкинути зміни?
 Dismiss,Звільнити.
+Dismiss notification,Закрити сповіщення
 Display entity view from page,"Показувати об'єкт, який переглядають зі сторінки"
 Display options,Параметри відображення
 Do you want disable 2FA for the following users?,Ви хочете вимкнути 2FA для наступних користувачів?
@@ -403,6 +434,7 @@ Do you want reset the password for the following users?,Ви хочете ски
 Do you want to delete the following items?,Ви хочете видалити наступні елементи?
 Document,Документ
 Document contents,Зміст документа
+Document deleted,Документ видалено
 Document OCR trigger,Тригер розпізнавання документів
 Document Title,Назва документа
 Document updated,Документ оновлено
@@ -430,16 +462,21 @@ Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
 Duration,Тривалість
 e.g.,наприклад:
+e.g. hombres,напр. hombres
 Each series uses the template brand color when comparing data sources.,"У кожній серії під час порівняння джерел даних використовується колір бренду, визначений у шаблоні."
 Earlier,Раніше
+Echarts configuration,Конфігурація ECharts
 Edit,Редагувати
 Edit at source,Редагувати в джерелі
 Edit date,Дату змінено
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
+Edit Group,Редагувати групу
 Edit item,Редагувати елемент
+Edit Link,Редагувати посилання
 Edit metadata of entities,Редагування метаданих сутностей
+Edit relationship type,Редагувати тип зв’язку
 Edit theme,Редагувати тему
 Edit user,Редагувати користувача
 Edited,Відредаговано
@@ -452,25 +489,29 @@ Embed in pages,Вбудувати на сторінки
 Empty,Порожній
 Empty group. Drop here to add,"Порожня група. Натисніть тут, щоб додати"
 empty property tip,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
+Empty value label,Підпис порожнього значення
 Enable,Увімкнути
 Enable public embedding to use this chart in external sites on private instances.,"Увімкніть функцію публічного вбудовування, щоб використовувати цю діаграму на зовнішніх сайтах у приватних екземплярах."
 Enable this page to be used as an entity view page:,Зробіть цю сторінку доступною для використання в якості сторінки для перегляду об'єкта:
 Enter the 6-digit verification code generated by your Authenticator app,"Введіть 6-значний код підтвердження, згенерований вашим додатком Authenticator"
 "Enter the full username, email, or group name. Suggestions are not shown.","Введіть повне ім'я користувача, адресу електронної пошти або назву групи. Підказки не відображаються."
+Enter title,Введіть заголовок
 Enter your current password to confirm,Введіть ваш поточний пароль для підтвердження
 Entities,Об'єкти
 entities,Об'єкти
+entities · generated,об’єктів · згенеровано
 Entities across all languages,Сутності всіма мовами
 Entities created,Створені об’єкти
 Entities updated,Оновлені об’єкти
-entities · generated,об’єктів · згенеровано
 Entity,Об'єкт
 Entity creation stage completed.,Етап створення об’єкта завершено.
 Entity deleted,Сутність видалено
 Entity Page,Сторінка сутності
+Entity primary,Основна сутність
 Entity saved,Об'єкт збережено
 Entity scope,Область дії об’єкта
 Entity type,Тип об’єкта
+Entity type (template),Тип сутності (шаблон)
 Entity types,Типи об'єктів
 Entity updated,Сутність оновлено
 Error,Помилка
@@ -487,6 +528,7 @@ Export CSV,Експортувати CSV
 Exporting entities to CSV,Експортувати об'єкти до CSV
 Extension Token,Токен розширення
 External embed,Зовнішнє вбудовування
+External iframe code,Зовнішній код iframe
 Extract new paragraphs,Витягніть нові абзаци
 Extract paragraphs,Витягнути абзаци
 Extracting files,Витягнення файлів
@@ -512,12 +554,14 @@ file,файл
 File deleted,Файл видалено
 File details,Відомості про файл
 File extraction completed successfully.,Витягнення файлів завершено успішно.
+File language,Мова файлу
 File name,Ім'я файлу
 File preview unavailable,Попередній перегляд файлу недоступний
 File updated,Файл оновлено
 Files,Файли
 files,файли
 Files and database usage,Використання файлів і баз даних
+Files list,Список файлів
 Fill,Заповнити
 Filter,Фільтр
 Filter unauthorized relationships,"За замовчуванням зв’язки, що вказують на об’єкти з обмеженим доступом, відображаються анонімним користувачам, але не пов’язані з ними. Якщо цю опцію увімкнути, такі зв’язки повністю приховуються, що не дозволяє звичайним користувачам дізнатися про існування вмісту з обмеженим доступом."
@@ -536,13 +580,16 @@ Find suggestions for selected,Знайдіть пропозиції для об�
 Finding suggestions,Пошук пропозицій
 Fit,Пристосувати
 Flag,Прапорець
+Flags,Прапори
 for,за
 For all entities,Для всіх суб'єктів господарювання
 For entities with blank values,Для сутностей з порожніми значеннями
 Forgot Password or Username?,Забули пароль або ім'я користувача?
 Forms and email configuration,Налаштування форм та електронної пошти
+Frequency,Частота
 From,Від
 From all suggestions,З усіх пропозицій
+From date,З дати
 From previous step,З попереднього кроку
 From selection,Із вибраного
 From:,Від:
@@ -552,12 +599,14 @@ General,Загальний
 General access,Загальний доступ
 General Information,Загальна інформація
 Generated ID,Згенерований ідентифікатор
+Geolocation,Геолокація
 Global CSS,Глобальні CSS
 Global CSS & JS,Глобальний CSS та JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Аналітики
 Google Maps,Карти Google
+Graph,Граф
 Group,Групи
 Group by,Згрупувати за
 group expressions,групові вирази
@@ -580,13 +629,18 @@ Hide actions,Приховати дії
 Hide details,Приховати деталі
 Hide label,Приховати мітку
 Hide restricted relationships from public,Приховати обмежені зв’язки від загального доступу
+Hide task,Приховати завдання
 Hide toolbar,Приховати панель інструментів
+Hours,Години
+How to combine sources,Як поєднати джерела
 HTML,HTML
 https://yourdomain,https://вашдомен
 hub,хаб
 hubs,хаби
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,Гібридний
 Icon,Символ
+Icons,Піктограми
 ID,ІДЕНТИФІКАТОР
 ID:,ПОСВІДЧЕННЯ ОСОБИ:
 "If an account exists with the email you provided, you will receive an email
@@ -594,6 +648,7 @@ ID:,ПОСВІДЧЕННЯ ОСОБИ:
  з інструкціями щодо зміни пароля."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Якщо це зовнішній URL, використовуйте повністю сформований URL. Тобто http://www.uwazi.io."
 "If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
+Image,Зображення
 Image doesn't match the required size.,Зображення не відповідає необхідному розміру.
 Import,Імпортувати
 Import asset,Імпортний актив
@@ -613,6 +668,7 @@ In use,Використовується
 Include all entities,Включити всі об’єкти
 Include only public,Включити лише загальнодоступні
 Incoming,Вхідні
+Increase indentation,Збільшити відступ
 Info,Інформація
 Information extraction training,Тренінг з вилучення інформації
 Inherit,Успадковувати
@@ -644,6 +700,7 @@ key,ключ
 Label,Мітка
 "Label date ""From""",з
 "Label date ""to""",до
+Label format,Формат підпису
 Labeled,З позначкою
 Landing page,Головна сторінка
 Landing page description,"Цільова сторінка - це перша сторінка, яку бачать відвідувачі, коли потрапляють до вашої колекції. За замовчуванням цільовою сторінкою є бібліотека вашої колекції. Ви можете встановити іншу цільову сторінку, додавши тут її відносну URL-адресу. Наприклад:
@@ -654,13 +711,14 @@ Landing page description,"Цільова сторінка - це перша ст
 Документ: */document/4y9i99fadjp833di*
 
 Важливо: Ви повинні використовувати відносні URL-адреси. Вони починаються з прямої похилої риски і не містять доменного імені. Наприклад: В адресі *https://yoursite.com/landingpage* відносною URL-адресою буде /landingpage"
+Landscape,Альбомна
 Language,Мова
 Language Code,Код мови
 Language deleted,Мову видалено
 Language reset success,Успішне перезавантаження мови
 Language uninstalled successfully,Мова успішно видалена
-Language(s),Мова(и)
 Language:,Мова:
+Language(s),Мова(и)
 Languages,Мови
 Languages installed successfully,Мови встановлено успішно
 Last updated,Останнє оновлення
@@ -671,11 +729,13 @@ Learn how to add and configure a contact form on a webpage.,"Дізнайтес�
 Learn how to build your first collection,"Дізнайтеся, як створити свою першу колекцію"
 Learn more,Дізнатися більше
 Learn more about the components.,Дізнайтеся більше про компоненти.
+Legacy Uwazi,Класичний Uwazi
 Legend,Підпис
 Lengthy reindex process,Тривалий процес реіндексації
 Library,Бібліотека
 library list view,перегляд бібліотеки у вигляді списку
 library map view,перегляд бібліотеки у вигляді карти
+Library results,Результати бібліотеки
 library table view,перегляд бібліотеки у табличному вигляді
 Light,Світла
 Light Theme,Світла тема
@@ -683,6 +743,7 @@ Link,Посилання
 linked,пов'язаний
 List,Список
 List renders as a table. Use the options below to filter empty or zero values.,"Список відображається у вигляді таблиці. Скористайтеся наведеними нижче параметрами, щоб відфільтрувати порожні або нульові значення."
+Live (always up to date),Наживо (завжди актуально)
 Live preview,Попередній перегляд у реальному часі
 Live translate,Прямий переклад
 Load,Завантажити
@@ -703,6 +764,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,Управління типами зв’язків
 Manage site settings and configuration,Керування сайтом і конфігурація
 Manage types,Управління типами
+Manual,Вручну
 Manual data,Дані введено вручну
 Manually set a color,Встановити колір вручну
 Map,Карта
@@ -740,6 +802,10 @@ Matches show the passage and the page they are on.,"У результатах п
 Matching,Відповідність
 matching,відповідність
 Matomo,Матомо.
+Max,Макс.
+Max buckets,Макс. кошиків
+Max number of slices,Макс. кількість часток
+Media,Медіа
 Members,Учасники
 Menu,Меню
 Message,Повідомлення
@@ -750,7 +816,9 @@ Metadata Extraction,Видобування метаданих
             configure categories, labels, and slices. Use the Appearance tab for colors.","Діаграма ""Метрика"" відображає загальну кількість. Виберіть вище тип діаграми — ""Кругова"", ""Стовпчаста"" або інший, щоб
  налаштувати категорії, мітки та сегменти. Для налаштування кольорів скористайтеся вкладкою ""Зовнішній вигляд""."
 MIGRATE,МІГРУВАТИ
+Min,Мін.
 Minimum,Мінімум
+Minutes,Хвилини
 Mismatch,Невідповідність
 mismatched passwords,Паролі не збігаються
 mismatching,невідповідність
@@ -758,6 +826,7 @@ Mixed access,Доступ змішаного типу
 ML TOC,Зміст для машинного навчання
 Modified,Змінено
 Month,Місяць
+Monthly,Щомісяця
 Months,Місяці
 More,Більше
 more,далі
@@ -766,6 +835,8 @@ More rows per screen; same type size,Більше рядків на екрані
 Multi-source mode,Режим роботи з декількома джерелами
 Multiple date,Кілька дат
 Multiple date range,Діапазон кількох дат
+Multiple date ranges,Кілька діапазонів дат
+Multiple dates,Кілька дат
 Multiple inherited properties warning ([property 1] affects [property 2]),впливає
 Multiple matches found,Знайдено кілька збігів
 Multiple relationships edit description,"Внесення змін до цієї властивості вплине на інші властивості цього шаблону, оскільки всі вони мають спільні зв'язки з тією самою конфігурацією."
@@ -787,12 +858,15 @@ New activity will show up here.,Нові події з’являтимутьс�
 New conversation,Нова розмова
 New entity,Новий об'єкт
 New group,Нова група
+New Group,Нова група
 New language added,Додано нову мову
+New Link,Нове посилання
 New page,Нова сторінка
 New password,Новий пароль
 New primary doc,Новий первинний документ
 New relation type label…,Нова назва типу зв’язку…
 New relationship type,Новий тип відносин
+New Relationships,Нові зв’язки
 New relationships group,Група нових взаємозв'язків
 New Relationships Migration,Нові стосунки Міграція Міграція
 New user,Новий користувач
@@ -858,9 +932,9 @@ No valid target template available,Відсутній правильний ша�
 No value,Немає значення
 No Value,Немає значення
 No visualization data available.,Дані для візуалізації відсутні.
-"No, cancel","Ні, скасуй."
 no-toc-description,"Для початку можна виділити текст у документі та натиснути кнопку ""Додати до
 змісту""."
+"No, cancel","Ні, скасуй."
 Non processed,Не оброблений
 Non-labeled,Без маркування
 Non-latin characters support,Підтримка нелатинських символів
@@ -872,6 +946,7 @@ Not Found,Не знайдено
 Nothing here yet.,Тут поки що нічого немає.
 Nothing selected,Нічого не вибрано
 Notifications,Повідомлення
+Numeric,Числовий
 Obsolete,Застарілий
 obsolete,застарілий
 OCR,Оптичне розпізнавання символів
@@ -905,10 +980,11 @@ Open group,Відкрита група
 Open link,Відкрити посилання
 Open PDF,Відкрити PDF
 Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
+Operator,Оператор
 Options,Параметри
 or,або
 or drag and drop here,або перетягніть сюди
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,або перетягніть файли PDF сюди
 or drop your files here.,або опустіть свої файли сюди.
 Or paste a URL,Або вставте URL-адресу
 Order,Порядок
@@ -916,16 +992,22 @@ Other,Інший
 other,Інший
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
+Others label,Підпис «Інше»
 Outgoing,Вихідні
+Overview,Огляд
 p.,с.
 Page,Сторінка
+Page embed code,Код вбудовування на сторінку
+Page language,Мова сторінки
 Page not found,Сторінку не знайдено
 Page published successfully.,Сторінка успішно опублікована.
 Pages,Сторінки
+Pagination,Пагінація
 Paragrap number extraction property (numeric),Властивість вилучення номера абзацу (числова)
 Paragraph,Абзац
 Paragraph Extraction,Вилучення абзацу
 Paragraph Extractor added,Додано екстрактор абзаців
+Paragraph extractor wizard,Майстер витягування абзаців
 Paragraph text extraction property (rich text),Властивість вилучення тексту абзацу (розширений текст)
 Paragraphs,Абзаци
 Paragraphs deleted,Абзаци вилучено
@@ -944,6 +1026,7 @@ PDF,PDF
 Pending,На розгляді
 People and groups,Люди та групи
 per page,на сторінку
+Percentage,Відсоток
 Permission,Дозвіл
 Permission level,Рівень доступу
 Permission on entities explicitly shared with the user,"Дозвіл на об'єкти, якими поділилися з користувачем"
@@ -952,9 +1035,12 @@ Permissions updated,Оновлено права доступу
 Pick a color,Виберіть колір
 Pick another,Виберіть інший
 Plain text,Звичайний текст
+Play audio,Відтворити аудіо
+Play video,Відтворити відео
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
 Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
+Portrait,Книжкова
 Pre-filled from your selection. Edit as needed.,Попередньо заповнено відповідно до вашого вибору. Відредагуйте за потреби.
 Preflight scan completed.,Попереднє сканування завершено.
 Preparing required relationships.,Підготовка необхідних зв’язків.
@@ -964,11 +1050,14 @@ Preserve Extension,Зберегти розширення
 Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
+Preview mode,Режим попереднього перегляду
 Preview updates automatically (300ms debounce),Попередній перегляд оновлюється автоматично (затримка 300 мс)
 Preview updates when the JSON is valid.,"Попередній перегляд оновлюється, якщо JSON дійсний."
 Previous,Попередній
 Primary,Первинна
+Primary action,Основна дія
 Primary button,Головна кнопка
+Primary dimension (X-axis / categories),Основний вимір (вісь X / категорії)
 Primary document,Первинний документ
 Primary Documents,Основні документи
 Primary documents,Первинні документи
@@ -1022,6 +1111,7 @@ Publish release,Опублікувати реліз
 Published,У відкритому доступі
 Published and unpublished entities are counted.,"До підрахунку включаються як опубліковані, так і неопубліковані об’єкти."
 QR Code,QR-код
+qr code,QR-код
 Query,Запит
 Queued,У черзі
 RAW,RAW
@@ -1064,10 +1154,13 @@ remaining,решта
 remaining files,решта файлів
 Remote Server Unreachable,Віддалений сервер недоступний
 Remove,Видалити
+Remove data source,Видалити джерело даних
+Remove filter,Видалити фільтр
 Remove from connection,Видалити зі зв’язку
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму
 Remove icon,Видалити піктограму
+Remove timelink,Видалити часову мітку
 Removed language,Вилучена мова
 Rename,Перейменувати
 Renamed attachment,Перейменовано вкладення
@@ -1084,6 +1177,7 @@ Reset default translation,Скинути переклад за замовчув�
 Reset language,Скинути мову
 Reset Password,Скинути пароль
 Reset passwords,Скидання паролів
+Reset Search input,Скинути пошук
 Resize panels,Змінити розмір панелей
 Restore,Відновити
 Restore previous version,Відновити попередню версію
@@ -1093,10 +1187,12 @@ Retrying,Повторна спроба
 Return to login,Повернутись до авторизації
 Review,Огляд
 Reviewed,Переглянуто
+Rich text,Форматований текст
 Role,Роль
 Room around every row,Більше простору навколо кожного рядка
 Route,Маршрут
 Row,Гребіть!
+Row actions,Дії рядка
 Row density,Щільність рядів
 Rows failed,Помилки в рядках
 Rows processed,Кількість оброблених рядків
@@ -1105,6 +1201,7 @@ Satellite,Супутник
 Save,Зберегти
 Save & Preview,Зберегти та переглянути
 Save changes,Зберегти зміни
+Save label,Зберегти підпис
 Save password,Зберегти пароль
 Save the visualization before refreshing.,Збережіть візуалізацію перед оновленням.
 Save the visualization to get embed code.,"Збережіть візуалізацію, щоб отримати код для вбудовування."
@@ -1119,13 +1216,16 @@ Schedule,Розклад
 Schedules run in UTC (Coordinated Universal Time).,Розклади вказані за UTC (універсальний координований час).
 Search,Шукати
 "Search  •  AND, OR, NOT, ""exact"", wild*","Пошук  •  AND, OR, NOT, ""точний"", підстановка*"
+Search button,Кнопка пошуку
 Search by title,Пошук за назвою
+Search chart types,Пошук типів діаграм
 Search entities...,Пошук об’єктів...
 Search entities…,Пошук об’єктів…
 Search item,Шукати предмет
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
 Search relationships,Пошук зв’язків
 Search relevance,Релевантність пошуку
+Search templates,Пошук шаблонів
 Search text,Пошук за текстом
 Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
 Search this document,Пошук у цьому документі
@@ -1138,7 +1238,12 @@ Search Tips: proximity,"~ для пошуку за близькістю слів
 Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""юрис*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
 Search title & metadata,Пошук за назвою та метаданими
 Searching...,Пошук...
+Second dimension (series / stacks),Другий вимір (ряди / стоси)
 Secondary button,Додаткова кнопка
+Secondary button border,Межа додаткової кнопки
+Secondary button text,Текст додаткової кнопки
+Secondary text,Додатковий текст
+Seconds,Секунди
 Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
@@ -1147,34 +1252,43 @@ Select & Search,Вибір та пошук
 Select a document to connect to a specific paragraph,"Виберіть документ, щоб перейти до конкретного абзацу"
 Select a file,Виберіть файл
 Select all,Вибрати все
+Select all files,Вибрати всі файли
 Select an existing image,Виберіть існуюче зображення
 Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
+Select icon...,Вибрати піктограму…
 Select image,Виберіть зображення
 Select media,Виберіть медіафайл
+Select page,Вибрати сторінку
+Select property…,Вибрати властивість…
 Select relationship,Вибрати зв'язок
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
 Select target document,Виберіть документ-ціль
 Select target entity,Виберіть об’єкт призначення
 Select target paragraph,Виберіть цільовий абзац
+Select template…,Вибрати шаблон…
 Select text in target document,Виділіть текст у цільовому документі
 select text or a value,вибрати текст або значення
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
+Select values…,Вибрати значення…
 Select...,Вибрати...
+Select…,Вибрати…
 Selected,Вибране
 selected,вибраний
 selected of,вибраний із
 Selected or suggested,Вибрані або запропоновані
 Selected templates,Вибрані шаблони
 Send,Відправити
+Send message,Надіслати повідомлення
 Send recovery email,Відправити лист для відновлення на електронну пошту
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
 Sending labeled data,Відправлення маркованих даних
 Series,Серія
+Server disconnected,Сервер відключено
 Services,Послуги
 Set as default,Встановити за замовчуванням
 Set default language,Встановити мову за замовчуванням
@@ -1182,6 +1296,7 @@ Set default template,Встановити шаблон за замовчуван
 Set the default starting point for your geolocation properties.,Встановити відправну точку за замовчуванням для своїх властивостей геолокації.
 Settings,Налаштування
 settings,налаштування
+Settings navigation,Навігація налаштувань
 Settings navigation active background,Навігація по налаштуваннях: активний фон
 Settings sidebar background,Фон бічної панелі налаштувань
 Settings updated,Налаштування оновлено
@@ -1204,6 +1319,7 @@ Show toolbar,Показати панель інструментів
 Showing,Показати
 Showing the top,Показано найпопулярніші
 shown of,показано від
+Side panel tabs,Вкладки бічної панелі
 Sign in,Увійти
 Simple mode,Простий режим
 Single relationships must have a hub,Одинокі стосунки повинні мати центр
@@ -1214,6 +1330,8 @@ Site logo description,"Логотип відображається у верхн
 Site logo no images hint,"Поки немає файлів зображень у Користувацьких завантаженнях. Спочатку додайте зображення PNG, SVG або JPEG."
 Size,Розмір
 Skip to main content,Перейти до основного змісту
+Snapshot (manual),Знімок (вручну)
+Snapshot (scheduled),Знімок (за розкладом)
 Some tasks may take a while. Bert will reply when it's done.,"Деякі завдання можуть зайняти деякий час. Bert відповість, коли все буде готово."
 Something went wrong,Щось пішло не так
 Sort,Сортувати
@@ -1251,11 +1369,13 @@ Suggestions,Запропоновані варіанти
 suggestions,пропозиції
 Suggestions sent,Пропозиції надіслані
 Suggestions updated,Оновлено пропозиції
+Sum,Сума
 Supported chart types for manual data,"Підтримувані типи діаграм для даних, що вводяться вручну"
 Supported chart types for this configuration,"Типи діаграм, що підтримуються для цієї конфігурації"
 Supporting,Супровідна
 Supporting file,Супровідний файл
 Supporting files,Супровідні файли
+Surface text,Текст поверхні
 Synced template,Синхронізований шаблон
 Synced Template,Синхронізований шаблон
 Synced templates cannot be deleted.,Синхронізовані шаблони не можна видалити.
@@ -1270,12 +1390,13 @@ Target entity type,Тип цільового об’єкта
 Target relationship type,Тип цільового зв'язку
 Target Template,Шаблон цілі
 Target template,Шаблон цілі
-Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
 Target:,Ціль:
+Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
 Tasks,Завдання
 Template,Шаблон
 Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.
 Template color,Колір шаблону
+Template colors,Кольори шаблону
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","Кольори шаблону застосовуються під час порівняння джерел даних або якщо вимір має тип ""об’єкт"".
 В інших випадках як запасний варіант використовується палітра діаграми."
@@ -1309,6 +1430,7 @@ Theme instance file invalid,Файл екземпляра теми є недій
 Theme logotype,Логотип теми
 Theme presets,Готові теми
 Theme preview,Попередній перегляд теми
+Theme preview label,Підпис попереднього перегляду теми
 Then by,Потім за
 There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
 There are no untranslated terms,Немає неперекладених термінів
@@ -1336,6 +1458,7 @@ This chart type cannot display the current data.,Цей тип діаграми 
  легенда, мітки або фільтри даних, виберіть інший тип діаграми вище."
 This content is automatically generated,Цей контент генерується автоматично
 This data visualization name already exists. Enter a unique name.,Така назва візуалізації даних уже існує. Введіть унікальну назву.
+This document,Цей документ
 "This entity has no document, you probably want to see the metadata","Цей об'єкт не має документів, ви, певно, хочете переглянути метадані"
 This entity is restricted from public view.,Цей об'єкт обмежений для загальнодоступного перегляду.
 This field is required,Це поле обов'язкове для заповнення
@@ -1369,7 +1492,7 @@ This table of contents was automatically created by the system.,Цей зміс�
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
 Thumbnail,Ескіз
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,Рамка мініатюри
 Time,Час
 Time (UTC),Час (UTC)
 Timeline,Часова шкала
@@ -1379,8 +1502,13 @@ tips,поради
 Title,Заголовок
 To,До
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
+To date,До дати
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
+Toggle dark theme,Увімкнути темну тему
+Toggle light theme,Увімкнути світлу тему
+Toggle navigation menu,Перемкнути меню навігації
+Toggle options menu,Перемкнути меню параметрів
 Toggle relationship details,Перемикати деталі зв’язку
 Toggle timeline mode,Увімкнути/вимкнути режим часової шкали
 Tools,Інструменти
@@ -1404,6 +1532,7 @@ Translations,Переклади
 Translations imported.,Переклади імпортовані.
 Translations reset successfully,Переклади успішно скинуто
 Translations saved,Переклади збережено
+Tree,Дерево
 Try a different search or clear filters.,Спробуйте ввести інший запит або скинути фільтри.
 Turn off inline translation,Вимкнути вбудований переклад
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1417,6 +1546,7 @@ Two-factor verification failed,Двохетапна перевірка не вд
 Two-step verification,Двохетапна перевірка
 Two-step verification token required,Потрібен токен з двоетапною верифікацією
 Type,Тип
+Type to filter…,Введіть для фільтрації…
 U,U
 "Unable to save, failed response","Не вдалося врятувати, не вдалося відповісти"
 Unauthorized,Несанкціонований
@@ -1446,12 +1576,13 @@ Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
 Updating…,Оновлення…
-Upload,Upload
+Upload,Вивантажити
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера
 Upload image,Завантажити зображення
 Upload PDF,Завантажити PDF
 Upload PDF(s) to create,"Завантажити PDF, щоб створити"
+Upload progress,Перебіг вивантаження
 Uploaded attachment,Завантажено вкладення
 Uploaded custom file,Завантажено користувацький файл
 Uploaded document,Завантажений документ
@@ -1467,9 +1598,9 @@ Use for training,Використання для навчання
                 needed.","Використовуйте цей iframe на зовнішніх сайтах. За потреби змініть параметр запиту ""locale"" в URL-адресі,
  якщо це необхідно."
 Use URL,Використовувати URL-адресу
-Used in templates and {n} refs — cannot delete,Використовується в шаблонах та {n} посиланнях — видалити не можна
-Used in templates — cannot delete,Використовується в шаблонах — видалити не можна
 Used in {n} refs — cannot delete,Використовується в {n} посиланнях — видалити не можна
+Used in templates — cannot delete,Використовується в шаблонах — видалити не можна
+Used in templates and {n} refs — cannot delete,Використовується в шаблонах та {n} посиланнях — видалити не можна
 User,Користувач
 User Action,Дія користувача
 User Role,Роль користувача
@@ -1485,29 +1616,37 @@ Users & Groups,Користувачі та групи
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
 Uwazi,Uwazi
+Uwazi Design,Дизайн Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi розроблений
+Uwazi label,Підпис Uwazi
 Uwazi UI,Інтерфейс користувача Uwazi
 Validating,Перевірка
 Validating file structure and headers.,Перевірка структури файлу та заголовків.
 Value,Значення
+Value and percentage,Значення і відсоток
 Value cannot be transformed to the correct type,Значення не може бути перетворено до правильного типу
 values,значення
 "values are staged, not saved","значення на розгляді, не збережені"
 Verify,Верифікувати
 Verifying...,Верифікування...
 via,через
+Video,Відео
 View,Переглянути
 view,переглянути
 View entities,Перегляд сутностей
 View entity,Переглянути сутність
 View in library,Переглянути в бібліотеці
 View page,Переглянути сторінку
+Vimeo video player,Відеоплеєр Vimeo
+Violated articles,Порушені статті
 Visibility,Видимість
 Visualization data updated from your collection.,Оновлено дані візуалізації з вашої колекції.
 WARNING,ПОПЕРЕДЖЕННЯ
 Warning: you are editing multiple entities. Fields marked with a,"Попередження: ви редагуєте декілька об'єктів. Поля, позначені"
 We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
+Week,Тиждень
+Weekly,Щотижня
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1540,6 +1679,7 @@ You should activate this feature for enhanced account security.,Вам слід 
 You won't be able to save an entity if this property is empty.,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
 You're all caught up,Тут усе переглянуто
 Your account's security is enhanced with two-factor authentication.,Безпека вашого облікового запису посилюється завдяки двофакторній автентифікації.
+YouTube video player,Відеоплеєр YouTube
 Z → A,Я → А
 Zoom in,Збільшити масштаб
 Zoom in library view,Збільшити масштаб перегляду бібліотеки

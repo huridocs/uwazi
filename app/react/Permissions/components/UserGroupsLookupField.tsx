@@ -1,4 +1,4 @@
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from '#UI/Icon/Icon.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
@@ -74,7 +74,7 @@ export const UserGroupsLookupField = ({
     <div className="userGroupsLookupField">
       <input
         type="text"
-        placeholder="Add people or groups"
+        placeholder={t('System', 'Add people or groups', null, false)}
         onChange={onChangeHandler}
         onKeyDown={onKeyPressHandler}
         onBlur={(e: any) => {

@@ -5,7 +5,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
-import { Translate, t } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
@@ -75,7 +75,7 @@ const I18NMenu = () => {
   return (
     <li
       className={languageList.length === 1 ? 'menuNav-I18NMenu one-language' : 'menuNav-I18NMenu'}
-      aria-label="Languages"
+      aria-label={t('System', 'Languages', null, false)}
       ref={menuRef}
     >
       {inlineEditState.inlineEdit && (

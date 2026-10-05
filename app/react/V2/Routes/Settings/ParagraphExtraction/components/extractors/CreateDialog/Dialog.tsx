@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from '#V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { AddExtractorSteps } from './steps/index.js';
 import { useCreateExtractorContext } from './CreateExtractorContext.js';
 import { Steppers } from './Steppers.js';
@@ -11,7 +11,7 @@ const Dialog = () => {
   const CurrentStepFooter = AddExtractorSteps[step].Footer;
 
   return (
-    <Modal size="xxl" ariaLabel="Paragraph extractor wizard">
+    <Modal size="xxl" ariaLabel={t('System', 'Paragraph extractor wizard', null, false)}>
       <Modal.Header>
         <div className="flex flex-col">
           <h1 className="text-lg font-semibold text-ink">{AddExtractorSteps[step].title()}</h1>

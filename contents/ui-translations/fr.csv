@@ -8,13 +8,13 @@ Key,French
 198?,198 ?
 2FA,Authentification à deux facteurs (2FA)
 2FA Enabled,Authentification à deux facteurs activée
+A → Z,A → Z
 A default template cannot be deleted.,Un modèle par défaut ne peut pas être supprimé.
 A friendly hand for serious work — I'll act in the context shown above.,Une main amicale pour un travail sérieux — Je vais agir dans le contexte présenté ci-dessus.
 A generated ID will be the default title.,Un identifiant généré sera le titre par défaut.
 A source template must,Un modèle source doit
 A target template needs to have the following properties,Un modèle cible doit posséder les propriétés suivantes
 A valid email is required,L'email est obligatoire
-A → Z,A → Z
 Accept,Accepter
 Accept all,Tout accepter
 Accepted suggestion on entity,Suggestion acceptée concernant l'entité
@@ -91,8 +91,11 @@ Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
 Administrators and Editors always have edit access,Les administrateurs et les rédacteurs disposent toujours d'un accès en modification
 Admins,Administrateurs
+Advanced,Avancé
 Advanced colors,Couleurs avancées
 Advanced ECharts overrides,Remplacements avancés dans ECharts
+Aggregation,Agrégation
+Alias,Alias
 ALL,TOUT
 All,Tout
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -138,6 +141,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Êtes-vous sûr de vouloir supprimer cette visualisation ? Cette action ne peut pas être annulée.
 Are you sure?,Êtes-vous sûr ?
 Ask Bert,Demander à Bert
+"Ask Bert anything, or describe a task…","Demandez n’importe quoi à Bert, ou décrivez une tâche…"
 Attachment,Pièce jointe
 Attachment deleted,Pièce jointe supprimée
 Attachment renamed,Pièce jointe renommée
@@ -152,6 +156,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
 Available default translation,Traduction par défaut disponible
+Available files,Fichiers disponibles
+Avg,Moyenne
 Back,Retour
 Back to,Retour à
 Back to details,Retour aux détails
@@ -194,13 +200,14 @@ Character support process warning,"Ce processus peut prendre plusieurs minutes e
 Character support revert warning,"Une fois cette option sélectionnée, vous ne pourrez plus revenir à l'ancienne nomenclature des propriétés. Si vous ne rencontrez pas de problèmes avec les noms de propriétés de vos modèles, nous vous recommandons de ne pas cocher cette case."
 Chart,Graphique
 Chart options,Options du graphique
+Chart palette,Palette du graphique
 Chart theme,Thème du graphique
 Chart type,Type de graphique
 Chart type uses a custom view,Le type de graphique utilise une vue personnalisée
 Check to make this instance public (non-logged in users can see public documents and entities),Cochez cette case pour rendre cette instance publique (les utilisateurs non connectés peuvent consulter les documents et entités publics)
 Checking which images fit the requirements,Vérification en cours des images correspondant aux exigences...
 Choose,Choisissez
-Choose PDF files,Choose PDF files
+Choose PDF files,Choisir des fichiers PDF
 Choose relation type,Choisissez le type de relation
 Choose which data to use for training,Choisissez les données à utiliser pour l'entraînement
 Chrome header,En-tête de la barre supérieure
@@ -212,12 +219,18 @@ Clear coordinates,Effacer les coordonnées
 Clear Filters,Effacer les filtres
 Clear PDF selection,Effacer la sélection dans le PDF
 Clear search,Effacer la recherche
+Clear selection,Effacer la sélection
+Clear selection filter,Effacer le filtre de sélection
+Clear sort,Effacer le tri
 Click,Cliquez
 Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
 Click to select files,Cliquez pour sélectionner des fichiers
 Close,Fermer
+Close filters,Fermer les filtres
+Close modal,Fermer la fenêtre
+Close side panel,Fermer le panneau latéral
 Code,Code
 Collaborator,Collaborateur
 Collaborators,Collaborateurs
@@ -225,15 +238,19 @@ Collapse all,Tout réduire
 Collapse All,Tout réduire
 Collection,Collection
 Collection Name,Nom de la collection
+Color mode,Mode de couleur
 Colors,Couleurs
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Les couleurs proviennent de la couche de données du serveur. L'aperçu affiche les couleurs attribuées aux compartiments lorsqu'elles sont disponibles.
 Columns,Colonnes
+Combine counts,Combiner les comptes
 combine or exclude terms,combiner ou exclure des termes
 Comfortable,Confortable
 Common sources,Sources courantes
 Compact,Compacte
+Compare side by side,Comparer côte à côte
 Completed,Terminé
 Completed with errors,Terminé avec des erreurs
+Computed years,Années calculées
 Config,Configuration
 Configuration,Configuration
 Configure filters,Configurer les filtres
@@ -254,7 +271,9 @@ Connect to an entity,Se connecter à une entité
 Connect to entity,Se connecter à l'entité
 Connected entities,Entités liées
 Connected to server,Connecté au serveur
+Connection deleted,Connexion supprimée
 Connection type,Type de connexion
+Connections,Connexions
 Contact email description,Vous pouvez configurer ici l'e-mail de contact ainsi que l'adresse qui apparaît lorsque Uwazi envoie une notification à un utilisateur
 Contact Form,Formulaire de contact
 Contact form email,E-mail du formulaire de contact
@@ -321,6 +340,7 @@ CSV import failed,Échec de l'importation du fichier CSV
 CSV or ZIP,Fichier CSV ou ZIP
 Ctrl K,Ctrl+K
 Current Value/Suggestion,Valeur actuelle / Suggestion
+Custom colors,Couleurs personnalisées
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Les couleurs personnalisées ne sont pas disponibles pour ce type de graphique. Utilisez plutôt la palette de couleurs du graphique ou les
 couleurs du modèle."
@@ -330,19 +350,25 @@ Custom Favicon,Favicon personnalisée
 Custom JS,JS personnalisé
 Custom landing page,Page d'accueil personnalisée
 custom page error warning,"Une erreur inattendue s'est produite sur cette page personnalisée, il se peut qu'elle ne fonctionne pas correctement. Veuillez contacter un administrateur pour plus de détails."
+Custom pair,Paire personnalisée
 Custom Uploads,Téléchargements personnalisés
 Customize,Personnaliser
 Customized,Personnalisé
+Daily,Quotidien
 Dark,Sombre
 Dark Theme,Thème sombre
 Dashboard,Tableau de bord
+Data,Données
 Data may be outdated.,Les données peuvent être obsolètes.
 Data source,Source des données
 Data sources,Sources des données
 Data visualizations,Visualisations de données
 Data was updated recently. You can refresh again in a few seconds.,Les données ont été mises à jour récemment. Vous pourrez actualiser de nouveau dans quelques secondes.
+Dataviz editor,Éditeur de visualisation
+Dataviz preview,Aperçu de la visualisation
 Date,Date
 Date added,Date ajoutée
+Date interval,Intervalle de dates
 Date modified,Date de modification
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Les combinaisons ""date"" ou ""valeur numérique × valeur numérique"" permettent d'afficher un nuage de points et une carte thermique. Les graphiques linéaires, en aires et à barres représentent la
@@ -352,11 +378,13 @@ Date modified,Date de modification
  au fil du temps."
 Date range,Plage de dates
 Day,Jour
+Decrease indentation,Diminuer le retrait
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Intégré en profondeur dans l'option ECharts générée. À utiliser pour affiner les paramètres qui ne sont pas accessibles dans
 l'onglet ""Graphique""."
 Default,Par défaut
 Default date format,Format de date par défaut
+Default file,Fichier par défaut
 Default filter,Filtre par défaut
 Default language,Langue par défaut
 Default language change success,Succès du changement de langue par défaut
@@ -366,6 +394,7 @@ Default View,Affichage par défaut
 Delete,Effacer
 DELETE,Effacer
 Delete entities and documents,Supprimer des entités et des documents
+Delete entry,Supprimer l’entrée
 Delete file,Supprimer le fichier
 Delete relationship,Supprimer la relation
 Delete relationships,Supprimer les relations
@@ -387,6 +416,7 @@ Deletion success,Suppression réussie
 Density,Densité
 Description,Description
 Deselect all,Tout désélectionner
+Detail,Détail
 Details,Détails
 Direction,Direction
 Disable,Désactiver
@@ -396,6 +426,7 @@ Discard,Abandonner
 Discard changes,Annuler les modifications
 Discard changes?,Annuler les modifications ?
 Dismiss,Ignorer
+Dismiss notification,Ignorer la notification
 Display entity view from page,Afficher la vue de l'entité depuis la page
 Display options,Options d'affichage
 Do you want disable 2FA for the following users?,Souhaitez-vous désactiver l'authentification à deux facteurs (2FA) pour les utilisateurs suivants ?
@@ -403,6 +434,7 @@ Do you want reset the password for the following users?,Souhaitez-vous réinitia
 Do you want to delete the following items?,Souhaitez-vous supprimer les éléments suivants ?
 Document,Document
 Document contents,Contenu du document
+Document deleted,Document supprimé
 Document OCR trigger,Déclencheur OCR pour les documents
 Document Title,Titre du document
 Document updated,Document mis à jour
@@ -430,16 +462,21 @@ Duplicated name,Nom dupliqué
 Duplicated username,Nom d'utilisateur en double
 Duration,Durée
 e.g.,par exemple
+e.g. hombres,p. ex. hombres
 Each series uses the template brand color when comparing data sources.,Chaque série utilise la couleur de marque du modèle lors de la comparaison des sources de données.
 Earlier,Auparavant
+Echarts configuration,Configuration ECharts
 Edit,Éditer
 Edit at source,Modifier à la source
 Edit date,Date de modification
 Edit Extractor,Modifier l'extracteur
 Edit File,Modifier le fichier
 Edit group,Modifier le groupe
+Edit Group,Modifier le groupe
 Edit item,Modifier l'élément
+Edit Link,Modifier le lien
 Edit metadata of entities,Modifier les métadonnées des entités
+Edit relationship type,Modifier le type de relation
 Edit theme,Modifier le thème
 Edit user,Modifier un utilisateur
 Edited,Modifié
@@ -452,25 +489,29 @@ Embed in pages,Intégrer dans des pages
 Empty,Vide
 Empty group. Drop here to add,Groupe vide. Glisser-déposer ici pour ajouter
 empty property tip,Vous ne pourrez pas enregistrer une entité si cette propriété est vide.
+Empty value label,Libellé de valeur vide
 Enable,Activer
 Enable public embedding to use this chart in external sites on private instances.,Activez l'intégration publique pour pouvoir utiliser ce graphique sur des sites externes au sein d'instances privées.
 Enable this page to be used as an entity view page:,Activez cette page pour qu'elle soit utilisée comme page de visualisation des entités :
 Enter the 6-digit verification code generated by your Authenticator app,Saisissez le code de vérification à 6 chiffres généré par votre application Authenticator
 "Enter the full username, email, or group name. Suggestions are not shown.","Saisissez le nom d'utilisateur complet, l'adresse e-mail ou le nom du groupe. Aucune suggestion n'est affichée."
+Enter title,Saisir le titre
 Enter your current password to confirm,Saisissez votre mot de passe actuel pour confirmer
 Entities,Entités
 entities,Entités
+entities · generated,entités · générées
 Entities across all languages,Entités dans toutes les langues
 Entities created,Entités créées
 Entities updated,Entités mises à jour
-entities · generated,entités · générées
 Entity,Entité
 Entity creation stage completed.,La phase de création de l'entité est terminée.
 Entity deleted,Entité supprimée
 Entity Page,Page d'entité
+Entity primary,Entité principale
 Entity saved,Entité enregistrée
 Entity scope,Portée de l'entité
 Entity type,Type d'entité
+Entity type (template),Type d’entité (modèle)
 Entity types,Types d'entités
 Entity updated,Entité mise à jour
 Error,Erreur
@@ -487,6 +528,7 @@ Export CSV,Exporter CSV
 Exporting entities to CSV,Exporter des entités vers CSV
 Extension Token,Jeton d'extension
 External embed,Intégration externe
+External iframe code,Code iframe externe
 Extract new paragraphs,Extraire de nouveaux paragraphes
 Extract paragraphs,Extraire des paragraphes
 Extracting files,Extraction de fichiers
@@ -512,12 +554,14 @@ file,fichier
 File deleted,Fichier supprimé
 File details,Détails du fichier
 File extraction completed successfully.,L'extraction des fichiers s'est déroulée avec succès.
+File language,Langue du fichier
 File name,Nom du fichier
 File preview unavailable,Aperçu du fichier indisponible
 File updated,Fichier mis à jour
 Files,Fichiers
 files,fichiers
 Files and database usage,Utilisation des fichiers et de la base de données
+Files list,Liste des fichiers
 Fill,Remplir
 Filter,Filtre
 Filter unauthorized relationships,"Par défaut, les relations pointant vers des entités restreintes sont visibles par les utilisateurs anonymes, mais sans lien actif. Lorsque cette option est activée, ces relations sont entièrement masquées, empêchant les utilisateurs publics de savoir qu'un contenu restreint existe."
@@ -536,13 +580,16 @@ Find suggestions for selected,Rechercher des suggestions pour la sélection
 Finding suggestions,Recherche de suggestions
 Fit,Adapter
 Flag,Drapeau
+Flags,Drapeaux
 for,pour
 For all entities,Pour toutes les entités
 For entities with blank values,Pour les entités dont les valeurs sont vides
 Forgot Password or Username?,Mot de passe ou identifiant oublié ?
 Forms and email configuration,Configuration des formulaires et des e-mails
+Frequency,Fréquence
 From,De
 From all suggestions,Parmi toutes les suggestions
+From date,Date de début
 From previous step,À partir de l'étape précédente
 From selection,Extrait de la sélection
 From:,De :
@@ -552,12 +599,14 @@ General,Général
 General access,Accès général
 General Information,Informations générales
 Generated ID,Identifiant généré
+Geolocation,Géolocalisation
 Global CSS,CSS global
 Global CSS & JS,CSS et JS globaux
 Global JS,JS global
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Maps
+Graph,Graphe
 Group,Groupe
 Group by,Regrouper par
 group expressions,expressions de groupe
@@ -580,13 +629,18 @@ Hide actions,Masquer les actions
 Hide details,Masquer les détails
 Hide label,Masquer l'étiquette
 Hide restricted relationships from public,Masquer les relations restreintes au public
+Hide task,Masquer la tâche
 Hide toolbar,Masquer la barre d'outils
+Hours,Heures
+How to combine sources,Comment combiner les sources
 HTML,HTML
 https://yourdomain,https://votredomaine
 hub,Nœud central
 hubs,nœuds centraux
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,Hybride
 Icon,Icône
+Icons,Icônes
 ID,ID
 ID:,ID :
 "If an account exists with the email you provided, you will receive an email
@@ -594,6 +648,7 @@ ID:,ID :
  contenant les instructions pour réinitialiser votre mot de passe."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si c'est une URL externe, utilisez une URL complète. Par exemple, http://www.uwazi.io."
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
+Image,Image
 Image doesn't match the required size.,La taille de l'image ne correspond pas à celle requise.
 Import,Importer
 Import asset,Importer un élément
@@ -613,6 +668,7 @@ In use,En cours d'utilisation
 Include all entities,Inclure toutes les entités
 Include only public,N'inclure que les entités publiques
 Incoming,Entrant
+Increase indentation,Augmenter le retrait
 Info,Infos
 Information extraction training,Formation à l'extraction d'informations
 Inherit,Hériter
@@ -644,6 +700,7 @@ key,French
 Label,Étiquette
 "Label date ""From""",Du
 "Label date ""to""",Au
+Label format,Format du libellé
 Labeled,Étiqueté
 Landing page,Page d'accueuil
 Landing page description,"La page d'accueil est la première page que voient les visiteurs lorsqu'ils accèdent à votre collection. La page d'accueil par défaut est la bibliothèque de votre collection. Vous pouvez définir une page d'accueil différente en ajoutant son URL relative ici. Par exemple :
@@ -654,13 +711,14 @@ Une entité : */entity/9htbkgpkyy7j5rk9*
 Un document : */document/4y9i99fadjp833di*
 
 Important : vous devez utiliser des URL relatives. Celles-ci commencent par une barre oblique et n'incluent pas le nom de domaine. Par exemple : dans l'adresse *https://yoursite.com/landingpage*, l'URL relative est /landingpage"
+Landscape,Paysage
 Language,Langue
 Language Code,Code de langue
 Language deleted,Langue supprimée
 Language reset success,Réinitialisation de la langue réussie
 Language uninstalled successfully,La langue a été désinstallée avec succès
-Language(s),Langue(s)
 Language:,Langue :
+Language(s),Langue(s)
 Languages,Langues
 Languages installed successfully,Langues installées avec succès
 Last updated,Dernière mise à jour
@@ -671,11 +729,13 @@ Learn how to add and configure a contact form on a webpage.,Découvrez comment a
 Learn how to build your first collection,Découvrez comment créer votre première collection
 Learn more,En savoir plus
 Learn more about the components.,En savoir plus sur les composants.
+Legacy Uwazi,Uwazi historique
 Legend,Légende
 Lengthy reindex process,Processus de réindexation fastidieux
 Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
+Library results,Résultats de la bibliothèque
 library table view,Bilbliothèque en vue tabulaire
 Light,Clair
 Light Theme,Thème clair
@@ -683,6 +743,7 @@ Link,Lien
 linked,Lié
 List,Liste
 List renders as a table. Use the options below to filter empty or zero values.,La liste s'affiche sous forme de tableau. Utilisez les options ci-dessous pour filtrer les valeurs vides ou égales à zéro.
+Live (always up to date),En direct (toujours à jour)
 Live preview,Aperçu en direct
 Live translate,Traduction en direct
 Load,Charger
@@ -703,6 +764,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,Gérer les types de relations
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
 Manage types,Gérer les types
+Manual,Manuel
 Manual data,Données manuelles
 Manually set a color,Définir manuellement une couleur
 Map,Carte
@@ -740,6 +802,10 @@ Matches show the passage and the page they are on.,Les résultats indiquent le p
 Matching,Correspondance
 matching,correspondant
 Matomo,Matomo
+Max,Max.
+Max buckets,Nombre max. de groupes
+Max number of slices,Nombre maximal de parts
+Media,Médias
 Members,Membres
 Menu,Menu
 Message,Message
@@ -750,7 +816,9 @@ Metadata Extraction,Extraction de métadonnées
             configure categories, labels, and slices. Use the Appearance tab for colors.","La métrique affiche un seul total. Sélectionnez ""Camembert"", ""Histogramme"" ou un autre type de graphique ci-dessus pour
  configurer les catégories, les libellés et les parts. Utilisez l'onglet ""Apparence"" pour définir les couleurs."
 MIGRATE,MIGRER
+Min,Min.
 Minimum,Minimum
+Minutes,Minutes
 Mismatch,Incohérence
 mismatched passwords,Les mots de passe ne correspondent pas
 mismatching,non correspondant
@@ -758,6 +826,7 @@ Mixed access,Accès mixte
 ML TOC,Table des matières ML
 Modified,Modifié
 Month,Mois
+Monthly,Mensuel
 Months,Mois
 More,Plus
 more,plus
@@ -766,6 +835,8 @@ More rows per screen; same type size,Plus de lignes à l'écran : même taille d
 Multi-source mode,Mode multi-source
 Multiple date,Dates multiples
 Multiple date range,Plages de dates multiples
+Multiple date ranges,Plusieurs plages de dates
+Multiple dates,Plusieurs dates
 Multiple inherited properties warning ([property 1] affects [property 2]),affecte
 Multiple matches found,Plusieurs résultats trouvés
 Multiple relationships edit description,"Toute modification apportée à cette propriété affectera les autres propriétés de ce modèle, car elles partagent toutes des relations avec la même configuration."
@@ -787,12 +858,15 @@ New activity will show up here.,Les nouvelles activités s'afficheront ici.
 New conversation,Nouvelle conversation
 New entity,Nouvelle entité
 New group,Nouveau groupe
+New Group,Nouveau groupe
 New language added,Ajout d'une nouvelle langue
+New Link,Nouveau lien
 New page,Nouvelle page
 New password,Nouveau mot de passe
 New primary doc,Nouveau document principal
 New relation type label…,Nouvelle étiquette de type de relation…
 New relationship type,Nouveau type de relation
+New Relationships,Nouvelles relations
 New relationships group,"Groupe ""Nouvelles relations"""
 New Relationships Migration,Migration des nouvelles relations
 New user,Nouvel utilisateur
@@ -858,9 +932,9 @@ No valid target template available,Aucun modèle cible valide n'est disponible
 No value,Aucune valeur
 No Value,Aucune valeur
 No visualization data available.,Aucune donnée de visualisation n'est disponible.
-"No, cancel","Non, annuler"
 no-toc-description,"Vous pouvez commencer par sélectionner du texte dans le document, puis cliquer sur le bouton
               ""Ajouter à la table des matières""."
+"No, cancel","Non, annuler"
 Non processed,Non traités
 Non-labeled,Non étiqueté
 Non-latin characters support,Prise en charge des caractères non latins
@@ -872,6 +946,7 @@ Not Found,Introuvable
 Nothing here yet.,Il n'y a encore rien ici.
 Nothing selected,Aucun élément sélectionné
 Notifications,Notifications
+Numeric,Numérique
 Obsolete,Obsolète
 obsolete,obsolète
 OCR,OCR
@@ -905,10 +980,11 @@ Open group,Ouvrir le groupe
 Open link,Ouvrir le lien
 Open PDF,Ouvrir le PDF
 Open the two-factor Authenticator app on your device,Ouvrez l'application d'authentification à deux facteurs sur votre appareil
+Operator,Opérateur
 Options,Options
 or,ou
 or drag and drop here,ou glisser-déposer ici
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,ou déposez des fichiers PDF ici
 or drop your files here.,ou déposez vos fichiers ici.
 Or paste a URL,Ou collez une URL
 Order,Organiser par
@@ -916,16 +992,22 @@ Other,Autre
 other,Autre
 Other users will be affected by this action!,Cette action aura des répercussions sur d'autres utilisateurs !
 Others,Autres
+Others label,Libellé « Autres »
 Outgoing,Sortant
+Overview,Aperçu
 p.,p.
 Page,Page
+Page embed code,Code d’intégration de page
+Page language,Langue de la page
 Page not found,Page non trouvée
 Page published successfully.,La page a été publiée avec succès.
 Pages,Pages
+Pagination,Pagination
 Paragrap number extraction property (numeric),Propriété d'extraction du numéro de paragraphe (numérique)
 Paragraph,Paragraphe
 Paragraph Extraction,Extraction de paragraphes
 Paragraph Extractor added,Extracteur de paragraphes ajouté
+Paragraph extractor wizard,Assistant d’extraction de paragraphes
 Paragraph text extraction property (rich text),Propriété d’extraction de texte par paragraphe (texte enrichi)
 Paragraphs,Paragraphes
 Paragraphs deleted,Paragraphes supprimés
@@ -944,6 +1026,7 @@ PDF,PDF
 Pending,En attente
 People and groups,Personnes et groupes
 per page,par page
+Percentage,Pourcentage
 Permission,Autorisation
 Permission level,Niveau d'autorisation
 Permission on entities explicitly shared with the user,Permission sur les entités explicitement partagées avec l'utilisateur
@@ -952,9 +1035,12 @@ Permissions updated,Mise à jour des autorisations
 Pick a color,Choisissez une couleur
 Pick another,Choisir une autre
 Plain text,Texte brut
+Play audio,Lire l’audio
+Play video,Lire la vidéo
 Please contact an admin for details.,Veuillez contacter un administrateur pour plus de détails.
 Please type in,Veuillez saisir
 Please type in letters and numbers from the image to start the export.,Veuillez saisir les lettres et les chiffres de l'image pour lancer l'exportation.
+Portrait,Portrait
 Pre-filled from your selection. Edit as needed.,Prérempli en fonction de votre sélection. Modifiez si nécessaire.
 Preflight scan completed.,La vérification préalable est terminée.
 Preparing required relationships.,Préparation des relations requises.
@@ -964,11 +1050,14 @@ Preserve Extension,"Extension ""Preserve"""
 Preserve Setup Description,"Si vous connaissez l'URL et le TOKEN de votre Uwazi, cliquez sur le lien ci-dessous et renseignez les informations demandées."
 Press enter to add,Appuyez sur la touche Entrée pour ajouter
 Preview,Aperçu
+Preview mode,Mode aperçu
 Preview updates automatically (300ms debounce),L'aperçu se met à jour automatiquement (délai de 300 ms).
 Preview updates when the JSON is valid.,L'aperçu se met à jour lorsque le JSON est valide.
 Previous,Précédent
 Primary,Primaire
+Primary action,Action principale
 Primary button,Bouton principal
+Primary dimension (X-axis / categories),Dimension principale (axe X / catégories)
 Primary document,Document source
 Primary Documents,Documents principaux
 Primary documents,Documents sources
@@ -1022,6 +1111,7 @@ Publish release,Publier la version
 Published,Publié
 Published and unpublished entities are counted.,Les entités publiées et non publiées sont prises en compte.
 QR Code,Code QR
+qr code,Code QR
 Query,Requête
 Queued,En attente
 RAW,RAW
@@ -1063,10 +1153,13 @@ remaining,restant
 remaining files,fichiers restants
 Remote Server Unreachable,Serveur distant inaccessible
 Remove,Supprimer
+Remove data source,Retirer la source de données
+Remove filter,Retirer le filtre
 Remove from connection,Déconnecter
 Remove from training set,Retirer de l'ensemble d'apprentissage
 remove icon,Supprimer l'icône
 Remove icon,Supprimer l'icône
+Remove timelink,Retirer le lien temporel
 Removed language,Langue supprimée
 Rename,Renommer
 Renamed attachment,Pièce jointe renommée
@@ -1083,6 +1176,7 @@ Reset default translation,Réinitialiser la traduction par défaut
 Reset language,Réinitialiser la langue
 Reset Password,Réinitialiser le mot de passe
 Reset passwords,Réinitialiser les mots de passe
+Reset Search input,Réinitialiser la recherche
 Resize panels,Redimensionner les panneaux
 Restore,Restaurer
 Restore previous version,Restaurer la version précédente
@@ -1092,10 +1186,12 @@ Retrying,Nouvelle tentative
 Return to login,Retourner à la connexion
 Review,Examiner
 Reviewed,Révisé
+Rich text,Texte enrichi
 Role,Rôle
 Room around every row,Plus d'espace autour de chaque ligne
 Route,Itinéraire
 Row,Ligne
+Row actions,Actions de ligne
 Row density,Densité des lignes
 Rows failed,Lignes ayant échoué
 Rows processed,Nombre de lignes traitées
@@ -1104,6 +1200,7 @@ Satellite,Satellite
 Save,Sauvegarder
 Save & Preview,Enregistrer et prévisualiser
 Save changes,Enregistrer les modifications
+Save label,Enregistrer le libellé
 Save password,Sauvegarder le mot de passe
 Save the visualization before refreshing.,Enregistrez la visualisation avant de l'actualiser.
 Save the visualization to get embed code.,Enregistrez la visualisation pour obtenir le code d'intégration.
@@ -1118,13 +1215,16 @@ Schedule,Planification
 Schedules run in UTC (Coordinated Universal Time).,Les horaires sont exprimés en UTC (temps universel coordonné).
 Search,Recherche
 "Search  •  AND, OR, NOT, ""exact"", wild*","Recherche  •  AND, OR, NOT, ""exact"", * (caractère générique)"
+Search button,Bouton de recherche
 Search by title,Rechercher par titre
+Search chart types,Rechercher des types de graphique
 Search entities...,Rechercher des entités...
 Search entities…,Rechercher des entités…
 Search item,Recherche d'éléménts
 Search related entities or documents,Rechercher des entités ou des documents liés
 Search relationships,Rechercher des relations
 Search relevance,Pertinence de recherche
+Search templates,Rechercher des modèles
 Search text,Recherche de texte
 Search text description,Saisissez quelque chose dans la zone de recherche pour obtenir des résultats.
 Search this document,Rechercher dans ce document
@@ -1137,7 +1237,12 @@ Search Tips: proximity,"~ pour les recherches de proximité. Par exemple : ""le 
 Search Tips: wildcard,"Utilisez un * pour la recherche par caractère générique. Par exemple : ""juri*"" correspondra à des mots comme juridiction, juridique, juriste, jurisprudence, etc."
 Search title & metadata,Rechercher dans le titre et les métadonnées
 Searching...,Recherche en cours...
+Second dimension (series / stacks),Seconde dimension (séries / piles)
 Secondary button,Bouton secondaire
+Secondary button border,Bordure du bouton secondaire
+Secondary button text,Texte du bouton secondaire
+Secondary text,Texte secondaire
+Seconds,Secondes
 Secret keys,Clés secrètes
 Security,Sécurité
 Select,Sélectionner
@@ -1146,34 +1251,43 @@ Select & Search,Sélectionner et rechercher
 Select a document to connect to a specific paragraph,Sélectionnez un document pour accéder à un paragraphe spécifique
 Select a file,Sélectionnez un fichier
 Select all,Tout sélectionner
+Select all files,Sélectionner tous les fichiers
 Select an existing image,Sélectionnez une image existante
 Select favicon image,Sélectionner l'image du favicon
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Sélectionner depuis l'ordinateur
+Select icon...,Sélectionner une icône…
 Select image,Sélectionner une image
 Select media,Sélectionner un média
+Select page,Sélectionner une page
+Select property…,Sélectionner une propriété…
 Select relationship,Sélectionner une relation
 Select relationship type,Sélectionner le type de relation
 Select site logo image,Sélectionner l'image du logo du site
 Select target document,Sélectionner le document cible
 Select target entity,Sélectionner l'entité cible
 Select target paragraph,Sélectionner le paragraphe cible
+Select template…,Sélectionner un modèle…
 Select text in target document,Sélectionner du texte dans le document cible
 select text or a value,sélectionnez un texte ou une valeur
 Select the template to store the extracted paragraphs.,Sélectionnez le modèle dans lequel vous souhaitez enregistrer les paragraphes extraits.
 Select the template with the source documents.,Sélectionnez le modèle contenant les documents sources.
+Select values…,Sélectionner des valeurs…
 Select...,Sélectionner...
+Select…,Sélectionner…
 Selected,Sélectionné
 selected,Sélectionné
 selected of,sélectionné sur
 Selected or suggested,Sélectionnés ou suggérés
 Selected templates,Modèles sélectionnés
 Send,Envoyer
+Send message,Envoyer le message
 Send recovery email,Envoyer mail de récupération
 Sending email,Envoi d'e-mail
 Sending email description,Il s'agit de l'adresse e-mail qui apparaîtra comme expéditeur lorsqu'un e-mail est envoyé depuis votre collection Uwazi aux utilisateurs enregistrés. L'adresse par défaut est *no-reply@uwazi.io*. Vous pouvez en définir une personnalisée en indiquant ici l'adresse e-mail de votre choix.
 Sending labeled data,Envoi de données étiquetées
 Series,Série
+Server disconnected,Serveur déconnecté
 Services,Services
 Set as default,Définir par défaut
 Set default language,Définir la langue par défaut
@@ -1181,6 +1295,7 @@ Set default template,Définir le modèle par défaut
 Set the default starting point for your geolocation properties.,Définissez le point de départ par défaut pour vos propriétés de géolocalisation.
 Settings,Paramètres
 settings,Paramètres
+Settings navigation,Navigation des paramètres
 Settings navigation active background,Arrière-plan actif de la navigation dans les paramètres
 Settings sidebar background,Arrière-plan de la barre latérale des paramètres
 Settings updated,Paramètres mis à jour
@@ -1203,6 +1318,7 @@ Show toolbar,Afficher la barre d'outils
 Showing,Affichage
 Showing the top,Affichage des
 shown of,Listé sur un total de
+Side panel tabs,Onglets du panneau latéral
 Sign in,S'identifier
 Simple mode,Mode simple
 Single relationships must have a hub,Les relations isolées doivent avoir un nœud central
@@ -1213,6 +1329,8 @@ Site logo description,"Le logo apparaît dans la barre supérieure à côté du 
 Site logo no images hint,"Aucun fichier image dans Téléchargements personnalisés pour l'instant. Ajoutez d'abord des images PNG, SVG ou JPEG."
 Size,Taille
 Skip to main content,Aller directement au contenu principal
+Snapshot (manual),Instantané (manuel)
+Snapshot (scheduled),Instantané (planifié)
 Some tasks may take a while. Bert will reply when it's done.,Certaines tâches peuvent prendre un certain temps. Bert vous répondra dès qu'elles seront terminées.
 Something went wrong,Quelque chose a mal tourné
 Sort,Trier
@@ -1250,11 +1368,13 @@ Suggestions,Suggestions
 suggestions,suggestions
 Suggestions sent,Suggestions envoyées
 Suggestions updated,Mise à jour des suggestions
+Sum,Somme
 Supported chart types for manual data,Types de graphiques pris en charge pour les données saisies manuellement
 Supported chart types for this configuration,Types de graphiques pris en charge pour cette configuration
 Supporting,Accompagnement
 Supporting file,Fichier d'accompagnement
 Supporting files,Fichiers de support
+Surface text,Texte de surface
 Synced template,Modèle synchronisé
 Synced Template,Modèle synchronisé
 Synced templates cannot be deleted.,Les modèles synchronisés ne peuvent pas être supprimés.
@@ -1269,12 +1389,13 @@ Target entity type,Type d'entité cible
 Target relationship type,Type de relation cible
 Target Template,Modèle cible
 Target template,Modèle cible
-Target's role in the relationship Source-Target.,Le rôle de la cible dans la relation source-cible.
 Target:,Cible :
+Target's role in the relationship Source-Target.,Le rôle de la cible dans la relation source-cible.
 Tasks,Tâches
 Template,Modèle
 Template changes are being applied to all related entities.,Les modifications apportées au modèle sont en cours d'application à toutes les entités concernées.
 Template color,Couleur du modèle
+Template colors,Couleurs du modèle
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","Les couleurs du modèle s'appliquent lors de la comparaison de sources de données ou lorsque la dimension est de type ""entité"".
 Dans le cas contraire, la palette du graphique est utilisée par défaut."
@@ -1308,6 +1429,7 @@ Theme instance file invalid,Fichier d'instance du thème non valide
 Theme logotype,Logo du thème
 Theme presets,Préréglages de thèmes
 Theme preview,Aperçu du thème
+Theme preview label,Libellé d’aperçu du thème
 Then by,Puis par
 There are no pages enabled for entity view,Il n'y a pas de pages activées pour la visualisation des entités
 There are no untranslated terms,Il n'y a pas de termes non traduits
@@ -1335,6 +1457,7 @@ This chart type cannot display the current data.,Ce type de graphique ne permet 
 légende, d'étiquettes ou de filtres de données."
 This content is automatically generated,Ce contenu est généré automatiquement
 This data visualization name already exists. Enter a unique name.,Ce nom de visualisation de données existe déjà. Veuillez saisir un nom unique.
+This document,Ce document
 "This entity has no document, you probably want to see the metadata","Cette entité n'a pas de document, vous voulez probablement voir les métadonnées."
 This entity is restricted from public view.,Cette entité n'est pas accessible au public.
 This field is required,Ce champ est obligatoire
@@ -1368,7 +1491,7 @@ This table of contents was automatically created by the system.,Cette table des 
 this template,ce modèle
 This template is in use by existing entities and cannot be deleted.,Ce modèle est utilisé par des entités existantes et ne peut pas être supprimé.
 Thumbnail,Vignette
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,Cadre de miniature
 Time,Temps
 Time (UTC),Heure (UTC)
 Timeline,Chronologie
@@ -1378,8 +1501,13 @@ tips,conseils
 Title,Titre
 To,À
 "To complete the account creation process, please create a password for your account","Pour compléter le processus de création de compte, veuillez créer un mot de passe pour votre compte."
+To date,Date de fin
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
 Today,Aujourd'hui
+Toggle dark theme,Activer le thème sombre
+Toggle light theme,Activer le thème clair
+Toggle navigation menu,Afficher le menu de navigation
+Toggle options menu,Afficher le menu d’options
 Toggle relationship details,Afficher/masquer les détails de la relation
 Toggle timeline mode,Activer/désactiver le mode chronologique
 Tools,Outils
@@ -1403,6 +1531,7 @@ Translations,Traductions
 Translations imported.,Traductions importées.
 Translations reset successfully,Les traductions ont été réinitialisées avec succès
 Translations saved,Traductions sauvegardées
+Tree,Arbre
 Try a different search or clear filters.,Essayez une autre recherche ou effacez les filtres.
 Turn off inline translation,Désactiver la traduction en ligne
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1416,6 +1545,7 @@ Two-factor verification failed,Échec de la vérification à deux facteurs
 Two-step verification,Vérification en deux étapes
 Two-step verification token required,Un jeton d'authentification à deux facteurs est requis
 Type,Type
+Type to filter…,Saisissez pour filtrer…
 U,U
 "Unable to save, failed response","Impossible d'enregistrer, réponse échouée"
 Unauthorized,Non autorisé
@@ -1445,12 +1575,13 @@ Updated translations,Traductions mises à jour
 Updated user,Utilisateur mis à jour
 Updating template properties across,Mise à jour des propriétés des modèles dans l'ensemble de
 Updating…,Mise à jour en cours…
-Upload,Upload
+Upload,Téléverser
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
 Upload image,Télécharger une image
 Upload PDF,Télécharger le PDF
 Upload PDF(s) to create,Télécharger le(s) PDF à créer
+Upload progress,Progression du téléversement
 Uploaded attachment,Pièce jointe téléchargée
 Uploaded custom file,Fichier personnalisé téléchargé
 Uploaded document,Document téléchargé
@@ -1466,9 +1597,9 @@ Use for training,À utiliser pour l'entraînement
                 needed.","Utilisez cet iframe sur des sites externes. Modifiez le paramètre de requête ""locale"" dans l'URL si
  nécessaire."
 Use URL,Utiliser l'URL
-Used in templates and {n} refs — cannot delete,Utilisé dans des modèles et {n} références — ne peut pas être supprimé
-Used in templates — cannot delete,Utilisé dans des modèles — ne peut pas être supprimé
 Used in {n} refs — cannot delete,Utilisé dans {n} références — ne peut pas être supprimé
+Used in templates — cannot delete,Utilisé dans des modèles — ne peut pas être supprimé
+Used in templates and {n} refs — cannot delete,Utilisé dans des modèles et {n} références — ne peut pas être supprimé
 User,Utilisateur
 User Action,Action de l'utilisateur
 User Role,Rôle de l'utilisateur
@@ -1484,29 +1615,37 @@ Users & Groups,Utilisateurs et groupes
 Using Authenticator,Utilisation d'Authenticator
 Using URLs,Utilisation des URL
 Uwazi,Uwazi
+Uwazi Design,Design Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi est développé par
+Uwazi label,Libellé Uwazi
 Uwazi UI,Interface utilisateur d'Uwazi
 Validating,Validation
 Validating file structure and headers.,Vérification de la structure du fichier et des en-têtes.
 Value,Valeur
+Value and percentage,Valeur et pourcentage
 Value cannot be transformed to the correct type,La valeur ne peut pas être convertie dans le type approprié
 values,valeurs
 "values are staged, not saved","les valeurs sont en attente, non enregistrées"
 Verify,Vérifier
 Verifying...,En cours de vérification...
 via,via
+Video,Vidéo
 View,Vue
 view,Vue
 View entities,Afficher les entités
 View entity,Afficher l'entité
 View in library,Voir dans la bibliothèque
 View page,Voir page
+Vimeo video player,Lecteur vidéo Vimeo
+Violated articles,Articles violés
 Visibility,Visibilité
 Visualization data updated from your collection.,Données de visualisation mises à jour à partir de votre collection.
 WARNING,AVERTISSEMENT
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un
 We can't find the page you're looking for.,Nous ne trouvons pas la page que vous recherchez.
+Week,Semaine
+Weekly,Hebdomadaire
 Welcome to Uwazi,Bienvenue à Uwazi
 "Well, this is awkward...","Eh bien, c'est gênant..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1539,6 +1678,7 @@ You should activate this feature for enhanced account security.,Nous vous recomm
 You won't be able to save an entity if this property is empty.,Vous ne pourrez pas enregistrer une entité si cette propriété est vide.
 You're all caught up,Vous êtes à jour
 Your account's security is enhanced with two-factor authentication.,La sécurité de votre compte est renforcée grâce à l'authentification à deux facteurs.
+YouTube video player,Lecteur vidéo YouTube
 Z → A,Z → A
 Zoom in,Zoom avant
 Zoom in library view,Zoom avant sur la vue de la bibliothèque

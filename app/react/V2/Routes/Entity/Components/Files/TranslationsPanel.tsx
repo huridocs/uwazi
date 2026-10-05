@@ -1,6 +1,6 @@
 import React from 'react';
 import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileLanguageChip } from './FileLanguageChip.js';
@@ -52,7 +52,7 @@ const TranslationsPanel = ({
           <button
             type="button"
             onClick={() => onViewRow(file)}
-            aria-label={`View ${file.displayName}`}
+            aria-label={`${t('System', 'View', null, false)} ${file.displayName}`}
             className="rounded p-1 text-ink-tertiary transition-colors hover:bg-parchment"
           >
             <EyeIcon className="h-3.5 w-3.5" />
@@ -62,7 +62,7 @@ const TranslationsPanel = ({
             <button
               type="button"
               onClick={() => onDeleteRow(file)}
-              aria-label={`Delete ${file.displayName}`}
+              aria-label={`${t('System', 'Delete', null, false)} ${file.displayName}`}
               className="rounded p-1 text-ink-muted transition-colors hover:bg-seal-tint hover:text-seal"
             >
               <TrashIcon className="h-3.5 w-3.5" />

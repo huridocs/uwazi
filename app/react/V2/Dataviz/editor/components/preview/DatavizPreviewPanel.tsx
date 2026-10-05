@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { Tabs } from '#V2/Components/UI/index.js';
@@ -122,12 +122,12 @@ const DatavizPreviewPanel = ({
   const colorContext = useMemo(() => {
     const templatesById: Record<string, { color?: string; name?: string }> = {};
     const templatePropertiesById: Record<string, Array<{ name: string; label: string }>> = {};
-    templates.forEach(t => {
-      if (t._id) {
-        templatesById[t._id] = { color: t.color, name: t.name };
-        templatePropertiesById[t._id] = [
-          ...(t.commonProperties || []),
-          ...(t.properties || []),
+    templates.forEach(tmpl => {
+      if (tmpl._id) {
+        templatesById[tmpl._id] = { color: tmpl.color, name: tmpl.name };
+        templatePropertiesById[tmpl._id] = [
+          ...(tmpl.commonProperties || []),
+          ...(tmpl.properties || []),
         ].map(prop => ({ name: prop.name, label: prop.label }));
       }
     });
@@ -191,7 +191,7 @@ const DatavizPreviewPanel = ({
 
   const tabElements = useMemo(() => {
     const tabs = [
-      <Tabs.Tab key="preview" id="preview" label="Preview">
+      <Tabs.Tab key="preview" id="preview" label={t('System', 'Preview', null, false)}>
         <PreviewTabContent
           definition={definition}
           data={data}
@@ -206,7 +206,7 @@ const DatavizPreviewPanel = ({
 
     if (usesEcharts) {
       tabs.push(
-        <Tabs.Tab key="advanced" id="advanced" label="Advanced">
+        <Tabs.Tab key="advanced" id="advanced" label={t('System', 'Advanced', null, false)}>
           <div className="p-4">
             <ChartAdvancedSection
               definition={definition}
@@ -219,7 +219,7 @@ const DatavizPreviewPanel = ({
     }
 
     tabs.push(
-      <Tabs.Tab key="inspector" id="inspector" label="Data">
+      <Tabs.Tab key="inspector" id="inspector" label={t('System', 'Data', null, false)}>
         <div className="p-4">
           <DataInspector data={data} />
         </div>
@@ -228,7 +228,7 @@ const DatavizPreviewPanel = ({
 
     if (!isManual) {
       tabs.push(
-        <Tabs.Tab key="query" id="query" label="Query">
+        <Tabs.Tab key="query" id="query" label={t('System', 'Query', null, false)}>
           <div className="p-4">
             <QueryNormalizedView query={definition.query} />
           </div>
@@ -259,7 +259,7 @@ const DatavizPreviewPanel = ({
         groupId="dataviz-preview"
         activeTabId={activeTab}
         onTabSelected={tabId => onTabChange(tabId as PreviewTabId)}
-        tabListAriaLabel="Dataviz preview"
+        tabListAriaLabel={t('System', 'Dataviz preview', null, false)}
         tabListClassName="!mx-3 !mt-3 !mb-0 !mr-28"
         className="min-h-0 flex-1"
       >

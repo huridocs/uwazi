@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { FacetLookup } from '../lookupAggregation.js';
 import { AndOrToggle } from './AndOrToggle.js';
@@ -113,14 +113,14 @@ const KeywordFacet = ({
                 setSearch(event.target.value);
                 setShowAll(false);
               }}
-              placeholder="Search"
-              aria-label="Search"
+              placeholder={t('System', 'Search', null, false)}
+              aria-label={t('System', 'Search', null, false)}
               className="min-w-0 flex-1 bg-transparent text-xs font-medium text-ink placeholder:text-ink-muted focus:outline-none"
             />
             {search ? (
               <button
                 type="button"
-                aria-label="Clear search"
+                aria-label={t('System', 'Clear search', null, false)}
                 onClick={() => setSearch('')}
                 className="shrink-0 cursor-pointer text-ink-muted hover:text-ink"
               >

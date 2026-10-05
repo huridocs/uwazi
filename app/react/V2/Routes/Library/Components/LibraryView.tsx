@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
@@ -153,7 +153,7 @@ const LibraryView = ({
                   : 'min-h-0 flex-1 overflow-auto bg-warm p-3'
               }
               role="region"
-              aria-label="Library results"
+              aria-label={t('System', 'Library results', null, false)}
             >
               <LibraryViewerHost
                 view={view}

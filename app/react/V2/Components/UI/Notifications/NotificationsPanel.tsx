@@ -1,6 +1,6 @@
 import React, { useId, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Drawer } from '#V2/Components/UI/Drawer.js';
 import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 import { type StatusNotification, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
@@ -49,7 +49,7 @@ const NotificationsPanel = () => {
   const hasNotifications = notifications.length > 0;
   const isEmpty = !hasNotifications && tasks.length === 0;
   const itemCount = notifications.length + tasks.length;
-  const hasClearable = hasNotifications || tasks.some(t => t.status !== 'running');
+  const hasClearable = hasNotifications || tasks.some(task => task.status !== 'running');
 
   return (
     <Drawer
@@ -76,7 +76,7 @@ const NotificationsPanel = () => {
           <button
             type="button"
             onClick={closePanel}
-            aria-label="Close"
+            aria-label={t('System', 'Close', null, false)}
             className="ms-auto flex h-7 w-7 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-warm hover:text-ink-secondary"
           >
             <svg

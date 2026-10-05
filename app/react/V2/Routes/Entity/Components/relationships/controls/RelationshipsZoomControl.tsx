@@ -16,9 +16,9 @@ const zoomOptions: {
   label: string;
   Icon: typeof LayoutListIcon;
 }[] = [
-  { id: 'detail', label: 'Detail', Icon: LayoutListIcon },
-  { id: 'compact', label: 'Compact', Icon: Rows3Icon },
-  { id: 'overview', label: 'Overview', Icon: CircleDotIcon },
+  { id: 'detail', label: t('System', 'Detail', null, false), Icon: LayoutListIcon },
+  { id: 'compact', label: t('System', 'Compact', null, false), Icon: Rows3Icon },
+  { id: 'overview', label: t('System', 'Overview', null, false), Icon: CircleDotIcon },
 ];
 
 type RelationshipsZoomControlProps = {

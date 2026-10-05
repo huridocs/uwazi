@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { MouseEventHandler } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { t } from '#app/I18N/index.js';
 
 type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'xxxxl';
 
@@ -105,7 +106,7 @@ Modal.CloseButton = ({
 }) => (
   <button
     onClick={onClick}
-    aria-label="Close modal"
+    aria-label={t('System', 'Close modal', null, false)}
     className={[
       className,
       'ml-auto inline-flex shrink-0 items-center rounded-lg bg-transparent p-1.5 text-sm',

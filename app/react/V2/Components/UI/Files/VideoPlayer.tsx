@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -161,7 +161,7 @@ const VideoPlayer = ({
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
-            title="YouTube video player"
+            title={t('System', 'YouTube video player', null, false)}
           />
         </div>
       );
@@ -179,7 +179,7 @@ const VideoPlayer = ({
             className="absolute top-0 left-0 w-full h-full"
             allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
-            title="Vimeo video player"
+            title={t('System', 'Vimeo video player', null, false)}
           />
         </div>
       );
@@ -218,7 +218,7 @@ const VideoPlayer = ({
             type="button"
             onClick={handlePlayClick}
             className="absolute inset-0 flex items-center justify-center z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-            aria-label="Play video"
+            aria-label={t('System', 'Play video', null, false)}
           >
             <PlayIcon className={`w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           </button>

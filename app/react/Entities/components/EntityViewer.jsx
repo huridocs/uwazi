@@ -234,7 +234,7 @@ class EntityViewer extends Component {
               type="button"
               className="closeSidepanel close-modal"
               onClick={this.closePanel.bind(this)}
-              aria-label="Close side panel"
+              aria-label={t('System', 'Close side panel', null, false)}
             >
               <Icon icon="times" />
             </button>
@@ -274,11 +274,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Info', null, false)}
                     component="div"
                   >
-                      <I18NLink
-                        className={this.linkClassNames(['info', ''])}
-                        to={`${entityBasePath}/${rawEntity.sharedId}/info`}
-                        replace
-                      >
+                    <I18NLink
+                      className={this.linkClassNames(['info', ''])}
+                      to={`${entityBasePath}/${rawEntity.sharedId}/info`}
+                      replace
+                    >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                     </I18NLink>
@@ -292,11 +292,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Relationships', null, false)}
                     component="div"
                   >
-                      <I18NLink
-                        className={this.linkClassNames(['relationships'])}
-                        to={`${entityBasePath}/${rawEntity.sharedId}/relationships`}
-                        replace
-                      >
+                    <I18NLink
+                      className={this.linkClassNames(['relationships'])}
+                      to={`${entityBasePath}/${rawEntity.sharedId}/relationships`}
+                      replace
+                    >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
@@ -309,7 +309,7 @@ class EntityViewer extends Component {
                       to="newrelationships"
                       role="button"
                       tabIndex="0"
-                      aria-label="New Relationships"
+                      aria-label={t('System', 'New Relationships', null, false)}
                       component="div"
                     >
                       <I18NLink
