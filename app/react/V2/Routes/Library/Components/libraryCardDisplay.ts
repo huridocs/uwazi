@@ -1,4 +1,5 @@
 import { t } from '#app/I18N/index.js';
+
 type ThumbFrame = 'landscape' | 'portrait';
 type ThumbFit = 'cover' | 'contain';
 type ThumbnailKind = 'document' | 'image' | 'audio' | 'video';

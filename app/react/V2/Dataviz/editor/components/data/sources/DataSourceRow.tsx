@@ -27,7 +27,7 @@ const DataSourceRow = ({
   const templates = useAtomValue(templatesAtom);
   const templateOptions = [
     { value: '', label: t('System', 'Select template…', null, false) },
-    ...templates.filter(t => t._id).map(t => ({ value: t._id!, label: t.name })),
+    ...templates.filter(tmpl => tmpl._id).map(tmpl => ({ value: tmpl._id!, label: tmpl.name })),
   ];
 
   return (

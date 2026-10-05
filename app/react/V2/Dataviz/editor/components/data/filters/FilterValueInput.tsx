@@ -39,7 +39,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
 
   const thesaurusOptions = useMemo(() => {
     const source = sources.find(s => s.alias === filter.sourceAlias) || sources[0];
-    const template = templates.find(t => t._id === source?.templateId);
+    const template = templates.find(tmpl => tmpl._id === source?.templateId);
     const prop = template?.properties?.find(p => p.name === filter.property);
     if (!prop?.content) return [];
     const thesaurus = thesauri.find(th => th._id === prop.content);

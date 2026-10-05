@@ -122,12 +122,12 @@ const DatavizPreviewPanel = ({
   const colorContext = useMemo(() => {
     const templatesById: Record<string, { color?: string; name?: string }> = {};
     const templatePropertiesById: Record<string, Array<{ name: string; label: string }>> = {};
-    templates.forEach(t => {
-      if (t._id) {
-        templatesById[t._id] = { color: t.color, name: t.name };
-        templatePropertiesById[t._id] = [
-          ...(t.commonProperties || []),
-          ...(t.properties || []),
+    templates.forEach(tmpl => {
+      if (tmpl._id) {
+        templatesById[tmpl._id] = { color: tmpl.color, name: tmpl.name };
+        templatePropertiesById[tmpl._id] = [
+          ...(tmpl.commonProperties || []),
+          ...(tmpl.properties || []),
         ].map(prop => ({ name: prop.name, label: prop.label }));
       }
     });

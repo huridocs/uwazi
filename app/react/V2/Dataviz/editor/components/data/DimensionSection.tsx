@@ -100,7 +100,7 @@ const DimensionSection = ({
     sources.find(s => s.alias === dimension?.sourceAlias) ||
     sources.find(s => s.templateId) ||
     sources[0];
-  const template = templates.find(t => t._id === activeSource?.templateId);
+  const template = templates.find(tmpl => tmpl._id === activeSource?.templateId);
 
   const availableProperties = useMemo(
     () => getSharedDimensionProperties(sources, templates as ClientTemplateSchema[]),

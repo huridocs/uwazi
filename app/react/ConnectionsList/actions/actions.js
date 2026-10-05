@@ -41,7 +41,8 @@ export function connectionsChanged(sharedId) {
       .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
       .then(async connectionsGroups => {
         const filteredTemplates = connectionsGroups.reduce(
-          (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
+          (templateIds, group) =>
+            templateIds.concat(group.templates.map(tmpl => tmpl._id.toString())),
           []
         );
 

@@ -18,7 +18,8 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
   const [search, setSearch] = useState('');
 
   const available = useMemo(
-    () => templates.filter(t => t._id && t.name.toLowerCase().includes(search.toLowerCase())),
+    () =>
+      templates.filter(tmpl => tmpl._id && tmpl.name.toLowerCase().includes(search.toLowerCase())),
     [templates, search]
   );
 

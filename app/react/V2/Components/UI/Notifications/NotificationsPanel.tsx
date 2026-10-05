@@ -49,7 +49,7 @@ const NotificationsPanel = () => {
   const hasNotifications = notifications.length > 0;
   const isEmpty = !hasNotifications && tasks.length === 0;
   const itemCount = notifications.length + tasks.length;
-  const hasClearable = hasNotifications || tasks.some(t => t.status !== 'running');
+  const hasClearable = hasNotifications || tasks.some(task => task.status !== 'running');
 
   return (
     <Drawer
