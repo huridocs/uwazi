@@ -93,44 +93,17 @@ const setDefault = async (
   return [undefined as never];
 };
 
-type CountPayload = number | { value: number };
-
-const readCount = (count: CountPayload | undefined): number => {
-  if (typeof count === 'number') return count;
-  if (count !== undefined && typeof count.value === 'number') return count.value;
-  return 0;
-};
-
 const checkEntityCounts = async (
   templateIds: string[],
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<Record<string, number>>> => {
-  if (!templateIds || !Array.isArray(templateIds) || templateIds.length === 0) {
-    return [{}];
-  }
+  if (templateIds.length === 0) return [{}];
 
-  const results = await Promise.all(
-    templateIds.map(async id => {
-      const [count, error] = await apiClient.getJson<CountPayload>(
-        'v2/entities/count_by_template',
-        { templateId: id },
-        { headers: requestHeaders(headers) }
-      );
-      return { id, count, error };
-    })
+  return apiClient.getJson<Record<string, number>>(
+    'v2/entities/count_by_template',
+    { templateIds: templateIds.join(',') },
+    { headers: requestHeaders(headers) }
   );
-
-  const failed = results.find(result => result.error);
-  if (failed?.error) {
-    return [undefined as never, failed.error];
-  }
-
-  return [
-    results.reduce<Record<string, number>>((acc, { id, count }) => {
-      acc[id] = readCount(count);
-      return acc;
-    }, {}),
-  ];
 };
 
 export { getAll, getById, upsert, remove, setDefault, checkEntityCounts };
