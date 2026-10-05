@@ -5,6 +5,7 @@ import { FileIsNotADocument } from '../errors/FileIsNotADocument.js';
 import { OcrAlreadyActive } from '../errors/OcrAlreadyActive.js';
 import { OcrLanguageNotSupported } from '../errors/OcrLanguageNotSupported.js';
 import { OcrNotEnabled } from '../errors/OcrNotEnabled.js';
+import { FakeFileStorage, ALL_PDFS } from './FakeFileStorage.js';
 import { FakeOcrEngine } from './FakeOcrEngine.js';
 import {
   f,
@@ -31,16 +32,23 @@ describe('RequestOcr', () => {
   });
 
   describe.each(testConfigs)('$name', ({ postgresCore }) => {
+    let existing = ALL_PDFS;
+
     const setUp = async (records: object[] = [], features?: Parameters<typeof withRecords>[1]) => {
       selectBackend(postgresCore);
       await testingEnvironment.setFixtures(withRecords(records, features));
       await testingEnvironment.jobs.clear();
       engine = new FakeOcrEngine();
+      existing = ALL_PDFS;
     };
 
     const execute = async (filename = 'scan.pdf') =>
       testingEnvironment.runWithContext(async () =>
-        RequestOcrFactory.default({ ocrEngine: engine, now: () => NOW }).execute({ filename })
+        RequestOcrFactory.default({
+          ocrEngine: engine,
+          fileStorage: new FakeFileStorage(existing),
+          now: () => NOW,
+        }).execute({ filename })
       );
 
     it('should store a queued record for the file and dispatch its submission', async () => {
@@ -87,6 +95,14 @@ describe('RequestOcr', () => {
       await setUp();
 
       await expect(execute('nope.pdf')).rejects.toBeInstanceOf(FileNotFound);
+    });
+
+    it('should refuse a file whose content is missing from storage', async () => {
+      await setUp();
+      existing = [];
+
+      await expect(execute()).rejects.toBeInstanceOf(FileNotFound);
+      expect(await storedRecords(postgresCore)).toEqual([]);
     });
 
     it('should refuse a file that is not a document', async () => {

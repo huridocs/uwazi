@@ -1,6 +1,8 @@
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { LanguageUtils } from '#shared/language/index.js';
@@ -19,6 +21,7 @@ type Input = { filename: string };
 type Deps = {
   ocrDS: OcrRecordDataSource;
   filesDS: FilesDataSource;
+  fileStorage: Pick<FileStorage, 'fileExists'>;
   settingsDS: SettingsDataSource;
   ocrEngine: OcrEngine;
   jobs: OcrJobs;
@@ -33,13 +36,10 @@ type Deps = {
 class RequestOcr extends AbstractUseCase<Input, void, Deps> {
   async execute({ filename }: Input): Promise<void> {
     await this.assertEnabled();
-    const file = (await this.deps.filesDS.getByFilename(filename)).getDataOrThrow();
-    if (file.type !== 'document') {
-      throw new FileIsNotADocument(filename);
-    }
+    const file = await this.documentNamed(filename);
 
     //cc: uwazi should always speak ISO 639-1, it's the job of ocr engine implementation to change to ISO 639-3, not application layer.
-    const language = LanguageUtils.fromISO639_1((file as PDFDocument).language ?? '').ISO639_3;
+    const language = LanguageUtils.fromISO639_1(file.language ?? '').ISO639_3;
     if (!(await this.deps.ocrEngine.supportsLanguage(language))) {
       throw new OcrLanguageNotSupported(language);
     }
@@ -49,6 +49,17 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
       await this.store(record, isNew);
       await this.deps.jobs.submitOcr(record.id);
     });
+  }
+
+  private async documentNamed(filename: string) {
+    const file = (await this.deps.filesDS.getByFilename(filename)).getDataOrThrow();
+    if (!(await this.deps.fileStorage.fileExists(file))) {
+      throw new FileNotFound(`The content of the file "${filename}" is not in storage`);
+    }
+    if (file.type !== 'document') {
+      throw new FileIsNotADocument(filename);
+    }
+    return file as PDFDocument;
   }
 
   private async assertEnabled() {
