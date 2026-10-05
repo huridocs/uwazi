@@ -419,6 +419,23 @@ describe('FilesService', () => {
         expect(demoted.entity).toBe('entity1');
       });
 
+      it("should join the caller's transaction instead of opening its own", async () => {
+        const docId = f.idString('dm-doc');
+
+        await testingEnvironment.runWithContext(async () => {
+          const service = FilesServiceFactory.default();
+          await ExecutionContext.transactionManager.run(async () =>
+            service.demoteToAttachment(docId)
+          );
+        });
+
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
+        const demoted = (dbFiles as Record<string, unknown>[]).find(
+          file => file._id!.toString() === docId
+        )!;
+        expect(demoted.type).toBe('attachment');
+      });
+
       it('should throw when file is not found', async () => {
         const { service } = createService();
         await expect(service.demoteToAttachment('non_existent_id')).rejects.toThrow();

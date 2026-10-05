@@ -191,7 +191,7 @@ class FilesService {
       content: pdfDoc.content,
     });
 
-    await this.deps.transactionManager.run(async () => {
+    const replace = async () => {
       await this.deps.filesDS.replaceFile(attachment);
 
       this.deps.transactionManager.onCommitted(async () =>
@@ -202,7 +202,14 @@ class FilesService {
           })
         )
       );
-    });
+    };
+
+    // Joins the caller's transaction when there is one: transactions do not nest.
+    if (this.deps.transactionManager.isRunning()) {
+      await replace();
+      return;
+    }
+    await this.deps.transactionManager.run(replace);
   }
 
   async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {

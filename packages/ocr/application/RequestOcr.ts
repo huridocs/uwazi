@@ -38,7 +38,7 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
       throw new FileIsNotADocument(filename);
     }
 
-    // The file model speaks ISO 639-1; records and the engine keep ISO 639-3.
+    //cc: uwazi should always speak ISO 639-1, it's the job of ocr engine implementation to change to ISO 639-3, not application layer.
     const language = LanguageUtils.fromISO639_1((file as PDFDocument).language ?? '').ISO639_3;
     if (!(await this.deps.ocrEngine.supportsLanguage(language))) {
       throw new OcrLanguageNotSupported(language);
