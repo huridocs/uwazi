@@ -83,7 +83,7 @@ describe('files routes download', () => {
 
       expect(response).toHaveStatus(200);
       expect(response.get('Content-Disposition')).toBe(
-        `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+        `inline; filename*=UTF-8''${encodeURIComponent(file.originalname)}`
       );
     });
 
