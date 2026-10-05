@@ -1,3 +1,4 @@
+import { LanguageUtils } from '#shared/language/index.js';
 import { OcrFailureReason } from '../../domain/OcrFailureReason.js';
 import { OcrRecord } from '../../domain/OcrRecord.js';
 import { OcrStatus } from '../../domain/OcrStatus.js';
@@ -9,7 +10,7 @@ class PostgresOcrRecordMapper {
       id: row._id,
       sourceFileId: row.source_file_id ?? null,
       filename: row.filename,
-      language: row.language,
+      language: LanguageUtils.fromISO639_3(row.language).ISO639_1!,
       status: row.status as OcrStatus,
       attempt: Number(row.attempt),
       requestedAt: row.requested_at === undefined ? undefined : Number(row.requested_at),
@@ -26,7 +27,7 @@ class PostgresOcrRecordMapper {
       source_file_id: record.sourceFileId,
       result_file_id: record.resultFileId ?? null,
       filename: record.filename,
-      language: record.language,
+      language: LanguageUtils.fromISO639_1(record.language).ISO639_3,
       status: record.status,
       attempt: record.attempt,
       requested_at: record.requestedAt ?? null,

@@ -1,3 +1,4 @@
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { InvalidOcrTransition } from './errors/InvalidOcrTransition.js';
 import { IdempotencyKey } from './IdempotencyKey.js';
 import { OcrFailureReason } from './OcrFailureReason.js';
@@ -7,7 +8,7 @@ type OcrRecordProps = {
   id: string;
   sourceFileId: string | null;
   filename: string;
-  language: string;
+  language: LanguageISO6391;
   status: OcrStatus;
   attempt: number;
   requestedAt?: number;
@@ -33,7 +34,7 @@ class OcrRecord {
 
   readonly filename: string;
 
-  readonly language: string;
+  readonly language: LanguageISO6391;
 
   private _sourceFileId: string | null;
 
@@ -66,7 +67,7 @@ class OcrRecord {
     id: string;
     sourceFileId: string | null;
     filename: string;
-    language: string;
+    language: LanguageISO6391;
     now: number;
   }): OcrRecord {
     const { now, ...identity } = props;

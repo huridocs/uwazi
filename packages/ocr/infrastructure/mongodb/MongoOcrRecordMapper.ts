@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { LanguageUtils } from '#shared/language/index.js';
 import { OcrFailureReason } from '../../domain/OcrFailureReason.js';
 import { OcrRecord } from '../../domain/OcrRecord.js';
 import { OcrStatus } from '../../domain/OcrStatus.js';
@@ -10,7 +11,7 @@ class MongoOcrRecordMapper {
       id: dbo._id.toHexString(),
       sourceFileId: dbo.sourceFile?.toHexString() ?? null,
       filename: dbo.filename,
-      language: dbo.language,
+      language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1!,
       status: dbo.status as OcrStatus,
       attempt: dbo.attempt,
       requestedAt: dbo.requestedAt,
@@ -25,7 +26,7 @@ class MongoOcrRecordMapper {
       _id: new ObjectId(record.id),
       sourceFile: record.sourceFileId === null ? null : new ObjectId(record.sourceFileId),
       filename: record.filename,
-      language: record.language,
+      language: LanguageUtils.fromISO639_1(record.language).ISO639_3,
       status: record.status,
       attempt: record.attempt,
       lastUpdated: record.lastUpdated,

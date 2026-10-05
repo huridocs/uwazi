@@ -3,11 +3,10 @@ import type { ReadableStream } from 'stream/web';
 import urljoin from 'url-join';
 import { z } from 'zod';
 import type { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { OcrEngine, OcrRequest, OutcomeHandle } from '../../application/contracts/OcrEngine.js';
 import { MalformedOcrResult } from '../../application/errors/MalformedOcrResult.js';
-import { OcrLanguageNotSupported } from '../../application/errors/OcrLanguageNotSupported.js';
 import { OcrServiceNotConfigured } from '../../application/errors/OcrServiceNotConfigured.js';
-import { LanguageTranslator } from './LanguageTranslator.js';
 import { ServiceFailure } from './ServiceFailure.js';
 import { WireInfoSchema, WireOutcomeHandle, WireTaskMessage } from './wireTypes.js';
 
@@ -40,10 +39,6 @@ class RemoteOcrEngine implements OcrEngine {
 
   async submit({ key, filename, language, content }: OcrRequest): Promise<void> {
     const url = await this.requireUrl();
-    const serviceLanguage = LanguageTranslator.toService(language);
-    if (!serviceLanguage) {
-      throw new OcrLanguageNotSupported(language);
-    }
 
     try {
       await this.deps.http.uploadFile(urljoin(url, 'upload', this.deps.tenant), filename, content);
@@ -54,7 +49,7 @@ class RemoteOcrEngine implements OcrEngine {
     await this.deps.taskQueue.startTask({
       task: 'ocr',
       tenant: this.deps.tenant,
-      params: { filename, language: serviceLanguage, metadata: { key: key.toString() } },
+      params: { filename, language, metadata: { key: key.toString() } },
     });
   }
 
@@ -84,8 +79,7 @@ class RemoteOcrEngine implements OcrEngine {
     };
   }
 
-  async supportsLanguage(language: string): Promise<boolean> {
-    const serviceLanguage = LanguageTranslator.toService(language);
+  async supportsLanguage(language: LanguageISO6391): Promise<boolean> {
     const url = await this.requireUrl();
 
     let body: unknown;
@@ -99,7 +93,7 @@ class RemoteOcrEngine implements OcrEngine {
     if (!info.success) {
       throw new MalformedOcrResult('unexpected service info', info.error);
     }
-    return serviceLanguage !== undefined && info.data.supported_languages.includes(serviceLanguage);
+    return info.data.supported_languages.includes(language);
   }
 
   private async requireUrl() {

@@ -9,7 +9,7 @@ class FakeOcrEngine implements OcrEngine {
 
   failWith: Error | undefined;
 
-  supportedLanguages = ['eng', 'spa'];
+  supportedLanguages = ['en', 'es'];
 
   asked: string[] = [];
 

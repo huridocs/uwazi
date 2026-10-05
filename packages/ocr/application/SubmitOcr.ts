@@ -7,7 +7,6 @@ import { OcrStatus } from '../domain/OcrStatus.js';
 import { OcrEngine } from './contracts/OcrEngine.js';
 import { OcrJobs } from './contracts/OcrJobs.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
-import { OcrLanguageNotSupported } from './errors/OcrLanguageNotSupported.js';
 import { OcrServiceNotConfigured } from './errors/OcrServiceNotConfigured.js';
 import { OcrServiceUnavailable } from './errors/OcrServiceUnavailable.js';
 
@@ -84,8 +83,6 @@ class SubmitOcr extends AbstractUseCase<Input, void, Deps> {
       await this.submitLater(record);
     } else if (error instanceof OcrServiceNotConfigured) {
       await this.fail(record, OcrFailureReason.SERVICE_NOT_CONFIGURED);
-    } else if (error instanceof OcrLanguageNotSupported) {
-      await this.fail(record, OcrFailureReason.UNEXPECTED);
     } else {
       throw error;
     }

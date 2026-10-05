@@ -8,7 +8,7 @@ import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalD
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { MalformedOcrResult } from '../../../application/errors/MalformedOcrResult.js';
-import { OcrLanguageNotSupported } from '../../../application/errors/OcrLanguageNotSupported.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { OcrResultGone } from '../../../application/errors/OcrResultGone.js';
 import { OcrServiceNotConfigured } from '../../../application/errors/OcrServiceNotConfigured.js';
 import { OcrServiceUnavailable } from '../../../application/errors/OcrServiceUnavailable.js';
@@ -27,7 +27,7 @@ const settingsWithOcrUrl = (url?: string) => ({
 const request = {
   key: IdempotencyKey.of('rec1', 1),
   filename: 'document.pdf',
-  language: 'eng',
+  language: 'en' as const,
   content: Buffer.from('%PDF-1.4 content'),
 };
 
@@ -103,14 +103,6 @@ describe('RemoteOcrEngine', () => {
       expect(await service.readFirstTaskMessage()).toBeUndefined();
     });
 
-    it('should refuse a language the service has no code for, queueing nothing', async () => {
-      await expect(sut().submit({ ...request, language: 'other' })).rejects.toBeInstanceOf(
-        OcrLanguageNotSupported
-      );
-      expect(service.filesNames).toEqual([]);
-      expect(await service.readFirstTaskMessage()).toBeUndefined();
-    });
-
     it('should report the service as unavailable when it cannot be reached, queueing nothing', async () => {
       await testingEnvironment.setFixtures(settingsWithOcrUrl('http://localhost:1'));
 
@@ -170,11 +162,10 @@ describe('RemoteOcrEngine', () => {
     const settingsWithInfo = async () =>
       testingEnvironment.setFixtures(settingsWithOcrUrl(`http://localhost:${INFO_PORT}`));
 
-    it.each([
-      ['eng', true],
-      ['spa', true],
-      ['fra', false],
-      ['other', false],
+    it.each<[LanguageISO6391, boolean]>([
+      ['en', true],
+      ['es', true],
+      ['fr', false],
     ])('should say whether the service supports %s', async (language, expected) => {
       await settingsWithInfo();
 
@@ -184,14 +175,14 @@ describe('RemoteOcrEngine', () => {
     it('should refuse to ask when no service url is configured', async () => {
       await testingEnvironment.setFixtures(settingsWithOcrUrl());
 
-      await expect(sut().supportsLanguage('eng')).rejects.toBeInstanceOf(OcrServiceNotConfigured);
+      await expect(sut().supportsLanguage('en')).rejects.toBeInstanceOf(OcrServiceNotConfigured);
     });
 
     it('should report the service as unavailable when it fails on its side', async () => {
       await settingsWithInfo();
       infoStatus = 503;
 
-      await expect(sut().supportsLanguage('eng')).rejects.toBeInstanceOf(OcrServiceUnavailable);
+      await expect(sut().supportsLanguage('en')).rejects.toBeInstanceOf(OcrServiceUnavailable);
     });
   });
 });

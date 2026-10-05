@@ -77,7 +77,7 @@ describe('RequestOcr', () => {
 
       await execute();
 
-      expect(engine.asked).toEqual(['eng']);
+      expect(engine.asked).toEqual(['en']);
     });
 
     it.each([

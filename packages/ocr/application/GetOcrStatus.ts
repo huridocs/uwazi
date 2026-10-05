@@ -4,7 +4,6 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { LanguageUtils } from '#shared/language/index.js';
 import { OcrStatus } from '../domain/OcrStatus.js';
 import { OcrEngine } from './contracts/OcrEngine.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
@@ -60,9 +59,8 @@ class GetOcrStatus extends AbstractUseCase<Input, OcrFileStatus, Deps> {
   }
 
   private async readsLanguageOf(file: PDFDocument) {
-    // The file model speaks ISO 639-1; the engine takes ISO 639-3.
-    const language = LanguageUtils.fromISO639_1(file.language ?? '').ISO639_3;
-    return this.deps.ocrEngine.supportsLanguage(language);
+    const { language } = file;
+    return language !== undefined && this.deps.ocrEngine.supportsLanguage(language);
   }
 }
 

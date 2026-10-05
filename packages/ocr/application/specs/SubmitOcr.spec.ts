@@ -1,7 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { SubmitOcrFactory } from '../../infrastructure/factories/SubmitOcrFactory.js';
-import { OcrLanguageNotSupported } from '../errors/OcrLanguageNotSupported.js';
 import { OcrServiceNotConfigured } from '../errors/OcrServiceNotConfigured.js';
 import { OcrServiceUnavailable } from '../errors/OcrServiceUnavailable.js';
 import { FakeOcrEngine } from './FakeOcrEngine.js';
@@ -66,7 +65,7 @@ describe('SubmitOcr', () => {
       expect(engine.submitted).toHaveLength(1);
       const [request] = engine.submitted;
       expect(request.key.toString()).toBe(`${f.idString('doc')}:1`);
-      expect(request).toMatchObject({ filename: 'english.pdf', language: 'spa' });
+      expect(request).toMatchObject({ filename: 'english.pdf', language: 'es' });
       expect(request.content.subarray(0, 5).toString()).toBe('%PDF-');
       expect(await storedRecords(postgresCore)).toEqual([
         expect.objectContaining({ status: 'processing', attempt: 1, requestedAt: NOW }),
@@ -137,10 +136,7 @@ describe('SubmitOcr', () => {
       });
     });
 
-    it.each([
-      ['has no url', new OcrServiceNotConfigured(), 'serviceNotConfigured'],
-      ['no longer supports the language', new OcrLanguageNotSupported('eng'), 'unexpected'],
-    ])(
+    it.each([['has no url', new OcrServiceNotConfigured(), 'serviceNotConfigured']])(
       'should fail the record and tell the editors when the service %s',
       async (_case, error, reason) => {
         await setUp(queued);

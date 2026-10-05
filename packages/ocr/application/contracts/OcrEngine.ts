@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IdempotencyKey } from '../../domain/IdempotencyKey.js';
 import { OcrFailureReason } from '../../domain/OcrFailureReason.js';
 
@@ -19,8 +20,7 @@ type OcrOutcome = { key?: IdempotencyKey; filename: string } & (
 type OcrRequest = {
   key: IdempotencyKey;
   filename: string;
-  /** ISO 639-3, as files keep it. */
-  language: string;
+  language: LanguageISO6391;
   content: Buffer;
 };
 
@@ -35,8 +35,8 @@ interface OcrEngine {
   /** Fetches a successful result. The service hands each result out once. */
   fetchResult(handle: OutcomeHandle): Promise<{ pdf: Readable; mimetype: string }>;
 
-  /** Whether the service can read text in the language, given as ISO 639-3. */
-  supportsLanguage(language: string): Promise<boolean>;
+  /** Whether the service can read text in the language. */
+  supportsLanguage(language: LanguageISO6391): Promise<boolean>;
 }
 
 export type { OcrEngine, OcrRequest, OutcomeHandle, OcrOutcome };

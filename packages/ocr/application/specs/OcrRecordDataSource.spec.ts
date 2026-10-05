@@ -53,7 +53,7 @@ describe('OcrRecordDataSource', () => {
           id: f.idString('ready'),
           sourceFileId: f.idString('fileD'),
           filename: 'd.pdf',
-          language: 'eng',
+          language: 'en',
           status: OcrStatus.READY,
           attempt: 1,
           requestedAt: 1000,
@@ -128,7 +128,7 @@ describe('OcrRecordDataSource', () => {
             id: f.idString('new'),
             sourceFileId: f.idString('fileNew'),
             filename: 'new.pdf',
-            language: 'spa',
+            language: 'es',
             now: 9000,
           })
         );
@@ -141,9 +141,26 @@ describe('OcrRecordDataSource', () => {
           attempt: 0,
         });
         expect(snapshot(await sut().getById(f.idString('new')))).toMatchObject({
-          language: 'spa',
+          language: 'es',
           lastUpdated: 9000,
         });
+      });
+
+      it('should store the language as ISO 639-3', async () => {
+        await sut().create(
+          OcrRecord.request({
+            id: f.idString('new'),
+            sourceFileId: f.idString('fileNew'),
+            filename: 'new.pdf',
+            language: 'es',
+            now: 9000,
+          })
+        );
+
+        const stored = usePostgres
+          ? await testingEnvironment.pg.getAllFrom('ocr_records')
+          : await testingEnvironment.db.getAllFrom('ocr_records');
+        expect(stored.find(r => String(r._id) === f.idString('new'))?.language).toBe('spa');
       });
 
       it('should not create a second record for a source file that has one', async () => {
@@ -154,7 +171,7 @@ describe('OcrRecordDataSource', () => {
             id: f.idString('duplicate'),
             sourceFileId: f.idString('fileA'),
             filename: 'a.pdf',
-            language: 'eng',
+            language: 'en',
             now: 9000,
           })
         );
@@ -169,7 +186,7 @@ describe('OcrRecordDataSource', () => {
             id: f.idString('anotherDetached'),
             sourceFileId: null,
             filename: 'g.pdf',
-            language: 'eng',
+            language: 'en',
             now: 9000,
           })
         );

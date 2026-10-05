@@ -7,7 +7,12 @@ import { InvalidOcrTransition } from '../errors/InvalidOcrTransition.js';
 const NOW = 1_700_000_000_000;
 const LATER = NOW + 1000;
 
-const identity = { id: 'rec1', sourceFileId: 'file1', filename: 'scan.pdf', language: 'eng' };
+const identity = {
+  id: 'rec1',
+  sourceFileId: 'file1',
+  filename: 'scan.pdf',
+  language: 'en' as const,
+};
 
 const load = (overrides: Partial<OcrRecordProps>) =>
   new OcrRecord({

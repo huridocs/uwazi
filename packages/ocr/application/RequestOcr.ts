@@ -5,7 +5,7 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { LanguageUtils } from '#shared/language/index.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { OcrRecord } from '../domain/OcrRecord.js';
 import { OcrStatus } from '../domain/OcrStatus.js';
 import { OcrEngine } from './contracts/OcrEngine.js';
@@ -39,8 +39,8 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
     const file = await this.documentNamed(filename);
 
     //cc: uwazi should always speak ISO 639-1, it's the job of ocr engine implementation to change to ISO 639-3, not application layer.
-    const language = LanguageUtils.fromISO639_1(file.language ?? '').ISO639_3;
-    if (!(await this.deps.ocrEngine.supportsLanguage(language))) {
+    const { language } = file;
+    if (!language || !(await this.deps.ocrEngine.supportsLanguage(language))) {
       throw new OcrLanguageNotSupported(language);
     }
 
@@ -70,7 +70,7 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
     }
   }
 
-  private async recordFor(source: { id: string; filename: string; language: string }) {
+  private async recordFor(source: { id: string; filename: string; language: LanguageISO6391 }) {
     const existing = await this.deps.ocrDS.getBySourceFileId(source.id);
     if (!existing) {
       const record = OcrRecord.request({
