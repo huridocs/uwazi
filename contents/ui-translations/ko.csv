@@ -227,6 +227,7 @@ Click to select files,클릭하여 파일을 선택하세요
 Close,닫기
 Close filters,필터 닫기
 Close modal,모달 닫기
+Close selection list,선택 목록 닫기
 Close side panel,사이드 패널 닫기
 Code,코드
 Collaborator,협업자
@@ -1155,6 +1156,7 @@ Remove,제거
 Remove data source,데이터 소스 제거
 Remove filter,필터 제거
 Remove from connection,연결 해제
+Remove from selection,선택에서 제거
 Remove from training set,훈련 집합에서 제외
 remove icon,아이콘 제거
 Remove icon,아이콘 제거
@@ -1277,9 +1279,11 @@ Select...,선택
 Select…,선택…
 Selected,선택됨
 selected,선택 완료
+Selected entities,선택한 엔티티
 selected of,~ 중 선택됨
 Selected or suggested,선택된 또는 추천된
 Selected templates,선택된 템플릿
+Selection,선택
 Send,전송
 Send message,메시지 보내기
 Send recovery email,복구 이메일 전송
@@ -1498,6 +1502,7 @@ this template,이 템플릿
 This template is in use by existing entities and cannot be deleted.,이 템플릿은 기존 엔티티에서 사용 중이므로 삭제할 수 없습니다.
 Thumbnail,썸네일
 Thumbnail frame,썸네일 프레임
+Thumbnail size,썸네일 크기
 Time,시간
 Time (UTC),시간 (UTC)
 Timeline,연표
@@ -1649,6 +1654,7 @@ Visibility,가시성
 Visualization data updated from your collection.,사용자 컬렉션의 시각화 데이터가 업데이트되었습니다.
 WARNING,경고
 Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,경고: 여러 엔티티를 편집하고 있습니다. 각 필드의 값이 모두에 적용됩니다.
 We can't find the page you're looking for.,찾으신 페이지를 찾을 수 없습니다.
 Week,주
 Weekly,매주

@@ -10,8 +10,10 @@ import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { LibraryMultiEditProperty } from './LibraryMultiEditProperty.js';
 import { useLibraryMultiEdit, type MultiEditFormValues } from './useLibraryMultiEdit.js';
 
-const provideForm = (form: UseFormReturn<MultiEditFormValues>, children: React.ReactNode) =>
-  React.createElement(FormProvider, form, children);
+const provideForm = (form: UseFormReturn<MultiEditFormValues>, children: React.ReactNode) => {
+  const props = { ...form, children };
+  return React.createElement(FormProvider<MultiEditFormValues>, props);
+};
 
 const FORM_ID = 'library-multi-edit-form';
 

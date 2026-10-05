@@ -227,6 +227,7 @@ Click to select files,ဖိုင်များရွေးရန် နှိ
 Close,ပိတ်ရန်
 Close filters,စစ်ထုတ်မှုများ ပိတ်ရန်
 Close modal,ဝင်းဒိုး ပိတ်ရန်
+Close selection list,ရွေးချယ်မှုစာရင်းကို ပိတ်ရန်
 Close side panel,ဘေးဘောင် ပိတ်ရန်
 Code,ကုဒ်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
@@ -1145,6 +1146,7 @@ Remove,ဖယ်ရှားရန်
 Remove data source,ဒေတာရင်းမြစ် ဖယ်ရန်
 Remove filter,စစ်ထုတ်မှု ဖယ်ရန်
 Remove from connection,ချိတ်ဆက်မှုမှ ဖယ်ရှားပါ
+Remove from selection,ရွေးချယ်မှုမှ ဖယ်ရှားရန်
 Remove from training set,လေ့ကျင့်မှုအစုမှ ဖယ်ရှားပါ
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Remove icon,အိုင်ကွန် ဖယ်ရှားပါ
@@ -1267,9 +1269,11 @@ Select...,ရွေးချယ်ရန်...
 Select…,ရွေးရန်…
 Selected,ရွေးချယ်ထားသော
 selected,ရွေးချယ်ပြီး
+Selected entities,ရွေးထားသော ဖြည့်သွင်းချက်များ
 selected of,ရွေးချယ်ထားသည်
 Selected or suggested,ရွေးချယ်ထားသော သို့မဟုတ် အကြံပြုထားသော
 Selected templates,ရွေးချယ်ထားသော ပုံစံများ
+Selection,ရွေးချယ်မှု
 Send,ပေးပို့ရန်
 Send message,မက်ဆေ့ချ် ပို့ရန်
 Send recovery email,ပြန်လည်ရယူရန်အတွက် အီးမေးလ် ပို့ရန်
@@ -1479,6 +1483,7 @@ this template,ဤပုံစံ
 This template is in use by existing entities and cannot be deleted.,ဤပုံစံကို လက်ရှိ အဖွဲ့အစည်းများက အသုံးပြုနေပြီး ဖျက်၍ မရပါ။
 Thumbnail,သေးငယ်သောပုံ
 Thumbnail frame,ပုံသေး ဘောင်
+Thumbnail size,ပုံသေး အရွယ်အစား
 Time,အချိန်
 Time (UTC),အချိန် (UTC)
 Timeline,အချိန်ကြောင်း
@@ -1628,6 +1633,7 @@ Visibility,မြင်သာမှု
 Visualization data updated from your collection.,သင့်စုဆောင်းမှုမှ ဒေတာကို မြင်ကွင်းဖော်ပြချက်အဖြစ် အပ်ဒိတ်လုပ်ထားသည်။
 WARNING,သတိပေးချက်
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ အကွက်တိုင်း၏ တန်ဖိုးကို အားလုံးတွင် အသုံးပြုမည်။
 We can't find the page you're looking for.,သင်ရှာဖွေနေသည့် စာမျက်နှာကို မတွေ့နိုင်ပါ။
 Week,ပတ်
 Weekly,အပတ်စဉ်

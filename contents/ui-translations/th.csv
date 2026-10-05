@@ -230,6 +230,7 @@ Click to select files,คลิกเพื่อเลือกไฟล์
 Close,ปิด
 Close filters,ปิดตัวกรอง
 Close modal,ปิดหน้าต่าง
+Close selection list,ปิดรายการที่เลือก
 Close side panel,ปิดแผงด้านข้าง
 Code,รหัส
 Collaborator,ผู้ประสานงาน
@@ -1163,6 +1164,7 @@ Remove,ลบ
 Remove data source,ลบแหล่งข้อมูล
 Remove filter,ลบตัวกรอง
 Remove from connection,ตัดการเชื่อมต่อ
+Remove from selection,นำออกจากการเลือก
 Remove from training set,ลบออกจากชุดข้อมูลฝึก
 remove icon,ลบไอคอน
 Remove icon,ลบไอคอน
@@ -1285,9 +1287,11 @@ Select...,เลือก...
 Select…,เลือก…
 Selected,ที่เลือกไว้
 selected,เลือกแล้ว
+Selected entities,เอนทิตีที่เลือก
 selected of,ถูกเลือกโดย
 Selected or suggested,ที่เลือกหรือที่แนะนำ
 Selected templates,แม่แบบที่เลือกไว้
+Selection,รายการที่เลือก
 Send,ส่ง
 Send message,ส่งข้อความ
 Send recovery email,ส่งอีเมลการกู้คืน
@@ -1506,6 +1510,7 @@ this template,แม่แบบนี้
 This template is in use by existing entities and cannot be deleted.,แม่แบบนี้กำลังถูกใช้โดยเอนทิตีที่มีอยู่และไม่สามารถลบได้
 Thumbnail,ภาพขนาดย่อ
 Thumbnail frame,กรอบภาพย่อ
+Thumbnail size,ขนาดรูปขนาดย่อ
 Time,เวลา
 Time (UTC),เวลา (UTC)
 Timeline,เส้นเวลา
@@ -1657,6 +1662,7 @@ Visibility,การมองเห็น
 Visualization data updated from your collection.,ข้อมูลการแสดงภาพได้รับการอัปเดตจากคอลเลกชันของคุณ
 WARNING,คำเตือน
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,คำเตือน: คุณกำลังแก้ไขหลายรายการ ค่าของแต่ละช่องจะถูกใช้กับทุกรายการ
 We can't find the page you're looking for.,เราไม่สามารถหาหน้าที่คุณกำลังค้นหาได้
 Week,สัปดาห์
 Weekly,รายสัปดาห์

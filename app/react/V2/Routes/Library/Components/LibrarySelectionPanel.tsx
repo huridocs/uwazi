@@ -89,7 +89,10 @@ const LibrarySelectionPanel = ({
         </span>
       </div>
       <div data-part="rows" className="min-h-0 flex-1 overflow-auto px-3 py-3">
-        <ul className="flex flex-col gap-2" aria-label="Selected entities">
+        <ul
+          className="flex flex-col gap-2"
+          aria-label={t('System', 'Selected entities', null, false)}
+        >
           {listedIds.slice(0, visible).map(sharedId => {
             const hit = hits.get(sharedId);
             return hit ? (

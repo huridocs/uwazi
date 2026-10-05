@@ -70,13 +70,7 @@ const iconChildren: Record<LibrarySelectionIconName, ReactNode> = {
   ),
 };
 
-const LibrarySelectionIcon = ({
-  name,
-  size,
-}: {
-  name: LibrarySelectionIconName;
-  size: number;
-}) => (
+const LibrarySelectionIcon = ({ name, size }: { name: LibrarySelectionIconName; size: number }) => (
   <svg
     width={size}
     height={size}

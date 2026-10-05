@@ -1,6 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
@@ -45,7 +45,7 @@ const LibrarySingleSelectActions = ({
         </LibraryFooterButton>
         <button
           type="button"
-          aria-label="Permissions"
+          aria-label={t('System', 'Permissions', null, false)}
           onClick={() => onAction?.('permissions')}
           className={iconButtonClassName}
         >
@@ -54,7 +54,7 @@ const LibrarySingleSelectActions = ({
         <LibraryFooterDivider />
         <button
           type="button"
-          aria-label="Delete"
+          aria-label={t('System', 'Delete', null, false)}
           onClick={() => onAction?.('delete')}
           className={deleteButtonClassName}
         >

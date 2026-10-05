@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import type { Template } from '#app/apiResponseTypes.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -132,7 +132,7 @@ const LibrarySelectionRow = ({
               type="button"
               data-part="remove"
               aria-label={`Remove ${hit.title} from selection`}
-              title="Remove from selection"
+              title={t('System', 'Remove from selection', null, false)}
               onClick={event => {
                 event.stopPropagation();
                 onRemove(hit.sharedId);

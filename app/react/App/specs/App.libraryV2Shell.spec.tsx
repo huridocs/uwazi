@@ -36,7 +36,7 @@ const renderAppAt = (pathname: string, featureFlagLibraryV2: boolean) => {
     [
       {
         path: '/',
-        element: <App />,
+        element: <App customParams={{}} />,
         children: [
           {
             path: 'en/libraryv2/*',

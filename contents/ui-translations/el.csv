@@ -229,6 +229,7 @@ Click to select files,Κάντε κλικ για να επιλέξετε αρχ�
 Close,Κλείσιμο
 Close filters,Κλείσιμο φίλτρων
 Close modal,Κλείσιμο παραθύρου
+Close selection list,Κλείσιμο λίστας επιλογής
 Close side panel,Κλείσιμο πλευρικού πίνακα
 Code,Κώδικας
 Collaborator,Συνεργάτης
@@ -1162,6 +1163,7 @@ Remove,Αφαίρεση
 Remove data source,Αφαίρεση πηγής δεδομένων
 Remove filter,Αφαίρεση φίλτρου
 Remove from connection,Αποσύνδεση
+Remove from selection,Αφαίρεση από την επιλογή
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
 Remove icon,Κατάργηση εικονιδίου
@@ -1284,9 +1286,11 @@ Select...,Επιλέξτε...
 Select…,Επιλογή…
 Selected,Επιλεγμένα
 selected,επιλεγμένα
+Selected entities,Επιλεγμένες οντότητες
 selected of,επιλεγμένα από
 Selected or suggested,Επιλεγμένα ή προτεινόμενα
 Selected templates,Επιλεγμένα πρότυπα
+Selection,Επιλογή
 Send,Αποστολή
 Send message,Αποστολή μηνύματος
 Send recovery email,Αποστολή email ανάκτησης
@@ -1505,6 +1509,7 @@ this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
 Thumbnail,Μικρογραφία
 Thumbnail frame,Πλαίσιο μικρογραφίας
+Thumbnail size,Μέγεθος μικρογραφίας
 Time,Χρόνος
 Time (UTC),Ώρα (UTC)
 Timeline,Χρονολόγιο
@@ -1656,6 +1661,7 @@ Visibility,Ορατότητα
 Visualization data updated from your collection.,Τα δεδομένα οπτικοποίησης ενημερώθηκαν από τη συλλογή σας.
 WARNING,ΠΡΟΕΙΔΟΠΟΙΗΣΗ
 Warning: you are editing multiple entities. Fields marked with a,Προειδοποίηση: επεξεργάζεστε πολλαπλές οντότητες. Τα πεδία που σημειώνονται με
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Προειδοποίηση: επεξεργάζεστε πολλές οντότητες. Η τιμή κάθε πεδίου θα εφαρμοστεί σε όλες.
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Week,Εβδομάδα
 Weekly,Εβδομαδιαία
