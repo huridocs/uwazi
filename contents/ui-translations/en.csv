@@ -74,8 +74,11 @@ Add to training set,Add to training set
 Add translation,Add translation
 Add user,Add user
 add value,add value
+Add value,Add value
 Add/delete users and assign roles,Add/delete users and assign roles
 Add/edit translations,Add/edit translations
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Added language
 Added new user,Added new user
 "Added relation type ""{name}""","Added relation type ""{name}"""
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Already the same value.
 Amount,Amount
 An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
@@ -291,6 +295,7 @@ Copy link,Copy link
 Copy properties to this entity from,Copy properties to this entity from
 Copy to clipboard,Copy to clipboard
 Could not add media. Please try again.,Could not add media. Please try again.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,Could not be processed
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -332,7 +337,7 @@ CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
-CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+CSV or ZIP,CSV or ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
 Custom colors,Custom colors
@@ -515,7 +520,6 @@ Error loading your image,Error loading your image
 Error loading your media,Error loading your media
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
@@ -866,6 +870,7 @@ New Relationships,New Relationships
 New relationships group,New relationships group
 New Relationships Migration,New Relationships Migration
 New user,New user
+New value in,New value in
 Next,Next
 No,No
 No attachments,No attachments

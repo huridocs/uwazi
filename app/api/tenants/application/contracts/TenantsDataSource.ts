@@ -1,5 +1,5 @@
 import type { FeatureFlagsPatch } from '../../featureFlags.js';
-import type { TenantOperationalData } from '../../operationalData.js';
+import type { TenantMetadataPatch, TenantOperationalData } from '../../operationalData.js';
 import type { Tenant } from '../../tenant.js';
 
 /**
@@ -11,9 +11,13 @@ type TenantRecord = Partial<Tenant> & TenantOperationalData & { name: string };
 
 type Nullable<T> = { [K in keyof T]?: T[K] | null };
 
-/** `undefined` leaves a field alone, `null` removes it, anything else sets it. */
-type TenantPatch = Omit<Nullable<Omit<TenantRecord, 'name'>>, 'featureFlags'> & {
+/**
+ * `undefined` leaves a field alone, `null` removes it, anything else sets it. `featureFlags` and
+ * `metadata` merge key by key, with the same rules one level down.
+ */
+type TenantPatch = Omit<Nullable<Omit<TenantRecord, 'name'>>, 'featureFlags' | 'metadata'> & {
   featureFlags?: FeatureFlagsPatch | null;
+  metadata?: TenantMetadataPatch | null;
 };
 
 /**

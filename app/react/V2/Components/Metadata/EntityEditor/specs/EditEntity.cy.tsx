@@ -1,12 +1,65 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
+import type { Thesaurus, ThesaurusInput, ThesaurusValue } from '#shared/contracts/Thesaurus.js';
+import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
+import type { ThesaurusService } from '#V2/services/contracts/ThesaurusService.js';
+import { ServicesProvider } from '#V2/services/index.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import * as stories from '#app/stories/EntityViewer/EditEntity.stories.js';
 
 const selectSearchSelectOption = (fieldId: string, optionLabel: string) => {
   cy.get(`[id="${fieldId}"]`).click();
   cy.contains('[role="option"]', optionLabel).click();
+};
+
+const adminUser: ClientUserSchema = {
+  _id: 'admin1',
+  role: 'admin',
+  username: 'admin',
+  email: 'admin@example.com',
+};
+
+const assignIds = (values: ThesaurusValue[]): ThesaurusValue[] =>
+  values.map((value, index) => ({
+    id: value.id ?? `generated-${index}`,
+    label: value.label,
+    ...(value.values
+      ? {
+          values: value.values.map((child, childIndex) => ({
+            id: child.id ?? `generated-${index}-${childIndex}`,
+            label: child.label,
+          })),
+        }
+      : {}),
+  }));
+
+const savedThesaurus = (input: ThesaurusInput): Thesaurus => ({
+  _id: input._id ?? 'saved',
+  name: input.name,
+  values: assignIds(input.values),
+});
+
+const addValueButton = (fieldLabel: string) =>
+  cy.contains('label', fieldLabel).parent().contains('button', 'Add value');
+
+const mountWithThesaurus = (
+  upserts: ThesaurusInput[],
+  onSave?: (savedEntity: EntitySaveInput) => void
+) => {
+  const upsert: ThesaurusService['upsert'] = async input => {
+    upserts.push(input);
+    return [savedThesaurus(input)];
+  };
+  mount(
+    <ThemeProvider>
+      <ServicesProvider value={createTestServices({ thesauri: { upsert } })}>
+        <stories.Basic.Component user={adminUser} onSave={onSave} />
+      </ServicesProvider>
+    </ThemeProvider>
+  );
 };
 
 const titleField = () => cy.get('textarea[id="title"]');
@@ -443,6 +496,84 @@ describe('Entity edit', () => {
       cy.contains('This value is invalid').should('be.visible');
       cy.contains('This relationship is not allowed').should('be.visible');
       cy.contains('Please provide a valid source URL').should('be.visible');
+    });
+  });
+
+  describe('Add value', () => {
+    it('should hide Add value when no admin is signed in', () => {
+      mount(
+        <ThemeProvider>
+          <Basic.Component />
+        </ThemeProvider>
+      );
+      cy.contains('label', 'Single select').should('exist');
+      addValueButton('Single select').should('not.exist');
+      addValueButton('Multiple selector').should('not.exist');
+    });
+
+    it('should append a single-select value and select it', () => {
+      const upserts: ThesaurusInput[] = [];
+      const saveSpy = cy.stub().as('saveSpy');
+      mountWithThesaurus(upserts, saveSpy);
+
+      cy.contains('label', 'Single select').parent().contains('button', 'Clear').should('exist');
+      addValueButton('Single select').click();
+      cy.get('[role="dialog"][aria-label="Add thesaurus value"]').within(() => {
+        cy.get('select').should('not.exist');
+        cy.get('#add-thesaurus-value-note').should('contain', 'Added at the end of the thesaurus.');
+        cy.get('#add-thesaurus-value').type('Fresh event');
+      });
+      cy.get('[role="dialog"][aria-label="Add thesaurus value"]')
+        .contains('button', 'Save')
+        .click();
+
+      cy.get('[id="metadata.status_selection"]')
+        .should('contain', 'Fresh event')
+        .and('contain', 'New');
+      cy.contains('button', 'Save').click();
+
+      cy.should(() => {
+        expect(upserts).to.have.length(1);
+        expect(upserts[0]?.values.at(-1)).to.deep.equal({ label: 'Fresh event' });
+      });
+      cy.get('@saveSpy').should('have.been.calledOnce');
+      cy.get('@saveSpy').then(spy => {
+        const saved = (spy as unknown as Cypress.Agent<sinon.SinonSpy>).getCall(0).args[0];
+        expect(saved.metadata.status_selection).to.deep.equal([
+          { value: 'generated-3', label: 'Fresh event' },
+        ]);
+      });
+    });
+
+    it('should append a nested multiselect value inside the chosen group', () => {
+      const upserts: ThesaurusInput[] = [];
+      mountWithThesaurus(upserts);
+
+      cy.contains('label', 'Multiple selector')
+        .parent()
+        .contains('button', 'Clear')
+        .should('not.exist');
+      addValueButton('Multiple selector').click();
+      cy.get('[role="dialog"][aria-label="Add thesaurus value"]').within(() => {
+        cy.get('#add-thesaurus-value-group').select('Grouped verbs');
+        cy.get('#add-thesaurus-value').type('verb3');
+        cy.get('#add-thesaurus-value-note').should('contain', 'Added in Grouped verbs.');
+      });
+      cy.get('[role="dialog"][aria-label="Add thesaurus value"]')
+        .contains('button', 'Save')
+        .click();
+
+      cy.get('input#generated-4-2').should('be.checked');
+      cy.contains('verb3').should('exist');
+      cy.contains('New').should('exist');
+      cy.contains('label', 'Multiple selector')
+        .parent()
+        .contains('button', 'Clear')
+        .should('not.exist');
+      cy.should(() => {
+        const group = upserts[0]?.values.find(value => value.id === 'thes.g');
+        expect(group?.values?.at(-1)).to.deep.equal({ label: 'verb3' });
+      });
     });
   });
 });

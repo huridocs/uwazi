@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { Translate } from '#app/I18N/index.js';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -14,9 +15,15 @@ type TabsMainButtonsProps = {
   entity: EntityType;
   mainDocument?: FileType;
   onTabChange: (tabId: string) => void;
+  groupId?: string;
 };
 
-const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
+const TabsMainButtons = ({
+  entity,
+  mainDocument,
+  onTabChange,
+  groupId = 'entity-main',
+}: TabsMainButtonsProps) => {
   const { isDirty } = useMetadataEditing();
   const relationships = useDirectedRelationships();
   const templates = useAtomValue(templatesAtom);
@@ -50,12 +57,16 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
       id: MAIN_TAB.RELATIONSHIPS,
       name: 'Relationships',
       label: <TabLabel text="Relationships" count={relationshipsCount} />,
+      menuLabel: <Translate>Relationships</Translate>,
+      accessory: relationshipsCount,
     });
 
     items.push({
       id: MAIN_TAB.FILES,
       name: 'Files',
       label: <TabLabel text="Files" count={filesCount} />,
+      menuLabel: <Translate>Files</Translate>,
+      accessory: filesCount,
     });
 
     return items;
@@ -74,7 +85,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0 flex-1">
         <TabButtons
-          groupId="entity-main"
+          groupId={groupId}
           buttons={buttons}
           onTabChange={onTabChange}
           tabListAriaLabel={t('System', 'Entity primary', null, false)}

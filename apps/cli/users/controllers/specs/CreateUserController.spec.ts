@@ -44,10 +44,21 @@ describe.each(ControllerSpecs.backends)('CreateUserController ($name)', ({ postg
         role: 'collaborator',
       },
       welcomeEmailQueued: true,
+      ignoredGroups: [],
     });
     expect(await ControllerSpecs.stored(postgresCore, 'users')).toContainEqual(
       expect.objectContaining({ username: 'newguy', email: 'newguy@test.com' })
     );
+  });
+
+  it('should report the group ids it ignored because they match no group', async () => {
+    const output = await ControllerSpecs.asCli(async () =>
+      CreateUserController.handle(
+        input({ groups: [f.idString('ghost-group'), 'not-an-id', f.idString('Researchers')] })
+      )
+    );
+
+    expect(output.ignoredGroups).toEqual([f.idString('ghost-group'), 'not-an-id']);
   });
 
   it('should queue the welcome email with the tenant domain', async () => {

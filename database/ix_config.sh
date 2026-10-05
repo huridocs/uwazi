@@ -7,3 +7,7 @@ mongosh --quiet -host $HOST $DB --eval 'db.settings.updateOne({},{$set : {"featu
     "metadata-extraction": true,
     "metadataExtraction" :{"url":"http://127.0.0.1:5056"},
     "segmentation":{"url":"http://127.0.0.1:5051/async_extraction"}}}},{upsert:false,multi:true})'
+
+# Segmentation no longer scans for unsegmented PDFs: request the idle ones it was switched on over.
+echo -e "\nRequesting idle segmentations"
+DATABASE_NAME=$DB DBHOST=$HOST yarn uwazi segmentation queue-idle --tenant default

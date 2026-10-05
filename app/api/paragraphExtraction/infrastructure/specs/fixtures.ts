@@ -1,5 +1,5 @@
 import { Property } from '#api/core/domain/template/Property.js';
-import { Segmentation } from '#api/segmentation.v2/domain/Segmentation.js';
+import { SegmentationReadModel, SegmentType } from '#segmentation';
 import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 import { ObjectId } from 'mongodb';
@@ -118,16 +118,24 @@ const targetTemplate = TemplateBuilder.aTemplate({
   .withProperties([paragraphProperty, paragraphNumberProperty])
   .build();
 
-const segmentation: Segmentation = {
-  id: 'any_id',
+const segmentation: SegmentationReadModel = {
   fileId: document.id,
-  documentId: document.id,
   filename: document.filename,
-  xmlname: document.filename,
-  paragraphs: [
-    { width: 0, height: 0, left: 0, top: 0, type: 'any_type', text: 'any_text', pageNumber: 0 },
-  ],
-  status: 'ready',
+  xmlFilename: document.filename,
+  layout: {
+    pages: [{ number: 1, width: 0, height: 0 }],
+    segments: [
+      {
+        width: 0,
+        height: 0,
+        left: 0,
+        top: 0,
+        type: SegmentType.TEXT,
+        text: 'any_text',
+        pageNumber: 1,
+      },
+    ],
+  },
 };
 
 const sourceRelationshipType = {
@@ -140,16 +148,24 @@ const targetRelationshipType = {
   name: 'Target Relationship Type',
 };
 
-const segmentation2: Segmentation = {
-  id: 'any_id2',
+const segmentation2: SegmentationReadModel = {
   fileId: document2.id,
-  documentId: document2.id,
   filename: document2.filename,
-  xmlname: document2.filename,
-  paragraphs: [
-    { width: 0, height: 0, left: 0, top: 0, type: 'any_type', text: 'any_text', pageNumber: 0 },
-  ],
-  status: 'ready',
+  xmlFilename: document2.filename,
+  layout: {
+    pages: [{ number: 1, width: 0, height: 0 }],
+    segments: [
+      {
+        width: 0,
+        height: 0,
+        left: 0,
+        top: 0,
+        type: SegmentType.TEXT,
+        text: 'any_text',
+        pageNumber: 1,
+      },
+    ],
+  },
 };
 
 const extractor = new PXExtractor({

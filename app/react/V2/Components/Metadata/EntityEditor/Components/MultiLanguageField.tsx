@@ -78,7 +78,7 @@ const MultiLanguageField = React.memo(
         onToggle={() => setOpen(value => !value)}
         onAutoTranslate={() => {
           setOpen(true);
-          empties.forEach(language => {
+          (empties.length > 0 ? empties : others).forEach(language => {
             void translate(language);
           });
         }}

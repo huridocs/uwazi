@@ -293,7 +293,7 @@ CSV Import,Task label prefix,Settings > Import CSV,Prefix text prepended to the 
 CSV import cancelled,Toast notification,Settings > Import CSV,"Confirmation toast shown after an admin cancels a CSV import, from the cancel modal or background task tracking."
 CSV import completed,Toast notification title,Settings > Import CSV,Title of the success toast fired when a CSV import task finishes successfully.
 CSV import failed,Toast notification title,Settings > Import CSV,Title of the error toast fired when a CSV import task fails.
-CSV or ZIP up to 50MB,Dropzone helper text,Settings > Import CSV,"Helper text inside the file dropzone in the upload modal, stating accepted file types and the size limit."
+CSV or ZIP,Dropzone helper text,Settings > Import CSV,"Helper text inside the file dropzone in the upload modal, stating accepted file types."
 Ctrl K,Keyboard shortcut badge,AI Assistant (Bert) panel,Small badge in the Bert modal header showing the keyboard shortcut that opens the assistant.
 Current Value/Suggestion,Table column header,Settings > Metadata extraction,Column header in the suggestions table pairing the entity's current value with the extractor's suggested value.
 "Custom colors are not available for this chart type. Use the chart palette or template

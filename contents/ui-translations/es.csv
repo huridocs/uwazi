@@ -74,8 +74,11 @@ Add to training set,Añadir a conjunto de entrenamiento
 Add translation,Añadir traducción
 Add user,Añadir usuario
 add value,añadir valor
+Add value,Añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
+Added at the end of the thesaurus.,Añadido al final del tesauro.
+Added in,Añadido en
 Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
 "Added relation type ""{name}""","Tipo de relación ""{name}"" añadido"
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Permitir la omisión de captcha
 Allow public embedding without login,Permitir la incrustación pública sin necesidad de iniciar sesión
 Already exists,Ya existe
+already exists. Save selects it.,ya existe. Guardar lo selecciona.
 Already the same value.,Ya es el mismo valor.
 Amount,Cantidad
 An admin needs to add relationship types before you can create a relationship.,Un administrador necesita añadir tipos de relación para poder crear una relación.
@@ -289,6 +293,7 @@ Copy link,Copiar enlace
 Copy properties to this entity from,Copiar las propiedades a esta entidad desde
 Copy to clipboard,Copiar al portapapeles
 Could not add media. Please try again.,No se pudo agregar el archivo. Por favor intenta nuevamente.
+Could not add thesaurus value,No se pudo agregar el valor del tesauro
 Could not be processed,El proceso no ha sido posible
 Could not create entity,No se pudo crear la entidad
 Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
@@ -330,7 +335,7 @@ CSV Import,Importación de CSV
 CSV import cancelled,Importación de CSV cancelada
 CSV import completed,Importación de CSV completada
 CSV import failed,Importación de CSV fallida
-CSV or ZIP up to 50MB,CSV o ZIP de hasta 50 MB
+CSV or ZIP,CSV o ZIP
 Ctrl K,Ctrl+K
 Current Value/Suggestion,Valor actual/Sugerencia
 Custom colors,Colores personalizados
@@ -513,7 +518,6 @@ Error loading your image,Error al cargar la imagen
 Error loading your media,Error al cargar el archivo multimedia
 Error saving template.,Error al guardar la plantilla.
 Error updating thesauri.,Error al actualizar los tesauros.
-Every language has a value — use the re-translate button on a row,Cada idioma tiene un valor — utiliza el botón de re-traducir en una fila
 evidence,evidencia
 exact phrase,frase exacta
 Expand all,Expandir todo
@@ -864,6 +868,7 @@ New Relationships,Nuevas relaciones
 New relationships group,Nuevo grupo de relaciones
 New Relationships Migration,Migración de nuevas relaciones
 New user,Nuevo usuario
+New value in,Nuevo valor en
 Next,Próximo
 No,No
 No attachments,Sin adjuntos

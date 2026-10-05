@@ -8,7 +8,7 @@ import moment from 'moment';
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { SegmentationDirectoryFactory } from '#segmentation';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
@@ -457,15 +457,15 @@ class InformationExtraction {
   };
 
   _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<null | EntityDBO> => {
-    const [segmentation] = await SegmentationModel.get({
-      xmlname: rawSuggestion.xml_file_name,
-    });
+    const fileId = await SegmentationDirectoryFactory.default().fileIdForXml(
+      rawSuggestion.xml_file_name
+    );
 
-    if (!segmentation?.fileID) {
+    if (!fileId) {
       return null;
     }
     const dao = FilesDAOFactory.default();
-    const fileResult = await dao.getById(segmentation.fileID.toString());
+    const fileResult = await dao.getById(fileId);
 
     if (fileResult.isError()) {
       return null;
@@ -550,18 +550,18 @@ class InformationExtraction {
           return Promise.resolve();
         }
 
-        const [segmentation] = await SegmentationModel.get({
-          xmlname: rawSuggestion.xml_file_name,
-        });
+        const fileId = await SegmentationDirectoryFactory.default().fileIdForXml(
+          rawSuggestion.xml_file_name
+        );
 
-        if (!segmentation) {
+        if (!fileId) {
           return Promise.resolve();
         }
 
         const originalSuggestion = await suggestionsDao().getOneForFile({
           extractorId: extractor._id,
           entityId: entity.sharedId!,
-          fileId: segmentation.fileID!,
+          fileId: new ObjectId(fileId),
         });
 
         if (!originalSuggestion) {

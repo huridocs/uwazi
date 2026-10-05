@@ -74,8 +74,11 @@ Add to training set,Добавить в обучающую выборку
 Add translation,Добавить перевод
 Add user,Добавить пользователя
 add value,Добавить значение
+Add value,Add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
 Add/edit translations,Добавить / редактировать переводы
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Добавлен язык
 Added new user,Добавлен новый пользователь
 "Added relation type ""{name}""","Добавлен тип отношения ""{name}"""
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Разрешить обход капчи
 Allow public embedding without login,Разрешить публичную вставку без входа в систему
 Already exists,Уже существует
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Значение уже совпадает.
 Amount,Количество
 An admin needs to add relationship types before you can create a relationship.,"Прежде чем вы сможете создать связь, администратор должен добавить типы связей."
@@ -291,6 +295,7 @@ Copy link,Скопировать ссылку
 Copy properties to this entity from,Скопировать свойства к этому объекту из
 Copy to clipboard,Скопировать в буфер обмена
 Could not add media. Please try again.,"Не удалось добавить медиафайл. Пожалуйста, попробуйте ещё раз."
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,Не получилось обработать
 Could not create entity,Не удалось создать объект
 Could not detect the area for the selected text,"Не удалось определить область для выделенного текста, попробуйте выделить его снова."
@@ -332,7 +337,7 @@ CSV Import,Импорт из CSV
 CSV import cancelled,Импорт из CSV отменен
 CSV import completed,Импорт из CSV завершён
 CSV import failed,Импорт из CSV не выполнен
-CSV or ZIP up to 50MB,"CSV или ZIP, размер до 50 МБ"
+CSV or ZIP,CSV или ZIP
 Ctrl K,Ctrl+K
 Current Value/Suggestion,Текущее значение/предложение
 Custom colors,Пользовательские цвета
@@ -515,7 +520,6 @@ Error loading your image,Ошибка при загрузке изображен
 Error loading your media,Error loading your media
 Error saving template.,Ошибка при сохранении шаблона.
 Error updating thesauri.,Ошибка при обновлении тезаурусов.
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,доказательства
 exact phrase,точная фраза
 Expand all,Развернуть всё
@@ -866,6 +870,7 @@ New Relationships,Новые связи
 New relationships group,Группа новых взаимосвязей
 New Relationships Migration,Перенос новых отношений
 New user,Новый пользователь
+New value in,New value in
 Next,Следующий
 No,Нет
 No attachments,Нет вложений

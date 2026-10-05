@@ -74,8 +74,11 @@ Add to training set,เพิ่มเข้าไปในชุดข้อม
 Add translation,เพิ่มการแปล
 Add user,เพิ่มผู้ใช้
 add value,เพิ่มค่า
+Add value,Add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
 Add/edit translations,เพิ่ม / แก้ไขการแปล
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,เพิ่มภาษา
 Added new user,เพิ่มผู้ใช้ใหม่
 "Added relation type ""{name}""","เพิ่มประเภทความสัมพันธ์ ""{name}"""
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,อนุญาตให้ข้ามระบบ captcha
 Allow public embedding without login,อนุญาตให้ผู้ใช้ทั่วไปฝังเนื้อหาได้โดยไม่ต้องเข้าสู่ระบบ
 Already exists,มีอยู่แล้ว
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,เป็นค่าเดียวกันอยู่แล้ว
 Amount,จำนวน
 An admin needs to add relationship types before you can create a relationship.,ผู้ดูแลระบบต้องเพิ่มประเภทความสัมพันธ์ก่อนที่คุณจะสามารถสร้างความสัมพันธ์ได้
@@ -291,6 +295,7 @@ Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
 Copy to clipboard,คัดลอกไปยังคลิปบอร์ด
 Could not add media. Please try again.,ไม่สามารถเพิ่มสื่อได้ โปรดลองอีกครั้ง
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,ไม่สามารถดำเนินการได้
 Could not create entity,ไม่สามารถสร้างเอนทิตีได้
 Could not detect the area for the selected text,ไม่สามารถตรวจพบพื้นที่ของข้อความที่เลือกได้ โปรดลองเลือกใหม่
@@ -332,7 +337,7 @@ CSV Import,นำเข้าไฟล์ CSV
 CSV import cancelled,การนำเข้า CSV ถูกยกเลิก
 CSV import completed,การนำเข้าไฟล์ CSV เสร็จสิ้นแล้ว
 CSV import failed,การนำเข้าไฟล์ CSV ไม่สำเร็จ
-CSV or ZIP up to 50MB,ไฟล์ CSV หรือ ZIP ขนาดไม่เกิน 50MB
+CSV or ZIP,ไฟล์ CSV หรือ ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,ค่าปัจจุบัน/ข้อเสนอแนะ
 Custom colors,สีที่กำหนดเอง
@@ -515,7 +520,6 @@ Error loading your image,เกิดข้อผิดพลาดขณะโ�
 Error loading your media,Error loading your media
 Error saving template.,เกิดข้อผิดพลาดขณะบันทึกแม่แบบ
 Error updating thesauri.,เกิดข้อผิดพลาดในการอัปเดตพจนานุกรมคำพ้องความหมาย
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,หลักฐาน
 exact phrase,วลีที่ตรงกัน
 Expand all,แสดงทั้งหมด
@@ -866,6 +870,7 @@ New Relationships,ความสัมพันธ์ใหม่
 New relationships group,กลุ่มความสัมพันธ์ใหม่
 New Relationships Migration,การย้ายข้อมูลความสัมพันธ์ใหม่
 New user,ผู้ใช้ใหม่
+New value in,New value in
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา

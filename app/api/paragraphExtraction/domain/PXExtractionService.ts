@@ -1,11 +1,11 @@
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
-import { Segmentation } from '#api/segmentation.v2/domain/Segmentation.js';
+import type { SegmentationReadModel } from '#segmentation';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PXExtractionKey } from './PXExtractionKey.js';
 
 type ExtractParagraphInput = {
-  segmentations: Segmentation[];
+  segmentations: SegmentationReadModel[];
   documents: PDFDocument[];
   mainLanguage: LanguageISO6391;
   extractionKey: PXExtractionKey;

@@ -22,13 +22,23 @@ const indexedThesaurus = createSelector(
 const formatMetadata = createSelector(
   s => s.templates,
   indexedThesaurus,
-  (_s, doc, sortProperty, references, options) => ({ doc, sortProperty, references, options }),
+  (_s, ...selection) => {
+    const [doc, sortProperty, references, options] = selection;
+    return { doc, sortProperty, references, options };
+  },
   (templates, thesauris, { doc, sortProperty, references, options }) => {
     if (sortProperty) {
-      return formater.prepareMetadataForCard(doc, templates, thesauris, sortProperty).metadata;
+      return formater.prepareMetadataForCard(doc, templates, {
+        thesauri: thesauris,
+        sortedProperty: sortProperty,
+      }).metadata;
     }
 
-    return formater.prepareMetadata(doc, templates, thesauris, references, options).metadata;
+    return formater.prepareMetadata(doc, templates, {
+      thesauri: thesauris,
+      relationships: references,
+      options,
+    }).metadata;
   }
 );
 

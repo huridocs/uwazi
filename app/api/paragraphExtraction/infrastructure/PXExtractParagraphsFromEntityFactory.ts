@@ -5,7 +5,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSegmentationDataSource } from '#api/segmentation.v2/infrastructure/mongodb/MongoSegmentationDataSource.js';
+import { SegmentationDirectoryFactory } from '#segmentation';
 
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -44,7 +44,7 @@ export class PXExtractParagraphsFromEntityFactory {
     const fileStorage = FileStorageFactory.default();
     const idGenerator = MongoIdHandler;
     const logger = LoggerFactory.default();
-    const segmentationDS = new MongoSegmentationDataSource(connection, mongoTransactionManager);
+    const segmentationDirectory = SegmentationDirectoryFactory.default();
 
     const entitiesService = EntitiesServiceFactory.default({
       entitiesDS,
@@ -66,7 +66,7 @@ export class PXExtractParagraphsFromEntityFactory {
         idGenerator,
         logger,
         tenantName,
-        segmentationDS,
+        segmentationDirectory,
       },
       { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );

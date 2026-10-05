@@ -74,8 +74,11 @@ Add to training set,Додати до тренувального набору
 Add translation,Додати переклад
 Add user,Додати користувача
 add value,додавати цінність
+Add value,Add value
 Add/delete users and assign roles,Додати/видалити користувачів та призначити ролі
 Add/edit translations,Додати/редагувати переклади
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,Додано мову
 Added new user,Додано нового користувача
 "Added relation type ""{name}""","Додано тип зв’язку ""{name}"""
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Дозволити обхід капчі
 Allow public embedding without login,Дозволити публічне вбудовування без входу в систему
 Already exists,Вже існує
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,Вже те саме значення.
 Amount,Сума
 An admin needs to add relationship types before you can create a relationship.,"Перш ніж ви зможете створити зв’язок, адміністратор повинен додати типи зв’язків."
@@ -291,6 +295,7 @@ Copy link,Скопіювати посилання
 Copy properties to this entity from,Скопіювати властивості до цього об'єкта з
 Copy to clipboard,Скопіювати в буфер обміну
 Could not add media. Please try again.,Не вдалося додати медіафайл. Спробуйте ще раз.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,Не вдалось обробити
 Could not create entity,Не вдалося створити об’єкт
 Could not detect the area for the selected text,"Не вдалося виявити область для виділеного тексту, спробуйте виділити ще раз."
@@ -332,7 +337,7 @@ CSV Import,Імпорт CSV
 CSV import cancelled,Імпорт CSV скасовано
 CSV import completed,Імпорт CSV завершено
 CSV import failed,Імпорт CSV не вдався
-CSV or ZIP up to 50MB,CSV або ZIP (розмір до 50 МБ)
+CSV or ZIP,CSV або ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom colors,Власні кольори
@@ -515,7 +520,6 @@ Error loading your image,Помилка завантаження зображе�
 Error loading your media,Error loading your media
 Error saving template.,Шаблон збереження помилок.
 Error updating thesauri.,Помилка оновлення тезаурусів.
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,докази
 exact phrase,точна фраза
 Expand all,Розгорнути все
@@ -866,6 +870,7 @@ New Relationships,Нові зв’язки
 New relationships group,Група нових взаємозв'язків
 New Relationships Migration,Нові стосунки Міграція Міграція
 New user,Новий користувач
+New value in,New value in
 Next,Наступний
 No,Ні
 No attachments,Немає вкладень

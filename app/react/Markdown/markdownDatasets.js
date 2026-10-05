@@ -1,7 +1,10 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
+import Immutable from 'immutable';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { Big } from 'big.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 
 import { SearchAPI as searchApi } from '#app/Search/SearchAPI.js';
 import { api } from '#app/utils/api.js';
@@ -73,8 +76,16 @@ const conformDatasets = sets =>
     return { ...memo, [set.name]: data };
   }, {});
 
+const pageDatasets = state => {
+  const fromEntityPage = getStore().get(entityPageViewAtom)?.datasets;
+  if (fromEntityPage) {
+    return Immutable.fromJS(fromEntityPage);
+  }
+  return state.page.datasets;
+};
+
 const getAggregations = (state, { property, dataset = 'default' }) => {
-  const data = state.page.datasets.get(dataset);
+  const data = pageDatasets(state).get(dataset);
   return !data ? undefined : data.getIn(['aggregations', 'all', property, 'buckets']);
 };
 
@@ -96,7 +107,7 @@ export default {
   },
 
   getRows(state, { dataset = 'default' }) {
-    const data = state.page.datasets.get(dataset);
+    const data = pageDatasets(state).get(dataset);
     if (!data) {
       return undefined;
     }
@@ -120,7 +131,7 @@ export default {
   },
 
   getMetadataValue(state, { property, dataset = 'default' }) {
-    const data = state.page.datasets.get(dataset);
+    const data = pageDatasets(state).get(dataset);
     const propertyExists = data && data.hasIn(['metadata', property]);
     const mos = propertyExists ? data.getIn(['metadata', property]).toJS() : [];
     return mos && mos.length && mos[0].value ? Number(mos[0].value) : undefined;

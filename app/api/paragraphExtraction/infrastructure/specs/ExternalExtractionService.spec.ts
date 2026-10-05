@@ -97,7 +97,7 @@ describe('ExternalExtractionService', () => {
               is_main_language: true,
               xml_file_name: 'any_file_name',
               xml_segments_boxes: [
-                { left: 0, top: 0, page_number: 0, segment_type: 'any_type', width: 0, height: 0 },
+                { left: 0, top: 0, page_number: 1, segment_type: 'Text', width: 0, height: 0 },
               ],
             },
           ],

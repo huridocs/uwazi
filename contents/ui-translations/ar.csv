@@ -74,8 +74,11 @@ Add to training set,إضافة إلى مجموعة التدريب
 Add translation,إضافة ترجمة
 Add user,إضافة مستخدم
 add value,إضافة قيمة
+Add value,Add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
 Add/edit translations,إضافة / تحرير الترجمات
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,لغة مضافة
 Added new user,تمت إضافة مستخدم جديد
 "Added relation type ""{name}""","تمت إضافة نوع العلاقة ""{name}"""
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,السماح بتجاوز اختبار كابتشا
 Allow public embedding without login,السماح بالتضمين العام دون تسجيل الدخول
 Already exists,موجود بالفعل
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,القيمة نفسها بالفعل.
 Amount,العدد
 An admin needs to add relationship types before you can create a relationship.,يجب على المسؤول إضافة أنواع العلاقات قبل أن تتمكن من إنشاء علاقة.
@@ -290,6 +294,7 @@ Copy link,نسخ الرابط
 Copy properties to this entity from,انسخ الخصائص إلى هذا الكيان (الإدخال) من
 Copy to clipboard,نسخ إلى الحافظة
 Could not add media. Please try again.,تعذر إضافة الملفات. يرجى المحاولة مرة أخرى.
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,لا يمكن معالجتها
 Could not create entity,تعذر إنشاء الكيان
 Could not detect the area for the selected text,تعذر تحديد منطقة النص المحدد، يرجى محاولة التحديد مرة أخرى.
@@ -331,7 +336,7 @@ CSV Import,استيراد ملف CSV
 CSV import cancelled,تم إلغاء استيراد ملف CSV
 CSV import completed,اكتمل استيراد ملف CSV
 CSV import failed,فشل استيراد ملف CSV
-CSV or ZIP up to 50MB,ملف CSV أو ZIP بحجم يصل إلى 50 ميغابايت
+CSV or ZIP,ملف CSV أو ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,القيمة الحالية/الاقتراح
 Custom colors,ألوان مخصصة
@@ -514,7 +519,6 @@ Error loading your image,حدث خطأ أثناء تحميل صورتك
 Error loading your media,Error loading your media
 Error saving template.,حدث خطأ أثناء حفظ القالب.
 Error updating thesauri.,حدث خطأ أثناء تحديث قوائم المرادفات.
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,دليل
 exact phrase,العبارة بالضبط
 Expand all,توسيع كل العناصر
@@ -865,6 +869,7 @@ New Relationships,علاقات جديدة
 New relationships group,مجموعة علاقات جديدة
 New Relationships Migration,ترحيل العلاقات الجديدة
 New user,مستخدم جديد
+New value in,New value in
 Next,التالي
 No,لا
 No attachments,لا توجد مرفقات

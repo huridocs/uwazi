@@ -3,8 +3,8 @@ import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import AdapterModule from '@belzile/enzyme-adapter-react-19';
 import Enzyme from 'enzyme';
-import reactDom from 'react-dom';
 import { MessageChannel } from 'node:worker_threads';
+import './react/findDOMNodePolyfill.js';
 import { configureEnzymeReact19 } from './setUpEnzymeReact19.js';
 
 if (typeof Element !== 'undefined') {
@@ -55,25 +55,6 @@ globalThis.requestAnimationFrame = callback => {
 globalThis.cancelAnimationFrame = id => {
   rafQueue.delete(id);
 };
-
-const findDOMNode = component => {
-  if (component == null) {
-    return null;
-  }
-  if (component.nodeType === 1 || component.nodeType === 3) {
-    return component;
-  }
-  let fiber = component._reactInternals || component._reactInternalFiber;
-  while (fiber) {
-    if (fiber.stateNode && fiber.stateNode.nodeType === 1) {
-      return fiber.stateNode;
-    }
-    fiber = fiber.child;
-  }
-  return null;
-};
-
-reactDom.findDOMNode = findDOMNode;
 
 Object.assign(global, { TextDecoder, TextEncoder });
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;

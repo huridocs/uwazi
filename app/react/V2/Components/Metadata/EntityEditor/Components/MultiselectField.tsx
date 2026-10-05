@@ -1,9 +1,11 @@
 import React from 'react';
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
+import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { BaseSelectField } from './BaseSelectField.js';
 import { getMetadataSelectedValues, getOptionInfo } from './metadataSelectUtils.js';
+import { useThesaurusAdornment } from './ThesaurusValueControls.js';
 
 type MultiselectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -13,6 +15,8 @@ type MultiselectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   hideFilters?: boolean;
+  hideLabel?: boolean;
+  thesaurus?: ClientThesaurus;
 };
 
 const MultiselectField = <TFormValues extends FieldValues = FieldValues>({
@@ -23,28 +27,44 @@ const MultiselectField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   hideFilters,
-}: MultiselectFieldProps<TFormValues>) => (
-  <BaseSelectField<TFormValues>
-    context={context}
-    label={label}
-    field={field}
-    options={options}
-    registerOptions={registerOptions}
-    disabled={disabled}
-    hideFilters={hideFilters}
-    getSelectedValues={getMetadataSelectedValues}
-    onSelectedValuesChange={(selectedValues, availableOptions) =>
-      selectedValues.map(value => {
-        const option = getOptionInfo(value, availableOptions);
+  hideLabel,
+  thesaurus,
+}: MultiselectFieldProps<TFormValues>) => {
+  const bound = useThesaurusAdornment({
+    thesaurus,
+    options,
+    singleSelect: false,
+    disabled,
+    label,
+    context,
+    required: Boolean(registerOptions?.required),
+    htmlFor: field,
+  });
 
-        return {
-          value,
-          label: option.label,
-          parent: option.parent,
-        } satisfies MetadataValue;
-      })
-    }
-  />
-);
+  return (
+    <BaseSelectField<TFormValues>
+      context={context}
+      label={label}
+      field={field}
+      options={bound.options}
+      registerOptions={registerOptions}
+      disabled={disabled}
+      hideFilters={hideFilters}
+      hideLabel={hideLabel || bound.bound}
+      adornment={bound.adornment}
+      getSelectedValues={getMetadataSelectedValues}
+      onSelectedValuesChange={(selectedValues, availableOptions) =>
+        selectedValues.map(value => {
+          const option = getOptionInfo(value, availableOptions);
+          return {
+            value,
+            label: option.label,
+            parent: option.parent,
+          } satisfies MetadataValue;
+        })
+      }
+    />
+  );
+};
 
 export { MultiselectField };

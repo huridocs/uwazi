@@ -9,6 +9,7 @@ export class MongoSegmentationBuilder {
   static create() {
     return new MongoSegmentationBuilder({
       _id: new ObjectId(),
+      filename: 'default.pdf',
       status: 'ready',
       segmentation: {
         page_height: 0,

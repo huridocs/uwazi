@@ -19,9 +19,13 @@ const resolveInheritedRelationship = (
   }
 
   const nextValues = getInheritedChildren(metadataValues);
+  const currentInheritedType = metadataValues.find(item => item?.inheritedType)?.inheritedType;
   const nextInheritedType = nextValues.find(item => item?.inheritedType)?.inheritedType;
 
-  return resolveInheritedRelationship(nextValues, nextInheritedType || inheritedType);
+  return resolveInheritedRelationship(
+    nextValues,
+    nextInheritedType || currentInheritedType || inheritedType
+  );
 };
 
 const resolvePropertyMetadataValues = (

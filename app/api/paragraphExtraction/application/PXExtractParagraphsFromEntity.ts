@@ -4,8 +4,7 @@ import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { Segmentation } from '#api/segmentation.v2/domain/Segmentation.js';
-import { SegmentationDataSource } from '#api/segmentation.v2/application/contracts/SegmentationDataSource.js';
+import type { SegmentationDirectory, SegmentationReadModel } from '#segmentation';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
@@ -43,7 +42,7 @@ type Deps = {
   logger: Logger;
   tenantName: string;
   entitiesService: EntitiesService;
-  segmentationDS: SegmentationDataSource;
+  segmentationDirectory: SegmentationDirectory;
 };
 
 export class PXExtractParagraphsFromEntity extends AbstractUseCase<
@@ -151,13 +150,13 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     return { extractor, entity, installedLanguages, defaultLanguage };
   }
 
-  private async getSegmentationFiles(segmentations: Segmentation[]) {
+  private async getSegmentationFiles(segmentations: SegmentationReadModel[]) {
     const files: { filename: string; contents: FileContents }[] = await ArrayUtils.parallelFor(
       segmentations,
       async segmentation => ({
-        filename: segmentation.xmlname!,
+        filename: segmentation.xmlFilename,
         contents: await this.deps.fileStorage.getFile({
-          filename: segmentation.xmlname!,
+          filename: segmentation.xmlFilename,
           type: 'segmentation',
         }),
       })
@@ -213,9 +212,9 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     entity: Entity,
     defaultLanguage: LanguageISO6391
   ) {
-    const segmentations = await this.deps.segmentationDS
-      .getSegmentations(documents.map(document => document.id))
-      .all();
+    const segmentations = await this.deps.segmentationDirectory.readyByFileIds(
+      documents.map(document => document.id)
+    );
 
     if (segmentations.length !== documents.length) {
       throw new PXValidationError(

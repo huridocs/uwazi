@@ -1,5 +1,6 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { SegmentationDirectoryFactory } from '#segmentation';
 import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import {
   mongoTransactionManager,
@@ -15,13 +16,14 @@ class IXTrainingMaterialsQueryServiceFactory {
       return new PostgresIXTrainingMaterialsQueryService({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
-        mongoDb: getConnection(),
+        segmentationDirectory: SegmentationDirectoryFactory.default(),
       });
     }
 
     return new MongoIXTrainingMaterialsQueryService({
       db: getConnection(),
       transactionManager: mongoTransactionManager(),
+      segmentationDirectory: SegmentationDirectoryFactory.default(),
     });
   }
 }

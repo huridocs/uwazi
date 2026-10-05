@@ -74,8 +74,11 @@ Add to training set,လေ့ကျင့်မှုအစုသို့ ထ�
 Add translation,ဘာသာပြန်ချက်ထည့်ပါ
 Add user,အသုံးပြုသူထည့်ရန်
 add value,တန်ဖိုး ထည့်ပါ
+Add value,Add value
 Add/delete users and assign roles,အသုံးပြုသူများကို ထည့်/ဖျက်ပြီး တာဝန်များ သတ်မှတ်ရန်
 Add/edit translations,ဘာသာပြန်ဆိုမှုများကို ထည့်ရန်/တည်းဖြတ်ရန်
+Added at the end of the thesaurus.,Added at the end of the thesaurus.
+Added in,Added in
 Added language,ထည့်သွင်းထားသော ဘာသာစကား
 Added new user,အသုံးပြုသူအသစ် ထည့်သွင်းခဲ့သည်။
 "Added relation type ""{name}""","ဆက်နွယ်မှုအမျိုးအစား ""{name}"" ကို ထည့်သွင်းခဲ့သည်။"
@@ -103,6 +106,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Captcha ကျော်ခွင့်ပြုပါ
 Allow public embedding without login,ဝင်ရောက်ခြင်းမလိုဘဲ အများပြည်သူထည့်သွင်းခွင့်ပြုပါ။
 Already exists,ယခင်ကတည်းက ရှိပြီးသား
+already exists. Save selects it.,already exists. Save selects it.
 Already the same value.,ယခင်ကတည်းက တူညီသော တန်ဖိုးဖြစ်သည်။
 Amount,ပမာဏ
 An admin needs to add relationship types before you can create a relationship.,ဆက်နွယ်မှုတစ်ခုကို ဖန်တီးနိုင်ရန် မတိုင်မီ အုပ်ချုပ်သူသည် ဆက်နွယ်မှုအမျိုးအစားများကို ထည့်သွင်းရမည်။
@@ -288,6 +292,7 @@ Copy link,လင့်ခ်ကို ကူးပါ
 Copy properties to this entity from,ဤဖြည့်သွင်းချက်သို့ ထူးခြားချက်များကို ဤမှ ကူးပါ
 Copy to clipboard,ကလစ်ဘုတ်သို့ ကူးယူရန်
 Could not add media. Please try again.,မီဒီယာထည့်သွင်း၍ မရပါ။ ထပ်မံကြိုးစားပါ။
+Could not add thesaurus value,Could not add thesaurus value
 Could not be processed,ဆောင်ရွက်၍ မရနိုင်ခဲ့ပါ
 Could not create entity,အဖွဲ့အစည်း ဖန်တီး၍ မရနိုင်ခဲ့ပါ
 Could not detect the area for the selected text,ရွေးထားသော စာသားအတွက် နယ်ပယ်ကို မတွေ့နိုင်ပါ၊ ထပ်မံရွေးချယ်ကြည့်ပါ။
@@ -329,7 +334,7 @@ CSV Import,CSV တင်သွင်းခြင်း
 CSV import cancelled,CSV တင်သွင်းခြင်း ဖျက်သိမ်းခဲ့သည်။
 CSV import completed,CSV တင်သွင်းမှု ပြီးစီးပါပြီ။
 CSV import failed,CSV တင်သွင်းမှု မအောင်မြင်ပါ။
-CSV or ZIP up to 50MB,CSV သို့မဟုတ် ZIP၊ အများဆုံး 50MB
+CSV or ZIP,CSV သို့မဟုတ် ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,လက်ရှိတန်ဖိုး/အကြံပြုချက်
 Custom colors,စိတ်ကြိုက် အရောင်များ
@@ -508,7 +513,6 @@ Error loading your image,သင့်ပုံကို တင်နေစဉ်
 Error loading your media,Error loading your media
 Error saving template.,ပုံစံ သိမ်းဆည်းရာတွင် အမှားဖြစ်နေသည်။
 Error updating thesauri.,အဓိပ္ပာယ်တူစာရင်းများကို အပ်ဒိတ်လုပ်ရာတွင် အမှားဖြစ်နေသည်။
-Every language has a value — use the re-translate button on a row,Every language has a value — use the re-translate button on a row
 evidence,သက်သေ
 exact phrase,တိကျသော စကားစု
 Expand all,အားလုံးကို တိုးချဲ့ပြရန်
@@ -855,6 +859,7 @@ New Relationships,ဆက်သွယ်မှုအသစ်များ
 New relationships group,ဆက်နွှယ်မှုအသစ်များ အုပ်စု
 New Relationships Migration,ဆက်နွယ်မှုအသစ်များ ရွှေ့ပြောင်းခြင်း
 New user,အသုံးပြုသူအသစ်
+New value in,New value in
 Next,ရှေ့သို့
 No,မရှိပါ
 No attachments,တွဲချိတ်မှုများ မရှိပါ

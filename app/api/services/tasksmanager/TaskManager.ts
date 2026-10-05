@@ -33,6 +33,18 @@ export interface Service<R = ResultsMessage> {
   serviceName: string;
   processResults?: (results: R) => Promise<void>;
   processResultsMessageHiddenTime?: number;
+  /**
+   * Delete a results message only once `processResults` has finished with it. A message whose
+   * processing throws then stays in the queue and is delivered again once its hidden time is up,
+   * so `processResults` must tolerate seeing the same message more than once.
+   */
+  deleteAfterProcessing?: boolean;
+  /**
+   * With `deleteAfterProcessing`, how many times a message may be delivered before it is dropped
+   * and reported. Without it, a message that can never be processed — its tenant unknown, say —
+   * would be delivered forever.
+   */
+  maxDeliveries?: number;
 }
 
 export class TaskManager<T = TaskMessage, R = ResultsMessage> {
@@ -113,20 +125,43 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
       })) as QueueMessage;
 
       if (message.id && this.service.processResults) {
-        await this.redisSMQ.deleteMessageAsync({
-          qname: this.resultsQueue,
-          id: message.id,
-        });
-
-        const processedMessage = JSON.parse(message.message);
-
-        await runInJobContext(processedMessage.tenant, async () =>
-          this.service.processResults!(processedMessage)
-        );
+        await this.processResultsMessage(message);
       }
     } catch (e) {
       handleError(e, { useContext: false });
     }
+  }
+
+  private async processResultsMessage(message: QueueMessage) {
+    if (this.deliveredTooOften(message)) {
+      await this.deleteResultsMessage(message.id);
+      throw new Error(
+        `Results message ${message.id} on ${this.resultsQueue} was delivered ${message.rc} times without being processed; it has been dropped`
+      );
+    }
+
+    if (!this.service.deleteAfterProcessing) {
+      await this.deleteResultsMessage(message.id);
+    }
+
+    const processedMessage = JSON.parse(message.message);
+
+    await runInJobContext(processedMessage.tenant, async () =>
+      this.service.processResults!(processedMessage)
+    );
+
+    if (this.service.deleteAfterProcessing) {
+      await this.deleteResultsMessage(message.id);
+    }
+  }
+
+  private deliveredTooOften(message: QueueMessage) {
+    const { deleteAfterProcessing, maxDeliveries } = this.service;
+    return Boolean(deleteAfterProcessing && maxDeliveries && message.rc > maxDeliveries);
+  }
+
+  private async deleteResultsMessage(id: string) {
+    await this.redisSMQ.deleteMessageAsync({ qname: this.resultsQueue, id });
   }
 
   async startTask(taskMessage: T) {
