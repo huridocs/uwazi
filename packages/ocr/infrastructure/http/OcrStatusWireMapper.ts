@@ -1,13 +1,8 @@
 import { OcrFileStatus } from '../../application/GetOcrStatus.js';
 import { OcrStatus } from '../../domain/OcrStatus.js';
+import { GetOcrStatusResponse } from './GetOcrStatusResponse.js';
 
-/** What `GET /api/files/:filename/ocr` answers, as clients have always read it. */
-type OcrStatusWire = {
-  status: 'noOCR' | 'inQueue' | 'cannotProcess' | 'withOCR' | 'unsupported_language';
-  lastUpdated?: number;
-};
-
-const WIRE_STATUS: Record<OcrFileStatus['status'], OcrStatusWire['status']> = {
+const WIRE_STATUS: Record<OcrFileStatus['status'], GetOcrStatusResponse['status']> = {
   none: 'noOCR',
   [OcrStatus.QUEUED]: 'inQueue',
   [OcrStatus.PROCESSING]: 'inQueue',
@@ -17,7 +12,7 @@ const WIRE_STATUS: Record<OcrFileStatus['status'], OcrStatusWire['status']> = {
 };
 
 class OcrStatusWireMapper {
-  static toWire({ status, lastUpdated }: OcrFileStatus): OcrStatusWire {
+  static toWire({ status, lastUpdated }: OcrFileStatus): GetOcrStatusResponse {
     return {
       status: WIRE_STATUS[status],
       ...(lastUpdated !== undefined && { lastUpdated }),
@@ -26,4 +21,3 @@ class OcrStatusWireMapper {
 }
 
 export { OcrStatusWireMapper };
-export type { OcrStatusWire };

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { GetOcrStatusFactory } from '../factories/GetOcrStatusFactory.js';
+import { GetOcrStatusResponse } from './GetOcrStatusResponse.js';
 import { OcrErrorResponder } from './OcrErrorResponder.js';
 import { OcrStatusWireMapper } from './OcrStatusWireMapper.js';
 
@@ -14,7 +15,8 @@ class OcrStatusController extends AbstractController {
 
     try {
       const status = await GetOcrStatusFactory.default().execute({ filename });
-      this.jsonResponse(OcrStatusWireMapper.toWire(status));
+      const response: GetOcrStatusResponse = OcrStatusWireMapper.toWire(status);
+      this.jsonResponse(response);
     } catch (error) {
       if (!OcrErrorResponder.respond(this.response, error)) {
         throw error;
