@@ -1,5 +1,4 @@
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { OcrFailureReason } from '../domain/OcrFailureReason.js';
 import { OcrRecord } from '../domain/OcrRecord.js';
@@ -9,6 +8,7 @@ import { OcrJobs } from './contracts/OcrJobs.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
 import { OcrServiceNotConfigured } from './errors/OcrServiceNotConfigured.js';
 import { OcrServiceUnavailable } from './errors/OcrServiceUnavailable.js';
+import { OcrSettled, OcrSettlement } from './OcrSettled.js';
 
 type Input = { recordId: string };
 
@@ -17,8 +17,6 @@ type Deps = {
   ocrEngine: OcrEngine;
   fileStorage: FileStorage;
   jobs: OcrJobs;
-  sockets: WebSockets;
-  tenantName: string;
   /** Requests waiting in the service beyond which new ones hold back. */
   maxBacklog: number;
   /** How long a held-back request waits before it is tried again. */
@@ -33,28 +31,29 @@ type Deps = {
  * take it now — its backlog is full, or it is down — the request is put back on the queue for
  * later rather than failed, so waiting out an outage never exhausts the job's retries and strands
  * the record.
+ *
+ * Reports the record settled when it fails here.
  */
-class SubmitOcr extends AbstractUseCase<Input, void, Deps> {
-  async execute({ recordId }: Input): Promise<void> {
+class SubmitOcr extends AbstractUseCase<Input, OcrSettled, Deps> {
+  async execute({ recordId }: Input): Promise<OcrSettled> {
     const record = await this.deps.ocrDS.getById(recordId);
     if (record?.status !== OcrStatus.QUEUED) {
-      return;
+      return undefined;
     }
 
     if (record.sourceFileId === null) {
-      await this.fail(record, OcrFailureReason.SOURCE_GONE);
-      return;
+      return this.fail(record, OcrFailureReason.SOURCE_GONE);
     }
 
     if ((await this.deps.ocrEngine.backlogSize()) >= this.deps.maxBacklog) {
       await this.submitLater(record);
-      return;
+      return undefined;
     }
 
-    await this.send(record);
+    return this.send(record);
   }
 
-  private async send(record: OcrRecord) {
+  private async send(record: OcrRecord): Promise<OcrSettled> {
     const content = await this.readPdf(record.filename);
     const key = record.submit();
 
@@ -66,37 +65,32 @@ class SubmitOcr extends AbstractUseCase<Input, void, Deps> {
         content,
       });
     } catch (error) {
-      await this.whenNotSent(record.id, error);
-      return;
+      return this.whenNotSent(record.id, error);
     }
 
     await this.transactionManager.run(async () => this.deps.ocrDS.save(record));
+    return undefined;
   }
 
   /** A service that cannot take it now gets it later; one that never will makes it fail. */
-  private async whenNotSent(recordId: string, error: unknown) {
+  private async whenNotSent(recordId: string, error: unknown): Promise<OcrSettled> {
     // Nothing was saved: the stored record is still queued, as it was before the attempt.
     const record = (await this.deps.ocrDS.getById(recordId))!;
 
     if (error instanceof OcrServiceUnavailable) {
       await this.submitLater(record);
-    } else if (error instanceof OcrServiceNotConfigured) {
-      await this.fail(record, OcrFailureReason.SERVICE_NOT_CONFIGURED);
-    } else {
-      throw error;
+      return undefined;
     }
+    if (error instanceof OcrServiceNotConfigured) {
+      return this.fail(record, OcrFailureReason.SERVICE_NOT_CONFIGURED);
+    }
+    throw error;
   }
 
-  private async fail(record: OcrRecord, reason: OcrFailureReason) {
+  private async fail(record: OcrRecord, reason: OcrFailureReason): Promise<OcrSettled> {
     record.failUnsent(reason);
     await this.transactionManager.run(async () => this.deps.ocrDS.save(record));
-    if (record.sourceFileId !== null) {
-      this.deps.sockets.emitToTenantAdminsAndEditors(
-        this.deps.tenantName,
-        'ocr:error',
-        record.sourceFileId
-      );
-    }
+    return OcrSettlement.of(record);
   }
 
   private async submitLater(record: OcrRecord) {

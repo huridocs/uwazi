@@ -17,6 +17,9 @@ type OcrOutcome = { key?: IdempotencyKey; filename: string } & (
   { succeeded: true; handle: OutcomeHandle } | { succeeded: false; reason: OcrFailureReason }
 );
 
+/** A successful result, as fetched from the service. */
+type OcrResultFile = { pdf: Readable; mimetype: string };
+
 type OcrRequest = {
   key: IdempotencyKey;
   filename: string;
@@ -33,10 +36,10 @@ interface OcrEngine {
   backlogSize(): Promise<number>;
 
   /** Fetches a successful result. The service hands each result out once. */
-  fetchResult(handle: OutcomeHandle): Promise<{ pdf: Readable; mimetype: string }>;
+  fetchResult(handle: OutcomeHandle): Promise<OcrResultFile>;
 
   /** Whether the service can read text in the language. */
   supportsLanguage(language: LanguageISO6391): Promise<boolean>;
 }
 
-export type { OcrEngine, OcrRequest, OutcomeHandle, OcrOutcome };
+export type { OcrEngine, OcrRequest, OcrResultFile, OutcomeHandle, OcrOutcome };

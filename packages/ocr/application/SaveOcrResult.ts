@@ -1,7 +1,6 @@
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
@@ -10,14 +9,21 @@ import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV
 import { IdempotencyKey } from '../domain/IdempotencyKey.js';
 import { OcrFailureReason } from '../domain/OcrFailureReason.js';
 import { OcrRecord } from '../domain/OcrRecord.js';
-import { OcrEngine, OcrOutcome, OutcomeHandle } from './contracts/OcrEngine.js';
+import { OcrEngine, OcrOutcome, OcrResultFile, OutcomeHandle } from './contracts/OcrEngine.js';
 import { OcrJobs } from './contracts/OcrJobs.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
 import { MalformedOcrResult } from './errors/MalformedOcrResult.js';
 import { OcrResultGone } from './errors/OcrResultGone.js';
+import { OcrSettled, OcrSettlement } from './OcrSettled.js';
 
 /** The record, and the key of the attempt a result was reported for. */
 type Attempt = { record: OcrRecord; key: IdempotencyKey };
+
+/** What becomes of the attempt, decided before anything is written. */
+type Resolution =
+  | { kind: 'complete'; source: PDFDocument; resultFile: PDFDocument }
+  | { kind: 'fail'; reason: OcrFailureReason }
+  | { kind: 'requeue' };
 
 type Deps = {
   ocrDS: OcrRecordDataSource;
@@ -27,13 +33,11 @@ type Deps = {
   relationshipsV1DS: RelationshipsV1DataSource;
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
-  sockets: WebSockets;
   jobs: OcrJobs;
-  tenantName: string;
 };
 
 /**
- * Takes what the OCR service reported for one request.
+ * Takes what the OCR service reported for one request, in a single transaction.
  *
  * Only the outcome of the record's current attempt, while it is processing, is taken; a stale or
  * duplicate one is dropped before anything is fetched, since the service hands each result out
@@ -46,26 +50,25 @@ type Deps = {
  * The result file is stored first, outside the transaction; if the transaction then fails the
  * stored copy is removed and the error rethrown for the job to retry.
  */
-class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
-  async execute(outcome: OcrOutcome): Promise<void> {
+class SaveOcrResult extends AbstractUseCase<OcrOutcome, OcrSettled, Deps> {
+  async execute(outcome: OcrOutcome): Promise<OcrSettled> {
     const attempt = await this.currentAttempt(outcome);
-    if (attempt) {
-      await this.apply(attempt, outcome);
-    }
-  }
-
-  private async apply(attempt: Attempt, outcome: OcrOutcome) {
-    if (!outcome.succeeded) {
-      await this.fail(attempt, outcome.reason);
-      return;
+    if (!attempt) {
+      return undefined;
     }
 
-    const source = await this.sourceOf(attempt.record);
-    if (source) {
-      await this.takeResult(attempt, source, outcome.handle);
-    } else {
-      await this.fail(attempt, OcrFailureReason.SOURCE_GONE);
+    const resolution = await this.resolve(attempt.record, outcome);
+    try {
+      await this.transactionManager.run(async () => this.apply(attempt, resolution));
+    } catch (error) {
+      if (resolution.kind === 'complete') {
+        await this.deps.fileStorage.removeFile(
+          resolution.resultFile as PDFDocument & { content: never }
+        );
+      }
+      throw error;
     }
+    return OcrSettlement.of(attempt.record);
   }
 
   /** The attempt the outcome belongs to, unless it is stale, a duplicate, or for no record. */
@@ -81,6 +84,41 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
     return record.accepts(key) ? { record, key } : undefined;
   }
 
+  /** Does the work outside the store: fetching the result and storing its file. */
+  private async resolve(record: OcrRecord, outcome: OcrOutcome): Promise<Resolution> {
+    if (!outcome.succeeded) {
+      return { kind: 'fail', reason: outcome.reason };
+    }
+
+    const source = await this.sourceOf(record);
+    if (!source) {
+      return { kind: 'fail', reason: OcrFailureReason.SOURCE_GONE };
+    }
+
+    const fetched = await this.fetch(outcome.handle);
+    if ('kind' in fetched) {
+      return fetched;
+    }
+
+    return { kind: 'complete', source, resultFile: await this.storeResultFile(source, fetched) };
+  }
+
+  private async apply({ record, key }: Attempt, resolution: Resolution) {
+    switch (resolution.kind) {
+      case 'complete':
+        await this.replaceSource(resolution.source, resolution.resultFile);
+        record.complete(key, resolution.resultFile.id);
+        break;
+      case 'requeue':
+        record.requeue();
+        await this.deps.jobs.submitOcr(record.id);
+        break;
+      default:
+        record.fail(key, resolution.reason);
+    }
+    await this.deps.ocrDS.save(record);
+  }
+
   /** The record's source file, when it is still a document. */
   private async sourceOf(record: OcrRecord) {
     if (record.sourceFileId === null) {
@@ -93,85 +131,45 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
     return found.getData() as PDFDocument;
   }
 
-  private async takeResult(attempt: Attempt, source: PDFDocument, handle: OutcomeHandle) {
-    let fetched: Awaited<ReturnType<OcrEngine['fetchResult']>>;
+  /** The result, or what to do when the service cannot hand it over. */
+  private async fetch(handle: OutcomeHandle): Promise<OcrResultFile | Resolution> {
     try {
-      fetched = await this.deps.ocrEngine.fetchResult(handle);
+      return await this.deps.ocrEngine.fetchResult(handle);
     } catch (error) {
-      await this.whenNotFetched(attempt, error);
-      return;
-    }
-    await this.store(attempt, source, fetched);
-  }
-
-  private async store(
-    attempt: Attempt,
-    source: PDFDocument,
-    fetched: Awaited<ReturnType<OcrEngine['fetchResult']>>
-  ) {
-    const resultFile = await this.toResultFile(source, fetched);
-    await this.deps.filesService.storeFiles([resultFile]);
-    try {
-      await this.replaceSource(attempt, source, resultFile);
-    } catch (error) {
-      await this.deps.fileStorage.removeFile(resultFile as PDFDocument & { content: never });
+      if (error instanceof OcrResultGone) {
+        return { kind: 'requeue' };
+      }
+      if (error instanceof MalformedOcrResult) {
+        return { kind: 'fail', reason: OcrFailureReason.UNEXPECTED };
+      }
       throw error;
     }
   }
 
-  private async toResultFile(
-    source: PDFDocument,
-    fetched: Awaited<ReturnType<OcrEngine['fetchResult']>>
-  ) {
+  /** Stores the result's content, not yet its file record. */
+  private async storeResultFile(source: PDFDocument, fetched: OcrResultFile) {
     const inputFile = await InputFile.fromStream({
       stream: fetched.pdf,
       originalname: `ocr_${source.originalname}`,
       mimetype: fetched.mimetype,
       type: 'document',
     });
-    return inputFile.toEntityFile(source.entity, this.deps.idGenerator.generate()) as PDFDocument;
+    const resultFile = inputFile.toEntityFile(
+      source.entity,
+      this.deps.idGenerator.generate()
+    ) as PDFDocument;
+    await this.deps.filesService.storeFiles([resultFile]);
+    return resultFile;
   }
 
-  private async replaceSource(attempt: Attempt, source: PDFDocument, resultFile: PDFDocument) {
-    await this.transactionManager.run(async () => {
-      await this.deps.filesService.insert([resultFile]);
-      await this.deps.filesService.demoteToAttachment(source.id);
-      await this.deps.relationshipsV1DS.updateMany(
-        { file: source.id },
-        { set: { file: resultFile.id } }
-      );
-      attempt.record.complete(attempt.key, resultFile.id);
-      await this.deps.ocrDS.save(attempt.record);
-      this.transactionManager.onCommitted(async () => this.notify('ocr:ready', source.id));
-    });
-  }
-
-  private async whenNotFetched(attempt: Attempt, error: unknown) {
-    if (error instanceof OcrResultGone) {
-      attempt.record.requeue();
-      await this.transactionManager.run(async () => {
-        await this.deps.ocrDS.save(attempt.record);
-        await this.deps.jobs.submitOcr(attempt.record.id);
-      });
-      return;
-    }
-    if (error instanceof MalformedOcrResult) {
-      await this.fail(attempt, OcrFailureReason.UNEXPECTED);
-      return;
-    }
-    throw error;
-  }
-
-  private async fail({ record, key }: Attempt, reason: OcrFailureReason) {
-    record.fail(key, reason);
-    await this.transactionManager.run(async () => this.deps.ocrDS.save(record));
-    if (record.sourceFileId !== null) {
-      this.notify('ocr:error', record.sourceFileId);
-    }
-  }
-
-  private notify(event: 'ocr:ready' | 'ocr:error', sourceFileId: string) {
-    this.deps.sockets.emitToTenantAdminsAndEditors(this.deps.tenantName, event, sourceFileId);
+  /** The result becomes the entity's document, and the source an attachment. */
+  private async replaceSource(source: PDFDocument, resultFile: PDFDocument) {
+    await this.deps.filesService.insert([resultFile]);
+    await this.deps.filesService.demoteToAttachment(source.id);
+    await this.deps.relationshipsV1DS.updateMany(
+      { file: source.id },
+      { set: { file: resultFile.id } }
+    );
   }
 }
 

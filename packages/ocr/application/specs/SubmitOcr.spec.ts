@@ -1,5 +1,4 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { SubmitOcrFactory } from '../../infrastructure/factories/SubmitOcrFactory.js';
 import { OcrServiceNotConfigured } from '../errors/OcrServiceNotConfigured.js';
 import { OcrServiceUnavailable } from '../errors/OcrServiceUnavailable.js';
@@ -19,12 +18,6 @@ const queued = record('doc', { filename: 'english.pdf' });
 
 describe('SubmitOcr', () => {
   let engine: FakeOcrEngine;
-  const sockets = {
-    emitToTenant: jest.fn(),
-    emitToTenantAdmins: jest.fn(),
-    emitToTenantAdminsAndEditors: jest.fn(),
-    emitToSession: jest.fn(),
-  };
 
   beforeAll(async () => {
     await setUpBackends();
@@ -50,7 +43,7 @@ describe('SubmitOcr', () => {
 
     const execute = async (recordId = f.idString('doc')) =>
       testingEnvironment.runWithContext(async () =>
-        SubmitOcrFactory.default({ ocrEngine: engine, sockets }).execute({
+        SubmitOcrFactory.default({ ocrEngine: engine }).execute({
           recordId,
         })
       );
@@ -90,16 +83,16 @@ describe('SubmitOcr', () => {
       expect(engine.submitted).toEqual([]);
     });
 
-    it('should fail a record whose source file is gone, without telling anyone', async () => {
+    it('should fail a record whose source file is gone, without reporting it settled', async () => {
       await setUp({ ...queued, sourceFile: null, resultFile: f.id('result') });
 
-      await execute();
+      const settled = await execute();
 
       expect(engine.submitted).toEqual([]);
       expect(await storedRecords(postgresCore)).toEqual([
         expect.objectContaining({ status: 'failed', failureReason: 'sourceGone' }),
       ]);
-      expect(sockets.emitToTenantAdminsAndEditors).not.toHaveBeenCalled();
+      expect(settled).toBeUndefined();
     });
 
     describe.each([
@@ -138,21 +131,17 @@ describe('SubmitOcr', () => {
     });
 
     it.each([['has no url', new OcrServiceNotConfigured(), 'serviceNotConfigured']])(
-      'should fail the record and tell the editors when the service %s',
+      'should fail the record and report it settled when the service %s',
       async (_case, error, reason) => {
         await setUp(queued);
         engine.failWith = error;
 
-        await execute();
+        const settled = await execute();
 
         expect(await storedRecords(postgresCore)).toEqual([
           expect.objectContaining({ status: 'failed', attempt: 0, failureReason: reason }),
         ]);
-        expect(sockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
-          testingTenants.current().name,
-          'ocr:error',
-          f.idString('file-doc')
-        );
+        expect(settled).toEqual({ status: 'failed', sourceFileId: f.idString('file-doc') });
         expect(await submitJobs(postgresCore)).toEqual([]);
       }
     );

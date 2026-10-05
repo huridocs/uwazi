@@ -33,12 +33,6 @@ const success = (overrides: Partial<OcrOutcome> = {}) =>
 
 describe('SaveOcrResult', () => {
   let engine: FakeOcrEngine;
-  const sockets = {
-    emitToTenant: jest.fn(),
-    emitToTenantAdmins: jest.fn(),
-    emitToTenantAdminsAndEditors: jest.fn(),
-    emitToSession: jest.fn(),
-  };
 
   beforeAll(async () => {
     await setUpBackends();
@@ -70,7 +64,6 @@ describe('SaveOcrResult', () => {
       testingEnvironment.runWithContext(async () =>
         SaveOcrResultFactory.default({
           ocrEngine: engine,
-          sockets,
           ...overrides,
         }).execute(outcome)
       );
@@ -88,7 +81,6 @@ describe('SaveOcrResult', () => {
         expect.objectContaining({ id: f.idString(SOURCE), type: 'document' }),
       ]);
       expect(await storedRecord(postgresCore)).toMatchObject({ status: 'processing', attempt: 2 });
-      expect(sockets.emitToTenantAdminsAndEditors).not.toHaveBeenCalled();
     };
 
     it('should store the result as the new document and demote the original to an attachment', async () => {
@@ -122,20 +114,16 @@ describe('SaveOcrResult', () => {
       });
     });
 
-    it('should mark the record ready with its result and tell the editors', async () => {
+    it('should mark the record ready with its result and report it settled', async () => {
       await setUp();
 
-      await execute(success());
+      const settled = await execute(success());
 
       expect(await storedRecord(postgresCore)).toMatchObject({
         status: 'ready',
         resultFileId: (await newFile())!.id,
       });
-      expect(sockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
-        testingTenants.current().name,
-        'ocr:ready',
-        f.idString(SOURCE)
-      );
+      expect(settled).toEqual({ status: 'ready', sourceFileId: f.idString(SOURCE) });
     });
 
     it('should take a result with no key as the current attempt, finding the record by filename', async () => {
@@ -153,27 +141,28 @@ describe('SaveOcrResult', () => {
       await setUp(record);
       const fetch = jest.spyOn(engine, 'fetchResult');
 
-      await execute(outcome);
+      const settled = await execute(outcome);
 
       expect(fetch).not.toHaveBeenCalled();
       expect(await storedFiles()).toEqual([
         expect.objectContaining({ id: f.idString(SOURCE), type: 'document' }),
       ]);
-      expect(sockets.emitToTenantAdminsAndEditors).not.toHaveBeenCalled();
+      expect(settled).toBeUndefined();
     });
 
     it('should do nothing for a record that does not exist', async () => {
       await setUp();
 
-      await execute(success({ filename: 'other.pdf', key: undefined }));
+      const settled = await execute(success({ filename: 'other.pdf', key: undefined }));
 
       await expectUntouched();
+      expect(settled).toBeUndefined();
     });
 
-    it('should fail the record and tell the editors when the service reported a failure', async () => {
+    it('should fail the record and report it settled when the service reported a failure', async () => {
       await setUp();
 
-      await execute({
+      const settled = await execute({
         filename: FILENAME,
         key: key(2),
         succeeded: false,
@@ -184,11 +173,7 @@ describe('SaveOcrResult', () => {
         status: 'failed',
         failureReason: 'invalidPdf',
       });
-      expect(sockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
-        testingTenants.current().name,
-        'ocr:error',
-        f.idString(SOURCE)
-      );
+      expect(settled).toEqual({ status: 'failed', sourceFileId: f.idString(SOURCE) });
     });
 
     it.each([
@@ -204,26 +189,23 @@ describe('SaveOcrResult', () => {
       };
       await setUp(override ?? {}, override ? null : attachment);
 
-      await execute(success());
+      const settled = await execute(success());
 
       expect(await storedRecord(postgresCore)).toMatchObject({
         status: 'failed',
         failureReason: 'sourceGone',
       });
       expect(await storedFiles()).toHaveLength(1);
-      expect(sockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
-        testingTenants.current().name,
-        'ocr:error',
-        expect.any(String)
-      );
+      expect(settled).toEqual({ status: 'failed', sourceFileId: expect.any(String) });
     });
 
     it('should queue the record again when the service no longer has the result', async () => {
       await setUp();
       jest.spyOn(engine, 'fetchResult').mockRejectedValue(new OcrResultGone());
 
-      await execute(success());
+      const settled = await execute(success());
 
+      expect(settled).toBeUndefined();
       expect(await storedRecord(postgresCore)).toMatchObject({ status: 'queued', attempt: 2 });
       expect(await submitJobs(postgresCore)).toEqual([
         {
