@@ -69,7 +69,7 @@ const mergeSpecifierList = (existing: string, add: string[]): string => {
 };
 
 const insertImportLine = (source: string, importLine: string): string => {
-  const lastImport = [...source.matchAll(/^import .*;?\n/gm)].pop();
+  const lastImport = [...source.matchAll(/^import[\s\S]*?;\n/gm)].pop();
   if (lastImport && lastImport.index !== undefined) {
     const insertAt = lastImport.index + lastImport[0].length;
     return `${source.slice(0, insertAt)}${importLine}${source.slice(insertAt)}`;

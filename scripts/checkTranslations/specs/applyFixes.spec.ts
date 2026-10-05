@@ -109,6 +109,32 @@ const x = <button aria-label="Close modal" />;
     expect(next.match(/#app\/I18N/g)).toHaveLength(1);
   });
 
+  it('inserts the I18N import after a multiline import block', () => {
+    const source = `import {
+  CUSTOM_COLOR_TARGET_HINTS,
+} from '#V2/Dataviz/utils/getCustomColorTargets.js';
+const x = <button aria-label="Close modal" />;
+`;
+    const start = source.indexOf('"Close modal"');
+    const { source: next } = applySourceFixes(source, [
+      finding({
+        kind: 'untranslated-attribute',
+        text: 'Close modal',
+        key: 'Close modal',
+        attrName: 'aria-label',
+        start,
+        end: start + '"Close modal"'.length,
+      }),
+    ]);
+
+    expect(next).toBe(`import {
+  CUSTOM_COLOR_TARGET_HINTS,
+} from '#V2/Dataviz/utils/getCustomColorTargets.js';
+import { t } from '#app/I18N/index.js';
+const x = <button aria-label={t('System', 'Close modal', null, false)} />;
+`);
+  });
+
   it('leaves unfixable findings untouched', () => {
     const source = "const options = [{ label: 'Text' }];";
     const start = source.indexOf("'Text'");

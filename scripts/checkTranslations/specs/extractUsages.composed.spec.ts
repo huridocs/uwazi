@@ -46,6 +46,14 @@ describe('extractUsages composed strings', () => {
     expect(byKind(source, 'composed')).toEqual([]);
   });
 
+  it('does not flag a translated word concatenated with a dynamic value', () => {
+    const source = `
+      const x = <button aria-label={\`\${t('System', 'Page', null, false)} \${pageNumber}\`} />;
+    `;
+
+    expect(byKind(source, 'composed')).toEqual([]);
+  });
+
   it('flags interpolations that embed hardcoded UI copy', () => {
     const source = `
       const x = (
