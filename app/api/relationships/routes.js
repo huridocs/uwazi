@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
+import { ObjectIdAsString, ObjectIdListAsString } from '#api/utils/ajvSchemas.js';
 import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import relationships from './relationships.js';
@@ -185,17 +185,23 @@ export default app => {
           type: 'object',
           properties: {
             relationtypeId: ObjectIdAsString,
+            relationtypeIds: ObjectIdListAsString,
           },
-          required: ['relationtypeId'],
+          anyOf: [{ required: ['relationtypeId'] }, { required: ['relationtypeIds'] }],
         },
       },
       required: ['query'],
     }),
     (req, res, next) => {
-      void relationships
-        .countByRelationType(req.query.relationtypeId)
-        .then(response => res.json(response))
-        .catch(next);
+      const { relationtypeId, relationtypeIds } = req.query;
+      const count = relationtypeId
+        ? relationships.countByRelationType(relationtypeId)
+        : Promise.all(
+            relationtypeIds
+              .split(',')
+              .map(async id => [id, await relationships.countByRelationType(id)])
+          ).then(Object.fromEntries);
+      void count.then(response => res.json(response)).catch(next);
     }
   );
 };

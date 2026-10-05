@@ -2,6 +2,7 @@ import type { Application, Request } from 'express';
 import { validation } from '#api/utils/index.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { User } from '#api/users.v2/model/User.js';
+import { ObjectIdAsString, ObjectIdListAsString } from '#api/utils/ajvSchemas.js';
 
 const entitiesRoutes = (app: Application) => {
   app.get(
@@ -12,21 +13,28 @@ const entitiesRoutes = (app: Application) => {
         query: {
           type: 'object',
           properties: {
-            templateId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            templateId: ObjectIdAsString,
+            templateIds: ObjectIdListAsString,
           },
-          required: ['templateId'],
+          anyOf: [{ required: ['templateId'] }, { required: ['templateIds'] }],
         },
       },
       required: ['query'],
     }),
-    async (req: Request, res) => {
-      const { templateId } = req.query;
+    async (req: Request<{}, {}, {}, { templateId: string } | { templateIds: string }>, res) => {
+      const dao = EntitiesDAOFactory.default({ user: User.createFrom(req.user) });
 
-      const count = await EntitiesDAOFactory.default({
-        user: User.createFrom(req.user),
-      }).countByTemplate(templateId as string);
-      res.json(count);
-      res.status(200);
+      if ('templateId' in req.query) {
+        res.json(await dao.countByTemplate(req.query.templateId));
+        return;
+      }
+
+      const ids = req.query.templateIds.split(',');
+      res.json(
+        Object.fromEntries(
+          await Promise.all(ids.map(async id => [id, await dao.countByTemplate(id)]))
+        )
+      );
     }
   );
 };

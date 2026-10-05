@@ -125,6 +125,24 @@ describe('entities countByTemplate V2 routes', () => {
       );
     });
 
+    it('should return counts keyed by id for comma-separated templateIds', async () => {
+      const ids = [template1._id.toString(), template2._id.toString(), '507f1f77bcf86cd799439011'];
+      const response = await request(app)
+        .get('/api/v2/entities/count_by_template')
+        .query({ templateIds: ids.join(',') });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ [ids[0]]: 3, [ids[1]]: 2, [ids[2]]: 0 });
+    });
+
+    it('should reject invalid templateIds', async () => {
+      const response = await request(app)
+        .get('/api/v2/entities/count_by_template')
+        .query({ templateIds: `${template1._id.toString()},invalid-id` });
+
+      expect(response.status).toBe(400);
+    });
+
     it('should not depend on Accept-Language header', async () => {
       const response = await request(app)
         .get('/api/v2/entities/count_by_template')

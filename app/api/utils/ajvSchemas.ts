@@ -1,6 +1,13 @@
+const objectId = '[0-9a-fA-F]{24}';
+
 const ObjectIdAsString = {
   type: 'string',
-  pattern: '^[0-9a-fA-F]{24}$',
+  pattern: `^${objectId}$`,
 };
 
-export { ObjectIdAsString };
+const ObjectIdListAsString = {
+  type: 'string',
+  pattern: `^${objectId}(,${objectId})*$`,
+};
+
+export { ObjectIdAsString, ObjectIdListAsString };
