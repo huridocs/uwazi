@@ -145,7 +145,7 @@ describe('RequestOcr', () => {
           sourceFile: f.id('scan'),
           status: 'failed',
           attempt: 2,
-          failureReason: 'timeout',
+          failureReason: 'unexpected',
         }),
       ]);
 

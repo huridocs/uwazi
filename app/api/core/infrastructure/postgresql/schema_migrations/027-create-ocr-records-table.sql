@@ -26,9 +26,6 @@ CREATE INDEX IF NOT EXISTS ocr_records_result_file_id
 CREATE INDEX IF NOT EXISTS ocr_records_filename
   ON ocr_records ("tenant_id", "filename");
 
-CREATE INDEX IF NOT EXISTS ocr_records_status_requested_at
-  ON ocr_records ("tenant_id", "status", "requested_at");
-
 ALTER TABLE ocr_records ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY tenant_isolation ON ocr_records

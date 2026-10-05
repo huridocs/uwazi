@@ -109,7 +109,7 @@ describe('OcrRecordDataSource', () => {
 
     describe('getByFilename()', () => {
       it('should find the record by the filename the service knows', async () => {
-        expect((await sut().getByFilename('b.pdf'))?.id).toBe(f.idString('staleProcessing'));
+        expect((await sut().getByFilename('b.pdf'))?.id).toBe(f.idString('processing'));
       });
 
       it('should not find a record whose source file is gone', async () => {
@@ -197,7 +197,7 @@ describe('OcrRecordDataSource', () => {
       });
 
       it('should persist a result', async () => {
-        const record = (await sut().getById(f.idString('recentProcessing')))!;
+        const record = (await sut().getById(f.idString('otherProcessing')))!;
         record.complete(
           IdempotencyKey.of(record.id, record.attempt),
           f.idString('resultNew'),
@@ -206,7 +206,7 @@ describe('OcrRecordDataSource', () => {
 
         await sut().save(record);
 
-        expect(snapshot(await sut().getById(f.idString('recentProcessing')))).toMatchObject({
+        expect(snapshot(await sut().getById(f.idString('otherProcessing')))).toMatchObject({
           status: OcrStatus.READY,
           resultFileId: f.idString('resultNew'),
           lastUpdated: 9000,
@@ -248,18 +248,6 @@ describe('OcrRecordDataSource', () => {
         expect((await storedOcrRecords(usePostgres)).map(r => r.id)).not.toContain(
           f.idString('queued')
         );
-      });
-    });
-
-    describe('staleProcessing()', () => {
-      it('should return processing records requested before the cutoff', async () => {
-        const stale = await sut().staleProcessing(3000, 10);
-
-        expect(ids(stale)).toEqual([f.idString('staleProcessing')]);
-      });
-
-      it('should honor the limit', async () => {
-        expect(await sut().staleProcessing(10_000, 1)).toHaveLength(1);
       });
     });
 

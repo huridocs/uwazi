@@ -151,12 +151,6 @@ class OcrRecord {
     this.moveTo(OcrStatus.FAILED, now);
   }
 
-  timeOut(now: number): void {
-    this.assertStatus(OcrStatus.PROCESSING, 'time out');
-    this._failureReason = OcrFailureReason.TIMEOUT;
-    this.moveTo(OcrStatus.FAILED, now);
-  }
-
   sourceRemoved(): void {
     this._sourceFileId = null;
   }

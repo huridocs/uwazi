@@ -14,9 +14,6 @@ interface OcrRecordDataSource {
   /** Updates a stored record. One deleted in the meantime stays deleted. */
   save(record: OcrRecord): Promise<void>;
 
-  /** Processing records requested before `requestedBefore`. */
-  staleProcessing(requestedBefore: number, limit: number): Promise<OcrRecord[]>;
-
   /** The records whose source or result file is one of the files. */
   getForFiles(fileIds: string[]): Promise<OcrRecord[]>;
 

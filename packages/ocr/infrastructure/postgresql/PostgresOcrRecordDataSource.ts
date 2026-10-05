@@ -1,6 +1,5 @@
 import { OcrRecordDataSource } from '../../application/contracts/OcrRecordDataSource.js';
 import { OcrRecord } from '../../domain/OcrRecord.js';
-import { OcrStatus } from '../../domain/OcrStatus.js';
 import { PostgresOcrRecordDAO } from './PostgresOcrRecordDAO.js';
 import { PostgresOcrRecordMapper } from './PostgresOcrRecordMapper.js';
 import { PostgresOcrRecordRow } from './PostgresOcrRecordRow.js';
@@ -36,16 +35,6 @@ class PostgresOcrRecordDataSource implements OcrRecordDataSource {
 
   async save(record: OcrRecord): Promise<void> {
     await this.deps.dao.updateExisting(PostgresOcrRecordMapper.toRow(record));
-  }
-
-  async staleProcessing(requestedBefore: number, limit: number): Promise<OcrRecord[]> {
-    const rows = await this.deps.dao
-      .rows()
-      .where({ status: OcrStatus.PROCESSING })
-      .whereRaw('"requested_at" < ?', [requestedBefore])
-      .limit(limit)
-      .all();
-    return rows.map(PostgresOcrRecordMapper.toDomain);
   }
 
   async getForFiles(fileIds: string[]): Promise<OcrRecord[]> {

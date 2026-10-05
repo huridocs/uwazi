@@ -1,6 +1,5 @@
 import { OcrRecordDataSource } from '../../application/contracts/OcrRecordDataSource.js';
 import { OcrRecord } from '../../domain/OcrRecord.js';
-import { OcrStatus } from '../../domain/OcrStatus.js';
 import { MongoOcrRecordDAO } from './MongoOcrRecordDAO.js';
 import { MongoOcrRecordDBO } from './MongoOcrRecordDBO.js';
 import { MongoOcrRecordMapper } from './MongoOcrRecordMapper.js';
@@ -28,14 +27,6 @@ class MongoOcrRecordDataSource implements OcrRecordDataSource {
 
   async save(record: OcrRecord): Promise<void> {
     await this.deps.dao.replaceExisting(MongoOcrRecordMapper.toDBO(record));
-  }
-
-  async staleProcessing(requestedBefore: number, limit: number): Promise<OcrRecord[]> {
-    const found = await this.deps.dao.find(
-      { status: OcrStatus.PROCESSING, requestedAt: { $lt: requestedBefore } },
-      { limit }
-    );
-    return found.map(MongoOcrRecordMapper.toDomain);
   }
 
   async getForFiles(fileIds: string[]): Promise<OcrRecord[]> {

@@ -38,7 +38,7 @@ const seeds: Seed[] = [
     lastUpdated: 100,
   },
   {
-    name: 'staleProcessing',
+    name: 'processing',
     source: 'fileB',
     filename: 'b.pdf',
     status: 'processing',
@@ -47,7 +47,7 @@ const seeds: Seed[] = [
     lastUpdated: 1000,
   },
   {
-    name: 'recentProcessing',
+    name: 'otherProcessing',
     source: 'fileC',
     filename: 'c.pdf',
     status: 'processing',

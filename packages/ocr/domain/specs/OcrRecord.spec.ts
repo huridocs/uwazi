@@ -69,7 +69,7 @@ describe('OcrRecord', () => {
       const record = load({
         status: OcrStatus.FAILED,
         attempt: 1,
-        failureReason: OcrFailureReason.TIMEOUT,
+        failureReason: OcrFailureReason.UNEXPECTED,
       });
 
       record.retry(LATER);
@@ -200,27 +200,6 @@ describe('OcrRecord', () => {
         InvalidOcrTransition
       );
     });
-  });
-
-  describe('timeOut()', () => {
-    it('should fail a processing record with the timeout reason', () => {
-      const record = processing(1);
-
-      record.timeOut(LATER);
-
-      expect(record).toMatchObject({
-        status: OcrStatus.FAILED,
-        failureReason: OcrFailureReason.TIMEOUT,
-        lastUpdated: LATER,
-      });
-    });
-
-    it.each(statusesExcept(OcrStatus.PROCESSING))(
-      'should refuse to time out a %s record',
-      status => {
-        expect(() => load({ status }).timeOut(LATER)).toThrow(InvalidOcrTransition);
-      }
-    );
   });
 
   describe('sourceRemoved()', () => {

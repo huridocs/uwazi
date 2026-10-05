@@ -55,7 +55,7 @@ describe('GetOcrStatus', () => {
     it.each([
       ['queued', { status: 'queued' }],
       ['processing', { status: 'processing', attempt: 1, requestedAt: 3000 }],
-      ['failed', { status: 'failed', attempt: 1, failureReason: 'timeout' }],
+      ['failed', { status: 'failed', attempt: 1, failureReason: 'unexpected' }],
       ['ready', { status: 'ready', attempt: 1, resultFile: f.id('result') }],
     ])('should report a %s record with when it last changed', async (status, overrides) => {
       await setUp([ofScan(overrides)]);
