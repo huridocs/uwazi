@@ -12,7 +12,7 @@ export class ShellExecutor {
   // eslint-disable-next-line class-methods-use-this
   async execute(command: string, args: string[] = []): Promise<ResultType<string, ShellError>> {
     return new Promise(resolve => {
-      const child = spawn(command, args, { shell: true });
+      const child = spawn(command, args);
       let stdout = '';
       let stderr = '';
 
