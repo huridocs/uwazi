@@ -474,7 +474,9 @@ export class PostgresRelationshipsV1DataSource
         ...filteredConnectionIds.map(id => PostgresRelationshipsV1DataSource.toStringId(id))
       );
     } else {
-      inner = `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(searchResultIds.length)})`;
+      inner = searchResultIds.length
+        ? `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(searchResultIds.length)})`
+        : 'FALSE';
       bindings.push(...searchResultIds);
     }
 
@@ -506,7 +508,9 @@ export class PostgresRelationshipsV1DataSource
         ...filteredConnectionIds.map(id => PostgresRelationshipsV1DataSource.toStringId(id))
       );
     } else {
-      connectionMatch = `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredSharedIds.length)})`;
+      connectionMatch = filteredSharedIds.length
+        ? `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredSharedIds.length)})`
+        : 'FALSE';
       bindings.push(...filteredSharedIds);
     }
 
