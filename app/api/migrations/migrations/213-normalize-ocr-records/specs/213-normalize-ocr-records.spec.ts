@@ -171,9 +171,19 @@ describe('migration normalize-ocr-records', () => {
     expect(await records().find().sort({ _id: 1 }).toArray()).toEqual(before);
   });
 
-  it('should do nothing when the collection does not exist', async () => {
+  it('should create the collection with its unique source file index when it does not exist', async () => {
     await testingDB.setupFixturesAndContext({ files: [] });
+    await testingDB.mongodb!.collection('ocr_records').drop();
 
-    await expect(migration.up(testingDB.mongodb!)).resolves.toBeUndefined();
+    await migration.up(testingDB.mongodb!);
+
+    const indexes = await testingDB.mongodb!.collection('ocr_records').indexes();
+    expect(indexes).toContainEqual(
+      expect.objectContaining({
+        key: { sourceFile: 1 },
+        unique: true,
+        partialFilterExpression: { sourceFile: { $type: 'objectId' } },
+      })
+    );
   });
 });

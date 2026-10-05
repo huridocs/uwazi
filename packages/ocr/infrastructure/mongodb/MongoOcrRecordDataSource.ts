@@ -1,14 +1,39 @@
+import { Db, Filter, ObjectId } from 'mongodb';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { OcrRecordDataSource } from '../../application/contracts/OcrRecordDataSource.js';
 import { OcrRecord } from '../../domain/OcrRecord.js';
-import { MongoOcrRecordDAO } from './MongoOcrRecordDAO.js';
 import { MongoOcrRecordDBO } from './MongoOcrRecordDBO.js';
 import { MongoOcrRecordMapper } from './MongoOcrRecordMapper.js';
 
-class MongoOcrRecordDataSource implements OcrRecordDataSource {
-  constructor(private readonly deps: { dao: MongoOcrRecordDAO }) {}
+/**
+ * The `ocr_records` collection. Records are never synced to other instances, so writes skip the
+ * sync log.
+ */
+class MongoOcrRecordDataSource
+  extends MongoDataSource<MongoOcrRecordDBO>
+  implements OcrRecordDataSource
+{
+  protected collectionName = 'ocr_records';
 
+  constructor(db: Db, transactionManager: TransactionManager) {
+    super(db, transactionManager, { useSyncedCollection: false });
+  }
+
+  /** Relies on the unique source file index to keep one record per file however many race. */
   async create(record: OcrRecord): Promise<boolean> {
-    return this.deps.dao.insertForSource(MongoOcrRecordMapper.toDBO(record));
+    const dbo = MongoOcrRecordMapper.toDBO(record);
+    if (dbo.sourceFile === null) {
+      await this.getCollection().insertOne(dbo);
+      return true;
+    }
+
+    const result = await this.getCollection().updateOne(
+      { sourceFile: dbo.sourceFile },
+      { $setOnInsert: dbo },
+      { upsert: true }
+    );
+    return result.upsertedCount === 1;
   }
 
   async getById(id: string): Promise<OcrRecord | undefined> {
@@ -20,43 +45,48 @@ class MongoOcrRecordDataSource implements OcrRecordDataSource {
   }
 
   async getByFilename(filename: string): Promise<OcrRecord | undefined> {
-    return MongoOcrRecordDataSource.toDomain(
-      await this.deps.dao.findOne({ filename, sourceFile: { $ne: null } })
-    );
+    return this.findOne({ filename, sourceFile: { $ne: null } });
   }
 
+  /** Replaces a stored document's fields; a document no longer there is not recreated. */
   async save(record: OcrRecord): Promise<void> {
-    await this.deps.dao.replaceExisting(MongoOcrRecordMapper.toDBO(record));
+    const { _id, ...fields } = MongoOcrRecordMapper.toDBO(record);
+    await this.getCollection().replaceOne({ _id }, fields);
   }
 
   async getForFiles(fileIds: string[]): Promise<OcrRecord[]> {
-    const ids = MongoOcrRecordDAO.objectIds(fileIds);
+    const ids = MongoOcrRecordDataSource.objectIds(fileIds);
     if (!ids.length) {
       return [];
     }
-    const found = await this.deps.dao.find({
-      $or: [{ sourceFile: { $in: ids } }, { resultFile: { $in: ids } }],
-    });
+    const found = await this.getCollection()
+      .find({ $or: [{ sourceFile: { $in: ids } }, { resultFile: { $in: ids } }] })
+      .toArray();
     return found.map(MongoOcrRecordMapper.toDomain);
   }
 
   async delete(recordIds: string[]): Promise<void> {
-    const ids = MongoOcrRecordDAO.objectIds(recordIds);
+    const ids = MongoOcrRecordDataSource.objectIds(recordIds);
     if (ids.length) {
-      await this.deps.dao.deleteMany({ _id: { $in: ids } });
+      await this.getCollection().deleteMany({ _id: { $in: ids } });
     }
   }
 
   private async findOneByIds(field: '_id' | 'sourceFile', id: string) {
-    const [objectId] = MongoOcrRecordDAO.objectIds([id]);
+    const [objectId] = MongoOcrRecordDataSource.objectIds([id]);
     if (!objectId) {
       return undefined;
     }
-    return MongoOcrRecordDataSource.toDomain(await this.deps.dao.findOne({ [field]: objectId }));
+    return this.findOne({ [field]: objectId });
   }
 
-  private static toDomain(dbo: MongoOcrRecordDBO | null) {
+  private async findOne(filter: Filter<MongoOcrRecordDBO>) {
+    const dbo = await this.getCollection().findOne(filter);
     return dbo ? MongoOcrRecordMapper.toDomain(dbo) : undefined;
+  }
+
+  private static objectIds(ids: string[]): ObjectId[] {
+    return ids.filter(id => ObjectId.isValid(id) && id.length === 24).map(id => new ObjectId(id));
   }
 }
 

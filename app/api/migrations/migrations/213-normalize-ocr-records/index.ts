@@ -148,14 +148,12 @@ export default {
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    if (!(await collectionExists(db))) {
-      return;
-    }
-
     const records = db.collection<OcrRecordDoc>(COLLECTION);
-    await deleteUnusable(records);
-    await deduplicate(records);
-    await normalizeLegacy(db, records);
+    if (await collectionExists(db)) {
+      await deleteUnusable(records);
+      await deduplicate(records);
+      await normalizeLegacy(db, records);
+    }
     await createIndexes(records);
   },
 };
