@@ -242,6 +242,13 @@ describe('RelationshipsV1DataSource', () => {
       );
     });
 
+    it('returns no matching hubs when there are no connections to match', async () => {
+      const sut = createSut();
+
+      await expect(sut.getMatchingHubsCount('A', [], [])).resolves.toBe(0);
+      await expect(sut.getHubsForSearch('A', [], [], 10)).resolves.toEqual([]);
+    });
+
     it('lists entities affected by hubs and hubs to delete', async () => {
       const sut = createSut();
 
