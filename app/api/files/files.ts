@@ -6,7 +6,6 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
-import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { validateFile } from '#shared/types/fileSchema.js';
@@ -127,8 +126,6 @@ export const files = {
 
       await applicationEventsBus.emit(new FilesDeletedEvent({ files: toDeleteFiles }));
     }
-
-    await cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));
 
     return toDeleteFiles;
   },

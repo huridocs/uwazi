@@ -36,6 +36,7 @@ import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/job
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { OcrComposition } from '#ocr/composition';
 import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 
 type Props = {
@@ -154,6 +155,9 @@ function setupQueueWorker(props?: Props) {
 
         await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
         logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+
+        await OcrComposition.ensureScheduled();
+        logger.info('Ensured ScheduleStaleOcrSweepJob is scheduled');
       }
 
       if (standAloneProcess) {

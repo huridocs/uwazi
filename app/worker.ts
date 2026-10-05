@@ -7,7 +7,6 @@ import { DB } from '#api/odm/index.js';
 import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-import { ocrManager } from '#api/services/ocr/OcrManager.js';
 import { preserveSync } from '#api/services/preserve/preserveSync.js';
 import { DistributedLoop } from '#api/services/tasksmanager/DistributedLoop.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
@@ -17,6 +16,7 @@ import { tenants } from '#api/tenants/index.js';
 import { tocService } from '#api/toc_generation/tocService.js';
 import { sleep } from '#shared/tsUtils.js';
 import { handleError } from '#api/utils/handleError.js';
+import { OcrComposition } from '#ocr/composition';
 import { SegmentationComposition } from '#segmentation/composition';
 import { ListenerRegistration } from '#api/ListenerRegistration.js';
 
@@ -41,7 +41,6 @@ DB.connect(config.DBHOST, config.DBAUTH)
     systemLogger.info('[Worker] - ==> 📡 starting external services...');
 
     const services: Record<string, any> = {
-      ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
       px_paragraphs_results: new PXParagraphsResultListener(),
       information_extractor: new InformationExtraction(),
@@ -65,6 +64,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
         delayTimeBetweenTasks: 10000,
       }),
       segmentation_results: SegmentationComposition.createResultListener(),
+      ocr_results: OcrComposition.createResultListener(),
     };
 
     Object.values(services).forEach(service => service.start());

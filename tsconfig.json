@@ -24,6 +24,8 @@
       "#api/*": ["./app/api/*"],
       "#app/*": ["./app/react/*"],
       "#shared/*": ["./app/shared/*"],
+      "#ocr": ["./packages/ocr/index.ts"],
+      "#ocr/composition": ["./packages/ocr/composition.ts"],
       "#segmentation": ["./packages/segmentation/index.ts"],
       "#segmentation/composition": ["./packages/segmentation/composition.ts"],
       "#UI": ["./app/react/UI"],
