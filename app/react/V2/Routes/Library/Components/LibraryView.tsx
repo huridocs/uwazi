@@ -1,18 +1,26 @@
 import React, { useMemo } from 'react';
+import { t, Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
-import { LibraryRightPane } from './LibraryRightPane.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
 import { pdfFilesFromList, uploadPdfsAndCreateEntities } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
+import { librarySidePanes } from './LibrarySidePanes.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
+import { useLibraryPaneRequest } from './useLibraryMobilePane.js';
 import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
+
+const libraryPaneMode = (creating: boolean, selectedCount: number) => {
+  if (creating) return 'create';
+  if (selectedCount > 0) return 'entity';
+  return 'filters';
+};
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -108,6 +116,8 @@ const LibraryView = ({
     openCreate,
     finishCreated,
   } = useLibraryCreateActions(selectEntity, dismissSelection, onEntityCreated);
+  const { isMobile, requestedPane, requestPane, filtersOpen, openFilters, closeFilters } =
+    useLibraryPaneRequest(selectedIds, creating);
   const uploadChosenPdfs = (files: File[]) => {
     const pdfs = pdfFilesFromList(files);
     if (!pdfs.length) {
@@ -127,8 +137,16 @@ const LibraryView = ({
   };
 
   return (
-    <div className="h-full min-h-0 bg-warm" data-testid="library-v2">
-      <PaneLayout defaultRatios={[0.72, 0.28]} localStorageKey="library-v2-panes-v2">
+    <div
+      className="h-full min-h-0 bg-warm"
+      data-testid="library-v2"
+      data-mode={libraryPaneMode(creating, selectedIds.length)}
+    >
+      <PaneLayout
+        defaultRatios={[0.72, 0.28]}
+        localStorageKey="library-v2-panes-v2"
+        requestedPane={requestedPane}
+      >
         <PaneLayout.Pane
           key="results"
           background="var(--color-theme-surface-warm, var(--color-theme-bg-warm))"
@@ -158,6 +176,18 @@ const LibraryView = ({
               onToggleTableColumn={onToggleTableColumn}
               onTableDensityChange={onTableDensityChange}
             />
+            {isMobile ? (
+              <button
+                type="button"
+                onClick={() => {
+                  closePreview();
+                  openFilters();
+                }}
+                className="mx-3 mb-1 inline-flex h-7 items-center self-start rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink md:hidden"
+              >
+                <Translate>Filters</Translate>
+              </button>
+            ) : null}
             <div
               className={
                 view === 'map'
@@ -165,7 +195,7 @@ const LibraryView = ({
                   : 'min-h-0 flex-1 overflow-auto bg-warm p-3'
               }
               role="region"
-              aria-label="Library results"
+              aria-label={t('System', 'Library results', null, false)}
             >
               <LibraryViewerHost
                 view={view}
@@ -216,30 +246,34 @@ const LibraryView = ({
             )}
           </div>
         </PaneLayout.Pane>
-        <PaneLayout.Pane key="filters" background="transparent">
-          <LibraryRightPane
-            creating={creating}
-            rows={rows}
-            selectedIds={selectedIds}
-            selectionPanelOpen={selectionPanelOpen}
-            entityBasePath={entityBasePath}
-            focusFieldKey={focusFieldKey}
-            aggregations={aggregations}
-            filters={filters}
-            andFilters={andFilters}
-            chips={chips}
-            onFiltersChange={onFiltersChange}
-            onAndFiltersChange={onAndFiltersChange}
-            onClosePreview={closePreview}
-            onCloseSelection={dismissSelection}
-            onRemoveSelection={sharedId =>
-              onSelectedIdsChange(selectedIds.filter(id => id !== sharedId))
-            }
-            onPreviewSelection={sharedId => selectEntity(sharedId)}
-            onCreated={finishCreated}
-            onAction={onAction}
-          />
-        </PaneLayout.Pane>
+        {librarySidePanes({
+          isMobile,
+          filtersOpen,
+          onFiltersDismiss: () => {
+            closeFilters();
+            closePreview();
+          },
+          requestPane,
+          creating,
+          rows,
+          selectedIds,
+          selectionPanelOpen,
+          entityBasePath,
+          focusFieldKey,
+          aggregations,
+          filters,
+          andFilters,
+          chips,
+          onFiltersChange,
+          onAndFiltersChange,
+          onClosePreview: closePreview,
+          onCloseSelection: dismissSelection,
+          onRemoveSelection: sharedId =>
+            onSelectedIdsChange(selectedIds.filter(id => id !== sharedId)),
+          onPreviewSelection: sharedId => selectEntity(sharedId),
+          onCreated: finishCreated,
+          onAction,
+        })}
       </PaneLayout>
       {dialogs}
     </div>

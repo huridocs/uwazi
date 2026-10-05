@@ -45,10 +45,6 @@ jest.mock('../LibraryCreateEntityPanel', () => ({
   LibraryCreateEntityPanel: () => <div>create body</div>,
 }));
 
-jest.mock('../LibraryUploadPdfModal', () => ({
-  LibraryUploadPdfModal: () => null,
-}));
-
 jest.mock('../Viewers/index', () => ({
   LibraryViewerHost: ({ onSelect }: { onSelect: (sharedId: string) => void }) => (
     <button type="button" onClick={() => onSelect('entity-1')}>
@@ -59,11 +55,19 @@ jest.mock('../Viewers/index', () => ({
 
 const aggregations = { templates: [], published: { published: 0, restricted: 0 }, properties: {} };
 
+jest.mock('react-router', () => ({
+  useRevalidator: () => ({ revalidate: () => undefined }),
+}));
+
+jest.mock('#V2/services/index.js', () => ({
+  useServices: () => ({ entities: { delete: async () => [undefined, undefined] } }),
+}));
+
 const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () => void }) => {
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   return (
     <>
-      <span data-testid="selected-id">{selectedId ?? ''}</span>
+      <span data-testid="selected-id">{selectedIds[0] ?? ''}</span>
       <LibraryView
         rows={[]}
         totalRows={0}
@@ -80,9 +84,9 @@ const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () =
         andFilters={[]}
         onAndFiltersChange={() => undefined}
         chips={[]}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onClosePreview={() => setSelectedId(undefined)}
+        selectedIds={selectedIds}
+        onSelectedIdsChange={setSelectedIds}
+        onClosePreview={() => setSelectedIds([])}
         entityBasePath="/en/library"
         onLoadMore={() => undefined}
       />
