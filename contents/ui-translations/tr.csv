@@ -8,13 +8,13 @@ Key,Turkish
 198?,198?
 2FA,2FA
 2FA Enabled,2FA Etkin
+A → Z,A → Z
 A default template cannot be deleted.,Varsayılan şablon silinemez.
 A friendly hand for serious work — I'll act in the context shown above.,Ciddi işler için dostça bir yardım — Yukarıda gösterilen bağlamda hareket edeceğim.
 A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan başlık olacaktır."
 A source template must,Bir kaynak şablonu şunları içermelidir:
 A target template needs to have the following properties,Bir hedef şablonunun aşağıdaki özelliklere sahip olması gerekir
 A valid email is required,E-posta gerekli
-A → Z,A → Z
 Accept,Kabul Et
 Accept all,Hepsini kabul et
 Accepted suggestion on entity,Varlıkla ilgili kabul edilen öneri
@@ -88,8 +88,11 @@ Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
 Administrators and Editors always have edit access,Yöneticiler ve Editörler her zaman düzenleme erişimine sahiptir
 Admins,Yöneticiler
+Advanced,Gelişmiş
 Advanced colors,Gelişmiş renkler
 Advanced ECharts overrides,Gelişmiş ECharts geçersiz kılmaları
+Aggregation,Toplama
+Alias,Takma ad
 ALL,TÜM
 All,Tümü
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -134,6 +137,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Bu görselleştirmeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
 Are you sure?,Emin misiniz?
 Ask Bert,Bert’e sor
+"Ask Bert anything, or describe a task…",Bert’e bir şey sorun veya bir görev tanımlayın…
 Attachment,Ek
 Attachment deleted,Ek silindi
 Attachment renamed,Ekin adı değiştirildi
@@ -148,6 +152,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
 Available default translation,Mevcut varsayılan çeviri
+Available files,Kullanılabilir dosyalar
+Avg,Ortalama
 Back,Geriye git
 Back to,Geri dön
 Back to details,Ayrıntılara geri dön
@@ -190,13 +196,14 @@ Character support process warning,"Bu işlem birkaç dakika sürebilir ve muhtem
 Character support revert warning,"Bu seçeneği seçtikten sonra, eski özellik adlandırma sistemine geri dönemezsiniz. Şablon özellik adlarınızla ilgili herhangi bir sorun yaşamıyorsanız, bu seçeneği işaretlememenizi öneririz."
 Chart,Grafik
 Chart options,Grafik seçenekleri
+Chart palette,Grafik paleti
 Chart theme,Grafik teması
 Chart type,Grafik türü
 Chart type uses a custom view,"Grafik türü, özel bir görünüm kullanır"
 Check to make this instance public (non-logged in users can see public documents and entities),"Bu örneğin herkese açık olmasını sağlamak için işaretleyin (giriş yapmamış kullanıcılar, herkese açık belgeleri ve varlıkları görebilir)"
 Checking which images fit the requirements,Hangi resimlerin gereksinimlere uygun olduğu kontrol ediliyor...
 Choose,Seç
-Choose PDF files,Choose PDF files
+Choose PDF files,PDF dosyaları seç
 Choose relation type,İlişki türünü seçin
 Choose which data to use for training,Eğitim için hangi verilerin kullanılacağını seçin
 Chrome header,Başlık çubuğu
@@ -208,12 +215,18 @@ Clear coordinates,Koordinatları temizle
 Clear Filters,Filtreleri Temizle
 Clear PDF selection,PDF seçimini temizle
 Clear search,Aramayı temizle
+Clear selection,Seçimi temizle
+Clear selection filter,Seçim filtresini temizle
+Clear sort,Sıralamayı temizle
 Click,Tıkla
 Click to fill,Doldurmak için tıklayın
 Click to select an image,Bir resim seçmek için tıklayın
 Click to select audio or video,Ses veya videoyu seçmek için tıklayın
 Click to select files,Dosyaları seçmek için tıklayın
 Close,Kapat
+Close filters,Filtreleri kapat
+Close modal,Pencereyi kapat
+Close side panel,Yan paneli kapat
 Code,Kod
 Collaborator,Katkı Sunan
 Collaborators,Katkı Sunanlar
@@ -221,15 +234,19 @@ Collapse all,Tümünü daralt
 Collapse All,Tümünü Daralt
 Collection,Koleksiyon
 Collection Name,Koleksiyon Adı
+Color mode,Renk modu
 Colors,Renkler
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Renkler, sunucu veri katmanından alınır. Önizleme, mevcut olduğunda atanan kova renklerini gösterir."
 Columns,Sütunlar
+Combine counts,Sayımları birleştir
 combine or exclude terms,terimleri birleştirmek veya hariç tutmak
 Comfortable,Rahat
 Common sources,Yaygın kaynaklar
 Compact,Kompakt
+Compare side by side,Yan yana karşılaştır
 Completed,Tamamlandı
 Completed with errors,Hatalarla tamamlandı
+Computed years,Hesaplanan yıllar
 Config,Yapılandırma
 Configuration,Yapılandırma
 Configure filters,Filtreleri yapılandır
@@ -250,7 +267,9 @@ Connect to an entity,Bir varlığa bağlan
 Connect to entity,Varlığa bağlan
 Connected entities,Bağlı varlıklar
 Connected to server,Sunucuya bağlandı
+Connection deleted,Bağlantı silindi
 Connection type,Bağlantı türü
+Connections,Bağlantılar
 Contact email description,"Burada, iletişim e-postasını ve Uwazi'nin bir kullanıcıya bildirim gönderdiğinde görüntülenen e-postayı ayarlayabilirsiniz"
 Contact Form,İletişim Formu
 Contact form email,İletişim formu e-posta adresi
@@ -316,6 +335,7 @@ CSV import failed,CSV içe aktarma işlemi başarısız oldu
 CSV or ZIP up to 50MB,CSV veya ZIP dosyası (en fazla 50 MB)
 Ctrl K,Ctrl K
 Current Value/Suggestion,Mevcut Değer/Öneri
+Custom colors,Özel renkler
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Bu grafik türü için özel renkler kullanılamaz. Bunun yerine grafik paletini veya şablon
 renklerini kullanın."
@@ -325,19 +345,25 @@ Custom Favicon,Özel Favicon
 Custom JS,Özel JS
 Custom landing page,Özel açılış sayfası
 custom page error warning,Bu özel sayfada beklenmedik bir hata oluştu; sayfa düzgün çalışmayabilir. Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
+Custom pair,Özel çift
 Custom Uploads,Özel Yüklemeler
 Customize,Kişiselleştir
 Customized,Kişiye özel
+Daily,Günlük
 Dark,Koyu
 Dark Theme,Koyu Tema
 Dashboard,Kontrol Paneli
+Data,Veri
 Data may be outdated.,Veriler güncel olmayabilir.
 Data source,Veri kaynağı
 Data sources,Veri kaynakları
 Data visualizations,Veri görselleştirmeleri
 Data was updated recently. You can refresh again in a few seconds.,Veriler kısa süre önce güncellendi. Birkaç saniye sonra sayfayı yeniden yükleyebilirsiniz.
+Dataviz editor,Görselleştirme düzenleyicisi
+Dataviz preview,Görselleştirme önizlemesi
 Date,Tarih
 Date added,Eklenme tarihi
+Date interval,Tarih aralığı
 Date modified,Değiştirilme tarihi
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Tarih veya sayısal × sayısal seçenekleri, dağılım grafiği ve ısı haritası oluşturmaya olanak tanır. Çizgi, alan ve çubuk grafikleri ise
@@ -347,11 +373,13 @@ Date modified,Değiştirilme tarihi
 değeri için bir çizgi içeren çizgi ve alan grafiklerini etkinleştirir."
 Date range,Tarih aralığı
 Day,Gün
+Decrease indentation,Girintiyi azalt
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Oluşturulan ECharts seçeneğine derinlemesine entegre edilmiştir.
 “Grafik” sekmesinde gösterilmeyen seçenekleri ince ayarlamak için kullanın."
 Default,Varsayılan
 Default date format,Varsayılan tarih biçimi
+Default file,Varsayılan dosya
 Default filter,Varsayılan filtre
 Default language,Varsayılan dil
 Default language change success,Varsayılan dil değişikliği başarısı
@@ -361,6 +389,7 @@ Default View,Varsayılan Görünüm
 Delete,Sil
 DELETE,Sil
 Delete entities and documents,Varlıkları ve belgeleri sil
+Delete entry,Girdiyi sil
 Delete file,Dosyayı sil
 Delete relationship,İlişkiyi sil
 Delete relationships,İlişkileri sil
@@ -382,6 +411,7 @@ Deletion success,Silme işlemi başarıyla tamamlandı
 Density,Yoğunluk
 Description,Tanım
 Deselect all,Tüm seçimi kaldır
+Detail,Ayrıntı
 Details,Ayrıntılar
 Direction,Yön
 Disable,Devre dışı bırak
@@ -391,6 +421,7 @@ Discard,Vazgeç
 Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Değişikliklerden vazgeçmek istiyor musunuz?
 Dismiss,Kapat
+Dismiss notification,Bildirimi kapat
 Display entity view from page,Sayfadan varlık görünümünü görüntüle
 Display options,Görüntüleme seçenekleri
 Do you want disable 2FA for the following users?,Aşağıdaki kullanıcılar için 2FA'yı devre dışı bırakmak istiyor musunuz?
@@ -398,6 +429,7 @@ Do you want reset the password for the following users?,Aşağıdaki kullanıcı
 Do you want to delete the following items?,Aşağıdaki öğeleri silmek istiyor musunuz?
 Document,Belge
 Document contents,Belge içeriği
+Document deleted,Belge silindi
 Document OCR trigger,Belge OCR tetikleyicisi
 Document Title,Belge Başlığı
 Document updated,Belge güncellendi
@@ -425,16 +457,21 @@ Duplicated name,Mükerrer ad
 Duplicated username,Mükerrer kullanıcı adı
 Duration,Süre
 e.g.,örn.
+e.g. hombres,örn. hombres
 Each series uses the template brand color when comparing data sources.,"Her seri, veri kaynaklarını karşılaştırırken şablondaki marka rengini kullanır."
 Earlier,Daha önce
+Echarts configuration,ECharts yapılandırması
 Edit,Düzenle
 Edit at source,Kaynakta düzenle
 Edit date,Değiştirilme tarihi
 Edit Extractor,Çıkarıcıyı Düzenle
 Edit File,Dosyayı Düzenle
 Edit group,Grubu düzenle
+Edit Group,Grubu düzenle
 Edit item,Öğeyi düzenle
+Edit Link,Bağlantıyı düzenle
 Edit metadata of entities,Varlıkların meta verilerini düzenle
+Edit relationship type,İlişki türünü düzenle
 Edit theme,Temayı düzenle
 Edit user,Kullanıcıyı düzenle
 Edited,Düzenlendi
@@ -447,25 +484,29 @@ Embed in pages,Sayfalara gömme
 Empty,Boş
 Empty group. Drop here to add,Boş grup. Eklemek için buraya sürükleyin
 empty property tip,"Bu özellik boşsa, bir varlığı kaydedemezsiniz."
+Empty value label,Boş değer etiketi
 Enable,Etkinleştir
 Enable public embedding to use this chart in external sites on private instances.,Özel örneklerdeki bu grafiği harici sitelerde kullanmak için genel gömme özelliğini etkinleştirin.
 Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
 Enter the 6-digit verification code generated by your Authenticator app,Authenticator uygulamanız tarafından oluşturulan 6 haneli doğrulama kodunu girin
 "Enter the full username, email, or group name. Suggestions are not shown.","Kullanıcı adını, e-posta adresini veya grup adını tam olarak girin. Öneriler gösterilmez."
+Enter title,Başlık girin
 Enter your current password to confirm,Onaylamak için mevcut şifrenizi girin
 Entities,Varlıklar
 entities,Varlıklar
+entities · generated,varlıklar · oluşturulan
 Entities across all languages,Tüm dillerdeki varlıklar
 Entities created,Oluşturulan varlıklar
 Entities updated,Güncellenen varlıklar
-entities · generated,varlıklar · oluşturulan
 Entity,Varlık
 Entity creation stage completed.,Varlık oluşturma aşaması tamamlandı.
 Entity deleted,Varlık silindi
 Entity Page,Varlık Sayfası
+Entity primary,Birincil varlık
 Entity saved,Varlık kaydedildi
 Entity scope,Varlık kapsamı
 Entity type,Varlık türü
+Entity type (template),Varlık türü (şablon)
 Entity types,Varlık türü
 Entity updated,Varlık güncellendi
 Error,Hata
@@ -483,6 +524,7 @@ Export CSV,CSV'yi dışa aktar
 Exporting entities to CSV,Varlıkları CSV'ye dışa aktarma
 Extension Token,Uzantı Jetonu
 External embed,Dış kaynaklı gömme
+External iframe code,Harici iframe kodu
 Extract new paragraphs,Yeni paragrafları ayıkla
 Extract paragraphs,Paragrafları ayıklayın
 Extracting files,Dosyalar çıkarılıyor
@@ -508,12 +550,14 @@ file,dosya
 File deleted,Dosya silindi
 File details,Dosya ayrıntıları
 File extraction completed successfully.,Dosya çıkarma işlemi başarıyla tamamlandı.
+File language,Dosya dili
 File name,Dosya adı
 File preview unavailable,Dosya önizlemesi mevcut değil
 File updated,Dosya güncellendi
 Files,Dosyalar
 files,dosyalar
 Files and database usage,Dosya ve veritabanı kullanımı
+Files list,Dosya listesi
 Fill,Doldur
 Filter,Filtre
 Filter unauthorized relationships,"Varsayılan olarak, kısıtlanmış varlıklara yönelen ilişkiler anonim kullanıcılar tarafından görülebilir, ancak bağlantılı değildir. Bu özellik etkinleştirildiğinde, bu ilişkiler tamamen gizlenir ve böylece genel kullanıcıların kısıtlanmış içeriğin varlığından haberdar olmaları engellenir."
@@ -532,13 +576,16 @@ Find suggestions for selected,Seçilenler için önerileri bulun
 Finding suggestions,Öneriler bulunuyor
 Fit,Yerleştirmek
 Flag,İşaretle
+Flags,Bayraklar
 for,için
 For all entities,Tüm varlıklar için
 For entities with blank values,Değerleri boş olan varlıklar için
 Forgot Password or Username?,Şifrenizi veya kullanıcı adınızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
+Frequency,Sıklık
 From,Başlangıç:
 From all suggestions,Tüm önerilerden
+From date,Başlangıç tarihi
 From previous step,Önceki adımdan
 From selection,Seçimden
 From:,Gönderen:
@@ -548,12 +595,14 @@ General,Genel
 General access,Genel erişim
 General Information,Genel Bilgiler
 Generated ID,Oluşturulan Kimlik
+Geolocation,Coğrafi konum
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS ve JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Maps
+Graph,Grafik
 Group,Grup
 Group by,Gruplama kriteri
 group expressions,grup ifadeleri
@@ -576,13 +625,18 @@ Hide actions,Eylemleri gizle
 Hide details,Ayrıntıları gizle
 Hide label,Etiketi Gizle
 Hide restricted relationships from public,Kısıtlı ilişkileri herkesten gizle
+Hide task,Görevi gizle
 Hide toolbar,Araç çubuğunu gizle
+Hours,Saat
+How to combine sources,Kaynaklar nasıl birleştirilir
 HTML,HTML
 https://yourdomain,https://yourdomain
 hub,merkez
 hubs,merkezler
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,Hibrit
 Icon,Simge
+Icons,Simgeler
 ID,Kimlik
 ID:,Kimlik:
 "If an account exists with the email you provided, you will receive an email
@@ -590,6 +644,7 @@ ID:,Kimlik:
 şifrenizi sıfırlamanız için gerekli talimatları içeren bir e-posta alacaksınız."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
+Image,Görüntü
 Image doesn't match the required size.,"Görsel, istenen boyuta uymuyor."
 Import,İçe aktar
 Import asset,Dosya içe aktar
@@ -609,6 +664,7 @@ In use,Kullanımda
 Include all entities,Tüm varlıklar dahil edilsin
 Include only public,Yalnızca herkese açık olanları ekle
 Incoming,Gelen
+Increase indentation,Girintiyi artır
 Info,Bilgi
 Information extraction training,Bilgi çıkarma eğitimi
 Inherit,Devral
@@ -640,6 +696,7 @@ key,Turkish
 Label,Etiket
 "Label date ""From""",Başlangıç:
 "Label date ""to""",Son:
+Label format,Etiket biçimi
 Labeled,Etiketli
 Landing page,Açılış sayfası
 Landing page description,"Açılış sayfası, ziyaretçilerin koleksiyonunuza geldiklerinde gördükleri ilk sayfadır. Varsayılan açılış sayfası, koleksiyonunuzun kütüphanesidir. Buraya göreli URL'sini ekleyerek farklı bir açılış sayfası belirleyebilirsiniz. Örneğin:
@@ -650,13 +707,14 @@ Bir varlık: */entity/9htbkgpkyy7j5rk9*
 Bir belge: */document/4y9i99fadjp833di*
 
 Önemli: Göreli URL kullanmanız gerekir. Bu URL'ler bir eğik çizgiyle başlar ve alan adını içermez. Örneğin: *https://yoursite.com/landingpage* adresinde göreli URL /landingpage'dir."
+Landscape,Yatay
 Language,Dil
 Language Code,Dil Kodu
 Language deleted,Dil silindi
 Language reset success,Dil sıfırlama işlemi başarıyla tamamlandı
 Language uninstalled successfully,Dil başarıyla kaldırıldı
-Language(s),Dil(ler)
 Language:,Dil:
+Language(s),Dil(ler)
 Languages,Diller
 Languages installed successfully,Diller başarıyla yüklendi
 Last updated,Son güncelleme tarihi
@@ -667,11 +725,13 @@ Learn how to add and configure a contact form on a webpage.,Bir web sayfasına i
 Learn how to build your first collection,İlk koleksiyonunuzu nasıl oluşturacağınızı öğrenin
 Learn more,Daha fazla bilgi edin
 Learn more about the components.,Bileşenler hakkında daha fazla bilgi edinin.
+Legacy Uwazi,Klasik Uwazi
 Legend,Gösterge
 Lengthy reindex process,Uzun süren yeniden indeksleme işlemi
 Library,Kütüphane
 library list view,kütüphane listesi görünümü
 library map view,kütüphane harita görünümü
+Library results,Kütüphane sonuçları
 library table view,kütüphane tablo görünümü
 Light,Açık
 Light Theme,Açık Tema
@@ -679,6 +739,7 @@ Link,Bağlantı
 linked,bağlantılı
 List,Liste
 List renders as a table. Use the options below to filter empty or zero values.,Liste bir tablo olarak görüntülenir. Boş veya sıfır değerleri filtrelemek için aşağıdaki seçenekleri kullanın.
+Live (always up to date),Canlı (her zaman güncel)
 Live preview,Canlı önizleme
 Live translate,Canlı çeviri
 Load,Yükle
@@ -699,6 +760,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,İlişki türlerini yönetme
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
 Manage types,Türleri yönet
+Manual,Manuel
 Manual data,Manuel veriler
 Manually set a color,Bir rengi manuel olarak ayarla
 Map,Harita
@@ -735,6 +797,10 @@ Matches show the passage and the page they are on.,"Eşleşmeler, ilgili pasajı
 Matching,Eşleştirme
 matching,eşleşen
 Matomo,Matomo
+Max,En yüksek
+Max buckets,En fazla kova
+Max number of slices,En fazla dilim sayısı
+Media,Medya
 Members,Üyeler
 Menu,Menü
 Message,Mesaj
@@ -745,7 +811,9 @@ Metadata Extraction,Meta veri özütleme
             configure categories, labels, and slices. Use the Appearance tab for colors.","Metrik, tek bir toplam sayıyı gösterir. Kategorileri, etiketleri ve dilimleri yapılandırmak için yukarıdan Pasta, Çubuk veya başka bir grafik türü seçin.
 Renkler için Görünüm sekmesini kullanın."
 MIGRATE,TAŞIMA
+Min,En düşük
 Minimum,En az
+Minutes,Dakika
 Mismatch,Uyumsuzluk
 mismatched passwords,Şifreler uyuşmuyor
 mismatching,uyumsuzluk
@@ -753,6 +821,7 @@ Mixed access,Karma erişim
 ML TOC,ML İçindekiler
 Modified,Değiştirildi
 Month,Ay
+Monthly,Aylık
 Months,Aylar
 More,Daha fazla
 more,daha fazla
@@ -761,6 +830,8 @@ More rows per screen; same type size,Ekranda daha fazla satır; aynı yazı tipi
 Multi-source mode,Çoklu kaynak modu
 Multiple date,Birden fazla tarih
 Multiple date range,Birden fazla tarih aralığı
+Multiple date ranges,Birden fazla tarih aralığı
+Multiple dates,Birden fazla tarih
 Multiple inherited properties warning ([property 1] affects [property 2]),etkiler
 Multiple matches found,Birden fazla eşleşme bulundu
 Multiple relationships edit description,"Bu özelliğe yapılacak değişiklikler, bu şablondaki diğer özellikleri de etkileyecektir; zira hepsi aynı yapılandırma ile ilişkili durumdadır."
@@ -782,12 +853,15 @@ New activity will show up here.,Yeni etkinlikler burada görünecektir.
 New conversation,Yeni sohbet
 New entity,Yeni varlık
 New group,Yeni grup
+New Group,Yeni grup
 New language added,Yeni dil eklendi
+New Link,Yeni bağlantı
 New page,Yeni sayfa
 New password,Yeni parola
 New primary doc,Yeni birincil belge
 New relation type label…,Yeni ilişki türü etiketi…
 New relationship type,Yeni ilişki türü
+New Relationships,Yeni ilişkiler
 New relationships group,Yeni ilişkiler grubu
 New Relationships Migration,Yeni İlişkilerin Taşınması
 New user,Yeni kullanıcı
@@ -852,9 +926,9 @@ No valid target template available,Kullanılabilir geçerli bir hedef şablon bu
 No value,Değer yok
 No Value,Değer yok
 No visualization data available.,Görselleştirme verisi mevcut değil.
-"No, cancel","Hayır, iptal et"
 no-toc-description,"Belgedeki metni seçip ""İçindekiler'e
 Ekle"" düğmesine tıklayarak başlayabilirsiniz."
+"No, cancel","Hayır, iptal et"
 Non processed,İşlenmemiş
 Non-labeled,Etiketsiz
 Non-latin characters support,Latin dışı karakter desteği
@@ -866,6 +940,7 @@ Not Found,Bulunamadı
 Nothing here yet.,Henüz burada bir şey yok.
 Nothing selected,Hiçbir öğe seçilmedi
 Notifications,Bildirimler
+Numeric,Sayısal
 Obsolete,Eski
 obsolete,eski
 OCR,OKT
@@ -899,10 +974,11 @@ Open group,Grubu aç
 Open link,Bağlantıyı aç
 Open PDF,PDF'yi aç
 Open the two-factor Authenticator app on your device,Cihazınızda iki faktörlü Kimlik Doğrulayıcı uygulamasını açın
+Operator,İşleç
 Options,Seçenekler
 or,ya da
 or drag and drop here,ya da buraya sürükleyip bırakın
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,veya PDF dosyalarını buraya sürükleyin
 or drop your files here.,veya dosyalarınızı buraya bırakın.
 Or paste a URL,Ya da bir URL yapıştırın
 Order,Düzen
@@ -910,16 +986,22 @@ Other,Diğer
 other,Diğer
 Other users will be affected by this action!,Bu işlem diğer kullanıcıları da etkileyecektir!
 Others,Diğerleri
+Others label,“Diğer” etiketi
 Outgoing,Giden
+Overview,Genel bakış
 p.,s.
 Page,Sayfa
+Page embed code,Sayfa yerleştirme kodu
+Page language,Sayfa dili
 Page not found,Sayfa bulunamadı
 Page published successfully.,Sayfa başarıyla yayınlandı.
 Pages,Sayfalar
+Pagination,Sayfalama
 Paragrap number extraction property (numeric),Paragraf numarası çıkarma özelliği (sayısal)
 Paragraph,Paragraf
 Paragraph Extraction,Paragraf Çıkarma
 Paragraph Extractor added,Paragraf Çıkarıcı eklendi
+Paragraph extractor wizard,Paragraf çıkarma sihirbazı
 Paragraph text extraction property (rich text),Paragraf metni çıkarma özelliği (zengin metin)
 Paragraphs,Paragraflar
 Paragraphs deleted,Paragraflar silindi
@@ -938,6 +1020,7 @@ PDF,PDF
 Pending,Beklemede
 People and groups,Kişiler ve gruplar
 per page,sayfa başına
+Percentage,Yüzde
 Permission,İzin
 Permission level,İzin düzeyi
 Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
@@ -946,9 +1029,12 @@ Permissions updated,İzinler güncellendi
 Pick a color,Bir renk seçin
 Pick another,Başka birini seçin
 Plain text,Düz metin
+Play audio,Sesi oynat
+Play video,Videoyu oynat
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Lütfen şunu yazın
 Please type in letters and numbers from the image to start the export.,Dışa aktarmayı başlatmak için lütfen resimdeki harfleri ve sayıları girin.
+Portrait,Dikey
 Pre-filled from your selection. Edit as needed.,Seçiminize göre önceden doldurulmuştur. Gerektiği şekilde düzenleyin.
 Preflight scan completed.,Ön tarama tamamlandı.
 Preparing required relationships.,Gerekli ilişkilerin hazırlanması.
@@ -958,11 +1044,14 @@ Preserve Extension,Koruma Uzantısı
 Preserve Setup Description,"Uwazi URL’nizi ve TOKEN’ınızı biliyorsanız, aşağıdaki bağlantıya tıklayın ve gerekli bilgileri girin."
 Press enter to add,Eklemek için enter'a basın
 Preview,Ön izleme
+Preview mode,Önizleme modu
 Preview updates automatically (300ms debounce),Önizleme otomatik olarak güncellenir (300 ms gecikme)
 Preview updates when the JSON is valid.,JSON geçerli olduğunda önizleme güncellenir.
 Previous,Önceki
 Primary,Birincil
+Primary action,Birincil eylem
 Primary button,Ana düğme
+Primary dimension (X-axis / categories),Birincil boyut (X ekseni / kategoriler)
 Primary document,Birincil belge
 Primary Documents,BİRİNCİL BELGELER
 Primary documents,Birincil belgeler
@@ -1016,6 +1105,7 @@ Publish release,Sürümü yayınla
 Published,Yayınlanan
 Published and unpublished entities are counted.,Yayınlanmış ve yayınlanmamış varlıklar sayılmaktadır.
 QR Code,QR Kodu
+qr code,QR kodu
 Query,Sorgulama
 Queued,Sırada
 RAW,RAW
@@ -1058,10 +1148,13 @@ remaining,kalan
 remaining files,kalan dosyalar
 Remote Server Unreachable,Uzak Sunucuya Erişilemiyor
 Remove,Kaldır
+Remove data source,Veri kaynağını kaldır
+Remove filter,Filtreyi kaldır
 Remove from connection,Bağlantıyı kes
 Remove from training set,Eğitim kümesinden çıkar
 remove icon,simgeyi kaldır
 Remove icon,Simgeyi kaldır
+Remove timelink,Zaman bağlantısını kaldır
 Removed language,Kaldırılan dil
 Rename,Yeniden adlandır
 Renamed attachment,Ekin adı değiştirildi
@@ -1078,6 +1171,7 @@ Reset default translation,Varsayılan çeviriyi sıfırla
 Reset language,Dili sıfırla
 Reset Password,Parolayı sıfırla
 Reset passwords,Şifreleri sıfırla
+Reset Search input,Aramayı sıfırla
 Resize panels,Panellerin boyutunu değiştir
 Restore,Geri Yükle
 Restore previous version,Önceki sürümü geri yükle
@@ -1087,10 +1181,12 @@ Retrying,Yeniden deneniyor
 Return to login,Girişe dön
 Review,İncele
 Reviewed,İncelendi
+Rich text,Zengin metin
 Role,Rol
 Room around every row,Her satırın çevresinde daha fazla boşluk
 Route,Rota
 Row,Satır
+Row actions,Satır eylemleri
 Row density,Satır yoğunluğu
 Rows failed,Başarısız satırlar
 Rows processed,İşlenen satırlar
@@ -1099,6 +1195,7 @@ Satellite,Uydu
 Save,Kaydet
 Save & Preview,Kaydet ve Önizle
 Save changes,Değişiklikleri kaydet
+Save label,Etiketi kaydet
 Save password,Parolayı kaydet
 Save the visualization before refreshing.,Yenilemeden önce görselleştirmeyi kaydedin.
 Save the visualization to get embed code.,Gömme kodunu almak için görselleştirmeyi kaydedin.
@@ -1113,13 +1210,16 @@ Schedule,Program
 Schedules run in UTC (Coordinated Universal Time).,Programlar UTC (Koordineli Evrensel Zaman) formatında yürütülür.
 Search,Ara
 "Search  •  AND, OR, NOT, ""exact"", wild*","Arama  •  AND, OR, NOT, ""tam"", wild*"
+Search button,Arama düğmesi
 Search by title,Başlığa göre ara
+Search chart types,Grafik türlerini ara
 Search entities...,Varlıkları ara...
 Search entities…,Varlıkları ara…
 Search item,Öğe ara
 Search related entities or documents,İlgili varlıkları veya belgeleri arayın
 Search relationships,İlişkileri ara
 Search relevance,Alaka arama
+Search templates,Şablonları ara
 Search text,Metin ara
 Search text description,Sonuç almak için arama kutusuna bir şey yazın.
 Search this document,Bu belgede arama yap
@@ -1132,7 +1232,12 @@ Search Tips: proximity,"Yakınlık araması için ~ kullanın. Örneğin: ""duru
 Search Tips: wildcard,"Joker karakter araması için * kullanın. Örneğin: ""hukuk*"" araması; hukuki, hukukçu, hukuk bilimi gibi kelimelerle eşleşir."
 Search title & metadata,Başlık ve meta verileri ara
 Searching...,Aranıyor...
+Second dimension (series / stacks),İkinci boyut (seriler / yığınlar)
 Secondary button,İkincil düğme
+Secondary button border,İkincil düğme kenarlığı
+Secondary button text,İkincil düğme metni
+Secondary text,İkincil metin
+Seconds,Saniye
 Secret keys,Gizli anahtarlar
 Security,Güvenlik
 Select,Seç
@@ -1141,34 +1246,43 @@ Select & Search,Seç ve Ara
 Select a document to connect to a specific paragraph,Belirli bir paragrafa bağlanmak için bir belge seçin
 Select a file,Bir dosya seçin
 Select all,Hepsini seç
+Select all files,Tüm dosyaları seç
 Select an existing image,Mevcut bir resim seçin
 Select favicon image,Favicon resmini seçin
 Select files on your device,Cihazınızdaki dosyaları seçin
 Select from computer,Bilgisayardan seçin
+Select icon...,Simge seçin…
 Select image,Resmi seç
 Select media,Medya seçin
+Select page,Sayfa seç
+Select property…,Özellik seçin…
 Select relationship,İlişkiyi seçin
 Select relationship type,İlişki türü seç
 Select site logo image,Site logosu resmini seçin
 Select target document,Hedef belgeyi seçin
 Select target entity,Hedef varlığı seçin
 Select target paragraph,Hedef paragraf seç
+Select template…,Şablon seçin…
 Select text in target document,Hedef belgedeki metni seçin
 select text or a value,metin veya bir değer seçin
 Select the template to store the extracted paragraphs.,Çıkarılan paragrafları kaydetmek için şablonu seçin.
 Select the template with the source documents.,Kaynak belgelerin bulunduğu şablonu seçin.
+Select values…,Değerleri seçin…
 Select...,Seç...
+Select…,Seçin…
 Selected,Seçilen
 selected,seçilmiş
 selected of,arasından seçildi
 Selected or suggested,Seçilmiş veya önerilen
 Selected templates,Seçilmiş şablonlar
 Send,Gönder
+Send message,Mesaj gönder
 Send recovery email,Kurtarma e-postası gönder
 Sending email,E-posta gönderme
 Sending email description,"Bu, Uwazi koleksiyonunuzdan kayıtlı kullanıcılara e-posta gönderildiğinde gönderen olarak görünecek e-posta adresidir. Varsayılan adres *no-reply@uwazi.io* şeklindedir. Buraya istediğiniz e-posta adresini girerek özel bir adres belirleyebilirsiniz."
 Sending labeled data,Etiketli veriler gönderiliyor
 Series,Dizi
+Server disconnected,Sunucu bağlantısı kesildi
 Services,Hizmetler
 Set as default,Varsayılan olarak ayarla
 Set default language,Varsayılan dili ayarla
@@ -1176,6 +1290,7 @@ Set default template,Varsayılan şablonu ayarla
 Set the default starting point for your geolocation properties.,Coğrafi konum özellikleriniz için varsayılan başlangıç noktasını ayarlayın.
 Settings,Ayarlar
 settings,Ayarlar
+Settings navigation,Ayarlar gezintisi
 Settings navigation active background,Ayarlar menüsünde etkin arka plan
 Settings sidebar background,Ayarlar kenar çubuğunun arka planı
 Settings updated,Ayarlar güncellendi.
@@ -1198,6 +1313,7 @@ Show toolbar,Araç çubuğunu göster
 Showing,Gösteriliyor
 Showing the top,Gösterilen ilk
 shown of,gösterilen
+Side panel tabs,Yan panel sekmeleri
 Sign in,Oturum aç
 Simple mode,Basit mod
 Single relationships must have a hub,Tekli ilişkilerin bir merkez noktası olması gerekir
@@ -1208,6 +1324,8 @@ Site logo description,"Logo, koleksiyon adınızın yanındaki üst çubukta gö
 Site logo no images hint,"Özel Yüklemeler bölümünde henüz hiçbir resim dosyası yok. Öncelikle buraya PNG, SVG veya JPEG formatında resimler ekleyin."
 Size,Boyut
 Skip to main content,Ana içeriğe atla
+Snapshot (manual),Anlık görüntü (manuel)
+Snapshot (scheduled),Anlık görüntü (zamanlanmış)
 Some tasks may take a while. Bert will reply when it's done.,Bazı işlemler biraz zaman alabilir. İşlem tamamlandığında Bert size yanıt verecektir.
 Something went wrong,Bir şey ters gitti
 Sort,Sırala
@@ -1245,11 +1363,13 @@ Suggestions,Öneriler
 suggestions,öneriler
 Suggestions sent,Öneriler gönderildi
 Suggestions updated,Öneriler güncellendi
+Sum,Toplam
 Supported chart types for manual data,Manuel veri girişi için desteklenen grafik türleri
 Supported chart types for this configuration,Bu yapılandırma için desteklenen grafik türleri
 Supporting,Destekleyici
 Supporting file,Destekleyici dosya
 Supporting files,Destekleyici belgeler
+Surface text,Yüzey metni
 Synced template,Senkronize şablon
 Synced Template,Senkronize Şablon
 Synced templates cannot be deleted.,Senkronize edilmiş şablonlar silinemez.
@@ -1264,12 +1384,13 @@ Target entity type,Hedef varlık türü
 Target relationship type,Hedef ilişki türü
 Target Template,Hedef Şablonu
 Target template,Hedef şablonu
-Target's role in the relationship Source-Target.,Kaynak-Hedef ilişkisinde Hedef'in rolü.
 Target:,Hedef:
+Target's role in the relationship Source-Target.,Kaynak-Hedef ilişkisinde Hedef'in rolü.
 Tasks,Görevler
 Template,Şablon
 Template changes are being applied to all related entities.,"Şablon değişiklikleri, ilgili tüm varlıklar üzerinde uygulanmaktadır."
 Template color,Şablon rengi
+Template colors,Şablon renkleri
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","Veri kaynakları karşılaştırılırken veya boyutun varlık
 türü olduğu durumlarda şablon renkleri uygulanır. Aksi takdirde, yedek olarak grafik paleti kullanılır."
@@ -1303,6 +1424,7 @@ Theme instance file invalid,Tema örneği dosyası geçersiz
 Theme logotype,Tema logosu
 Theme presets,Tema ön ayarları
 Theme preview,Tema önizlemesi
+Theme preview label,Tema önizleme etiketi
 Then by,"Sonra, şu şekilde:"
 There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
 There are no untranslated terms,Çevrilmemiş terim bulunmamaktadır
@@ -1330,6 +1452,7 @@ sekmesinden desteklenen bir tür seçin."
 yukarıdan başka bir grafik türü seçin."
 This content is automatically generated,Bu içerik otomatik olarak oluşturulur
 This data visualization name already exists. Enter a unique name.,Bu veri görselleştirme adı zaten mevcut. Benzersiz bir ad girin.
+This document,Bu belge
 "This entity has no document, you probably want to see the metadata","Bu varlığın belgesi yok, muhtemelen meta verileri görmek isteyebilirsiniz"
 This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
 This field is required,Bu alan zorunludur
@@ -1363,7 +1486,7 @@ This table of contents was automatically created by the system.,Bu içindekiler 
 this template,bu şablon
 This template is in use by existing entities and cannot be deleted.,"Bu şablon, mevcut varlıklar tarafından kullanılmaktadır ve silinemez."
 Thumbnail,Küçük resim
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,Küçük resim çerçevesi
 Time,Saat
 Time (UTC),Saat (UTC)
 Timeline,Zaman Çizelgesi
@@ -1373,8 +1496,13 @@ tips,ipuçları
 Title,Başlık
 To,Bitiş:
 "To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
+To date,Bitiş tarihi
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
 Today,Bugün
+Toggle dark theme,Koyu temayı aç
+Toggle light theme,Açık temayı aç
+Toggle navigation menu,Gezinme menüsünü aç/kapat
+Toggle options menu,Seçenekler menüsünü aç/kapat
 Toggle relationship details,İlişki ayrıntılarını göster/gizle
 Toggle timeline mode,Zaman çizelgesi modunu aç/kapat
 Tools,Araçlar
@@ -1398,6 +1526,7 @@ Translations,Çeviriler
 Translations imported.,Çeviriler içe aktarıldı.
 Translations reset successfully,Çeviriler başarıyla sıfırlandı
 Translations saved,Çeviriler kaydedildi
+Tree,Ağaç
 Try a different search or clear filters.,Farklı bir arama deneyin veya filtreleri temizleyin.
 Turn off inline translation,Satır içi çeviriyi devre dışı bırak
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1411,6 +1540,7 @@ Two-factor verification failed,İki faktörlü doğrulama başarısız oldu
 Two-step verification,İki faktörlü doğrulama
 Two-step verification token required,İki aşamalı doğrulama jetonu gereklidir
 Type,Tür
+Type to filter…,Süzmek için yazın…
 U,U
 "Unable to save, failed response","Kaydedilemedi, yanıt hatası"
 Unauthorized,Yetkisiz
@@ -1440,12 +1570,13 @@ Updated translations,Güncellenen çeviriler
 Updated user,Güncellenen kullanıcı
 Updating template properties across,Şablon özellikleri güncelleniyor —
 Updating…,Güncelleniyor…
-Upload,Upload
+Upload,Yükle
 Upload and select file,Dosya yükle ve seç
 Upload from computer,Bilgisayardan yükle
 Upload image,Resim yükle
 Upload PDF,PDF Yükle
 Upload PDF(s) to create,Oluşturmak için PDF(leri) yükleyin
+Upload progress,Yükleme ilerlemesi
 Uploaded attachment,Yüklenen ek
 Uploaded custom file,Özel dosya yüklendi
 Uploaded document,Yüklenen belge
@@ -1461,9 +1592,9 @@ Use for training,Eğitim amacıyla kullanın
                 needed.","Bu iframe’i harici sitelerde kullanın. Gerekirse URL’deki yerel ayar sorgu parametresini
 değiştirin."
 Use URL,URL'yi kullan
-Used in templates and {n} refs — cannot delete,Şablonlarda ve {n} referansta kullanılmaktadır — silinemez
-Used in templates — cannot delete,Şablonlarda kullanılıyor — silinemez
 Used in {n} refs — cannot delete,{n} referansta kullanılıyor — silinemez
+Used in templates — cannot delete,Şablonlarda kullanılıyor — silinemez
+Used in templates and {n} refs — cannot delete,Şablonlarda ve {n} referansta kullanılmaktadır — silinemez
 User,Kullanıcı
 User Action,Kullanıcı Eylemi
 User Role,Kullanıcı Rolü
@@ -1479,29 +1610,37 @@ Users & Groups,Kullanıcılar ve Gruplar
 Using Authenticator,Authenticator'ı Kullanma
 Using URLs,URL'lerin kullanımı
 Uwazi,Uwazi
+Uwazi Design,Uwazi Tasarımı
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi tarafından geliştirildi
+Uwazi label,Uwazi etiketi
 Uwazi UI,Uwazi Kullanıcı Arayüzü
 Validating,Doğrulanıyor
 Validating file structure and headers.,Dosya yapısı ve başlıklar doğrulanıyor.
 Value,Değer
+Value and percentage,Değer ve yüzde
 Value cannot be transformed to the correct type,"Değer, doğru türe dönüştürülemiyor"
 values,değerler
 "values are staged, not saved","değerler beklemede, kaydedilmedi"
 Verify,Doğrula
 Verifying...,Doğrulanıyor...
 via,üzerinden
+Video,Video
 View,Görüntüle
 view,Görüntüle
 View entities,Varlıkları görüntüle
 View entity,Varlığı görüntüle
 View in library,Kitaplıkta görüntüle
 View page,sayfaya bak
+Vimeo video player,Vimeo video oynatıcı
+Violated articles,İhlal edilen maddeler
 Visibility,Görünürlük
 Visualization data updated from your collection.,Koleksiyonunuzdan alınan görselleştirme verileri güncellendi.
 WARNING,UYARI
 Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
 We can't find the page you're looking for.,Aradığınız sayfayı bulamıyoruz.
+Week,Hafta
+Weekly,Haftalık
 Welcome to Uwazi,Uwazi'ye hoş geldiniz
 "Well, this is awkward...","Peki, bu garip bir durum..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1534,6 +1673,7 @@ You should activate this feature for enhanced account security.,Hesap güvenliğ
 You won't be able to save an entity if this property is empty.,"Bu özellik boşsa, bir varlığı kaydedemezsiniz."
 You're all caught up,Her şey güncel
 Your account's security is enhanced with two-factor authentication.,İki faktörlü kimlik doğrulama sayesinde hesabınızın güvenliği artırılmıştır.
+YouTube video player,YouTube video oynatıcı
 Z → A,Z → A
 Zoom in,Yakınlaştır
 Zoom in library view,Kütüphane görünümünü yakınlaştır

@@ -8,13 +8,13 @@ Key,Thai
 198?,198?
 2FA,2FA
 2FA Enabled,เปิดใช้งาน 2FA แล้ว
+A → Z,A → Z
 A default template cannot be deleted.,ไม่สามารถลบแม่แบบเริ่มต้นได้
 A friendly hand for serious work — I'll act in the context shown above.,มือที่อบอุ่นสำหรับงานที่จริงจัง — ฉันจะดำเนินการตามบริบทที่แสดงไว้ข้างต้น
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
 A source template must,แม่แบบต้นแบบต้อง
 A target template needs to have the following properties,แม่แบบเป้าหมายต้องมีคุณสมบัติต่อไปนี้
 A valid email is required,จำเป็นต้องใช้อีเมล
-A → Z,A → Z
 Accept,ตกลง
 Accept all,ยอมรับทั้งหมด
 Accepted suggestion on entity,ข้อเสนอที่ได้รับการยอมรับเกี่ยวกับเอนทิตี
@@ -88,8 +88,11 @@ Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 Administrators and Editors always have edit access,ผู้ดูแลระบบและผู้บรรณาธิการมีสิทธิ์แก้ไขเสมอ
 Admins,ผู้ดูแลระบบ
+Advanced,ขั้นสูง
 Advanced colors,สีขั้นสูง
 Advanced ECharts overrides,การแทนที่ Advanced ECharts
+Aggregation,การรวม
+Alias,นามแฝง
 ALL,ทั้งหมด
 All,ทั้งหมด
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
@@ -134,6 +137,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,คุณแน่ใจหรือไม่ว่าต้องการลบการแสดงข้อมูลนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
 Are you sure?,คุณแน่ใจไหม?
 Ask Bert,ถาม Bert
+"Ask Bert anything, or describe a task…",ถาม Bert อะไรก็ได้ หรืออธิบายงาน…
 Attachment,ไฟล์แนบ
 Attachment deleted,ไฟล์แนบถูกลบแล้ว
 Attachment renamed,เปลี่ยนชื่อไฟล์แนบแล้ว
@@ -148,6 +152,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,การแปลตามค่าเริ่มต้นที่มีอยู่
+Available files,ไฟล์ที่มี
+Avg,เฉลี่ย
 Back,ย้อนกลับ
 Back to,กลับไปยัง
 Back to details,กลับสู่รายละเอียด
@@ -190,13 +196,14 @@ Character support process warning,กระบวนการนี้อาจ�
 Character support revert warning,หลังจากเลือกตัวเลือกนี้แล้ว คุณจะไม่สามารถกลับใช้ระบบตั้งชื่อคุณสมบัติแบบเดิมได้อีก หากคุณไม่พบปัญหาใด ๆ กับชื่อคุณสมบัติในเทมเพลตของคุณ เราแนะนำให้ไม่ทำเครื่องหมายในตัวเลือกนี้
 Chart,แผนภูมิ
 Chart options,ตัวเลือกแผนภูมิ
+Chart palette,จานสีแผนภูมิ
 Chart theme,ธีมของแผนภูมิ
 Chart type,ประเภทกราฟ
 Chart type uses a custom view,ประเภทกราฟใช้มุมมองที่กำหนดเอง
 Check to make this instance public (non-logged in users can see public documents and entities),ทำเครื่องหมายเพื่อกำหนดให้อินสแตนซ์นี้เป็นสาธารณะ (ผู้ใช้ที่ยังไม่ได้เข้าสู่ระบบสามารถดูเอกสารและเอนทิตีสาธารณะได้)
 Checking which images fit the requirements,กำลังตรวจสอบภาพใดที่ตรงกับข้อกำหนด...
 Choose,เลือก
-Choose PDF files,Choose PDF files
+Choose PDF files,เลือกไฟล์ PDF
 Choose relation type,เลือกประเภทความสัมพันธ์
 Choose which data to use for training,เลือกข้อมูลที่จะใช้ในการฝึกอบรม
 Chrome header,ส่วนหัวของ Chrome
@@ -208,12 +215,18 @@ Clear coordinates,ลบจุดพิกัด
 Clear Filters,ล้างตัวกรอง
 Clear PDF selection,ล้างการเลือก PDF
 Clear search,ล้างผลการค้นหา
+Clear selection,ล้างการเลือก
+Clear selection filter,ล้างตัวกรองการเลือก
+Clear sort,ล้างการเรียง
 Click,คลิก
 Click to fill,คลิกเพื่อใส่ค่า
 Click to select an image,คลิกเพื่อเลือกภาพ
 Click to select audio or video,คลิกเพื่อเลือกไฟล์เสียงหรือวิดีโอ
 Click to select files,คลิกเพื่อเลือกไฟล์
 Close,ปิด
+Close filters,ปิดตัวกรอง
+Close modal,ปิดหน้าต่าง
+Close side panel,ปิดแผงด้านข้าง
 Code,รหัส
 Collaborator,ผู้ประสานงาน
 Collaborators,ผู้ร่วมงาน
@@ -221,15 +234,19 @@ Collapse all,ปิดทั้งหมด
 Collapse All,ปิดทั้งหมด
 Collection,คอลเล็คชั่น
 Collection Name,ชื่อคอลเลกชัน
+Color mode,โหมดสี
 Colors,สี
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,สีมาจากชั้นข้อมูลของเซิร์ฟเวอร์ การแสดงตัวอย่างจะแสดงสีของบัคเก็ตที่กำหนดไว้ หากมี
 Columns,คอลัมน์
+Combine counts,รวมจำนวน
 combine or exclude terms,รวมหรือยกเว้นคำค้นหา
 Comfortable,สบาย
 Common sources,แหล่งข้อมูลทั่วไป
 Compact,กระชับ
+Compare side by side,เปรียบเทียบข้างกัน
 Completed,เสร็จแล้ว
 Completed with errors,เสร็จสิ้นแล้ว แต่มีข้อผิดพลาด
+Computed years,ปีที่คำนวณ
 Config,การตั้งค่า
 Configuration,การตั้งค่า
 Configure filters,กำหนดค่าตัวกรอง
@@ -250,7 +267,9 @@ Connect to an entity,เชื่อมต่อกับเอนทิตี
 Connect to entity,เชื่อมต่อกับเอนทิตี
 Connected entities,เอนทิตีที่เกี่ยวข้อง
 Connected to server,เชื่อมต่อกับเซิร์ฟเวอร์แล้ว
+Connection deleted,ลบการเชื่อมต่อแล้ว
 Connection type,ประเภทการเชื่อมต่อ
+Connections,การเชื่อมต่อ
 Contact email description,ที่นี่คุณสามารถตั้งค่าที่อยู่อีเมลติดต่อและที่อยู่อีเมลที่จะปรากฏขึ้นเมื่อ Uwazi ส่งการแจ้งเตือนไปยังผู้ใช้
 Contact Form,แบบฟอร์มติดต่อ
 Contact form email,อีเมลจากแบบฟอร์มติดต่อ
@@ -316,6 +335,7 @@ CSV import failed,การนำเข้าไฟล์ CSV ไม่สำเ
 CSV or ZIP up to 50MB,ไฟล์ CSV หรือ ZIP ขนาดไม่เกิน 50MB
 Ctrl K,Ctrl K
 Current Value/Suggestion,ค่าปัจจุบัน/ข้อเสนอแนะ
+Custom colors,สีที่กำหนดเอง
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","สีที่กำหนดเองไม่สามารถใช้ได้กับประเภทแผนภูมินี้ โปรดใช้สีจากพาเลตต์แผนภูมิหรือสีจากแม่แบบ
 แทน"
@@ -325,19 +345,25 @@ Custom Favicon,ไอคอนเว็บไซต์แบบกำหนด�
 Custom JS,JS ที่ปรับแต่งเอง
 Custom landing page,หน้า Landing Page ที่กำหนดเอง
 custom page error warning,เกิดข้อผิดพลาดที่ไม่คาดคิดบนหน้านี้ ซึ่งอาจทำงานไม่ถูกต้อง โปรดติดต่อผู้ดูแลระบบเพื่อทราบรายละเอียดเพิ่มเติม
+Custom pair,คู่ที่กำหนดเอง
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
 Customize,ปรับแต่ง
 Customized,ตามความต้องการ
+Daily,รายวัน
 Dark,มืด
 Dark Theme,ธีมสีมืด
 Dashboard,แดชบอร์ด
+Data,ข้อมูล
 Data may be outdated.,ข้อมูลอาจไม่ทันสมัยแล้ว
 Data source,แหล่งข้อมูล
 Data sources,แหล่งข้อมูล
 Data visualizations,การแสดงข้อมูลแบบภาพ
 Data was updated recently. You can refresh again in a few seconds.,ข้อมูลได้รับการอัปเดตเมื่อเร็วๆ นี้ คุณสามารถรีเฟรชอีกครั้งได้ภายในไม่กี่วินาที
+Dataviz editor,ตัวแก้ไขภาพข้อมูล
+Dataviz preview,ตัวอย่างภาพข้อมูล
 Date,วันที่
 Date added,เพิ่ม ณ วันที่
+Date interval,ช่วงวันที่
 Date modified,แก้ไข ณ วันที่
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","ข้อมูลวันที่หรือตัวเลข × ตัวเลข สามารถใช้สร้างกราฟกระจายและแผนที่ความร้อนได้ ส่วนกราฟเส้น กราฟพื้นที่ และกราฟแท่งจะแสดง
@@ -347,11 +373,13 @@ Date modified,แก้ไข ณ วันที่
 ตามช่วงเวลา"
 Date range,ช่วงวันที่
 Day,วัน
+Decrease indentation,ลดการเยื้อง
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","ผสานอย่างลึกซึ้งกับตัวเลือก ECharts ที่สร้างขึ้น ใช้เพื่อปรับแต่งตัวเลือกที่ไม่ได้แสดงใน
 แท็บ Chart"
 Default,ค่าเริ่มต้น
 Default date format,รูปแบบวันที่ตามค่าเริ่มต้น
+Default file,ไฟล์เริ่มต้น
 Default filter,ตัวกรองเริ่มต้น
 Default language,ภาษาเริ่มต้น
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
@@ -361,6 +389,7 @@ Default View,มุมมองเริ่มต้น
 Delete,ลบ
 DELETE,ลบ
 Delete entities and documents,ลบเอนทิตีและเอกสาร
+Delete entry,ลบรายการ
 Delete file,ลบไฟล์
 Delete relationship,ลบความสัมพันธ์
 Delete relationships,ลบความสัมพันธ์
@@ -382,6 +411,7 @@ Deletion success,การลบสำเร็จแล้ว
 Density,ความหนาแน่น
 Description,คำอธิบาย
 Deselect all,ยกเลิกการเลือกทั้งหมด
+Detail,รายละเอียด
 Details,รายละเอียด
 Direction,ทิศทาง
 Disable,ปิดใช้งาน
@@ -391,6 +421,7 @@ Discard,ทิ้ง
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,จะยกเลิกการเปลี่ยนแปลงหรือไม่?
 Dismiss,ปิด
+Dismiss notification,ปิดการแจ้งเตือน
 Display entity view from page,แสดงมุมมองรายการจากหน้า
 Display options,ตัวเลือกการแสดงผล
 Do you want disable 2FA for the following users?,คุณต้องการปิดใช้งานการยืนยันตัวตนสองขั้นตอน (2FA) สำหรับผู้ใช้ต่อไปนี้หรือไม่?
@@ -398,6 +429,7 @@ Do you want reset the password for the following users?,คุณต้องก
 Do you want to delete the following items?,คุณต้องการลบรายการต่อไปนี้หรือไม่?
 Document,เอกสาร
 Document contents,เนื้อหาของเอกสาร
+Document deleted,ลบเอกสารแล้ว
 Document OCR trigger,ตัวกระตุ้น OCR ของเอกสาร
 Document Title,ชื่อเอกสาร
 Document updated,เอกสารได้รับการอัปเดตแล้ว
@@ -425,16 +457,21 @@ Duplicated name,ชื่อที่ซ้ำกัน
 Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Duration,ระยะเวลา
 e.g.,เช่น
+e.g. hombres,เช่น hombres
 Each series uses the template brand color when comparing data sources.,แต่ละชุดข้อมูลจะใช้สีแบรนด์ตามแบบอย่างเมื่อเปรียบเทียบแหล่งข้อมูล
 Earlier,ก่อนหน้านี้
+Echarts configuration,การตั้งค่า ECharts
 Edit,แก้ไข
 Edit at source,แก้ไขที่ต้นฉบับ
 Edit date,แก้ไข ณ วันที่
 Edit Extractor,แก้ไขเครื่องมือสกัด
 Edit File,แก้ไขไฟล์
 Edit group,แก้ไขกลุ่ม
+Edit Group,แก้ไขกลุ่ม
 Edit item,แก้ไขรายการ
+Edit Link,แก้ไขลิงก์
 Edit metadata of entities,แก้ไขข้อมูลเมตาของเอนทิตี
+Edit relationship type,แก้ไขประเภทความสัมพันธ์
 Edit theme,แก้ไขธีม
 Edit user,แก้ไขข้อมูลผู้ใช้
 Edited,แก้ไขแล้ว
@@ -447,25 +484,29 @@ Embed in pages,ฝังลงในหน้า
 Empty,ว่าง
 Empty group. Drop here to add,กลุ่มว่าง. ลากมาที่นี่เพื่อเพิ่ม
 empty property tip,คุณไม่สามารถบันทึกเอนทิตีได้หากคุณสมบัตินี้เป็นค่าว่าง
+Empty value label,ป้ายค่าว่าง
 Enable,เปิดใช้งาน
 Enable public embedding to use this chart in external sites on private instances.,เปิดใช้งานการฝังแบบสาธารณะเพื่อใช้แผนภูมินี้ในเว็บไซต์ภายนอกบนอินสแตนซ์ส่วนตัว
 Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
 Enter the 6-digit verification code generated by your Authenticator app,ป้อนรหัสยืนยัน 6 หลักที่สร้างขึ้นโดยแอป Authenticator ของคุณ
 "Enter the full username, email, or group name. Suggestions are not shown.",กรอกชื่อผู้ใช้ อีเมล หรือชื่อกลุ่มอย่างครบถ้วน ไม่มีการแสดงคำแนะนำ
+Enter title,ใส่ชื่อเรื่อง
 Enter your current password to confirm,กรุณาป้อนรหัสผ่านปัจจุบันของคุณเพื่อยืนยัน
 Entities,รายการ
 entities,รายการ
+entities · generated,เอนทิตี · ที่สร้างขึ้น
 Entities across all languages,เอนทิตีในทุกภาษา
 Entities created,เอนทิตีที่สร้างขึ้น
 Entities updated,เอนทิตีที่อัปเดตแล้ว
-entities · generated,เอนทิตี · ที่สร้างขึ้น
 Entity,รายการ
 Entity creation stage completed.,ขั้นตอนการสร้างเอนทิตีเสร็จสิ้นแล้ว
 Entity deleted,ได้ลบเอนทิตีแล้ว
 Entity Page,หน้าเอนทิตี
+Entity primary,เอนทิตีหลัก
 Entity saved,บันทึกเอนทิตีแล้ว
 Entity scope,ขอบเขตของเอนทิตี
 Entity type,ประเภทเอนทิตี
+Entity type (template),ประเภทเอนทิตี (เทมเพลต)
 Entity types,ประเภทรายการ
 Entity updated,อัปเดตข้อมูลเอนทิตีแล้ว
 Error,ข้อผิดพลาด
@@ -483,6 +524,7 @@ Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,โทเคนส่วนขยาย
 External embed,การฝังจากแหล่งภายนอก
+External iframe code,โค้ด iframe ภายนอก
 Extract new paragraphs,แยกเป็นย่อหน้าใหม่
 Extract paragraphs,คัดลอกย่อหน้า
 Extracting files,การดึงไฟล์
@@ -508,12 +550,14 @@ file,ไฟล์
 File deleted,ไฟล์ถูกลบแล้ว
 File details,รายละเอียดไฟล์
 File extraction completed successfully.,การแยกไฟล์เสร็จสิ้นแล้ว
+File language,ภาษาของไฟล์
 File name,ชื่อไฟล์
 File preview unavailable,ไม่สามารถดูตัวอย่างไฟล์ได้
 File updated,ไฟล์ได้รับการอัปเดตแล้ว
 Files,ไฟล์
 files,ไฟล์
 Files and database usage,การใช้ไฟล์และฐานข้อมูล
+Files list,รายการไฟล์
 Fill,ใส่ค่า
 Filter,ตัวกรอง
 Filter unauthorized relationships,ตามค่าเริ่มต้น ความสัมพันธ์ที่ชี้ไปยังเอนทิตีที่ถูกจำกัดจะปรากฏให้ผู้ใช้ที่ไม่ระบุตัวตนเห็นได้ แต่ไม่มีการเชื่อมโยง เมื่อเปิดใช้งาน ความสัมพันธ์เหล่านี้จะถูกซ่อนไว้อย่างสมบูรณ์ เพื่อป้องกันไม่ให้ผู้ใช้ทั่วไปทราบว่าเนื้อหาที่ถูกจำกัดนั้นมีอยู่
@@ -532,13 +576,16 @@ Find suggestions for selected,ค้นหาคำแนะนำสำหร�
 Finding suggestions,ค้นหาคำแนะนำ
 Fit,พอดี
 Flag,แฟล็ก
+Flags,ธง
 for,สำหรับ
 For all entities,สำหรับทุกเอนทิตี
 For entities with blank values,สำหรับเอนทิตีที่มีค่าเป็นว่าง
 Forgot Password or Username?,ลืมรหัสผ่านหรือชื่อผู้ใช้?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
+Frequency,ความถี่
 From,จาก
 From all suggestions,จากทุกข้อเสนอแนะ
+From date,จากวันที่
 From previous step,จากขั้นตอนก่อนหน้านี้
 From selection,จากการคัดเลือก
 From:,จาก:
@@ -548,12 +595,14 @@ General,ข้อมูลทั่วไป
 General access,การเข้าถึงทั่วไป
 General Information,ข้อมูลทั่วไป
 Generated ID,ID ที่สร้างขึ้น
+Geolocation,ตำแหน่งทางภูมิศาสตร์
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,CSS และ JS ทั่วทั้งเว็บไซต์
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Maps
+Graph,กราฟ
 Group,กลุ่ม
 Group by,จัดกลุ่มตาม
 group expressions,นิพจน์กลุ่ม
@@ -576,13 +625,18 @@ Hide actions,ซ่อนการดำเนินการ
 Hide details,ซ่อนรายละเอียด
 Hide label,ซ่อนป้าย
 Hide restricted relationships from public,ซ่อนความสัมพันธ์ที่ถูกจำกัดไม่ให้แสดงต่อสาธารณะ
+Hide task,ซ่อนงาน
 Hide toolbar,ซ่อนแถบเครื่องมือ
+Hours,ชั่วโมง
+How to combine sources,วิธีรวมแหล่งข้อมูล
 HTML,HTML
 https://yourdomain,https://yourdomain
 hub,ศูนย์กลาง
 hubs,ฮับ
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,ไฮบริด
 Icon,ไอคอน
+Icons,ไอคอน
 ID,ID
 ID:,ID:
 "If an account exists with the email you provided, you will receive an email
@@ -590,6 +644,7 @@ ID:,ID:
 ที่มีคำแนะนำสำหรับการตั้งรหัสผ่านใหม่"
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
+Image,รูปภาพ
 Image doesn't match the required size.,ภาพไม่ตรงกับขนาดที่กำหนด
 Import,นำเข้า
 Import asset,นำเข้าสินทรัพย์
@@ -609,6 +664,7 @@ In use,กำลังใช้งาน
 Include all entities,รวมทุกเอนทิตี
 Include only public,ให้รวมเฉพาะข้อมูลสาธารณะเท่านั้น
 Incoming,ขาเข้า
+Increase indentation,เพิ่มการเยื้อง
 Info,ข้อมูล
 Information extraction training,การฝึกอบรมการสกัดข้อมูล
 Inherit,สืบทอด
@@ -640,6 +696,7 @@ key,Thai
 Label,ประเภท
 "Label date ""From""","ลาเบลวันที่ ""ตั้งแต่"""
 "Label date ""to""","ลาเบลวันที่ ""ถึง"""
+Label format,รูปแบบป้าย
 Labeled,มีป้ายกำกับ
 Landing page,หน้าแลนดิ้งเพจ
 Landing page description,"หน้า Landing Page คือหน้าแรกที่ผู้เยี่ยมชมจะเห็นเมื่อเข้ามาที่คอลเลกชันของคุณ หน้า Landing Page เริ่มต้นคือไลบรารีของคอลเลกชันของคุณ คุณสามารถกำหนดหน้า Landing Page อื่นได้โดยเพิ่ม URL แบบสัมพัทธ์ (relative URL) ของหน้านั้นที่นี่ ตัวอย่างเช่น:
@@ -650,13 +707,14 @@ Landing page description,"หน้า Landing Page คือหน้าแร�
 เอกสาร: */document/4y9i99fadjp833di*
 
 สำคัญ: คุณต้องใช้ URL แบบสัมพัทธ์เท่านั้น โดยต้องขึ้นต้นด้วยเครื่องหมายทับ (/) และไม่มีชื่อโดเมนอยู่ด้วย ตัวอย่างเช่น ในที่อยู่ *https://yoursite.com/landingpage* URL แบบสัมพัทธ์คือ /landingpage"
+Landscape,แนวนอน
 Language,ภาษา
 Language Code,รหัสภาษา
 Language deleted,ลบภาษาแล้ว
 Language reset success,การตั้งค่าภาษาใหม่สำเร็จแล้ว
 Language uninstalled successfully,ภาษาได้ถอนการติดตั้งสำเร็จแล้ว
-Language(s),ภาษา
 Language:,ภาษา:
+Language(s),ภาษา
 Languages,ภาษา
 Languages installed successfully,ภาษาได้ติดตั้งสำเร็จแล้ว
 Last updated,อัปเดตครั้งสุดท้าย
@@ -667,11 +725,13 @@ Learn how to add and configure a contact form on a webpage.,เรียนร�
 Learn how to build your first collection,เรียนรู้วิธีสร้างคอลเลกชันแรกของคุณ
 Learn more,เรียนรู้เพิ่มเติม
 Learn more about the components.,เรียนรู้เพิ่มเติมเกี่ยวกับส่วนประกอบต่างๆ
+Legacy Uwazi,Uwazi แบบเดิม
 Legend,กลุ่ม
 Lengthy reindex process,กระบวนการสร้างดัชนีใหม่ที่ใช้เวลานาน
 Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
+Library results,ผลลัพธ์คลังเอกสาร
 library table view,มุมมองตารางไลบรารี
 Light,สว่าง
 Light Theme,ธีมสีอ่อน
@@ -679,6 +739,7 @@ Link,ลิงก์
 linked,เชื่อมโยงแล้ว
 List,รายการ
 List renders as a table. Use the options below to filter empty or zero values.,รายการจะแสดงในรูปแบบตาราง ใช้ตัวเลือกด้านล่างเพื่อกรองค่าที่ว่างหรือค่าเป็นศูนย์
+Live (always up to date),สด (อัปเดตเสมอ)
 Live preview,ดูตัวอย่างแบบเรียลไทม์
 Live translate,แปลแบบเรียลไทม์
 Load,โหลด
@@ -699,6 +760,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,จัดการประเภทความสัมพันธ์
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
 Manage types,จัดการประเภท
+Manual,ด้วยตนเอง
 Manual data,ข้อมูลที่ป้อนด้วยมือ
 Manually set a color,ตั้งค่าสีด้วยมือ
 Map,แผนที่
@@ -736,6 +798,10 @@ Matches show the passage and the page they are on.,ผลการค้นห�
 Matching,การจับคู่
 matching,การจับคู่
 Matomo,Matomo
+Max,สูงสุด
+Max buckets,ถังสูงสุด
+Max number of slices,จำนวนชิ้นสูงสุด
+Media,สื่อ
 Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
@@ -746,7 +812,9 @@ Metadata Extraction,ค้นหาเมตาดาต้า
             configure categories, labels, and slices. Use the Appearance tab for colors.","เมตริกแสดงจำนวนรวมเพียงหนึ่งเดียว ให้เลือกประเภทกราฟแบบวงกลม (Pie), แบบแท่ง (Bar) หรือประเภทอื่น ๆ ด้านบนเพื่อ
 กำหนดหมวดหมู่ ป้ายชื่อ และส่วนต่าง ๆ ใช้แท็บ ""Appearance"" เพื่อปรับสี"
 MIGRATE,ย้าย
+Min,ต่ำสุด
 Minimum,ขั้นต่ำ
+Minutes,นาที
 Mismatch,ไม่ตรงกัน
 mismatched passwords,รหัสผ่านไม่ตรงกัน
 mismatching,ไม่ตรงกัน
@@ -754,6 +822,7 @@ Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
 Modified,แก้ไขแล้ว
 Month,เดือน
+Monthly,รายเดือน
 Months,เดือน
 More,เพิ่มเติม
 more,เพิ่มเติม
@@ -762,6 +831,8 @@ More rows per screen; same type size,แสดงแถวได้มากข�
 Multi-source mode,โหมดหลายแหล่งข้อมูล
 Multiple date,หลายวัน
 Multiple date range,ช่วงวันที่หลายช่วง
+Multiple date ranges,หลายช่วงวันที่
+Multiple dates,หลายวันที่
 Multiple inherited properties warning ([property 1] affects [property 2]),ส่งผล
 Multiple matches found,พบผลลัพธ์หลายรายการ
 Multiple relationships edit description,การปรับเปลี่ยนคุณสมบัตินี้จะส่งผลต่อคุณสมบัติอื่น ๆ ในเทมเพลตนี้ เนื่องจากทั้งหมดมีความสัมพันธ์กันผ่านการตั้งค่าเดียวกัน
@@ -783,12 +854,15 @@ New activity will show up here.,กิจกรรมใหม่จะปรา
 New conversation,บทสนทนาใหม่
 New entity,รายการใหม่
 New group,กลุ่มใหม่
+New Group,กลุ่มใหม่
 New language added,ภาษาใหม่ถูกเพิ่มแล้ว
+New Link,ลิงก์ใหม่
 New page,หน้าใหม่
 New password,รหัสผ่านใหม่
 New primary doc,เอกสารหลักใหม่
 New relation type label…,ชื่อประเภทความสัมพันธ์ใหม่…
 New relationship type,ประเภทความสัมพันธ์ใหม่
+New Relationships,ความสัมพันธ์ใหม่
 New relationships group,กลุ่มความสัมพันธ์ใหม่
 New Relationships Migration,การย้ายข้อมูลความสัมพันธ์ใหม่
 New user,ผู้ใช้ใหม่
@@ -853,9 +927,9 @@ No valid target template available,ไม่มีแม่แบบเป้า
 No value,ไม่มีค่า
 No Value,ไม่มีค่า
 No visualization data available.,ไม่มีข้อมูลภาพแสดงผล
-"No, cancel","ไม่, ยกเลิก"
 no-toc-description,"คุณสามารถเริ่มได้โดยเลือกข้อความในเอกสารแล้วคลิกปุ่ม ""เพิ่มไปยัง
 สารบัญ"""
+"No, cancel","ไม่, ยกเลิก"
 Non processed,ไม่ผ่านกระบวนการแปรรูป
 Non-labeled,ไม่มีป้ายกำกับ
 Non-latin characters support,การสนับสนุนตัวอักษรที่ไม่ใช่ตัวอักษรละติน
@@ -867,6 +941,7 @@ Not Found,ไม่พบ
 Nothing here yet.,ยังไม่มีอะไรที่นี่เลย
 Nothing selected,ไม่มีการเลือกอะไรเลย
 Notifications,การแจ้งเตือน
+Numeric,ตัวเลข
 Obsolete,ล้าสมัย
 obsolete,ล้าสมัย
 OCR,OCR
@@ -900,10 +975,11 @@ Open group,เปิดกลุ่ม
 Open link,เปิดลิงก์
 Open PDF,เปิดไฟล์ PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
+Operator,ตัวดำเนินการ
 Options,ตัวเลือก
 or,หรือ
 or drag and drop here,หรือลากและวางที่นี่
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,หรือลากไฟล์ PDF มาวางที่นี่
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
 Or paste a URL,หรือวาง URL ลงมา
 Order,คำสั่ง
@@ -911,16 +987,22 @@ Other,อื่น
 other,อื่น
 Other users will be affected by this action!,การดำเนินการนี้จะส่งผลกระทบต่อผู้ใช้คนอื่น ๆ!
 Others,อื่นๆ
+Others label,ป้ายอื่นๆ
 Outgoing,ขาออก
+Overview,ภาพรวม
 p.,หน้า
 Page,หน้า
+Page embed code,โค้ดฝังหน้า
+Page language,ภาษาของหน้า
 Page not found,ไม่พบหน้า
 Page published successfully.,หน้าได้เผยแพร่สำเร็จแล้ว
 Pages,หน้า
+Pagination,การแบ่งหน้า
 Paragrap number extraction property (numeric),คุณสมบัติการดึงหมายเลขย่อหน้า (ตัวเลข)
 Paragraph,ย่อหน้า
 Paragraph Extraction,การสกัดย่อหน้า
 Paragraph Extractor added,เพิ่มเครื่องมือสกัดย่อหน้า
+Paragraph extractor wizard,ตัวช่วยแยกย่อหน้า
 Paragraph text extraction property (rich text),คุณสมบัติการสกัดข้อความจากย่อหน้า (Rich Text)
 Paragraphs,ย่อหน้า
 Paragraphs deleted,ย่อหน้าที่ถูกลบ
@@ -939,6 +1021,7 @@ PDF,PDF
 Pending,รอดำเนินการ
 People and groups,บุคคลและกลุ่ม
 per page,ต่อหน้า
+Percentage,เปอร์เซ็นต์
 Permission,สิทธิการเข้าถึง
 Permission level,ระดับสิทธิ์
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
@@ -947,9 +1030,12 @@ Permissions updated,อัปเดตสิทธิ์
 Pick a color,เลือกสี
 Pick another,เลือกรายการอื่น
 Plain text,ข้อความธรรมดา
+Play audio,เล่นเสียง
+Play video,เล่นวิดีโอ
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,กรุณาพิมพ์
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
+Portrait,แนวตั้ง
 Pre-filled from your selection. Edit as needed.,ข้อมูลถูกกรอกไว้ล่วงหน้าตามการเลือกของคุณแล้ว สามารถแก้ไขได้ตามต้องการ
 Preflight scan completed.,การสแกนตรวจสอบเบื้องต้นเสร็จสิ้นแล้ว
 Preparing required relationships.,เตรียมความสัมพันธ์ที่จำเป็น
@@ -959,11 +1045,14 @@ Preserve Extension,ส่วนขยายการเก็บรักษา
 Preserve Setup Description,หากคุณทราบ URL และ TOKEN ของ Uwazi แล้ว ให้คลิกลิงก์ด้านล่าง และกรอกข้อมูลที่จำเป็น
 Press enter to add,กด Enter เพื่อเพิ่ม
 Preview,ดูตัวอย่าง
+Preview mode,โหมดตัวอย่าง
 Preview updates automatically (300ms debounce),แสดงตัวอย่างการอัปเดตอัตโนมัติ (ระยะเวลาหน่วง 300 มิลลิวินาที)
 Preview updates when the JSON is valid.,ดูตัวอย่างการอัปเดตเมื่อ JSON เป็นข้อมูลที่ถูกต้อง
 Previous,ก่อนหน้า
 Primary,หลัก
+Primary action,การดำเนินการหลัก
 Primary button,ปุ่มหลัก
+Primary dimension (X-axis / categories),มิติหลัก (แกน X / หมวดหมู่)
 Primary document,เอกสารหลัก
 Primary Documents,เอกสารหลัก
 Primary documents,เอกสารต้นฉบับ
@@ -1017,6 +1106,7 @@ Publish release,เผยแพร่เวอร์ชัน
 Published,ตีพิมพ์แล้ว
 Published and unpublished entities are counted.,นับทั้งเอนทิตีที่ได้รับการเผยแพร่และที่ยังไม่ได้รับการเผยแพร่
 QR Code,รหัส QR
+qr code,คิวอาร์โค้ด
 Query,สืบค้น
 Queued,อยู่ในคิว
 RAW,RAW
@@ -1059,10 +1149,13 @@ remaining,ที่เหลือ
 remaining files,ไฟล์ที่เหลือ
 Remote Server Unreachable,ไม่สามารถติดต่อกับเซิร์ฟเวอร์ระยะไกลได้
 Remove,ลบ
+Remove data source,ลบแหล่งข้อมูล
+Remove filter,ลบตัวกรอง
 Remove from connection,ตัดการเชื่อมต่อ
 Remove from training set,ลบออกจากชุดข้อมูลฝึก
 remove icon,ลบไอคอน
 Remove icon,ลบไอคอน
+Remove timelink,ลบลิงก์เวลา
 Removed language,ภาษาที่ถูกลบออก
 Rename,เปลี่ยนชื่อ
 Renamed attachment,ไฟล์แนบที่ถูกเปลี่ยนชื่อ
@@ -1079,6 +1172,7 @@ Reset default translation,ตั้งค่าการแปลกลับเ
 Reset language,ตั้งภาษาใหม่
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Reset passwords,ตั้งรหัสผ่านใหม่
+Reset Search input,รีเซ็ตการค้นหา
 Resize panels,ปรับขนาดแผง
 Restore,กู้คืน
 Restore previous version,คืนสู่เวอร์ชันก่อนหน้า
@@ -1088,10 +1182,12 @@ Retrying,ลองอีกครั้ง
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Review,ตรวจสอบ
 Reviewed,ตรวจสอบแล้ว
+Rich text,ข้อความมีรูปแบบ
 Role,บทบาท
 Room around every row,เว้นพื้นที่รอบแถวมากขึ้น
 Route,เส้นทาง
 Row,แถว
+Row actions,การทำงานของแถว
 Row density,ความหนาแน่นของแถว
 Rows failed,แถวไม่ผ่าน
 Rows processed,จำนวนแถวที่ประมวลผลแล้ว
@@ -1100,6 +1196,7 @@ Satellite,ดาวเทียม
 Save,บันทึก
 Save & Preview,บันทึกและดูตัวอย่าง
 Save changes,บันทึกการเปลี่ยนแปลง
+Save label,บันทึกป้าย
 Save password,บันทึกรหัสผ่าน
 Save the visualization before refreshing.,บันทึกการแสดงผลก่อนที่จะรีเฟรช
 Save the visualization to get embed code.,บันทึกภาพแสดงข้อมูลเพื่อรับรหัสฝัง
@@ -1114,13 +1211,16 @@ Schedule,ตารางเวลา
 Schedules run in UTC (Coordinated Universal Time).,ตารางเวลาใช้ UTC (เวลาสากลเชิงพิกัด)
 Search,ค้นหา
 "Search  •  AND, OR, NOT, ""exact"", wild*","ค้นหา  •  AND, OR, NOT, ""exact"", wild*"
+Search button,ปุ่มค้นหา
 Search by title,ค้นหาตามชื่อ
+Search chart types,ค้นหาชนิดแผนภูมิ
 Search entities...,ค้นหาเอนทิตี...
 Search entities…,ค้นหาเอนทิตี…
 Search item,ค้นหารายการ
 Search related entities or documents,ค้นหารายการหรือเอกสารที่เกี่ยวข้อง
 Search relationships,ค้นหาความสัมพันธ์
 Search relevance,ความเกี่ยวข้องของการค้นหา
+Search templates,ค้นหาเทมเพลต
 Search text,ข้อความค้นหา
 Search text description,พิมพ์คำค้นหาลงในช่องค้นหาเพื่อดูผลลัพธ์
 Search this document,ค้นหาในเอกสารนี้
@@ -1133,7 +1233,12 @@ Search Tips: proximity,"ใช้ ~ สำหรับการค้นหา�
 Search Tips: wildcard,"ใช้ * สำหรับการค้นหาแบบไวลด์การ์ด เช่น ""นิติ*"" จะจับคู่กับคำต่าง ๆ เช่น นิติศาสตร์ นิติกร นิติบุคคล เป็นต้น"
 Search title & metadata,ค้นหาชื่อและข้อมูลเมตา
 Searching...,กำลังค้นหา...
+Second dimension (series / stacks),มิติที่สอง (ชุด / กอง)
 Secondary button,ปุ่มรอง
+Secondary button border,เส้นขอบปุ่มรอง
+Secondary button text,ข้อความปุ่มรอง
+Secondary text,ข้อความรอง
+Seconds,วินาที
 Secret keys,กุญแจลับ
 Security,ความปลอดภัย
 Select,เลือก
@@ -1142,34 +1247,43 @@ Select & Search,เลือกและค้นหา
 Select a document to connect to a specific paragraph,เลือกเอกสารเพื่อเชื่อมโยงไปยังย่อหน้าเฉพาะ
 Select a file,เลือกไฟล์
 Select all,เลือกทั้งหมด
+Select all files,เลือกไฟล์ทั้งหมด
 Select an existing image,เลือกภาพที่มีอยู่
 Select favicon image,เลือกภาพ favicon
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
 Select from computer,เลือกจากคอมพิวเตอร์
+Select icon...,เลือกไอคอน…
 Select image,เลือกภาพ
 Select media,เลือกสื่อ
+Select page,เลือกหน้า
+Select property…,เลือกคุณสมบัติ…
 Select relationship,เลือกความสัมพันธ์
 Select relationship type,เลือกประเภทความสัมพันธ์
 Select site logo image,เลือกภาพโลโก้เว็บไซต์
 Select target document,เลือกเอกสารเป้าหมาย
 Select target entity,เลือกเอนทิตีเป้าหมาย
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
+Select template…,เลือกเทมเพลต…
 Select text in target document,เลือกข้อความในเอกสารเป้าหมาย
 select text or a value,เลือกข้อความหรือค่า
 Select the template to store the extracted paragraphs.,เลือกแม่แบบเพื่อเก็บย่อหน้าที่ถูกแยกออกมา
 Select the template with the source documents.,เลือกแม่แบบที่มีเอกสารต้นฉบับ
+Select values…,เลือกค่า…
 Select...,เลือก...
+Select…,เลือก…
 Selected,ที่เลือกไว้
 selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
 Selected or suggested,ที่เลือกหรือที่แนะนำ
 Selected templates,แม่แบบที่เลือกไว้
 Send,ส่ง
+Send message,ส่งข้อความ
 Send recovery email,ส่งอีเมลการกู้คืน
 Sending email,ส่งอีเมล
 Sending email description,นี่คือที่อยู่อีเมลที่จะปรากฏเป็นผู้ส่งเมื่อส่งอีเมลจากคอลเลกชัน Uwazi ของคุณไปยังผู้ใช้ที่ลงทะเบียน ที่อยู่อีเมลเริ่มต้นคือ *no-reply@uwazi.io* คุณสามารถตั้งค่าที่อยู่อีเมลที่กำหนดเองได้โดยใส่ที่อยู่อีเมลที่คุณต้องการที่นี่
 Sending labeled data,การส่งข้อมูลที่มีป้ายกำกับ
 Series,ซีรีส์
+Server disconnected,ตัดการเชื่อมต่อเซิร์ฟเวอร์
 Services,บริการ
 Set as default,ตั้งเป็นค่าเริ่มต้น
 Set default language,ตั้งภาษาหลัก
@@ -1177,6 +1291,7 @@ Set default template,ตั้งแม่แบบเริ่มต้น
 Set the default starting point for your geolocation properties.,ตั้งค่าจุดเริ่มต้นอัตโนมัติสำหรับคุณสมบัติทางภูมิศาสตร์ของคุณ
 Settings,การตั้งค่า
 settings,การตั้งค่า
+Settings navigation,การนำทางการตั้งค่า
 Settings navigation active background,พื้นหลังที่ใช้งานอยู่ในการนำทางเมนูการตั้งค่า
 Settings sidebar background,พื้นหลังของแถบด้านข้างการตั้งค่า
 Settings updated,การตั้งค่าถูกอัปเดตแล้ว
@@ -1199,6 +1314,7 @@ Show toolbar,แสดงแถบเครื่องมือ
 Showing,กำลังแสดง
 Showing the top,แสดงส่วนบน
 shown of,แสดงโดย
+Side panel tabs,แท็บแผงด้านข้าง
 Sign in,เข้าสู่ระบบ
 Simple mode,โหมดง่าย
 Single relationships must have a hub,ความสัมพันธ์แบบเดี่ยวต้องมีศูนย์กลาง
@@ -1209,6 +1325,8 @@ Site logo description,"โลโก้จะปรากฏในแถบด้
 Site logo no images hint,"ยังไม่มีไฟล์ภาพจากส่วน ""Custom Uploads"" โปรดเพิ่มภาพในรูปแบบ PNG, SVG หรือ JPEG ไปที่นั่นก่อน"
 Size,ขนาด
 Skip to main content,ข้ามไปยังเนื้อหาหลัก
+Snapshot (manual),สแนปชอต (ด้วยตนเอง)
+Snapshot (scheduled),สแนปชอต (ตามกำหนด)
 Some tasks may take a while. Bert will reply when it's done.,บางงานอาจใช้เวลาสักพัก Bert จะตอบกลับเมื่อเสร็จแล้ว
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
@@ -1246,11 +1364,13 @@ Suggestions,คำแนะนำ
 suggestions,ข้อเสนอแนะ
 Suggestions sent,ข้อเสนอแนะได้ส่งไปแล้ว
 Suggestions updated,ข้อเสนอแนะได้รับการอัปเดตแล้ว
+Sum,ผลรวม
 Supported chart types for manual data,ประเภทกราฟที่รองรับสำหรับข้อมูลที่ป้อนด้วยมือ
 Supported chart types for this configuration,ประเภทกราฟที่รองรับสำหรับการตั้งค่านี้
 Supporting,สนับสนุน
 Supporting file,ไฟล์สนับสนุน
 Supporting files,รองรับไฟล์
+Surface text,ข้อความพื้นผิว
 Synced template,แม่แบบที่ซิงค์แล้ว
 Synced Template,แม่แบบที่ซิงค์แล้ว
 Synced templates cannot be deleted.,ไม่สามารถลบแม่แบบที่ซิงค์ได้
@@ -1265,12 +1385,13 @@ Target entity type,ประเภทเอนทิตีเป้าหมา�
 Target relationship type,ประเภทความสัมพันธ์เป้าหมาย
 Target Template,แม่แบบเป้าหมาย
 Target template,แม่แบบเป้าหมาย
-Target's role in the relationship Source-Target.,บทบาทของ Target ในความสัมพันธ์ระหว่าง Source และ Target
 Target:,เป้าหมาย:
+Target's role in the relationship Source-Target.,บทบาทของ Target ในความสัมพันธ์ระหว่าง Source และ Target
 Tasks,งาน
 Template,แม่แบบ
 Template changes are being applied to all related entities.,การเปลี่ยนแปลงแม่แบบกำลังถูกนำไปใช้กับทุกเอนทิตีที่เกี่ยวข้อง
 Template color,สีของแม่แบบ
+Template colors,สีของแม่แบบ
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","สีของแม่แบบจะถูกใช้เมื่อเปรียบเทียบแหล่งข้อมูล หรือเมื่อมิติเป็นประเภทเอนทิตี
  ในกรณีอื่น ๆ จะใช้ชุดสีของแผนภูมิเป็นตัวเลือกสำรอง"
@@ -1304,6 +1425,7 @@ Theme instance file invalid,ไฟล์ตัวอย่างธีมไม�
 Theme logotype,โลโก้ธีม
 Theme presets,การตั้งค่าธีมล่วงหน้า
 Theme preview,ดูตัวอย่างธีม
+Theme preview label,ป้ายตัวอย่างธีม
 Then by,แล้วโดย
 There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
 There are no untranslated terms,ไม่มีคำใดที่ยังไม่ได้รับการแปล
@@ -1331,6 +1453,7 @@ This chart type cannot display the current data.,ประเภทกราฟ�
 คำอธิบายในตำนานกราฟ ป้ายกำกับ หรือตัวกรองข้อมูล ให้เลือกประเภทกราฟอื่นด้านบน"
 This content is automatically generated,เนื้อหานี้ถูกสร้างขึ้นโดยอัตโนมัติ
 This data visualization name already exists. Enter a unique name.,ชื่อการแสดงข้อมูลนี้มีอยู่แล้ว โปรดใส่ชื่อที่ไม่ซ้ำกัน
+This document,เอกสารนี้
 "This entity has no document, you probably want to see the metadata",รายการนี้ไม่มีเอกสาร คุณอาจจะอยากดูข้อมูลเมตาดาตาเพิ่มเติม
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,ช่องนี้ต้องกรอกข้อมูล
@@ -1364,7 +1487,7 @@ This table of contents was automatically created by the system.,สารบั�
 this template,แม่แบบนี้
 This template is in use by existing entities and cannot be deleted.,แม่แบบนี้กำลังถูกใช้โดยเอนทิตีที่มีอยู่และไม่สามารถลบได้
 Thumbnail,ภาพขนาดย่อ
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,กรอบภาพย่อ
 Time,เวลา
 Time (UTC),เวลา (UTC)
 Timeline,เส้นเวลา
@@ -1374,8 +1497,13 @@ tips,เคล็ดลับ
 Title,ชื่อหัวข้อ
 To,ถึง
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
+To date,ถึงวันที่
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
 Today,วันนี้
+Toggle dark theme,เปิดธีมมืด
+Toggle light theme,เปิดธีมสว่าง
+Toggle navigation menu,สลับเมนูนำทาง
+Toggle options menu,สลับเมนูตัวเลือก
 Toggle relationship details,แสดง/ซ่อนรายละเอียดความสัมพันธ์
 Toggle timeline mode,สลับโหมดไทม์ไลน์
 Tools,เครื่องมือ
@@ -1399,6 +1527,7 @@ Translations,การแปล
 Translations imported.,ได้นำเข้าการแปลแล้ว
 Translations reset successfully,การตั้งค่าการแปลได้คืนค่าสำเร็จแล้ว
 Translations saved,บันทึกการแปล
+Tree,ต้นไม้
 Try a different search or clear filters.,ลองค้นหาด้วยคำค้นหาอื่น หรือล้างตัวกรอง
 Turn off inline translation,ปิดการแปลแบบทันที
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1412,6 +1541,7 @@ Two-factor verification failed,การตรวจสอบสองขั้�
 Two-step verification,การตรวจสอบสองขั้นตอน
 Two-step verification token required,จำเป็นต้องใช้โทเค็นการยืนยันสองขั้นตอน
 Type,ประเภท
+Type to filter…,พิมพ์เพื่อกรอง…
 U,U
 "Unable to save, failed response","ไม่สามารถบันทึกได้, การตอบสนองล้มเหลว"
 Unauthorized,ไม่ได้รับอนุญาต
@@ -1441,12 +1571,13 @@ Updated translations,การแปลที่อัปเดตแล้ว
 Updated user,ผู้ใช้ที่อัปเดตแล้ว
 Updating template properties across,อัปเดตคุณสมบัติของเทมเพลตในทุกส่วน
 Updating…,กำลังอัปเดต…
-Upload,Upload
+Upload,อัปโหลด
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
 Upload image,อัปโหลดรูปภาพ
 Upload PDF,นำเข้า PDF
 Upload PDF(s) to create,นำเข้า PDF เพื่อสร้าง
+Upload progress,ความคืบหน้าการอัปโหลด
 Uploaded attachment,ไฟล์แนบที่อัปโหลดแล้ว
 Uploaded custom file,ได้อัปโหลดไฟล์ที่กำหนดเองแล้ว
 Uploaded document,เอกสารที่อัปโหลดแล้ว
@@ -1462,9 +1593,9 @@ Use for training,ใช้สำหรับการฝึกอบรม
                 needed.","ใช้ iframe นี้บนเว็บไซต์ภายนอก หากจำเป็น ให้เปลี่ยนพารามิเตอร์การค้นหาภาษา (locale) ใน URL
 ตามความจำเป็น"
 Use URL,ใช้ URL
-Used in templates and {n} refs — cannot delete,ใช้ในเทมเพลตและ {n} การอ้างอิง — ไม่สามารถลบได้
-Used in templates — cannot delete,ใช้ในเทมเพลต — ไม่สามารถลบได้
 Used in {n} refs — cannot delete,ใช้ใน {n} การอ้างอิง — ไม่สามารถลบได้
+Used in templates — cannot delete,ใช้ในเทมเพลต — ไม่สามารถลบได้
+Used in templates and {n} refs — cannot delete,ใช้ในเทมเพลตและ {n} การอ้างอิง — ไม่สามารถลบได้
 User,ผู้ใช้
 User Action,การดำเนินการของผู้ใช้
 User Role,บทบาทของผู้ใช้
@@ -1480,29 +1611,37 @@ Users & Groups,ผู้ใช้และกลุ่ม
 Using Authenticator,การใช้ Authenticator
 Using URLs,การใช้ URL
 Uwazi,Uwazi
+Uwazi Design,ดีไซน์ Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
+Uwazi label,ป้าย Uwazi
 Uwazi UI,uwazi ui
 Validating,การตรวจสอบความถูกต้อง
 Validating file structure and headers.,ตรวจสอบโครงสร้างไฟล์และส่วนหัว
 Value,ค่า
+Value and percentage,ค่าและเปอร์เซ็นต์
 Value cannot be transformed to the correct type,ไม่สามารถแปลงค่าให้เป็นประเภทที่ถูกต้องได้
 values,ค่า
 "values are staged, not saved",ค่าอยู่ระหว่างรอดำเนินการ ยังไม่ได้บันทึก
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
 via,ผ่าน
+Video,วิดีโอ
 View,ดู
 view,ดู
 View entities,ดูเอนทิตี
 View entity,ดูเอนทิตี
 View in library,ดูในไลบรารี
 View page,ดูหน้า
+Vimeo video player,เครื่องเล่นวิดีโอ Vimeo
+Violated articles,ข้อบทที่ถูกละเมิด
 Visibility,การมองเห็น
 Visualization data updated from your collection.,ข้อมูลการแสดงภาพได้รับการอัปเดตจากคอลเลกชันของคุณ
 WARNING,คำเตือน
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
 We can't find the page you're looking for.,เราไม่สามารถหาหน้าที่คุณกำลังค้นหาได้
+Week,สัปดาห์
+Weekly,รายสัปดาห์
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1535,6 +1674,7 @@ You should activate this feature for enhanced account security.,คุณคว�
 You won't be able to save an entity if this property is empty.,คุณไม่สามารถบันทึกเอนทิตีได้หากคุณสมบัติตัวนี้ว่างเปล่า
 You're all caught up,คุณได้ติดตามครบถ้วนแล้ว
 Your account's security is enhanced with two-factor authentication.,ความปลอดภัยของบัญชีของคุณได้รับการเสริมความปลอดภัยด้วยระบบการยืนยันตัวตนสองขั้นตอน
+YouTube video player,เครื่องเล่นวิดี오 YouTube
 Z → A,Z → A
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
