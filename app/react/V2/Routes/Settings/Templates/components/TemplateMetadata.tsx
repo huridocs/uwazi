@@ -3,7 +3,7 @@ import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { Select, OptionSchema } from '#V2/Components/Forms/Select.js';
-import { Translate, t } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { templateColors } from './defaultTemplateColors.js';
 
 export interface TemplateMetadataValues {
@@ -88,7 +88,12 @@ export const TemplateMetadata = ({
             <Select
               id="select-page"
               label=""
-              options={[{ value: '', label: 'Select page' }, ...pages] as OptionSchema[]}
+              options={
+                [
+                  { value: '', label: t('System', 'Select page', null, false) },
+                  ...pages,
+                ] as OptionSchema[]
+              }
               value={value.entityViewPage}
               onChange={e => onChange({ ...value, entityViewPage: e.target.value })}
               disabled={!displayAsPage}

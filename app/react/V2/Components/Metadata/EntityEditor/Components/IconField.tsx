@@ -3,7 +3,7 @@ import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from '#app/UI/index.js';
 import { Icon } from '#UI/Icon/Icon.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { CountryFlag } from '#V2/Components/CustomIcons/CoutryFlags.js';
 import { SearchSelect } from '#V2/Components/Forms/index.js';
 import { EntityField } from './EntityField.js';
@@ -54,7 +54,7 @@ const iconFromSelection = (value: string): EntityIcon => {
 
 const iconSelectGroups = [
   {
-    label: 'Icons',
+    label: t('System', 'Icons', null, false),
     options: iconNames.map(name => ({
       value: `Icons:${name}`,
       searchLabel: name,
@@ -63,7 +63,7 @@ const iconSelectGroups = [
     })),
   },
   {
-    label: 'Flags',
+    label: t('System', 'Flags', null, false),
     options: Array.from(CountryList).map(([, country]) => ({
       value: `Flags:${country.cca3}`,
       searchLabel: country.label,
@@ -141,7 +141,7 @@ const IconField = ({ disabled = false }: IconFieldProps) => {
           <SearchSelect
             id="entity-icon"
             hideLabel
-            placeholder="Select icon..."
+            placeholder={t('System', 'Select icon...', null, false)}
             groups={iconSelectGroups}
             value={selectionFromIcon(field.value)}
             disabled={disabled}

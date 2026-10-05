@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 
 import { Icon } from '#UI/Icon/Icon.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 import { closePanel } from '../actions/uiActions.js';
 import { setRelationType, setTargetDocument } from '../actions/actions.js';
@@ -40,7 +40,7 @@ class CreateConnectionPanel extends Component {
           <button
             className="closeSidepanel close-modal"
             onClick={this.props.closePanel}
-            aria-label="Close side panel"
+            aria-label={t('System', 'Close side panel', null, false)}
             type="button"
           >
             <Icon icon="times" />
@@ -69,7 +69,7 @@ class CreateConnectionPanel extends Component {
             <button
               className="btn btn-default"
               onClick={this.props.closePanel}
-              aria-label="Close side panel"
+              aria-label={t('System', 'Close side panel', null, false)}
               type="button"
             >
               <Translate>Cancel</Translate>

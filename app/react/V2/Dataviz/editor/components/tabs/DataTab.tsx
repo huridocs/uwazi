@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import type {
   DatavizDataSourceKind,
@@ -211,7 +211,7 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             measure={measure}
             onMeasureChange={setMeasure}
             onChange={dim => setDimensions(dim, secondaryDimension)}
-            title="Primary dimension (X-axis / categories)"
+            title={t('System', 'Primary dimension (X-axis / categories)', null, false)}
             idPrefix="primary-dimension"
             allowTemplateDimension={!isMultiSource}
           />
@@ -221,7 +221,7 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             measure={measure}
             onMeasureChange={setMeasure}
             onChange={dim => setDimensions(primaryDimension, dim)}
-            title="Second dimension (series / stacks)"
+            title={t('System', 'Second dimension (series / stacks)', null, false)}
             idPrefix="secondary-dimension"
             excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
             allowTemplateDimension={false}

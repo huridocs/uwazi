@@ -4,7 +4,7 @@ import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import isEmpty from 'lodash/isEmpty.js';
 import last from 'lodash/last.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { InputField, Select } from '#V2/Components/Forms/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import uniqueID from '#shared/uniqueID.js';
@@ -123,7 +123,7 @@ const ThesauriValueFormSidepanel = ({
                       {...register(`newValues.${index}.groupId`)}
                       disabled={value.length > 0}
                       options={[
-                        { value: '', label: 'No Group', key: '0' },
+                        { value: '', label: t('System', 'No Group', null, false), key: '0' },
                         ...groups.map(group => ({
                           value: group.rowId,
                           label: group.label,

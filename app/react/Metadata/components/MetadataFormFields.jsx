@@ -145,7 +145,7 @@ class MetadataFormFields extends Component {
               model={_model}
               optionsValue="id"
               options={translateOptions(thesauri)}
-              placeholder="Select..."
+              placeholder={t('System', 'Select...', null, false)}
             />
           </>
         );

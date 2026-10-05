@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { SectionHeading, SegmentedControl, SurfacePanel } from '#V2/Components/UI/index.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, THEME_MODES } from '#V2/theme/themes.js';
@@ -25,37 +25,37 @@ const contrastChecks = (themeVars: ThemeVars, mode: ThemeMode) => {
   return [
     {
       id: 'surface-primary',
-      label: 'Surface text',
+      label: t('System', 'Surface text', null, false),
       result: checkContrast(surface, primaryText),
     },
     {
       id: 'surface-secondary',
-      label: 'Secondary text',
+      label: t('System', 'Secondary text', null, false),
       result: checkContrast(surface, resolved['--color-theme-text-secondary']),
     },
     {
       id: 'accent-primary',
-      label: 'Primary action',
+      label: t('System', 'Primary action', null, false),
       result: checkContrast(accent, getContrastTextColor(accent)),
     },
     {
       id: 'outline-button-text',
-      label: 'Secondary button text',
+      label: t('System', 'Secondary button text', null, false),
       result: checkContrast(surface, accent),
     },
     {
       id: 'outline-button-border',
-      label: 'Secondary button border',
+      label: t('System', 'Secondary button border', null, false),
       result: checkContrast(surface, accent),
     },
     {
       id: 'preview-brand-label',
-      label: 'Uwazi label',
+      label: t('System', 'Uwazi label', null, false),
       result: checkContrast(surface, primaryText),
     },
     {
       id: 'preview-title-label',
-      label: 'Theme preview label',
+      label: t('System', 'Theme preview label', null, false),
       result: checkContrast(surface, primaryText),
     },
   ];
@@ -81,7 +81,7 @@ const ThemePreviewSection = ({
         <SegmentedControl
           value={previewMode}
           onChange={setPreviewMode}
-          ariaLabel="Preview mode"
+          ariaLabel={t('System', 'Preview mode', null, false)}
           showLabels
           options={THEME_MODES.map(mode => ({
             id: mode,

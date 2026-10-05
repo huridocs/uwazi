@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { EntityFile, FileCard } from '#V2/Components/UI/Files/FileCard.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -39,9 +39,13 @@ const FileList = ({ entity }: FileListProps) => {
     <div
       className="flex flex-col h-full bg-(--color-theme-surface-raised)"
       role="region"
-      aria-label="Files list"
+      aria-label={t('System', 'Files list', null, false)}
     >
-      <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
+      <div
+        className="flex-1 overflow-y-auto p-4"
+        role="list"
+        aria-label={t('System', 'Available files', null, false)}
+      >
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 w-full">
           {files.map((file, index) => (
             <FileCard key={`${file._id || file.filename || index}`} file={file} index={index} />

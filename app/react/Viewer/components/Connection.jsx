@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from '#app/UI/index.js';
-import { I18NLink } from '#app/I18N/index.js';
+import { t, I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { ShowIf } from '#app/App/ShowIf.js';
@@ -101,7 +101,10 @@ class Connection extends Component {
             : null
         }
         additionalMetadata={[
-          { label: 'Connection type', value: this.relationType(reference.template) },
+          {
+            label: t('System', 'Connection type', null, false),
+            value: this.relationType(reference.template),
+          },
         ]}
         evalPublished
         buttons={

@@ -8,7 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
 import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
@@ -304,7 +304,7 @@ const MediaFieldPreview = ({
                   }
                   onBlur={() => commitTimePart(index, 'hh')}
                   className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
-                  aria-label="Hours"
+                  aria-label={t('System', 'Hours', null, false)}
                 />
                 <span>:</span>
                 <input
@@ -319,7 +319,7 @@ const MediaFieldPreview = ({
                   }
                   onBlur={() => commitTimePart(index, 'mm')}
                   className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
-                  aria-label="Minutes"
+                  aria-label={t('System', 'Minutes', null, false)}
                 />
                 <span>:</span>
                 <input
@@ -334,7 +334,7 @@ const MediaFieldPreview = ({
                   }
                   onBlur={() => commitTimePart(index, 'ss')}
                   className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
-                  aria-label="Seconds"
+                  aria-label={t('System', 'Seconds', null, false)}
                 />
                 <input
                   type="text"
@@ -343,14 +343,14 @@ const MediaFieldPreview = ({
                   value={timelink.label}
                   onChange={event => updateLocalTimelink(index, { label: event.target.value })}
                   onBlur={commitLabel}
-                  placeholder="Label"
+                  placeholder={t('System', 'Label', null, false)}
                   className="min-w-32 flex-1 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-sm"
                 />
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => removeTimelink(index)}
-                  aria-label="Remove timelink"
+                  aria-label={t('System', 'Remove timelink', null, false)}
                 >
                   <XMarkIcon className="w-4 h-4" />
                 </button>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import type { DatavizQuery } from '#V2/Dataviz/types/definition.js';
 
@@ -11,12 +11,12 @@ type JoinModeSectionProps = {
 const JOIN_OPTIONS = [
   {
     value: 'compare',
-    label: 'Compare side by side',
+    label: t('System', 'Compare side by side', null, false),
     description: 'Each data source becomes its own series on the chart.',
   },
   {
     value: 'union',
-    label: 'Combine counts',
+    label: t('System', 'Combine counts', null, false),
     description: 'Merge buckets from all sources into a single series.',
   },
 ] as const;
@@ -32,7 +32,7 @@ const JoinModeSection = ({ join, onChange }: JoinModeSectionProps) => {
       </h3>
       <Select
         id="dataviz-join-mode"
-        label="How to combine sources"
+        label={t('System', 'How to combine sources', null, false)}
         value={mode}
         options={JOIN_OPTIONS.map(option => ({ value: option.value, label: option.label }))}
         onChange={e =>

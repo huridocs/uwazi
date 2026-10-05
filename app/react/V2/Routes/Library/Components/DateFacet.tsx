@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { FacetCard } from './FacetCard.js';
+import { t } from '#app/I18N/index.js';
 
 type DateFacetProps = {
   title: ReactNode;
@@ -61,7 +62,7 @@ const DateFacet = ({ title, name, from, to, onChange, open = true }: DateFacetPr
         id={`facet-${name}-from`}
         value={from}
         onChange={timestamp => onChange({ from: timestamp, to })}
-        ariaLabel="From date"
+        ariaLabel={t('System', 'From date', null, false)}
       />
       <span className="shrink-0 text-xs text-ink-tertiary" aria-hidden>
         →
@@ -70,7 +71,7 @@ const DateFacet = ({ title, name, from, to, onChange, open = true }: DateFacetPr
         id={`facet-${name}-to`}
         value={to}
         onChange={timestamp => onChange({ from, to: timestamp })}
-        ariaLabel="To date"
+        ariaLabel={t('System', 'To date', null, false)}
       />
     </div>
   </FacetCard>

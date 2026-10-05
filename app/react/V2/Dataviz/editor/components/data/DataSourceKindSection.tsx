@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import type { DatavizDataSourceKind } from '#shared/types/datavizSchema.js';
 
 type DataSourceKindSectionProps = {
@@ -14,12 +14,12 @@ const DATA_SOURCE_OPTIONS: {
 }[] = [
   {
     value: 'query',
-    label: 'Query',
+    label: t('System', 'Query', null, false),
     description: 'Load data from entity templates.',
   },
   {
     value: 'manual',
-    label: 'Manual',
+    label: t('System', 'Manual', null, false),
     description: 'Paste chart-ready JSON.',
   },
 ];

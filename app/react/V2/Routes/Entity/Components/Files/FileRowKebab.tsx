@@ -7,7 +7,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useEntityWriteAuthorized } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityFileRow } from './types.js';
 
@@ -155,7 +155,7 @@ const FileRowKebab = ({
         }}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Row actions"
+        aria-label={t('System', 'Row actions', null, false)}
         className="flex items-center justify-center rounded p-1 transition-colors hover:bg-parchment"
       >
         <EllipsisVerticalIcon className="h-3.5 w-3.5 text-ink-tertiary" />

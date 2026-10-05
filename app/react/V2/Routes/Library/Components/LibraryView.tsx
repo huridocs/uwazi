@@ -14,6 +14,7 @@ import { LibraryUploadPdfModal } from './LibraryUploadPdfModal.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
 import { DEFAULT_THUMB_FRAME } from './libraryCardDisplay.js';
+import { t } from '#app/I18N/index.js';
 import {
   visibleLibraryTableColumns,
   libraryTableColumnGroups,
@@ -275,7 +276,7 @@ const LibraryView = ({
                   : 'min-h-0 flex-1 overflow-auto bg-warm p-3'
               }
               role="region"
-              aria-label="Library results"
+              aria-label={t('System', 'Library results', null, false)}
             >
               <LibraryViewerHost
                 view={view}

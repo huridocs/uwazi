@@ -11,6 +11,7 @@ import { PageTag } from '../relationships/rows/PageTag.js';
 import type { ProcessedTocEntry } from './types.js';
 import { DeleteConfirmation } from './DeleteConfirmation.js';
 import { findAllAncestors, getPageNumber, hasDirectChildren } from './utils.js';
+import { t } from '#app/I18N/index.js';
 
 type EditControlsProps = {
   isFirstEntry: boolean;
@@ -33,7 +34,7 @@ const EditControls = ({
       onClick={handleDecreaseIndentation}
       disabled={isFirstEntry || !canDecreaseIndentation}
       className="h-5 w-5 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-50"
-      aria-label="Decrease indentation"
+      aria-label={t('System', 'Decrease indentation', null, false)}
     >
       <ChevronLeftIcon className="h-4 w-4 text-ink-secondary" />
     </button>
@@ -42,7 +43,7 @@ const EditControls = ({
       onClick={handleIncreaseIndentation}
       disabled={isFirstEntry || !canIncreaseIndentation}
       className="h-5 w-5 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-50"
-      aria-label="Increase indentation"
+      aria-label={t('System', 'Increase indentation', null, false)}
     >
       <ChevronRightIcon className="h-4 w-4 text-ink-secondary" />
     </button>
@@ -222,7 +223,7 @@ export const ToCItem = ({
               handleLabelSave();
             }}
             className="shrink-0 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30"
-            aria-label="Save label"
+            aria-label={t('System', 'Save label', null, false)}
           >
             <CheckIcon className="h-4 w-4 text-ink-secondary" />
           </button>
@@ -281,7 +282,7 @@ export const ToCItem = ({
         <button
           type="button"
           className="h-5 w-5 cursor-pointer rounded transition hover:bg-seal-tint focus:outline-none focus:ring-1 focus:ring-(--color-theme-feedback-danger)"
-          aria-label="Delete entry"
+          aria-label={t('System', 'Delete entry', null, false)}
         >
           <TrashIcon className="h-4 w-4 text-seal" />
         </button>

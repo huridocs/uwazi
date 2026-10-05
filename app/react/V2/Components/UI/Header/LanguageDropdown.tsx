@@ -5,7 +5,7 @@ import { LanguageIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { LanguageSelect, NeedAuthorization } from '#V2/Components/UI/index.js';
 import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 import { followLanguageUrl } from './followLanguageUrl.js';
@@ -53,7 +53,7 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
         value={selected.key}
         options={options}
         align="end"
-        aria-label="Language"
+        aria-label={t('System', 'Language', null, false)}
         onChange={languageKey => {
           if (languageKey === selected.key) return;
           if (inlineEditState.inlineEdit) {

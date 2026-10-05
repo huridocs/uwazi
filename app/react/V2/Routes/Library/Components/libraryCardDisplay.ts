@@ -1,3 +1,4 @@
+import { t } from '#app/I18N/index.js';
 type ThumbFrame = 'landscape' | 'portrait';
 type ThumbFit = 'cover' | 'contain';
 type ThumbnailKind = 'document' | 'image' | 'audio' | 'video';
@@ -11,8 +12,16 @@ const LANDSCAPE_THUMB_HEIGHT_PX = 142;
 const landscapeThumbHeightClass = 'h-[142px]';
 
 const THUMB_FRAMES: { id: ThumbFrame; label: string; detail: string }[] = [
-  { id: 'portrait', label: 'Portrait', detail: '3:4 cards in narrower columns — a gallery hang' },
-  { id: 'landscape', label: 'Landscape', detail: 'A wide band across the card' },
+  {
+    id: 'portrait',
+    label: t('System', 'Portrait', null, false),
+    detail: '3:4 cards in narrower columns — a gallery hang',
+  },
+  {
+    id: 'landscape',
+    label: t('System', 'Landscape', null, false),
+    detail: 'A wide band across the card',
+  },
 ];
 
 const thumbnailFitFromStyle = (style?: string): ThumbFit =>
