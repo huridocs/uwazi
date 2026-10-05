@@ -2,27 +2,8 @@ import React from 'react';
 import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import type { PaneProps } from '#V2/Components/Layouts/PaneLayout/types.js';
-import type { LibraryAggregations } from '#shared/types/librarySearch.js';
-import type { LibraryFiltersState } from '../libraryUrlState.js';
-import type { Chip } from './ActiveFiltersSheet.js';
-import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
-import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryFilters } from './LibraryFilters.js';
-
-type LibraryRightPaneProps = {
-  creating: boolean;
-  selectedId?: string;
-  entityBasePath: string;
-  focusFieldKey?: string;
-  aggregations: LibraryAggregations;
-  filters: LibraryFiltersState;
-  andFilters: string[];
-  chips: Chip[];
-  onFiltersChange: (filters: LibraryFiltersState) => void;
-  onAndFiltersChange: (andFilters: string[]) => void;
-  onClosePreview: () => void;
-  onCreated: (sharedId?: string) => void;
-};
+import { LibraryRightPane, type LibraryRightPaneProps } from './LibraryRightPane.js';
 
 type LibrarySidePanesProps = LibraryRightPaneProps & {
   isMobile: boolean;
@@ -31,11 +12,6 @@ type LibrarySidePanesProps = LibraryRightPaneProps & {
   requestPane: (index: number) => void;
 };
 
-type FiltersListProps = Pick<
-  LibraryRightPaneProps,
-  'aggregations' | 'filters' | 'andFilters' | 'chips' | 'onFiltersChange' | 'onAndFiltersChange'
->;
-
 const filtersList = ({
   aggregations,
   filters,
@@ -43,7 +19,7 @@ const filtersList = ({
   chips,
   onFiltersChange,
   onAndFiltersChange,
-}: FiltersListProps) => (
+}: LibraryRightPaneProps) => (
   <LibraryFilters
     aggregations={aggregations}
     filters={filters}
@@ -54,43 +30,28 @@ const filtersList = ({
   />
 );
 
-const renderLibraryRightPane = ({
-  creating,
-  selectedId,
-  entityBasePath,
-  focusFieldKey,
-  aggregations,
-  filters,
-  andFilters,
-  chips,
-  onFiltersChange,
-  onAndFiltersChange,
-  onClosePreview,
-  onCreated,
-}: LibraryRightPaneProps) => {
-  if (creating) {
-    return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
-  }
-  if (selectedId) {
-    return (
-      <LibraryEntityPreview
-        key={selectedId}
-        sharedId={selectedId}
-        entityBasePath={entityBasePath}
-        onClose={onClosePreview}
-        focusFieldKey={focusFieldKey}
-      />
-    );
-  }
-  return filtersList({
-    aggregations,
-    filters,
-    andFilters,
-    chips,
-    onFiltersChange,
-    onAndFiltersChange,
-  });
-};
+const libraryRightPaneElement = (pane: LibraryRightPaneProps, onClosePreview: () => void) => (
+  <LibraryRightPane
+    creating={pane.creating}
+    rows={pane.rows}
+    selectedIds={pane.selectedIds}
+    selectionPanelOpen={pane.selectionPanelOpen}
+    entityBasePath={pane.entityBasePath}
+    focusFieldKey={pane.focusFieldKey}
+    aggregations={pane.aggregations}
+    filters={pane.filters}
+    andFilters={pane.andFilters}
+    chips={pane.chips}
+    onFiltersChange={pane.onFiltersChange}
+    onAndFiltersChange={pane.onAndFiltersChange}
+    onClosePreview={onClosePreview}
+    onCloseSelection={pane.onCloseSelection}
+    onRemoveSelection={pane.onRemoveSelection}
+    onPreviewSelection={pane.onPreviewSelection}
+    onCreated={pane.onCreated}
+    onAction={pane.onAction}
+  />
+);
 
 const librarySidePanes = ({
   isMobile,
@@ -102,7 +63,7 @@ const librarySidePanes = ({
   if (!isMobile) {
     return [
       <PaneLayout.Pane key="side" background="transparent">
-        {renderLibraryRightPane(pane)}
+        {libraryRightPaneElement(pane, pane.onClosePreview)}
       </PaneLayout.Pane>,
     ];
   }
@@ -125,7 +86,7 @@ const librarySidePanes = ({
       </PaneLayout.Pane>
     );
   }
-  if (pane.creating || pane.selectedId) {
+  if (pane.creating || pane.selectedIds.length > 0) {
     panes.push(
       <PaneLayout.Pane
         key="preview"
@@ -133,7 +94,7 @@ const librarySidePanes = ({
         mobileSnap={pane.creating ? 'full' : 'half'}
         onMobileClose={pane.onClosePreview}
       >
-        {renderLibraryRightPane({ ...pane, onClosePreview: popPreview })}
+        {libraryRightPaneElement(pane, popPreview)}
       </PaneLayout.Pane>
     );
   }

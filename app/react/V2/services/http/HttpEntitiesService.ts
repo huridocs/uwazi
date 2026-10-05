@@ -6,7 +6,11 @@ import * as entitiesApi from '#V2/api/entities/index.js';
 import { requestStatusAtom } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusTypes.js';
 import { createUuid } from '#V2/utils/uuid.js';
-import type { EntitiesService, EntitySaveInput } from '../contracts/EntitiesService.js';
+import type {
+  EntitiesService,
+  EntitySaveInput,
+  MultipleUpdateOptions,
+} from '../contracts/EntitiesService.js';
 import type { ServiceRequestOptions } from '../contracts/ServiceRequestOptions.js';
 
 const toWarning = (error: unknown): string => {
@@ -76,6 +80,14 @@ const httpEntitiesService: EntitiesService = {
   },
 
   delete: async (sharedIds, { headers } = {}) => entitiesApi.remove(sharedIds, headers),
+
+  multipleUpdate: async (request, options: MultipleUpdateOptions) => {
+    const { headers, language, notifySuccess = true } = options;
+    const [data, error] = await entitiesApi.multipleUpdate(request, language, headers);
+    if (error || data === undefined) return [undefined, error];
+    if (notifySuccess) notify('success', t('System', 'Saved successfully.', null, false));
+    return [data];
+  },
 
   getPermissions: async (sharedIds, { headers } = {}) =>
     entitiesApi.getPermissions(sharedIds, headers),

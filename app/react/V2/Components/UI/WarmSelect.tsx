@@ -48,10 +48,10 @@ const WarmSelect = <T extends string>({
   }, [open]);
   const current = options.find(option => option.value === value) ?? options[0];
   const triggerClass =
-    'inline-flex h-8 max-w-full cursor-pointer items-center gap-1 rounded-md border border-border bg-paper ps-3 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/35 disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex h-8 max-w-64 cursor-pointer items-center gap-1 overflow-hidden rounded-md border border-border bg-paper ps-3 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/35 disabled:cursor-not-allowed disabled:opacity-60';
 
   return (
-    <div ref={ref} className="relative w-max shrink-0">
+    <div ref={ref} className="relative w-max max-w-64 shrink-0">
       <button
         type="button"
         disabled={disabled}
@@ -61,7 +61,8 @@ const WarmSelect = <T extends string>({
         aria-label={ariaLabel}
         className={triggerClass}
       >
-        <span className="truncate">{current?.label}</span>
+        <span className="min-w-0 flex-1 truncate">{current?.label}</span>
+        {current?.accessory ? <span className="shrink-0">{current.accessory}</span> : null}
         <ChevronDownIcon
           className={`h-3.5 w-3.5 shrink-0 text-ink-secondary transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden
@@ -70,7 +71,7 @@ const WarmSelect = <T extends string>({
       {open && !disabled && (
         <div
           role="listbox"
-          className={`absolute top-full z-30 mt-1 w-max min-w-full rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
+          className={`absolute top-full z-30 mt-1 w-max min-w-full max-w-72 rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
             align === 'end' ? 'end-0' : 'start-0'
           }`}
         >
@@ -84,13 +85,13 @@ const WarmSelect = <T extends string>({
                 onChange(option.value);
                 setOpen(false);
               }}
-              className={`flex w-max min-w-full cursor-pointer items-center gap-2 whitespace-nowrap px-3 py-1.5 text-start text-xs transition-colors ${
+              className={`flex w-full min-w-0 cursor-pointer items-center gap-2 px-3 py-1.5 text-start text-xs transition-colors ${
                 option.value === value
                   ? 'bg-vellum font-semibold text-ink'
                   : 'text-ink-secondary hover:bg-warm'
               }`}
             >
-              <span>{option.label}</span>
+              <span className="min-w-0 flex-1 truncate">{option.label}</span>
               {option.accessory === undefined ? null : (
                 <span className="ms-auto shrink-0 text-meta text-ink-tertiary">
                   {option.accessory}

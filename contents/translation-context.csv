@@ -1553,3 +1553,9 @@ SEO meta description,Tooltip,Settings > Collection,"Tooltip explaining the meta 
 SEO og title description,Tooltip,Settings > Collection,"Tooltip explaining og:title: the title used when sharing the collection; falls back to the page title if empty.",false
 SEO og description,Tooltip,Settings > Collection,"Tooltip explaining og:description: the social preview description; falls back to the meta description if empty.",false
 SEO og image description,Tooltip,Settings > Collection,"Tooltip explaining og:image: the social preview image, with a recommended size of 1200×630 pixels.",false
+Thumbnail size,Field label,Library,Section heading in the Library card display menu for the Small Medium and Large thumbnail size choices.,false
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,UI text,Library,"Warning at the top of the multi-entity edit form: every filled field is saved onto all selected entities.",false
+Selection,UI text,Library,Heading of the right-hand panel that lists the entities currently selected in the Library.,false
+Close selection list,Accessible label,Library,Accessible name of the button that closes the Library selection list.,false
+Selected entities,Accessible label,Library,Accessible name of the list of entities in the Library selection panel.,false
+Remove from selection,Tooltip,Library,Tooltip on the button that removes one entity from the Library selection.,false

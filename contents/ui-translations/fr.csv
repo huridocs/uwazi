@@ -230,6 +230,7 @@ Click to select files,Cliquez pour sélectionner des fichiers
 Close,Fermer
 Close filters,Fermer les filtres
 Close modal,Fermer la fenêtre
+Close selection list,Fermer la liste de sélection
 Close side panel,Fermer le panneau latéral
 Code,Code
 Collaborator,Collaborateur
@@ -1162,6 +1163,7 @@ Remove,Supprimer
 Remove data source,Retirer la source de données
 Remove filter,Retirer le filtre
 Remove from connection,Déconnecter
+Remove from selection,Retirer de la sélection
 Remove from training set,Retirer de l'ensemble d'apprentissage
 remove icon,Supprimer l'icône
 Remove icon,Supprimer l'icône
@@ -1284,9 +1286,11 @@ Select...,Sélectionner...
 Select…,Sélectionner…
 Selected,Sélectionné
 selected,Sélectionné
+Selected entities,Entités sélectionnées
 selected of,sélectionné sur
 Selected or suggested,Sélectionnés ou suggérés
 Selected templates,Modèles sélectionnés
+Selection,Sélection
 Send,Envoyer
 Send message,Envoyer le message
 Send recovery email,Envoyer mail de récupération
@@ -1505,6 +1509,7 @@ this template,ce modèle
 This template is in use by existing entities and cannot be deleted.,Ce modèle est utilisé par des entités existantes et ne peut pas être supprimé.
 Thumbnail,Vignette
 Thumbnail frame,Cadre de miniature
+Thumbnail size,Taille de la miniature
 Time,Temps
 Time (UTC),Heure (UTC)
 Timeline,Chronologie
@@ -1656,6 +1661,7 @@ Visibility,Visibilité
 Visualization data updated from your collection.,Données de visualisation mises à jour à partir de votre collection.
 WARNING,AVERTISSEMENT
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Attention : vous modifiez plusieurs entités. La valeur de chaque champ sera appliquée à toutes.
 We can't find the page you're looking for.,Nous ne trouvons pas la page que vous recherchez.
 Week,Semaine
 Weekly,Hebdomadaire
