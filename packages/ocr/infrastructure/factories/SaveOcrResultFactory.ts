@@ -18,7 +18,6 @@ type Overrides = {
   ocrEngine?: OcrEngine;
   sockets?: WebSockets;
   relationshipsV1DS?: RelationshipsV1DataSource;
-  now?: () => number;
 };
 
 class SaveOcrResultFactory {
@@ -37,7 +36,6 @@ class SaveOcrResultFactory {
       sockets: overrides.sockets ?? new V1WebSocketsWrapper(),
       jobs: new OcrJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
       tenantName: ExecutionContext.currentTenant.name,
-      now: overrides.now ?? Date.now,
       transactionManager: ExecutionContext.transactionManager,
     });
   }

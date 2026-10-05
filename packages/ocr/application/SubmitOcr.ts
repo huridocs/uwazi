@@ -19,7 +19,6 @@ type Deps = {
   jobs: OcrJobs;
   sockets: WebSockets;
   tenantName: string;
-  now: () => number;
   /** Requests waiting in the service beyond which new ones hold back. */
   maxBacklog: number;
   /** How long a held-back request waits before it is tried again. */
@@ -57,7 +56,7 @@ class SubmitOcr extends AbstractUseCase<Input, void, Deps> {
 
   private async send(record: OcrRecord) {
     const content = await this.readPdf(record.filename);
-    const key = record.submit(this.deps.now());
+    const key = record.submit();
 
     try {
       await this.deps.ocrEngine.submit({
@@ -89,7 +88,7 @@ class SubmitOcr extends AbstractUseCase<Input, void, Deps> {
   }
 
   private async fail(record: OcrRecord, reason: OcrFailureReason) {
-    record.failUnsent(reason, this.deps.now());
+    record.failUnsent(reason);
     await this.transactionManager.run(async () => this.deps.ocrDS.save(record));
     if (record.sourceFileId !== null) {
       this.deps.sockets.emitToTenantAdminsAndEditors(

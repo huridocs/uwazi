@@ -18,8 +18,6 @@ import {
   testConfigs,
 } from './OcrIntakeFixtures.js';
 
-const NOW = 1_700_000_000_000;
-
 describe('RequestOcr', () => {
   let engine: FakeOcrEngine;
 
@@ -47,7 +45,6 @@ describe('RequestOcr', () => {
         RequestOcrFactory.default({
           ocrEngine: engine,
           fileStorage: new FakeFileStorage(existing),
-          now: () => NOW,
         }).execute({ filename })
       );
 

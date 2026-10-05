@@ -14,7 +14,6 @@ import { OcrRecordDataSourceFactory } from './OcrRecordDataSourceFactory.js';
 type Overrides = {
   ocrEngine?: OcrEngine;
   fileStorage?: Pick<FileStorage, 'fileExists'>;
-  now?: () => number;
 };
 
 class RequestOcrFactory {
@@ -27,7 +26,6 @@ class RequestOcrFactory {
       ocrEngine: overrides.ocrEngine ?? OcrEngineFactory.default(),
       jobs: new OcrJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
       idGenerator: IdGeneratorFactory.default(),
-      now: overrides.now ?? Date.now,
       transactionManager: ExecutionContext.transactionManager,
     });
   }

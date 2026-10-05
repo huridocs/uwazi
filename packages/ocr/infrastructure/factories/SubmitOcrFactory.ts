@@ -15,7 +15,6 @@ const RETRY_DELAY_MS = Number(process.env.OCR_RETRY_DELAY_MS) || 60_000;
 type Overrides = {
   ocrEngine?: OcrEngine;
   sockets?: WebSockets;
-  now?: () => number;
 };
 
 class SubmitOcrFactory {
@@ -27,7 +26,6 @@ class SubmitOcrFactory {
       jobs: new OcrJobsAdapter({ jobsDispatcher: ExecutionContext.jobsDispatcher }),
       sockets: overrides.sockets ?? new V1WebSocketsWrapper(),
       tenantName: ExecutionContext.currentTenant.name,
-      now: overrides.now ?? Date.now,
       maxBacklog: MAX_BACKLOG,
       retryDelayMs: RETRY_DELAY_MS,
       transactionManager: ExecutionContext.transactionManager,

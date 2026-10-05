@@ -15,8 +15,6 @@ import {
   testConfigs,
 } from './OcrIntakeFixtures.js';
 
-const NOW = 1_700_000_000_000;
-
 const queued = record('doc', { filename: 'english.pdf' });
 
 describe('SubmitOcr', () => {
@@ -52,13 +50,14 @@ describe('SubmitOcr', () => {
 
     const execute = async (recordId = f.idString('doc')) =>
       testingEnvironment.runWithContext(async () =>
-        SubmitOcrFactory.default({ ocrEngine: engine, sockets, now: () => NOW }).execute({
+        SubmitOcrFactory.default({ ocrEngine: engine, sockets }).execute({
           recordId,
         })
       );
 
     it('should send the PDF with the key of a new attempt, then mark it processing', async () => {
       await setUp({ ...queued, language: 'spa' });
+      const before = Date.now();
 
       await execute();
 
@@ -68,8 +67,10 @@ describe('SubmitOcr', () => {
       expect(request).toMatchObject({ filename: 'english.pdf', language: 'es' });
       expect(request.content.subarray(0, 5).toString()).toBe('%PDF-');
       expect(await storedRecords(postgresCore)).toEqual([
-        expect.objectContaining({ status: 'processing', attempt: 1, requestedAt: NOW }),
+        expect.objectContaining({ status: 'processing', attempt: 1 }),
       ]);
+      const [{ requestedAt }] = await storedRecords(postgresCore);
+      expect(requestedAt).toBeGreaterThanOrEqual(before);
     });
 
     it.each(['processing', 'ready', 'failed'])('should leave a %s record alone', async status => {

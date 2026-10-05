@@ -30,7 +30,6 @@ type Deps = {
   sockets: WebSockets;
   jobs: OcrJobs;
   tenantName: string;
-  now: () => number;
 };
 
 /**
@@ -141,7 +140,7 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
         { file: source.id },
         { set: { file: resultFile.id } }
       );
-      attempt.record.complete(attempt.key, resultFile.id, this.deps.now());
+      attempt.record.complete(attempt.key, resultFile.id);
       await this.deps.ocrDS.save(attempt.record);
       this.transactionManager.onCommitted(async () => this.notify('ocr:ready', source.id));
     });
@@ -149,7 +148,7 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
 
   private async whenNotFetched(attempt: Attempt, error: unknown) {
     if (error instanceof OcrResultGone) {
-      attempt.record.requeue(this.deps.now());
+      attempt.record.requeue();
       await this.transactionManager.run(async () => {
         await this.deps.ocrDS.save(attempt.record);
         await this.deps.jobs.submitOcr(attempt.record.id);
@@ -164,7 +163,7 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, void, Deps> {
   }
 
   private async fail({ record, key }: Attempt, reason: OcrFailureReason) {
-    record.fail(key, reason, this.deps.now());
+    record.fail(key, reason);
     await this.transactionManager.run(async () => this.deps.ocrDS.save(record));
     if (record.sourceFileId !== null) {
       this.notify('ocr:error', record.sourceFileId);

@@ -68,10 +68,13 @@ class OcrRecord {
     sourceFileId: string | null;
     filename: string;
     language: LanguageISO6391;
-    now: number;
   }): OcrRecord {
-    const { now, ...identity } = props;
-    return new OcrRecord({ ...identity, status: OcrStatus.QUEUED, attempt: 0, lastUpdated: now });
+    return new OcrRecord({
+      ...props,
+      status: OcrStatus.QUEUED,
+      attempt: 0,
+      lastUpdated: Date.now(),
+    });
   }
 
   get sourceFileId() {
@@ -102,23 +105,23 @@ class OcrRecord {
     return this._failureReason;
   }
 
-  retry(now: number): void {
+  retry(): void {
     this.assertStatus(OcrStatus.FAILED, 'be retried');
     this._failureReason = undefined;
-    this.moveTo(OcrStatus.QUEUED, now);
+    this.moveTo(OcrStatus.QUEUED);
   }
 
-  submit(now: number): IdempotencyKey {
+  submit(): IdempotencyKey {
     this.assertStatus(OcrStatus.QUEUED, 'be submitted');
     this._attempt += 1;
-    this._requestedAt = now;
-    this.moveTo(OcrStatus.PROCESSING, now);
+    this.moveTo(OcrStatus.PROCESSING);
+    this._requestedAt = this._lastUpdated;
     return IdempotencyKey.of(this.id, this._attempt);
   }
 
-  requeue(now: number): void {
+  requeue(): void {
     this.assertStatus(OcrStatus.PROCESSING, 'be requeued');
-    this.moveTo(OcrStatus.QUEUED, now);
+    this.moveTo(OcrStatus.QUEUED);
   }
 
   accepts(key: IdempotencyKey): boolean {
@@ -127,29 +130,29 @@ class OcrRecord {
     );
   }
 
-  complete(key: IdempotencyKey, resultFileId: string, now: number): OcrResultOutcome {
+  complete(key: IdempotencyKey, resultFileId: string): OcrResultOutcome {
     if (!this.accepts(key)) {
       return 'ignored';
     }
     this._resultFileId = resultFileId;
     this._failureReason = undefined;
-    this.moveTo(OcrStatus.READY, now);
+    this.moveTo(OcrStatus.READY);
     return 'applied';
   }
 
-  fail(key: IdempotencyKey, reason: OcrFailureReason, now: number): OcrResultOutcome {
+  fail(key: IdempotencyKey, reason: OcrFailureReason): OcrResultOutcome {
     if (!this.accepts(key)) {
       return 'ignored';
     }
     this._failureReason = reason;
-    this.moveTo(OcrStatus.FAILED, now);
+    this.moveTo(OcrStatus.FAILED);
     return 'applied';
   }
 
-  failUnsent(reason: OcrFailureReason, now: number): void {
+  failUnsent(reason: OcrFailureReason): void {
     this.assertStatus(OcrStatus.QUEUED, 'fail unsent');
     this._failureReason = reason;
-    this.moveTo(OcrStatus.FAILED, now);
+    this.moveTo(OcrStatus.FAILED);
   }
 
   sourceRemoved(): void {
@@ -166,9 +169,9 @@ class OcrRecord {
     }
   }
 
-  private moveTo(status: OcrStatus, now: number) {
+  private moveTo(status: OcrStatus) {
     this._status = status;
-    this._lastUpdated = now;
+    this._lastUpdated = Date.now();
   }
 }
 

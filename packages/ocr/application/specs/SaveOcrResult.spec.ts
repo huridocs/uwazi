@@ -26,7 +26,6 @@ import {
   testConfigs,
 } from './OcrResultFixtures.js';
 
-const NOW = 1_700_000_000_000;
 const handle = { fileUrl: 'http://service/result' };
 const key = (attempt: number) => IdempotencyKey.of(f.idString('record'), attempt);
 const success = (overrides: Partial<OcrOutcome> = {}) =>
@@ -72,7 +71,6 @@ describe('SaveOcrResult', () => {
         SaveOcrResultFactory.default({
           ocrEngine: engine,
           sockets,
-          now: () => NOW,
           ...overrides,
         }).execute(outcome)
       );

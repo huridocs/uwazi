@@ -129,7 +129,6 @@ describe('OcrRecordDataSource', () => {
             sourceFileId: f.idString('fileNew'),
             filename: 'new.pdf',
             language: 'es',
-            now: 9000,
           })
         );
 
@@ -142,7 +141,7 @@ describe('OcrRecordDataSource', () => {
         });
         expect(snapshot(await sut().getById(f.idString('new')))).toMatchObject({
           language: 'es',
-          lastUpdated: 9000,
+          lastUpdated: expect.any(Number),
         });
       });
 
@@ -153,7 +152,6 @@ describe('OcrRecordDataSource', () => {
             sourceFileId: f.idString('fileNew'),
             filename: 'new.pdf',
             language: 'es',
-            now: 9000,
           })
         );
 
@@ -172,7 +170,6 @@ describe('OcrRecordDataSource', () => {
             sourceFileId: f.idString('fileA'),
             filename: 'a.pdf',
             language: 'en',
-            now: 9000,
           })
         );
 
@@ -187,7 +184,6 @@ describe('OcrRecordDataSource', () => {
             sourceFileId: null,
             filename: 'g.pdf',
             language: 'en',
-            now: 9000,
           })
         );
 
@@ -201,45 +197,41 @@ describe('OcrRecordDataSource', () => {
     describe('save()', () => {
       it('should persist a submission', async () => {
         const record = (await sut().getById(f.idString('queued')))!;
-        record.submit(9000);
+        record.submit();
 
         await sut().save(record);
 
         expect(snapshot(await sut().getById(f.idString('queued')))).toMatchObject({
           status: OcrStatus.PROCESSING,
           attempt: 1,
-          requestedAt: 9000,
-          lastUpdated: 9000,
+          requestedAt: record.lastUpdated,
+          lastUpdated: record.lastUpdated,
         });
       });
 
       it('should persist a result', async () => {
         const record = (await sut().getById(f.idString('otherProcessing')))!;
-        record.complete(
-          IdempotencyKey.of(record.id, record.attempt),
-          f.idString('resultNew'),
-          9000
-        );
+        record.complete(IdempotencyKey.of(record.id, record.attempt), f.idString('resultNew'));
 
         await sut().save(record);
 
         expect(snapshot(await sut().getById(f.idString('otherProcessing')))).toMatchObject({
           status: OcrStatus.READY,
           resultFileId: f.idString('resultNew'),
-          lastUpdated: 9000,
+          lastUpdated: record.lastUpdated,
         });
       });
 
       it('should persist a failure and clear it on retry', async () => {
         const record = (await sut().getById(f.idString('failed')))!;
-        record.retry(9000);
+        record.retry();
 
         await sut().save(record);
 
         expect(snapshot(await sut().getById(f.idString('failed')))).toMatchObject({
           status: OcrStatus.QUEUED,
           failureReason: undefined,
-          lastUpdated: 9000,
+          lastUpdated: record.lastUpdated,
         });
       });
 
@@ -258,7 +250,7 @@ describe('OcrRecordDataSource', () => {
       it('should not bring back a record deleted in the meantime', async () => {
         const record = (await sut().getById(f.idString('queued')))!;
         await sut().delete([f.idString('queued')]);
-        record.submit(9000);
+        record.submit();
 
         await sut().save(record);
 

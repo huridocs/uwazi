@@ -26,7 +26,6 @@ type Deps = {
   ocrEngine: OcrEngine;
   jobs: OcrJobs;
   idGenerator: IdGenerator;
-  now: () => number;
 };
 
 /**
@@ -78,14 +77,13 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
         sourceFileId: source.id,
         filename: source.filename,
         language: source.language,
-        now: this.deps.now(),
       });
       return { record, isNew: true };
     }
     if (existing.status !== OcrStatus.FAILED) {
       throw new OcrAlreadyActive(source.filename);
     }
-    existing.retry(this.deps.now());
+    existing.retry();
     return { record: existing, isNew: false };
   }
 

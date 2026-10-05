@@ -32,15 +32,23 @@ const statusesExcept = (...allowed: OcrStatus[]) =>
   Object.values(OcrStatus).filter(status => !allowed.includes(status));
 
 describe('OcrRecord', () => {
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(LATER);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('request()', () => {
-    it('should start queued, with no attempt and no result', () => {
-      const record = OcrRecord.request({ ...identity, now: NOW });
+    it('should start queued, with no attempt and no result, stamped now', () => {
+      const record = OcrRecord.request(identity);
 
       expect(record).toMatchObject({
         ...identity,
         status: OcrStatus.QUEUED,
         attempt: 0,
-        lastUpdated: NOW,
+        lastUpdated: LATER,
       });
       expect(record.requestedAt).toBeUndefined();
       expect(record.resultFileId).toBeUndefined();
@@ -53,7 +61,7 @@ describe('OcrRecord', () => {
     it('should start a new attempt and return its key', () => {
       const record = load({ status: OcrStatus.QUEUED, attempt: 2 });
 
-      const key = record.submit(LATER);
+      const key = record.submit();
 
       expect(key.equals(keyFor(3))).toBe(true);
       expect(record).toMatchObject({
@@ -65,7 +73,7 @@ describe('OcrRecord', () => {
     });
 
     it.each(statusesExcept(OcrStatus.QUEUED))('should refuse to submit a %s record', status => {
-      expect(() => load({ status }).submit(LATER)).toThrow(InvalidOcrTransition);
+      expect(() => load({ status }).submit()).toThrow(InvalidOcrTransition);
     });
   });
 
@@ -77,14 +85,14 @@ describe('OcrRecord', () => {
         failureReason: OcrFailureReason.UNEXPECTED,
       });
 
-      record.retry(LATER);
+      record.retry();
 
       expect(record).toMatchObject({ status: OcrStatus.QUEUED, attempt: 1, lastUpdated: LATER });
       expect(record.failureReason).toBeUndefined();
     });
 
     it.each(statusesExcept(OcrStatus.FAILED))('should refuse to retry a %s record', status => {
-      expect(() => load({ status }).retry(LATER)).toThrow(InvalidOcrTransition);
+      expect(() => load({ status }).retry()).toThrow(InvalidOcrTransition);
     });
   });
 
@@ -92,7 +100,7 @@ describe('OcrRecord', () => {
     it('should move a processing record back to queued', () => {
       const record = processing(2);
 
-      record.requeue(LATER);
+      record.requeue();
 
       expect(record).toMatchObject({ status: OcrStatus.QUEUED, attempt: 2, lastUpdated: LATER });
     });
@@ -100,7 +108,7 @@ describe('OcrRecord', () => {
     it.each(statusesExcept(OcrStatus.PROCESSING))(
       'should refuse to requeue a %s record',
       status => {
-        expect(() => load({ status }).requeue(LATER)).toThrow(InvalidOcrTransition);
+        expect(() => load({ status }).requeue()).toThrow(InvalidOcrTransition);
       }
     );
   });
@@ -131,7 +139,7 @@ describe('OcrRecord', () => {
     it('should store the result file and become ready', () => {
       const record = processing(2);
 
-      expect(record.complete(keyFor(2), 'result1', LATER)).toBe('applied');
+      expect(record.complete(keyFor(2), 'result1')).toBe('applied');
       expect(record).toMatchObject({
         status: OcrStatus.READY,
         resultFileId: 'result1',
@@ -143,16 +151,17 @@ describe('OcrRecord', () => {
     it('should ignore a stale key', () => {
       const record = processing(2);
 
-      expect(record.complete(keyFor(1), 'result1', LATER)).toBe('ignored');
+      expect(record.complete(keyFor(1), 'result1')).toBe('ignored');
       expect(record).toMatchObject({ status: OcrStatus.PROCESSING, lastUpdated: NOW });
       expect(record.resultFileId).toBeUndefined();
     });
 
     it('should ignore a duplicate result once ready', () => {
       const record = processing(1);
-      record.complete(keyFor(1), 'result1', LATER);
+      record.complete(keyFor(1), 'result1');
+      jest.spyOn(Date, 'now').mockReturnValue(LATER + 1);
 
-      expect(record.complete(keyFor(1), 'result2', LATER + 1)).toBe('ignored');
+      expect(record.complete(keyFor(1), 'result2')).toBe('ignored');
       expect(record.resultFileId).toBe('result1');
       expect(record.lastUpdated).toBe(LATER);
     });
@@ -162,7 +171,7 @@ describe('OcrRecord', () => {
     it('should record the reason and become failed', () => {
       const record = processing(1);
 
-      expect(record.fail(keyFor(1), OcrFailureReason.INVALID_PDF, LATER)).toBe('applied');
+      expect(record.fail(keyFor(1), OcrFailureReason.INVALID_PDF)).toBe('applied');
       expect(record).toMatchObject({
         status: OcrStatus.FAILED,
         failureReason: OcrFailureReason.INVALID_PDF,
@@ -174,7 +183,7 @@ describe('OcrRecord', () => {
     it('should ignore a stale key', () => {
       const record = processing(2);
 
-      expect(record.fail(keyFor(1), OcrFailureReason.UNEXPECTED, LATER)).toBe('ignored');
+      expect(record.fail(keyFor(1), OcrFailureReason.UNEXPECTED)).toBe('ignored');
       expect(record.status).toBe(OcrStatus.PROCESSING);
       expect(record.failureReason).toBeUndefined();
     });
@@ -182,7 +191,7 @@ describe('OcrRecord', () => {
     it('should ignore a result for a record that is not processing', () => {
       const record = load({ status: OcrStatus.READY, attempt: 1, resultFileId: 'result1' });
 
-      expect(record.fail(keyFor(1), OcrFailureReason.UNEXPECTED, LATER)).toBe('ignored');
+      expect(record.fail(keyFor(1), OcrFailureReason.UNEXPECTED)).toBe('ignored');
       expect(record.status).toBe(OcrStatus.READY);
     });
   });
@@ -191,7 +200,7 @@ describe('OcrRecord', () => {
     it('should fail a queued record that never reached the service', () => {
       const record = load({ status: OcrStatus.QUEUED });
 
-      record.failUnsent(OcrFailureReason.SERVICE_NOT_CONFIGURED, LATER);
+      record.failUnsent(OcrFailureReason.SERVICE_NOT_CONFIGURED);
 
       expect(record).toMatchObject({
         status: OcrStatus.FAILED,
@@ -201,7 +210,7 @@ describe('OcrRecord', () => {
     });
 
     it.each(statusesExcept(OcrStatus.QUEUED))('should refuse to fail a %s record', status => {
-      expect(() => load({ status }).failUnsent(OcrFailureReason.UNEXPECTED, LATER)).toThrow(
+      expect(() => load({ status }).failUnsent(OcrFailureReason.UNEXPECTED)).toThrow(
         InvalidOcrTransition
       );
     });
