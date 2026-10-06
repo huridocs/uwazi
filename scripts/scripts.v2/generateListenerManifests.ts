@@ -13,6 +13,7 @@ const generator = new ListenerManifestGenerator(
       root: 'packages/segmentation',
       output: 'packages/segmentation/infrastructure/listeners.generated.ts',
     },
+    { root: 'packages/ocr', output: 'packages/ocr/infrastructure/listeners.generated.ts' },
   ],
   PrettierSourceFormatter.format
 );

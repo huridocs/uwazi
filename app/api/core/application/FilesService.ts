@@ -170,6 +170,7 @@ class FilesService {
     });
   }
 
+  /** Must be called inside a transaction; the caller owns it. */
   async demoteToAttachment(fileId: string): Promise<void> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
 
@@ -191,18 +192,16 @@ class FilesService {
       content: pdfDoc.content,
     });
 
-    await this.deps.transactionManager.run(async () => {
-      await this.deps.filesDS.replaceFile(attachment);
+    await this.deps.filesDS.replaceFile(attachment);
 
-      this.deps.transactionManager.onCommitted(async () =>
-        this.deps.eventBus.emit(
-          new FileUpdatedEvent({
-            before: FileMappers.toDBO(pdfDoc),
-            after: FileMappers.toDBO(attachment),
-          })
-        )
-      );
-    });
+    this.deps.transactionManager.onCommitted(async () =>
+      this.deps.eventBus.emit(
+        new FileUpdatedEvent({
+          before: FileMappers.toDBO(pdfDoc),
+          after: FileMappers.toDBO(attachment),
+        })
+      )
+    );
   }
 
   async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {

@@ -3,6 +3,7 @@ import { EventListenerRegistry } from '#api/core/libs/eventEmitter/EventListener
 import { ListenerManifest } from '#api/core/libs/eventEmitter/ListenerManifest.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { OcrComposition } from '#ocr/composition';
 import { SegmentationComposition } from '#segmentation/composition';
 import { listeners } from './listeners.generated.js';
 
@@ -18,7 +19,7 @@ type RegisterJob = <T extends Dispatchable>(
  */
 class ListenerRegistration {
   static manifest(): ListenerManifest {
-    return [...listeners, ...SegmentationComposition.listeners];
+    return [...listeners, ...SegmentationComposition.listeners, ...OcrComposition.listeners];
   }
 
   /** Safe to call more than once: a listener already registered is left as it is. */

@@ -285,6 +285,10 @@
               {
                 "group": ["**/packages/segmentation/**", "#segmentation/**"],
                 "message": "The segmentation package is private. Import its public contract from '#segmentation'."
+              },
+              {
+                "group": ["**/packages/ocr/**", "#ocr/**"],
+                "message": "The OCR package is private. Import its public contract from '#ocr'."
               }
             ]
           }
@@ -328,6 +332,10 @@
                   "!#segmentation/composition"
                 ],
                 "message": "The segmentation package is private. Import its public contract from '#segmentation', or its host wiring from '#segmentation/composition'."
+              },
+              {
+                "group": ["**/packages/ocr/**", "#ocr/**", "!#ocr/composition"],
+                "message": "The OCR package is private. Import its public contract from '#ocr', or its host wiring from '#ocr/composition'."
               }
             ]
           }
@@ -363,6 +371,8 @@
                 "group": [
                   "#segmentation",
                   "#segmentation/**",
+                  "#ocr",
+                  "#ocr/**",
                   "#api/services/**",
                   "!#api/services/tasksmanager/**",
                   "#api/suggestions/**",
@@ -370,6 +380,38 @@
                   "#api/segmentation.v2/**"
                 ],
                 "message": "The segmentation package depends only on platform code in #api. Use relative imports inside the package, and never another module's internals."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ocr/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              },
+              {
+                "group": [
+                  "#ocr",
+                  "#ocr/**",
+                  "#segmentation",
+                  "#segmentation/**",
+                  "#api/services/**",
+                  "!#api/services/tasksmanager/**",
+                  "#api/files/**"
+                ],
+                "message": "The OCR package depends only on platform code in #api. Use relative imports inside the package, and never another module's internals."
               }
             ]
           }
@@ -386,6 +428,10 @@
               {
                 "group": ["**/packages/segmentation/**", "#segmentation/**"],
                 "message": "The segmentation package is private. Import its public contract from '#segmentation'."
+              },
+              {
+                "group": ["**/packages/ocr/**", "#ocr/**"],
+                "message": "The OCR package is private. Import its public contract from '#ocr'."
               }
             ]
           }
@@ -406,6 +452,10 @@
                   "!#segmentation/composition"
                 ],
                 "message": "The segmentation package is private. Import its public contract from '#segmentation', or its host wiring from '#segmentation/composition'."
+              },
+              {
+                "group": ["**/packages/ocr/**", "#ocr/**"],
+                "message": "The OCR package is private. Import its public contract from '#ocr'."
               }
             ]
           }

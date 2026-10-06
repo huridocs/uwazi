@@ -38,6 +38,8 @@
   "moduleNameMapper": {
     "^#api/(.*)\\.js$": "<rootDir>/api/$1",
     "^#api/(.*)": "<rootDir>/api/$1",
+    "^#ocr$": "<rootDir>/../packages/ocr/index",
+    "^#ocr/composition$": "<rootDir>/../packages/ocr/composition",
     "^#segmentation$": "<rootDir>/../packages/segmentation/index",
     "^#segmentation/composition$": "<rootDir>/../packages/segmentation/composition",
     "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
