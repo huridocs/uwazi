@@ -7,6 +7,7 @@ import {
 } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
 import { useEntitySearchParams, useUpdateEntityUrl } from '../../entityUrlState.js';
+import { useEntityPageView } from '../../Components/EntityPageView/EntityPageViewContext.js';
 import type { EntityMainTabsState, UseEntityTabsParams } from '../EntityTabsContext.js';
 import {
   applyMainTabSearchParam,
@@ -47,6 +48,7 @@ const useMainTabActions = ({
   setTabGroups: (updater: TabGroupsState | ((prev: TabGroupsState) => TabGroupsState)) => void;
   updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
 }) => {
+  const { hasEntityPageView } = useEntityPageView();
   const selectSideTab = useCallback(
     (sideTab: SideTabId) => {
       setTabGroups(prev => mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab }));
@@ -58,7 +60,11 @@ const useMainTabActions = ({
     (selectedMainTab: string) => {
       if (!isValidMainTab(selectedMainTab)) return;
       updateEntityUrl({
-        search: next => applyMainTabSearchParam(next, selectedMainTab, hasMainDocument),
+        search: next =>
+          applyMainTabSearchParam(next, selectedMainTab, {
+            hasMainDocument,
+            retainDocumentTab: hasEntityPageView,
+          }),
         hash: next => {
           const searchDirty = Boolean(next.get(SEARCH_PARAM)?.trim());
           const available = buttonsFor(selectedMainTab, searchDirty);
@@ -71,7 +77,7 @@ const useMainTabActions = ({
         },
       });
     },
-    [activeMainTab, buttonsFor, hasMainDocument, updateEntityUrl]
+    [activeMainTab, buttonsFor, hasEntityPageView, hasMainDocument, updateEntityUrl]
   );
 
   const stageSideTab = useCallback(

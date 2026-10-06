@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
@@ -162,12 +162,10 @@ const usePublishedModeForEntity = (sharedId: string | undefined) => {
   const mode = useAtomValue(entityDisplayModeAtom);
   const setMode = useSetAtom(entityDisplayModeAtom);
   const mainTab = useEntitySearchParams().get(MAIN_TAB_PARAM);
-  const mainTabRef = useRef(mainTab);
-  mainTabRef.current = mainTab;
 
   useLayoutEffect(() => {
-    setMode(isValidMainTab(mainTabRef.current) ? 'entity' : 'published');
-  }, [sharedId, setMode]);
+    setMode(isValidMainTab(mainTab) ? 'entity' : 'published');
+  }, [sharedId, mainTab, setMode]);
 
   return mode;
 };

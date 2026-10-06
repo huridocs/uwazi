@@ -152,6 +152,18 @@ describe('entity display mode', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Published view' }));
     expect(await screen.findByTestId('entity-page-markdown')).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('m=');
+    });
+  });
+
+  it('stays on the entity viewer when another main tab is selected', async () => {
+    renderEntity();
+    fireEvent.click(await screen.findByRole('button', { name: 'Entity view' }));
+    fireEvent.click(await screen.findByRole('tab', { name: 'Document' }));
+    expect(await screen.findByTestId('mock-pdf')).toBeInTheDocument();
+    expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();
   });
 
   it('asks to discard a dirty metadata edit instead of leaving the viewer', async () => {

@@ -39,6 +39,14 @@ const usePublishedViewActions = () => {
   const { isEditing, isDirty, requestDiscard } = useMetadataEditing();
 
   const activate = () => {
+    const showPublished = () => {
+      updateEntityUrl({
+        search: params => {
+          params.delete(MAIN_TAB_PARAM);
+        },
+      });
+      setMode('published');
+    };
     if (mode === 'published') {
       setTabGroups(prev => mergeTabGroup(prev, 'entity-main', { activeTabId: MAIN_TAB.METADATA }));
       updateEntityUrl({
@@ -50,10 +58,10 @@ const usePublishedViewActions = () => {
       return;
     }
     if (isEditing && isDirty) {
-      requestDiscard('discard', () => setMode('published'));
+      requestDiscard('discard', showPublished);
       return;
     }
-    setMode('published');
+    showPublished();
   };
 
   return { toEntity: mode === 'published', activate };
