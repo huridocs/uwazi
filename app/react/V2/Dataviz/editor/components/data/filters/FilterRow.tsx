@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Select } from '#V2/Components/Forms/Select.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
@@ -33,7 +33,7 @@ const FilterRow = ({ filter, sources, onChange, onRemove }: FilterRowProps) => {
           type="button"
           onClick={onRemove}
           className="text-ink-muted hover:text-ink"
-          aria-label="Remove filter"
+          aria-label={t('System', 'Remove filter', null, false)}
         >
           <XMarkIcon className="h-4 w-4" />
         </button>
@@ -47,7 +47,7 @@ const FilterRow = ({ filter, sources, onChange, onRemove }: FilterRowProps) => {
         <>
           <Select
             id={`filter-operator-${filter.id}`}
-            label="Operator"
+            label={t('System', 'Operator', null, false)}
             value={filter.operator}
             options={operators.map(op => ({ value: op, label: OPERATOR_LABELS[op] }))}
             onChange={e => {

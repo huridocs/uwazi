@@ -225,9 +225,9 @@ describe('Manage relationship types dialog', () => {
     });
 
     cy.get('[aria-label="Delete related to"]').click();
-    cy.get('[aria-label="Cancel deleting related to"]').should('be.visible');
-    cy.get('[aria-label="Cancel deleting related to"]').click();
-    cy.get('[aria-label="Cancel deleting related to"]').should('not.exist');
+    cy.get('[aria-label="Cancel related to"]').should('be.visible');
+    cy.get('[aria-label="Cancel related to"]').click();
+    cy.get('[aria-label="Cancel related to"]').should('not.exist');
 
     cy.get('[aria-label="Delete related to"]').click();
     cy.get('[aria-label="Delete related to"]').click();
@@ -239,7 +239,7 @@ describe('Manage relationship types dialog', () => {
     mountManageModal({ storyTemplates: templatesWithMentionsInUse });
 
     cy.get('[aria-label="Delete mentions"]').click({ force: true });
-    cy.get('[aria-label="Cancel deleting mentions"]').should('not.exist');
+    cy.get('[aria-label="Cancel mentions"]').should('not.exist');
   });
 
   it('keeps the type when delete is rejected', () => {

@@ -120,7 +120,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links, actions 
       type="button"
       className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
       aria-expanded={isOpen}
-      aria-label="Toggle navigation menu"
+      aria-label={t('System', 'Toggle navigation menu', null, false)}
     >
       <HamburgerIcon className="h-5 w-5" />
     </button>

@@ -109,12 +109,30 @@ describe('TableViewer', () => {
     renderTable({ onSelect, onFocusProperty });
 
     fireEvent.click(screen.getByText('Amnesty International'));
-    expect(onSelect).toHaveBeenCalledWith('org-1');
+    expect(onSelect).toHaveBeenCalledWith('org-1', {
+      shiftKey: false,
+      ctrlKey: false,
+      metaKey: false,
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Latitude: -35.9, Longitude: -65' }));
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'location');
     fireEvent.click(screen.getByRole('button', { name: 'hearing.mp4' }));
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'video');
+  });
+
+  it('does not select row text on shift-click and still selects the row', () => {
+    const onSelect = jest.fn();
+    renderTable({ onSelect });
+    const title = screen.getByText('Amnesty International');
+    expect(fireEvent.mouseDown(title, { shiftKey: true })).toBe(false);
+    expect(fireEvent.mouseDown(title)).toBe(true);
+    fireEvent.click(title, { shiftKey: true });
+    expect(onSelect).toHaveBeenCalledWith('org-1', {
+      shiftKey: true,
+      ctrlKey: false,
+      metaKey: false,
+    });
   });
 
   it('uses compact row padding by default', () => {

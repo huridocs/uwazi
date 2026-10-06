@@ -43,9 +43,42 @@ describe('LibraryCardsDisplayOptions', () => {
     expect(screen.queryByRole('menuitemcheckbox', { name: /Auto/ })).not.toBeInTheDocument();
   });
 
-  it('hides the thumbnail frame when thumbnails are off', () => {
+  it('offers small, medium and large thumbnail sizes and leaves connections out', () => {
+    const onThumbSizeChange = jest.fn();
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [templatesAtom, templates],
+          [translationsAtom, translations],
+        ]}
+      >
+        <LibraryCardsDisplayOptions
+          showThumbnail
+          showMetadata
+          onShowThumbnailChange={() => undefined}
+          onShowMetadataChange={() => undefined}
+          onThumbSizeChange={onThumbSizeChange}
+        />
+      </TestAtomStoreProvider>
+    );
+    expect(screen.getByText('Thumbnail size')).toBeInTheDocument();
+    expect(screen.queryByRole('menuitemcheckbox', { name: /Connections/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Small' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Medium' }));
+    expect(onThumbSizeChange).toHaveBeenCalledWith('m');
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Large' }));
+    expect(onThumbSizeChange).toHaveBeenCalledWith('l');
+  });
+
+  it('hides thumbnail size and frame when thumbnails are off', () => {
     renderCardsOptions(false);
     expect(screen.queryByRole('menuitemcheckbox', { name: /Landscape/ })).not.toBeInTheDocument();
+    expect(screen.queryByText('Thumbnail size')).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitemcheckbox', { name: 'Small' })).not.toBeInTheDocument();
     expect(screen.queryByText('Image fit')).not.toBeInTheDocument();
   });
 

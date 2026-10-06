@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { BaseDropdown } from './BaseDropdown.js';
 import type { MobileMenuAction } from './MobileMenuDropdown.js';
@@ -19,7 +19,7 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
       type="button"
       className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
       aria-expanded={isOpen}
-      aria-label="Toggle options menu"
+      aria-label={t('System', 'Toggle options menu', null, false)}
     >
       <EllipsisVerticalIcon className="h-5 w-5" />
     </button>

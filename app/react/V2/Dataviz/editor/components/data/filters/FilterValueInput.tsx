@@ -7,6 +7,7 @@ import { templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
 import { usesMultipleValues } from '#V2/Dataviz/utils/filterOperators.js';
 import { parseLocalizedDate, secondsToISODate } from '#V2/shared/dateHelpers.js';
+import { t } from '#app/I18N/index.js';
 
 type FilterValueInputProps = {
   filter: DatavizFilter;
@@ -38,7 +39,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
 
   const thesaurusOptions = useMemo(() => {
     const source = sources.find(s => s.alias === filter.sourceAlias) || sources[0];
-    const template = templates.find(t => t._id === source?.templateId);
+    const template = templates.find(tmpl => tmpl._id === source?.templateId);
     const prop = template?.properties?.find(p => p.name === filter.property);
     if (!prop?.content) return [];
     const thesaurus = thesauri.find(th => th._id === prop.content);
@@ -52,14 +53,14 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
       <div className="flex gap-2">
         <InputField
           id={`filter-from-${filter.id}`}
-          label="From"
+          label={t('System', 'From', null, false)}
           type={filter.propertyType === 'date' ? 'date' : 'number'}
           value={normalizeFilterValue(filter.from)}
           onChange={e => onChange({ from: parseDateOrStringValue(e.target.value) })}
         />
         <InputField
           id={`filter-to-${filter.id}`}
-          label="To"
+          label={t('System', 'To', null, false)}
           type={filter.propertyType === 'date' ? 'date' : 'number'}
           value={normalizeFilterValue(filter.to)}
           onChange={e => onChange({ to: parseDateOrStringValue(e.target.value) })}
@@ -79,7 +80,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
         options={thesaurusOptions}
         onChange={values => onChange({ values })}
         canBeEmpty
-        placeholder="Select values…"
+        placeholder={t('System', 'Select values…', null, false)}
       />
     );
   }
@@ -113,9 +114,9 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     return (
       <Select
         id={`filter-value-${filter.id}`}
-        label="Value"
+        label={t('System', 'Value', null, false)}
         value={String(filter.value || '')}
-        options={[{ value: '', label: 'Select…' }, ...thesaurusOptions]}
+        options={[{ value: '', label: t('System', 'Select…', null, false) }, ...thesaurusOptions]}
         onChange={e => onChange({ value: e.target.value })}
       />
     );
@@ -124,7 +125,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
   return (
     <InputField
       id={`filter-value-${filter.id}`}
-      label="Value"
+      label={t('System', 'Value', null, false)}
       type={filter.propertyType === 'numeric' ? 'number' : 'text'}
       value={String(filter.value ?? '')}
       onChange={e => onChange({ value: e.target.value })}

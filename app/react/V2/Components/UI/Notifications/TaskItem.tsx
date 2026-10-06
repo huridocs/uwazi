@@ -3,6 +3,7 @@ import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/out
 import { ProgressBar } from '#V2/Components/UI/ProgressBar.js';
 import { UwaziLoader } from '#V2/Components/UI/UwaziLoader.js';
 import { type StatusTask, type TaskStatus } from '#V2/atoms/requestStatusAtom.js';
+import { t } from '#app/I18N/index.js';
 
 interface TaskItemProps {
   task: StatusTask;
@@ -55,7 +56,7 @@ const TaskItem = ({ task, onRemove }: TaskItemProps) => {
         <button
           type="button"
           onClick={() => onRemove(task.id)}
-          aria-label="Hide task"
+          aria-label={t('System', 'Hide task', null, false)}
           className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-ink-secondary"
         >
           <XMarkIcon className="h-[13px] w-[13px]" aria-hidden="true" />

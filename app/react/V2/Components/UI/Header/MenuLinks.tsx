@@ -147,7 +147,7 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
       className={['relative z-0 flex min-w-0 flex-1 items-center gap-2', className]
         .filter(Boolean)
         .join(' ')}
-      aria-label="Primary"
+      aria-label={t('System', 'Primary', null, false)}
       aria-busy={!hasMeasured}
     >
       <div

@@ -1,14 +1,17 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { settingsAtom, themeModeAtom } from '../../../atoms/index.js';
 
 const ThemeToggle = ({ labeled = false }: { labeled?: boolean }) => {
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const settings = useAtomValue(settingsAtom);
   if (!settings.themeCustomization) return null;
-  const label = themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme';
+  const label =
+    themeMode === 'light'
+      ? t('System', 'Toggle dark theme', null, false)
+      : t('System', 'Toggle light theme', null, false);
   return (
     <button
       type="button"
@@ -18,7 +21,7 @@ const ThemeToggle = ({ labeled = false }: { labeled?: boolean }) => {
       title={label}
     >
       {themeMode === 'light' ? <MoonIcon className="h-4 w-4" /> : <SunIcon className="h-4 w-4" />}
-      {labeled ? <Translate>{label}</Translate> : null}
+      {labeled ? label : null}
     </button>
   );
 };

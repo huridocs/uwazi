@@ -4,6 +4,7 @@ import { formatLanguageName } from '#shared/language/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
 import type { PageEditorLanguage } from '../pageEditorForm.js';
+import { t } from '#app/I18N/index.js';
 
 type PageEditorLanguageSelectorProps = {
   languages: PageEditorLanguage[];
@@ -43,7 +44,7 @@ const PageEditorLanguageSelector = ({
         value={activeLanguage}
         options={languageOptions}
         onChange={onChange}
-        aria-label="Page language"
+        aria-label={t('System', 'Page language', null, false)}
         align="end"
         appearance="default"
       />

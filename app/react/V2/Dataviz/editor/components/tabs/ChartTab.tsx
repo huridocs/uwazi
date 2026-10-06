@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
@@ -158,7 +158,7 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
             />
             <InputField
               id="missing-value-label"
-              label="Empty value label"
+              label={t('System', 'Empty value label', null, false)}
               value={chart.missingValueLabel || 'No data'}
               onChange={e => onPatchChart({ missingValueLabel: e.target.value })}
             />
@@ -168,12 +168,12 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
           <>
             <Select
               id="label-format"
-              label="Label format"
+              label={t('System', 'Label format', null, false)}
               value={chart.pieOptions?.labelFormat || 'percentage'}
               options={[
-                { value: 'percentage', label: 'Percentage' },
-                { value: 'value', label: 'Value' },
-                { value: 'both', label: 'Value and percentage' },
+                { value: 'percentage', label: t('System', 'Percentage', null, false) },
+                { value: 'value', label: t('System', 'Value', null, false) },
+                { value: 'both', label: t('System', 'Value and percentage', null, false) },
               ]}
               onChange={e =>
                 onPatchChart({
@@ -186,7 +186,7 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
             />
             <InputField
               id="max-slices"
-              label="Max number of slices"
+              label={t('System', 'Max number of slices', null, false)}
               type="number"
               value={String(chart.pieOptions?.maxSlices ?? 10)}
               onChange={e =>
@@ -200,7 +200,7 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
             />
             <InputField
               id="others-label"
-              label="Others label"
+              label={t('System', 'Others label', null, false)}
               value={chart.pieOptions?.othersLabel || 'Other'}
               onChange={e =>
                 onPatchChart({

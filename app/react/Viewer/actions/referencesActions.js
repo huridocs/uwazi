@@ -7,6 +7,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { reloadRelationships } from '#app/Relationships/actions/actions.js';
 import * as uiActions from './uiActions.js';
+import { t } from '#app/I18N/index.js';
 
 export function setReferences(references) {
   return {
@@ -57,6 +58,8 @@ export function deleteReference(reference) {
     referencesAPI.delete(new RequestParams({ _id })).then(() => {
       dispatch(reloadRelationships(getState().relationships.list.sharedId));
       dispatch({ type: types.REMOVE_REFERENCE, reference });
-      dispatch(notificationActions.notify('Connection deleted', 'success'));
+      dispatch(
+        notificationActions.notify(t('System', 'Connection deleted', null, false), 'success')
+      );
     });
 }

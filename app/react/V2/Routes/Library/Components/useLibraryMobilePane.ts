@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 
 const useLibraryMobilePane = (
   selectedId: string | undefined,
@@ -22,4 +23,11 @@ const useLibraryMobilePane = (
   return { requestedPane, requestPane, filtersOpen, entityPane, openFilters, closeFilters };
 };
 
-export { useLibraryMobilePane };
+const useLibraryPaneRequest = (selectedIds: readonly string[], creating: boolean) => {
+  const isMobile = useIsMobile() === true;
+  const [selectedId] = selectedIds;
+  const pane = useLibraryMobilePane(selectedId, creating, isMobile);
+  return { isMobile, ...pane };
+};
+
+export { useLibraryMobilePane, useLibraryPaneRequest };

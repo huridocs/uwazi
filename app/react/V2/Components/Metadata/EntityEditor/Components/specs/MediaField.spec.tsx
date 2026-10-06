@@ -12,6 +12,7 @@ const mockGetCurrentTime = jest.fn(() => 125);
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  t: (_context: string, key: string) => key,
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({

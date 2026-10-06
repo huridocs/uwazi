@@ -10,8 +10,6 @@ import entities from '#api/entities/index.js';
 import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
 import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
-import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
-import { registerEventListeners as registerOcrListeners } from '#api/services/ocr/eventListeners.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
@@ -40,8 +38,6 @@ import {
 } from './fixtures.js';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
-
-registerOcrListeners(applicationEventsBus);
 
 type TestConfig = {
   name: string;
@@ -472,14 +468,6 @@ describe('files routes', () => {
         expect(allConnections.length).toBe(2);
         expect(allConnections[0]).toEqual(expect.objectContaining({ entity: 'entity3' }));
         expect(allConnections[1]).toEqual(expect.objectContaining({ entity: 'sharedId1' }));
-      });
-
-      it('should cleanup the ocr records related to the file', async () => {
-        const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
-        await request(app).delete('/api/files').query({
-          _id: uploadId2.toString(),
-        });
-        expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
       });
 
       describe('events', () => {

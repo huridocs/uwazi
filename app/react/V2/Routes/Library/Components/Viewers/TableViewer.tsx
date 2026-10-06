@@ -80,7 +80,7 @@ const renderLibraryTableCell = ({
 const TableViewer = ({
   rows,
   totalRows,
-  selectedId,
+  selectedIds = [],
   onSelect,
   onLoadMore,
   sort,
@@ -125,13 +125,27 @@ const TableViewer = ({
 
   return (
     <>
-      <div data-testid="library-table">
+      <div
+        data-testid="library-table"
+        onMouseDown={event => {
+          if (event.shiftKey) {
+            event.preventDefault();
+          }
+        }}
+      >
         <DataTable
           columns={columns}
           data={data}
           density={tableDensity}
-          selectedRowId={selectedId}
-          onRowClick={row => onSelect(row.sharedId)}
+          selectedRowIds={selectedIds}
+          rowSelectId={row => row.sharedId}
+          onRowClick={(row, event) =>
+            onSelect(row.sharedId, {
+              shiftKey: event.shiftKey,
+              ctrlKey: event.ctrlKey,
+              metaKey: event.metaKey,
+            })
+          }
           sort={sortState}
           onSort={
             onSortChange

@@ -7,6 +7,7 @@ import { IStore } from '#app/istore.js';
 import { ensure } from '#shared/tsUtils.js';
 import { FileType } from '#shared/types/fileType.js';
 import { AppDispatch } from '#app/thunkDispatch.js';
+import { t } from '#app/I18N/index.js';
 
 const tocGenerationActions = {
   reviewToc(fileId: string) {
@@ -26,7 +27,7 @@ const tocGenerationActions = {
         }),
       };
 
-      dispatch(notificationActions.notify('Document updated', 'success'));
+      dispatch(notificationActions.notify(t('System', 'Document updated', null, false), 'success'));
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', doc));
     };

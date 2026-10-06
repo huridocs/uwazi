@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { EntityAudioThumb } from './EntityAudioThumb.js';
 import {
   DEFAULT_THUMB_FIT,
@@ -95,7 +95,7 @@ const renderVideoPlayer = (src: string, className: string) => {
     >
       {embed ? (
         <iframe
-          title="Video"
+          title={t('System', 'Video', null, false)}
           src={embed}
           className="h-full w-full"
           allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
@@ -113,7 +113,7 @@ const renderVideoPlayer = (src: string, className: string) => {
 const renderVideoPoster = (className: string, onPlay: () => void) => (
   <button
     type="button"
-    aria-label="Play video"
+    aria-label={t('System', 'Play video', null, false)}
     className={`group flex items-center justify-center bg-black ${className}`.trim()}
     onClick={event => {
       stopCardActivation(event);

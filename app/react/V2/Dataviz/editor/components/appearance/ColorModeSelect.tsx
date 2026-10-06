@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Select } from '#V2/Components/Forms/Select.js';
 import type { ColorMode } from '#V2/Dataviz/types/definition.js';
+import { t } from '#app/I18N/index.js';
 import {
   CUSTOM_COLOR_TARGET_HINTS,
   type CustomColorTargetKind,
@@ -9,17 +10,17 @@ import {
 const BASE_COLOR_MODE_OPTIONS: { value: ColorMode; label: string; hint: string }[] = [
   {
     value: 'theme',
-    label: 'Chart palette',
+    label: t('System', 'Chart palette', null, false),
     hint: 'Assigns colors in order from a fixed palette. Repeats when there are more values than colors.',
   },
   {
     value: 'template',
-    label: 'Template colors',
+    label: t('System', 'Template colors', null, false),
     hint: 'Uses each template brand color when comparing data sources or when the dimension is entity type.',
   },
   {
     value: 'custom',
-    label: 'Custom colors',
+    label: t('System', 'Custom colors', null, false),
     hint: 'Override colors for specific values below.',
   },
 ];
@@ -64,7 +65,7 @@ const ColorModeSelect = ({
     <div className="flex flex-col gap-2">
       <Select
         id="color-mode"
-        label="Color mode"
+        label={t('System', 'Color mode', null, false)}
         value={effectiveValue}
         options={options.map(option => ({ value: option.value, label: option.label }))}
         onChange={e => onChange(e.target.value as ColorMode)}

@@ -1,4 +1,4 @@
-Key,Component,View,Context
+Key,Component,View,Context,DoNotTranslate
 """Costa Rica""",Search tip example,Entity view,"Monospace example query in the search tips popover, illustrating an exact phrase search."
 """the status""~5",Search tip example,Entity view,"Monospace example query in the search tips popover, illustrating a proximity search."
 *please keep this key secret and don't share it.,Field label (warning note),Settings > Account,"Secondary warning line under the secret-key label, cautioning the user not to share the key."
@@ -1400,3 +1400,162 @@ Zoom in,Tooltip text,Library,"Tooltip on the zoom-in control, shared between the
 Zoom in library view,Button aria-label,Library,Accessibility label on the zoom-in control in the Library's card view mode toggle.
 Zoom out,Tooltip text,Library,"Tooltip on the zoom-out control, shared between the Library's card zoom buttons and the Entity view's relationship graph zoom controls."
 Zoom out library view,Button aria-label,Library,Accessibility label on the zoom-out control in the Library's card view mode toggle.
+Human Rights Information and Documentation Systems,Accessible label,Shared,"Accessible name of the HURIDOCS logo in the site footer; organization name, keep in English.",true
+Close side panel,Accessible label,Entity view,Accessible name of the Close side panel control on Entity view.,false
+Connection deleted,Toast notification,Entity view,Toast shown when connection deleted.,false
+New Relationships,Accessible label,Entity view,Accessible name of the New Relationships control on Entity view.,false
+Reset Search input,Accessible label,Library,Accessible name of the Reset Search input control on Library.,false
+Search button,Accessible label,Library,Accessible name of the Search button control on Library.,false
+Enter title,Placeholder,Shared,Placeholder shown in Shared.,false
+Remove timelink,Accessible label,Shared,Accessible name of the Remove timelink control on Shared.,false
+"Ask Bert anything, or describe a task…",Placeholder,AI Assistant (Bert) panel,Placeholder shown in AI Assistant (Bert) panel.,false
+Send message,Accessible label,AI Assistant (Bert) panel,Accessible name of the Send message control on AI Assistant (Bert) panel.,false
+Select icon...,Placeholder,Shared,Placeholder shown in Shared.,false
+Hours,Accessible label,Shared,Accessible name of the Hours control on Shared.,false
+Minutes,Accessible label,Shared,Accessible name of the Minutes control on Shared.,false
+Seconds,Accessible label,Shared,Accessible name of the Seconds control on Shared.,false
+Clear selection,Accessible label,Shared,Accessible name of the Clear selection control on Shared.,false
+Preview mode,Accessible label,Settings > Theme and branding,Accessible name of the Preview mode control on Settings > Theme and branding.,false
+Default file,Accessible label,Shared,Accessible name of the Default file control on Shared.,false
+YouTube video player,Accessible label,Shared,Accessible name of the YouTube video player control on Shared.,false
+Vimeo video player,Accessible label,Shared,Accessible name of the Vimeo video player control on Shared.,false
+Play video,Accessible label,Shared,Accessible name of the Play video control on Shared.,false
+Close filters,Accessible label,Shared,Accessible name of the Close filters control on Shared.,false
+Toggle navigation menu,Accessible label,Global header,Accessible name of the Toggle navigation menu control on Global header.,false
+Toggle options menu,Accessible label,Global header,Accessible name of the Toggle options menu control on Global header.,false
+Close modal,Accessible label,Shared,Accessible name of the Close modal control on Shared.,false
+Server disconnected,Accessible label,Shared,Accessible name of the Server disconnected control on Shared.,false
+Dismiss notification,Accessible label,Shared,Accessible name of the Dismiss notification control on Shared.,false
+Hide task,Accessible label,Shared,Accessible name of the Hide task control on Shared.,false
+Pagination,Accessible label,Shared,Accessible name of the Pagination control on Shared.,false
+Type to filter…,Placeholder,Settings > Data Visualizations,Placeholder shown in Settings > Data Visualizations.,false
+Remove filter,Accessible label,Settings > Data Visualizations,Accessible name of the Remove filter control on Settings > Data Visualizations.,false
+Select values…,Placeholder,Settings > Data Visualizations,Placeholder shown in Settings > Data Visualizations.,false
+Remove data source,Accessible label,Settings > Data Visualizations,Accessible name of the Remove data source control on Settings > Data Visualizations.,false
+e.g. hombres,Placeholder,Settings > Data Visualizations,"Placeholder example in a Dataviz data-source field; keep the sample word hombres, translate only e.g.",false
+Dataviz editor,Accessible label,Settings > Data Visualizations,Accessible name of the Dataviz editor control on Settings > Data Visualizations.,false
+Dataviz preview,Accessible label,Settings > Data Visualizations,Accessible name of the Dataviz preview control on Settings > Data Visualizations.,false
+File language,Accessible label,Entity view,Accessible name of the File language control on Entity view.,false
+Row actions,Accessible label,Entity view,Accessible name of the Row actions control on Entity view.,false
+Upload progress,Accessible label,Entity view,Accessible name of the Upload progress control on Entity view.,false
+Select all files,Accessible label,Entity view,Accessible name of the Select all files control on Entity view.,false
+Decrease indentation,Accessible label,Entity view,Accessible name of the Decrease indentation control on Entity view.,false
+Increase indentation,Accessible label,Entity view,Accessible name of the Increase indentation control on Entity view.,false
+Save label,Accessible label,Entity view,Accessible name of the Save label control on Entity view.,false
+Delete entry,Accessible label,Entity view,Accessible name of the Delete entry control on Entity view.,false
+Clear sort,Accessible label,Entity view,Accessible name of the Clear sort control on Entity view.,false
+Clear selection filter,Accessible label,Entity view,Accessible name of the Clear selection filter control on Entity view.,false
+Files list,Accessible label,Entity view,Accessible name of the Files list control on Entity view.,false
+Available files,Accessible label,Entity view,Accessible name of the Available files control on Entity view.,false
+Entity primary,Accessible label,Entity view,Accessible name of the Entity primary control on Entity view.,false
+Side panel tabs,Accessible label,Entity view,Accessible name of the Side panel tabs control on Entity view.,false
+From date,Accessible label,Library,Accessible name of the From date control on Library.,false
+To date,Accessible label,Library,Accessible name of the To date control on Library.,false
+Play audio,Accessible label,Library,Accessible name of the Play audio control on Library.,false
+Video,Accessible label,Library,Accessible name of the Video control on Library.,false
+Library results,Accessible label,Library,Accessible name of the Library results control on Library.,false
+Page language,Accessible label,Settings > Pages,Accessible name of the Page language control on Settings > Pages.,false
+Paragraph extractor wizard,Accessible label,Settings > Paragraph Extraction,Accessible name of the Paragraph extractor wizard control on Settings > Paragraph Extraction.,false
+Settings navigation,Accessible label,Shared,Accessible name of the Settings navigation control on Shared.,false
+Document deleted,Toast notification,Entity view,Toast shown when document deleted.,false
+Connections,UI text,AI Assistant (Bert) panel,UI text shown on AI Assistant (Bert) panel.,false
+This document,UI text,AI Assistant (Bert) panel,UI text shown on AI Assistant (Bert) panel.,false
+Icons,UI text,Shared,UI text shown on Shared.,false
+Flags,UI text,Shared,UI text shown on Shared.,false
+Surface text,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Secondary text,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Primary action,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Secondary button text,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Secondary button border,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Uwazi label,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Theme preview label,UI text,Settings > Theme and branding,UI text shown on Settings > Theme and branding.,false
+Toggle dark theme,Accessible label,Global header,Accessible name of the Toggle dark theme control on Global header.,false
+Toggle light theme,Accessible label,Global header,Accessible name of the Toggle light theme control on Global header.,false
+Manual,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Sum,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Avg,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Min,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Max,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Week,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Computed years,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Entity type (template),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Aggregation,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Date interval,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Max buckets,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Search chart types,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Select property…,Placeholder,Settings > Data Visualizations,Placeholder shown in Settings > Data Visualizations.,false
+Operator,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Select…,Placeholder,Settings > Data Visualizations,Placeholder shown in Settings > Data Visualizations.,false
+Search templates,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Select template…,Placeholder,Settings > Data Visualizations,Placeholder shown in Settings > Data Visualizations.,false
+Alias,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Compare side by side,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Combine counts,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+How to combine sources,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Data,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Advanced,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Page embed code,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+External iframe code,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Echarts configuration,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Empty value label,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Label format,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Percentage,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Value and percentage,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Max number of slices,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Others label,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Primary dimension (X-axis / categories),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Second dimension (series / stacks),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Live (always up to date),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Snapshot (manual),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Snapshot (scheduled),UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Frequency,UI text,Settings > Data Visualizations,UI text shown on Settings > Data Visualizations.,false
+Daily,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Weekly,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Monthly,Option label,Settings > Data Visualizations,Option label in Settings > Data Visualizations.,false
+Tree,Option label,Entity view,Option label in Entity view.,false
+Graph,Option label,Entity view,Option label in Entity view.,false
+Detail,UI text,Entity view,UI text shown on Entity view.,false
+Overview,UI text,Entity view,UI text shown on Entity view.,false
+Portrait,Option label,Library,Option label in Library.,false
+Landscape,Option label,Library,Option label in Library.,false
+qr code,Accessible label,Settings > Account,Accessible name of the qr code control on Settings > Account.,false
+New Group,Modal heading,Settings > Menu,Side-panel heading on Settings > Menu.,false
+Edit Group,Modal heading,Settings > Menu,Side-panel heading on Settings > Menu.,false
+New Link,Modal heading,Settings > Menu,Side-panel heading on Settings > Menu.,false
+Edit Link,Modal heading,Settings > Menu,Side-panel heading on Settings > Menu.,false
+Edit relationship type,Modal heading,Settings > Relationship Types,Side-panel heading on Settings > Relationship Types.,false
+Select page,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Rich text,Option label,Settings > Templates,Option label in Settings > Templates.,false
+Numeric,Option label,Settings > Templates,Option label in Settings > Templates.,false
+Multiple dates,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Multiple date ranges,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Image,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Media,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Geolocation,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Violated articles,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
+Uwazi Design,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
+Legacy Uwazi,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
+Custom pair,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
+Chart palette,Option label,Settings > Dataviz > Appearance tab,Dropdown option that assigns chart series colors in order from a fixed palette and repeats when there are more values than colors.,false
+Template colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that uses each template brand color when comparing data sources or when the dimension is entity type.,false
+Custom colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that lets the user override colors for specific chart values.,false
+Color mode,Field label,Settings > Dataviz > Appearance tab,Label on the select that chooses how chart series colors are assigned.,false
+SEO,UI text,Settings > Collection,Card title for the instance SEO settings section.,true
+Page title,Field label,Settings > Collection,Label for the HTML page title field used in browser tabs and search results.,false
+Meta description,Field label,Settings > Collection,Label for the short collection description that search engines may show in results.,false
+Open Graph,UI text,Settings > Collection,Section heading for the Open Graph fields used in social media previews.,true
+og:title,Field label,Settings > Collection,Open Graph title protocol property name shown as a field label.,true
+og:description,Field label,Settings > Collection,Open Graph description protocol property name shown as a field label.,true
+og:image,Field label,Settings > Collection,Open Graph image protocol property name shown as a field label.,true
+Select Open Graph image,Button label,Settings > Collection,Button that opens the image picker for the Open Graph share image.,false
+SEO page title description,Tooltip,Settings > Collection,Tooltip explaining the page title field: default HTML title in browser tabs and search results.,false
+SEO meta description,Tooltip,Settings > Collection,"Tooltip explaining the meta description field: a short collection summary for search results, about 150–160 characters.",false
+SEO og title description,Tooltip,Settings > Collection,"Tooltip explaining og:title: the title used when sharing the collection; falls back to the page title if empty.",false
+SEO og description,Tooltip,Settings > Collection,"Tooltip explaining og:description: the social preview description; falls back to the meta description if empty.",false
+SEO og image description,Tooltip,Settings > Collection,"Tooltip explaining og:image: the social preview image, with a recommended size of 1200×630 pixels.",false
+Thumbnail size,Field label,Library,Section heading in the Library card display menu for the Small Medium and Large thumbnail size choices.,false
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,UI text,Library,"Warning at the top of the multi-entity edit form: every filled field is saved onto all selected entities.",false
+Selection,UI text,Library,Heading of the right-hand panel that lists the entities currently selected in the Library.,false
+Close selection list,Accessible label,Library,Accessible name of the button that closes the Library selection list.,false
+Selected entities,Accessible label,Library,Accessible name of the list of entities in the Library selection panel.,false
+Remove from selection,Tooltip,Library,Tooltip on the button that removes one entity from the Library selection.,false

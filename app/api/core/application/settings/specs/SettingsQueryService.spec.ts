@@ -16,6 +16,10 @@ const stored = {
   mailerConfig: 'smtp://secret',
   contactEmail: 'admin@example.com',
   languages: [{ key: 'en', label: 'English', default: true }],
+  seo: {
+    title: 'Public title',
+    description: 'Public description',
+  },
 } as SettingsType;
 
 const createSut = (actor?: User) => {
@@ -46,6 +50,7 @@ describe('SettingsQueryService', () => {
 
     expect(result.site_name).toBe('Uwazi');
     expect(result.mailerConfig).toBeUndefined();
+    expect(result.seo).toEqual({ title: 'Public title', description: 'Public description' });
     expect(result.themeCustomization).toBe(true);
   });
 

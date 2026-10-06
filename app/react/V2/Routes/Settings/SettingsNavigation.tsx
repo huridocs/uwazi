@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
+import { t, Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { Icon } from '#app/UI/index.js';
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
@@ -19,7 +19,7 @@ const SettingsNavigation = () => {
 
   return (
     <nav
-      aria-label="Settings navigation"
+      aria-label={t('System', 'Settings navigation', null, false)}
       className="h-full flex flex-col gap-6 text-sm overflow-y-auto"
     >
       <section className="p-4">

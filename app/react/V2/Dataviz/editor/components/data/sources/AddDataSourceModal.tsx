@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { Modal } from '#V2/Components/UI/Modal.js';
 import { Button } from '#V2/Components/UI/Button.js';
@@ -18,7 +18,8 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
   const [search, setSearch] = useState('');
 
   const available = useMemo(
-    () => templates.filter(t => t._id && t.name.toLowerCase().includes(search.toLowerCase())),
+    () =>
+      templates.filter(tmpl => tmpl._id && tmpl.name.toLowerCase().includes(search.toLowerCase())),
     [templates, search]
   );
 
@@ -33,10 +34,10 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
       <Modal.Body>
         <InputField
           id="source-search"
-          label="Search templates"
+          label={t('System', 'Search templates', null, false)}
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Type to filter…"
+          placeholder={t('System', 'Type to filter…', null, false)}
         />
         <ul className="mt-4 max-h-60 space-y-1 overflow-y-auto">
           {available.length === 0 && (

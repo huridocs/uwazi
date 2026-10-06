@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { ChatBubbleBottomCenterTextIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { BertIconStacked } from './BertIcon.js';
 import { BertContextBar } from './BertContextBar.js';
@@ -128,7 +128,7 @@ const BertModal = ({
   }
 
   return (
-    <Modal size="xxxl" id="bert-modal" ariaLabel="Bert">
+    <Modal size="xxxl" id="bert-modal" ariaLabel={t('System', 'Bert', null, false)}>
       <Modal.Header className="!px-4 !py-3 shrink-0 items-center">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex items-center gap-1">

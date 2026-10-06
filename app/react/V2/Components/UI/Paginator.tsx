@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 const pageLinkClass =
   'px-3 py-1.5 leading-snug text-ink-secondary bg-paper border-r border-border border-y hover:bg-warm hover:text-ink';
@@ -38,7 +38,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
   const [showMore, setShowMore] = useState<Boolean>(totalPages - currentPage < 6);
 
   return (
-    <nav aria-label="Pagination">
+    <nav aria-label={t('System', 'Pagination', null, false)}>
       <ul className="flex flex-wrap items-center">
         <li key="previous">
           {isFirstPage ? (

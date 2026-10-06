@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -52,21 +52,21 @@ const RelationshipsActiveFilterChips = () => {
         <ActiveFilterChip
           label={`"${search}"`}
           onRemove={() => setSearch('')}
-          removeAriaLabel="Clear search"
+          removeAriaLabel={t('System', 'Clear search', null, false)}
         />
       )}
       {sort === 'asc' && (
         <ActiveFilterChip
           label={sortOptionLabel('asc')}
           onRemove={() => setSort(DEFAULT_RELATIONSHIPS_SORT)}
-          removeAriaLabel="Clear sort"
+          removeAriaLabel={t('System', 'Clear sort', null, false)}
         />
       )}
       {sort === 'desc' && (
         <ActiveFilterChip
           label={sortOptionLabel('desc')}
           onRemove={() => setSort(DEFAULT_RELATIONSHIPS_SORT)}
-          removeAriaLabel="Clear sort"
+          removeAriaLabel={t('System', 'Clear sort', null, false)}
         />
       )}
       {activeRelTypes.map(id => (
@@ -92,7 +92,7 @@ const RelationshipsActiveFilterChips = () => {
         <ActiveFilterChip
           label={<Translate>From selection</Translate>}
           onRemove={() => setCluster(null)}
-          removeAriaLabel="Clear selection filter"
+          removeAriaLabel={t('System', 'Clear selection filter', null, false)}
         />
       )}
     </>

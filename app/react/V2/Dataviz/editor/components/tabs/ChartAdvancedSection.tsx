@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -100,7 +100,7 @@ const ChartAdvancedSection = ({
       </div>
       {parseError && <p className="text-xs text-red-600">{parseError}</p>}
       <JsonCopyPanel
-        title="Echarts configuration"
+        title={t('System', 'Echarts configuration', null, false)}
         value={resolvedOption}
         emptyMessage="No configuration"
       />

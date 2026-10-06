@@ -8,7 +8,7 @@ import { Icon } from '#UI/Icon/Icon.js';
 import { withContext, withRouter } from '#app/componentWrappers.js';
 import { MetadataFormButtons, ShowMetadata } from '#app/Metadata/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { I18NLinkV2 as I18NLink, t, Translate } from '#app/I18N/index.js';
+import { t, Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { FileList } from '#app/Attachments/components/FileList.js';
 import { ConnectionsList as Connections } from '#app/Viewer/components/ConnectionsList.js';
@@ -192,7 +192,7 @@ class DocumentSidePanel extends Component {
             type="button"
             className="closeSidepanel close-modal"
             onClick={this.close.bind(this)}
-            aria-label="Close side panel"
+            aria-label={t('System', 'Close side panel', null, false)}
           >
             <Icon icon="times" />
           </button>
@@ -422,7 +422,7 @@ class DocumentSidePanel extends Component {
                     to="newrelationships"
                     role="button"
                     tabIndex="0"
-                    aria-label="New Relationships"
+                    aria-label={t('System', 'New Relationships', null, false)}
                     component="div"
                   >
                     <I18NLink

@@ -3,6 +3,7 @@ import { data as routeData, isRouteErrorResponse } from 'react-router';
 import { ApiError } from '#shared/apiClient/index.js';
 import { isClient } from '#app/utils/index.js';
 import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
+import { t } from '#app/I18N/index.js';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -75,7 +76,7 @@ const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   reportErrorToSentry(error, key);
   const details =
     'json' in error ? error.json?.prettyMessage || error.json?.error : error.message || undefined;
-  notifyBridge('An error occurred', 'error', undefined, details);
+  notifyBridge(t('System', 'An error occurred', null, false), 'error', undefined, details);
 };
 
 const isApiError = (error: unknown): error is ApiError => error instanceof ApiError;

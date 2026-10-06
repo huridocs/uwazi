@@ -17,6 +17,20 @@ import { columns } from './components/TableComponents.js';
 import { Link, formatMenuLinks, sanitizeIds } from './shared.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
+const menuSidepanelTitle = (link?: Link & { parentId?: string }): string => {
+  const isNew = link?.title === '';
+  if (link?.type === 'group') {
+    if (isNew) {
+      return t('System', 'New Group', null, false);
+    }
+    return t('System', 'Edit Group', null, false);
+  }
+  if (isNew) {
+    return t('System', 'New Link', null, false);
+  }
+  return t('System', 'Edit Link', null, false);
+};
+
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
@@ -173,13 +187,7 @@ const MenuConfig = () => {
         </SettingsContent.Footer>
       </SettingsContent>
       <Sidepanel
-        title={
-          <Translate className="uppercase">
-            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
-              formValues?.type === 'group' ? 'Group' : 'Link'
-            }`}
-          </Translate>
-        }
+        title={<span className="uppercase">{menuSidepanelTitle(formValues)}</span>}
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
         size="medium"

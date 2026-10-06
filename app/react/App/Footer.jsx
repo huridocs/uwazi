@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, Translate } from '#app/I18N/index.js';
+import { t, Translate, I18NLink } from '#app/I18N/index.js';
 import { resetConsent } from '#app/App/cookieConsent.js';
 import { createSelector } from 'reselect';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
@@ -22,7 +22,12 @@ class Footer extends Component {
                   <img
                     src="/public/huridocs-logo.svg"
                     title="HURIDOCS"
-                    alt="Human Rights Information and Documentation Systems"
+                    alt={t(
+                      'System',
+                      'Human Rights Information and Documentation Systems',
+                      null,
+                      false
+                    )}
                   />
                 </a>
               </p>

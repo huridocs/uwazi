@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import type { SelectionRectangle, TextSelection } from '@huridocs/react-text-selection-handler';
 import { clearControlAnchor } from './functions/clearControlAnchor.js';
 import { mergeLineRectangles } from './functions/mergeLineRectangles.js';
+import { t } from '#app/I18N/index.js';
 
 const HIGHLIGHT_PAD_X = 8;
 const HIGHLIGHT_PAD_Y = 2;
@@ -88,7 +89,7 @@ const WordSelectionHighlight = ({
       {showClear && lastVisible && onClear ? (
         <button
           type="button"
-          aria-label="Clear selection"
+          aria-label={t('System', 'Clear selection', null, false)}
           onMouseDown={event => {
             event.preventDefault();
             event.stopPropagation();

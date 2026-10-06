@@ -116,6 +116,8 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
       <Helmet>
         <title>{entity.title}</title>
         <meta name="description" content={description} />
+        <meta property="og:title" content={entity.title} />
+        <meta property="og:description" content={description} />
         <link rel="canonical" href={canonicalPath} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>

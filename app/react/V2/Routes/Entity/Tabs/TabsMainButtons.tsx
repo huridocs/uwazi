@@ -9,6 +9,7 @@ import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index
 import { useMetadataEditing, useDirectedRelationships } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { MAIN_TAB } from './tabIds.js';
+import { t } from '#app/I18N/index.js';
 
 type TabsMainButtonsProps = {
   entity: EntityType;
@@ -87,7 +88,7 @@ const TabsMainButtons = ({
           groupId={groupId}
           buttons={buttons}
           onTabChange={onTabChange}
-          tabListAriaLabel="Entity primary"
+          tabListAriaLabel={t('System', 'Entity primary', null, false)}
         />
       </div>
       <EntityLanguageBar />
