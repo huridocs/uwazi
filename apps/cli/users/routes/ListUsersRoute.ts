@@ -14,7 +14,7 @@ class ListUsersRoute implements Route<ListUsersCliInput, UserListItem[]> {
 
   readonly tenancy = 'single-or-all';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, elasticsearch: false };
 
   readonly request = z.object({ role: z.nativeEnum(UserRole).optional() }).strict();
 
