@@ -83,11 +83,15 @@ describe('GetOcrStatus', () => {
       expect(await execute()).toEqual({ status: 'unsupportedLanguage' });
     });
 
-    it('should not ask the service about the language of a ready file', async () => {
-      await setUp([ofScan({ status: 'ready', attempt: 1, resultFile: f.id('result') })]);
+    it.each([
+      ['queued', { status: 'queued' }],
+      ['processing', { status: 'processing', attempt: 1, requestedAt: 3000 }],
+      ['ready', { status: 'ready', attempt: 1, resultFile: f.id('result') }],
+    ])('should not ask the service about the language of a %s file', async (status, overrides) => {
+      await setUp([ofScan(overrides)]);
       engine.supportedLanguages = [];
 
-      expect((await execute()).status).toBe('ready');
+      expect((await execute()).status).toBe(status);
       expect(engine.asked).toEqual([]);
     });
 

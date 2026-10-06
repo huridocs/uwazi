@@ -19,8 +19,9 @@ type Deps = {
 
 /**
  * Reports where a file stands with OCR. A file is found through its record whether it is the
- * source or the result. Unless the record is ready, the service is asked live whether it reads the
- * file's language, since the answer can change with the service.
+ * source or the result. When OCR could be asked for — no record yet, or a failed one — the service
+ * is asked live whether it reads the file's language, since the answer can change with the
+ * service. A record in the queue or ready is reported as it is, so the service is not needed.
  */
 class GetOcrStatus extends AbstractUseCase<Input, OcrFileStatus, Deps> {
   async execute({ filename }: Input): Promise<OcrFileStatus> {
@@ -33,10 +34,8 @@ class GetOcrStatus extends AbstractUseCase<Input, OcrFileStatus, Deps> {
       throw new FileIsNotADocument(filename);
     }
 
-    if (
-      record?.status !== OcrStatus.READY &&
-      !(await ocrAvailability.readableLanguageOf(file as PDFDocument))
-    ) {
+    const canBeRequested = !record || record.status === OcrStatus.FAILED;
+    if (canBeRequested && !(await ocrAvailability.readableLanguageOf(file as PDFDocument))) {
       return { status: 'unsupportedLanguage' };
     }
     return record ? { status: record.status, lastUpdated: record.lastUpdated } : { status: 'none' };
