@@ -69,8 +69,11 @@ describe('EntityPageViewer', () => {
 
     const page = await screen.findByTestId('markdown-viewer');
     expect(page).toHaveTextContent('Hello from entity page');
-    expect(page.closest('main')).toHaveClass('page-viewer', 'document-viewer');
-    expect(page.closest('main')).not.toHaveClass('min-h-0', 'flex-1');
+    const viewer = page.closest('main');
+    expect(viewer).toHaveClass('page-viewer', 'document-viewer');
+    expect(viewer).not.toHaveClass('min-h-0', 'flex-1');
+    expect(viewer?.parentElement).toHaveClass('row');
+    expect(viewer?.closest('.entity-viewer')).not.toBeNull();
     expect(store.get(entityPageViewAtom)?.pageSharedId).toBe('page1');
   });
 
@@ -120,6 +123,34 @@ describe('EntityPageViewer', () => {
     expect(isDatasetView(datasets) && datasets.get('a')).toBe(1);
     restore();
     expect(store.getState()).toBe(base);
+  });
+
+  it('renders the page when window.store is missing', async () => {
+    const previous = window.store;
+    Reflect.deleteProperty(window, 'store');
+    const withScript = {
+      ...pageViewData,
+      pageView: {
+        ...pageViewData.pageView,
+        metadata: { content: '<p>Hello from entity page</p>', script: 'var ready = true;' },
+      },
+    };
+    try {
+      render(
+        <JotaiProvider store={createStore()}>
+          <MemoryRouter>
+            <EntityPageViewProvider entityPageView={withScript}>
+              <EntityPageViewer />
+            </EntityPageViewProvider>
+          </MemoryRouter>
+        </JotaiProvider>
+      );
+      expect(await screen.findByTestId('markdown-viewer')).toHaveTextContent(
+        'Hello from entity page'
+      );
+    } finally {
+      window.store = previous;
+    }
   });
 
   it('includes the page markup in server HTML without touching window.store', () => {

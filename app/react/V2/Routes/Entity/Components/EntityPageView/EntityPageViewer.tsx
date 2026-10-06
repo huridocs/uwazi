@@ -26,7 +26,7 @@ const EntityPageViewer = () => {
   const datasetsImmutable = useMemo(() => Immutable.fromJS(datasets || {}), [datasets]);
 
   useLayoutEffect(() => {
-    if (!script || !datasets) return undefined;
+    if (!script || !datasets || !window.store) return undefined;
     return installEntityPageStore(window.store, datasets);
   }, [datasets, script]);
 
@@ -62,43 +62,47 @@ const EntityPageViewer = () => {
       }
     >
       <div className="entity-page-viewer">
-        <main className="page-viewer document-viewer">
-          <div className="main-wrapper">
-            <PageStyle>{pageCss}</PageStyle>
-            {customPageError ? (
-              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-                <div className="alert alert-danger">
-                  <Icon icon="exclamation-triangle" />
-                  <Translate translationKey="custom page error warning">
-                    There is an unexpected error on this custom page, it may not work properly.
-                    Please contact an admin for details.
-                  </Translate>
-                  <Icon icon="times" onClick={() => setCustomPageError(null)} />
-                </div>
-              </NeedAuthorization>
-            ) : null}
-            {errors ? (
-              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-                <div className="alert alert-warning">
-                  <Icon icon="exclamation-triangle" />
-                  <span style={{ whiteSpace: 'pre-wrap' }}>{errors}</span>
-                </div>
-              </NeedAuthorization>
-            ) : null}
-            <Context.Provider value={datasetsImmutable}>
-              <ErrorBoundary>
-                <MarkdownViewer
-                  html
-                  markdown={content}
-                  lists={lists}
-                  sanitized={false}
-                  parseMarkdown={parseMarkdown}
-                />
-              </ErrorBoundary>
-            </Context.Provider>
+        <main className="entity-viewer">
+          <div className="row">
+            <main className="page-viewer document-viewer">
+              <div className="main-wrapper">
+                <PageStyle>{pageCss}</PageStyle>
+                {customPageError ? (
+                  <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+                    <div className="alert alert-danger">
+                      <Icon icon="exclamation-triangle" />
+                      <Translate translationKey="custom page error warning">
+                        There is an unexpected error on this custom page, it may not work properly.
+                        Please contact an admin for details.
+                      </Translate>
+                      <Icon icon="times" onClick={() => setCustomPageError(null)} />
+                    </div>
+                  </NeedAuthorization>
+                ) : null}
+                {errors ? (
+                  <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+                    <div className="alert alert-warning">
+                      <Icon icon="exclamation-triangle" />
+                      <span style={{ whiteSpace: 'pre-wrap' }}>{errors}</span>
+                    </div>
+                  </NeedAuthorization>
+                ) : null}
+                <Context.Provider value={datasetsImmutable}>
+                  <ErrorBoundary>
+                    <MarkdownViewer
+                      html
+                      markdown={content}
+                      lists={lists}
+                      sanitized={false}
+                      parseMarkdown={parseMarkdown}
+                    />
+                  </ErrorBoundary>
+                </Context.Provider>
+              </div>
+            </main>
+            {scriptCode ? <EntityPageScript code={scriptCode} onError={handleScriptError} /> : null}
           </div>
         </main>
-        {scriptCode ? <EntityPageScript code={scriptCode} onError={handleScriptError} /> : null}
       </div>
     </Suspense>
   );

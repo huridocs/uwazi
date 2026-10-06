@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useLayoutEffect, useMemo } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
@@ -9,6 +9,8 @@ import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { entityDisplayModeAtom } from './entityDisplayModeAtom.js';
+import { EntityUrlSync, useEntitySearchParams } from './entityUrlState.js';
+import { MAIN_TAB_PARAM } from './urlParams.js';
 import { PublishedViewToggle } from './PublishedViewToggle.js';
 import {
   EntityScopedProvider,
@@ -42,7 +44,6 @@ import { EntityMainTabsProvider, useEntityTabNavigation } from './Tabs/EntityTab
 import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
 import { useEntityMainTabs } from './Tabs/hooks/useEntityMainTabs.js';
 import { LoaderResponse } from './types.js';
-import { EntityUrlSync } from './entityUrlState.js';
 
 const EntityCreateRelationshipModal = () => {
   const { mainDocument } = useEntityLanguage();
@@ -157,17 +158,25 @@ const EntityView = () => {
   );
 };
 
+const usePublishedModeForEntity = (sharedId: string | undefined) => {
+  const mode = useAtomValue(entityDisplayModeAtom);
+  const setMode = useSetAtom(entityDisplayModeAtom);
+  const mainTab = useEntitySearchParams().get(MAIN_TAB_PARAM);
+  const mainTabRef = useRef(mainTab);
+  mainTabRef.current = mainTab;
+
+  useLayoutEffect(() => {
+    setMode(isValidMainTab(mainTabRef.current) ? 'entity' : 'published');
+  }, [sharedId, setMode]);
+
+  return mode;
+};
+
 const EntityRouteBody = () => {
   const entity = useEntityScopedEntity();
   const { isRtl } = useEntityLanguage();
   const { hasEntityPageView } = useEntityPageView();
-  const mode = useAtomValue(entityDisplayModeAtom);
-  const setMode = useSetAtom(entityDisplayModeAtom);
-  const sharedId = entity?.sharedId;
-
-  useLayoutEffect(() => {
-    setMode('published');
-  }, [sharedId, setMode]);
+  const mode = usePublishedModeForEntity(entity?.sharedId);
 
   const showPublished = hasEntityPageView && mode === 'published';
 

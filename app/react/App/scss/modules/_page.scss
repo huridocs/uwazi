@@ -1,4 +1,5 @@
 @use '../config/colors';
+@use '../config/typography';
 
 .entity-page-viewer {
   display: flex;
@@ -7,7 +8,7 @@
   min-height: 0;
   min-width: 0;
 
-  > .page-viewer {
+  > .entity-viewer {
     flex: 1 1 auto;
     min-height: 0;
   }
@@ -17,6 +18,9 @@
   padding-top: 15px;
   padding-bottom: 0;
   background: colors.$c-white;
+  color: colors.$c-black;
+  font-family: typography.$f-regular;
+  line-height: 1.42857143;
 }
 
 .page-viewer .item-chart {

@@ -61,13 +61,15 @@ const renderEntity = ({
   mobile = false,
   user,
   mode = 'published',
+  entry = '/',
 }: {
   withPage?: boolean;
   mobile?: boolean;
   user?: typeof adminUser;
   mode?: 'published' | 'entity';
+  entry?: string;
 } = {}) => {
-  window.history.replaceState({}, '', '/');
+  window.history.replaceState({}, '', entry);
   const atoms: Array<
     | readonly [typeof templatesAtom, unknown]
     | readonly [typeof userAtom, unknown]
@@ -85,6 +87,7 @@ const renderEntity = ({
 
   const tree = (
     <TestRouterContext
+      initialEntries={[entry]}
       loaderData={{
         entity,
         mainDocument: entity.documents?.[0],
@@ -109,6 +112,16 @@ describe('entity display mode', () => {
     expect(await screen.findByTestId('entity-page-markdown')).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entity view' })).toBeInTheDocument();
+  });
+
+  it('opens the entity viewer when the route already selects a main tab', async () => {
+    renderEntity({ entry: '/?m=metadata', mode: 'published' });
+    expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();
   });
 
   it('opens the published page when entering even if the previous view was the entity viewer', async () => {
@@ -162,8 +175,8 @@ describe('entity display mode', () => {
     expect(toggle).toHaveClass(
       'fixed',
       'z-30',
-      'top-[65px]',
-      'end-3',
+      'top-16.25',
+      'inset-e-3',
       'h-7',
       'w-7',
       'rounded-md',
