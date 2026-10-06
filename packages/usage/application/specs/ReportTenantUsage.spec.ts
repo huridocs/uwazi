@@ -11,6 +11,9 @@ const f = getFixturesFactory();
 const TENANT_ID = 'usage-report';
 const LAST_ACTIVE = 1_700_000_000_000;
 
+/** The shared database is shared by every test worker: only touch the session this spec owns. */
+const SESSION_ID = 'usage-report-spec:session';
+
 const fixtures = {
   entities: [...f.entityInMultipleLanguages(['en', 'es'], 'entity1', 'template')],
   files: [
@@ -23,7 +26,7 @@ const storeSession = async () =>
   DB.mongodb_Db(config.SHARED_DB)
     .collection<{ _id: string; session: string; lastModified: Date; expires: Date }>('sessions')
     .insertOne({
-      _id: 'session',
+      _id: SESSION_ID,
       session: JSON.stringify({ passport: { user: `user1///${TENANT_ID}` } }),
       lastModified: new Date(LAST_ACTIVE),
       expires: new Date(LAST_ACTIVE + 1000),
@@ -39,7 +42,9 @@ describe('ReportTenantUsage', () => {
   });
 
   beforeEach(async () => {
-    await DB.mongodb_Db(config.SHARED_DB).collection('sessions').deleteMany({});
+    await DB.mongodb_Db(config.SHARED_DB)
+      .collection<{ _id: string }>('sessions')
+      .deleteMany({ _id: SESSION_ID });
     await storeSession();
   });
 

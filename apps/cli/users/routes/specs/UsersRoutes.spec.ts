@@ -31,7 +31,7 @@ describe('UsersRoutes', () => {
   });
 
   it('should only need MongoDB and PostgreSQL, never Redis', () => {
-    UsersRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false }));
+    UsersRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, elasticsearch: false }));
   });
 
   it.each(['create', 'update', 'delete', 'list', 'stats'])(
