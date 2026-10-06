@@ -20,7 +20,6 @@ export class RelationshipsV1DataSourceFactory {
 
       return new PostgresRelationshipsV1DataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager,
         entitiesDAO: EntitiesDAOFactory.default(),
         settingsDS: SettingsDataSourceFactory.default(),

@@ -4,7 +4,6 @@ import { ObjectId } from 'mongodb';
 import type { Knex } from 'knex';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTable } from '../PostgresTable.js';
@@ -33,21 +32,17 @@ const jsonVal = (v: unknown) => JSON.stringify(v);
 
 const SYNC_NAMESPACE = 'test_thesauri';
 
-const getSyncDb = () => getConnection();
-
-const createTableWithSync = (
-  tenantId = DEFAULT_TENANT,
-  syncDb = getSyncDb(),
-  namespace = SYNC_NAMESPACE
-) =>
-  PostgresTable.for<TestRow>({
+const createTableWithSync = (tenantId = DEFAULT_TENANT, namespace = SYNC_NAMESPACE) => {
+  const transactionManager = managerFor(tenantId);
+  return PostgresTable.for<TestRow>({
     tableName: 'thesauri',
     tenantId,
-    transactionManager: managerFor(tenantId),
-    syncWriter: new SyncLogWriter(syncDb, namespace),
+    transactionManager,
+    syncWriter: new SyncLogWriter(transactionManager, tenantId, namespace),
   });
+};
 
-const getSyncLogs = async () => getSyncDb().collection('updatelogs').find({}).toArray();
+const getSyncLogs = async () => testingPG.getAllFrom('updatelogs');
 
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });
@@ -1088,16 +1083,14 @@ describe('PostgresTable', () => {
   });
 
   describe('sync logs', () => {
-    let syncDb: ReturnType<typeof getSyncDb>;
     let _id: () => string;
 
     beforeAll(() => {
-      syncDb = getSyncDb();
       _id = () => new ObjectId().toHexString();
     });
 
     beforeEach(async () => {
-      await syncDb.collection('updatelogs').deleteMany({});
+      await testingPG.clear(['updatelogs']);
     });
 
     describe('insert', () => {
@@ -1110,7 +1103,7 @@ describe('PostgresTable', () => {
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
         expect(logs[0].namespace).toBe(SYNC_NAMESPACE);
-        expect(logs[0].mongoId.toString()).toBe(rowId);
+        expect(logs[0].id.toString()).toBe(rowId);
         expect(logs[0].deleted).toBe(false);
       });
 
@@ -1126,7 +1119,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(2);
-        const ids = logs.map(l => l.mongoId.toString()).sort();
+        const ids = logs.map(l => l.id.toString()).sort();
         expect(ids).toEqual([m1, m2].sort());
       });
 
@@ -1149,7 +1142,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(u1);
+        expect(logs[0].id.toString()).toBe(u1);
       });
 
       it('should upsert the same sync log on update path (no duplicate entries)', async () => {
@@ -1157,13 +1150,13 @@ describe('PostgresTable', () => {
         const u2 = _id();
 
         await table.insert({ _id: u2, name: 'first', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.upsert({ _id: u2, name: 'second', values: jsonVal([]) });
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(u2);
+        expect(logs[0].id.toString()).toBe(u2);
         expect(logs[0].deleted).toBe(false);
       });
 
@@ -1171,7 +1164,7 @@ describe('PostgresTable', () => {
         const table = createTableWithSync();
         const keptId = _id();
         await table.insert({ _id: keptId, name: 'same-name', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.upsert(
           { _id: _id(), name: 'same-name', values: jsonVal(['changed']) },
@@ -1180,7 +1173,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(keptId);
+        expect(logs[0].id.toString()).toBe(keptId);
       });
     });
 
@@ -1191,7 +1184,7 @@ describe('PostgresTable', () => {
         const i2 = _id();
         await table.insert({ _id: i1, name: 'alpha', values: jsonVal([]) });
         await table.insert({ _id: i2, name: 'beta', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.whereIn('_id', [i1, i2]).update({
           values: jsonVal([{ id: 'v1', label: 'Updated' }]),
@@ -1199,7 +1192,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(2);
-        const ids = logs.map(l => l.mongoId.toString()).sort();
+        const ids = logs.map(l => l.id.toString()).sort();
         expect(ids).toEqual([i1, i2].sort());
         expect(logs.every(l => l.deleted === false)).toBe(true);
       });
@@ -1208,7 +1201,7 @@ describe('PostgresTable', () => {
         const table = createTableWithSync();
         const i3 = _id();
         await table.insert({ _id: i3, name: 'only', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.where({ name: 'nonexistent' }).update({ name: 'x' });
 
@@ -1225,7 +1218,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(i4);
+        expect(logs[0].id.toString()).toBe(i4);
         expect(logs[0].deleted).toBe(false);
       });
     });
@@ -1239,7 +1232,7 @@ describe('PostgresTable', () => {
           { _id: b1, name: 'alpha', values: jsonVal([]) },
           { _id: b2, name: 'beta', values: jsonVal([]) },
         ]);
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.bulkUpdate([
           { _id: b1, name: 'alpha-1' },
@@ -1248,7 +1241,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(2);
-        const ids = logs.map(l => l.mongoId.toString()).sort();
+        const ids = logs.map(l => l.id.toString()).sort();
         expect(ids).toEqual([b1, b2].sort());
         expect(logs.every(l => l.deleted === false)).toBe(true);
       });
@@ -1257,7 +1250,7 @@ describe('PostgresTable', () => {
         const table = createTableWithSync();
         const b3 = _id();
         await table.insert({ _id: b3, name: 'only', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.bulkUpdate([{ _id: _id(), name: 'ghost' }]);
 
@@ -1271,13 +1264,13 @@ describe('PostgresTable', () => {
         const table = createTableWithSync();
         const d1 = _id();
         await table.insert({ _id: d1, name: 'gone', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.where({ _id: d1 }).delete();
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(d1);
+        expect(logs[0].id.toString()).toBe(d1);
         expect(logs[0].deleted).toBe(true);
       });
 
@@ -1285,7 +1278,7 @@ describe('PostgresTable', () => {
         const table = createTableWithSync();
         const d2 = _id();
         await table.insert({ _id: d2, name: 'stay', values: jsonVal([]) });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.where({ _id: '000000000000000000000000' }).delete();
 
@@ -1298,13 +1291,13 @@ describe('PostgresTable', () => {
         const d3 = _id();
         await table.insert({ _id: d3, name: 'temp', values: jsonVal([]) });
         await table.where({ _id: d3 }).update({ name: 'changed' });
-        await syncDb.collection('updatelogs').deleteMany({});
+        await testingPG.clear(['updatelogs']);
 
         await table.where({ _id: d3 }).delete();
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(1);
-        expect(logs[0].mongoId.toString()).toBe(d3);
+        expect(logs[0].id.toString()).toBe(d3);
         expect(logs[0].deleted).toBe(true);
       });
     });
@@ -1321,7 +1314,7 @@ describe('PostgresTable', () => {
 
         const logs = await getSyncLogs();
         expect(logs).toHaveLength(2);
-        const ids = logs.map(l => l.mongoId.toString()).sort();
+        const ids = logs.map(l => l.id.toString()).sort();
         expect(ids).toEqual([idA, idB].sort());
       });
     });

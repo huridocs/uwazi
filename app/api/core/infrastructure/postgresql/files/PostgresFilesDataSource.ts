@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { Db } from 'mongodb';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
@@ -22,7 +21,6 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 type Deps = {
   transactionManager: TransactionManager;
   fileStorage: FileStorage;
-  mongoDb: Db;
 } & Omit<PostgresDataSourceDeps, 'sync'>;
 
 export class PostgresFilesDataSource
@@ -38,7 +36,7 @@ export class PostgresFilesDataSource
   constructor(deps: Deps) {
     super('files', {
       ...deps,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'files' },
+      sync: { syncNamespace: 'files' },
     });
 
     this.transactionManager = deps.transactionManager;

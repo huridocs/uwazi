@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresPermissionEnforcedTable } from '#api/core/infrastructure/postgresql/common/PostgresPermissionEnforcedTable.js';
@@ -53,21 +52,20 @@ export class PostgresEntitiesSyncHandler
 
   constructor(deps: {
     tenantId: string;
-    mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
     accessContext: AccessContext;
   }) {
     super('entities', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'entities' },
+      sync: { syncNamespace: 'entities' },
     });
     this.entitiesTable = PostgresPermissionEnforcedTable.for<EntityRow>({
       tableName: 'entities',
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
       accessContext: deps.accessContext,
-      syncWriter: new SyncLogWriter(deps.mongoDb, 'entities'),
+      syncWriter: new SyncLogWriter(deps.pgTransactionManager, deps.tenantId, 'entities'),
     });
   }
 

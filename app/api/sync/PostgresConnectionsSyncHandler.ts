@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { ConnectionsSyncHandler, ConnectionSyncDocument } from './ConnectionsSyncHandler.js';
@@ -48,15 +48,11 @@ export class PostgresConnectionsSyncHandler
   extends PostgresDataSource<ConnectionRow>
   implements ConnectionsSyncHandler
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('connections', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'connections' },
+      sync: { syncNamespace: 'connections' },
     });
   }
 

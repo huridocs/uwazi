@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { Db } from 'mongodb';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -17,7 +16,7 @@ import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresResultSet } from '../common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import { SyncLogWriter } from '../common/SyncLogWriter.js';
+import { entitySyncLogging } from '../common/entitySyncLogging.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '../../mongodb/entity/MongoEntityMapper.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
@@ -32,7 +31,6 @@ type Deps = PostgresDataSourceDeps & {
   transactionManager: TransactionManager;
   templatesDAO: TemplatesDAO;
   settingsDataSource: SettingsDataSource;
-  mongoDb: Db;
   accessContext: AccessContext;
   skipOnCommits?: boolean;
 };
@@ -49,8 +47,6 @@ export class PostgresEntitiesDataSource
 
   private settingsDataSource: SettingsDataSource;
 
-  private mongoDb: Db;
-
   private accessContext: AccessContext;
 
   private permissionTable: PostgresPermissionEnforcedTable<EntityRow>;
@@ -63,14 +59,13 @@ export class PostgresEntitiesDataSource
     super('entities', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'entities' },
+      sync: { syncNamespace: 'entities' },
     });
 
     this.transactionManager = deps.transactionManager;
     this.pgTransactionManager = deps.pgTransactionManager;
     this.templatesDAO = deps.templatesDAO;
     this.settingsDataSource = deps.settingsDataSource;
-    this.mongoDb = deps.mongoDb;
     this.accessContext = deps.accessContext;
 
     this.permissionTable = PostgresPermissionEnforcedTable.for<EntityRow>({
@@ -78,7 +73,11 @@ export class PostgresEntitiesDataSource
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
       accessContext: deps.accessContext,
-      syncWriter: new SyncLogWriter(deps.mongoDb, 'entities'),
+      ...entitySyncLogging({
+        transactionManager: deps.pgTransactionManager,
+        tenantId: deps.tenantId,
+        accessContext: deps.accessContext,
+      }),
     });
 
     if (!deps.skipOnCommits) {
@@ -100,7 +99,6 @@ export class PostgresEntitiesDataSource
         pgTransactionManager: this.pgTransactionManager,
         templatesDAO: this.templatesDAO,
         settingsDataSource: this.settingsDataSource,
-        mongoDb: this.mongoDb,
         accessContext: AccessContext.system(),
         skipOnCommits: true,
       });
@@ -329,7 +327,7 @@ export class PostgresEntitiesDataSource
 
     affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
 
-    await this.table.raw(
+    await this.updateAndRecord(
       `UPDATE ?? SET metadata = COALESCE(
         (SELECT jsonb_object_agg(prop.key, COALESCE(
           (SELECT jsonb_agg(item) FROM jsonb_array_elements(prop.value) AS item
@@ -337,7 +335,7 @@ export class PostgresEntitiesDataSource
           '[]'::jsonb
         )) FROM jsonb_each(metadata) AS prop),
         '{}'::jsonb
-      ) WHERE "sharedId" = ANY(?::text[])`,
+      ) WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
       [this.table.tableName, deletedSharedIds, affectedSharedIds]
     );
   }
@@ -365,8 +363,8 @@ export class PostgresEntitiesDataSource
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
     if (!propertyNames.length || !sharedIds.length) return;
 
-    await this.table.raw(
-      'UPDATE ?? SET metadata = metadata - ?::text[] WHERE "sharedId" = ANY(?::text[])',
+    await this.updateAndRecord(
+      'UPDATE ?? SET metadata = metadata - ?::text[] WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"',
       [this.table.tableName, propertyNames, sharedIds]
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
@@ -387,8 +385,8 @@ export class PostgresEntitiesDataSource
     });
     bindings.push(sharedIds);
 
-    await this.table.raw(
-      `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ANY(?::text[])`,
+    await this.updateAndRecord(
+      `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
       bindings
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
@@ -422,10 +420,11 @@ export class PostgresEntitiesDataSource
       bindings.push(row.sharedId, row.language, JSON.stringify(row.patch));
     });
 
-    await this.table.raw(
+    await this.updateAndRecord(
       `UPDATE ?? AS t SET metadata = t.metadata || v.patch
        FROM (VALUES ${placeholders}) AS v("sharedId", "language", patch)
-       WHERE t."sharedId" = v."sharedId" AND t."language" = v."language"`,
+       WHERE t."sharedId" = v."sharedId" AND t."language" = v."language"
+       RETURNING t."_id"`,
       bindings
     );
 
@@ -526,5 +525,10 @@ export class PostgresEntitiesDataSource
     await this.table.insert(allRows);
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+  }
+
+  private async updateAndRecord(sql: string, bindings?: unknown): Promise<void> {
+    const result = await this.table.raw<{ rows: { _id: string }[] }>(sql, bindings);
+    await this.table.recordSync(result.rows.map(row => row._id));
   }
 }

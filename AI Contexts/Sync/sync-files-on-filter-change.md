@@ -1,7 +1,7 @@
 # Sync files when an entity crosses the sync filter
 
 Date: 2026-09-29
-Status: implemented on Mongo. `SyncedCollection` refreshes `files` update logs on entity insert and update. Entity delete does not. Postgres is a separate issue.
+Status: implemented. Mongo refreshes `files` logs on entity insert and update (`SyncedCollection`). Postgres does the same for every non-delete entity write, including raw metadata updates, access-policy updates, and language clone (Decisions 2026-10-06). Entity delete and language delete write `entities` logs with `deleted: true` and do not refresh file logs. Follow-ups from that day: `afterSyncLog` stays, `PostgresEntitiesDAO` is split under the line limit, the namespace rename is deferred, and the Postgres log column is `id` (not `mongoId`). See Decisions (2026-10-06, follow-ups).
 
 ## Problem
 
@@ -50,13 +50,21 @@ So the belief in the task is right: a file log is accepted or rejected by the pa
 
 ### Who writes the logs
 
-Update logs still live in Mongo `updatelogs`, for both databases. One row per (`namespace`, `mongoId`), upserted with a new `timestamp`.
+Update logs are one row per document id (`mongoId`), upserted with a new `timestamp` and `namespace`. With `postgresCore` off they live in Mongo `updatelogs`. With the flag on they live in the Postgres `updatelogs` table, and the sync worker reads that table. The `syncs` cursor (`lastSyncs`, `consecutiveFailures`) stays in Mongo.
 
 **Mongo, current entity saves** (`postgresCore` off). `POST /api/entities` goes through `UpdateEntity` → `MongoEntitiesDataSource.bulkUpdate` → `SyncedCollection`. That writes an `entities` log for the entity `_id`s touched. It does not look at `files`.
 
 **Mongo, legacy ODM save.** `EntitiesUpdateLogHelper.upsertLogOne` (used by `OdmModel.save` / `create` / `saveMultiple` on the `entities` model) writes the entity log **and** refreshes existing `files` logs whose `entity` is that `sharedId`. Covered by `app/api/odm/specs/EntitiesUpdateLogHelper.spec.ts`: document, attachment, and thumbnail timestamps move; a custom file and another entity's files do not. `upsertLogMany` only updates logs that already exist (`_updateMany`, no upsert), and it reads files through the Mongo ODM model. The V2 save path does not call this helper.
 
-**Postgres, current entity saves** (`postgresCore` on). `PostgresEntitiesDataSource` constructs a `SyncLogWriter` for namespace `entities` on the table created by `super()`, then overrides `table` with a `PostgresPermissionEnforcedTable` that is **not** given that writer. `bulkUpdate`, `insert`, and `delete` on the permission table therefore do not write `updatelogs`. Raw metadata updates (`deleteMetadataProperties`, `renameMetadataProperties`, `deleteReferencesToSharedIds`) go through `table.raw` and would not write logs even if the writer were attached. There is no spec that a Postgres entity insert/update produces an `entities` update log.
+**Postgres, current entity saves** (`postgresCore` on). `PostgresEntitiesDataSource` writes through a `PostgresPermissionEnforcedTable`. That table receives a `SyncLogWriter` for `entities` and an `afterSyncLog` hook, so `insert`, `update`, `bulkUpdate`, `delete`, and `upsert` write `updatelogs` and, unless the log is a delete, refresh `files` logs. The writer constructed on the unused parent table from `super()` is not the one that runs.
+
+`table.raw` still never notifies by itself. The callers that use it now `RETURNING` the affected `_id`s and `recordSync` them:
+
+- `deleteMetadataProperties`, `renameMetadataProperties`, `deleteReferencesToSharedIds`, and `bulkUpdateDeprecated`.
+- `PostgresEntityAccessPolicyDataSource.bulkPersist` — `permissions` and `published` on every language row of each `sharedId`. That permission table has the same writer and hook. The Mongo side already did this through `updateMany` / `bulkWrite`.
+- `PostgresEntitiesDAO.cloneForLanguage` / `deleteByLanguage`. Clone's `ignore` upsert notifies inserted ids only. `delete()` notifies `deleted: true` and does not refresh files. `unrestricted()` builds a new DAO with the same Postgres transaction manager, so it logs too.
+
+A log is one row per language-row `_id`, not per `sharedId`. A sharedId-keyed update records every language row it changed. Non-delete logs refresh `files` logs for files whose `entity` is one of those `sharedId`s.
 
 `PostgresEntitiesSyncHandler` (the target, receiving a sync) does pass a `SyncLogWriter` into its permission table. That is the inbound side, not the source save.
 
@@ -68,8 +76,8 @@ Update logs still live in Mongo `updatelogs`, for both databases. One row per (`
 |---|---|---|---|
 | Create entity with file, or upload a file | yes | yes | Both judged. Filter false → both deleted on target. Filter true and `attachments: true` → both stored, blob uploaded. |
 | Append / remove / rename a file | only if the entity row is also saved | yes, for the files touched | Those files re-judged. |
-| Edit metadata, filter stays true or stays false | yes on Mongo V2; not on Postgres V2 (see above) | no | Entity re-judged. Files left as they were after their last file log. |
-| Edit metadata, filter flips | same | no | Entity appears or disappears. Files do not follow. |
+| Edit metadata, filter stays true or stays false | yes | yes, except an entity delete | Entity re-judged. Files follow, including a touch that only changes `editDate`. |
+| Edit metadata, filter flips | yes | yes, except an entity delete | Entity appears or disappears. Files follow. |
 | Delete entity on the source | yes, `deleted: true` | yes, `deleted: true`, via `FilesService.deleteEntityFiles` | Both deleted on target. |
 
 `skip: true` always calls delete. A file that never reached the target is deleted again, harmlessly. A file that did reach it loses the row and, when `filename` was stored, the blob (`routes.ts` delete handler).
@@ -160,4 +168,58 @@ Editing the sync config (filter text, template list, `attachments`) does not rew
 
 Connections are not part of this. They do not go through `entityIsAllowed`.
 
-Postgres entity insert, update, and delete now write `entities` logs. `PostgresEntitiesDataSource` passes a `SyncLogWriter` into the permission table it actually writes. `table.raw` updates (`deleteMetadataProperties`, `renameMetadataProperties`, `deleteReferencesToSharedIds`) still do not, and neither does `PostgresEntityAccessPolicyDataSource` (permissions and published, also raw SQL) or the language-clone upsert on `PostgresEntitiesDAO`. File-log refresh on entity write is still Mongo-only (`SyncedCollection`). A Postgres tenant that edits an entity will sync the entity and still leave its files behind until that refresh is ported.
+Postgres entity writes, including the raw paths, the access-policy update, and language clone, now write `entities` logs and refresh `files` logs unless the entity log is a delete. The shape of that is the next section.
+
+## Decisions (2026-10-06)
+
+Passing `syncWriter` into the entity permission table is the fix for `insert`, `update`, `bulkUpdate`, `delete`, and `upsert`. It is not the fix for `table.raw`. Those statements never call the writer, so attaching one changes nothing until the caller records the affected row ids.
+
+The same file-log rule as Mongo applies on Postgres: a non-delete entity log refreshes `files` logs (`deleted: false`, new timestamp) for every file whose `entity` is one of those rows' `sharedId`s. Missing logs are created. A log sitting at `deleted: true` is cleared. Custom files have no `entity` and are not matched. Other entities' files are not matched. A `deleted: true` entity log does not refresh files. Source delete already removes file rows and writes their own delete logs. Bumping those back to `deleted: false` would undo the delete.
+
+`files()` still decides sync or delete. The write path does not reimplement `entityIsAllowed`. Collection order stays files then entities. Batch size stays 50.
+
+### Where the entity log is written
+
+1. Metadata raw updates on `PostgresEntitiesDataSource`: `deleteMetadataProperties`, `renameMetadataProperties`, `deleteReferencesToSharedIds`, and `bulkUpdateDeprecated`. After the `UPDATE`, `RETURNING` the `_id`s and record them. The first three touch every language row of the affected `sharedId`s. The deprecated bulk update touches only the `(sharedId, language)` pairs it patched. Recording the returned ids, not every row of the sharedId, keeps that difference.
+2. `PostgresEntityAccessPolicyDataSource.bulkPersist`. Give that permission table the same writer and hook. The SQL updates every language row of each policy `sharedId`. `RETURNING t."_id"`, then record those ids. One policy is several entity logs.
+3. `PostgresEntitiesDAO`. The permission table gets the same writer and hook. `unrestricted()` constructs a new DAO, so it must get them too. Clone and delete need no extra SQL: `upsert({ ignore: true })` already notifies the inserted ids, and `delete()` already notifies `deleted: true`. An entity that already has the target language is not re-logged. That matches "leave the existing target-language row alone".
+
+### File logs
+
+One hook, `afterSyncLog`, on the table config, run from the same place that writes the entity log (`insert`, `update`, `bulkUpdate`, `delete`, `upsert`, and a public `recordSync` used by the raw callers). Both `PostgresTable.for` and `PostgresPermissionEnforcedTable.for` have to copy it. `chain()` already keeps the config.
+
+The hook returns immediately when `deleted` is true or there are no ids. Otherwise, inside the tenant transaction, select `sharedId` from `entities` for those `_id`s, then `_id` from `files` where `entity` is one of those sharedIds, then upsert `files` logs with `deleted: false`.
+
+The lookup uses the writer's permission context (`bypass` for a privileged actor, otherwise that actor's ref ids). `withConnection` with no context sets `uwazi.bypass_rls` to false and would hide rows from the session that just wrote them. Files are tenant-isolated only, so the file query does not apply entity permissions. The entity query must still see the rows just written.
+
+## Decisions (2026-10-06, update logs on Postgres)
+
+`updatelogs` moves with `postgresCore`. Postgres data sources, DAOs, and sync handlers do not take a Mongo connection. `SyncLogWriter` upserts the Postgres table through the transaction manager already on the table. When that manager has a transaction open, the log commits with the row. That upsert does not reset `uwazi.bypass_rls`, so a privileged transaction stays privileged after the log is written. Mongo `SyncedCollection` and the V1 mongoose helpers still write the Mongo collection, and they only run when the flag is off.
+
+The table is `tenant_id`, `id`, `namespace`, `timestamp`, `deleted`. `id` is the changed document's id, stored as text. Unique on `(tenant_id, id)`, matching the Mongo upsert, which keys on `mongoId` alone and overwrites `namespace`. Index `(tenant_id, namespace, timestamp)` for the worker query. Tenant row-level security only. Entity permissions do not apply.
+
+`createSyncConfig.lastChangesForCollection` reads that table when the flag is on, and the mongoose model when it is off. The reader maps the `id` column back to `mongoId` on the object the worker already uses. `syncs` stays in Mongo. `lastSyncs` is a timestamp and stays valid if the copied log timestamps are the same.
+
+Existing Mongo logs are copied by `migrateToPostgres.ts` under the `postgresCore` group (`UpdateLogsMigrationConfig`). A tenant that flips the flag without that copy has an empty Postgres log, and the worker will not see changes that were still only in Mongo.
+
+The log write does not reimplement the filter. Collection order and batch size stay as they are.
+
+## Decisions (2026-10-06, follow-ups)
+
+### `afterSyncLog` stays
+
+The file refresh does not move into `SyncLogWriter`. That writer is the generic upsert for every namespace. Teaching it to load entities and files would couple it to those two tables, and every `entities` writer would refresh files, including `PostgresEntitiesSyncHandler`. A received entity must not re-queue that target's files.
+
+The hook stays opt-in on the table config. `PostgresPermissionEnforcedTable` copies it because entity writes use that table, not the parent from `super()`. Only `PostgresEntitiesDataSource`, `PostgresEntityAccessPolicyDataSource`, and `PostgresEntitiesDAO` pass it. The inbound handler does not.
+
+### `PostgresEntitiesDAO` is split
+
+The class file is under the 300-line limit and no longer disables `max-statements`. Query building is `entityQuery.ts` (filters are a list of appliers, not a chain of `if`s). The row map is `entityRow.ts`. Joining files is `entityFilesJoin.ts`. Language clone and language delete are `entityLanguageBatches.ts`. Behavior is unchanged.
+
+### Namespace rename is a later development
+
+The stored namespace stays the Mongo collection name, including `dictionaries`, `translationsV2`, and `relationtypes`. A translation only at send time does nothing while the log, `lastSyncs`, and the target still use those strings. Postgres writers keep passing that name. Replacing it with the Postgres table name, and translating at the boundary that talks to a Mongo target, is a separate change.
+
+### The Postgres column is `id`
+
+Not `mongoId`. The column is text and holds the changed document's id, the same value as that row's `_id`. `(tenant_id, id)` is the primary key. The Mongo document field is still `mongoId`. `UpdateLogsMigrationConfig` copies that field into `id`. `readUpdateLogs` maps `id` back to `mongoId` for the worker, so `ProcessNamespaces` and the HTTP payload are unchanged.

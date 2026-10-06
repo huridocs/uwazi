@@ -4,12 +4,15 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 
-export type TableConfig = {
+type AfterSyncLog = (ids: string[], deleted: boolean) => Promise<void>;
+
+type TableConfig = {
   knex: Knex;
   tableName: string;
   tenantId: string;
   transactionManager: PostgresTransactionManager;
   syncWriter?: SyncLogWriter;
+  afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
 };
 
@@ -19,6 +22,7 @@ type ForParams = {
   transactionManager: PostgresTransactionManager;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
 };
 
@@ -27,7 +31,7 @@ type ForParams = {
  * so a terminal can tell a projected row read from an aggregate: only the first may take the
  * identity column.
  */
-export type QueryState = {
+type QueryState = {
   /** Columns passed to `select()`, in order. Raw projections do not count. */
   projected?: string[];
   /** A join, groupBy or distinct is in play, so the identity column must not be added. */
@@ -84,6 +88,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      afterSyncLog: params.afterSyncLog,
       identityColumn: params.identityColumn,
     };
     return new PostgresTable<T>(cfg, knexInstance(params.tableName));
@@ -380,9 +385,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   async update(changes: Record<string, unknown>): Promise<string[]> {
     const serialized = PostgresTable.serialize(changes);
     const result = await this.run(qb => qb.returning(['_id']).update(serialized));
-    if (this.cfg.syncWriter) {
-      await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), false);
-    }
+    await this.emitSyncLogs(PostgresTable.idsOf(result), false);
     return PostgresTable.idsOf(result);
   }
 
@@ -441,17 +444,13 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     ]);
 
     const affectedIds = result.rows.map(row => row._id);
-    if (this.cfg.syncWriter) {
-      await this.cfg.syncWriter.upsertSyncLogs(affectedIds, false);
-    }
+    await this.emitSyncLogs(affectedIds, false);
     return affectedIds;
   }
 
   async delete(): Promise<string[]> {
     const result = await this.run(qb => qb.returning(['_id']).del());
-    if (this.cfg.syncWriter) {
-      await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), true);
-    }
+    await this.emitSyncLogs(PostgresTable.idsOf(result), true);
     return PostgresTable.idsOf(result);
   }
 
@@ -495,10 +494,19 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     );
   }
 
+  async recordSync(ids: string[], deleted = false): Promise<void> {
+    await this.emitSyncLogs(ids, deleted);
+  }
+
   protected async notifySync(rows: Record<string, unknown>[], deleted: boolean): Promise<void> {
-    if (!this.cfg.syncWriter) return;
     const ids = rows.map(row => row._id).filter((id): id is string => typeof id === 'string');
+    await this.emitSyncLogs(ids, deleted);
+  }
+
+  private async emitSyncLogs(ids: string[], deleted: boolean): Promise<void> {
+    if (ids.length === 0 || !this.cfg.syncWriter) return;
     await this.cfg.syncWriter.upsertSyncLogs(ids, deleted);
+    await this.cfg.afterSyncLog?.(ids, deleted);
   }
 
   protected rowsWithTenant(
@@ -512,3 +520,5 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return (result as { _id: string }[]).map(r => r._id);
   }
 }
+
+export type { AfterSyncLog, TableConfig, QueryState };

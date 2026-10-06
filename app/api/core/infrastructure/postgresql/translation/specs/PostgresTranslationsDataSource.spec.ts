@@ -2,7 +2,6 @@ import { Translation, TranslationContext } from '#api/core/domain/translation/Tr
 import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -37,7 +36,6 @@ const managerFor = (tenantId: string) =>
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresTranslationsDataSource({
     tenantId,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
     idGenerator: IdGeneratorFactory.default(),
   });
@@ -155,7 +153,6 @@ describe('PostgresTranslationsDataSource', () => {
       const manager = managerFor(TENANT_ID);
       const ds = new PostgresTranslationsDataSource({
         tenantId: TENANT_ID,
-        mongoDb: getConnection(),
         pgTransactionManager: manager,
         idGenerator: IdGeneratorFactory.default(),
       });

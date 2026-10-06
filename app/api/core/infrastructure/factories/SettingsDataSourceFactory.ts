@@ -33,7 +33,6 @@ const buildPostgresSettingsDataSource = (cached = false) => {
 
   const deps = {
     tenantId: tenant.name,
-    mongoDb: getConnection(),
     pgTransactionManager,
     idGenerator: IdGeneratorFactory.default(),
   };

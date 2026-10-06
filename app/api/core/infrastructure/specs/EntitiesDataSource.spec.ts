@@ -1418,6 +1418,10 @@ describe('EntitiesDataSource', () => {
         languages.map(language => factory.idString(`${sharedId}-${language}`)).sort();
 
       beforeEach(async () => {
+        if (usePostgres) {
+          await testingPG.clear(['updatelogs']);
+          return;
+        }
         await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
       });
 
@@ -1438,7 +1442,11 @@ describe('EntitiesDataSource', () => {
         const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
         const entity = createEntityWithIds('synced', ['en'], template);
         await sut.bulkInsert([entity]);
-        await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+        if (usePostgres) {
+          await testingPG.clear(['updatelogs']);
+        } else {
+          await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+        }
 
         entity.setPropertyAssignmentsInAllLanguages([
           template.createPropertyAssignment('title', { value: [{ value: 'Updated Title' }] }),
@@ -1455,7 +1463,11 @@ describe('EntitiesDataSource', () => {
         const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
         const entity = createEntityWithIds('synced', ['en', 'es'], template);
         await sut.bulkInsert([entity]);
-        await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+        if (usePostgres) {
+          await testingPG.clear(['updatelogs']);
+        } else {
+          await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+        }
 
         await sut.bulkDelete([entity.sharedId]);
 

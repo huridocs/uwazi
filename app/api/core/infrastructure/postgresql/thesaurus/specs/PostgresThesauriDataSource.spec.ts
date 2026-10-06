@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
@@ -20,7 +19,6 @@ const managerFor = (tenantId: string) =>
 const makeDS = () =>
   new PostgresThesauriDataSource({
     tenantId: TENANT_ID,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(TENANT_ID),
   });
 
@@ -202,7 +200,7 @@ describe('PostgresThesauriDataSource', () => {
 
       await ds.create(thesaurus);
 
-      const logs = await getConnection().collection('updatelogs').find({}).toArray();
+      const logs = await testingPG.getAllFrom('updatelogs');
       expect(logs).toHaveLength(1);
       expect(logs[0].namespace).toBe('dictionaries');
     });
@@ -212,12 +210,12 @@ describe('PostgresThesauriDataSource', () => {
       const thesaurus = makeThesaurus();
       await ds.create(thesaurus);
 
-      await getConnection().collection('updatelogs').deleteMany({});
+      await testingPG.clear(['updatelogs']);
 
       const updated = thesaurus.update({ name: 'Updated' });
       await ds.update(updated);
 
-      const logs = await getConnection().collection('updatelogs').find({}).toArray();
+      const logs = await testingPG.getAllFrom('updatelogs');
       expect(logs).toHaveLength(1);
       expect(logs[0].namespace).toBe('dictionaries');
     });

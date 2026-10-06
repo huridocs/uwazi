@@ -20,7 +20,6 @@ export class FilesDataSourceFactory {
       const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresFilesDataSource({
-        mongoDb: db,
         tenantId: tenant.name,
         transactionManager: tm,
         pgTransactionManager: pgTM,

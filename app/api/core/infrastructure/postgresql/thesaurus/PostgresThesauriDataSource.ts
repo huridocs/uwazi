@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
@@ -14,15 +13,11 @@ export class PostgresThesauriDataSource
   extends PostgresDataSource<ThesaurusRow>
   implements ThesauriDataSource
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('thesauri', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' }, // syncNamespace matches MongoDB collection name for updatelogs compatibility
+      sync: { syncNamespace: 'dictionaries' },
     });
   }
 

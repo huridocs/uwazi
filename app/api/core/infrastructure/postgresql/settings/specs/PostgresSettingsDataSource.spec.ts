@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
@@ -22,7 +21,6 @@ const makeDS = (
 ) =>
   new PostgresSettingsDataSource({
     tenantId,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
     idGenerator: IdGeneratorFactory.default(),
     ...overrides,
