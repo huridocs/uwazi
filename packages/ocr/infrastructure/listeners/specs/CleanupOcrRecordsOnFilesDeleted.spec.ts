@@ -32,11 +32,11 @@ describe('CleanupOcrRecordsOnFilesDeleted', () => {
       )
     );
 
-  it('should detach the record of a deleted source file', async () => {
-    await handle(f.idString('file-a'));
+  it('should detach the record of a deleted source file from it', async () => {
+    await handle(f.idString('file-b'));
 
-    expect((await storedRecords(false)).map(r => r.sourceFileId)).toEqual(
-      expect.arrayContaining([null])
+    expect(await storedRecords(false)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: f.idString('b'), sourceFileId: null })])
     );
   });
 

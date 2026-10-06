@@ -12,6 +12,8 @@ import {
 
 const records = [
   record('queued'),
+  record('processing', { status: 'processing', attempt: 1, requestedAt: 3000 }),
+  record('failed', { status: 'failed', attempt: 1, failureReason: 'invalidPdf' }),
   record('ready', { status: 'ready', attempt: 1, resultFile: f.id('result-ready') }),
   record('detached', {
     sourceFile: null,
@@ -45,13 +47,16 @@ describe('CleanupOcrRecordsOfFiles', () => {
     const byName = async () =>
       Object.fromEntries((await storedRecords(postgresCore)).map(r => [r.id, r]));
 
-    it('should detach a record from its deleted source file, keeping the record', async () => {
-      await execute(f.idString('file-queued'));
+    it.each(['queued', 'processing', 'failed'])(
+      'should delete a %s record without a result when its source file is deleted',
+      async name => {
+        await execute(f.idString(`file-${name}`));
 
-      const stored = await byName();
-      expect(stored[f.idString('queued')]).toMatchObject({ sourceFileId: null, status: 'queued' });
-      expect(Object.keys(stored)).toHaveLength(4);
-    });
+        const stored = Object.keys(await byName());
+        expect(stored).not.toContain(f.idString(name));
+        expect(stored).toHaveLength(records.length - 1);
+      }
+    );
 
     it('should keep the result of a record whose source was deleted', async () => {
       await execute(f.idString('file-ready'));
@@ -70,7 +75,7 @@ describe('CleanupOcrRecordsOfFiles', () => {
         expect(Object.keys(await byName())).not.toContain(
           f.idString(result.replace('result-', ''))
         );
-        expect(Object.keys(await byName())).toHaveLength(3);
+        expect(Object.keys(await byName())).toHaveLength(records.length - 1);
       }
     );
 
