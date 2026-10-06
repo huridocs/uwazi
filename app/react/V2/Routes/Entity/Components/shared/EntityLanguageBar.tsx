@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import { formatLanguageName } from '#shared/language/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
+import { t } from '#app/I18N/index.js';
 import {
   useEntityLanguage,
   useMetadataEditing,
@@ -38,7 +39,7 @@ const EntityLanguageBar = () => {
         setLanguage(nextLanguage).catch(() => undefined);
       }}
       disabled={isLoading || isSaving}
-      aria-label="Language"
+      aria-label={t('System', 'Language', null, false)}
       align="end"
       appearance="default"
     />

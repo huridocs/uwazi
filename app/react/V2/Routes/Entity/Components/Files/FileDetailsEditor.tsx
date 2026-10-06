@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { getRowIcon } from './fileRowIcon.js';
@@ -84,7 +84,7 @@ const FileDetailsEditor = ({
                 }
               }}
               className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-sm text-ink focus:outline-none"
-              aria-label="File name"
+              aria-label={t('System', 'File name', null, false)}
             />
           </div>
         </FileDetailsField>
@@ -98,7 +98,7 @@ const FileDetailsEditor = ({
                 value={draftLanguage}
                 onChange={setDraftLanguage}
                 options={languageOptions}
-                aria-label="File language"
+                aria-label={t('System', 'File language', null, false)}
                 appearance="default"
               />
             </FileDetailsField>

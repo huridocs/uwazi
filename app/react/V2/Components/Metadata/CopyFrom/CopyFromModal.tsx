@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useWatch } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Modal } from '#V2/Components/UI/index.js';
 import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
@@ -43,7 +43,7 @@ const CopyFromModal = ({ onClose }: CopyFromModalProps) => {
     });
 
   return (
-    <Modal size="xl" ariaLabel="Copy from">
+    <Modal size="xl" ariaLabel={t('System', 'Copy from', null, false)}>
       <div className="flex h-[min(80vh,40rem)] flex-col" data-testid="copy-from-modal">
         <Modal.Header>
           {source ? (

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { FilesTableSection } from '../../Components/Files/FilesTableSection.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
@@ -53,7 +53,7 @@ const FilesTab = () => {
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-5 overflow-auto bg-warm p-4 pb-8">
       <FilesTableSection
-        title="Primary documents"
+        title={t('System', 'Primary documents', null, false)}
         rows={primaryRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
@@ -68,7 +68,7 @@ const FilesTab = () => {
         onDeleteRow={requestDeleteRow}
       />
       <FilesTableSection
-        title="Supporting files"
+        title={t('System', 'Supporting files', null, false)}
         rows={supportingRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}

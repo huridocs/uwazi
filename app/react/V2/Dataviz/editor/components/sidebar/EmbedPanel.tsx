@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { canUseExternalEmbed } from '#shared/embed/canUseExternalEmbed.js';
 import { CopyValueInput, ToggleButton } from '#V2/Components/UI/index.js';
@@ -61,7 +61,11 @@ const EmbedPanel = ({ id, embedPublic = false, onEmbedPublicChange }: EmbedPanel
         <p className="text-xs text-ink-secondary">
           <Translate>Paste this tag in a page HTML. The chart uses the page language.</Translate>
         </p>
-        <CopyValueInput id="dataviz-page-embed" label="Page embed code" value={pageSnippet} />
+        <CopyValueInput
+          id="dataviz-page-embed"
+          label={t('System', 'Page embed code', null, false)}
+          value={pageSnippet}
+        />
       </div>
 
       <div className="flex flex-col gap-3">
@@ -89,7 +93,7 @@ const EmbedPanel = ({ id, embedPublic = false, onEmbedPublicChange }: EmbedPanel
             </p>
             <CopyValueInput
               id="dataviz-external-embed"
-              label="External iframe code"
+              label={t('System', 'External iframe code', null, false)}
               value={iframeSnippet}
             />
           </>

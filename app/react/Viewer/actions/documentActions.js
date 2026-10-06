@@ -18,6 +18,7 @@ import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.j
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
+import { t } from '#app/I18N/index.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -29,7 +30,7 @@ function getEntityDoc(entity, filename, defaultLanguage) {
 }
 
 const dispatchUpdatedDocument = (dispatch, doc, updatedDoc, entityFileId) => {
-  dispatch(notificationActions.notify('Document updated', 'success'));
+  dispatch(notificationActions.notify(t('System', 'Document updated', null, false), 'success'));
   dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
   dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
   const defaultDoc = updatedDoc.entity.documents.find(document => document._id === entityFileId);
@@ -87,7 +88,7 @@ export function saveToc(toc, fileId) {
       }),
     };
 
-    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Document updated', null, false), 'success'));
     dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('viewer/doc', doc));
@@ -97,7 +98,7 @@ export function saveToc(toc, fileId) {
 export function deleteDocument(doc) {
   return async dispatch => {
     await EntitiesAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
-    dispatch(notificationActions.notify('Document deleted', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Document deleted', null, false), 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
     getStore().set(deletedEntityAtom, doc.sharedId);

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Modal } from '#V2/Components/UI/Modal.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
@@ -36,10 +36,10 @@ const LoadManualExampleModal = ({ onSelect, onClose }: LoadManualExampleModalPro
       <Modal.Body>
         <InputField
           id="chart-type-search"
-          label="Search chart types"
+          label={t('System', 'Search chart types', null, false)}
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Type to filter…"
+          placeholder={t('System', 'Type to filter…', null, false)}
         />
         <ul className="mt-4 max-h-60 space-y-1 overflow-y-auto">
           {available.length === 0 && (

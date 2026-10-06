@@ -5,6 +5,7 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import { getFilterableProperties } from '#V2/Dataviz/utils/getFilterableProperties.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
 import { getOperatorsForPropertyType } from '#V2/Dataviz/utils/filterOperators.js';
+import { t } from '#app/I18N/index.js';
 
 type FilterPropertySelectProps = {
   filter: DatavizFilter;
@@ -17,7 +18,7 @@ const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelec
   const options = useMemo(() => {
     const filterableProperties = getFilterableProperties(templates, sources);
     return [
-      { value: '', label: 'Select property…' },
+      { value: '', label: t('System', 'Select property…', null, false) },
       ...filterableProperties.map(p => ({
         value: `${p.sourceAlias || ''}::${p.propertyName}`,
         label:
@@ -58,7 +59,7 @@ const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelec
   return (
     <Select
       id={`filter-property-${filter.id}`}
-      label="Property"
+      label={t('System', 'Property', null, false)}
       value={currentValue}
       options={options}
       onChange={e => handleChange(e.target.value)}

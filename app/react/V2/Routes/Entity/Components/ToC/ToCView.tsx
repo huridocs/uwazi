@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useEntityDocumentPage } from '../../entityUrlState.js';
 import { ToC } from './ToC.js';
 import { findItemsWithChildren, normalizeToc } from './utils.js';
@@ -66,7 +66,12 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
               // eslint-disable-next-line react/style-prop-object
               style="light"
               arrow={false}
-              content="This table of contents was automatically created by the system."
+              content={t(
+                'System',
+                'This table of contents was automatically created by the system.',
+                null,
+                false
+              )}
             >
               <span className="inline-flex">
                 <Translate className="sr-only">auto created</Translate>

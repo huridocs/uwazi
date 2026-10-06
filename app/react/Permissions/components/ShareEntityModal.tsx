@@ -3,7 +3,7 @@
 import { Modal } from '#app/Layout/Modal.js';
 import React, { useState, useEffect } from 'react';
 import { Icon } from '#UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, MixedAccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
@@ -23,15 +23,6 @@ export interface ShareEntityModalProps {
   ) => Promise<void>;
   storeKey: string;
 }
-
-const pseudoMembers: MemberWithPermission[] = [
-  {
-    refId: '',
-    type: 'group',
-    label: 'Administrators and Editors',
-    level: AccessLevels.WRITE,
-  },
-];
 
 const findPublicPermission = (permissions: MemberWithPermission[]) =>
   permissions.find(p => p.type === PermissionType.PUBLIC);
@@ -118,7 +109,15 @@ export const ShareEntityModalComponent = ({
     return onClose();
   };
 
-  const members = pseudoMembers.concat(assignments);
+  const members = [
+    {
+      refId: '',
+      type: 'group' as const,
+      label: t('System', 'Administrators and Editors', null, false),
+      level: AccessLevels.WRITE,
+    },
+    ...assignments,
+  ];
   const currentPublicLevel = findPublicPermission(members)?.level || false;
 
   return (

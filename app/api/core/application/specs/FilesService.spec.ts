@@ -419,6 +419,15 @@ describe('FilesService', () => {
         expect(demoted.entity).toBe('entity1');
       });
 
+      it('should leave the transaction to the caller, opening none of its own', async () => {
+        const { service, transactionManager } = createService();
+        const run = jest.spyOn(transactionManager, 'run');
+
+        await service.demoteToAttachment(f.idString('dm-doc'));
+
+        expect(run).not.toHaveBeenCalled();
+      });
+
       it('should throw when file is not found', async () => {
         const { service } = createService();
         await expect(service.demoteToAttachment('non_existent_id')).rejects.toThrow();

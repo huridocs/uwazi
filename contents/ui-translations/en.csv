@@ -8,13 +8,13 @@ Key,English
 198?,198?
 2FA,2FA
 2FA Enabled,2FA Enabled
+A → Z,A → Z
 A default template cannot be deleted.,A default template cannot be deleted.
 A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,A generated ID will be the default title.
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,A valid email is required
-A → Z,A → Z
 Accept,Accept
 Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
@@ -91,8 +91,11 @@ Admin,Admin
 Administrators and Editors,Administrators and Editors
 Administrators and Editors always have edit access,Administrators and Editors always have edit access
 Admins,Admins
+Advanced,Advanced
 Advanced colors,Advanced colors
 Advanced ECharts overrides,Advanced ECharts overrides
+Aggregation,Aggregation
+Alias,Alias
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -138,6 +141,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
 Ask Bert,Ask Bert
+"Ask Bert anything, or describe a task…","Ask Bert anything, or describe a task…"
 Attachment,Attachment
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -152,6 +156,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
 Available default translation,Available default translation
+Available files,Available files
+Avg,Avg
 Back,Back
 Back to,Back to
 Back to details,Back to details
@@ -194,6 +200,7 @@ Character support process warning,"This process could take several minutes and w
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Chart,Chart
 Chart options,Chart options
+Chart palette,Chart palette
 Chart theme,Chart theme
 Chart type,Chart type
 Chart type uses a custom view,Chart type uses a custom view
@@ -212,12 +219,19 @@ Clear coordinates,Clear coordinates
 Clear Filters,Clear Filters
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
+Clear selection,Clear selection
+Clear selection filter,Clear selection filter
+Clear sort,Clear sort
 Click,Click
 Click to fill,Click to fill
 Click to select an image,Click to select an image
 Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,Close
+Close filters,Close filters
+Close modal,Close modal
+Close selection list,Close selection list
+Close side panel,Close side panel
 Code,Code
 Collaborator,Collaborator
 Collaborators,Collaborators
@@ -225,15 +239,19 @@ Collapse all,Collapse all
 Collapse All,Collapse All
 Collection,Collection
 Collection Name,Collection Name
+Color mode,Color mode
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
 Columns,Columns
+Combine counts,Combine counts
 combine or exclude terms,combine or exclude terms
 Comfortable,Comfortable
 Common sources,Common sources
 Compact,Compact
+Compare side by side,Compare side by side
 Completed,Completed
 Completed with errors,Completed with errors
+Computed years,Computed years
 Config,Config
 Configuration,Configuration
 Configure filters,Configure filters
@@ -254,7 +272,9 @@ Connect to an entity,Connect to an entity
 Connect to entity,Connect to entity
 Connected entities,Connected entities
 Connected to server,Connected to server
+Connection deleted,Connection deleted
 Connection type,Connection type
+Connections,Connections
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Contact Form
 Contact form email,Contact form email
@@ -321,6 +341,7 @@ CSV import failed,CSV import failed
 CSV or ZIP,CSV or ZIP
 Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
+Custom colors,Custom colors
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
             colors instead."
@@ -330,19 +351,25 @@ Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom pair,Custom pair
 Custom Uploads,Custom Uploads
 Customize,Customize
 Customized,Customized
+Daily,Daily
 Dark,Dark
 Dark Theme,Dark Theme
 Dashboard,Dashboard
+Data,Data
 Data may be outdated.,Data may be outdated.
 Data source,Data source
 Data sources,Data sources
 Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
+Dataviz editor,Dataviz editor
+Dataviz preview,Dataviz preview
 Date,Date
 Date added,Date added
+Date interval,Date interval
 Date modified,Date modified
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -352,11 +379,13 @@ Date modified,Date modified
                 value over time."
 Date range,Date range
 Day,Day
+Decrease indentation,Decrease indentation
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab."
 Default,Default
 Default date format,Default date format
+Default file,Default file
 Default filter,Default filter
 Default language,Default language
 Default language change success,Default language change success
@@ -366,6 +395,7 @@ Default View,Default View
 Delete,Delete
 DELETE,DELETE
 Delete entities and documents,Delete entities and documents
+Delete entry,Delete entry
 Delete file,Delete file
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
@@ -387,6 +417,7 @@ Deletion success,Deletion success
 Density,Density
 Description,Description
 Deselect all,Deselect all
+Detail,Detail
 Details,Details
 Direction,Direction
 Disable,Disable
@@ -396,6 +427,7 @@ Discard,Discard
 Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss
+Dismiss notification,Dismiss notification
 Display entity view from page,Display entity view from page
 Display options,Display options
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
@@ -403,6 +435,7 @@ Do you want reset the password for the following users?,Do you want reset the pa
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document contents,Document contents
+Document deleted,Document deleted
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
 Document updated,Document updated
@@ -430,16 +463,21 @@ Duplicated name,Duplicated name
 Duplicated username,Duplicated username
 Duration,Duration
 e.g.,e.g.
+e.g. hombres,e.g. hombres
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
+Echarts configuration,Echarts configuration
 Edit,Edit
 Edit at source,Edit at source
 Edit date,Edit date
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
+Edit Group,Edit Group
 Edit item,Edit item
+Edit Link,Edit Link
 Edit metadata of entities,Edit metadata of entities
+Edit relationship type,Edit relationship type
 Edit theme,Edit theme
 Edit user,Edit user
 Edited,Edited
@@ -452,25 +490,29 @@ Embed in pages,Embed in pages
 Empty,Empty
 Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
+Empty value label,Empty value label
 Enable,Enable
 Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
 Enable this page to be used as an entity view page:,Enable this page to be used as an entity view page:
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 "Enter the full username, email, or group name. Suggestions are not shown.","Enter the full username, email, or group name. Suggestions are not shown."
+Enter title,Enter title
 Enter your current password to confirm,Enter your current password to confirm
 Entities,Entities
 entities,entities
+entities · generated,entities · generated
 Entities across all languages,Entities across all languages
 Entities created,Entities created
 Entities updated,Entities updated
-entities · generated,entities · generated
 Entity,Entity
 Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
+Entity primary,Entity primary
 Entity saved,Entity saved
 Entity scope,Entity scope
 Entity type,Entity type
+Entity type (template),Entity type (template)
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
@@ -487,6 +529,7 @@ Export CSV,Export CSV
 Exporting entities to CSV,Exporting entities to CSV
 Extension Token,Extension Token
 External embed,External embed
+External iframe code,External iframe code
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extracting files,Extracting files
@@ -512,12 +555,14 @@ file,file
 File deleted,File deleted
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
+File language,File language
 File name,File name
 File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 files,files
 Files and database usage,Files and database usage
+Files list,Files list
 Fill,Fill
 Filter,Filter
 Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
@@ -536,13 +581,16 @@ Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
 Fit,Fit
 Flag,Flag
+Flags,Flags
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
 Forgot Password or Username?,Forgot Password or Username?
 Forms and email configuration,Forms and email configuration
+Frequency,Frequency
 From,From
 From all suggestions,From all suggestions
+From date,From date
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -552,12 +600,14 @@ General,General
 General access,General access
 General Information,General Information
 Generated ID,Generated ID
+Geolocation,Geolocation
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Maps
+Graph,Graph
 Group,Group
 Group by,Group by
 group expressions,group expressions
@@ -580,13 +630,18 @@ Hide actions,Hide actions
 Hide details,Hide details
 Hide label,Hide label
 Hide restricted relationships from public,Hide restricted relationships from public
+Hide task,Hide task
 Hide toolbar,Hide toolbar
+Hours,Hours
+How to combine sources,How to combine sources
 HTML,HTML
 https://yourdomain,https://yourdomain
 hub,hub
 hubs,hubs
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,Hybrid
 Icon,Icon
+Icons,Icons
 ID,ID
 ID:,ID:
 "If an account exists with the email you provided, you will receive an email
@@ -594,6 +649,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
+Image,Image
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Import
 Import asset,Import asset
@@ -613,6 +669,7 @@ In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
+Increase indentation,Increase indentation
 Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
@@ -644,6 +701,7 @@ key,key
 Label,Label
 "Label date ""From""",From:
 "Label date ""to""",To:
+Label format,Label format
 Labeled,Labeled
 Landing page,Landing page
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
@@ -654,13 +712,14 @@ An entity: */entity/9htbkgpkyy7j5rk9*
 A document: */document/4y9i99fadjp833di*
 
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Landscape,Landscape
 Language,Language
 Language Code,Language Code
 Language deleted,Language deleted
 Language reset success,Language reset success
 Language uninstalled successfully,Language uninstalled successfully
-Language(s),Language(s)
 Language:,Language:
+Language(s),Language(s)
 Languages,Languages
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -671,11 +730,13 @@ Learn how to add and configure a contact form on a webpage.,Learn how to add and
 Learn how to build your first collection,Learn how to build your first collection
 Learn more,Learn more
 Learn more about the components.,Learn more about the components.
+Legacy Uwazi,Legacy Uwazi
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Library
 library list view,library list view
 library map view,library map view
+Library results,Library results
 library table view,library table view
 Light,Light
 Light Theme,Light Theme
@@ -683,6 +744,7 @@ Link,Link
 linked,linked
 List,List
 List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
+Live (always up to date),Live (always up to date)
 Live preview,Live preview
 Live translate,Live translate
 Load,Load
@@ -703,6 +765,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,Manage relationship types
 Manage site settings and configuration,Manage site settings and configuration
 Manage types,Manage types
+Manual,Manual
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Map
@@ -740,17 +803,24 @@ Matches show the passage and the page they are on.,Matches show the passage and 
 Matching,Matching
 matching,matching
 Matomo,Matomo
+Max,Max
+Max buckets,Max buckets
+Max number of slices,Max number of slices
+Media,Media
 Members,Members
 Menu,Menu
 Message,Message
 Message sent,Message sent
+Meta description,Meta description
 Metadata,Metadata
 Metadata Extraction,Metadata Extraction
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
             configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
             configure categories, labels, and slices. Use the Appearance tab for colors."
 MIGRATE,MIGRATE
+Min,Min
 Minimum,Minimum
+Minutes,Minutes
 Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
@@ -758,6 +828,7 @@ Mixed access,Mixed access
 ML TOC,ML TOC
 Modified,Modified
 Month,Month
+Monthly,Monthly
 Months,Months
 More,More
 more,more
@@ -766,6 +837,8 @@ More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
 Multiple date range,Multiple date range
+Multiple date ranges,Multiple date ranges
+Multiple dates,Multiple dates
 Multiple inherited properties warning ([property 1] affects [property 2]),affects
 Multiple matches found,Multiple matches found
 Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
@@ -787,12 +860,15 @@ New activity will show up here.,New activity will show up here.
 New conversation,New conversation
 New entity,New entity
 New group,New group
+New Group,New Group
 New language added,New language added
+New Link,New Link
 New page,New page
 New password,New password
 New primary doc,New primary doc
 New relation type label…,New relation type label…
 New relationship type,New relationship type
+New Relationships,New Relationships
 New relationships group,New relationships group
 New Relationships Migration,New Relationships Migration
 New user,New user
@@ -858,9 +934,9 @@ No valid target template available,No valid target template available
 No value,No value
 No Value,No Value
 No visualization data available.,No visualization data available.
-"No, cancel","No, cancel"
 no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
               ToC"" button."
+"No, cancel","No, cancel"
 Non processed,Non processed
 Non-labeled,Non-labeled
 Non-latin characters support,Non-latin characters support
@@ -872,6 +948,7 @@ Not Found,Not Found
 Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
 Notifications,Notifications
+Numeric,Numeric
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -883,6 +960,9 @@ OCR error,OCR error
 OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
 OCR PDF,OCR PDF
 of,of
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Ok
 OK,OK
 On this entity,On this entity
@@ -901,10 +981,12 @@ Only published entities are counted.,Only published entities are counted.
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open entity,Open entity
+Open Graph,Open Graph
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
+Operator,Operator
 Options,Options
 or,or
 or drag and drop here,or drag and drop here
@@ -916,16 +998,23 @@ Other,Other
 other,other
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Others label,Others label
 Outgoing,Outgoing
+Overview,Overview
 p.,p.
 Page,Page
+Page embed code,Page embed code
+Page language,Page language
 Page not found,Page not found
 Page published successfully.,Page published successfully.
+Page title,Page title
 Pages,Pages
+Pagination,Pagination
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph extractor wizard,Paragraph extractor wizard
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
@@ -944,6 +1033,7 @@ PDF,PDF
 Pending,Pending
 People and groups,People and groups
 per page,per page
+Percentage,Percentage
 Permission,Permission
 Permission level,Permission level
 Permission on entities explicitly shared with the user,Permission on entities explicitly shared with the user
@@ -952,9 +1042,12 @@ Permissions updated,Permissions updated
 Pick a color,Pick a color
 Pick another,Pick another
 Plain text,Plain text
+Play audio,Play audio
+Play video,Play video
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Please type in letters and numbers from the image to start the export.
+Portrait,Portrait
 Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
@@ -964,11 +1057,14 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Press enter to add
 Preview,Preview
+Preview mode,Preview mode
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Previous
 Primary,Primary
+Primary action,Primary action
 Primary button,Primary button
+Primary dimension (X-axis / categories),Primary dimension (X-axis / categories)
 Primary document,Primary document
 Primary Documents,Primary Documents
 Primary documents,Primary documents
@@ -1022,6 +1118,7 @@ Publish release,Publish release
 Published,Published
 Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,QR Code
+qr code,qr code
 Query,Query
 Queued,Queued
 RAW,RAW
@@ -1064,10 +1161,14 @@ remaining,remaining
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
+Remove data source,Remove data source
+Remove filter,Remove filter
 Remove from connection,Remove from connection
+Remove from selection,Remove from selection
 Remove from training set,Remove from training set
 remove icon,remove icon
 Remove icon,Remove icon
+Remove timelink,Remove timelink
 Removed language,Removed language
 Rename,Rename
 Renamed attachment,Renamed attachment
@@ -1084,6 +1185,7 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Reset Password
 Reset passwords,Reset passwords
+Reset Search input,Reset Search input
 Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
@@ -1093,10 +1195,12 @@ Retrying,Retrying
 Return to login,Return to login
 Review,Review
 Reviewed,Reviewed
+Rich text,Rich text
 Role,Role
 Room around every row,Room around every row
 Route,Route
 Row,Row
+Row actions,Row actions
 Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
@@ -1105,6 +1209,7 @@ Satellite,Satellite
 Save,Save
 Save & Preview,Save & Preview
 Save changes,Save changes
+Save label,Save label
 Save password,Save password
 Save the visualization before refreshing.,Save the visualization before refreshing.
 Save the visualization to get embed code.,Save the visualization to get embed code.
@@ -1119,13 +1224,16 @@ Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,Search
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search button,Search button
 Search by title,Search by title
+Search chart types,Search chart types
 Search entities...,Search entities...
 Search entities…,Search entities…
 Search item,Search item
 Search related entities or documents,Search related entities or documents
 Search relationships,Search relationships
 Search relevance,Search relevance
+Search templates,Search templates
 Search text,Search text
 Search text description,Type something in the search box to get some results.
 Search this document,Search this document
@@ -1138,7 +1246,12 @@ Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
 Search title & metadata,Search title & metadata
 Searching...,Searching...
+Second dimension (series / stacks),Second dimension (series / stacks)
 Secondary button,Secondary button
+Secondary button border,Secondary button border
+Secondary button text,Secondary button text
+Secondary text,Secondary text
+Seconds,Seconds
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -1147,34 +1260,52 @@ Select & Search,Select & Search
 Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
 Select a file,Select a file
 Select all,Select all
+Select all files,Select all files
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,Select files on your device
 Select from computer,Select from computer
+Select icon...,Select icon...
 Select image,Select image
 Select media,Select media
+Select Open Graph image,Select Open Graph image
+Select page,Select page
+Select property…,Select property…
 Select relationship,Select relationship
 Select relationship type,Select relationship type
 Select site logo image,Select site logo image
 Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Select target paragraph
+Select template…,Select template…
 Select text in target document,Select text in target document
 select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
+Select values…,Select values…
 Select...,Select...
+Select…,Select…
 Selected,Selected
 selected,selected
+Selected entities,Selected entities
 selected of,selected of
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
+Selection,Selection
 Send,Send
+Send message,Send message
 Send recovery email,Send recovery email
 Sending email,Sending email
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Series
+Server disconnected,Server disconnected
 Services,Services
 Set as default,Set as default
 Set default language,Set default language
@@ -1182,6 +1313,7 @@ Set default template,Set default template
 Set the default starting point for your geolocation properties.,Set the default starting point for your geolocation properties.
 Settings,Settings
 settings,settings
+Settings navigation,Settings navigation
 Settings navigation active background,Settings navigation active background
 Settings sidebar background,Settings sidebar background
 Settings updated,Settings updated.
@@ -1204,6 +1336,7 @@ Show toolbar,Show toolbar
 Showing,Showing
 Showing the top,Showing the top
 shown of,shown of
+Side panel tabs,Side panel tabs
 Sign in,Sign in
 Simple mode,Simple mode
 Single relationships must have a hub,Single relationships must have a hub
@@ -1214,6 +1347,8 @@ Site logo description,"The logo appears in the top bar next to your collection n
 Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,Size
 Skip to main content,Skip to main content
+Snapshot (manual),Snapshot (manual)
+Snapshot (scheduled),Snapshot (scheduled)
 Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,Something went wrong
 Sort,Sort
@@ -1251,11 +1386,13 @@ Suggestions,Suggestions
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Sum,Sum
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
 Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,Supporting files
+Surface text,Surface text
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
@@ -1270,12 +1407,13 @@ Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
-Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Target:,Target:
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Tasks,Tasks
 Template,Template
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template color,Template color
+Template colors,Template colors
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback."
@@ -1309,6 +1447,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Theme preview label,Theme preview label
 Then by,Then by
 There are no pages enabled for entity view,There are no pages enabled for entity view
 There are no untranslated terms,There are no untranslated terms
@@ -1336,6 +1475,7 @@ This chart type cannot display the current data.,This chart type cannot display 
             legend, labels, or data filters."
 This content is automatically generated,This content is automatically generated
 This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
+This document,This document
 "This entity has no document, you probably want to see the metadata","This entity has no document, you probably want to see the metadata"
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
@@ -1370,6 +1510,7 @@ this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Thumbnail,Thumbnail
 Thumbnail frame,Thumbnail frame
+Thumbnail size,Thumbnail size
 Time,Time
 Time (UTC),Time (UTC)
 Timeline,Timeline
@@ -1379,8 +1520,13 @@ tips,tips
 Title,Title
 To,To
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
+To date,To date
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
 Today,Today
+Toggle dark theme,Toggle dark theme
+Toggle light theme,Toggle light theme
+Toggle navigation menu,Toggle navigation menu
+Toggle options menu,Toggle options menu
 Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,Tools
@@ -1404,6 +1550,7 @@ Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Translations saved
+Tree,Tree
 Try a different search or clear filters.,Try a different search or clear filters.
 Turn off inline translation,Turn off inline translation
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1417,6 +1564,7 @@ Two-factor verification failed,Two-factor verification failed
 Two-step verification,Two-step verification
 Two-step verification token required,Two-step verification token required
 Type,Type
+Type to filter…,Type to filter…
 U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,Unauthorized
@@ -1452,6 +1600,7 @@ Upload from computer,Upload from computer
 Upload image,Upload image
 Upload PDF,Upload PDF
 Upload PDF(s) to create,Upload PDF(s) to create
+Upload progress,Upload progress
 Uploaded attachment,Uploaded attachment
 Uploaded custom file,Uploaded custom file
 Uploaded document,Uploaded document
@@ -1467,9 +1616,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
-Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
-Used in templates — cannot delete,Used in templates — cannot delete
 Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
 User,User
 User Action,User Action
 User Role,User Role
@@ -1485,29 +1634,38 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Design,Uwazi Design
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi is developed by
+Uwazi label,Uwazi label
 Uwazi UI,Uwazi UI
 Validating,Validating
 Validating file structure and headers.,Validating file structure and headers.
 Value,Value
+Value and percentage,Value and percentage
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
 "values are staged, not saved","values are staged, not saved"
 Verify,Verify
 Verifying...,Verifying...
 via,via
+Video,Video
 View,View
 view,view
 View entities,View entities
 View entity,View entity
 View in library,View in library
 View page,View page
+Vimeo video player,Vimeo video player
+Violated articles,Violated articles
 Visibility,Visibility
 Visualization data updated from your collection.,Visualization data updated from your collection.
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Warning: you are editing multiple entities. The value of each field will be applied to all of them.
 We can't find the page you're looking for.,We can't find the page you're looking for.
+Week,Week
+Weekly,Weekly
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1540,6 +1698,7 @@ You should activate this feature for enhanced account security.,You should activ
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+YouTube video player,YouTube video player
 Z → A,Z → A
 Zoom in,Zoom in
 Zoom in library view,Zoom in library view

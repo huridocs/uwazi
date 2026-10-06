@@ -2,7 +2,7 @@ import React, { useId, useState } from 'react';
 import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { type NotificationType, type StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationKindIcon } from './notificationKindIcons.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 interface NotificationItemProps {
   notification: StatusNotification;
@@ -121,7 +121,7 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
           onDismiss(notification.id);
         }}
         className="absolute right-2.5 top-2.5 flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-muted opacity-0 transition-opacity hover:bg-[color-mix(in_srgb,var(--color-theme-text-primary)_5%,transparent)] group-hover:opacity-100 focus:opacity-100"
-        aria-label="Dismiss notification"
+        aria-label={t('System', 'Dismiss notification', null, false)}
       >
         <XMarkIcon className="h-[13px] w-[13px]" aria-hidden="true" />
       </button>

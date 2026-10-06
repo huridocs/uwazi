@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -26,8 +26,8 @@ const DataSourceRow = ({
 }: DataSourceRowProps) => {
   const templates = useAtomValue(templatesAtom);
   const templateOptions = [
-    { value: '', label: 'Select template…' },
-    ...templates.filter(t => t._id).map(t => ({ value: t._id!, label: t.name })),
+    { value: '', label: t('System', 'Select template…', null, false) },
+    ...templates.filter(tmpl => tmpl._id).map(tmpl => ({ value: tmpl._id!, label: tmpl.name })),
   ];
 
   return (
@@ -41,7 +41,7 @@ const DataSourceRow = ({
             type="button"
             onClick={onRemove}
             className="text-ink-muted hover:text-ink"
-            aria-label="Remove data source"
+            aria-label={t('System', 'Remove data source', null, false)}
           >
             <XMarkIcon className="h-4 w-4" />
           </button>
@@ -49,7 +49,7 @@ const DataSourceRow = ({
       </div>
       <Select
         id={`source-template-${index}`}
-        label="Template"
+        label={t('System', 'Template', null, false)}
         value={source.templateId}
         options={templateOptions}
         onChange={e => onChange({ ...source, templateId: e.target.value })}
@@ -57,9 +57,9 @@ const DataSourceRow = ({
       {showAlias && (
         <InputField
           id={`source-alias-${index}`}
-          label="Alias"
+          label={t('System', 'Alias', null, false)}
           value={source.alias || ''}
-          placeholder="e.g. hombres"
+          placeholder={t('System', 'e.g. hombres', null, false)}
           onChange={e => onChange({ ...source, alias: e.target.value })}
         />
       )}

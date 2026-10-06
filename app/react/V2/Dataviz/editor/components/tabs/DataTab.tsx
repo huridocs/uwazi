@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import type {
   DatavizDataSourceKind,
@@ -110,7 +110,9 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
         sources.length !== query.sources.length ||
         sources.some((source, index) => source.templateId !== query.sources[index]?.templateId);
 
-      const templateNameById = new Map(templates.filter(t => t._id).map(t => [t._id!, t.name]));
+      const templateNameById = new Map(
+        templates.filter(tmpl => tmpl._id).map(tmpl => [tmpl._id!, tmpl.name])
+      );
       const nextSources = structureChanged
         ? ensureSourceAliases(sources, templateNameById)
         : sources;
@@ -211,7 +213,7 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             measure={measure}
             onMeasureChange={setMeasure}
             onChange={dim => setDimensions(dim, secondaryDimension)}
-            title="Primary dimension (X-axis / categories)"
+            title={t('System', 'Primary dimension (X-axis / categories)', null, false)}
             idPrefix="primary-dimension"
             allowTemplateDimension={!isMultiSource}
           />
@@ -221,7 +223,7 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             measure={measure}
             onMeasureChange={setMeasure}
             onChange={dim => setDimensions(primaryDimension, dim)}
-            title="Second dimension (series / stacks)"
+            title={t('System', 'Second dimension (series / stacks)', null, false)}
             idPrefix="secondary-dimension"
             excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
             allowTemplateDimension={false}

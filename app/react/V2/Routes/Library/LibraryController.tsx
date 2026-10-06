@@ -71,14 +71,14 @@ const useLibrarySearchInput = (
 
 const useLibrarySelection = () => {
   const revalidator = useRevalidator();
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   return {
-    selectedId,
-    setSelectedId,
-    onClosePreview: () => setSelectedId(undefined),
+    selectedIds,
+    setSelectedIds,
+    onClosePreview: () => setSelectedIds([]),
     onEntityCreated: (sharedId?: string) => {
       void revalidator.revalidate();
-      if (sharedId) setSelectedId(sharedId);
+      if (sharedId) setSelectedIds([sharedId]);
     },
   };
 };
@@ -89,7 +89,7 @@ const LibraryController = () => {
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const { selectedId, setSelectedId, onClosePreview, onEntityCreated } = useLibrarySelection();
+  const { selectedIds, setSelectedIds, onClosePreview, onEntityCreated } = useLibrarySelection();
   const {
     draft: searchInput,
     setDraft: setSearchInput,
@@ -153,8 +153,8 @@ const LibraryController = () => {
         updateUrl({ andFilters: andFilters.length ? andFilters : null, from: 0 });
       }}
       chips={chips}
-      selectedId={selectedId}
-      onSelect={setSelectedId}
+      selectedIds={selectedIds}
+      onSelectedIdsChange={setSelectedIds}
       onClosePreview={onClosePreview}
       entityBasePath={entityBasePath}
       onLoadMore={amount => {

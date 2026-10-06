@@ -193,3 +193,37 @@ export const filterUnauthorizedRelated = (
     knowing restricted content exists.
   </Translate>
 );
+
+export const seoPageTitle = (
+  <Translate translationKey="SEO page title description">
+    A clear and descriptive title for the website. This is used as the default HTML page title in
+    browser tabs and search results.
+  </Translate>
+);
+
+export const seoMetaDescription = (
+  <Translate translationKey="SEO meta description">
+    A short description of what this collection provides. Search engines may show this text in
+    results. Aim for about 150–160 characters.
+  </Translate>
+);
+
+export const seoOgTitle = (
+  <Translate translationKey="SEO og title description">
+    Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other
+    social media. If empty, the page title is used.
+  </Translate>
+);
+
+export const seoOgDescription = (
+  <Translate translationKey="SEO og description">
+    Description used in social media previews. If empty, the meta description is used.
+  </Translate>
+);
+
+export const seoOgImage = (
+  <Translate translationKey="SEO og image description">
+    Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is
+    1200×630 pixels.
+  </Translate>
+);

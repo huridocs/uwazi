@@ -1,6 +1,11 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { MultiUpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/MultiUpdateEntityUseCaseFactory.js';
+import {
+  TargetLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from '#api/core/application/errors.js';
+import { PropertyNotTranslatableError } from '#api/core/domain/entity/errors.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -178,6 +183,131 @@ describe('MultiUpdateEntity', () => {
         entity1Docs.forEach(doc => {
           expect(doc.title).toBe(`Entity 1 ${doc.language!.toUpperCase()} title`);
         });
+      });
+    });
+
+    describe('when updating translations', () => {
+      it('should write each language of a text and keep translatable properties that were not sent', async () => {
+        const { sut } = createSut(undefined, postgresCore);
+
+        await sut.execute({
+          ids: ['entity-1', 'entity-2'],
+          targetLanguage: 'en',
+          values: {
+            propertyAssignments: [
+              { name: 'text', value: [{ value: 'Updated EN text' }] },
+              { name: 'numeric', value: [{ value: 99 }] },
+            ],
+            translations: {
+              es: [{ name: 'text', value: [{ value: 'Updated ES text' }] }],
+            },
+          },
+        });
+
+        const entity1Docs = await getAllDocs('entity-1');
+        const entity1En = entity1Docs.find(d => d.language === 'en')!;
+        const entity1Es = entity1Docs.find(d => d.language === 'es')!;
+
+        expect(entity1En.metadata.text).toEqual([{ value: 'Updated EN text' }]);
+        expect(entity1Es.metadata.text).toEqual([{ value: 'Updated ES text' }]);
+        expect(entity1En.title).toBe('Entity 1 EN title');
+        expect(entity1Es.title).toBe('Entity 1 ES title');
+        expect(entity1En.metadata.numeric).toEqual([{ value: 99 }]);
+        expect(entity1Es.metadata.numeric).toEqual([{ value: 99 }]);
+
+        const entity2Es = (await getAllDocs('entity-2')).find(d => d.language === 'es')!;
+        expect(entity2Es.metadata.text).toEqual([{ value: 'Updated ES text' }]);
+        expect(entity2Es.title).toBe('Entity 2 original title');
+      });
+
+      it('should create a missing installed language and apply only the sent properties', async () => {
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          settings: [
+            {
+              languages: [
+                { default: true, key: 'en', label: 'English' },
+                { key: 'es', label: 'Spanish' },
+                { key: 'pt', label: 'Portuguese' },
+              ],
+            },
+          ],
+        });
+        const { sut } = createSut(undefined, postgresCore);
+
+        await sut.execute({
+          ids: ['entity-1'],
+          targetLanguage: 'en',
+          values: {
+            translations: {
+              pt: [{ name: 'text', value: [{ value: 'Texto PT' }] }],
+            },
+          },
+        });
+
+        const docs = await getAllDocs('entity-1');
+        const pt = docs.find(d => d.language === 'pt')!;
+
+        expect(docs.map(d => d.language).sort()).toEqual(['en', 'es', 'pt']);
+        expect(pt.metadata.text).toEqual([{ value: 'Texto PT' }]);
+        expect(pt.title).toBe('Entity 1 EN title');
+        expect(pt.metadata.numeric).toEqual([{ value: 10 }]);
+        expect(docs.find(d => d.language === 'es')!.metadata.text).toEqual([
+          { value: 'Entity 1 ES text' },
+        ]);
+      });
+
+      it('should reject an unknown translation language without changing entities', async () => {
+        const { sut } = createSut(undefined, postgresCore);
+
+        await expect(
+          sut.execute({
+            ids: ['entity-1'],
+            targetLanguage: 'en',
+            values: {
+              translations: {
+                fr: [{ name: 'text', value: [{ value: 'Texte' }] }],
+              },
+            },
+          })
+        ).rejects.toThrow(new UnknownTranslationLanguageError('fr'));
+
+        const docs = await getAllDocs('entity-1');
+        expect(docs.find(d => d.language === 'en')!.metadata.text).toEqual([
+          { value: 'Entity 1 EN text' },
+        ]);
+      });
+
+      it('should reject the target language inside translations', async () => {
+        const { sut } = createSut(undefined, postgresCore);
+
+        await expect(
+          sut.execute({
+            ids: ['entity-1'],
+            targetLanguage: 'en',
+            values: {
+              translations: {
+                en: [{ name: 'text', value: [{ value: 'Still English' }] }],
+              },
+            },
+          })
+        ).rejects.toThrow(new TargetLanguageInTranslationsError('en'));
+      });
+
+      it('should reject a non-translatable property sent as a translation', async () => {
+        const { sut } = createSut(undefined, postgresCore);
+
+        await expect(
+          sut.execute({
+            ids: ['entity-1'],
+            targetLanguage: 'en',
+            values: {
+              translations: {
+                es: [{ name: 'numeric', value: [{ value: 5 }] }],
+              },
+            },
+          })
+        ).rejects.toThrow(new PropertyNotTranslatableError('es', 'numeric'));
       });
     });
 

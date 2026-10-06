@@ -21,18 +21,18 @@ const REFRESH_OPTIONS: {
 }[] = [
   {
     value: 'live',
-    label: 'Live (always up to date)',
+    label: t('System', 'Live (always up to date)', null, false),
     description: 'Data is fetched from your collection each time the visualization is loaded.',
   },
   {
     value: 'snapshot_manual',
-    label: 'Snapshot (manual)',
+    label: t('System', 'Snapshot (manual)', null, false),
     description:
       'Uses a saved copy of your data. Refresh when your collection has new or updated entries.',
   },
   {
     value: 'snapshot_scheduled',
-    label: 'Snapshot (scheduled)',
+    label: t('System', 'Snapshot (scheduled)', null, false),
     description:
       'Uses a saved copy that is updated on a schedule. You can also refresh manually after adding data.',
   },
@@ -288,12 +288,12 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
           </h3>
           <Select
             id="schedule-frequency"
-            label="Frequency"
+            label={t('System', 'Frequency', null, false)}
             value={refresh.schedule || 'daily'}
             options={[
-              { value: 'daily', label: 'Daily' },
-              { value: 'weekly', label: 'Weekly' },
-              { value: 'monthly', label: 'Monthly' },
+              { value: 'daily', label: t('System', 'Daily', null, false) },
+              { value: 'weekly', label: t('System', 'Weekly', null, false) },
+              { value: 'monthly', label: t('System', 'Monthly', null, false) },
             ]}
             onChange={e =>
               onPatchRefresh({

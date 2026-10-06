@@ -5,6 +5,7 @@ import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import Immutable from 'immutable';
 import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
+import { t } from '#app/I18N/index.js';
 
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
@@ -40,7 +41,8 @@ export function connectionsChanged(sharedId) {
       .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
       .then(async connectionsGroups => {
         const filteredTemplates = connectionsGroups.reduce(
-          (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
+          (templateIds, group) =>
+            templateIds.concat(group.templates.map(tmpl => tmpl._id.toString())),
           []
         );
 
@@ -63,7 +65,7 @@ export function connectionsChanged(sharedId) {
 export function deleteConnection(connection) {
   return async (dispatch, getState) => {
     await referencesAPI.delete(new RequestParams({ _id: connection._id }));
-    dispatch(notificationActions.notify('Connection deleted', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Connection deleted', null, false), 'success'));
     return connectionsChanged()(dispatch, getState);
   };
 }

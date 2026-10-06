@@ -84,10 +84,14 @@ const SearchBarComponent = ({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <Icon icon="times" onClick={resetSearch} aria-label="Reset Search input" />
+          <Icon
+            icon="times"
+            onClick={resetSearch}
+            aria-label={t('System', 'Reset Search input', null, false)}
+          />
 
           <button type="submit" className="search-icon-wrapper">
-            <Icon icon="search" aria-label="Search button" />
+            <Icon icon="search" aria-label={t('System', 'Search button', null, false)} />
           </button>
         </div>
       </Form>

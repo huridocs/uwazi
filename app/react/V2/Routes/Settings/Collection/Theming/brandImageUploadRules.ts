@@ -19,3 +19,13 @@ export const themeLogotypeImageSizeRule: ImageSizeRule = {
   maxHeight: 256,
   square: false,
 };
+
+export const ogImageSizeRule: ImageSizeRule = {
+  policy: 'soft',
+  assetLabel: 'ogImage',
+  minWidth: 600,
+  maxWidth: 2400,
+  minHeight: 315,
+  maxHeight: 1260,
+  square: false,
+};

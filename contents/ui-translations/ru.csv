@@ -8,13 +8,13 @@ Key,Russian
 198?,198?
 2FA,2FA
 2FA Enabled,Включена двухфакторная аутентификация
+A → Z,А → Я
 A default template cannot be deleted.,Шаблон по умолчанию удалить нельзя.
 A friendly hand for serious work — I'll act in the context shown above.,Дружеская помощь в серьезном деле — я буду действовать в соответствии с приведенным выше контекстом.
 A generated ID will be the default title.,Сгенерированный идентификатор будет назначен заголовком по умолчанию
 A source template must,Шаблон источника должен
 A target template needs to have the following properties,Шаблон цели должен обладать следующими свойствами
 A valid email is required,Требутся электронная почта
-A → Z,А → Я
 Accept,Принять
 Accept all,Принять всё
 Accepted suggestion on entity,Принятое предложение по объекту
@@ -91,8 +91,11 @@ Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
 Administrators and Editors always have edit access,Администраторы и редакторы всегда имеют права на редактирование
 Admins,Администраторы
+Advanced,Дополнительно
 Advanced colors,Расширенные цвета
 Advanced ECharts overrides,Расширенные переопределения ECharts
+Aggregation,Агрегация
+Alias,Псевдоним
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
@@ -138,6 +141,7 @@ Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,"Вы уверены, что хотите удалить эту визуализацию? Это действие нельзя отменить."
 Are you sure?,Вы уверены?
 Ask Bert,Спросите Bert
+"Ask Bert anything, or describe a task…",Спросите Берта что угодно или опишите задачу…
 Attachment,Вложение
 Attachment deleted,Вложение удалено
 Attachment renamed,Вложение переименовано
@@ -152,6 +156,8 @@ Auto-translate,Auto-translate
 Automatic Table of Contents,Автоматическое оглавление
 Automatically generated,Генерируется автоматически
 Available default translation,Доступный перевод по умолчанию
+Available files,Доступные файлы
+Avg,Среднее
 Back,Назад
 Back to,Назад к
 Back to details,Вернуться к подробностям
@@ -194,13 +200,14 @@ Character support process warning,"Этот процесс может занят
 Character support revert warning,"После выбора этой опции вы не сможете вернуться к использованию старого формата именования свойств. Если у вас нет проблем с названиями свойств шаблона, рекомендуем оставить этот параметр отключенным."
 Chart,Диаграмма
 Chart options,Параметры диаграммы
+Chart palette,Палитра диаграммы
 Chart theme,Тема диаграммы
 Chart type,Тип диаграммы
 Chart type uses a custom view,В этом типе диаграммы используется настраиваемый вид
 Check to make this instance public (non-logged in users can see public documents and entities),"Установите флажок, чтобы сделать этот экземпляр общедоступным (пользователи, не вошедшие в систему, смогут просматривать общедоступные документы и объекты)"
 Checking which images fit the requirements,"Проверка того, какие изображения соответствуют требованиям..."
 Choose,Выберите
-Choose PDF files,Choose PDF files
+Choose PDF files,Выбрать файлы PDF
 Choose relation type,Выберите тип связи
 Choose which data to use for training,"Выберите, какие данные использовать для обучения"
 Chrome header,Заголовок верхней панели
@@ -212,12 +219,19 @@ Clear coordinates,Очистить координаты
 Clear Filters,Очистить фильтры
 Clear PDF selection,Очистить выделенную область в PDF-файле
 Clear search,Очистить поиск
+Clear selection,Снять выделение
+Clear selection filter,Сбросить фильтр выбора
+Clear sort,Сбросить сортировку
 Click,Нажмите
 Click to fill,"Нажмите, чтобы заполнить"
 Click to select an image,"Нажмите, чтобы выбрать изображение"
 Click to select audio or video,"Нажмите, чтобы выбрать аудио или видео"
 Click to select files,"Нажмите, чтобы выбрать файлы"
 Close,Закрыть
+Close filters,Закрыть фильтры
+Close modal,Закрыть окно
+Close selection list,Закрыть список выбора
+Close side panel,Закрыть боковую панель
 Code,Код
 Collaborator,Соавтор
 Collaborators,Соавторы
@@ -225,15 +239,19 @@ Collapse all,Свернуть всё
 Collapse All,Свернуть всё
 Collection,Коллекция
 Collection Name,Название коллекции
+Color mode,Режим цвета
 Colors,Цвета
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Цвета берутся из уровня данных сервера. В окне предварительного просмотра отображаются цвета, назначенные корзинам, если они доступны."
 Columns,Столбцы
+Combine counts,Объединить подсчёты
 combine or exclude terms,объединить или исключить термины
 Comfortable,Комфортная
 Common sources,Распространенные источники
 Compact,Компактная
+Compare side by side,Сравнить рядом
 Completed,Завершено
 Completed with errors,Завершено с ошибками
+Computed years,Вычисленные годы
 Config,Настройки
 Configuration,Настройки
 Configure filters,Настроить фильтры
@@ -254,7 +272,9 @@ Connect to an entity,Подключиться к объекту
 Connect to entity,Подключиться к объекту
 Connected entities,Связанные объекты
 Connected to server,Подключено к серверу
+Connection deleted,Связь удалена
 Connection type,Тип связи
+Connections,Связи
 Contact email description,"Здесь вы можете настроить контактный адрес электронной почты и адрес, который отображается, когда Uwazi отправляет уведомление пользователю"
 Contact Form,Форма обратной связи
 Contact form email,Электронная почта контактной формы
@@ -321,6 +341,7 @@ CSV import failed,Импорт из CSV не выполнен
 CSV or ZIP,CSV или ZIP
 Ctrl K,Ctrl+K
 Current Value/Suggestion,Текущее значение/предложение
+Custom colors,Пользовательские цвета
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Для этого типа диаграммы пользовательские цвета недоступны. Вместо этого используйте цвета из палитры диаграммы или цвета шаблона
 ."
@@ -330,19 +351,25 @@ Custom Favicon,Пользовательский фавикон
 Custom JS,Пользовательский JS
 Custom landing page,Пользовательская целевая страница
 custom page error warning,"На этой пользовательской странице произошла непредвиденная ошибка, она может работать некорректно. Обратитесь к администратору за подробностями."
+Custom pair,Своя пара
 Custom Uploads,Пользовательские загрузки
 Customize,Настроить
 Customized,Настроено
+Daily,Ежедневно
 Dark,Тёмный
 Dark Theme,Тёмная тема
 Dashboard,Панель управления
+Data,Данные
 Data may be outdated.,Данные могут быть устаревшими.
 Data source,Источник данных
 Data sources,Источники данных
 Data visualizations,Визуализация данных
 Data was updated recently. You can refresh again in a few seconds.,Данные были обновлены недавно. Вы сможете обновить их снова через несколько секунд.
+Dataviz editor,Редактор визуализации
+Dataviz preview,Предпросмотр визуализации
 Date,Дата
 Date added,Дата добавления
+Date interval,Интервал дат
 Date modified,Дата изменена
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Дата или числовое значение × числовое значение позволяют построить диаграмму рассеяния и тепловую карту. Линейные, плоскостные и столбчатые диаграммы отображают
@@ -352,11 +379,13 @@ Date modified,Дата изменена
  по временному интервалу."
 Date range,Диапазон дат
 Day,День
+Decrease indentation,Уменьшить отступ
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Глубоко встроено в сгенерированные настройки ECharts. Используется для тонкой настройки параметров, недоступных на
  вкладке ""Диаграмма""."
 Default,По умолчанию
 Default date format,Формат даты по умолчанию
+Default file,Файл по умолчанию
 Default filter,Фильтр по умолчанию
 Default language,Язык по умолчанию
 Default language change success,Изменение языка по умолчанию прошло успешно
@@ -366,6 +395,7 @@ Default View,Вид по умолчанию
 Delete,Удалить
 DELETE,Удалить
 Delete entities and documents,Удаление объектов и документов
+Delete entry,Удалить запись
 Delete file,Удалить файл
 Delete relationship,Удалить связь
 Delete relationships,Удалить связи
@@ -387,6 +417,7 @@ Deletion success,Удаление выполнено успешно
 Density,Плотность
 Description,Описание
 Deselect all,Отменить выбор всех
+Detail,Подробно
 Details,Подробности
 Direction,Направление
 Disable,Отключить
@@ -396,6 +427,7 @@ Discard,Отменить
 Discard changes,Отменить изменения
 Discard changes?,Отменить изменения?
 Dismiss,Отклонить
+Dismiss notification,Скрыть уведомление
 Display entity view from page,Показывать просматриваемый объект со страницы
 Display options,Параметры отображения
 Do you want disable 2FA for the following users?,Вы хотите отключить двухфакторную аутентификацию (2FA) для следующих пользователей?
@@ -403,6 +435,7 @@ Do you want reset the password for the following users?,Хотите сброс�
 Do you want to delete the following items?,Вы хотите удалить следующие элементы?
 Document,Документ
 Document contents,Содержание документа
+Document deleted,Документ удалён
 Document OCR trigger,Триггер OCR документа
 Document Title,Название документа
 Document updated,Документ обновлен
@@ -430,16 +463,21 @@ Duplicated name,Дублированное имя
 Duplicated username,Продублированное имя пользователя
 Duration,Продолжительность
 e.g.,"например,"
+e.g. hombres,напр. hombres
 Each series uses the template brand color when comparing data sources.,При сравнении источников данных в каждой серии используется цвет бренда шаблона.
 Earlier,Ранее
+Echarts configuration,Конфигурация ECharts
 Edit,Редактировать
 Edit at source,Редактировать в источнике
 Edit date,Дата изменена
 Edit Extractor,Редактировать экстрактор
 Edit File,Редактировать файл
 Edit group,Редактировать группу
+Edit Group,Изменить группу
 Edit item,Редактировать элемент
+Edit Link,Изменить ссылку
 Edit metadata of entities,Редактирование метаданных объектов
+Edit relationship type,Изменить тип связи
 Edit theme,Изменить тему
 Edit user,Редактировать пользователя
 Edited,Отредактировано
@@ -452,25 +490,29 @@ Embed in pages,Вставить на страницы
 Empty,Пустой
 Empty group. Drop here to add,"Пустая группа. Перетащите сюда, чтобы добавить"
 empty property tip,"Вы не сможете сохранить объект, если это свойство пустое."
+Empty value label,Подпись пустого значения
 Enable,Включить
 Enable public embedding to use this chart in external sites on private instances.,"Включите публичное встраивание, чтобы использовать эту диаграмму на внешних сайтах в частных экземплярах."
 Enable this page to be used as an entity view page:,Сделайте эту страницу доступной для использования в качестве страницы для просмотра объекта:
 Enter the 6-digit verification code generated by your Authenticator app,"Введите 6-значный код подтверждения, сгенерированный приложением Authenticator"
 "Enter the full username, email, or group name. Suggestions are not shown.","Введите полное имя пользователя, адрес электронной почты или название группы. Варианты для ввода не отображаются."
+Enter title,Введите заголовок
 Enter your current password to confirm,Введите свой текущий пароль для подтверждения
 Entities,Объекты
 entities,Объекты
+entities · generated,объектов · сгенерировано
 Entities across all languages,Объекты во всех языках
 Entities created,Созданные объекты
 Entities updated,Обновленные объекты
-entities · generated,объектов · сгенерировано
 Entity,Объект
 Entity creation stage completed.,Этап создания объектов завершён.
 Entity deleted,Объект удален
 Entity Page,Страница объекта
+Entity primary,Основная сущность
 Entity saved,Объект сохранен
 Entity scope,Область действия объекта
 Entity type,Тип объекта
+Entity type (template),Тип сущности (шаблон)
 Entity types,Типы объектов
 Entity updated,Объект обновлен
 Error,Ошибка
@@ -487,6 +529,7 @@ Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
 Extension Token,Токен расширения
 External embed,Внешнее встраивание
+External iframe code,Внешний код iframe
 Extract new paragraphs,Извлечь новые абзацы
 Extract paragraphs,Извлечь абзацы
 Extracting files,Извлечение файлов
@@ -512,12 +555,14 @@ file,файл
 File deleted,Файл удален
 File details,Сведения о файле
 File extraction completed successfully.,Извлечение файлов завершено успешно.
+File language,Язык файла
 File name,Имя файла
 File preview unavailable,Предварительный просмотр файла недоступен
 File updated,Файл обновлен
 Files,Файлы
 files,файлы
 Files and database usage,Использование файлов и баз данных
+Files list,Список файлов
 Fill,Заполнить
 Filter,Фильтр
 Filter unauthorized relationships,"По умолчанию связи, указывающие на объекты с ограниченным доступом, видны анонимным пользователям, но не являются кликабельными. При включении этой опции такие связи полностью скрываются, чтобы публичные пользователи не знали о существовании ограниченного контента."
@@ -536,13 +581,16 @@ Find suggestions for selected,Искать предложения для выб�
 Finding suggestions,Поиск предложений
 Fit,Приспособить
 Flag,Флажок
+Flags,Флаги
 for,для
 For all entities,Для всех объектов
 For entities with blank values,Для объектов с пустыми значениями
 Forgot Password or Username?,Забыли пароль или имя пользователя?
 Forms and email configuration,Настройка форм и электронной почты
+Frequency,Частота
 From,От
 From all suggestions,Из всех предложений
+From date,С даты
 From previous step,Из предыдущего шага
 From selection,Из выбранного
 From:,От:
@@ -552,12 +600,14 @@ General,Общий
 General access,Общий доступ
 General Information,Общая информация
 Generated ID,Сгенерированный идентификатор
+Geolocation,Геолокация
 Global CSS,Глобальные CSS
 Global CSS & JS,Глобальные CSS и JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Карты
+Graph,Граф
 Group,Группа
 Group by,Сгруппировать по
 group expressions,групповые выражения
@@ -580,13 +630,18 @@ Hide actions,Скрыть действия
 Hide details,Скрыть подробности
 Hide label,Скрыть метку
 Hide restricted relationships from public,Скрыть связи с ограниченным доступом от публичных пользователей
+Hide task,Скрыть задачу
 Hide toolbar,Скрыть панель инструментов
+Hours,Часы
+How to combine sources,Как объединить источники
 HTML,HTML
 https://yourdomain,https://вашдомен
 hub,узел
 hubs,Хаб
+Human Rights Information and Documentation Systems,Human Rights Information and Documentation Systems
 Hybrid,Гибридный
 Icon,Символ
+Icons,Значки
 ID,ID
 ID:,ID:
 "If an account exists with the email you provided, you will receive an email
@@ -594,6 +649,7 @@ ID:,ID:
  с инструкциями по сбросу пароля."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Если это внешний URL, используйте полностью сформированный URL. Т. е. http://www.uwazi.io."
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
+Image,Изображение
 Image doesn't match the required size.,Изображение не соответствует требуемому размеру.
 Import,Импортировать
 Import asset,Импортировать ресурс
@@ -613,6 +669,7 @@ In use,Используется
 Include all entities,Включить все объекты
 Include only public,Включить только общедоступные
 Incoming,Входящие
+Increase indentation,Увеличить отступ
 Info,Информация
 Information extraction training,Обучение извлечению информации
 Inherit,Наследовать
@@ -644,6 +701,7 @@ key,Ключ
 Label,Метка
 "Label date ""From""",От:
 "Label date ""to""",До:
+Label format,Формат подписи
 Labeled,Размеченные
 Landing page,Целевая страница
 Landing page description,"Целевая страница — это первая страница, которую видят посетители при переходе в вашу коллекцию. По умолчанию целевой страницей является библиотека вашей коллекции. Вы можете задать другую целевую страницу, указав здесь её относительный URL-адрес. Например:
@@ -654,13 +712,14 @@ Landing page description,"Целевая страница — это перва�
 Документ: */document/4y9i99fadjp833di*
 
 Важно: необходимо использовать относительные URL-адреса. Они начинаются с косой черты и не включают доменное имя. Например, в адресе *https://yoursite.com/landingpage* относительный URL-адрес — /landingpage"
+Landscape,Альбомная
 Language,Язык
 Language Code,Код языка
 Language deleted,Язык удален
 Language reset success,Сброс переводов языка выполнен успешно
 Language uninstalled successfully,Язык удален успешно
-Language(s),Язык(и)
 Language:,Язык:
+Language(s),Язык(и)
 Languages,Языки
 Languages installed successfully,Языки успешно установлены
 Last updated,Последнее обновление
@@ -671,11 +730,13 @@ Learn how to add and configure a contact form on a webpage.,"Узнайте, к�
 Learn how to build your first collection,"Узнайте, как создать свою первую коллекцию"
 Learn more,Узнать больше
 Learn more about the components.,Узнайте больше об этих компонентах.
+Legacy Uwazi,Классический Uwazi
 Legend,Подпись
 Lengthy reindex process,Длительный процесс повторной индексации
 Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
+Library results,Результаты библиотеки
 library table view,просмотр библиотеки в табличном виде
 Light,Светлый
 Light Theme,Светлая тема
@@ -683,6 +744,7 @@ Link,Ссылка
 linked,связанный
 List,Список
 List renders as a table. Use the options below to filter empty or zero values.,"Список отображается в виде таблицы. Воспользуйтесь приведенными ниже параметрами, чтобы отфильтровать пустые значения или значения, равные нулю."
+Live (always up to date),Вживую (всегда актуально)
 Live preview,Предварительный просмотр в режиме реального времени
 Live translate,Перевод в режиме реального времени
 Load,Загрузить
@@ -703,6 +765,7 @@ Machine translated — editing this row clears the marker,Machine translated —
 Manage relationship types,Управление типами связей
 Manage site settings and configuration,Управление сайтом и конфигурация
 Manage types,Управление типами
+Manual,Вручную
 Manual data,Ручной ввод
 Manually set a color,Установить цвет вручную
 Map,Карта
@@ -740,17 +803,24 @@ Matches show the passage and the page they are on.,"В результатах п
 Matching,Сопоставление
 matching,соответствующий
 Matomo,Matomo
+Max,Макс.
+Max buckets,Макс. корзин
+Max number of slices,Макс. число долей
+Media,Медиа
 Members,Участники
 Menu,Меню
 Message,Сообщение
 Message sent,Сообщение отправлено
+Meta description,Метаописание
 Metadata,Метаданные
 Metadata Extraction,Извлечение метаданных
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
             configure categories, labels, and slices. Use the Appearance tab for colors.","Показатель ""Метрика"" отображает общее значение. Выберите выше тип диаграммы — круговую, столбчатую или другой — чтобы
  настроить категории, метки и сегменты. Цвета можно настроить на вкладке ""Внешний вид""."
 MIGRATE,МИГРАЦИЯ
+Min,Мин.
 Minimum,Минимум
+Minutes,Минуты
 Mismatch,Несоответствие
 mismatched passwords,Пароли не совпадают
 mismatching,несоответствие
@@ -758,6 +828,7 @@ Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Modified,Изменено
 Month,Месяц
+Monthly,Ежемесячно
 Months,Месяцы
 More,Ещё
 more,подробнее
@@ -766,6 +837,8 @@ More rows per screen; same type size,Больше строк на экране �
 Multi-source mode,Режим работы с несколькими источниками
 Multiple date,Несколько дат
 Multiple date range,Несколько диапазонов дат
+Multiple date ranges,Несколько диапазонов дат
+Multiple dates,Несколько дат
 Multiple inherited properties warning ([property 1] affects [property 2]),влияет
 Multiple matches found,Найдено несколько совпадений
 Multiple relationships edit description,"Изменение этого свойства повлияет на другие свойства этого шаблона, так как все они используют связи с одинаковой конфигурацией."
@@ -787,12 +860,15 @@ New activity will show up here.,Здесь будут отображаться �
 New conversation,Новый разговор
 New entity,Новый объект
 New group,Новая группа
+New Group,Новая группа
 New language added,Добавлен новый язык
+New Link,Новая ссылка
 New page,Новая страница
 New password,Новый пароль
 New primary doc,Новый первоисточник
 New relation type label…,Новое обозначение типа отношения…
 New relationship type,Новый тип отношений
+New Relationships,Новые связи
 New relationships group,Группа новых взаимосвязей
 New Relationships Migration,Перенос новых отношений
 New user,Новый пользователь
@@ -858,9 +934,9 @@ No valid target template available,Доступных шаблонов целе�
 No value,Нет значения
 No Value,Нет значения
 No visualization data available.,Данные для визуализации отсутствуют.
-"No, cancel","Нет, отменить"
 no-toc-description,"Начните с выделения текста в документе и нажатия кнопки ""Добавить в
               оглавление""."
+"No, cancel","Нет, отменить"
 Non processed,Необработанные
 Non-labeled,Неразмеченные
 Non-latin characters support,Поддержка нелатинских символов
@@ -872,6 +948,7 @@ Not Found,Не найдено
 Nothing here yet.,Пока здесь ничего нет.
 Nothing selected,Ничего не выбрано
 Notifications,Уведомления
+Numeric,Числовой
 Obsolete,Устаревшее
 obsolete,устаревший
 OCR,Оптическое распознавание символов
@@ -883,6 +960,9 @@ OCR error,Ошибка оптического распознавания сим�
 OCR error tip,Механизм OCR не смог прочитать документ из-за некорректного формата. Последнее обновление
 OCR PDF,Оптическое распознавание символов PDF
 of,из
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Окей
 OK,Окей
 On this entity,У этого объекта
@@ -899,14 +979,16 @@ Only published entities are counted.,Учитываются только опу�
 "Only the extractor will be deleted, all created entities will remain on the library.","Будет удален только экстрактор, все созданные объекты останутся в библиотеке."
 Open,Открыть
 Open entity,Открыть объект
+Open Graph,Open Graph
 Open group,Открыть группу
 Open link,Открыть ссылку
 Open PDF,Открыть PDF
 Open the two-factor Authenticator app on your device,Откройте приложение для двухфакторной аутентификации на вашем устройстве
+Operator,Оператор
 Options,Параметры
 or,или
 or drag and drop here,или перетащите сюда
-or drag and drop PDF files here,or drag and drop PDF files here
+or drag and drop PDF files here,или перетащите файлы PDF сюда
 or drop your files here.,или опустите свои файлы сюда.
 Or paste a URL,Или вставьте URL-адрес
 Order,Последовательность
@@ -914,16 +996,23 @@ Other,Другой
 other,Другой
 Other users will be affected by this action!,Это действие повлияет на других пользователей!
 Others,Прочее
+Others label,Подпись «Прочее»
 Outgoing,Исходящие
+Overview,Обзор
 p.,с.
 Page,Страница
+Page embed code,Код встраивания на страницу
+Page language,Язык страницы
 Page not found,Страница не найдена
 Page published successfully.,Страница успешно опубликована.
+Page title,Заголовок страницы
 Pages,Страницы
+Pagination,Разбивка на страницы
 Paragrap number extraction property (numeric),Свойство извлечения номера абзаца (числовое)
 Paragraph,Абзац
 Paragraph Extraction,Извлечение абзацев
 Paragraph Extractor added,Добавлен экстрактор абзацев
+Paragraph extractor wizard,Мастер извлечения абзацев
 Paragraph text extraction property (rich text),Свойство извлечения текста из абзаца (форматированный текст)
 Paragraphs,Абзацы
 Paragraphs deleted,Абзацы удалены
@@ -942,6 +1031,7 @@ PDF,PDF
 Pending,В ожидании
 People and groups,Люди и группы
 per page,за страницу
+Percentage,Процент
 Permission,Разрешение
 Permission level,Уровень доступа
 Permission on entities explicitly shared with the user,"Разрешение на объекты, которыми поделились с пользователем"
@@ -950,9 +1040,12 @@ Permissions updated,Права доступа обновлены
 Pick a color,Выберите цвет
 Pick another,Выберите другой
 Plain text,Обычный текст
+Play audio,Воспроизвести аудио
+Play video,Воспроизвести видео
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
 Please type in,Введите
 Please type in letters and numbers from the image to start the export.,"Пожалуйста, введите буквы и цифры с изображения для того, чтобы начать экспорт."
+Portrait,Книжная
 Pre-filled from your selection. Edit as needed.,Поле уже заполнено в соответствии с вашим выбором. При необходимости внесите изменения.
 Preflight scan completed.,Предварительное сканирование завершено.
 Preparing required relationships.,Подготовка необходимых связей.
@@ -962,11 +1055,14 @@ Preserve Extension,"Расширение ""Preserve"""
 Preserve Setup Description,"Если вы знаете свой URL-адрес Uwazi и TOKEN, перейдите по ссылке ниже и заполните необходимую информацию."
 Press enter to add,"Нажмите Enter, чтобы добавить"
 Preview,Предварительный просмотр
+Preview mode,Режим предпросмотра
 Preview updates automatically (300ms debounce),Предварительный просмотр обновляется автоматически (задержка 300 мс)
 Preview updates when the JSON is valid.,Предварительный просмотр обновляется при корректном формате JSON.
 Previous,Предыдущий
 Primary,Первичный
+Primary action,Основное действие
 Primary button,Основная кнопка
+Primary dimension (X-axis / categories),Основное измерение (ось X / категории)
 Primary document,Первоисточник
 Primary Documents,ОСНОВНЫЕ ДОКУМЕНТЫ
 Primary documents,Первоисточники
@@ -1020,6 +1116,7 @@ Publish release,Опубликовать версию
 Published,В открытом доступе
 Published and unpublished entities are counted.,"Учитываются как опубликованные, так и неопубликованные объекты."
 QR Code,QR-код
+qr code,QR-код
 Query,Запрос
 Queued,В очереди
 RAW,RAW
@@ -1060,10 +1157,14 @@ remaining,оставшиеся
 remaining files,оставшиеся файлы
 Remote Server Unreachable,Не удается установить соединение с удаленным сервером
 Remove,Удалить
+Remove data source,Удалить источник данных
+Remove filter,Удалить фильтр
 Remove from connection,Удалить связь
+Remove from selection,Убрать из выбора
 Remove from training set,Исключить из обучающей выборки
 remove icon,удалить иконку
 Remove icon,Удалить значок
+Remove timelink,Удалить временную метку
 Removed language,Удалённый язык
 Rename,Переименовать
 Renamed attachment,Переименованное вложение
@@ -1080,6 +1181,7 @@ Reset default translation,Сброшен перевод по умолчанию
 Reset language,Сбросить язык
 Reset Password,Сбросить пароль
 Reset passwords,Сброс паролей
+Reset Search input,Сбросить поиск
 Resize panels,Изменение размера панелей
 Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
@@ -1089,10 +1191,12 @@ Retrying,Повторная попытка
 Return to login,Вернуться к авторизации
 Review,Просмотреть
 Reviewed,Просмотрено
+Rich text,Форматированный текст
 Role,Роль
 Room around every row,Больше пространства вокруг каждой строки
 Route,Маршрут
 Row,Строка
+Row actions,Действия строки
 Row density,Плотность строк
 Rows failed,Строки с ошибками
 Rows processed,Обработанные строки
@@ -1101,6 +1205,7 @@ Satellite,Спутник
 Save,Сохранить
 Save & Preview,Сохранить и просмотреть
 Save changes,Сохранить изменения
+Save label,Сохранить подпись
 Save password,Сохранить пароль
 Save the visualization before refreshing.,Сохраните визуализацию перед обновлением.
 Save the visualization to get embed code.,"Сохраните визуализацию, чтобы получить код для вставки."
@@ -1115,13 +1220,16 @@ Schedule,Расписание
 Schedules run in UTC (Coordinated Universal Time).,Расписания указаны в формате UTC (универсальное координированное время).
 Search,Искать
 "Search  •  AND, OR, NOT, ""exact"", wild*","Поиск  •  AND, OR, NOT, ""точно"", любой*"
+Search button,Кнопка поиска
 Search by title,Поиск по названию
+Search chart types,Поиск типов диаграмм
 Search entities...,Поиск объектов...
 Search entities…,Поиск объектов…
 Search item,Искать предмет
 Search related entities or documents,Искать взаимосвязанные объекты и документы
 Search relationships,Поиск связей
 Search relevance,Релевантность поиска
+Search templates,Поиск шаблонов
 Search text,Поиск по тексту
 Search text description,"Введите что-нибудь в поле поиска, чтобы получить результаты."
 Search this document,Поиск в этом документе
@@ -1134,7 +1242,12 @@ Search Tips: proximity,"~ для поиска по близости слов. Н
 Search Tips: wildcard,"Используйте * для поиска с подстановочным знаком. Например, ""юрис*"" найдёт слова ""юрисдикция"", ""юрисдикционный"", ""юристы"", ""юриспруденция"" и другие."
 Search title & metadata,Поиск по названию и метаданным
 Searching...,Поиск...
+Second dimension (series / stacks),Второе измерение (ряды / стопки)
 Secondary button,Дополнительная кнопка
+Secondary button border,Граница дополнительной кнопки
+Secondary button text,Текст дополнительной кнопки
+Secondary text,Дополнительный текст
+Seconds,Секунды
 Secret keys,Секретные ключи
 Security,Безопасность
 Select,Выбрать
@@ -1143,34 +1256,52 @@ Select & Search,Выбор и поиск
 Select a document to connect to a specific paragraph,"Выберите документ, чтобы создать связь с конкретным абзацем."
 Select a file,Выберите файл
 Select all,Выбрать все
+Select all files,Выбрать все файлы
 Select an existing image,Выберите существующее изображение
 Select favicon image,Выберите изображение для фавикона
 Select files on your device,Выбрать файлы на вашем устройстве
 Select from computer,Выбрать с компьютера
+Select icon...,Выбрать значок…
 Select image,Выберите изображение
 Select media,Выбрать медиафайл
+Select Open Graph image,Выбрать изображение Open Graph
+Select page,Выбрать страницу
+Select property…,Выбрать свойство…
 Select relationship,Выбрать связь
 Select relationship type,Выберите тип взаимосвязей
 Select site logo image,Выберите изображение логотипа сайта
 Select target document,Выберите целевой документ
 Select target entity,Выберите целевой объект
 Select target paragraph,Выберите целевой абзац
+Select template…,Выбрать шаблон…
 Select text in target document,Выделите текст в целевом документе
 select text or a value,выберите текст или значение
 Select the template to store the extracted paragraphs.,Выберите шаблон для сохранения извлеченных абзацев.
 Select the template with the source documents.,Выберите шаблон с исходными документами.
+Select values…,Выбрать значения…
 Select...,Выбрать...
+Select…,Выбрать…
 Selected,Выбрано
 selected,выбранный
+Selected entities,Выбранные объекты
 selected of,выбран из
 Selected or suggested,Выбранное или предложенное
 Selected templates,Выбранные шаблоны
+Selection,Выбор
 Send,Отправить
+Send message,Отправить сообщение
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
 Sending email description,"Это адрес электронной почты, который будет отображаться как отправитель при отправке писем от вашей коллекции Uwazi зарегистрированным пользователям. Адрес по умолчанию — *no-reply@uwazi.io*. Вы можете указать здесь свой собственный адрес."
 Sending labeled data,Отправка размеченных данных
+SEO,SEO
+SEO meta description,"Краткое описание того, что даёт эта коллекция. Поисковые системы могут показывать этот текст в результатах. Ориентируйтесь на 150–160 символов."
+SEO og description,"Описание для превью в социальных сетях. Если поле пустое, используется метаописание."
+SEO og image description,"Изображение в превью социальных сетей (LinkedIn, Facebook и других). Рекомендуемый размер — 1200×630 пикселей."
+SEO og title description,"Заголовок, который используется при публикации этой коллекции в LinkedIn, Facebook и других социальных сетях. Если поле пустое, используется заголовок страницы."
+SEO page title description,Понятный и описательный заголовок сайта. Используется как HTML-заголовок по умолчанию во вкладках браузера и в результатах поиска.
 Series,Серия
+Server disconnected,Сервер отключён
 Services,Услуги
 Set as default,Установить по умолчанию
 Set default language,Установлен язык по умолчанию
@@ -1178,6 +1309,7 @@ Set default template,Установлен шаблон по умолчанию
 Set the default starting point for your geolocation properties.,Установить отправную точку по умолчанию для своих свойств геологации
 Settings,Настройки
 settings,Настройки
+Settings navigation,Навигация настроек
 Settings navigation active background,Настройки: активный фон навигации
 Settings sidebar background,Фон боковой панели настроек
 Settings updated,Настройки обновлены
@@ -1200,6 +1332,7 @@ Show toolbar,Показать панель инструментов
 Showing,Показано
 Showing the top,Отображаются первые
 shown of,показано от
+Side panel tabs,Вкладки боковой панели
 Sign in,Войти
 Simple mode,Простой режим
 Single relationships must have a hub,Одиночные связи должны иметь узел
@@ -1210,6 +1343,8 @@ Site logo description,"Логотип отображается в верхней
 Site logo no images hint,"Пока нет изображений в ""Пользовательских загрузках"". Сначала добавьте туда изображения в формате PNG, SVG или JPEG."
 Size,Размер
 Skip to main content,Перейти к основному содержанию
+Snapshot (manual),Снимок (вручную)
+Snapshot (scheduled),Снимок (по расписанию)
 Some tasks may take a while. Bert will reply when it's done.,"Некоторые задачи могут занять некоторое время. Bert ответит, когда они будут выполнены."
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
@@ -1247,11 +1382,13 @@ Suggestions,Предлагаемые варианты
 suggestions,предложения
 Suggestions sent,Предложения отправлены
 Suggestions updated,Предложения обновлены
+Sum,Сумма
 Supported chart types for manual data,"Поддерживаемые типы диаграмм для данных, вводимых вручную"
 Supported chart types for this configuration,"Типы диаграмм, поддерживаемые в данной конфигурации"
 Supporting,Вспомогательный
 Supporting file,Вспомогательный файл
 Supporting files,Сопроводительные файлы
+Surface text,Текст поверхности
 Synced template,Синхронизированный шаблон
 Synced Template,Синхронизированный шаблон
 Synced templates cannot be deleted.,Синхронизированные шаблоны удалить нельзя.
@@ -1266,12 +1403,13 @@ Target entity type,Тип целевого объекта
 Target relationship type,Целевой тип отношений
 Target Template,Шаблон цели
 Target template,Шаблон цели
-Target's role in the relationship Source-Target.,"Роль ""цели"" в отношениях ""источник–цель""."
 Target:,Цель:
+Target's role in the relationship Source-Target.,"Роль ""цели"" в отношениях ""источник–цель""."
 Tasks,Задачи
 Template,Шаблон
 Template changes are being applied to all related entities.,Изменения в шаблоне применяются ко всем связанным объектам.
 Template color,Цвет шаблона
+Template colors,Цвета шаблона
 "Template colors apply when comparing data sources or when the dimension is entity
               type. Otherwise the chart palette is used as fallback.","Цвета шаблона применяются при сравнении источников данных или если измерение имеет тип ""объект"". В остальных случаях в качестве запасного варианта используется палитра диаграммы."
 Template conflict,Конфликт шаблона
@@ -1304,6 +1442,7 @@ Theme instance file invalid,Файл экземпляра темы недейс�
 Theme logotype,Логотип темы
 Theme presets,Предустановленные темы
 Theme preview,Предварительный просмотр темы
+Theme preview label,Подпись предпросмотра темы
 Then by,Затем по
 There are no pages enabled for entity view,"Нет страниц с возможностями, предоставляемыми для просмотра объекта"
 There are no untranslated terms,Непереведенных терминов нет
@@ -1331,6 +1470,7 @@ This chart type cannot display the current data.,Данный тип диагр�
  легенда, метки или фильтры данных, выберите другой тип диаграммы выше."
 This content is automatically generated,Этот контент генерируется автоматически
 This data visualization name already exists. Enter a unique name.,Такое название визуализации данных уже существует. Введите уникальное название.
+This document,Этот документ
 "This entity has no document, you probably want to see the metadata","У этого объекта нет документов, вы наверняка хотите увидеть метаданные"
 This entity is restricted from public view.,Этот объект ограничен для общедоступного просмотра.
 This field is required,Это поле обязательно для заполнения
@@ -1364,7 +1504,8 @@ This table of contents was automatically created by the system.,Данное о�
 this template,этот шаблон
 This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
 Thumbnail,Миниатюра
-Thumbnail frame,Thumbnail frame
+Thumbnail frame,Рамка миниатюры
+Thumbnail size,Размер миниатюры
 Time,Время
 Time (UTC),Время (UTC)
 Timeline,Хронология
@@ -1374,8 +1515,13 @@ tips,советы
 Title,Заголовок
 To,До
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
+To date,По дату
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
 Today,Сегодня
+Toggle dark theme,Включить тёмную тему
+Toggle light theme,Включить светлую тему
+Toggle navigation menu,Переключить меню навигации
+Toggle options menu,Переключить меню параметров
 Toggle relationship details,Показать/скрыть подробности о взаимосвязях
 Toggle timeline mode,Переключить режим временной шкалы
 Tools,Инструменты
@@ -1399,6 +1545,7 @@ Translations,Переводы
 Translations imported.,Переводы импортированы.
 Translations reset successfully,Переводы успешно сброшены
 Translations saved,Переводы сохранены
+Tree,Дерево
 Try a different search or clear filters.,Попробуйте ввести другой запрос или сбросить фильтры.
 Turn off inline translation,Отключить встроенный перевод
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1412,6 +1559,7 @@ Two-factor verification failed,Двухфакторная верификация
 Two-step verification,Двухфакторная верификация
 Two-step verification token required,Требуется токен двухэтапной аутентификации
 Type,Тип
+Type to filter…,Введите для фильтрации…
 U,U
 "Unable to save, failed response","Не удалось сохранить, произошла ошибка при обработке ответа"
 Unauthorized,Не авторизован
@@ -1441,12 +1589,13 @@ Updated translations,Обновленные переводы
 Updated user,Обновленный пользователь
 Updating template properties across,Обновление свойств шаблонов в
 Updating…,Обновляется…
-Upload,Upload
+Upload,Загрузить
 Upload and select file,Загрузить и выбрать файл
 Upload from computer,Загрузить с компьютера
 Upload image,Загрузить изображение
 Upload PDF,Загрузить PDF
 Upload PDF(s) to create,"Загрузить PDF, чтобы создать"
+Upload progress,Ход загрузки
 Uploaded attachment,Загруженное вложение
 Uploaded custom file,Загружен пользовательский файл
 Uploaded document,Загруженный документ
@@ -1462,9 +1611,9 @@ Use for training,Использовать для обучения
                 needed.","Используйте этот iframe на внешних сайтах. При необходимости измените параметр запроса locale в URL-адресе,
 если это требуется."
 Use URL,Использовать URL
-Used in templates and {n} refs — cannot delete,Используется в шаблонах и {n} ссылках — удалить нельзя
-Used in templates — cannot delete,Используется в шаблонах — удалить нельзя
 Used in {n} refs — cannot delete,Используется в {n} ссылках — удалить нельзя
+Used in templates — cannot delete,Используется в шаблонах — удалить нельзя
+Used in templates and {n} refs — cannot delete,Используется в шаблонах и {n} ссылках — удалить нельзя
 User,Пользователь
 User Action,Действие пользователя
 User Role,Роль пользователя
@@ -1480,29 +1629,38 @@ Users & Groups,Пользователи и группы
 Using Authenticator,Использование приложения Authenticator
 Using URLs,Использование URL-адресов
 Uwazi,Uwazi
+Uwazi Design,Дизайн Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi разработан
+Uwazi label,Подпись Uwazi
 Uwazi UI,Интерфейс Uwazi
 Validating,Проверка
 Validating file structure and headers.,Проверка структуры файла и заголовков.
 Value,Значение
+Value and percentage,Значение и процент
 Value cannot be transformed to the correct type,Значение не может быть преобразовано в нужный тип
 values,значения
 "values are staged, not saved","значения в ожидании, не сохранены"
 Verify,Верифицировать
 Verifying...,Верифицирование...
 via,через
+Video,Видео
 View,Просмотреть
 view,Просмотреть
 View entities,Просмотр объектов
 View entity,Просмотреть объект
 View in library,Просмотреть в библиотеке
 View page,Просмотр страницы
+Vimeo video player,Видеоплеер Vimeo
+Violated articles,Нарушенные статьи
 Visibility,Видимость
 Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
 WARNING,ПРЕДУПРЕЖДЕНИЕ
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Предупреждение: вы редактируете несколько объектов. Значение каждого поля будет применено ко всем.
 We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
+Week,Неделя
+Weekly,Еженедельно
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
@@ -1535,6 +1693,7 @@ You should activate this feature for enhanced account security.,Вам след�
 You won't be able to save an entity if this property is empty.,"Вы не сможете сохранить объект, если это свойство пустое."
 You're all caught up,Вы ничего не пропустили
 Your account's security is enhanced with two-factor authentication.,Безопасность вашей учетной записи повышается благодаря двухфакторной аутентификации.
+YouTube video player,Видеоплеер YouTube
 Z → A,Я → А
 Zoom in,Увеличить масштаб
 Zoom in library view,Увеличить масштаб просмотра библиотеки

@@ -64,7 +64,7 @@ const ThemeSelectionCard = ({
                       'inset 0 0 0 1px color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
                   }}
                 >
-                  {selectedTheme?.label}
+                  {selectedTheme?.label ? <Translate>{selectedTheme.label}</Translate> : null}
                 </span>
                 {hasThemeOverrides ? (
                   <span

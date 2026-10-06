@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayerModule, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 
 const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
@@ -167,7 +167,7 @@ const MediaPlayer = ({
           playIcon={
             <PlayIcon
               className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`}
-              aria-label="Play video"
+              aria-label={t('System', 'Play video', null, false)}
             />
           }
           onClickPreview={() => !playing && setPlaying(true)}

@@ -14,6 +14,13 @@ import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents.js';
 import { Form } from './components/Form.js';
 
+const relationshipTypePanelTitle = (name?: string): string => {
+  if (name === '') {
+    return t('System', 'Add relationship type', null, false);
+  }
+  return t('System', 'Edit relationship type', null, false);
+};
+
 const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as Relationships[];
   const revalidator = useRevalidator();
@@ -160,11 +167,7 @@ const RelationshipTypes = () => {
         </SettingsContent.Footer>
       </SettingsContent>
       <Sidepanel
-        title={
-          <Translate className="uppercase">
-            {`${formValues?.name === '' ? 'Add' : 'Edit'} relationship type`}
-          </Translate>
-        }
+        title={<span className="uppercase">{relationshipTypePanelTitle(formValues?.name)}</span>}
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
         size="medium"

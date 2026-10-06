@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { OptionSchema, Select } from '#V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -10,7 +10,7 @@ const getOptions = (options: OptionSchema[]) => [
   {
     key: `select-${Math.random().toString()}`,
     value: '',
-    label: 'Select...',
+    label: t('System', 'Select...', null, false),
   },
   ...options,
 ];

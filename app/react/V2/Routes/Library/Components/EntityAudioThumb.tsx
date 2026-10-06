@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
+import { t } from '#app/I18N/index.js';
 
 type EntityAudioThumbProps = {
   src: string;
@@ -39,7 +40,7 @@ const EntityAudioThumb = ({ src, className = '' }: EntityAudioThumbProps) => {
     return (
       <button
         type="button"
-        aria-label="Play audio"
+        aria-label={t('System', 'Play audio', null, false)}
         data-testid="entity-audio-thumb"
         className={thumbClass}
         onClick={event => {

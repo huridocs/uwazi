@@ -9,6 +9,7 @@ const COLUMN_FIELDS = {
   themeVars: 'theme_vars',
   themeAssets: 'theme_assets',
   site_name: 'site_name',
+  seo: 'seo',
   customCSS: 'custom_css',
   customJS: 'custom_js',
   sync: 'sync',
@@ -52,6 +53,7 @@ type SettingsRow = {
   theme_vars?: SettingsType['themeVars'] | null;
   theme_assets?: SettingsType['themeAssets'] | null;
   site_name?: string | null;
+  seo?: SettingsType['seo'] | null;
   custom_css?: string | null;
   custom_js?: string | null;
   sync?: SettingsType['sync'] | null;

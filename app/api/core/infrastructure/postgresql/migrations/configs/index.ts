@@ -15,3 +15,4 @@ export { IXExtractorsMigrationConfig } from './IXExtractorsMigrationConfig.js';
 export { IXModelsMigrationConfig } from './IXModelsMigrationConfig.js';
 export { IXSuggestionsMigrationConfig } from './IXSuggestionsMigrationConfig.js';
 export { SegmentationsMigrationConfig } from './SegmentationsMigrationConfig.js';
+export { OcrRecordsMigrationConfig } from './OcrRecordsMigrationConfig.js';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 const FileUploadProgressLine = ({ progress }: { progress: number }) => {
   const bounded = Math.max(0, Math.min(100, progress));
@@ -11,7 +11,7 @@ const FileUploadProgressLine = ({ progress }: { progress: number }) => {
       <div
         className="h-1 flex-1 overflow-hidden rounded bg-vellum"
         role="progressbar"
-        aria-label="Upload progress"
+        aria-label={t('System', 'Upload progress', null, false)}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={bounded}

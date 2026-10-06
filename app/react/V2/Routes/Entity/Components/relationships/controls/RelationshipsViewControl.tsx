@@ -12,9 +12,9 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof LayoutListIcon }[] = [
-  { id: 'list', label: 'List', Icon: LayoutListIcon },
-  { id: 'tree', label: 'Tree', Icon: ListTreeIcon },
-  { id: 'graph', label: 'Graph', Icon: NetworkIcon },
+  { id: 'list', label: t('System', 'List', null, false), Icon: LayoutListIcon },
+  { id: 'tree', label: t('System', 'Tree', null, false), Icon: ListTreeIcon },
+  { id: 'graph', label: t('System', 'Graph', null, false), Icon: NetworkIcon },
 ];
 
 const RelationshipsViewControl = () => {
