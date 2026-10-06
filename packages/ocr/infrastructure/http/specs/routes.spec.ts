@@ -124,6 +124,13 @@ describe('ocr routes', () => {
 
       await request(app).get('/api/files/scan.pdf/ocr').expect(200);
     });
+
+    it('should answer 503 when the service cannot be reached', async () => {
+      await setUp();
+      fetchMock.mock('http://ocr/info', 503, { overwriteRoutes: true });
+
+      await request(app).get('/api/files/scan.pdf/ocr').expect(503);
+    });
   });
 
   describe('POST /api/files/:filename/ocr', () => {
@@ -171,6 +178,13 @@ describe('ocr routes', () => {
       user = collaborator;
 
       await request(app).post('/api/files/scan.pdf/ocr').expect(401);
+    });
+
+    it('should answer 503 when the service cannot be reached', async () => {
+      await setUp();
+      fetchMock.mock('http://ocr/info', 503, { overwriteRoutes: true });
+
+      await request(app).post('/api/files/scan.pdf/ocr').expect(503);
     });
   });
 });

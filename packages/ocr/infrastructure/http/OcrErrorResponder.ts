@@ -4,6 +4,7 @@ import { FileIsNotADocument } from '../../application/errors/FileIsNotADocument.
 import { OcrAlreadyActive } from '../../application/errors/OcrAlreadyActive.js';
 import { OcrLanguageNotSupported } from '../../application/errors/OcrLanguageNotSupported.js';
 import { OcrNotEnabled } from '../../application/errors/OcrNotEnabled.js';
+import { OcrServiceUnavailable } from '../../application/errors/OcrServiceUnavailable.js';
 
 const STATUS_BY_ERROR: [new (...args: never[]) => Error, number][] = [
   [OcrNotEnabled, 404],
@@ -11,6 +12,7 @@ const STATUS_BY_ERROR: [new (...args: never[]) => Error, number][] = [
   [FileIsNotADocument, 400],
   [OcrAlreadyActive, 409],
   [OcrLanguageNotSupported, 422],
+  [OcrServiceUnavailable, 503],
 ];
 
 /** Maps the errors the OCR use cases raise to the statuses the endpoints have always answered. */
