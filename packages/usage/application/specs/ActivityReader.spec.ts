@@ -7,6 +7,9 @@ const TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 const TENANT = 'usage-activity';
 
+/** The shared database is shared by every test worker: only touch the sessions this spec owns. */
+const SID_PREFIX = 'usage-activity-spec:';
+
 type StoredSession = { sid: string; user?: string; lastActive: number };
 
 const sessions: StoredSession[] = [
@@ -32,7 +35,7 @@ const storeInMongo = async (stored: StoredSession[]) =>
     .collection<SessionDocument>('sessions')
     .insertMany(
       stored.map(session => ({
-        _id: session.sid,
+        _id: `${SID_PREFIX}${session.sid}`,
         session: JSON.stringify(sessionPayload(session)),
         lastModified: new Date(session.lastActive),
         expires: new Date(session.lastActive + TTL_MS),
@@ -65,7 +68,9 @@ describe('ActivityReader', () => {
 
   beforeEach(async () => {
     await testingEnvironment.pg.pool!.query('DELETE FROM http_sessions');
-    await sharedDb().collection('sessions').deleteMany({});
+    await sharedDb()
+      .collection<SessionDocument>('sessions')
+      .deleteMany({ _id: { $regex: `^${SID_PREFIX}` } });
   });
 
   describe.each([
@@ -88,10 +93,12 @@ describe('ActivityReader', () => {
     });
 
     it('should match the tenant name literally', async () => {
-      await store([{ sid: 'dotted', user: 'user5///a.b', lastActive: 1_700_000_000_000 }]);
+      await store([
+        { sid: 'dotted', user: 'user5///usage.activity', lastActive: 1_700_000_000_000 },
+      ]);
 
-      expect(await lastSession('a.b')).toBe(1_700_000_000_000);
-      expect(await lastSession('axb')).toBeNull();
+      expect(await lastSession('usage.activity')).toBe(1_700_000_000_000);
+      expect(await lastSession('usagexactivity')).toBeNull();
     });
   });
 
@@ -100,7 +107,7 @@ describe('ActivityReader', () => {
       await sharedDb()
         .collection<SessionDocument>('sessions')
         .insertOne({
-          _id: 'untouched',
+          _id: `${SID_PREFIX}untouched`,
           session: JSON.stringify(
             sessionPayload({ sid: 'untouched', user: `u///${TENANT}`, lastActive: 0 })
           ),
