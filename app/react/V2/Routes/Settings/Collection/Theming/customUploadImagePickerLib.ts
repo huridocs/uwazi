@@ -9,7 +9,7 @@ type ImageFeedback = {
 };
 type ImageSizeRule = {
   policy: ImageSizePolicy;
-  assetLabel: 'favicon' | 'logotype';
+  assetLabel: 'favicon' | 'logotype' | 'ogImage';
   minWidth: number;
   maxWidth: number;
   minHeight: number;

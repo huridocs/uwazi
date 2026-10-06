@@ -194,4 +194,52 @@ describe('POST /api/entities/multipleupdate - V2 only behaviours', () => {
       { expectStatus: 422 }
     );
   });
+
+  it('should save text translations and keep translatable properties that were not sent', async () => {
+    const result = await multipleUpdate(
+      {
+        ids: ['entity-1'],
+        values: {
+          metadata: { text: [{ value: 'Updated EN text' }] },
+          translations: { es: { text: [{ value: 'Updated ES text' }] } },
+        },
+      },
+      { language: 'en' }
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      sharedId: 'entity-1',
+      language: 'en',
+      title: 'Entity 1 EN title',
+      metadata: expect.objectContaining({ text: [{ value: 'Updated EN text' }] }),
+    });
+
+    const rows = (await testingEnvironment.db.getAllFrom('entities')).filter(
+      row => row.sharedId === 'entity-1'
+    );
+    const spanish = rows.find(row => row.language === 'es');
+    expect(spanish?.metadata.text).toEqual([{ value: 'Updated ES text' }]);
+    expect(spanish?.title).toBe('Entity 1 ES title');
+  });
+
+  it('should return 422 when a translation language is not installed', async () => {
+    await multipleUpdate(
+      {
+        ids: ['entity-1'],
+        values: { translations: { fr: { text: [{ value: 'Texte' }] } } },
+      },
+      { language: 'en', expectStatus: 422 }
+    );
+  });
+
+  it('should return 422 when translations include the request language', async () => {
+    await multipleUpdate(
+      {
+        ids: ['entity-1'],
+        values: { translations: { en: { text: [{ value: 'Still English' }] } } },
+      },
+      { language: 'en', expectStatus: 422 }
+    );
+  });
 });

@@ -227,6 +227,7 @@ Click to select files,클릭하여 파일을 선택하세요
 Close,닫기
 Close filters,필터 닫기
 Close modal,모달 닫기
+Close selection list,선택 목록 닫기
 Close side panel,사이드 패널 닫기
 Code,코드
 Collaborator,협업자
@@ -802,6 +803,7 @@ Members,멤버
 Menu,메뉴
 Message,메세지
 Message sent,메시지가 전송되었습니다
+Meta description,메타 설명
 Metadata,메타데이터
 Metadata Extraction,메타데이터 추출
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -950,6 +952,9 @@ OCR error,OCR 에러
 OCR error tip,문서 형식이 올바르지 않아 OCR 엔진이 문서를 인식하지 못했습니다. 마지막 업데이트
 OCR PDF,PDF OCR 읽기
 of,의
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,확인
 OK,확인
 On this entity,이 엔티티에 관하여
@@ -968,6 +973,7 @@ Only published entities are counted.,공개된 엔티티만 집계됩니다.
 "Only the extractor will be deleted, all created entities will remain on the library.","추출기만 삭제되며, 생성된 모든 엔티티는 라이브러리에 그대로 남아 있습니다."
 Open,열기
 Open entity,엔티티 열기
+Open Graph,Open Graph
 Open group,그룹 펼치기
 Open link,링크 열기
 Open PDF,PDF 열기
@@ -993,6 +999,7 @@ Page embed code,페이지 삽입 코드
 Page language,페이지 언어
 Page not found,페이지를 찾을 수 없습니다
 Page published successfully.,페이지가 성공적으로 게시되었습니다.
+Page title,페이지 제목
 Pages,페이지
 Pagination,페이지 매김
 Paragrap number extraction property (numeric),단락 번호 추출 속성 (숫자)
@@ -1149,6 +1156,7 @@ Remove,제거
 Remove data source,데이터 소스 제거
 Remove filter,필터 제거
 Remove from connection,연결 해제
+Remove from selection,선택에서 제거
 Remove from training set,훈련 집합에서 제외
 remove icon,아이콘 제거
 Remove icon,아이콘 제거
@@ -1252,6 +1260,7 @@ Select from computer,컴퓨터에서 선택
 Select icon...,아이콘 선택…
 Select image,이미지 선택
 Select media,미디어 선택
+Select Open Graph image,Open Graph 이미지 선택
 Select page,페이지 선택
 Select property…,속성 선택…
 Select relationship,관계 선택
@@ -1270,15 +1279,23 @@ Select...,선택
 Select…,선택…
 Selected,선택됨
 selected,선택 완료
+Selected entities,선택한 엔티티
 selected of,~ 중 선택됨
 Selected or suggested,선택된 또는 추천된
 Selected templates,선택된 템플릿
+Selection,선택
 Send,전송
 Send message,메시지 보내기
 Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,이 이메일 주소는 귀하의 Uwazi 컬렉션에서 등록된 사용자에게 이메일을 보낼 때 발신자로 표시되는 주소입니다. 기본 주소는 *no-reply@uwazi.io*입니다. 여기에 원하는 이메일 주소를 입력하여 사용자 지정 주소를 설정할 수 있습니다.
 Sending labeled data,라벨이 지정된 데이터 전송
+SEO,SEO
+SEO meta description,이 컬렉션이 제공하는 내용에 대한 짧은 설명입니다. 검색 엔진이 결과에 이 텍스트를 표시할 수 있습니다. 약 150–160자를 권장합니다.
+SEO og description,소셜 미디어 미리보기에 사용되는 설명입니다. 비어 있으면 메타 설명이 사용됩니다.
+SEO og image description,"소셜 미디어 미리보기(LinkedIn, Facebook 등)에 표시되는 이미지입니다. 권장 크기는 1200×630픽셀입니다."
+SEO og title description,"LinkedIn, Facebook 등 소셜 미디어에서 이 컬렉션을 공유할 때 사용되는 제목입니다. 비어 있으면 페이지 제목이 사용됩니다."
+SEO page title description,웹사이트를 위한 명확하고 설명적인 제목입니다. 브라우저 탭과 검색 결과의 기본 HTML 페이지 제목으로 사용됩니다.
 Series,시리즈
 Server disconnected,서버 연결이 끊김
 Services,서비스
@@ -1485,6 +1502,7 @@ this template,이 템플릿
 This template is in use by existing entities and cannot be deleted.,이 템플릿은 기존 엔티티에서 사용 중이므로 삭제할 수 없습니다.
 Thumbnail,썸네일
 Thumbnail frame,썸네일 프레임
+Thumbnail size,썸네일 크기
 Time,시간
 Time (UTC),시간 (UTC)
 Timeline,연표
@@ -1636,6 +1654,7 @@ Visibility,가시성
 Visualization data updated from your collection.,사용자 컬렉션의 시각화 데이터가 업데이트되었습니다.
 WARNING,경고
 Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,경고: 여러 엔티티를 편집하고 있습니다. 각 필드의 값이 모두에 적용됩니다.
 We can't find the page you're looking for.,찾으신 페이지를 찾을 수 없습니다.
 Week,주
 Weekly,매주

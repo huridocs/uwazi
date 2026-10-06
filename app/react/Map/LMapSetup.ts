@@ -9,9 +9,11 @@ import {
 import {
   DataMarker,
   getClusterMarker,
+  mapPointerModifiers,
   MarkerInput,
   parseMarkerPoint,
   TemplatesInfo,
+  type MapPointerModifiers,
 } from './MapHelper.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
@@ -142,20 +144,33 @@ const addMapMarkers = (args: {
   templatesInfo: TemplatesInfo;
   renderPopupInfo: boolean | undefined;
   zoom: number;
-  clickOnCluster?: (cluster: DataMarker[]) => void;
-  clickOnMarker?: (marker: DataMarker) => void;
+  clickOnCluster?: (cluster: DataMarker[], modifiers?: MapPointerModifiers) => void;
+  clickOnMarker?: (marker: DataMarker, modifiers?: MapPointerModifiers) => void;
 }) => {
   const { map, markerGroup, pointMarkers, deletedEntity, templatesInfo, renderPopupInfo, zoom } =
     args;
   const markers = pointMarkers
     .map(pointMarker => parseMarkerPoint(pointMarker, templatesInfo, renderPopupInfo))
     .filter(marker => marker.properties.entity?.sharedId !== deletedEntity);
-  markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
+  markers.forEach(point => {
+    const marker = getClusterMarker(point);
+    const sharedId = point.properties.entity?.sharedId;
+    if (point.properties.libraryMap && sharedId) {
+      marker.on('add', () => {
+        marker.getElement()?.setAttribute('data-select-id', sharedId);
+      });
+    }
+    marker.addTo(markerGroup);
+  });
   markerGroup.on('clusterclick', cluster => {
-    args.clickOnCluster?.(cluster.layer.getAllChildMarkers());
+    const pointer = cluster as Leaflet.LeafletMouseEvent;
+    args.clickOnCluster?.(
+      pointer.layer.getAllChildMarkers(),
+      mapPointerModifiers(pointer.originalEvent)
+    );
   });
   markerGroup.on('click', marker => {
-    args.clickOnMarker?.(marker.layer);
+    args.clickOnMarker?.(marker.layer, mapPointerModifiers(marker.originalEvent));
   });
   if (pointMarkers.length) {
     map.fitBounds(markerGroup.getBounds(), { maxZoom: zoom });

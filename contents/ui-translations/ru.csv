@@ -230,6 +230,7 @@ Click to select files,"Нажмите, чтобы выбрать файлы"
 Close,Закрыть
 Close filters,Закрыть фильтры
 Close modal,Закрыть окно
+Close selection list,Закрыть список выбора
 Close side panel,Закрыть боковую панель
 Code,Код
 Collaborator,Соавтор
@@ -810,6 +811,7 @@ Members,Участники
 Menu,Меню
 Message,Сообщение
 Message sent,Сообщение отправлено
+Meta description,Метаописание
 Metadata,Метаданные
 Metadata Extraction,Извлечение метаданных
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -958,6 +960,9 @@ OCR error,Ошибка оптического распознавания сим�
 OCR error tip,Механизм OCR не смог прочитать документ из-за некорректного формата. Последнее обновление
 OCR PDF,Оптическое распознавание символов PDF
 of,из
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Окей
 OK,Окей
 On this entity,У этого объекта
@@ -974,6 +979,7 @@ Only published entities are counted.,Учитываются только опу�
 "Only the extractor will be deleted, all created entities will remain on the library.","Будет удален только экстрактор, все созданные объекты останутся в библиотеке."
 Open,Открыть
 Open entity,Открыть объект
+Open Graph,Open Graph
 Open group,Открыть группу
 Open link,Открыть ссылку
 Open PDF,Открыть PDF
@@ -999,6 +1005,7 @@ Page embed code,Код встраивания на страницу
 Page language,Язык страницы
 Page not found,Страница не найдена
 Page published successfully.,Страница успешно опубликована.
+Page title,Заголовок страницы
 Pages,Страницы
 Pagination,Разбивка на страницы
 Paragrap number extraction property (numeric),Свойство извлечения номера абзаца (числовое)
@@ -1153,6 +1160,7 @@ Remove,Удалить
 Remove data source,Удалить источник данных
 Remove filter,Удалить фильтр
 Remove from connection,Удалить связь
+Remove from selection,Убрать из выбора
 Remove from training set,Исключить из обучающей выборки
 remove icon,удалить иконку
 Remove icon,Удалить значок
@@ -1256,6 +1264,7 @@ Select from computer,Выбрать с компьютера
 Select icon...,Выбрать значок…
 Select image,Выберите изображение
 Select media,Выбрать медиафайл
+Select Open Graph image,Выбрать изображение Open Graph
 Select page,Выбрать страницу
 Select property…,Выбрать свойство…
 Select relationship,Выбрать связь
@@ -1274,15 +1283,23 @@ Select...,Выбрать...
 Select…,Выбрать…
 Selected,Выбрано
 selected,выбранный
+Selected entities,Выбранные объекты
 selected of,выбран из
 Selected or suggested,Выбранное или предложенное
 Selected templates,Выбранные шаблоны
+Selection,Выбор
 Send,Отправить
 Send message,Отправить сообщение
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
 Sending email description,"Это адрес электронной почты, который будет отображаться как отправитель при отправке писем от вашей коллекции Uwazi зарегистрированным пользователям. Адрес по умолчанию — *no-reply@uwazi.io*. Вы можете указать здесь свой собственный адрес."
 Sending labeled data,Отправка размеченных данных
+SEO,SEO
+SEO meta description,"Краткое описание того, что даёт эта коллекция. Поисковые системы могут показывать этот текст в результатах. Ориентируйтесь на 150–160 символов."
+SEO og description,"Описание для превью в социальных сетях. Если поле пустое, используется метаописание."
+SEO og image description,"Изображение в превью социальных сетей (LinkedIn, Facebook и других). Рекомендуемый размер — 1200×630 пикселей."
+SEO og title description,"Заголовок, который используется при публикации этой коллекции в LinkedIn, Facebook и других социальных сетях. Если поле пустое, используется заголовок страницы."
+SEO page title description,Понятный и описательный заголовок сайта. Используется как HTML-заголовок по умолчанию во вкладках браузера и в результатах поиска.
 Series,Серия
 Server disconnected,Сервер отключён
 Services,Услуги
@@ -1488,6 +1505,7 @@ this template,этот шаблон
 This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
 Thumbnail,Миниатюра
 Thumbnail frame,Рамка миниатюры
+Thumbnail size,Размер миниатюры
 Time,Время
 Time (UTC),Время (UTC)
 Timeline,Хронология
@@ -1639,6 +1657,7 @@ Visibility,Видимость
 Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
 WARNING,ПРЕДУПРЕЖДЕНИЕ
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Предупреждение: вы редактируете несколько объектов. Значение каждого поля будет применено ко всем.
 We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
 Week,Неделя
 Weekly,Еженедельно

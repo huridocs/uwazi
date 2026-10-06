@@ -230,6 +230,7 @@ Click to select files,คลิกเพื่อเลือกไฟล์
 Close,ปิด
 Close filters,ปิดตัวกรอง
 Close modal,ปิดหน้าต่าง
+Close selection list,ปิดรายการที่เลือก
 Close side panel,ปิดแผงด้านข้าง
 Code,รหัส
 Collaborator,ผู้ประสานงาน
@@ -810,6 +811,7 @@ Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
 Message sent,ส่งข้อความแล้ว
+Meta description,คำอธิบายเมตา
 Metadata,เมทาดาทา
 Metadata Extraction,ค้นหาเมตาดาต้า
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -958,6 +960,9 @@ OCR error,ข้อผิดพลาด OCR
 OCR error tip,ระบบ OCR ไม่สามารถอ่านเอกสารได้ เนื่องจากรูปแบบเอกสารไม่ถูกต้อง อัปเดตครั้งสุดท้าย
 OCR PDF,OCR PDF
 of,ของ
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,ตกลง
 OK,ตกลง
 On this entity,เกี่ยวกับเอนทิตีนี้
@@ -976,6 +981,7 @@ Only published entities are counted.,นับเฉพาะเอนทิต�
 "Only the extractor will be deleted, all created entities will remain on the library.",จะลบเฉพาะเครื่องมือสกัดเท่านั้น ส่วนเอนทิตีทั้งหมดที่สร้างขึ้นจะยังคงอยู่ในไลบรารี
 Open,เปิด
 Open entity,เปิดเอนทิตี
+Open Graph,Open Graph
 Open group,เปิดกลุ่ม
 Open link,เปิดลิงก์
 Open PDF,เปิดไฟล์ PDF
@@ -1001,6 +1007,7 @@ Page embed code,โค้ดฝังหน้า
 Page language,ภาษาของหน้า
 Page not found,ไม่พบหน้า
 Page published successfully.,หน้าได้เผยแพร่สำเร็จแล้ว
+Page title,ชื่อหน้า
 Pages,หน้า
 Pagination,การแบ่งหน้า
 Paragrap number extraction property (numeric),คุณสมบัติการดึงหมายเลขย่อหน้า (ตัวเลข)
@@ -1157,6 +1164,7 @@ Remove,ลบ
 Remove data source,ลบแหล่งข้อมูล
 Remove filter,ลบตัวกรอง
 Remove from connection,ตัดการเชื่อมต่อ
+Remove from selection,นำออกจากการเลือก
 Remove from training set,ลบออกจากชุดข้อมูลฝึก
 remove icon,ลบไอคอน
 Remove icon,ลบไอคอน
@@ -1260,6 +1268,7 @@ Select from computer,เลือกจากคอมพิวเตอร์
 Select icon...,เลือกไอคอน…
 Select image,เลือกภาพ
 Select media,เลือกสื่อ
+Select Open Graph image,เลือกภาพ Open Graph
 Select page,เลือกหน้า
 Select property…,เลือกคุณสมบัติ…
 Select relationship,เลือกความสัมพันธ์
@@ -1278,15 +1287,23 @@ Select...,เลือก...
 Select…,เลือก…
 Selected,ที่เลือกไว้
 selected,เลือกแล้ว
+Selected entities,เอนทิตีที่เลือก
 selected of,ถูกเลือกโดย
 Selected or suggested,ที่เลือกหรือที่แนะนำ
 Selected templates,แม่แบบที่เลือกไว้
+Selection,รายการที่เลือก
 Send,ส่ง
 Send message,ส่งข้อความ
 Send recovery email,ส่งอีเมลการกู้คืน
 Sending email,ส่งอีเมล
 Sending email description,นี่คือที่อยู่อีเมลที่จะปรากฏเป็นผู้ส่งเมื่อส่งอีเมลจากคอลเลกชัน Uwazi ของคุณไปยังผู้ใช้ที่ลงทะเบียน ที่อยู่อีเมลเริ่มต้นคือ *no-reply@uwazi.io* คุณสามารถตั้งค่าที่อยู่อีเมลที่กำหนดเองได้โดยใส่ที่อยู่อีเมลที่คุณต้องการที่นี่
 Sending labeled data,การส่งข้อมูลที่มีป้ายกำกับ
+SEO,SEO
+SEO meta description,คำอธิบายสั้น ๆ ว่าคอลเลกชันนี้ให้อะไร เครื่องมือค้นหาอาจแสดงข้อความนี้ในผลการค้นหา ควรยาวประมาณ 150–160 ตัวอักษร
+SEO og description,คำอธิบายที่ใช้ในตัวอย่างแชร์บนโซเชียล หากว่างจะใช้คำอธิบายเมตา
+SEO og image description,"ภาพที่แสดงในตัวอย่างแชร์บนโซเชียล (LinkedIn, Facebook และอื่น ๆ) ขนาดที่แนะนำคือ 1200×630 พิกเซล"
+SEO og title description,"ชื่อที่ใช้เมื่อแชร์คอลเลกชันนี้บนแพลตฟอร์มอย่าง LinkedIn, Facebook และโซเชียลอื่น หากว่างจะใช้ชื่อหน้า"
+SEO page title description,ชื่อที่ชัดเจนและสื่อความหมายสำหรับเว็บไซต์ ใช้เป็นชื่อหน้า HTML เริ่มต้นในแท็บเบราว์เซอร์และผลการค้นหา
 Series,ซีรีส์
 Server disconnected,ตัดการเชื่อมต่อเซิร์ฟเวอร์
 Services,บริการ
@@ -1493,6 +1510,7 @@ this template,แม่แบบนี้
 This template is in use by existing entities and cannot be deleted.,แม่แบบนี้กำลังถูกใช้โดยเอนทิตีที่มีอยู่และไม่สามารถลบได้
 Thumbnail,ภาพขนาดย่อ
 Thumbnail frame,กรอบภาพย่อ
+Thumbnail size,ขนาดรูปขนาดย่อ
 Time,เวลา
 Time (UTC),เวลา (UTC)
 Timeline,เส้นเวลา
@@ -1644,6 +1662,7 @@ Visibility,การมองเห็น
 Visualization data updated from your collection.,ข้อมูลการแสดงภาพได้รับการอัปเดตจากคอลเลกชันของคุณ
 WARNING,คำเตือน
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,คำเตือน: คุณกำลังแก้ไขหลายรายการ ค่าของแต่ละช่องจะถูกใช้กับทุกรายการ
 We can't find the page you're looking for.,เราไม่สามารถหาหน้าที่คุณกำลังค้นหาได้
 Week,สัปดาห์
 Weekly,รายสัปดาห์

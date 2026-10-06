@@ -510,6 +510,10 @@
   border-color: var(--color-theme-border-soft);
 }
 
+@utility bg-border-soft {
+  background-color: var(--color-theme-border-soft);
+}
+
 @utility border-emphasis {
   border-color: var(--color-theme-accent-emphasis);
 }

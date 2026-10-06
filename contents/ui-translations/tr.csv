@@ -230,6 +230,7 @@ Click to select files,Dosyaları seçmek için tıklayın
 Close,Kapat
 Close filters,Filtreleri kapat
 Close modal,Pencereyi kapat
+Close selection list,Seçim listesini kapat
 Close side panel,Yan paneli kapat
 Code,Kod
 Collaborator,Katkı Sunan
@@ -809,6 +810,7 @@ Members,Üyeler
 Menu,Menü
 Message,Mesaj
 Message sent,Mesaj gönderildi
+Meta description,Meta açıklama
 Metadata,Meta veri
 Metadata Extraction,Meta veri özütleme
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -957,6 +959,9 @@ OCR error,OKT hatası
 OCR error tip,"OCR motoru, biçim hatası nedeniyle belgeyi okuyamadı. Son güncelleme tarihi"
 OCR PDF,OKT PDF
 of,nın-nin
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Tamam
 OK,TAMAM
 On this entity,Bu varlıkta
@@ -975,6 +980,7 @@ seçim için kullanılabilir."
 "Only the extractor will be deleted, all created entities will remain on the library.","Yalnızca çıkarıcı silinecek, oluşturulan tüm varlıklar kütüphanede kalacaktır."
 Open,Aç
 Open entity,Varlığı aç
+Open Graph,Open Graph
 Open group,Grubu aç
 Open link,Bağlantıyı aç
 Open PDF,PDF'yi aç
@@ -1000,6 +1006,7 @@ Page embed code,Sayfa yerleştirme kodu
 Page language,Sayfa dili
 Page not found,Sayfa bulunamadı
 Page published successfully.,Sayfa başarıyla yayınlandı.
+Page title,Sayfa başlığı
 Pages,Sayfalar
 Pagination,Sayfalama
 Paragrap number extraction property (numeric),Paragraf numarası çıkarma özelliği (sayısal)
@@ -1156,6 +1163,7 @@ Remove,Kaldır
 Remove data source,Veri kaynağını kaldır
 Remove filter,Filtreyi kaldır
 Remove from connection,Bağlantıyı kes
+Remove from selection,Seçimden kaldır
 Remove from training set,Eğitim kümesinden çıkar
 remove icon,simgeyi kaldır
 Remove icon,Simgeyi kaldır
@@ -1259,6 +1267,7 @@ Select from computer,Bilgisayardan seçin
 Select icon...,Simge seçin…
 Select image,Resmi seç
 Select media,Medya seçin
+Select Open Graph image,Open Graph görselini seç
 Select page,Sayfa seç
 Select property…,Özellik seçin…
 Select relationship,İlişkiyi seçin
@@ -1277,15 +1286,23 @@ Select...,Seç...
 Select…,Seçin…
 Selected,Seçilen
 selected,seçilmiş
+Selected entities,Seçili varlıklar
 selected of,arasından seçildi
 Selected or suggested,Seçilmiş veya önerilen
 Selected templates,Seçilmiş şablonlar
+Selection,Seçim
 Send,Gönder
 Send message,Mesaj gönder
 Send recovery email,Kurtarma e-postası gönder
 Sending email,E-posta gönderme
 Sending email description,"Bu, Uwazi koleksiyonunuzdan kayıtlı kullanıcılara e-posta gönderildiğinde gönderen olarak görünecek e-posta adresidir. Varsayılan adres *no-reply@uwazi.io* şeklindedir. Buraya istediğiniz e-posta adresini girerek özel bir adres belirleyebilirsiniz."
 Sending labeled data,Etiketli veriler gönderiliyor
+SEO,SEO
+SEO meta description,Bu koleksiyonun ne sunduğuna dair kısa bir açıklama. Arama motorları bu metni sonuçlarda gösterebilir. Yaklaşık 150–160 karakter hedefleyin.
+SEO og description,Sosyal medya önizlemelerinde kullanılan açıklama. Boşsa meta açıklama kullanılır.
+SEO og image description,"Sosyal medya önizlemelerinde (LinkedIn, Facebook ve diğerleri) gösterilen görsel. Önerilen boyut 1200×630 pikseldir."
+SEO og title description,"Bu koleksiyon LinkedIn, Facebook ve diğer sosyal ağlarda paylaşıldığında kullanılan başlık. Boşsa sayfa başlığı kullanılır."
+SEO page title description,Web sitesi için açık ve açıklayıcı bir başlık. Tarayıcı sekmelerinde ve arama sonuçlarında varsayılan HTML sayfa başlığı olarak kullanılır.
 Series,Dizi
 Server disconnected,Sunucu bağlantısı kesildi
 Services,Hizmetler
@@ -1492,6 +1509,7 @@ this template,bu şablon
 This template is in use by existing entities and cannot be deleted.,"Bu şablon, mevcut varlıklar tarafından kullanılmaktadır ve silinemez."
 Thumbnail,Küçük resim
 Thumbnail frame,Küçük resim çerçevesi
+Thumbnail size,Küçük resim boyutu
 Time,Saat
 Time (UTC),Saat (UTC)
 Timeline,Zaman Çizelgesi
@@ -1643,6 +1661,7 @@ Visibility,Görünürlük
 Visualization data updated from your collection.,Koleksiyonunuzdan alınan görselleştirme verileri güncellendi.
 WARNING,UYARI
 Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Uyarı: birden çok varlığı düzenliyorsunuz. Her alanın değeri tümüne uygulanacak.
 We can't find the page you're looking for.,Aradığınız sayfayı bulamıyoruz.
 Week,Hafta
 Weekly,Haftalık

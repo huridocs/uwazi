@@ -140,6 +140,10 @@ class EntityViewer extends Component {
       <div className="row">
         <Helmet>
           <title>{entity.get('title') ? entity.get('title') : 'Entity'}</title>
+          <meta
+            property="og:title"
+            content={entity.get('title') ? entity.get('title') : 'Entity'}
+          />
         </Helmet>
 
         {selectedTab !== 'page' && (

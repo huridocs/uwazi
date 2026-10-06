@@ -227,6 +227,7 @@ Click to select files,ဖိုင်များရွေးရန် နှိ
 Close,ပိတ်ရန်
 Close filters,စစ်ထုတ်မှုများ ပိတ်ရန်
 Close modal,ဝင်းဒိုး ပိတ်ရန်
+Close selection list,ရွေးချယ်မှုစာရင်းကို ပိတ်ရန်
 Close side panel,ဘေးဘောင် ပိတ်ရန်
 Code,ကုဒ်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
@@ -801,6 +802,7 @@ Members,အဖွဲ့ဝင်များ
 Menu,မီနူး
 Message,မက်ဆေ့ချ်
 Message sent,မက်ဆေ့ခ်ျ ပို့ပြီးပါပြီ။
+Meta description,မက်တာ ဖော်ပြချက်
 Metadata,မီတာဒေတာ
 Metadata Extraction,မီတာဒေတာ ထုတ်ယူခြင်း
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -946,6 +948,9 @@ OCR error,OCR အမှား
 OCR error tip,ဖော်မတ်မမှန်ကန်မှုကြောင့် OCR အင်ဂျင်သည် စာရွက်စာတမ်းကို ဖတ်ရှု၍ မရနိုင်ပါ။ နောက်ဆုံးအပ်ဒိတ်
 OCR PDF,OCR PDF
 of,၏
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,အိုကေ
 OK,အိုကေ
 On this entity,ဤအဖွဲ့အစည်းအပေါ်
@@ -961,6 +966,7 @@ Only published entities are counted.,ထုတ်ဝေထားသော အဖ
 "Only the extractor will be deleted, all created entities will remain on the library.",extractor ကိုသာ ဖျက်မည်၊ ဖန်တီးထားသော အဖွဲ့အစည်းအားလုံးကို စာကြည့်တိုက်တွင် ဆက်လက်သိမ်းဆည်းထားမည်။
 Open,ဖွင့်
 Open entity,အဖွဲ့အစည်းကို ဖွင့်ပါ
+Open Graph,Open Graph
 Open group,အုပ်စုကို ဖွင့်ရန်
 Open link,လင့်ခ်ဖွင့်ပါ
 Open PDF,PDF ဖွင့်ပါ
@@ -986,6 +992,7 @@ Page embed code,စာမျက်နှာ ထည့်သွင်းကုဒ
 Page language,စာမျက်နှာ ဘာသာစကား
 Page not found,စာမျက်နှာ မတွေ့ပါ
 Page published successfully.,စာမျက်နှာကို အောင်မြင်စွာ ထုတ်ဝေခဲ့သည်။
+Page title,စာမျက်နှာခေါင်းစဉ်
 Pages,စာမျက်နှာများ
 Pagination,စာမျက်နှာခွဲ
 Paragrap number extraction property (numeric),ပိုဒ်နံပါတ်ထုတ်ယူခြင်း ဂုဏ်သတ္တိ (ဂဏန်း)
@@ -1139,6 +1146,7 @@ Remove,ဖယ်ရှားရန်
 Remove data source,ဒေတာရင်းမြစ် ဖယ်ရန်
 Remove filter,စစ်ထုတ်မှု ဖယ်ရန်
 Remove from connection,ချိတ်ဆက်မှုမှ ဖယ်ရှားပါ
+Remove from selection,ရွေးချယ်မှုမှ ဖယ်ရှားရန်
 Remove from training set,လေ့ကျင့်မှုအစုမှ ဖယ်ရှားပါ
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Remove icon,အိုင်ကွန် ဖယ်ရှားပါ
@@ -1242,6 +1250,7 @@ Select from computer,ကွန်ပျူတာမှရွေးချယ်�
 Select icon...,သင်္ကေတ ရွေးရန်…
 Select image,ပုံကိုရွေးပါ
 Select media,မီဒီယာကိုရွေးပါ
+Select Open Graph image,Open Graph ပုံ ရွေးပါ
 Select page,စာမျက်နှာ ရွေးရန်
 Select property…,ဂုဏ်သတ္တိ ရွေးရန်…
 Select relationship,ဆက်နွယ်မှုကိုရွေးချယ်ပါ
@@ -1260,15 +1269,23 @@ Select...,ရွေးချယ်ရန်...
 Select…,ရွေးရန်…
 Selected,ရွေးချယ်ထားသော
 selected,ရွေးချယ်ပြီး
+Selected entities,ရွေးထားသော ဖြည့်သွင်းချက်များ
 selected of,ရွေးချယ်ထားသည်
 Selected or suggested,ရွေးချယ်ထားသော သို့မဟုတ် အကြံပြုထားသော
 Selected templates,ရွေးချယ်ထားသော ပုံစံများ
+Selection,ရွေးချယ်မှု
 Send,ပေးပို့ရန်
 Send message,မက်ဆေ့ချ် ပို့ရန်
 Send recovery email,ပြန်လည်ရယူရန်အတွက် အီးမေးလ် ပို့ရန်
 Sending email,အီးမေးလ်ပို့ခြင်း
 Sending email description,ဤသည်မှာ သင့် Uwazi စုစည်းမှုမှ မှတ်ပုံတင်ထားသော အသုံးပြုသူများထံ အီးမေးလ်ပို့သည့်အခါ ပို့သူအဖြစ် ပြသမည့် အီးမေးလ်လိပ်စာဖြစ်သည်။ မူလလိပ်စာမှာ *no-reply@uwazi.io* ဖြစ်သည်။ သင်နှစ်သက်ရာ အီးမေးလ်လိပ်စာကို ဤနေရာတွင် ထည့်သွင်း၍ ကိုယ်ပိုင်လိပ်စာ သတ်မှတ်နိုင်သည်။
 Sending labeled data,အမှတ်အသားတပ်ထားသော ဒေတာ ပို့ခြင်း
+SEO,SEO
+SEO meta description,ဤစုစည်းမှု ပေးသောအရာကို အတိုချုံးဖော်ပြချက်။ ရှာဖွေရေးအင်ဂျင်များက ရလဒ်တွင် ဤစာသားကို ပြသနိုင်သည်။ စာလုံးရေ ၁၅၀–၁၆၀ ခန့်ကို ရည်ရွယ်ပါ။
+SEO og description,လူမှုကွန်ရက် အကြိုကြည့်မှုများတွင် အသုံးပြုသော ဖော်ပြချက်။ ဗလာဖြစ်နေပါက မက်တာ ဖော်ပြချက်ကို အသုံးပြုသည်။
+SEO og image description,လူမှုကွန်ရက် အကြိုကြည့်မှုများ (LinkedIn၊ Facebook နှင့် အခြား) တွင် ပြသသော ပုံ။ အကြံပြုအရွယ်အစားမှာ 1200×630 ပစ်ဆယ် ဖြစ်သည်။
+SEO og title description,LinkedIn၊ Facebook နှင့် အခြားလူမှုကွန်ရက်များတွင် ဤစုစည်းမှုကို မျှဝေသည့်အခါ အသုံးပြုသော ခေါင်းစဉ်။ ဗလာဖြစ်နေပါက စာမျက်နှာခေါင်းစဉ်ကို အသုံးပြုသည်။
+SEO page title description,ဝဘ်ဆိုက်အတွက် ရှင်းလင်းပြီး ဖော်ပြချက်ရှိသော ခေါင်းစဉ်။ ဘရောက်ဇာ တက်ဘ်များနှင့် ရှာဖွေမှုရလဒ်များတွင် ပုံသေ HTML စာမျက်နှာခေါင်းစဉ်အဖြစ် အသုံးပြုသည်။
 Series,စီးရီး
 Server disconnected,ဆာဗာ ချိတ်ဆက်မှု ပြတ်
 Services,ဝန်ဆောင်မှုများ
@@ -1466,6 +1483,7 @@ this template,ဤပုံစံ
 This template is in use by existing entities and cannot be deleted.,ဤပုံစံကို လက်ရှိ အဖွဲ့အစည်းများက အသုံးပြုနေပြီး ဖျက်၍ မရပါ။
 Thumbnail,သေးငယ်သောပုံ
 Thumbnail frame,ပုံသေး ဘောင်
+Thumbnail size,ပုံသေး အရွယ်အစား
 Time,အချိန်
 Time (UTC),အချိန် (UTC)
 Timeline,အချိန်ကြောင်း
@@ -1615,6 +1633,7 @@ Visibility,မြင်သာမှု
 Visualization data updated from your collection.,သင့်စုဆောင်းမှုမှ ဒေတာကို မြင်ကွင်းဖော်ပြချက်အဖြစ် အပ်ဒိတ်လုပ်ထားသည်။
 WARNING,သတိပေးချက်
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ အကွက်တိုင်း၏ တန်ဖိုးကို အားလုံးတွင် အသုံးပြုမည်။
 We can't find the page you're looking for.,သင်ရှာဖွေနေသည့် စာမျက်နှာကို မတွေ့နိုင်ပါ။
 Week,ပတ်
 Weekly,အပတ်စဉ်
