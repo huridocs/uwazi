@@ -8,7 +8,6 @@ import { listeners } from './infrastructure/listeners.generated.js';
 
 /** How the host wires the OCR module in. */
 class OcrComposition {
-  /** The package's V2 listeners, for the host to register in every process. */
   static readonly listeners = listeners;
 
   static registerJobs(register: Register) {
@@ -17,7 +16,6 @@ class OcrComposition {
     register(SaveOcrResultJobHandler, async () => new SaveOcrResultJobHandler());
   }
 
-  /** The worker's consumer of the OCR service's results queue. */
   static createResultListener() {
     return OcrResultListenerFactory.default();
   }

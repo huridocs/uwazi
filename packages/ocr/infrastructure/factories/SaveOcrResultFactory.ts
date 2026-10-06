@@ -19,7 +19,6 @@ type Overrides = {
 
 class SaveOcrResultFactory {
   static default(overrides: Overrides = {}): SaveOcrResult {
-    // The files service moves references too, so it has to share the overridden data source.
     const relationshipsV1DS =
       overrides.relationshipsV1DS ?? RelationshipsV1DataSourceFactory.default();
 

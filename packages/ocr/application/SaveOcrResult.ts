@@ -16,10 +16,8 @@ import { MalformedOcrResult } from './errors/MalformedOcrResult.js';
 import { OcrResultGone } from './errors/OcrResultGone.js';
 import { OcrSettled, OcrSettlement } from './OcrSettled.js';
 
-/** The record, and the key of the attempt a result was reported for. */
 type Attempt = { record: OcrRecord; key: IdempotencyKey };
 
-/** What becomes of the attempt, decided before anything is written. */
 type Resolution =
   | { kind: 'complete'; source: PDFDocument; resultFile: PDFDocument }
   | { kind: 'fail'; reason: OcrFailureReason }
@@ -71,7 +69,6 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, OcrSettled, Deps> {
     return OcrSettlement.of(attempt.record);
   }
 
-  /** The attempt the outcome belongs to, unless it is stale, a duplicate, or for no record. */
   private async currentAttempt(outcome: OcrOutcome): Promise<Attempt | undefined> {
     const record = outcome.key
       ? await this.deps.ocrDS.getById(outcome.key.recordId)

@@ -17,9 +17,7 @@ type Deps = {
   ocrEngine: OcrEngine;
   fileStorage: FileStorage;
   jobs: OcrJobs;
-  /** Requests waiting in the service beyond which new ones hold back. */
   maxBacklog: number;
-  /** How long a held-back request waits before it is tried again. */
   retryDelayMs: number;
 };
 
@@ -72,9 +70,7 @@ class SubmitOcr extends AbstractUseCase<Input, OcrSettled, Deps> {
     return undefined;
   }
 
-  /** A service that cannot take it now gets it later; one that never will makes it fail. */
   private async whenNotSent(recordId: string, error: unknown): Promise<OcrSettled> {
-    // Nothing was saved: the stored record is still queued, as it was before the attempt.
     const record = (await this.deps.ocrDS.getById(recordId))!;
 
     if (error instanceof OcrServiceUnavailable) {

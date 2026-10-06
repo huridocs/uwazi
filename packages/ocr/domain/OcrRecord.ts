@@ -17,7 +17,6 @@ type OcrRecordProps = {
   failureReason?: OcrFailureReason;
 };
 
-/** Whether a result was taken, or discarded as stale or duplicate. */
 type OcrResultOutcome = 'applied' | 'ignored';
 
 /**

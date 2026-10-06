@@ -7,7 +7,6 @@ import { OcrAvailabilityService } from './OcrAvailabilityService.js';
 
 type Input = { filename: string };
 
-/** Where a file stands with OCR: its record's status, `none` without one, or a language the service cannot read. */
 type OcrFileStatus = {
   status: OcrStatus | 'none' | 'unsupportedLanguage';
   lastUpdated?: number;
