@@ -125,7 +125,7 @@
     "@types/express-session": "1.18.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "pbkdf2": "^3.1.5",
+    "pbkdf2": "^3.1.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-is": "19.3.0"
