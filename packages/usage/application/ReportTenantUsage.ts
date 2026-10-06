@@ -22,13 +22,14 @@ class ReportTenantUsage extends AbstractUseCase<void, TenantUsage, Deps> {
     const { content, footprint, searchIndex, activity } = this.deps;
     const { name, indexName } = this.tenant;
 
-    const [contentUsage, mongo, postgres, elasticStorage, lastSession] = await Promise.all([
-      content.read(),
-      footprint.mongo.databaseBytes(),
-      footprint.postgres?.databaseBytes() ?? 0,
-      searchIndex.indexBytes(indexName),
-      activity.lastSession(name),
-    ]);
+    const [contentUsage, mongo, postgres, elasticStorage, lastSession] =
+      await ReportTenantUsage.allSettled([
+        content.read(),
+        footprint.mongo.databaseBytes(),
+        footprint.postgres?.databaseBytes() ?? 0,
+        searchIndex.indexBytes(indexName),
+        activity.lastSession(name),
+      ] as const);
 
     return {
       ...contentUsage,
@@ -36,6 +37,23 @@ class ReportTenantUsage extends AbstractUseCase<void, TenantUsage, Deps> {
       dbStorageByEngine: { mongo, postgres },
       elasticStorage,
       lastSession,
+    };
+  }
+
+  /**
+   * Like Promise.all, but fails only once every read has finished: a read still running when the
+   * report fails would outlive it, and its connection could be closed under it.
+   */
+  private static async allSettled<T extends readonly unknown[]>(
+    reads: T
+  ): Promise<{ -readonly [K in keyof T]: Awaited<T[K]> }> {
+    const settled = await Promise.allSettled(reads);
+    const failed = settled.find(result => result.status === 'rejected');
+    if (failed) {
+      throw failed.reason;
+    }
+    return settled.map(result => (result as PromiseFulfilledResult<unknown>).value) as {
+      -readonly [K in keyof T]: Awaited<T[K]>;
     };
   }
 }

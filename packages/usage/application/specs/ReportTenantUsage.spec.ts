@@ -3,8 +3,10 @@ import { DB } from '#api/odm/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import type { Tenant } from '#api/tenants/tenantContext.js';
 import { ReportTenantUsageFactory } from '../../infrastructure/factories/ReportTenantUsageFactory.js';
 import { FileKind } from '../FileKind.js';
+import { ReportTenantUsage } from '../ReportTenantUsage.js';
 
 const f = getFixturesFactory();
 
@@ -100,5 +102,38 @@ describe('ReportTenantUsage', () => {
     await testingEnvironment.setFixtures(fixtures);
 
     expect((await report()).dbStorageByEngine.postgres).toBeGreaterThan(0);
+  });
+});
+
+describe('ReportTenantUsage when a read fails', () => {
+  /** A failing search index: the reads are built in memory to make one of them fail. */
+  it('should wait for every other read to finish before failing', async () => {
+    let contentFinished = false;
+    const content = {
+      read: async () => {
+        await new Promise(resolve => {
+          setTimeout(resolve, 50);
+        });
+        contentFinished = true;
+        return {
+          entitiesCount: 0,
+          filesCount: { document: 0, attachment: 0, custom: 0, thumbnail: 0 },
+          filesByBucket: FileKind.empty(),
+          filesStorage: 0,
+        };
+      },
+    };
+    const usage = new ReportTenantUsage(
+      {
+        content,
+        footprint: { mongo: { databaseBytes: async () => 0 }, postgres: null },
+        searchIndex: { indexBytes: async () => Promise.reject(new Error('Connection Error')) },
+        activity: { lastSession: async () => null },
+      },
+      { tenant: { name: 'tenant', indexName: 'index' } as Tenant }
+    );
+
+    await expect(usage.execute()).rejects.toThrow('Connection Error');
+    expect(contentFinished).toBe(true);
   });
 });
