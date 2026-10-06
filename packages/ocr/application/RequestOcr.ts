@@ -1,12 +1,10 @@
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { OcrRecord } from '../domain/OcrRecord.js';
 import { OcrStatus } from '../domain/OcrStatus.js';
 import { OcrJobs } from './contracts/OcrJobs.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
-import { FileIsNotADocument } from './errors/FileIsNotADocument.js';
 import { OcrAlreadyActive } from './errors/OcrAlreadyActive.js';
 import { OcrLanguageNotSupported } from './errors/OcrLanguageNotSupported.js';
 import { OcrAvailabilityService } from './OcrAvailabilityService.js';
@@ -39,11 +37,7 @@ class RequestOcr extends AbstractUseCase<Input, void, Deps> {
   /** A document in a language the service reads. */
   private async readableDocumentNamed(filename: string) {
     const { ocrAvailability } = this.deps;
-    const file = await ocrAvailability.storedFileNamed(filename);
-    if (file.type !== 'document') {
-      throw new FileIsNotADocument(filename);
-    }
-    const document = file as PDFDocument;
+    const document = await ocrAvailability.storedDocumentNamed(filename);
     const language = await ocrAvailability.readableLanguageOf(document);
     if (!language) {
       throw new OcrLanguageNotSupported(document.language);

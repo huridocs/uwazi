@@ -1,4 +1,3 @@
-import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { OcrStatus } from '../domain/OcrStatus.js';
 import { OcrRecordDataSource } from './contracts/OcrRecordDataSource.js';
@@ -35,7 +34,10 @@ class GetOcrStatus extends AbstractUseCase<Input, OcrFileStatus, Deps> {
     }
 
     const canBeRequested = !record || record.status === OcrStatus.FAILED;
-    if (canBeRequested && !(await ocrAvailability.readableLanguageOf(file as PDFDocument))) {
+    if (
+      canBeRequested &&
+      !(await ocrAvailability.readableLanguageOf(OcrAvailabilityService.documentOf(file)))
+    ) {
       return { status: 'unsupportedLanguage' };
     }
     return record ? { status: record.status, lastUpdated: record.lastUpdated } : { status: 'none' };

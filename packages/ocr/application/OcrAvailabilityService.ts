@@ -6,6 +6,7 @@ import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { OcrEngine } from './contracts/OcrEngine.js';
+import { FileIsNotADocument } from './errors/FileIsNotADocument.js';
 import { OcrNotEnabled } from './errors/OcrNotEnabled.js';
 
 type Deps = {
@@ -32,6 +33,19 @@ class OcrAvailabilityService {
     const file = (await this.deps.filesDS.getByFilename(filename)).getDataOrThrow();
     if (!(await this.deps.fileStorage.fileExists(file))) {
       throw new FileNotFound(`The content of the file "${filename}" is not in storage`);
+    }
+    return file;
+  }
+
+  /** The stored document of that name; any other kind of file is refused. */
+  async storedDocumentNamed(filename: string): Promise<PDFDocument> {
+    return OcrAvailabilityService.documentOf(await this.storedFileNamed(filename));
+  }
+
+  /** The file as a document OCR can work on; any other kind of file is refused. */
+  static documentOf(file: BaseFile): PDFDocument {
+    if (!(file instanceof PDFDocument)) {
+      throw new FileIsNotADocument(file.filename);
     }
     return file;
   }

@@ -122,10 +122,11 @@ class SaveOcrResult extends AbstractUseCase<OcrOutcome, OcrSettled, Deps> {
       return undefined;
     }
     const found = await this.deps.filesDS.getById(record.sourceFileId);
-    if (found.isError() || found.getData().type !== 'document') {
+    if (found.isError()) {
       return undefined;
     }
-    return found.getData() as PDFDocument;
+    const file = found.getData();
+    return file instanceof PDFDocument ? file : undefined;
   }
 
   /** The result, or what to do when the service cannot hand it over. */
