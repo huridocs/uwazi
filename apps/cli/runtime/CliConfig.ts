@@ -12,12 +12,6 @@ const DATABASE_VARIABLES = [
   'POSTGRES_APP_PASSWORD',
 ];
 
-/**
- * Commands that read the search index and the session store. SESSIONS_BACKEND has a default, but
- * a wrong one would silently read the other store.
- */
-const ELASTICSEARCH_VARIABLES = ['ELASTICSEARCH_URL', 'SESSIONS_BACKEND'];
-
 class CliConfig {
   /**
    * Only production is strict: development and tests rely on config.ts's local defaults, which
@@ -28,11 +22,7 @@ class CliConfig {
       return [];
     }
 
-    return [
-      ...DATABASE_VARIABLES,
-      ...(needs.redis ? ['REDIS_HOST'] : []),
-      ...(needs.elasticsearch ? ELASTICSEARCH_VARIABLES : []),
-    ];
+    return [...DATABASE_VARIABLES, ...(needs.redis ? ['REDIS_HOST'] : [])];
   }
 
   /**

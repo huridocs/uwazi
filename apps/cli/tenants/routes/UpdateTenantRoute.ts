@@ -13,7 +13,7 @@ class UpdateTenantRoute implements Route<UpdateTenantInput, TenantOutput> {
 
   readonly tenancy = 'none';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false };
 
   readonly request = UpdateTenantInputSchema;
 

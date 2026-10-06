@@ -13,7 +13,7 @@ class ListTenantsRoute implements Route<Record<string, never>, TenantsOutput> {
 
   readonly tenancy = 'none';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false };
 
   readonly request = z.object({}).strict();
 

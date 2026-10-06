@@ -15,7 +15,7 @@ class UpdateUserRoute implements Route<UpdateUserCliInput, UpdatedUserOutput> {
 
   readonly tenancy = 'single';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false };
 
   readonly request = z
     .object({

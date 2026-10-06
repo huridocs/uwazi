@@ -15,7 +15,7 @@ describe('SegmentationRoutes', () => {
   });
 
   it('should not need Redis: requests are queued as jobs', () => {
-    expect(route('queue-idle').needs).toEqual({ redis: false, elasticsearch: false });
+    expect(route('queue-idle').needs).toEqual({ redis: false });
   });
 
   it('should take an empty request only', () => {

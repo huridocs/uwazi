@@ -115,5 +115,5 @@ const createHttpSessionStore = (
 ): Store & { close: () => Promise<void> | void } =>
   backend === 'postgres' ? new TouchLimitedPgStore() : createMongoSessionStore();
 
-export { createHttpSessionStore, resolveSessionsBackend, TTL_SECONDS };
+export { createHttpSessionStore, resolveSessionsBackend };
 export type { SessionsBackend };
