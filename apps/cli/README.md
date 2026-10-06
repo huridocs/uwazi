@@ -15,6 +15,7 @@ in the module's own page:
 | [settings](docs/settings.md)         | `get`, `update`                                                                                        |
 | [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
+| [usage](docs/usage.md)               | `report`                                                                                               |
 
 ## Running it
 
@@ -42,7 +43,9 @@ start unless these are set, rather than falling back to localhost defaults and s
 talking to the wrong database:
 
 `MONGO_URI`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_APP_USER`,
-`POSTGRES_APP_PASSWORD`, and `REDIS_HOST` for commands that need Redis.
+`POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `ELASTICSEARCH_URL` and
+`SESSIONS_BACKEND` for commands that read the search index and the session store
+(`usage report`). `ELASTICSEARCH_API_KEY` is used when the cluster asks for one.
 
 Missing variables fail with `config.missing` (exit 1) before anything connects.
 
