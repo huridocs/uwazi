@@ -42,17 +42,16 @@ const storeInMongo = async (stored: StoredSession[]) =>
       }))
     );
 
-/** Stored as connect-pg-simple stores them: touching moves expire a full TTL ahead. */
+/**
+ * Stored as connect-pg-simple stores them: touching moves expire a full TTL ahead, written with
+ * to_timestamp(epoch seconds) into a column without time zone, so in the server's time zone.
+ */
 const storeInPostgres = async (stored: StoredSession[]) =>
   Promise.all(
     stored.map(async session =>
       testingEnvironment.pg.pool!.query(
-        'INSERT INTO http_sessions (sid, sess, expire) VALUES ($1, $2, $3)',
-        [
-          session.sid,
-          JSON.stringify(sessionPayload(session)),
-          new Date(session.lastActive + TTL_MS),
-        ]
+        'INSERT INTO http_sessions (sid, sess, expire) VALUES ($1, $2, to_timestamp($3))',
+        [session.sid, JSON.stringify(sessionPayload(session)), (session.lastActive + TTL_MS) / 1000]
       )
     )
   );
