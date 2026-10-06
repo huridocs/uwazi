@@ -61,8 +61,8 @@ const EntityPageViewer = () => {
         </div>
       }
     >
-      <div className="entity-page-viewer flex min-h-0 flex-1 flex-col overflow-auto">
-        <main className="page-viewer document-viewer min-h-0 flex-1">
+      <div className="entity-page-viewer">
+        <main className="page-viewer document-viewer">
           <div className="main-wrapper">
             <PageStyle>{pageCss}</PageStyle>
             {customPageError ? (
@@ -79,9 +79,9 @@ const EntityPageViewer = () => {
             ) : null}
             {errors ? (
               <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-                <div className="alert alert-warning mx-4 mt-2">
+                <div className="alert alert-warning">
                   <Icon icon="exclamation-triangle" />
-                  <span className="whitespace-pre-wrap">{errors}</span>
+                  <span style={{ whiteSpace: 'pre-wrap' }}>{errors}</span>
                 </div>
               </NeedAuthorization>
             ) : null}

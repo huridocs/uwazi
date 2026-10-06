@@ -1,4 +1,17 @@
-@use "../config/colors";
+@use '../config/colors';
+
+.entity-page-viewer {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+
+  > .page-viewer {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
 
 .page-viewer {
   padding-top: 15px;

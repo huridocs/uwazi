@@ -67,9 +67,10 @@ describe('EntityPageViewer', () => {
       </JotaiProvider>
     );
 
-    expect(await screen.findByTestId('markdown-viewer')).toHaveTextContent(
-      'Hello from entity page'
-    );
+    const page = await screen.findByTestId('markdown-viewer');
+    expect(page).toHaveTextContent('Hello from entity page');
+    expect(page.closest('main')).toHaveClass('page-viewer', 'document-viewer');
+    expect(page.closest('main')).not.toHaveClass('min-h-0', 'flex-1');
     expect(store.get(entityPageViewAtom)?.pageSharedId).toBe('page1');
   });
 
