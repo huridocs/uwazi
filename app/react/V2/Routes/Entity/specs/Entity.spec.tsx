@@ -18,8 +18,15 @@ import * as searchApi from '#V2/api/search/index.js';
 import * as scroller from '#V2/helpers/scrollIntoView.js';
 import { Entity } from '../Entity.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
+import type { EntityPageViewData } from '../Components/EntityPageView/index.js';
 import { entityWithRelations } from '../Components/relationships/specs/fixtures/entityWithRelations.js';
 import { relationshipQueryFromEntity } from '../Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
+
+jest.mock('#app/Markdown/index.js', () => ({
+  MarkdownViewer: ({ markdown }: { markdown: string }) => (
+    <div data-testid="entity-page-markdown">{markdown}</div>
+  ),
+}));
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -61,10 +68,32 @@ const adminUser = { _id: '1', role: 'admin', name: 'admin' };
 
 let mediaMock = setupMatchMediaMock();
 
+const sampleEntityPageView: EntityPageViewData = {
+  pageSharedId: 'page1',
+  pageView: {
+    title: 'Custom page',
+    markdownSupport: false,
+    metadata: { content: '<p>Custom entity page</p>', script: '', css: '' },
+  },
+  itemLists: [],
+  datasets: {},
+  entityRaw: {
+    _id: 'ent1',
+    sharedId: 'shared1',
+    language: 'en',
+    title: 'Sample Entity',
+    template: 'template1',
+    creationDate: 1,
+    user: 'user1',
+    metadata: {},
+  },
+};
+
 type RenderEntityOptions = {
   entity?: Partial<EntityType>;
   mainDocument?: typeof sampleMainDocument | undefined;
   pagePlaintext?: string;
+  entityPageView?: EntityPageViewData;
   initialEntries?: string[];
   settings?: Record<string, unknown>;
   user?: typeof adminUser;
@@ -76,6 +105,7 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
   const {
     entity = sampleEntity,
     pagePlaintext = '',
+    entityPageView,
     initialEntries,
     settings,
     user,
@@ -124,6 +154,7 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
         entity,
         mainDocument,
         pagePlaintext,
+        entityPageView,
         relationshipQuery,
       }}
       initialEntries={initialEntries}
@@ -171,6 +202,24 @@ describe('Entity view', () => {
     );
 
     expect(screen.getByText('Loading')).toBeInTheDocument();
+  });
+
+  it('renders the custom page as the route body when the loader includes a page view', async () => {
+    renderEntity({ entityPageView: sampleEntityPageView });
+
+    const page = await screen.findByTestId('entity-page-markdown');
+    expect(page).toHaveTextContent('Custom entity page');
+    expect(page.closest('[role="tabpanel"]')).toBeNull();
+    expect(screen.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the pane viewer and hides the view switch without a page view', async () => {
+    renderEntity();
+    await checkEntityRendered();
+
+    expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Entity view' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Published view' })).not.toBeInTheDocument();
   });
 
   it('should render PDF and metadata', async () => {

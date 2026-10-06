@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider as JotaiProvider, createStore, useAtomValue } from 'jotai';
 import { MemoryRouter } from 'react-router';
 import { EntityPageViewProvider, EntityPageViewer } from '../index.js';
+import { installEntityPageStore } from '../installEntityPageStore.js';
 import type { EntityPageViewData } from '../types.js';
 import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 
@@ -46,6 +47,11 @@ const pageViewData: EntityPageViewData = {
     template: 'template1',
   } as EntityPageViewData['entityRaw'],
 };
+
+type DatasetView = { get: (key: string) => unknown };
+
+const isDatasetView = (value: unknown): value is DatasetView =>
+  typeof value === 'object' && value !== null && 'get' in value && typeof value.get === 'function';
 
 describe('EntityPageViewer', () => {
   it('renders page markdown content from context', async () => {
@@ -100,6 +106,18 @@ describe('EntityPageViewer', () => {
     unmount();
 
     expect(store.get(entityPageViewAtom)).toBe(replacement);
+  });
+
+  it('keeps a stable store snapshot and restores getState', () => {
+    const base = { page: { datasets: {} }, marker: 1 };
+    const store = { getState: () => base };
+    const restore = installEntityPageStore(store, { a: 1 });
+    const state = store.getState();
+    const datasets = state.page?.datasets;
+    expect(state).toBe(store.getState());
+    expect(isDatasetView(datasets) && datasets.get('a')).toBe(1);
+    restore();
+    expect(store.getState()).toBe(base);
   });
 
   it('renders nothing when there is no entity page view', () => {

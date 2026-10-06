@@ -508,6 +508,7 @@ Entity type,အဖွဲ့အစည်းအမျိုးအစား
 Entity type (template),အရာဝတ္ထု အမျိုးအစား (ပုံစံခွက်)
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,အဖွဲ့အစည်းကို အပ်ဒိတ်လုပ်ခဲ့သည်။
+Entity view,Entity view
 Error,ချွတ်ယွင်းချက်
 Error adding thesauri.,အဓိပ္ပာယ်တူစာရင်းများ ထည့်သွင်းရာတွင် အမှားဖြစ်ပါသည်။
 Error loading your image,သင့်ပုံကို တင်နေစဉ် အမှားဖြစ်နေပါသည်။
@@ -1101,6 +1102,7 @@ Publish,ထုတ်ဝေရန်
 Publish release,ထုတ်ပြန်ချက် ထုတ်ဝေခြင်း
 Published,ထုတ်ဝေပြီး
 Published and unpublished entities are counted.,ထုတ်ဝေပြီးသောနှင့် မထုတ်ဝေထားသေးသော အဖွဲ့အစည်းများအားလုံးကို ရေတွက်သည်။
+Published view,Published view
 QR Code,QR ကုဒ်
 qr code,QR ကုဒ်
 Query,မေးခွန်း

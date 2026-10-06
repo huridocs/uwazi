@@ -1559,3 +1559,5 @@ Selection,UI text,Library,Heading of the right-hand panel that lists the entitie
 Close selection list,Accessible label,Library,Accessible name of the button that closes the Library selection list.,false
 Selected entities,Accessible label,Library,Accessible name of the list of entities in the Library selection panel.,false
 Remove from selection,Tooltip,Library,Tooltip on the button that removes one entity from the Library selection.,false
+Entity view,Accessible label,Entity view,"Accessible name and tooltip of the button that opens the entity viewer on Metadata, shown while the published page is open.",false
+Published view,Accessible label,Entity view,"Accessible name and tooltip of the button that returns to the published page, shown while the entity viewer is open.",false

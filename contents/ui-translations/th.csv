@@ -515,6 +515,7 @@ Entity type,ประเภทเอนทิตี
 Entity type (template),ประเภทเอนทิตี (เทมเพลต)
 Entity types,ประเภทรายการ
 Entity updated,อัปเดตข้อมูลเอนทิตีแล้ว
+Entity view,มุมมองรายการ
 Error,ข้อผิดพลาด
 Error adding thesauri.,เกิดข้อผิดพลาดขณะเพิ่มพจนานุกรมคำพ้องความหมาย
 Error loading your image,เกิดข้อผิดพลาดขณะโหลดภาพของคุณ
@@ -1117,6 +1118,7 @@ Publish,เผยแพร่
 Publish release,เผยแพร่เวอร์ชัน
 Published,ตีพิมพ์แล้ว
 Published and unpublished entities are counted.,นับทั้งเอนทิตีที่ได้รับการเผยแพร่และที่ยังไม่ได้รับการเผยแพร่
+Published view,มุมมองที่เผยแพร่
 QR Code,รหัส QR
 qr code,คิวอาร์โค้ด
 Query,สืบค้น

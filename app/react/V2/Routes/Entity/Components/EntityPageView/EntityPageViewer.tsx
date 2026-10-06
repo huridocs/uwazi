@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import React, { Suspense, useCallback, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import Immutable from 'immutable';
 import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
@@ -10,34 +10,7 @@ import { ErrorBoundary, ErrorFallback } from '#V2/Components/ErrorHandling/index
 import { PageStyle } from '#app/Pages/components/PageStyle.js';
 import { useEntityPageView } from './EntityPageViewContext.js';
 import { EntityPageScript } from './EntityPageScript.js';
-
-const buildScriptWithDatasets = (script: string, datasets: Record<string, unknown>) => {
-  const datasetsJson = JSON.stringify(datasets ?? {});
-  // Inject plain `datasets` and a minimal store shim for legacy scripts that still
-  // call window.store.getState().page.datasets.getIn(...).
-  return `var datasets = ${datasetsJson};
-(function(){
-  var pathGet = function(obj, path) {
-    return path.reduce(function(acc, key) {
-      return acc == null ? acc : acc[key];
-    }, obj);
-  };
-  var immutableLike = {
-    getIn: function(path) { return pathGet(datasets, path); },
-    get: function(key) { return datasets[key]; },
-    toJS: function() { return datasets; }
-  };
-  if (typeof window !== 'undefined' && window.store && typeof window.store.getState === 'function') {
-    var originalGetState = window.store.getState.bind(window.store);
-    window.store.getState = function() {
-      var state = originalGetState();
-      var page = Object.assign({}, state.page || {}, { datasets: immutableLike });
-      return Object.assign({}, state, { page: page });
-    };
-  }
-})();
-${script}`;
-};
+import { installEntityPageStore } from './installEntityPageStore.js';
 
 const EntityPageViewer = () => {
   const { entityPageView } = useEntityPageView();
@@ -47,22 +20,28 @@ const EntityPageViewer = () => {
     setCustomPageError(error);
   }, []);
 
-  const datasetsImmutable = useMemo(
-    () => Immutable.fromJS(entityPageView?.datasets || {}),
-    [entityPageView?.datasets]
-  );
+  const datasets = entityPageView?.datasets;
+  const script = entityPageView?.pageView.metadata?.script || '';
+
+  const datasetsImmutable = useMemo(() => Immutable.fromJS(datasets || {}), [datasets]);
+
+  useLayoutEffect(() => {
+    if (!script || !datasets) return undefined;
+    return installEntityPageStore(window.store, datasets);
+  }, [datasets, script]);
 
   if (!entityPageView) {
     return null;
   }
 
-  const { pageView, itemLists, datasets, errors } = entityPageView;
+  const { pageView, itemLists, errors } = entityPageView;
   const content = pageView.metadata?.content || '';
   const pageCss = pageView.metadata?.css || '';
-  const script = pageView.metadata?.script || '';
   const parseMarkdown = pageView.markdownSupport === true;
   const lists = itemLists || [];
-  const scriptCode = script ? buildScriptWithDatasets(script, datasets) : '';
+  const scriptCode = script
+    ? `var datasets = ${JSON.stringify(entityPageView.datasets)};\n${script}`
+    : '';
 
   if (errors && !content) {
     return (

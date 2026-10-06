@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { useLayoutEffect, useMemo } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
@@ -8,6 +8,8 @@ import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
+import { entityDisplayModeAtom } from './entityDisplayModeAtom.js';
+import { PublishedViewToggle } from './PublishedViewToggle.js';
 import {
   EntityScopedProvider,
   EntityFilesProvider,
@@ -18,7 +20,9 @@ import {
   useEntityFiles,
   useEntityScopedEntity,
   useEntityLanguage,
+  useEntityPageView,
   useMetadataEditing,
+  EntityPageViewer,
 } from './Components/index.js';
 import { useEntityOverlayTarget } from './Components/context/index.js';
 import { EntityOverlay } from './Components/relationships/overlay/EntityOverlay.js';
@@ -108,7 +112,7 @@ const useEntityMobileOverlay = (showSidePane: () => void) => {
 
 const EntityView = () => {
   const entity = useEntityScopedEntity();
-  const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
+  const { mainDocument, pagePlaintext } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
   const { primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
@@ -127,11 +131,10 @@ const EntityView = () => {
 
   return (
     <EntityMainTabsProvider value={entityTabs}>
-      <EntitySeo entity={entity} />
       <FilesDeleteConfirmationModal />
       <AddFileModal />
       <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
-      <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className="h-full min-h-0 flex-1">
         <PaneLayout
           defaultRatios={[0.637, 0.363]}
           className="bg-parchment text-ink"
@@ -151,6 +154,35 @@ const EntityView = () => {
         {isMobile ? <EntityOverlay /> : null}
       </div>
     </EntityMainTabsProvider>
+  );
+};
+
+const EntityRouteBody = () => {
+  const entity = useEntityScopedEntity();
+  const { isRtl } = useEntityLanguage();
+  const { hasEntityPageView } = useEntityPageView();
+  const mode = useAtomValue(entityDisplayModeAtom);
+  const setMode = useSetAtom(entityDisplayModeAtom);
+  const sharedId = entity?.sharedId;
+
+  useLayoutEffect(() => {
+    setMode('published');
+  }, [sharedId, setMode]);
+
+  const showPublished = hasEntityPageView && mode === 'published';
+
+  return (
+    <div className="flex h-full min-h-0 flex-col" dir={isRtl ? 'rtl' : 'ltr'}>
+      <EntitySeo entity={entity} />
+      {showPublished ? (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <EntityPageViewer />
+        </div>
+      ) : (
+        <EntityView />
+      )}
+      <PublishedViewToggle />
+    </div>
   );
 };
 
@@ -180,7 +212,7 @@ const Entity = () => {
           relationshipQuery={loaderData?.relationshipQuery}
         >
           <EntityFilesFromEntity>
-            <EntityView />
+            <EntityRouteBody />
           </EntityFilesFromEntity>
           <EntityCreateRelationshipModal />
           <ManageRelationTypesModal />

@@ -515,6 +515,7 @@ Entity type,Varlık türü
 Entity type (template),Varlık türü (şablon)
 Entity types,Varlık türü
 Entity updated,Varlık güncellendi
+Entity view,Varlık görünümü
 Error,Hata
 Error adding thesauri.,Thesaurus eklenirken hata oluştu.
 Error loading your image,Resminiz yüklenirken hata oluştu
@@ -1116,6 +1117,7 @@ Publish,Yayınla
 Publish release,Sürümü yayınla
 Published,Yayınlanan
 Published and unpublished entities are counted.,Yayınlanmış ve yayınlanmamış varlıklar sayılmaktadır.
+Published view,Yayımlanmış görünüm
 QR Code,QR Kodu
 qr code,QR kodu
 Query,Sorgulama
