@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { renderToString } from 'react-dom/server';
 import { render, screen } from '@testing-library/react';
 import { Provider as JotaiProvider, createStore, useAtomValue } from 'jotai';
 import { MemoryRouter } from 'react-router';
@@ -118,6 +119,27 @@ describe('EntityPageViewer', () => {
     expect(isDatasetView(datasets) && datasets.get('a')).toBe(1);
     restore();
     expect(store.getState()).toBe(base);
+  });
+
+  it('includes the page markup in server HTML without touching window.store', () => {
+    const withScript = {
+      ...pageViewData,
+      pageView: {
+        ...pageViewData.pageView,
+        metadata: {
+          content: '<p>Hello from entity page</p>',
+          script: 'window.store.getState()',
+        },
+      },
+    };
+    const html = renderToString(
+      <JotaiProvider store={createStore()}>
+        <EntityPageViewProvider entityPageView={withScript}>
+          <EntityPageViewer />
+        </EntityPageViewProvider>
+      </JotaiProvider>
+    );
+    expect(html).toContain('Hello from entity page');
   });
 
   it('renders nothing when there is no entity page view', () => {
