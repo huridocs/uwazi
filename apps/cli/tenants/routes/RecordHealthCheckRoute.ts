@@ -13,7 +13,7 @@ class RecordHealthCheckRoute implements Route<RecordHealthCheckInput, TenantOutp
 
   readonly tenancy = 'none';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false, sessions: false };
 
   readonly request = RecordHealthCheckInputSchema;
 

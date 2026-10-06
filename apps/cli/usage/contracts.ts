@@ -23,7 +23,6 @@ const UsageReportOutputSchema = z.object({
   filesStorage: z.number(),
   dbStorage: z.number(),
   dbStorageByEngine: z.object({ mongo: z.number(), postgres: z.number() }),
-  elasticStorage: z.number(),
   lastSession: z.number().nullable(),
 });
 

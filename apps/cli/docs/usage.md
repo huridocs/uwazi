@@ -1,7 +1,6 @@
 # usage
 
-Reports what a tenant consumes: its content, the storage it takes, its search index and when it
-was last used. A read for operators and the tools that bill and monitor instances; nothing in
+Reports what a tenant consumes: its content, the storage it takes and when it was last used. A read for operators and the tools that bill and monitor instances; nothing in
 Uwazi depends on it. Shared options, output and exit codes are in the [README](../README.md).
 
 | Command        | Tenancy                       | Does                                  |
@@ -33,7 +32,6 @@ No request. Prints, for each tenant (sizes in bytes, times in epoch milliseconds
   "filesStorage": 53904000,
   "dbStorage": 1630784,
   "dbStorageByEngine": { "mongo": 1500000, "postgres": 130784 },
-  "elasticStorage": 712489,
   "lastSession": 1759700000000
 }
 ```
@@ -46,7 +44,6 @@ No request. Prints, for each tenant (sizes in bytes, times in epoch milliseconds
 | `filesStorage`      | The sum of every file's stored size.                                                       |
 | `dbStorage`         | The sum of `dbStorageByEngine`.                                                            |
 | `dbStorageByEngine` | The tenant's database storage in MongoDB and in PostgreSQL.                                |
-| `elasticStorage`    | The size of the tenant's search index, replicas included; `0` when the index is missing.   |
 | `lastSession`       | The latest activity of any of the tenant's sessions; `null` when it has none.              |
 
 ### Kinds of file
@@ -85,8 +82,7 @@ Mimetypes are compared ignoring case and surrounding spaces.
 ### Configuration
 
 Besides the variables every command needs, in production this command requires
-`ELASTICSEARCH_URL` and `SESSIONS_BACKEND`. `ELASTICSEARCH_API_KEY` is used when the cluster
-asks for one.
+`SESSIONS_BACKEND`.
 
 ### Cost
 

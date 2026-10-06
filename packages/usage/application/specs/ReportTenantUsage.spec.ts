@@ -36,7 +36,7 @@ const storeSession = async () =>
 
 describe('ReportTenantUsage', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, { postgres: true, elasticIndex: true });
+    await testingEnvironment.setUp({}, { postgres: true });
   });
 
   afterAll(async () => {
@@ -65,7 +65,7 @@ describe('ReportTenantUsage', () => {
       await testingEnvironment.setFixtures(fixtures);
     });
 
-    it("should report the tenant's content, search index and last activity", async () => {
+    it("should report the tenant's content and last activity", async () => {
       const usage = await report();
 
       expect(usage).toMatchObject({
@@ -79,7 +79,7 @@ describe('ReportTenantUsage', () => {
         filesStorage: 1200,
         lastSession: LAST_ACTIVE,
       });
-      expect(usage.elasticStorage).toBeGreaterThan(0);
+      expect(usage).not.toHaveProperty('elasticStorage');
     });
 
     it('should add up the database storage of every engine', async () => {
@@ -106,7 +106,7 @@ describe('ReportTenantUsage', () => {
 });
 
 describe('ReportTenantUsage when a read fails', () => {
-  /** A failing search index: the reads are built in memory to make one of them fail. */
+  /** A failing session store: the reads are built in memory to make one of them fail. */
   it('should wait for every other read to finish before failing', async () => {
     let contentFinished = false;
     const content = {
@@ -127,10 +127,9 @@ describe('ReportTenantUsage when a read fails', () => {
       {
         content,
         footprint: { mongo: { databaseBytes: async () => 0 }, postgres: null },
-        searchIndex: { indexBytes: async () => Promise.reject(new Error('Connection Error')) },
-        activity: { lastSession: async () => null },
+        activity: { lastSession: async () => Promise.reject(new Error('Connection Error')) },
       },
-      { tenant: { name: 'tenant', indexName: 'index' } as Tenant }
+      { tenant: { name: 'tenant' } as Tenant }
     );
 
     await expect(usage.execute()).rejects.toThrow('Connection Error');
