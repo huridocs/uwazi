@@ -1,4 +1,4 @@
--- Migration 027: create-ocr-records-table
+-- Migration 028: create-ocr-records-table
 -- Create ocr_records table with RLS
 
 CREATE TABLE IF NOT EXISTS ocr_records (
