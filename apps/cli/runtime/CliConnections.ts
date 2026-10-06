@@ -1,21 +1,27 @@
 import { config } from '#api/config.js';
 
-type ConnectionNeeds = { redis: boolean };
+type ConnectionNeeds = { redis: boolean; elasticsearch: boolean };
 
 class CliConnections {
   private static drivers?: ReturnType<typeof CliConnections.loadDrivers>;
 
+  private static elasticsearch?: Promise<typeof import('#api/search/elastic.js')>;
+
   /**
-   * MongoDB is always opened: tenants are read from the shared database. PostgreSQL needs no
-   * opening, its pool connects lazily on first query.
+   * MongoDB is always opened: tenants are read from the shared database. PostgreSQL and
+   * Elasticsearch need no opening, they connect lazily on first request; Elasticsearch is only
+   * remembered so close() can release its sockets.
    */
-  static async open({ redis }: ConnectionNeeds): Promise<void> {
+  static async open({ redis, elasticsearch }: ConnectionNeeds): Promise<void> {
     CliConnections.drivers ??= CliConnections.loadDrivers();
     const { DB, Redis } = await CliConnections.drivers;
 
     await DB.connect(config.DBHOST, config.DBAUTH);
     if (redis) {
       await Redis.connect();
+    }
+    if (elasticsearch) {
+      CliConnections.elasticsearch ??= import('#api/search/elastic.js');
     }
   }
 
@@ -29,7 +35,16 @@ class CliConnections {
     }
 
     const { PostgresDB, Redis, DB } = await CliConnections.drivers;
-    await Promise.allSettled([Redis.disconnect(), PostgresDB.disconnect(), DB.disconnect()]);
+    const { elasticsearch } = CliConnections;
+    CliConnections.elasticsearch = undefined;
+    await Promise.allSettled([
+      Redis.disconnect(),
+      PostgresDB.disconnect(),
+      DB.disconnect(),
+      ...(elasticsearch
+        ? [elasticsearch.then(async ({ elasticClient }) => elasticClient.close())]
+        : []),
+    ]);
   }
 
   /** Loaded on first open(): the drivers pull in most of the backend, which --help never needs. */

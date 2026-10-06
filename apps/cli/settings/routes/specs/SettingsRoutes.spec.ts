@@ -28,7 +28,9 @@ describe('SettingsRoutes', () => {
   });
 
   it('should only need MongoDB and PostgreSQL, never Redis', () => {
-    SettingsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false }));
+    SettingsRoutes.all().forEach(r =>
+      expect(r.needs).toEqual({ redis: false, elasticsearch: false })
+    );
   });
 
   describe('get', () => {

@@ -14,7 +14,7 @@ class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
 
   readonly tenancy = 'single';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, elasticsearch: false };
 
   readonly request = z
     .object({

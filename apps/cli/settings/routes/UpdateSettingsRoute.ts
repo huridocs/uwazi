@@ -13,7 +13,7 @@ class UpdateSettingsRoute implements Route<UpdateSettingsCliInput, SettingsOutpu
 
   readonly tenancy = 'single';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, elasticsearch: false };
 
   /** The save use case's own input schema, so --schema documents exactly what it accepts. */
   readonly request = SaveSettingsInputSchema;
