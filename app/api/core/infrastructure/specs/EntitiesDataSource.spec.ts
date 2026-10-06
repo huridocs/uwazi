@@ -1404,5 +1404,65 @@ describe('EntitiesDataSource', () => {
         bulkDeleteBySharedIdSpy.mockRestore();
       });
     });
+
+    describe('update logs', () => {
+      const entityLogRows = async () => {
+        const logs = await testingEnvironment.db.getAllFrom('updatelogs');
+        return logs
+          .filter(log => log.namespace === 'entities')
+          .map(log => ({ mongoId: log.mongoId.toString(), deleted: log.deleted as boolean }))
+          .sort((a, b) => a.mongoId.localeCompare(b.mongoId));
+      };
+
+      const languageIds = (sharedId: string, languages: string[]) =>
+        languages.map(language => factory.idString(`${sharedId}-${language}`)).sort();
+
+      beforeEach(async () => {
+        await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+      });
+
+      it('writes an entities log for each inserted language row', async () => {
+        const { sut } = createSut();
+        const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
+        const entity = createEntityWithIds('synced', ['en', 'es'], template);
+
+        await sut.bulkInsert([entity]);
+
+        expect(await entityLogRows()).toEqual(
+          languageIds('synced', ['en', 'es']).map(mongoId => ({ mongoId, deleted: false }))
+        );
+      });
+
+      it('refreshes the entities log when an entity is updated', async () => {
+        const { sut } = createSut();
+        const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
+        const entity = createEntityWithIds('synced', ['en'], template);
+        await sut.bulkInsert([entity]);
+        await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+
+        entity.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', { value: [{ value: 'Updated Title' }] }),
+        ]);
+        await sut.update(entity);
+
+        expect(await entityLogRows()).toEqual([
+          { mongoId: factory.idString('synced-en'), deleted: false },
+        ]);
+      });
+
+      it('marks the entities log deleted when an entity is deleted', async () => {
+        const { sut } = createSut();
+        const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
+        const entity = createEntityWithIds('synced', ['en', 'es'], template);
+        await sut.bulkInsert([entity]);
+        await testingEnvironment.db.getCollection('updatelogs')?.deleteMany({});
+
+        await sut.bulkDelete([entity.sharedId]);
+
+        expect(await entityLogRows()).toEqual(
+          languageIds('synced', ['en', 'es']).map(mongoId => ({ mongoId, deleted: true }))
+        );
+      });
+    });
   });
 });

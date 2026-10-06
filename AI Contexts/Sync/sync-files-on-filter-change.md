@@ -160,4 +160,4 @@ Editing the sync config (filter text, template list, `attachments`) does not rew
 
 Connections are not part of this. They do not go through `entityIsAllowed`.
 
-Postgres entity saves not writing `updatelogs` is a separate issue. `PostgresEntitiesDataSource` builds a `SyncLogWriter` and does not pass it to the permission table it writes. That issue has to require both `entities` logs and the same `files` log refresh. A logging-only fix repeats this bug on Postgres.
+Postgres entity insert, update, and delete now write `entities` logs. `PostgresEntitiesDataSource` passes a `SyncLogWriter` into the permission table it actually writes. `table.raw` updates (`deleteMetadataProperties`, `renameMetadataProperties`, `deleteReferencesToSharedIds`) still do not, and neither does `PostgresEntityAccessPolicyDataSource` (permissions and published, also raw SQL) or the language-clone upsert on `PostgresEntitiesDAO`. File-log refresh on entity write is still Mongo-only (`SyncedCollection`). A Postgres tenant that edits an entity will sync the entity and still leave its files behind until that refresh is ported.

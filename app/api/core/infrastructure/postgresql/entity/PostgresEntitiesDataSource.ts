@@ -17,6 +17,7 @@ import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresResultSet } from '../common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
+import { SyncLogWriter } from '../common/SyncLogWriter.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '../../mongodb/entity/MongoEntityMapper.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
@@ -77,6 +78,7 @@ export class PostgresEntitiesDataSource
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
       accessContext: deps.accessContext,
+      syncWriter: new SyncLogWriter(deps.mongoDb, 'entities'),
     });
 
     if (!deps.skipOnCommits) {
