@@ -18,14 +18,13 @@ const emptyKind = { count: 0, size: 0 };
 
 describe.each(ControllerSpecs.backends)('UsageReportController ($name)', ({ postgresCore }) => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures, { postgres: true, elasticIndex: true });
+    await testingEnvironment.setUp(fixtures, { postgres: true });
     ControllerSpecs.useBackend(postgresCore);
   });
 
   it("should report the tenant's usage in the CLI output contract", async () => {
-    const output = UsageReportOutputSchema.parse(
-      await ControllerSpecs.asCli(async () => UsageReportController.handle())
-    );
+    const result = await ControllerSpecs.asCli(async () => UsageReportController.handle());
+    const output = UsageReportOutputSchema.strict().parse(result);
 
     expect(output).toMatchObject({
       entitiesCount: 1,
@@ -45,7 +44,6 @@ describe.each(ControllerSpecs.backends)('UsageReportController ($name)', ({ post
     expect(output.dbStorage).toBe(
       output.dbStorageByEngine.mongo + output.dbStorageByEngine.postgres
     );
-    expect(output.elasticStorage).toBeGreaterThan(0);
   });
 });
 

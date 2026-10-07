@@ -7,8 +7,8 @@ describe('UsageRoutes', () => {
     ]);
   });
 
-  it('should need Elasticsearch, not Redis', () => {
-    UsageRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, elasticsearch: true }));
+  it('should need the session store, not Redis', () => {
+    UsageRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: true }));
   });
 
   it('should take an empty request and reject unknown fields, tenant included', () => {
