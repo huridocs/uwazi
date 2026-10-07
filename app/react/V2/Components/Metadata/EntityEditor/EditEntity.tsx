@@ -24,6 +24,7 @@ import {
   isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
 import { rekeyEditEntityLanguage } from './functions/entityTranslations.js';
+import { metadataFormKey, metadataFormPath } from './functions/metadataFormKey.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
@@ -128,7 +129,7 @@ const EditEntity = ({
       new Set(
         metadataProperties
           .filter(property => property.type === 'image' || property.type === 'media')
-          .map(property => property.name)
+          .map(property => metadataFormKey(property.name))
       ),
     [metadataProperties]
   );
@@ -147,7 +148,8 @@ const EditEntity = ({
   );
 
   const isMetadataReady = metadataProperties.every(
-    property => metadataEpoch >= 0 && getValues('metadata')?.[property.name] !== undefined
+    property =>
+      metadataEpoch >= 0 && getValues('metadata')?.[metadataFormKey(property.name)] !== undefined
   );
 
   useEffect(() => {
@@ -170,15 +172,14 @@ const EditEntity = ({
   useEffect(() => {
     const pairs = getGroupedRelationshipSyncPairs(displayProperties);
     if (!pairs.length) return undefined;
-    const mains = new Set(pairs.map(pair => `metadata.${pair.mainName}`));
+    const mains = new Set<string>(pairs.map(pair => metadataFormPath(pair.mainName)));
     const sync = () => {
       pairs.forEach(({ mainName, otherNames }) => {
-        const sourceValues = getValues(`metadata.${mainName}`) ?? [];
+        const sourceValues = getValues(metadataFormPath(mainName)) ?? [];
         otherNames.forEach(name => {
-          if (
-            JSON.stringify(getValues(`metadata.${name}`) ?? []) !== JSON.stringify(sourceValues)
-          ) {
-            setValue(`metadata.${name}`, sourceValues);
+          const path = metadataFormPath(name);
+          if (JSON.stringify(getValues(path) ?? []) !== JSON.stringify(sourceValues)) {
+            setValue(path, sourceValues);
           }
         });
       });

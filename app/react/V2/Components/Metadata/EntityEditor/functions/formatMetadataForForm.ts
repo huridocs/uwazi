@@ -2,6 +2,7 @@ import type { MetadataObjectSchema, PropertySchema } from '#shared/types/commonT
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { metadataFormKey } from './metadataFormKey.js';
 
 type FormMetadataProperty = {
   _id: string;
@@ -41,7 +42,9 @@ const formatMetadataForForm = (
   entityMetadata?: Entity['metadata']
 ): Record<string, MetadataValue[]> =>
   templateProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
-    acc[property.name] = (entityMetadata?.[property.name] ?? []).map(toFormMetadataValue);
+    acc[metadataFormKey(property.name)] = (entityMetadata?.[property.name] ?? []).map(
+      toFormMetadataValue
+    );
     return acc;
   }, {});
 

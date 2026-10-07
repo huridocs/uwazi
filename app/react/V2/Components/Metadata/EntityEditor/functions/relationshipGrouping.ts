@@ -1,6 +1,7 @@
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { relationshipGroupKey } from '../../relationshipInherit.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
+import { metadataFormKey } from './metadataFormKey.js';
 
 type DisplayProperty = FormMetadataProperty & {
   groupedRelationshipNames?: string[];
@@ -66,9 +67,9 @@ const syncGroupedRelationshipMetadata = (
   const synced = { ...metadata };
 
   getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
-    const sourceValues = synced[mainName] ?? [];
+    const sourceValues = synced[metadataFormKey(mainName)] ?? [];
     otherNames.forEach(name => {
-      synced[name] = sourceValues;
+      synced[metadataFormKey(name)] = sourceValues;
     });
   });
 

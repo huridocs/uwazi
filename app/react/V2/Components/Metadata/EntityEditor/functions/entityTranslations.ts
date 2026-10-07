@@ -4,6 +4,7 @@ import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
+import { metadataFormKey } from './metadataFormKey.js';
 
 const TRANSLATABLE_METADATA_TYPES = new Set([
   'text',
@@ -91,7 +92,8 @@ const bucketFromCurrent = (
     title: textValues(values.title),
   };
   translatableProperties(metadataProperties).forEach(property => {
-    bucket[property.name] = (values.metadata[property.name] ?? []).map(toMetadataObjectSchema);
+    const formKey = metadataFormKey(property.name);
+    bucket[formKey] = (values.metadata[formKey] ?? []).map(toMetadataObjectSchema);
   });
   return bucket;
 };
@@ -116,7 +118,8 @@ const rekeyEditEntityLanguage = ({
   delete nextTouched[toLanguage];
   const nextMetadata = { ...values.metadata };
   translatableProperties(metadataProperties).forEach(property => {
-    nextMetadata[property.name] = toFormMetadataValues(toBucket[property.name]);
+    const formKey = metadataFormKey(property.name);
+    nextMetadata[formKey] = toFormMetadataValues(toBucket[formKey]);
   });
   return {
     ...values,
@@ -181,10 +184,11 @@ const completeLanguageBucket = ({
     }),
   };
   translatableProperties(metadataProperties).forEach(property => {
+    const formKey = metadataFormKey(property.name);
     next[property.name] = pickTranslationValue({
-      existing: bucket[property.name],
-      fallback: fallback[property.name],
-      touched: Boolean(touched[property.name]),
+      existing: bucket[formKey],
+      fallback: fallback[formKey],
+      touched: Boolean(touched[formKey]),
       blankFallsBack: Boolean(property.required),
     });
   });
@@ -239,10 +243,10 @@ const setTranslationText = ({
 });
 
 const translationValuePath = (language: string, propertyName: string) =>
-  `translations.${language}.${propertyName}`;
+  `translations.${language}.${metadataFormKey(propertyName)}`;
 
 const translationTouchedPath = (language: string, propertyName: string) =>
-  `touchedTranslations.${language}.${propertyName}`;
+  `touchedTranslations.${language}.${metadataFormKey(propertyName)}`;
 
 export {
   buildTranslationsForSave,
