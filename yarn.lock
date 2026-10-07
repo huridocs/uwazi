@@ -2283,9 +2283,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "@chromatic-com/storybook@npm:5.3.1"
+"@chromatic-com/storybook@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@chromatic-com/storybook@npm:5.4.0"
   dependencies:
     "@neoconfetti/react": "npm:^1.0.0"
     chromatic: "npm:^18.0.1"
@@ -2293,7 +2293,7 @@ __metadata:
     strip-ansi: "npm:^7.1.0"
   peerDependencies:
     storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0
-  checksum: 10c0/17b1a1abd2dede6f6f55e378e4e2765a1c262de7f1358c0f225b27d57db014de9293b17d823393efdce1d315b4c802d8c7bc9fc8d32a35db16e767821491cd0e
+  checksum: 10c0/43fcd30e819546906ffb47ea5675bc02b2dd53913d83d53c31e4b8d5224e53ad6dd9a526bddd8e83df1e2ad36542b682ed7599a413d345cdf9781b8b178ac806
   languageName: node
   linkType: hard
 
@@ -12482,15 +12482,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:10.6.0":
-  version: 10.6.0
-  resolution: "eslint-plugin-storybook@npm:10.6.0"
+"eslint-plugin-storybook@npm:10.6.1":
+  version: 10.6.1
+  resolution: "eslint-plugin-storybook@npm:10.6.1"
   dependencies:
     "@typescript-eslint/types": "npm:^8.60.0"
     "@typescript-eslint/utils": "npm:^8.60.0"
   peerDependencies:
     eslint: ">=8"
-  checksum: 10c0/f9036605c63b2e30546ac5d5a65310e19c38fd52919ca34d26a64a007c7ec69cd39d5325aeb539ac3e37502fcd69ac374b7198b4b9eee756eddb913bbbcd78e8
+  checksum: 10c0/68b097c63c55a664fdf92a2a8e296115f283fc8713e0f6d68278f6e4b27f8ade1a0a4837c4fbffc493b7db1afee2a837a28d8c823111c190ee92bfc8fdb7497c
   languageName: node
   linkType: hard
 
@@ -22478,9 +22478,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:10.6.0":
-  version: 10.6.0
-  resolution: "storybook@npm:10.6.0"
+"storybook@npm:10.6.1":
+  version: 10.6.1
+  resolution: "storybook@npm:10.6.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.2"
@@ -22512,7 +22512,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./dist/bin/dispatcher.js
-  checksum: 10c0/ffd7a513b088e206232c0206229fe05893c8c78e5e4a3b40647326111b608d79851f3b8f986616b6b585979d3a10c6c3081c0cd86a752329e2af309632bd7e3a
+  checksum: 10c0/fb95ae0e08f8db68d8564bfcbaf3fbeae87f49dbb6c9cb83d18573bbb51d2c58adf18f92dc8f6bf58fed433ed3c27bcb2b483c7137f1c6f1baf6fc8363d85a76
   languageName: node
   linkType: hard
 
@@ -24116,7 +24116,7 @@ __metadata:
     "@babel/register": "npm:^7.29.3"
     "@babel/traverse": "npm:^7.28.8"
     "@belzile/enzyme-adapter-react-19": "npm:^19.0.0"
-    "@chromatic-com/storybook": "npm:^5.3.1"
+    "@chromatic-com/storybook": "npm:^5.4.0"
     "@cypress/webpack-preprocessor": "npm:8.0.0"
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/modifiers": "npm:^9.0.0"
@@ -24248,7 +24248,7 @@ __metadata:
     enzyme: "npm:3.11.0"
     enzyme-to-json: "npm:^3.6.2"
     eslint-plugin-cypress: "npm:^7.0.2"
-    eslint-plugin-storybook: "npm:10.6.0"
+    eslint-plugin-storybook: "npm:10.6.1"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
     express-session: "npm:^1.19.0"
@@ -24365,7 +24365,7 @@ __metadata:
     socket.io: "npm:4.8.3"
     socket.io-client: "npm:4.8.3"
     stopword: "npm:3.1.5"
-    storybook: "npm:10.6.0"
+    storybook: "npm:10.6.1"
     stream-mock: "npm:^2.0.5"
     superagent: "npm:^10.3.0"
     supertest: "npm:7.2.2"
