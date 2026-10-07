@@ -515,6 +515,7 @@ Entity type,Entity type
 Entity type (template),Entity type (template)
 Entity types,Entity types
 Entity updated,Entity updated
+Entity view,Entity view
 Error,Error
 Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
@@ -1117,6 +1118,7 @@ Publish,Publish
 Publish release,Publish release
 Published,Published
 Published and unpublished entities are counted.,Published and unpublished entities are counted.
+Published view,Published view
 QR Code,QR Code
 qr code,qr code
 Query,Query
