@@ -70,6 +70,7 @@ describe('uwazi binary', () => {
   it.each([
     ['help', ['users', 'create', '--help'], 0],
     ['--schema', ['users', 'create', '--schema'], 0],
+    ['recover-password --schema', ['users', 'recover-password', '--schema'], 0],
     ['settings --schema', ['settings', 'update', '--schema'], 0],
     ['tenants --schema', ['tenants', 'update', '--schema'], 0],
     ['tenants help', ['tenants', 'register', '--help'], 0],
