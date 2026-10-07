@@ -1,3 +1,4 @@
+import { ActivityRoutes } from '../activity/ActivityRoutes.js';
 import { SegmentationRoutes } from '../segmentation/SegmentationRoutes.js';
 import { SessionsRoutes } from '../sessions/SessionsRoutes.js';
 import { SettingsRoutes } from '../settings/SettingsRoutes.js';
@@ -16,6 +17,7 @@ class RouteRegistry {
       ...SegmentationRoutes.all(),
       ...UsageRoutes.all(),
       ...SessionsRoutes.all(),
+      ...ActivityRoutes.all(),
     ];
   }
 }

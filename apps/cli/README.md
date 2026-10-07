@@ -17,6 +17,7 @@ in the module's own page:
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
 | [usage](docs/usage.md)               | `report`                                                                                               |
 | [sessions](docs/sessions.md)         | `last`                                                                                                 |
+| [activity](docs/activity.md)         | `list`                                                                                                 |
 
 ## Running it
 
