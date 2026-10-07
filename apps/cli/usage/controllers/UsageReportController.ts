@@ -16,7 +16,6 @@ class UsageReportController {
       filesStorage: usage.filesStorage,
       dbStorage: usage.dbStorage,
       dbStorageByEngine: { ...usage.dbStorageByEngine },
-      elasticStorage: usage.elasticStorage,
       lastSession: usage.lastSession,
     };
   }

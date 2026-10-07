@@ -3,7 +3,6 @@ import { ReportTenantUsage } from '../../application/ReportTenantUsage.js';
 import { ActivityReaderFactory } from './ActivityReaderFactory.js';
 import { ContentUsageReaderFactory } from './ContentUsageReaderFactory.js';
 import { FootprintReaderFactory } from './FootprintReaderFactory.js';
-import { SearchIndexReaderFactory } from './SearchIndexReaderFactory.js';
 
 class ReportTenantUsageFactory {
   static default(): ReportTenantUsage {
@@ -16,7 +15,6 @@ class ReportTenantUsageFactory {
           mongo: FootprintReaderFactory.mongo(),
           postgres: tenant.featureFlags?.postgresCore ? FootprintReaderFactory.postgres() : null,
         },
-        searchIndex: SearchIndexReaderFactory.default(),
         activity: ActivityReaderFactory.default(),
       },
       { tenant }
