@@ -16,6 +16,7 @@ in the module's own page:
 | [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
 | [usage](docs/usage.md)               | `report`                                                                                               |
+| [sessions](docs/sessions.md)         | `last`                                                                                                 |
 
 ## Running it
 
@@ -44,7 +45,7 @@ talking to the wrong database:
 
 `MONGO_URI`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_APP_USER`,
 `POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `SESSIONS_BACKEND` for
-commands that read the session store (`usage report`).
+commands that read the session store (`usage report`, `sessions last`).
 
 Missing variables fail with `config.missing` (exit 1) before anything connects.
 
