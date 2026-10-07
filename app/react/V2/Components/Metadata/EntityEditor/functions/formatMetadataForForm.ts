@@ -2,7 +2,6 @@ import type { MetadataObjectSchema, PropertySchema } from '#shared/types/commonT
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { metadataFormKey } from './metadataFormKey.js';
 
 type FormMetadataProperty = {
   _id: string;
@@ -17,6 +16,20 @@ type FormMetadataProperty = {
   inheritedType?: MetadataValue['inheritedType'];
   inherit?: { property?: string; type?: MetadataValue['inheritedType'] };
 };
+
+const ESCAPE: Record<string, string> = {
+  '~': '~7e',
+  '.': '~2e',
+  '[': '~5b',
+  ']': '~5d',
+  "'": '~27',
+  '"': '~22',
+};
+
+const metadataFormKey = (name: string) => name.replace(/[~.[\]'"]/g, char => ESCAPE[char] ?? char);
+
+const metadataFormPath = (name: string): `metadata.${string}` =>
+  `metadata.${metadataFormKey(name)}`;
 
 const PROPERTY_TYPES = new Set<string>(Object.values(propertyTypes));
 
@@ -48,5 +61,5 @@ const formatMetadataForForm = (
     return acc;
   }, {});
 
-export { formatMetadataForForm };
+export { formatMetadataForForm, metadataFormKey, metadataFormPath };
 export type { FormMetadataProperty };

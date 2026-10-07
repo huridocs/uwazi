@@ -20,11 +20,12 @@ import {
 } from './functions/buildEditEntityDefaultValues.js';
 import {
   buildEditEntitySaveInput,
+  mediaPropertyNamesForSave,
   planSharedMetadataSync,
   isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
 import { rekeyEditEntityLanguage } from './functions/entityTranslations.js';
-import { metadataFormKey, metadataFormPath } from './functions/metadataFormKey.js';
+import { metadataFormKey, metadataFormPath } from './functions/formatMetadataForForm.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
@@ -125,13 +126,12 @@ const EditEntity = ({
   } = mediaUpload;
 
   const mediaPropertyNames = useMemo(
-    () =>
-      new Set(
-        metadataProperties
-          .filter(property => property.type === 'image' || property.type === 'media')
-          .map(property => metadataFormKey(property.name))
-      ),
+    () => mediaPropertyNamesForSave(metadataProperties),
     [metadataProperties]
+  );
+  const mediaFormKeys = useMemo(
+    () => new Set([...mediaPropertyNames].map(name => metadataFormKey(name))),
+    [mediaPropertyNames]
   );
 
   const removePendingAttachmentIfUnused = useCallback(
@@ -140,11 +140,11 @@ const EditEntity = ({
         filterReferencedPendingAttachments(
           [{ fileLocalID }],
           currentAndTranslationMetadata(getValues('metadata'), getValues('translations')),
-          mediaPropertyNames
+          mediaFormKeys
         ).length > 0;
       if (!stillReferenced) removePendingAttachment(fileLocalID);
     },
-    [getValues, mediaPropertyNames, removePendingAttachment]
+    [getValues, mediaFormKeys, removePendingAttachment]
   );
 
   const isMetadataReady = metadataProperties.every(

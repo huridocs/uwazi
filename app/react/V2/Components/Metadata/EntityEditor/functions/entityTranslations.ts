@@ -2,9 +2,8 @@ import type { LanguagesListSchema, MetadataObjectSchema } from '#shared/types/co
 import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
-import type { FormMetadataProperty } from './formatMetadataForForm.js';
+import { metadataFormKey, type FormMetadataProperty } from './formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
-import { metadataFormKey } from './metadataFormKey.js';
 
 const TRANSLATABLE_METADATA_TYPES = new Set([
   'text',

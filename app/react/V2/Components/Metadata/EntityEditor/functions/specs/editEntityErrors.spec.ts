@@ -1,5 +1,4 @@
-import type { FormMetadataProperty } from '../formatMetadataForForm.js';
-import { metadataFormKey } from '../metadataFormKey.js';
+import { metadataFormKey, type FormMetadataProperty } from '../formatMetadataForForm.js';
 import {
   apiValidationsToEditEntityErrors,
   applyEditEntityErrors,

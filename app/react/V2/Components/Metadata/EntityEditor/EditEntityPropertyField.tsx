@@ -24,8 +24,7 @@ import {
 } from './Components/index.js';
 import type { EditEntityFormValues } from './functions/buildEditEntityDefaultValues.js';
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
-import { metadataFormPath } from './functions/metadataFormKey.js';
-import type { FormMetadataProperty } from './functions/formatMetadataForForm.js';
+import { metadataFormPath, type FormMetadataProperty } from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
 import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {

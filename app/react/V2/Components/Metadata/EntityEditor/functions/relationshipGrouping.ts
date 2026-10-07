@@ -1,7 +1,6 @@
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { relationshipGroupKey } from '../../relationshipInherit.js';
-import type { FormMetadataProperty } from './formatMetadataForForm.js';
-import { metadataFormKey } from './metadataFormKey.js';
+import { metadataFormKey, type FormMetadataProperty } from './formatMetadataForForm.js';
 
 type DisplayProperty = FormMetadataProperty & {
   groupedRelationshipNames?: string[];

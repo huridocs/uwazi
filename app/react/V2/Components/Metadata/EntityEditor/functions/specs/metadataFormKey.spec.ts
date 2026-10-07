@@ -1,7 +1,9 @@
 import { formatMetadataForEntity } from '../editEntityMetadata.js';
-import { formatMetadataForForm } from '../formatMetadataForForm.js';
-import { metadataFormKey } from '../metadataFormKey.js';
-import type { FormMetadataProperty } from '../formatMetadataForForm.js';
+import {
+  formatMetadataForForm,
+  metadataFormKey,
+  type FormMetadataProperty,
+} from '../formatMetadataForForm.js';
 
 const pathSegments = (path: string) => path.split(/[.[\]'"]/).filter(Boolean);
 

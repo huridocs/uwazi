@@ -1,8 +1,7 @@
 import type { Path, UseFormSetError } from 'react-hook-form';
 import type { ApiValidation } from '#shared/apiClient/index.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
-import type { FormMetadataProperty } from './formatMetadataForForm.js';
-import { metadataFormPath } from './metadataFormKey.js';
+import { metadataFormPath, type FormMetadataProperty } from './formatMetadataForForm.js';
 import { relationshipGroupKey } from '../../relationshipInherit.js';
 
 type EditEntityErrors = {

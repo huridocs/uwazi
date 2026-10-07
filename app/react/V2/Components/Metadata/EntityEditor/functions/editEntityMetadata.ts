@@ -10,8 +10,11 @@ import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js'
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { buildTranslationsForSave } from './entityTranslations.js';
-import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
-import { metadataFormKey } from './metadataFormKey.js';
+import {
+  formatMetadataForForm,
+  metadataFormKey,
+  type FormMetadataProperty,
+} from './formatMetadataForForm.js';
 import {
   groupRelationshipProperties,
   syncGroupedRelationshipMetadata,
@@ -44,6 +47,13 @@ const toSaveIcon = (showIcon: boolean, icon: EntityIcon): EntityIcon => {
   }
   return EMPTY_ICON;
 };
+
+const mediaPropertyNamesForSave = (metadataProperties: FormMetadataProperty[]) =>
+  new Set(
+    metadataProperties
+      .filter(property => property.type === 'image' || property.type === 'media')
+      .map(property => property.name)
+  );
 
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
@@ -174,6 +184,7 @@ const planSharedMetadataSync = ({
 export {
   formatMetadataForEntity,
   buildEditEntitySaveInput,
+  mediaPropertyNamesForSave,
   mergeSharedFormMetadata,
   planSharedMetadataSync,
   isEntityEditorDirty,
