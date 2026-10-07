@@ -27,6 +27,7 @@ describe('UsersRoutes', () => {
       ['users delete', 'single'],
       ['users list', 'single-or-all'],
       ['users stats', 'single-or-all'],
+      ['users recover-password', 'single'],
     ]);
   });
 
@@ -34,7 +35,7 @@ describe('UsersRoutes', () => {
     UsersRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
   });
 
-  it.each(['create', 'update', 'delete', 'list', 'stats'])(
+  it.each(['create', 'update', 'delete', 'list', 'stats', 'recover-password'])(
     '%s should reject unknown request fields, tenant included',
     name => {
       expect(issuesOf(() => parse(name, { tenant: 'acme', username: 'bob' }))).toContain('');
@@ -115,6 +116,27 @@ describe('UsersRoutes', () => {
     it('should accept a known role filter only', () => {
       expect(parse('list', { role: 'admin' })).toEqual({ role: 'admin' });
       expect(issuesOf(() => parse('list', { role: 'boss' }))).toEqual(['role']);
+    });
+  });
+
+  describe('recover-password', () => {
+    it('should take the email', () => {
+      expect(parse('recover-password', { email: 'bob@x.org' })).toEqual({ email: 'bob@x.org' });
+    });
+
+    it.each([
+      ['a missing email', {}],
+      ['an invalid email', { email: 'bob' }],
+    ])('should reject %s', (_case, request) => {
+      expect(issuesOf(() => parse('recover-password', request))).toEqual(['email']);
+    });
+
+    it('should not take a user reference', () => {
+      expect(
+        issuesOf(() =>
+          parse('recover-password', { email: 'bob@x.org', id: 'aaaaaaaaaaaaaaaaaaaaaaaa' })
+        )
+      ).toEqual(['']);
     });
   });
 
