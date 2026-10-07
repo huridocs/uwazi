@@ -34,6 +34,9 @@ const UpdatedUserOutputSchema = z.object({
 
 const DeletedUserOutputSchema = z.object({ id: z.string() });
 
+/** `false` when no active user has the email: nothing was stored or queued. */
+const RecoveryRequestedOutputSchema = z.object({ recoveryEmailQueued: z.boolean() });
+
 const RoleCountsOutputSchema = z.object({
   admin: z.number(),
   editor: z.number(),
@@ -46,6 +49,7 @@ type UserListItem = z.infer<typeof UserListItemSchema>;
 type CreatedUserOutput = z.infer<typeof CreatedUserOutputSchema>;
 type UpdatedUserOutput = z.infer<typeof UpdatedUserOutputSchema>;
 type DeletedUserOutput = z.infer<typeof DeletedUserOutputSchema>;
+type RecoveryRequestedOutput = z.infer<typeof RecoveryRequestedOutputSchema>;
 type RoleCountsOutput = z.infer<typeof RoleCountsOutputSchema>;
 
 export {
@@ -54,6 +58,7 @@ export {
   CreatedUserOutputSchema,
   UpdatedUserOutputSchema,
   DeletedUserOutputSchema,
+  RecoveryRequestedOutputSchema,
   RoleCountsOutputSchema,
 };
 export type {
@@ -62,5 +67,6 @@ export type {
   CreatedUserOutput,
   UpdatedUserOutput,
   DeletedUserOutput,
+  RecoveryRequestedOutput,
   RoleCountsOutput,
 };
