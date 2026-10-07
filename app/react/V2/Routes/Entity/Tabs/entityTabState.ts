@@ -62,9 +62,9 @@ const resolveExplicitSideTab = (
 const applyMainTabSearchParam = (
   params: URLSearchParams,
   mainTab: MainTabId,
-  hasMainDocument: boolean
+  options: { hasMainDocument: boolean; retainDocumentTab?: boolean }
 ) => {
-  if (mainTab === MAIN_TAB.DOCUMENT && hasMainDocument) {
+  if (mainTab === MAIN_TAB.DOCUMENT && options.hasMainDocument && !options.retainDocumentTab) {
     params.delete(MAIN_TAB_PARAM);
   } else {
     params.set(MAIN_TAB_PARAM, mainTab);

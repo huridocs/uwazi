@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { matchRoutes, RouteObject, StaticRouterProvider } from 'react-router';
 import { prepareRouteData } from './ssr/prepareRouteData.js';
+import { entityPageDocumentCss } from './ssr/entityPageDocumentCss.js';
 import { searchParamsWithChildQuery } from './ssr/routeSearchParams.js';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -520,7 +521,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
   const documentHeadPageCss =
-    typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
+    entityPageDocumentCss(staticHandleContext.loaderData) ??
+    (typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined);
 
   if (req.aborted) {
     logSSRAborted(req, 'Component HTML', ssrStart, routeName);

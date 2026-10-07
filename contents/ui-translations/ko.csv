@@ -512,6 +512,7 @@ Entity type,엔티티 유형
 Entity type (template),엔티티 유형(템플릿)
 Entity types,엔티티 유형
 Entity updated,엔티티가 업데이트되었습니다.
+Entity view,엔티티 보기
 Error,오류
 Error adding thesauri.,시소러스 추가 오류가 발생했습니다.
 Error loading your image,이미지 불러오는 중 오류가 발생했습니다.
@@ -1109,6 +1110,7 @@ Publish,게시
 Publish release,릴리스 게시
 Published,공개 게시물
 Published and unpublished entities are counted.,공개 및 비공개 엔티티가 모두 집계됩니다.
+Published view,게시된 보기
 QR Code,QR 코드
 qr code,QR 코드
 Query,검사
