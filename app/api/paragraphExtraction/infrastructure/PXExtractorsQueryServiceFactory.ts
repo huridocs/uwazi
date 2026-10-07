@@ -3,8 +3,10 @@ import { Db } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { MongoPXExtractorsQueryService } from './MongoPXExtractorsQueryService.js';
+import { PostgresPXExtractorsQueryService } from './postgresql/PostgresPXExtractorsQueryService.js';
 
 type Props = {
   connection?: Db;
@@ -14,8 +16,20 @@ type Props = {
 export class PXExtractorsQueryServiceFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
-    const transactionManager = props?.transactionManager || TransactionManagerFactory.mongo();
+    const tenant = ExecutionContext.currentTenant;
 
+    if (tenant.featureFlags?.postgresCore) {
+      const pgTransactionManager = ExecutionContext.getStore()
+        ? ExecutionContext.postgresTransactionManager
+        : TransactionManagerFactory.postgres();
+
+      return new PostgresPXExtractorsQueryService({
+        tenantId: tenant.name,
+        pgTransactionManager,
+      });
+    }
+
+    const transactionManager = props?.transactionManager || TransactionManagerFactory.mongo();
     return new MongoPXExtractorsQueryService(db, transactionManager);
   }
 }

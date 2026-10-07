@@ -77,6 +77,7 @@ const document1En = factory.processedDocument('document_1_En', {
 const createFixtures = (): DBFixture => ({
   templates: [sourceTemplate, sourceTemplate2, targetTemplate],
   [mongoPXExtractorsCollection]: [extractor, extractor2],
+  [mongoPXEntitiesStatusCollection]: [],
   relationtypes: [sourceRelationship, targetRelationship],
   settings: [
     {

@@ -4,6 +4,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { PXGetEntityParagraphs } from '../application/PXGetEntityParagraphs.js';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
@@ -17,20 +18,23 @@ type Props = {
 export class PXEntityParagraphsFactory {
   static createDefault(props?: Props) {
     const connection = props?.connection || getConnection();
-    const mongoTransactionManager =
-      props?.mongoTransactionManager || TransactionManagerFactory.mongo();
+    const transactionManager =
+      props?.mongoTransactionManager ??
+      (ExecutionContext.getStore()
+        ? ExecutionContext.transactionManager
+        : TransactionManagerFactory.default());
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
       extractorsQueryService,
     });
 

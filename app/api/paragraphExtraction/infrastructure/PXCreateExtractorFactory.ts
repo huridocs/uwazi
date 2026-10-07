@@ -11,23 +11,25 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.j
 export class PXCreateExtractorFactory {
   static async createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = ExecutionContext.getStore()
+      ? ExecutionContext.transactionManager
+      : TransactionManagerFactory.default();
 
     const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     return new PXCreateExtractor({
       relationshipTypeDS,
       extractorDS: PXExtractorsDataSourceFactory.createDefault({
         connection,
-        mongoTransactionManager,
+        mongoTransactionManager: transactionManager,
       }),
       idGenerator: MongoIdHandler,
       templatesDS: TemplatesDataSourceFactory.default({
-        transactionManager: mongoTransactionManager,
+        transactionManager,
       }),
-      transactionManager: mongoTransactionManager,
+      transactionManager,
       dispatcher: ExecutionContext.jobsDispatcher,
     });
   }

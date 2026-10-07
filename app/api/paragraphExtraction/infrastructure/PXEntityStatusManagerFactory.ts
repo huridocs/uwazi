@@ -2,6 +2,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
@@ -11,23 +12,27 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.j
 export class PXEntityStatusManagerFactory {
   static createDefault() {
     const connection = getConnection();
+    const transactionManager = ExecutionContext.getStore()
+      ? ExecutionContext.transactionManager
+      : TransactionManagerFactory.default();
     const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const filesDS = FilesDataSourceFactory.default({ transactionManager });
+    // Legacy V1 entities read path; kept on Mongo while PX moves its own persistence.
     const entitiesDS = DefaultDeprecatedEntitiesDataSource(mongoTransactionManager);
 
     return new PXEntityStatusManager({

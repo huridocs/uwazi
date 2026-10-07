@@ -19,14 +19,17 @@ type Props = {
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
+    const transactionManager =
+      props.mongoTransactionManager ??
+      (ExecutionContext.getStore()
+        ? ExecutionContext.transactionManager
+        : TransactionManagerFactory.default());
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??
       PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
-        mongoTransactionManager,
+        mongoTransactionManager: transactionManager,
       });
 
     return new PXExtractParagraphsFromEntities({

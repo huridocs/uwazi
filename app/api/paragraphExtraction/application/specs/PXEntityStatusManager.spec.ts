@@ -36,6 +36,7 @@ const createFixtures = (): DBFixture => ({
   entities: [entity, entity2],
   templates: [targetTemplate, sourceTemplate],
   [mongoPXExtractorsCollection]: [extractor],
+  [mongoPXEntitiesStatusCollection]: [],
   relationtypes: [sourceRelationship, targetRelationship],
   settings: [
     {
