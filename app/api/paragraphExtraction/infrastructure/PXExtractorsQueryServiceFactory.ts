@@ -1,7 +1,6 @@
 import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
@@ -19,9 +18,7 @@ export class PXExtractorsQueryServiceFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresCore) {
-      const pgTransactionManager = ExecutionContext.getStore()
-        ? ExecutionContext.postgresTransactionManager
-        : TransactionManagerFactory.postgres();
+      const pgTransactionManager = ExecutionContext.postgresTransactionManager;
 
       return new PostgresPXExtractorsQueryService({
         tenantId: tenant.name,
@@ -29,7 +26,7 @@ export class PXExtractorsQueryServiceFactory {
       });
     }
 
-    const transactionManager = props?.transactionManager || TransactionManagerFactory.mongo();
+    const transactionManager = props?.transactionManager ?? ExecutionContext.transactionManager;
     return new MongoPXExtractorsQueryService(db, transactionManager);
   }
 }

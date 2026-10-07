@@ -1,6 +1,5 @@
 import { Db } from 'mongodb';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -23,9 +22,7 @@ export class PXExtractorsDataSourceFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresCore) {
-      const pgTransactionManager = ExecutionContext.getStore()
-        ? ExecutionContext.postgresTransactionManager
-        : TransactionManagerFactory.postgres();
+      const pgTransactionManager = ExecutionContext.postgresTransactionManager;
 
       const extractorsQueryService =
         props.extractorsQueryService ??
@@ -40,7 +37,7 @@ export class PXExtractorsDataSourceFactory {
     }
 
     const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
+      props.mongoTransactionManager ?? ExecutionContext.transactionManager;
 
     const extractorsQueryService =
       props.extractorsQueryService ??

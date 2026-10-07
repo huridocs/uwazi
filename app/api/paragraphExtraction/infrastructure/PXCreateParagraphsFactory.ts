@@ -1,4 +1,3 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -18,9 +17,7 @@ import { DispatcherFactory } from '#api/core/infrastructure/factories/Dispatcher
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
     const connection = getConnection();
-    const transactionManager = ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.cached({
       transactionManager,

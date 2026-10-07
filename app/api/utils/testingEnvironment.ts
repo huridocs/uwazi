@@ -501,44 +501,11 @@ const testingEnvironment = {
         }
         if (collectionName === 'px_extractors') {
           const rows = await testingPG.getAllFrom<Record<string, unknown>>('px_extractors');
-          return rows.map(row => {
-            const { tenant_id: _tenantId, ...rest } = row;
-            return {
-              ...rest,
-              ...(rest._id ? { _id: new ObjectId(String(rest._id)) } : {}),
-              ...(rest.sourceTemplateId
-                ? { sourceTemplateId: new ObjectId(String(rest.sourceTemplateId)) }
-                : {}),
-              ...(rest.targetTemplateId
-                ? { targetTemplateId: new ObjectId(String(rest.targetTemplateId)) }
-                : {}),
-              ...(rest.paragraphNumberPropertyId
-                ? {
-                    paragraphNumberPropertyId: new ObjectId(String(rest.paragraphNumberPropertyId)),
-                  }
-                : {}),
-              ...(rest.paragraphPropertyId
-                ? { paragraphPropertyId: new ObjectId(String(rest.paragraphPropertyId)) }
-                : {}),
-              ...(rest.sourceRelationshipTypeId
-                ? { sourceRelationshipTypeId: new ObjectId(String(rest.sourceRelationshipTypeId)) }
-                : {}),
-              ...(rest.targetRelationshipTypeId
-                ? { targetRelationshipTypeId: new ObjectId(String(rest.targetRelationshipTypeId)) }
-                : {}),
-            };
-          });
+          return rows.map(({ tenant_id: _tenantId, ...rest }) => rest);
         }
         if (collectionName === 'px_entities_status') {
           const rows = await testingPG.getAllFrom<Record<string, unknown>>('px_entities_status');
-          return rows.map(row => {
-            const { tenant_id: _tenantId, ...rest } = row;
-            return {
-              ...rest,
-              ...(rest._id ? { _id: new ObjectId(String(rest._id)) } : {}),
-              ...(rest.extractorId ? { extractorId: new ObjectId(String(rest.extractorId)) } : {}),
-            };
-          });
+          return rows.map(({ tenant_id: _tenantId, ...rest }) => rest);
         }
       }
       if (!testingDB.mongodb) {

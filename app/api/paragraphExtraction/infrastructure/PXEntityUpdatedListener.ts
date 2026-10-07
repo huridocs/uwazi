@@ -2,7 +2,6 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -38,9 +37,7 @@ export class PXEntityUpdatedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const transactionManager = ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,

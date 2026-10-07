@@ -1,10 +1,9 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
-import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXEntityStatusManager } from '../application/PXEntityStatusManager.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
@@ -12,10 +11,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.j
 export class PXEntityStatusManagerFactory {
   static createDefault() {
     const connection = getConnection();
-    const transactionManager = ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
@@ -32,8 +28,7 @@ export class PXEntityStatusManagerFactory {
     });
 
     const filesDS = FilesDataSourceFactory.default({ transactionManager });
-    // Legacy V1 entities read path; kept on Mongo while PX moves its own persistence.
-    const entitiesDS = DefaultDeprecatedEntitiesDataSource(mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default();
 
     return new PXEntityStatusManager({
       entitiesStatusDS,

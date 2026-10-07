@@ -1,7 +1,6 @@
 import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
@@ -19,11 +18,7 @@ type Props = {
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const transactionManager =
-      props.mongoTransactionManager ??
-      (ExecutionContext.getStore()
-        ? ExecutionContext.transactionManager
-        : TransactionManagerFactory.default());
+    const transactionManager = props.mongoTransactionManager ?? ExecutionContext.transactionManager;
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??

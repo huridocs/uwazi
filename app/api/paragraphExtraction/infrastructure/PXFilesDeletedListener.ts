@@ -6,7 +6,6 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
@@ -35,9 +34,7 @@ export class PXFilesDeletedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const transactionManager = ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager: transactionManager,

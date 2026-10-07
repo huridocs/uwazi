@@ -1,7 +1,6 @@
 import { Db } from 'mongodb';
 
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
@@ -19,9 +18,7 @@ export class PXEntitiesStatusDataSourceFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresCore) {
-      const pgTransactionManager = ExecutionContext.getStore()
-        ? ExecutionContext.postgresTransactionManager
-        : TransactionManagerFactory.postgres();
+      const pgTransactionManager = ExecutionContext.postgresTransactionManager;
 
       return new PostgresPXEntitiesStatusDataSource({
         tenantId: tenant.name,
