@@ -40,7 +40,9 @@ import {
   MAIN_TAB,
   isValidMainTab,
 } from './Tabs/index.js';
+import { resolveMainTabFromUrl } from './Tabs/entityTabState.js';
 import { EntityMainTabsProvider, useEntityTabNavigation } from './Tabs/EntityTabsContext.js';
+import { useResolvedEntityMainTab } from './Tabs/hooks/useResolvedEntityMainTab.js';
 import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
 import { useEntityMainTabs } from './Tabs/hooks/useEntityMainTabs.js';
 import { LoaderResponse } from './types.js';
@@ -172,14 +174,20 @@ const usePublishedModeForEntity = (sharedId: string | undefined) => {
 
 const EntityRouteBody = () => {
   const entity = useEntityScopedEntity();
-  const { isRtl } = useEntityLanguage();
+  const { isRtl, mainDocument } = useEntityLanguage();
   const { hasEntityPageView } = useEntityPageView();
   const mode = usePublishedModeForEntity(entity?.sharedId);
-
   const showPublished = hasEntityPageView && mode === 'published';
+  const urlTab = resolveMainTabFromUrl(useEntitySearchParams(), Boolean(mainDocument?.filename));
+  const mainTab = useResolvedEntityMainTab(urlTab);
+  const viewId = showPublished ? 'published' : mainTab;
 
   return (
-    <div className="flex h-full min-h-0 flex-col" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div
+      id={`entity-view-${viewId}`}
+      className={`template_${entity.template} flex h-full min-h-0 flex-col`}
+      dir={isRtl ? 'rtl' : 'ltr'}
+    >
       <EntitySeo entity={entity} />
       {showPublished ? (
         <div className="flex min-h-0 flex-1 flex-col">

@@ -112,6 +112,7 @@ describe('entity display mode', () => {
     expect(await screen.findByTestId('entity-page-markdown')).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entity view' })).toBeInTheDocument();
+    expect(document.getElementById('entity-view-published')).toHaveClass('template_template1');
   });
 
   it('opens the entity viewer when the route already selects a main tab', async () => {
@@ -122,6 +123,7 @@ describe('entity display mode', () => {
     );
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();
+    expect(document.getElementById('entity-view-metadata')).toHaveClass('template_template1');
   });
 
   it('opens the published page when entering even if the previous view was the entity viewer', async () => {
@@ -164,6 +166,7 @@ describe('entity display mode', () => {
     expect(await screen.findByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();
+    expect(document.getElementById('entity-view-document')).toHaveClass('template_template1');
   });
 
   it('asks to discard a dirty metadata edit instead of leaving the viewer', async () => {
