@@ -515,6 +515,7 @@ Entity type,Тип об’єкта
 Entity type (template),Тип сутності (шаблон)
 Entity types,Типи об'єктів
 Entity updated,Сутність оновлено
+Entity view,Перегляд об'єкта
 Error,Помилка
 Error adding thesauri.,Помилка додавання тезаурусів.
 Error loading your image,Помилка завантаження зображення
@@ -1117,6 +1118,7 @@ Publish,Опублікувати
 Publish release,Опублікувати реліз
 Published,У відкритому доступі
 Published and unpublished entities are counted.,"До підрахунку включаються як опубліковані, так і неопубліковані об’єкти."
+Published view,Опублікований вигляд
 QR Code,QR-код
 qr code,QR-код
 Query,Запит

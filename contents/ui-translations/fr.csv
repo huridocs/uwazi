@@ -515,6 +515,7 @@ Entity type,Type d'entité
 Entity type (template),Type d’entité (modèle)
 Entity types,Types d'entités
 Entity updated,Entité mise à jour
+Entity view,Vue de l'entité
 Error,Erreur
 Error adding thesauri.,Erreur lors de l'ajout des thésaurus.
 Error loading your image,Erreur lors du chargement de votre image
@@ -1117,6 +1118,7 @@ Publish,Publier
 Publish release,Publier la version
 Published,Publié
 Published and unpublished entities are counted.,Les entités publiées et non publiées sont prises en compte.
+Published view,Vue publiée
 QR Code,Code QR
 qr code,Code QR
 Query,Requête

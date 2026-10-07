@@ -514,6 +514,7 @@ Entity type,نوع الكيان
 Entity type (template),نوع الكيان (القالب)
 Entity types,أنواع الكيانات
 Entity updated,تم تحديث الكيان
+Entity view,عرض الكيان
 Error,خطأ
 Error adding thesauri.,حدث خطأ أثناء إضافة قواميس المرادفات.
 Error loading your image,حدث خطأ أثناء تحميل صورتك
@@ -1116,6 +1117,7 @@ Publish,انشر
 Publish release,نشر الإصدار
 Published,منشور
 Published and unpublished entities are counted.,يتم احتساب الكيانات المنشورة وغير المنشورة.
+Published view,العرض المنشور
 QR Code,رمز الاستجابة السريعة
 qr code,رمز QR
 Query,استعلام
