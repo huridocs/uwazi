@@ -13,7 +13,7 @@ class DeleteUserRoute implements Route<UserReferenceInput, DeletedUserOutput> {
 
   readonly tenancy = 'single';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false, sessions: false };
 
   readonly request = z.object(UserReference.shape).strict().superRefine(UserReference.refine);
 
