@@ -2,22 +2,16 @@ import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { UsageComposition } from '../composition.js';
+import { ControllerSpecs } from '../../../testing/ControllerSpecs.js';
+import { SessionsLastOutputSchema } from '../../contracts.js';
+import { SessionsLastController } from '../SessionsLastController.js';
 
 const TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
-const TENANT = 'usage-composition';
-
 /** The shared database is shared by every test worker: only touch the sessions this spec owns. */
-const SID_PREFIX = 'usage-composition-spec:';
+const SID_PREFIX = 'cli-sessions-last-spec:';
 
 type StoredSession = { sid: string; user: string; lastActive: number };
-
-const sessions: StoredSession[] = [
-  { sid: 'older', user: `user1///${TENANT}`, lastActive: 1_700_000_000_000 },
-  { sid: 'latest', user: `user2///${TENANT}`, lastActive: 1_700_000_500_000 },
-  { sid: 'other-tenant', user: `user3///${TENANT}-2`, lastActive: 1_800_000_000_000 },
-];
 
 const sessionPayload = ({ user }: StoredSession) => ({
   cookie: { originalMaxAge: null, httpOnly: true, path: '/' },
@@ -50,7 +44,7 @@ const storeInPostgres = async (stored: StoredSession[]) =>
     )
   );
 
-describe('UsageComposition.lastSessionForCurrentTenant', () => {
+describe('SessionsLastController', () => {
   const previousBackend = config.sessionsBackend;
 
   beforeAll(async () => {
@@ -69,33 +63,41 @@ describe('UsageComposition.lastSessionForCurrentTenant', () => {
       .deleteMany({ _id: { $regex: `^${SID_PREFIX}` } });
   });
 
-  const lastSessionOf = async (tenantName: string) => {
-    const tenant = {
-      ...testingTenants.createTenant({ name: tenantName, dbName: tenantName, indexName: 'index' }),
-      domain: '127.0.0.1',
-    };
-
-    return testingEnvironment.runWithContext(
-      async () => UsageComposition.lastSessionForCurrentTenant(),
-      { tenant }
+  const lastSession = async () =>
+    SessionsLastOutputSchema.strict().parse(
+      await ControllerSpecs.asCli(async () => SessionsLastController.handle())
     );
-  };
 
   describe.each([
     { backend: 'mongo' as const, store: storeInMongo },
     { backend: 'postgres' as const, store: storeInPostgres },
-  ])('$backend', ({ backend, store }) => {
-    beforeEach(async () => {
+  ])('$backend sessions', ({ backend, store }) => {
+    beforeEach(() => {
       config.sessionsBackend = backend;
-      await store(sessions);
     });
 
-    it("should report the current tenant's latest session activity", async () => {
-      expect(await lastSessionOf(TENANT)).toBe(1_700_000_500_000);
+    it("should report the tenant's latest session activity in the CLI output contract", async () => {
+      const tenant = testingTenants.current().name;
+      await store([
+        { sid: 'older', user: `user1///${tenant}`, lastActive: 1_700_000_000_000 },
+        { sid: 'latest', user: `user2///${tenant}`, lastActive: 1_700_000_500_000 },
+      ]);
+
+      expect(await lastSession()).toEqual({ lastSession: 1_700_000_500_000 });
     });
 
-    it('should report null when the current tenant has no sessions', async () => {
-      expect(await lastSessionOf('no-sessions')).toBeNull();
+    it('should report 0, not null, when the tenant has no sessions', async () => {
+      expect(await lastSession()).toEqual({ lastSession: 0 });
+    });
+
+    it("should ignore other tenants' sessions", async () => {
+      const tenant = testingTenants.current().name;
+      await store([
+        { sid: 'other', user: `user3///${tenant}-2`, lastActive: 1_800_000_000_000 },
+        { sid: 'prefixed', user: `user4///x${tenant}`, lastActive: 1_800_000_000_000 },
+      ]);
+
+      expect(await lastSession()).toEqual({ lastSession: 0 });
     });
   });
 });
