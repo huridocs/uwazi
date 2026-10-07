@@ -18,7 +18,7 @@ const listThings = (handle: Route['handle']): Route => ({
   name: 'list',
   describe: 'List things',
   tenancy: 'none',
-  needs: { redis: true, elasticsearch: false },
+  needs: { redis: true, sessions: false },
   request: z.object({ name: z.string() }).strict(),
   fieldMap: {},
   handle,
@@ -52,7 +52,7 @@ describe('CliApplication', () => {
     expect(handle).toHaveBeenCalledWith({ name: 'a' });
     expect(JSON.parse(stdout.text)).toEqual([{ name: 'a' }]);
     expect(stderr.text).toBe('');
-    expect(connections.open).toHaveBeenCalledWith({ redis: true, elasticsearch: false });
+    expect(connections.open).toHaveBeenCalledWith({ redis: true, sessions: false });
     expect(connections.close).toHaveBeenCalledTimes(1);
   });
 
@@ -268,7 +268,7 @@ describe('CliApplication', () => {
 
       readonly tenancy = 'none';
 
-      readonly needs = { redis: false, elasticsearch: false };
+      readonly needs = { redis: false, sessions: false };
 
       readonly request = z.object({ name: z.string() });
 

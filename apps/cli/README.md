@@ -11,11 +11,14 @@ in the module's own page:
 
 | Module                               | Commands                                                                                               |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`                                                          |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                      |
 | [settings](docs/settings.md)         | `get`, `update`                                                                                        |
 | [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
 | [usage](docs/usage.md)               | `report`                                                                                               |
+| [sessions](docs/sessions.md)         | `last`                                                                                                 |
+| [activity](docs/activity.md)         | `list`                                                                                                 |
+| [archives](docs/archives.md)         | `list`                                                                                                 |
 
 ## Running it
 
@@ -43,9 +46,8 @@ start unless these are set, rather than falling back to localhost defaults and s
 talking to the wrong database:
 
 `MONGO_URI`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_APP_USER`,
-`POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `ELASTICSEARCH_URL` and
-`SESSIONS_BACKEND` for commands that read the search index and the session store
-(`usage report`). `ELASTICSEARCH_API_KEY` is used when the cluster asks for one.
+`POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `SESSIONS_BACKEND` for
+commands that read the session store (`usage report`, `sessions last`).
 
 Missing variables fail with `config.missing` (exit 1) before anything connects.
 
@@ -54,16 +56,16 @@ and written, as it does for the server.
 
 ## Input
 
-| Option                | Meaning                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                  |
-| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history. |
-| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.           |
-| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `tenants …`.         |
-| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).    |
-| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                             |
-| `--verbose`           | Add stack traces to errors.                                                                |
-| `--help`, `--version` |                                                                                            |
+| Option                | Meaning                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                           |
+| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.          |
+| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                    |
+| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `tenants …` and `archives …`. |
+| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).             |
+| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                      |
+| `--verbose`           | Add stack traces to errors.                                                                         |
+| `--help`, `--version` |                                                                                                     |
 
 Unknown request fields are rejected. `--schema` is the reference for each command's input:
 
@@ -85,6 +87,7 @@ unknown field.
   results.
 - `tenants …` takes neither. Those commands administer the registry that sits above every tenant,
   so there is no tenant to run _in_; the tenant they act _on_ travels in the request as `name`.
+- `archives …` takes neither as well: an archived tenant is no longer in the registry.
 
 ## Output
 
