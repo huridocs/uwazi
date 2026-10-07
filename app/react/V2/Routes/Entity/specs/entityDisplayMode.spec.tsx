@@ -1,13 +1,14 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { createStore, Provider } from 'jotai';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
-import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
+import { TestRouterContext } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { isMobileOverrideAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import { Entity } from '../Entity.js';
-import { entityDisplayModeAtom } from '../entityDisplayModeAtom.js';
+import { entityDisplayModesAtom, type EntityDisplayMode } from '../entityDisplayModeAtom.js';
 import type { EntityPageViewData } from '../Components/EntityPageView/index.js';
 
 jest.mock('#app/Markdown/index.js', () => ({
@@ -54,7 +55,13 @@ const pageView: EntityPageViewData = {
   entityRaw: entity,
 };
 
-const adminUser = { _id: '1', role: 'admin', name: 'admin' };
+const adminUser = {
+  _id: '1',
+  role: 'admin',
+  name: 'admin',
+  username: 'admin',
+  email: 'admin@example.com',
+} as const;
 
 const renderEntity = ({
   withPage = true,
@@ -62,48 +69,47 @@ const renderEntity = ({
   user,
   mode = 'published',
   entry = '/',
+  sharedId = entity.sharedId,
+  modes,
 }: {
   withPage?: boolean;
   mobile?: boolean;
   user?: typeof adminUser;
-  mode?: 'published' | 'entity';
+  mode?: EntityDisplayMode;
   entry?: string;
+  sharedId?: string;
+  modes?: Record<string, EntityDisplayMode>;
 } = {}) => {
   window.history.replaceState({}, '', entry);
-  const atoms: Array<
-    | readonly [typeof templatesAtom, unknown]
-    | readonly [typeof userAtom, unknown]
-    | readonly [typeof isMobileOverrideAtom, unknown]
-    | readonly [typeof entityDisplayModeAtom, 'published' | 'entity']
-  > = [
-    [
-      templatesAtom,
-      [{ _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] }],
-    ],
-    [isMobileOverrideAtom, mobile],
-    [entityDisplayModeAtom, mode],
-  ];
-  if (user) atoms.push([userAtom, user]);
+  const shown = { ...entity, sharedId };
+  const store = createStore();
+  store.set(templatesAtom, [{ _id: 'template1', name: 'Template 1', properties: [] }]);
+  store.set(isMobileOverrideAtom, mobile);
+  store.set(entityDisplayModesAtom, modes ?? (mode === 'entity' ? { [sharedId]: mode } : {}));
+  if (user) store.set(userAtom, user);
 
   const tree = (
     <TestRouterContext
       initialEntries={[entry]}
       loaderData={{
-        entity,
-        mainDocument: entity.documents?.[0],
+        entity: shown,
+        mainDocument: shown.documents?.[0],
         pagePlaintext: '',
-        entityPageView: withPage ? pageView : undefined,
+        entityPageView: withPage ? { ...pageView, entityRaw: shown } : undefined,
       }}
     >
-      <TestAtomStoreProvider initialValues={atoms}>
+      <Provider store={store}>
         <Entity />
-      </TestAtomStoreProvider>
+      </Provider>
     </TestRouterContext>
   );
 
-  return render(
-    user ? <ServicesProvider value={createTestServices()}>{tree}</ServicesProvider> : tree
-  );
+  return {
+    store,
+    ...render(
+      user ? <ServicesProvider value={createTestServices()}>{tree}</ServicesProvider> : tree
+    ),
+  };
 };
 
 describe('entity display mode', () => {
@@ -131,6 +137,14 @@ describe('entity display mode', () => {
     expect(await screen.findByTestId('entity-page-markdown')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entity view' })).toBeInTheDocument();
+  });
+
+  it('does not apply another entity’s saved view mode', async () => {
+    const { store } = renderEntity({ sharedId: 'shared2', modes: { shared1: 'entity' } });
+    expect(await screen.findByTestId('entity-page-markdown')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();
+    expect(store.get(entityDisplayModesAtom).shared1).toBe('entity');
+    expect(store.get(entityDisplayModesAtom).shared2).toBe('published');
   });
 
   it('keeps the current viewer and hides the control when there is no page view', async () => {

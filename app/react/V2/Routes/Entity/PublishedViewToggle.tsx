@@ -7,10 +7,16 @@ import { sheetStackAtom } from '#V2/Components/Layouts/PaneLayout/sheetStack.js'
 import {
   useEntityOverlayTarget,
   useEntityPageView,
+  useEntityScopedEntity,
   useMetadataEditing,
 } from './Components/index.js';
 import { useUpdateEntityUrl } from './entityUrlState.js';
-import { entityDisplayModeAtom } from './entityDisplayModeAtom.js';
+import {
+  entityDisplayModesAtom,
+  readEntityDisplayMode,
+  writeEntityDisplayMode,
+  type EntityDisplayMode,
+} from './entityDisplayModeAtom.js';
 import { MAIN_TAB } from './Tabs/tabIds.js';
 import { MAIN_TAB_PARAM } from './urlParams.js';
 
@@ -32,8 +38,13 @@ const useModalOpen = (active: boolean) => {
 };
 
 const usePublishedViewActions = () => {
-  const mode = useAtomValue(entityDisplayModeAtom);
-  const setMode = useSetAtom(entityDisplayModeAtom);
+  const { sharedId } = useEntityScopedEntity();
+  const mode = readEntityDisplayMode(useAtomValue(entityDisplayModesAtom), sharedId);
+  const setModes = useSetAtom(entityDisplayModesAtom);
+  const setMode = (next: EntityDisplayMode) => {
+    if (!sharedId) return;
+    setModes(current => writeEntityDisplayMode(current, sharedId, next));
+  };
   const setTabGroups = useSetAtom(tabGroupsAtom);
   const updateEntityUrl = useUpdateEntityUrl();
   const { isEditing, isDirty, requestDiscard } = useMetadataEditing();

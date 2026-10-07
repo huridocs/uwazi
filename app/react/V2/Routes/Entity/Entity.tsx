@@ -8,7 +8,12 @@ import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
-import { entityDisplayModeAtom } from './entityDisplayModeAtom.js';
+import {
+  clearEntityDisplayMode,
+  entityDisplayModesAtom,
+  readEntityDisplayMode,
+  writeEntityDisplayMode,
+} from './entityDisplayModeAtom.js';
 import { EntityUrlSync, useEntitySearchParams } from './entityUrlState.js';
 import { MAIN_TAB_PARAM } from './urlParams.js';
 import { PublishedViewToggle } from './PublishedViewToggle.js';
@@ -161,15 +166,25 @@ const EntityView = () => {
 };
 
 const usePublishedModeForEntity = (sharedId: string | undefined) => {
-  const mode = useAtomValue(entityDisplayModeAtom);
-  const setMode = useSetAtom(entityDisplayModeAtom);
+  const modes = useAtomValue(entityDisplayModesAtom);
+  const setModes = useSetAtom(entityDisplayModesAtom);
   const mainTab = useEntitySearchParams().get(MAIN_TAB_PARAM);
 
   useLayoutEffect(() => {
-    setMode(isValidMainTab(mainTab) ? 'entity' : 'published');
-  }, [sharedId, mainTab, setMode]);
+    if (!sharedId) return;
+    setModes(current =>
+      writeEntityDisplayMode(current, sharedId, isValidMainTab(mainTab) ? 'entity' : 'published')
+    );
+  }, [sharedId, mainTab, setModes]);
 
-  return mode;
+  useLayoutEffect(() => {
+    if (!sharedId) return undefined;
+    return () => {
+      setModes(current => clearEntityDisplayMode(current, sharedId));
+    };
+  }, [sharedId, setModes]);
+
+  return readEntityDisplayMode(modes, sharedId);
 };
 
 const EntityRouteBody = () => {
