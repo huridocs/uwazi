@@ -25,6 +25,7 @@
     "#ocr/composition": "./packages/ocr/composition.js",
     "#segmentation": "./packages/segmentation/index.js",
     "#segmentation/composition": "./packages/segmentation/composition.js",
+    "#activitylog": "./packages/activitylog/index.js",
     "#usage": "./packages/usage/index.js",
     "#usage/composition": "./packages/usage/composition.js",
     "#shared": "./app/shared/index.js",

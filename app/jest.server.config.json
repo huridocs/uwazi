@@ -42,6 +42,7 @@
     "^#ocr/composition$": "<rootDir>/../packages/ocr/composition",
     "^#segmentation$": "<rootDir>/../packages/segmentation/index",
     "^#segmentation/composition$": "<rootDir>/../packages/segmentation/composition",
+    "^#activitylog$": "<rootDir>/../packages/activitylog/index",
     "^#usage$": "<rootDir>/../packages/usage/index",
     "^#usage/composition$": "<rootDir>/../packages/usage/composition",
     "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
