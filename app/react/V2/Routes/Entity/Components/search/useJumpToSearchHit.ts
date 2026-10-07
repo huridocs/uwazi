@@ -6,6 +6,7 @@ import { useEntityTabNavigation } from '../../Tabs/EntityTabsContext.js';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { SIDE_TAB_PARAM } from '../../urlParams.js';
 import { applyMainTabSearchParam } from '../../Tabs/entityTabState.js';
+import { useEntityPageView } from '../EntityPageView/EntityPageViewContext.js';
 import { MAIN_TAB, SIDE_TAB, type MainTabId } from '../../Tabs/tabIds.js';
 import {
   esFieldToFocusKey,
@@ -19,20 +20,25 @@ const useJumpToSearchHit = () => {
   const { stageSideTab } = useEntityTabNavigation();
   const { mainDocument } = useEntityLanguage();
   const hasMainDocument = Boolean(mainDocument?.filename);
+  const { hasEntityPageView } = useEntityPageView();
 
   const ensureMainTab = useCallback(
     (mainTab: MainTabId, options?: { hash?: (params: URLSearchParams) => void }) => {
       selectMainTab(mainTab);
       stageSideTab(SIDE_TAB.SEARCH);
       updateEntityUrl({
-        search: next => applyMainTabSearchParam(next, mainTab, hasMainDocument),
+        search: next =>
+          applyMainTabSearchParam(next, mainTab, {
+            hasMainDocument,
+            retainDocumentTab: hasEntityPageView,
+          }),
         hash: next => {
           next.set(SIDE_TAB_PARAM, SIDE_TAB.SEARCH);
           options?.hash?.(next);
         },
       });
     },
-    [hasMainDocument, selectMainTab, stageSideTab, updateEntityUrl]
+    [hasEntityPageView, hasMainDocument, selectMainTab, stageSideTab, updateEntityUrl]
   );
 
   const jumpToProperty = useCallback(

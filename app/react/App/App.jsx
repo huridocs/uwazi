@@ -55,7 +55,8 @@ const useAppClassName = (pathname, languages, sharedId) => {
   const shouldAddAppClassName =
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(pathname) ||
     pathname.match(/\/page\/.*\/.*/g) ||
-    pathname.match(/\/entity\/.*/g);
+    pathname.match(/\/entity\/.*/g) ||
+    pathname.match(/\/entityv2\/.*/g);
   return shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 };
 

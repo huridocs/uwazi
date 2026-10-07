@@ -1,9 +1,27 @@
-@use "../config/colors";
+@use '../config/colors';
+@use '../config/typography';
+
+.entity-page-viewer {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+
+  > .entity-viewer {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0;
+  }
+}
 
 .page-viewer {
   padding-top: 15px;
   padding-bottom: 0;
   background: colors.$c-white;
+  color: colors.$c-black;
+  font-family: typography.$f-regular;
+  line-height: 1.42857143;
 }
 
 .page-viewer .item-chart {

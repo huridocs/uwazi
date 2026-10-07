@@ -1,15 +1,19 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
-import { useMetadataEditing, useDirectedRelationships } from '../Components/context/index.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import {
+  useEntityPageView,
+  useMetadataEditing,
+  useDirectedRelationships,
+} from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { MAIN_TAB } from './tabIds.js';
-import { t } from '#app/I18N/index.js';
 
 type TabsMainButtonsProps = {
   entity: EntityType;
@@ -25,6 +29,8 @@ const TabsMainButtons = ({
   groupId = 'entity-main',
 }: TabsMainButtonsProps) => {
   const { isDirty } = useMetadataEditing();
+  const { hasEntityPageView } = useEntityPageView();
+  const reserveToggleSlot = useIsMobile() === true && hasEntityPageView;
   const relationships = useDirectedRelationships();
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
@@ -91,7 +97,13 @@ const TabsMainButtons = ({
           tabListAriaLabel={t('System', 'Entity primary', null, false)}
         />
       </div>
-      <EntityLanguageBar />
+      {reserveToggleSlot ? (
+        <div className="me-10 shrink-0">
+          <EntityLanguageBar />
+        </div>
+      ) : (
+        <EntityLanguageBar />
+      )}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import type { UpdateEntityUrlOptions } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import type { TabButtonDef } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { MAIN_TAB, isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
+import { useEntityPageView } from '../../Components/EntityPageView/EntityPageViewContext.js';
 
 type UseEntityTabUrlSanitizeParams = {
   hashParams: URLSearchParams;
@@ -23,6 +24,7 @@ const useEntityTabUrlSanitize = ({
   hasMainDocument,
   updateEntityUrl,
 }: UseEntityTabUrlSanitizeParams) => {
+  const { hasEntityPageView } = useEntityPageView();
   useEffect(() => {
     const raw = hashParams.get(SIDE_TAB_PARAM);
     if (!raw || !isValidSideTab(raw)) return;
@@ -37,7 +39,7 @@ const useEntityTabUrlSanitize = ({
   useEffect(() => {
     const raw = searchParams.get(MAIN_TAB_PARAM);
     if (!raw || !isValidMainTab(raw)) return;
-    if (raw === MAIN_TAB.DOCUMENT && hasMainDocument) {
+    if (raw === MAIN_TAB.DOCUMENT && hasMainDocument && !hasEntityPageView) {
       updateEntityUrl({
         search: next => {
           next.delete(MAIN_TAB_PARAM);
@@ -51,7 +53,7 @@ const useEntityTabUrlSanitize = ({
         next.delete(MAIN_TAB_PARAM);
       },
     });
-  }, [searchParams, mainTabIds, hasMainDocument, updateEntityUrl]);
+  }, [hasEntityPageView, searchParams, mainTabIds, hasMainDocument, updateEntityUrl]);
 };
 
 export { useEntityTabUrlSanitize };
