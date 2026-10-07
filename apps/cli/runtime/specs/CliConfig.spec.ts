@@ -41,26 +41,26 @@ describe('CliConfig', () => {
 
     it('should require nothing outside production, where local defaults apply', () => {
       expect(
-        CliConfig.requiredFor({ redis: true, elasticsearch: true }, { NODE_ENV: 'development' })
+        CliConfig.requiredFor({ redis: true, sessions: true }, { NODE_ENV: 'development' })
       ).toEqual([]);
     });
 
     it('should require the database variables in production', () => {
       expect(
-        CliConfig.requiredFor({ redis: false, elasticsearch: false }, { NODE_ENV: 'production' })
+        CliConfig.requiredFor({ redis: false, sessions: false }, { NODE_ENV: 'production' })
       ).toEqual(database);
     });
 
     it('should also require REDIS_HOST in production when the command needs Redis', () => {
       expect(
-        CliConfig.requiredFor({ redis: true, elasticsearch: false }, { NODE_ENV: 'production' })
+        CliConfig.requiredFor({ redis: true, sessions: false }, { NODE_ENV: 'production' })
       ).toEqual([...database, 'REDIS_HOST']);
     });
 
-    it('should also require Elasticsearch and the sessions backend when the command reads them', () => {
+    it('should also require the sessions backend when the command reads the session store', () => {
       expect(
-        CliConfig.requiredFor({ redis: false, elasticsearch: true }, { NODE_ENV: 'production' })
-      ).toEqual([...database, 'ELASTICSEARCH_URL', 'SESSIONS_BACKEND']);
+        CliConfig.requiredFor({ redis: false, sessions: true }, { NODE_ENV: 'production' })
+      ).toEqual([...database, 'SESSIONS_BACKEND']);
     });
   });
 });

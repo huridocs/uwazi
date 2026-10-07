@@ -2,40 +2,34 @@ import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import type { ActivityReader } from './contracts/ActivityReader.js';
 import type { ContentUsageReader } from './contracts/ContentUsageReader.js';
 import type { FootprintReader } from './contracts/FootprintReader.js';
-import type { SearchIndexReader } from './contracts/SearchIndexReader.js';
 import type { TenantUsage } from './TenantUsage.js';
 
 type Deps = {
   content: ContentUsageReader;
   /** postgres is null while the tenant is not on PostgreSQL: it has no rows there to count. */
   footprint: { mongo: FootprintReader; postgres: FootprintReader | null };
-  searchIndex: SearchIndexReader;
   activity: ActivityReader;
 };
 
 /**
- * What the current tenant consumes: its content, the storage it takes in every engine and its
- * search index, and when it was last used. A read for operators; nothing in Uwazi depends on it.
+ * What the current tenant consumes: its content, the storage it takes in every database engine,
+ * and when it was last used. A read for operators; nothing in Uwazi depends on it.
  */
 class ReportTenantUsage extends AbstractUseCase<void, TenantUsage, Deps> {
   async execute(): Promise<TenantUsage> {
-    const { content, footprint, searchIndex, activity } = this.deps;
-    const { name, indexName } = this.tenant;
+    const { content, footprint, activity } = this.deps;
 
-    const [contentUsage, mongo, postgres, elasticStorage, lastSession] =
-      await ReportTenantUsage.allSettled([
-        content.read(),
-        footprint.mongo.databaseBytes(),
-        footprint.postgres?.databaseBytes() ?? 0,
-        searchIndex.indexBytes(indexName),
-        activity.lastSession(name),
-      ] as const);
+    const [contentUsage, mongo, postgres, lastSession] = await ReportTenantUsage.allSettled([
+      content.read(),
+      footprint.mongo.databaseBytes(),
+      footprint.postgres?.databaseBytes() ?? 0,
+      activity.lastSession(this.tenant.name),
+    ] as const);
 
     return {
       ...contentUsage,
       dbStorage: mongo + postgres,
       dbStorageByEngine: { mongo, postgres },
-      elasticStorage,
       lastSession,
     };
   }
