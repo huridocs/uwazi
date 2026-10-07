@@ -2,6 +2,7 @@ import type { Route } from '../routing/Route.js';
 import { CreateUserRoute } from './routes/CreateUserRoute.js';
 import { DeleteUserRoute } from './routes/DeleteUserRoute.js';
 import { ListUsersRoute } from './routes/ListUsersRoute.js';
+import { RecoverPasswordRoute } from './routes/RecoverPasswordRoute.js';
 import { UpdateUserRoute } from './routes/UpdateUserRoute.js';
 import { UserStatsRoute } from './routes/UserStatsRoute.js';
 
@@ -14,6 +15,7 @@ class UsersRoutes {
       new DeleteUserRoute(),
       new ListUsersRoute(),
       new UserStatsRoute(),
+      new RecoverPasswordRoute(),
     ];
   }
 }

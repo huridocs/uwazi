@@ -11,7 +11,7 @@ in the module's own page:
 
 | Module                               | Commands                                                                                               |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`                                                          |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                      |
 | [settings](docs/settings.md)         | `get`, `update`                                                                                        |
 | [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
