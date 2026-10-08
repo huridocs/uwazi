@@ -1,6 +1,5 @@
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
-import { User } from '#api/users.v2/model/User.js';
-import * as entityCounts from '#api/entities.v2/routes/index.js';
+import { EntityCountByTemplateQueryServiceFactory } from '#api/core/infrastructure/factories/EntityCountByTemplateQueryServiceFactory.js';
 import { createServerTemplatesService } from '../ServerTemplatesService.js';
 
 const ctx = { headers: { cookie: 'session=1' } };
@@ -29,13 +28,15 @@ describe('ServerTemplatesService', () => {
   });
 
   it('checkEntityCounts returns every template count', async () => {
-    jest.spyOn(entityCounts, 'countAllByTemplate').mockResolvedValue({ tmpl1: 4, tmpl2: 0 });
+    jest.spyOn(EntityCountByTemplateQueryServiceFactory, 'default').mockReturnValue({
+      all: async () => ({ tmpl1: 4, tmpl2: 0 }),
+      one: async () => 0,
+    });
 
     const [data, error] = await service.checkEntityCounts();
 
     expect(error).toBeUndefined();
     expect(data).toEqual({ tmpl1: 4, tmpl2: 0 });
-    expect(entityCounts.countAllByTemplate).toHaveBeenCalledWith(User.createFrom(null));
   });
 
   it('upsert returns not implemented', async () => {

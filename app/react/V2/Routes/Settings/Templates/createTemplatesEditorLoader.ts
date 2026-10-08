@@ -20,32 +20,6 @@ const entityViewPageOptions = (allPages: unknown) =>
     .filter((page: Page) => page.entityView)
     .map((page: Page) => ({ value: page.sharedId, label: page.title }));
 
-const loadEditedTemplate = async ({
-  services,
-  headers,
-  templates,
-  templateId,
-}: {
-  services: V2Services;
-  headers?: IncomingHttpHeaders;
-  templates: { _id: string }[];
-  templateId?: string;
-}) => {
-  const blank = { ...emptyTemplate, color: getRandomColor() };
-  if (!templateId) return { loadedTemplate: blank, entityCount: 0 };
-
-  const templateToEdit = templates.find(template => template._id === templateId);
-  if (!templateToEdit) return { loadedTemplate: blank, entityCount: 0 };
-
-  const [count, countsError] = await services.templates.checkEntityCount(templateToEdit._id, {
-    headers,
-  });
-  if (countsError) throw apiErrorToRequestError(countsError);
-
-  const loadedTemplate: ClientTemplateSchema = templateToEdit as ClientTemplateSchema;
-  return { loadedTemplate, entityCount: count };
-};
-
 const createTemplatesEditorLoader =
   (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -54,13 +28,23 @@ const createTemplatesEditorLoader =
     const [templates, templatesError] = await services.templates.getAll({ headers });
     if (templatesError) throw apiErrorToRequestError(templatesError);
 
-    const { loadedTemplate, entityCount } = await loadEditedTemplate({
-      services,
-      headers,
-      templates,
-      templateId: params.templateId,
-    });
-    return { loadedTemplate, pagesOptions, entityCount };
+    const blank = { ...emptyTemplate, color: getRandomColor() };
+    const templateToEdit = params.templateId
+      ? templates.find(template => template._id === params.templateId)
+      : undefined;
+    if (!templateToEdit) return { loadedTemplate: blank, pagesOptions, entityCount: 0 };
+
+    const [entityCount, countsError] = await services.templates.checkEntityCount(
+      templateToEdit._id,
+      { headers }
+    );
+    if (countsError) throw apiErrorToRequestError(countsError);
+
+    return {
+      loadedTemplate: templateToEdit as ClientTemplateSchema,
+      pagesOptions,
+      entityCount,
+    };
   };
 
 export { createTemplatesEditorLoader };

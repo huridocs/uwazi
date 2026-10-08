@@ -3,19 +3,10 @@ import Ajv from 'ajv';
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { RelationTypeCountQueryServiceFactory } from '#api/relationships/query/factory/RelationTypeCountQueryServiceFactory.js';
 import relationships from './relationships.js';
 import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
-
-const countAllByRelationType = async () => {
-  const types = await GetRelationshipTypesUseCaseFactory.default().execute({});
-  return Object.fromEntries(
-    await Promise.all(
-      types.map(async type => [type.id, await relationships.countByRelationType(type.id)])
-    )
-  );
-};
 
 class SelectionRectanglesIsEmptyError extends DomainError {
   constructor() {
@@ -202,11 +193,11 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) => {
+      const counts = RelationTypeCountQueryServiceFactory.default();
       const { relationtypeId } = req.query;
-      const count = relationtypeId
-        ? relationships.countByRelationType(relationtypeId)
-        : countAllByRelationType();
-      void count.then(response => res.json(response)).catch(next);
+      void (relationtypeId ? counts.one({ relationtypeId }) : counts.all())
+        .then(response => res.json(response))
+        .catch(next);
     }
   );
 };

@@ -2,17 +2,9 @@ import { apiClient } from '#V2/api/client.js';
 
 type CountPayload = number | { value: number };
 
-const parseCount = (data: unknown): number | undefined => {
+const parseCount = (data: CountPayload | undefined): number | undefined => {
   if (typeof data === 'number') return data;
-  if (
-    typeof data === 'object' &&
-    data !== null &&
-    'value' in data &&
-    typeof data.value === 'number'
-  ) {
-    return data.value;
-  }
-  return undefined;
+  return typeof data?.value === 'number' ? data.value : undefined;
 };
 
 const countByRelationType = async (

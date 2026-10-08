@@ -152,8 +152,8 @@ const useManageRelationTypesModal = () => {
   const { create, delete: deleteType } = useRelationshipTypeMutations();
   const counts = useRelationTypeCounts();
   const inUseIds = useMemo(() => relationTypeIdsInUse(templates), [templates]);
-  const pending = usePendingRelationTypeDelete(deleteType, notify);
-  const draft = useDraftRelationType(create, notify, pending.clearPending);
+  const { clearPending, ...pending } = usePendingRelationTypeDelete(deleteType, notify);
+  const draft = useDraftRelationType(create, notify, clearPending);
 
   return { ...counts, inUseIds, notify, ...pending, ...draft };
 };
