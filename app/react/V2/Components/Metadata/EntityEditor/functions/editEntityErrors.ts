@@ -1,7 +1,7 @@
 import type { Path, UseFormSetError } from 'react-hook-form';
 import type { ApiValidation } from '#shared/apiClient/index.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
-import type { FormMetadataProperty } from './formatMetadataForForm.js';
+import { metadataFormPath, type FormMetadataProperty } from './formatMetadataForForm.js';
 import { relationshipGroupKey } from '../../relationshipInherit.js';
 
 type EditEntityErrors = {
@@ -107,6 +107,7 @@ const buildRelationshipPrimaryNames = (properties: FormMetadataProperty[]) => {
 };
 
 const getMetadataFieldPath = (property: FormMetadataProperty): Path<EditEntityFormValues> => {
+  const path = metadataFormPath(property.name);
   switch (property.type) {
     case 'select':
     case 'multiselect':
@@ -115,9 +116,9 @@ const getMetadataFieldPath = (property: FormMetadataProperty): Path<EditEntityFo
     case 'multidate':
     case 'multidaterange':
     case 'geolocation':
-      return `metadata.${property.name}`;
+      return path;
     default:
-      return `metadata.${property.name}.0.value`;
+      return `${path}.0.value`;
   }
 };
 
@@ -127,7 +128,7 @@ const resolveMetadataErrorPath = (
 ): Path<EditEntityFormValues> => {
   if (property.type === 'relationship') {
     const primaryName = relationshipPrimaryNames.get(property.name) ?? property.name;
-    return `metadata.${primaryName}`;
+    return metadataFormPath(primaryName);
   }
 
   return getMetadataFieldPath(property);
@@ -148,7 +149,7 @@ const findFirstMetadataErrorPath = (
   const unknownEntry = Object.entries(metadataErrors).find(
     ([name, message]) => message && !propertyByName.has(name)
   );
-  return unknownEntry ? `metadata.${unknownEntry[0]}` : undefined;
+  return unknownEntry ? metadataFormPath(unknownEntry[0]) : undefined;
 };
 
 const getFirstEditEntityErrorPath = (
@@ -199,7 +200,7 @@ const applyMetadataEditEntityErrors = ({
     const property = propertyByName.get(name);
     const path = property
       ? resolveMetadataErrorPath(property, relationshipPrimaryNames)
-      : (`metadata.${name}` as Path<EditEntityFormValues>);
+      : metadataFormPath(name);
 
     if (appliedPaths.has(path)) return;
 

@@ -2,7 +2,11 @@ import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
-import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
+import {
+  formatMetadataForForm,
+  metadataFormKey,
+  type FormMetadataProperty,
+} from './formatMetadataForForm.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
@@ -45,6 +49,23 @@ const mapTemplateProperty = (property: TemplatePropertyInput): FormMetadataPrope
   inherit: property.inherit,
 });
 
+const encodeFormTranslations = (
+  translations: EntityTranslationsDTO | undefined,
+  properties: FormMetadataProperty[]
+): EntityTranslationsDTO =>
+  Object.fromEntries(
+    Object.entries(translations ?? {}).map(([language, bucket]) => {
+      const next = { ...bucket };
+      properties.forEach(property => {
+        const key = metadataFormKey(property.name);
+        if (key === property.name || !Object.hasOwn(next, property.name)) return;
+        next[key] = next[property.name];
+        delete next[property.name];
+      });
+      return [language, next];
+    })
+  );
+
 const buildEditEntityDefaultValues = (
   entity: Entity | undefined,
   templates: EditEntityTemplate[]
@@ -59,7 +80,7 @@ const buildEditEntityDefaultValues = (
     showIcon: hasEntityIcon(entity?.icon),
     icon: entity?.icon ?? EMPTY_ICON,
     metadata: formatMetadataForForm(properties, entity?.metadata),
-    translations: entity?.translations ?? {},
+    translations: encodeFormTranslations(entity?.translations, properties),
     touchedTranslations: {},
   };
 };

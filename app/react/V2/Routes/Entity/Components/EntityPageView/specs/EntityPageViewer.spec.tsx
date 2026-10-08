@@ -171,6 +171,7 @@ describe('EntityPageViewer', () => {
         </EntityPageViewProvider>
       </JotaiProvider>
     );
+    expect(html).toContain('page-viewer');
     expect(html).toContain('Hello from entity page');
   });
 
