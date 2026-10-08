@@ -8,6 +8,11 @@ describe('hydrationMismatch', () => {
     expect(isHydrationMismatch(error)).toBe(true);
   });
 
+  it('ignores a message that only contains the React error URL', () => {
+    const error = new Error('see https://react.dev/errors/418 for details');
+    expect(isHydrationMismatch(error)).toBe(false);
+  });
+
   it('leaves other errors alone', () => {
     expect(isHydrationMismatch(new Error('boom'))).toBe(false);
     expect(isHydrationMismatch('Hydration failed because the server rendered')).toBe(false);
