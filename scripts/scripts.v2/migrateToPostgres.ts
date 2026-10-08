@@ -62,6 +62,8 @@ import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/i
 import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
 import { PXExtractorsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXExtractorsMigrationConfig.js';
 import { PXEntitiesStatusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXEntitiesStatusMigrationConfig.js';
+import { DatavizMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizMigrationConfig.js';
+import { DatavizSnapshotsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizSnapshotsMigrationConfig.js';
 import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
 import { copyTenants } from '#api/core/infrastructure/postgresql/migrations/copyTenants.js';
 
@@ -94,6 +96,8 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   csv_import_relationships_values: CsvImportRelationshipValuesMigrationConfig,
   px_extractors: PXExtractorsMigrationConfig,
   px_entities_status: PXEntitiesStatusMigrationConfig,
+  dataviz: DatavizMigrationConfig,
+  dataviz_snapshots: DatavizSnapshotsMigrationConfig,
 };
 
 // Collections grouped by the feature flag that gates their migration. A group is
@@ -119,6 +123,8 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'segmentations',
     'ocr_records',
     'settings',
+    'dataviz',
+    'dataviz_snapshots',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
   postgresCsv: [
