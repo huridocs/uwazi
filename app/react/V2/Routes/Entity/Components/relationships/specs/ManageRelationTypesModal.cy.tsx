@@ -70,12 +70,13 @@ const NotificationsProbe = () => {
 
 const interceptCounts = (counts: { [id: string]: number } = {}) => {
   cy.intercept('GET', '**/references/count_by_relationtype*', req => {
-    const ids = new URL(req.url).searchParams.get('relationtypeIds')?.split(',') ?? [];
-    if (!ids.every(id => id in counts)) {
+    const id = new URL(req.url).searchParams.get('relationtypeId') ?? '';
+    const count = counts[id];
+    if (count === undefined) {
       req.reply({ statusCode: 500, body: {} });
       return;
     }
-    req.reply({ statusCode: 200, body: Object.fromEntries(ids.map(id => [id, counts[id]])) });
+    req.reply({ statusCode: 200, body: { value: count } });
   }).as('countRefs');
 };
 

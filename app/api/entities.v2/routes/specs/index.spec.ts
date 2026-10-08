@@ -23,6 +23,7 @@ describe('entities countByTemplate V2 routes', () => {
 
   const template1 = createTemplate('Template 1');
   const template2 = createTemplate('Template 2');
+  const emptyTemplate = createTemplate('Empty');
 
   beforeEach(async () => {
     await testingEnvironment.setUp(
@@ -36,7 +37,7 @@ describe('entities countByTemplate V2 routes', () => {
             ],
           },
         ],
-        templates: [template1, template2],
+        templates: [template1, template2, emptyTemplate],
         entities: [
           ...factory.entityInMultipleLanguages(
             ['en', 'es', 'fr'],
@@ -102,15 +103,15 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toBe(0);
     });
 
-    it('should handle missing templateId parameter', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .set('Accept-Language', 'en');
+    it('should return every template count when no id is passed, including zeros', async () => {
+      const response = await request(app).get('/api/v2/entities/count_by_template');
 
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual(
-        expect.objectContaining({ prettyMessage: 'validation failed' })
-      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        [template1._id.toString()]: 3,
+        [template2._id.toString()]: 2,
+        [emptyTemplate._id.toString()]: 0,
+      });
     });
 
     it('should handle invalid templateId format', async () => {
@@ -123,24 +124,6 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toEqual(
         expect.objectContaining({ prettyMessage: 'validation failed' })
       );
-    });
-
-    it('should return counts keyed by id for comma-separated templateIds', async () => {
-      const ids = [template1._id.toString(), template2._id.toString(), '507f1f77bcf86cd799439011'];
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateIds: ids.join(',') });
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ [ids[0]]: 3, [ids[1]]: 2, [ids[2]]: 0 });
-    });
-
-    it('should reject invalid templateIds', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateIds: `${template1._id.toString()},invalid-id` });
-
-      expect(response.status).toBe(400);
     });
 
     it('should not depend on Accept-Language header', async () => {

@@ -1,11 +1,21 @@
 import Ajv from 'ajv';
 
-import { ObjectIdAsString, ObjectIdListAsString } from '#api/utils/ajvSchemas.js';
+import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import relationships from './relationships.js';
 import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
+
+const countAllByRelationType = async () => {
+  const types = await GetRelationshipTypesUseCaseFactory.default().execute({});
+  return Object.fromEntries(
+    await Promise.all(
+      types.map(async type => [type.id, await relationships.countByRelationType(type.id)])
+    )
+  );
+};
 
 class SelectionRectanglesIsEmptyError extends DomainError {
   constructor() {
@@ -183,24 +193,19 @@ export default app => {
       properties: {
         query: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             relationtypeId: ObjectIdAsString,
-            relationtypeIds: ObjectIdListAsString,
           },
-          anyOf: [{ required: ['relationtypeId'] }, { required: ['relationtypeIds'] }],
         },
       },
       required: ['query'],
     }),
     (req, res, next) => {
-      const { relationtypeId, relationtypeIds } = req.query;
+      const { relationtypeId } = req.query;
       const count = relationtypeId
         ? relationships.countByRelationType(relationtypeId)
-        : Promise.all(
-            relationtypeIds
-              .split(',')
-              .map(async id => [id, await relationships.countByRelationType(id)])
-          ).then(Object.fromEntries);
+        : countAllByRelationType();
       void count.then(response => res.json(response)).catch(next);
     }
   );

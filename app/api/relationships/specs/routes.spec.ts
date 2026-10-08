@@ -1,10 +1,10 @@
 import type { Application, Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import routes from '../routes.js';
 
 const factory = getFixturesFactory();
@@ -22,33 +22,32 @@ describe('relationships routes', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({
       settings: [{ languages: [{ key: 'en', label: 'EN', default: true }] }],
-      relationtypes: [factory.relationType('rel1'), factory.relationType('rel2')],
-      connections: factory.bidirectionalHub('hub1', { entity: 'e1', template: 'rel1' }, [
-        { entity: 'e2', template: 'rel1' },
-        { entity: 'e3', template: 'rel2' },
-      ]),
     });
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  describe('GET /api/references/count_by_relationtype', () => {
-    it('should return counts keyed by id for comma-separated relationtypeIds', async () => {
-      const ids = [factory.idString('rel1'), factory.idString('rel2'), factory.idString('unused')];
-      const { body, status } = await request(app)
-        .get('/api/references/count_by_relationtype')
-        .query({ relationtypeIds: ids.join(',') });
-
-      expect(status).toBe(200);
-      expect(body).toEqual({ [ids[0]]: 2, [ids[1]]: 1, [ids[2]]: 0 });
+  it('returns every relation type count when no id is passed', async () => {
+    await testingEnvironment.setUp({
+      settings: [{ languages: [{ key: 'en', label: 'EN', default: true }] }],
+      relationtypes: [
+        factory.relationType('rel1'),
+        factory.relationType('rel2'),
+        factory.relationType('unused'),
+      ],
+      connections: factory.bidirectionalHub('hub1', { entity: 'e1', template: 'rel1' }, [
+        { entity: 'e2', template: 'rel1' },
+        { entity: 'e3', template: 'rel2' },
+      ]),
     });
 
-    it('should reject invalid relationtypeIds', async () => {
-      const { status } = await request(app)
-        .get('/api/references/count_by_relationtype')
-        .query({ relationtypeIds: 'invalid-id' });
+    const { body, status } = await request(app).get('/api/references/count_by_relationtype');
 
-      expect(status).toBe(400);
+    expect(status).toBe(200);
+    expect(body).toEqual({
+      [factory.idString('rel1')]: 2,
+      [factory.idString('rel2')]: 1,
+      [factory.idString('unused')]: 0,
     });
   });
 

@@ -93,17 +93,31 @@ const setDefault = async (
   return [undefined as never];
 };
 
-const checkEntityCounts = async (
-  templateIds: string[],
-  headers?: IncomingHttpHeaders
-): Promise<ApiResponse<Record<string, number>>> => {
-  if (templateIds.length === 0) return [{}];
+type CountPayload = number | { value: number };
 
-  return apiClient.getJson<Record<string, number>>(
+const readCount = (count: CountPayload | undefined): number =>
+  typeof count === 'number' ? count : (count?.value ?? 0);
+
+const checkEntityCounts = async (
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<Record<string, number>>> =>
+  apiClient.getJson<Record<string, number>>(
     'v2/entities/count_by_template',
-    { templateIds: templateIds.join(',') },
+    {},
     { headers: requestHeaders(headers) }
   );
+
+const checkEntityCount = async (
+  templateId: string,
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<number>> => {
+  const [count, error] = await apiClient.getJson<CountPayload>(
+    'v2/entities/count_by_template',
+    { templateId },
+    { headers: requestHeaders(headers) }
+  );
+  if (error) return [undefined as never, error];
+  return [readCount(count)];
 };
 
-export { getAll, getById, upsert, remove, setDefault, checkEntityCounts };
+export { getAll, getById, upsert, remove, setDefault, checkEntityCounts, checkEntityCount };

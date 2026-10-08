@@ -5,7 +5,9 @@ import type {
 } from '#shared/contracts/RelationshipType.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import { apiClient } from '#V2/api/client.js';
-import { countByRelationTypes } from './countByRelationType.js';
+import * as counts from './countByRelationType.js';
+
+const { countByRelationType, countByRelationTypes } = counts;
 
 const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
   const mapped = Object.fromEntries(
@@ -78,4 +80,4 @@ const remove = async (id: string, headers?: IncomingHttpHeaders): Promise<ApiRes
   return [undefined];
 };
 
-export { getAll, upsert, remove, countByRelationTypes };
+export { getAll, upsert, remove, countByRelationType, countByRelationTypes };

@@ -1,9 +1,8 @@
 /**
  * @jest-environment node
  */
-import { ApiError } from '#shared/apiClient/index.js';
 import { apiClient } from '#V2/api/client.js';
-import { checkEntityCounts } from '../index.js';
+import { checkEntityCount, checkEntityCounts } from '../index.js';
 
 jest.mock('#V2/api/client.js', () => ({
   apiClient: {
@@ -16,32 +15,33 @@ describe('checkEntityCounts', () => {
     jest.mocked(apiClient.getJson).mockReset();
   });
 
-  it('skips HTTP when templateIds is empty', async () => {
-    await expect(checkEntityCounts([])).resolves.toEqual([{}]);
-    expect(apiClient.getJson).not.toHaveBeenCalled();
-  });
+  it('requests every template count with no id', async () => {
+    jest.mocked(apiClient.getJson).mockResolvedValue([{ t1: 3 }]);
 
-  it('requests all templateIds in a single call', async () => {
-    jest.mocked(apiClient.getJson).mockResolvedValue([{ t1: 3, t2: 0 }]);
-
-    const [counts, error] = await checkEntityCounts(['t1', 't2']);
+    const [counts, error] = await checkEntityCounts();
 
     expect(error).toBeUndefined();
-    expect(counts).toEqual({ t1: 3, t2: 0 });
-    expect(apiClient.getJson).toHaveBeenCalledTimes(1);
+    expect(counts).toEqual({ t1: 3 });
     expect(apiClient.getJson).toHaveBeenCalledWith(
       'v2/entities/count_by_template',
-      { templateIds: 't1,t2' },
-      { headers: undefined }
+      {},
+      {
+        headers: undefined,
+      }
     );
   });
 
-  it('returns the error', async () => {
-    const apiError = new ApiError('fail', { kind: 'http', status: 500 });
-    jest.mocked(apiClient.getJson).mockResolvedValue([undefined, apiError]);
+  it('reads one template count from the primitive wrapper', async () => {
+    jest.mocked(apiClient.getJson).mockResolvedValue([{ value: 4 }]);
 
-    const [, error] = await checkEntityCounts(['t1']);
+    const [count, error] = await checkEntityCount('t1');
 
-    expect(error).toBe(apiError);
+    expect(error).toBeUndefined();
+    expect(count).toBe(4);
+    expect(apiClient.getJson).toHaveBeenCalledWith(
+      'v2/entities/count_by_template',
+      { templateId: 't1' },
+      { headers: undefined }
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { countAllByTemplate, countOneByTemplate } from '#api/entities.v2/routes/index.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import type { Template } from '#shared/contracts/Template.js';
@@ -55,21 +55,21 @@ const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesServi
   },
 
   checkEntityCounts: async (
-    templateIds: string[],
     _options?: ServiceRequestOptions
   ): Promise<ApiResponse<Record<string, number>>> => {
     try {
-      if (!templateIds.length) {
-        return [{}];
-      }
+      return [await countAllByTemplate(User.createFrom(ctx.user ?? null))];
+    } catch (e) {
+      return [undefined as never, toApiError(e)];
+    }
+  },
 
-      const dao = EntitiesDAOFactory.default({
-        user: User.createFrom(ctx.user ?? null),
-      });
-      const entries = await Promise.all(
-        templateIds.map(async id => [id, await dao.countByTemplate(id)] as const)
-      );
-      return [Object.fromEntries(entries)];
+  checkEntityCount: async (
+    templateId: string,
+    _options?: ServiceRequestOptions
+  ): Promise<ApiResponse<number>> => {
+    try {
+      return [await countOneByTemplate(User.createFrom(ctx.user ?? null), templateId)];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }

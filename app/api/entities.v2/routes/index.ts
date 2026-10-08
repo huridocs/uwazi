@@ -1,8 +1,25 @@
 import type { Application, Request } from 'express';
 import { validation } from '#api/utils/index.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { ObjectIdAsString, ObjectIdListAsString } from '#api/utils/ajvSchemas.js';
+import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
+
+const countOneByTemplate = async (user: User, templateId: string): Promise<number> =>
+  EntitiesDAOFactory.default({ user }).countByTemplate(templateId);
+
+const countAllByTemplate = async (user: User): Promise<Record<string, number>> => {
+  const dao = EntitiesDAOFactory.default({ user });
+  const templates = await TemplatesDAOFactory.default().get();
+  return Object.fromEntries(
+    await Promise.all(
+      templates.map(async (template): Promise<[string, number]> => {
+        const id = template._id.toString();
+        return [id, await dao.countByTemplate(id)];
+      })
+    )
+  );
+};
 
 const entitiesRoutes = (app: Application) => {
   app.get(
@@ -12,31 +29,22 @@ const entitiesRoutes = (app: Application) => {
       properties: {
         query: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             templateId: ObjectIdAsString,
-            templateIds: ObjectIdListAsString,
           },
-          anyOf: [{ required: ['templateId'] }, { required: ['templateIds'] }],
         },
       },
       required: ['query'],
     }),
-    async (req: Request<{}, {}, {}, { templateId: string } | { templateIds: string }>, res) => {
-      const dao = EntitiesDAOFactory.default({ user: User.createFrom(req.user) });
-
-      if ('templateId' in req.query) {
-        res.json(await dao.countByTemplate(req.query.templateId));
-        return;
-      }
-
-      const ids = req.query.templateIds.split(',');
+    async (req: Request<{}, {}, {}, { templateId?: string }>, res) => {
+      const user = User.createFrom(req.user);
+      const { templateId } = req.query;
       res.json(
-        Object.fromEntries(
-          await Promise.all(ids.map(async id => [id, await dao.countByTemplate(id)]))
-        )
+        templateId ? await countOneByTemplate(user, templateId) : await countAllByTemplate(user)
       );
     }
   );
 };
 
-export { entitiesRoutes };
+export { entitiesRoutes, countOneByTemplate, countAllByTemplate };
