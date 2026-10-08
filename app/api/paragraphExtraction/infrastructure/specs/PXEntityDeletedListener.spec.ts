@@ -58,7 +58,9 @@ describe('PXEntityDeletedListener', () => {
     const eventBus = new EventsBus();
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -71,11 +73,13 @@ describe('PXEntityDeletedListener', () => {
     const eventBus = new EventsBus();
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(
-      new EntityDeletedEvent({
-        entity: factory.entityInMultipleLanguages(['en', 'pt'], 'entity_not_processed'),
-      })
-    );
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(
+        new EntityDeletedEvent({
+          entity: factory.entityInMultipleLanguages(['en', 'pt'], 'entity_not_processed'),
+        })
+      );
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -89,7 +93,9 @@ describe('PXEntityDeletedListener', () => {
     tenants.current().featureFlags!.paragraphExtraction = false;
     new PXEntityDeletedListener(eventBus).start();
 
-    await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection

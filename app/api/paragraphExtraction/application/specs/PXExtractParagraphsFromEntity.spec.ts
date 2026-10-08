@@ -61,6 +61,9 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { SegmentationDirectoryFactory } from '#segmentation';
 import { User } from '#api/users.v2/model/User.js';
 
+const toPlainStrings = <T>(rows: T[]): Record<string, unknown>[] =>
+  JSON.parse(JSON.stringify(rows));
+
 type TestConfig = {
   name: string;
   usePostgres: boolean;
@@ -197,13 +200,13 @@ describe('PXExtractParagraphsFromEntity', () => {
         )
       ).rejects.toThrow();
 
-      const entitiesStatus1 = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus1 = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus1).toMatchObject([
         {
-          _id: entityStatus1._id,
+          _id: entityStatus1._id.toString(),
           status: EntityStatus.Processing,
         },
       ]);
@@ -220,13 +223,13 @@ describe('PXExtractParagraphsFromEntity', () => {
         )
       ).rejects.toThrow();
 
-      const entitiesStatus2 = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus2 = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus2).toMatchObject([
         {
-          _id: entityStatus1._id,
+          _id: entityStatus1._id.toString(),
           status: EntityStatus.Error,
         },
       ]);
