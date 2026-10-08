@@ -39,6 +39,20 @@ class JobsDispatcherFactory {
     );
   }
 
+  /**
+   * Dispatches into the current tenant's namespace on the Mongo queue, whatever its postgresCore
+   * flag. Transitional: lets a postgresCore tenant reach jobs dispatched before it switched.
+   */
+  static mongoQueue(
+    mongoQueueAdapter: MongoQueueAdapterFactory = DefaultQueueAdapter
+  ): JobsDispatcher {
+    return UwaziDispatcherFactory(
+      ExecutionContext.currentTenant.name,
+      ExecutionContext.mongoTransactionManager,
+      mongoQueueAdapter(ExecutionContext.mongoTransactionManager)
+    );
+  }
+
   /** Dispatches into the 'system' namespace (migrations, scheduled maintenance jobs). */
   static system(): JobsDispatcher {
     return DefaultDispatcher(SYSTEM_NAMESPACE, TransactionManagerFactory.createForSharedDataBase());
