@@ -45,6 +45,8 @@ import {
   PageMigrationConfig,
   SegmentationsMigrationConfig,
   OcrRecordsMigrationConfig,
+  DatavizMigrationConfig,
+  DatavizSnapshotsMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -190,6 +192,8 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   ixsuggestions: IXSuggestionsMigrationConfig.mapDocument,
   segmentations: SegmentationsMigrationConfig.mapDocument,
   ocr_records: OcrRecordsMigrationConfig.mapDocument,
+  dataviz: DatavizMigrationConfig.mapDocument,
+  dataviz_snapshots: DatavizSnapshotsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -211,6 +215,8 @@ const MIRRORED_COLLECTIONS = [
   'ocr_records',
   'px_extractors',
   'px_entities_status',
+  'dataviz',
+  'dataviz_snapshots',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {

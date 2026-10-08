@@ -9,6 +9,12 @@ import { cancelPendingDatavizRefreshJobs } from './cancelPendingDatavizRefreshJo
 type Deps = {
   jobsDispatcher: JobsDispatcher;
   tenantName: string;
+  /**
+   * The tenant's Mongo queue, given only to postgresCore tenants: refresh jobs dispatched before
+   * the tenant switched wait there until their next run moves them to Postgres, so cancelling
+   * must reach them too. Drop once no such jobs remain.
+   */
+  mongoQueueDispatcher?: JobsDispatcher;
 };
 
 class DatavizSchedulerService implements DatavizScheduler {
@@ -16,6 +22,9 @@ class DatavizSchedulerService implements DatavizScheduler {
 
   async cancelPending(datavizId: string): Promise<void> {
     await cancelPendingDatavizRefreshJobs(this.deps.jobsDispatcher, datavizId);
+    if (this.deps.mongoQueueDispatcher) {
+      await cancelPendingDatavizRefreshJobs(this.deps.mongoQueueDispatcher, datavizId);
+    }
   }
 
   async schedule(dataviz: Dataviz, actor: User, runImmediately = true): Promise<void> {
