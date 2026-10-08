@@ -8,6 +8,7 @@ import { GetPublicDatavizEmbedUseCase } from '#api/dataviz.v2/application/useCas
 import { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { JobsDispatcherFactory } from '#api/core/infrastructure/factories/JobsDispatcherFactory.js';
 import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
@@ -94,6 +95,7 @@ class DatavizFactory {
     return new DatavizSchedulerService({
       jobsDispatcher: ExecutionContext.jobsDispatcher,
       tenantName: ExecutionContext.tenant.name,
+      mongoQueueDispatcher: isPostgresCoreActive() ? JobsDispatcherFactory.mongoQueue() : undefined,
     });
   }
 
