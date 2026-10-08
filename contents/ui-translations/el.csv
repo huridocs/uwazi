@@ -514,6 +514,7 @@ Entity type,Τύπος οντότητας
 Entity type (template),Τύπος οντότητας (πρότυπο)
 Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
+Entity view,Προβολή οντότητας
 Error,Σφάλμα
 Error adding thesauri.,Σφάλμα προσθήκης θησαυρών.
 Error loading your image,Σφάλμα φόρτωσης της εικόνας σας
@@ -1116,6 +1117,7 @@ Publish,Δημοσίευση
 Publish release,Δημοσίευση έκδοσης
 Published,Δημοσιευμένα
 Published and unpublished entities are counted.,Λαμβάνονται υπόψη τόσο οι δημοσιευμένες όσο και οι αδημοσίευτες οντότητες.
+Published view,Δημοσιευμένη προβολή
 QR Code,Κωδικός QR
 qr code,Κωδικός QR
 Query,Ερώτημα

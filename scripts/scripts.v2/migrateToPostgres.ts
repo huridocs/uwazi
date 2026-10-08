@@ -61,6 +61,10 @@ import { CsvImportRowErrorsMigrationConfig } from '#api/csv.v2/infrastructure/po
 import { CsvImportThesauriValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportThesauriValuesMigrationConfig.js';
 import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipPendingValuesMigrationConfig.js';
 import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
+import { PXExtractorsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXExtractorsMigrationConfig.js';
+import { PXEntitiesStatusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXEntitiesStatusMigrationConfig.js';
+import { DatavizMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizMigrationConfig.js';
+import { DatavizSnapshotsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizSnapshotsMigrationConfig.js';
 import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
 import { copyTenants } from '#api/core/infrastructure/postgresql/migrations/copyTenants.js';
 
@@ -92,6 +96,10 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   csv_import_thesauri_values: CsvImportThesauriValuesMigrationConfig,
   csv_import_relationships_pending_values: CsvImportRelationshipPendingValuesMigrationConfig,
   csv_import_relationships_values: CsvImportRelationshipValuesMigrationConfig,
+  px_extractors: PXExtractorsMigrationConfig,
+  px_entities_status: PXEntitiesStatusMigrationConfig,
+  dataviz: DatavizMigrationConfig,
+  dataviz_snapshots: DatavizSnapshotsMigrationConfig,
 };
 
 // Collections grouped by the feature flag that gates their migration. A group is
@@ -109,12 +117,16 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'translations',
     'entities',
     'connections',
+    'px_extractors',
+    'px_entities_status',
     'ix_extractors',
     'ix_models',
     'ix_suggestions',
     'segmentations',
     'ocr_records',
     'settings',
+    'dataviz',
+    'dataviz_snapshots',
     'updatelogs',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],

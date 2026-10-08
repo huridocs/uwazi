@@ -17,6 +17,20 @@ type FormMetadataProperty = {
   inherit?: { property?: string; type?: MetadataValue['inheritedType'] };
 };
 
+const ESCAPE: Record<string, string> = {
+  '~': '~7e',
+  '.': '~2e',
+  '[': '~5b',
+  ']': '~5d',
+  "'": '~27',
+  '"': '~22',
+};
+
+const metadataFormKey = (name: string) => name.replace(/[~.[\]'"]/g, char => ESCAPE[char] ?? char);
+
+const metadataFormPath = (name: string): `metadata.${string}` =>
+  `metadata.${metadataFormKey(name)}`;
+
 const PROPERTY_TYPES = new Set<string>(Object.values(propertyTypes));
 
 const isInheritedType = (value: unknown): value is NonNullable<MetadataValue['inheritedType']> =>
@@ -41,9 +55,11 @@ const formatMetadataForForm = (
   entityMetadata?: Entity['metadata']
 ): Record<string, MetadataValue[]> =>
   templateProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
-    acc[property.name] = (entityMetadata?.[property.name] ?? []).map(toFormMetadataValue);
+    acc[metadataFormKey(property.name)] = (entityMetadata?.[property.name] ?? []).map(
+      toFormMetadataValue
+    );
     return acc;
   }, {});
 
-export { formatMetadataForForm };
+export { formatMetadataForForm, metadataFormKey, metadataFormPath };
 export type { FormMetadataProperty };

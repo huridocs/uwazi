@@ -17,3 +17,5 @@ export { IXSuggestionsMigrationConfig } from './IXSuggestionsMigrationConfig.js'
 export { SegmentationsMigrationConfig } from './SegmentationsMigrationConfig.js';
 export { OcrRecordsMigrationConfig } from './OcrRecordsMigrationConfig.js';
 export { UpdateLogsMigrationConfig } from './UpdateLogsMigrationConfig.js';
+export { DatavizMigrationConfig } from './DatavizMigrationConfig.js';
+export { DatavizSnapshotsMigrationConfig } from './DatavizSnapshotsMigrationConfig.js';

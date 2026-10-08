@@ -13,10 +13,10 @@ const DATABASE_VARIABLES = [
 ];
 
 /**
- * Commands that read the search index and the session store. SESSIONS_BACKEND has a default, but
- * a wrong one would silently read the other store.
+ * Commands that read the session store. SESSIONS_BACKEND has a default, but a wrong one would
+ * silently read the other store.
  */
-const ELASTICSEARCH_VARIABLES = ['ELASTICSEARCH_URL', 'SESSIONS_BACKEND'];
+const SESSIONS_VARIABLES = ['SESSIONS_BACKEND'];
 
 class CliConfig {
   /**
@@ -31,7 +31,7 @@ class CliConfig {
     return [
       ...DATABASE_VARIABLES,
       ...(needs.redis ? ['REDIS_HOST'] : []),
-      ...(needs.elasticsearch ? ELASTICSEARCH_VARIABLES : []),
+      ...(needs.sessions ? SESSIONS_VARIABLES : []),
     ];
   }
 

@@ -13,6 +13,9 @@ import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
 
+const toPlainStrings = <T>(rows: T[]): Record<string, unknown>[] =>
+  JSON.parse(JSON.stringify(rows));
+
 type TestConfig = {
   name: string;
   usePostgres: boolean;
@@ -77,6 +80,7 @@ const document1En = factory.processedDocument('document_1_En', {
 const createFixtures = (): DBFixture => ({
   templates: [sourceTemplate, sourceTemplate2, targetTemplate],
   [mongoPXExtractorsCollection]: [extractor, extractor2],
+  [mongoPXEntitiesStatusCollection]: [],
   relationtypes: [sourceRelationship, targetRelationship],
   settings: [
     {
@@ -136,8 +140,8 @@ describe('PXEntityUpdatedListener', () => {
           })
         );
 
-        const entitiesStatus = await testingEnvironment.db.getAllFrom(
-          mongoPXEntitiesStatusCollection
+        const entitiesStatus = toPlainStrings(
+          await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
         );
 
         expect(entitiesStatus).toMatchObject([]);
@@ -161,16 +165,16 @@ describe('PXEntityUpdatedListener', () => {
           );
         });
 
-        const entitiesStatus = await testingEnvironment.db.getAllFrom(
-          mongoPXEntitiesStatusCollection
+        const entitiesStatus = toPlainStrings(
+          await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
         );
 
         expect(entitiesStatus).toMatchObject([
           {
-            _id: expect.any(ObjectId),
+            _id: expect.any(String),
             status: EntityStatus.New,
             entitySharedId: entity1[0].sharedId,
-            extractorId: extractor._id,
+            extractorId: extractor._id.toString(),
           },
         ]);
       });
@@ -193,12 +197,12 @@ describe('PXEntityUpdatedListener', () => {
           );
         });
 
-        const entitiesStatus = await testingEnvironment.db.getAllFrom(
-          mongoPXEntitiesStatusCollection
+        const entitiesStatus = toPlainStrings(
+          await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
         );
 
         expect(entitiesStatus).toHaveLength(1);
-        expect(entitiesStatus).not.toMatchObject([entityStatus1]);
+        expect(entitiesStatus).not.toMatchObject(toPlainStrings([entityStatus1]));
       });
 
       it('should delete old EntityStatus and create new if Entity can be use for extraction', async () => {
@@ -220,18 +224,17 @@ describe('PXEntityUpdatedListener', () => {
           );
         });
 
-        const entitiesStatus = await testingEnvironment.db.getAllFrom(
-          mongoPXEntitiesStatusCollection
+        const entitiesStatus = toPlainStrings(
+          await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
         );
 
         expect(entitiesStatus).toMatchObject([
-          entityStatus2,
-          entityStatus3,
+          ...toPlainStrings([entityStatus2, entityStatus3]),
           {
-            _id: expect.any(ObjectId),
+            _id: expect.any(String),
             status: EntityStatus.New,
             entitySharedId: entity1[0].sharedId,
-            extractorId: extractor2._id,
+            extractorId: extractor2._id.toString(),
           },
         ]);
       });
@@ -254,11 +257,11 @@ describe('PXEntityUpdatedListener', () => {
           })
         );
 
-        const entitiesStatus = await testingEnvironment.db.getAllFrom(
-          mongoPXEntitiesStatusCollection
+        const entitiesStatus = toPlainStrings(
+          await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
         );
 
-        expect(entitiesStatus).toEqual([entityStatus1]);
+        expect(entitiesStatus).toEqual(toPlainStrings([entityStatus1]));
       });
     });
   });

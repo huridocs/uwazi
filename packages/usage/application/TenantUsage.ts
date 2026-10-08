@@ -14,8 +14,6 @@ type TenantUsage = {
   dbStorage: number;
   /** Bytes per engine. The PostgreSQL figure is an estimate from the tenant's row sizes. */
   dbStorageByEngine: { mongo: number; postgres: number };
-  /** Bytes of the tenant's search index. */
-  elasticStorage: number;
   /** Epoch ms of the latest session activity, accurate to a day; null when there is none. */
   lastSession: number | null;
 };

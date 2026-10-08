@@ -1,4 +1,4 @@
--- Migration 029: create-updatelogs-table
+-- Migration 032: create-updatelogs-table
 -- Sync change log. One row per document id, same upsert key as the Mongo collection.
 
 CREATE TABLE IF NOT EXISTS updatelogs (

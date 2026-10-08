@@ -28,6 +28,7 @@
       "#ocr/composition": ["./packages/ocr/composition.ts"],
       "#segmentation": ["./packages/segmentation/index.ts"],
       "#segmentation/composition": ["./packages/segmentation/composition.ts"],
+      "#activitylog": ["./packages/activitylog/index.ts"],
       "#usage": ["./packages/usage/index.ts"],
       "#usage/composition": ["./packages/usage/composition.ts"],
       "#UI": ["./app/react/UI"],

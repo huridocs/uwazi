@@ -13,7 +13,7 @@ class GetTenantRoute implements Route<TenantNameInput, TenantOutput> {
 
   readonly tenancy = 'none';
 
-  readonly needs = { redis: false, elasticsearch: false };
+  readonly needs = { redis: false, sessions: false };
 
   readonly request = TenantNameInputSchema;
 

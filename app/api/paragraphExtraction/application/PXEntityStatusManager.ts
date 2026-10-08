@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileType } from '#api/core/domain/files/FileType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -15,7 +15,7 @@ import { PXValidationError } from '../domain/PXValidationError.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  entitiesDS: DeprecatedEntitiesDataSource;
+  entitiesDS: EntitiesDataSource;
   settingsDS: SettingsDataSource;
   extractorsDS: PXExtractorsDataSource;
   filesDS: FilesDataSource;
@@ -71,7 +71,8 @@ export class PXEntityStatusManager {
       );
     }
 
-    const [entity] = await this.dependencies.entitiesDS.getByIds([after.entity]).all();
+    const entities = await this.dependencies.entitiesDS.getEntitiesBySharedIds([after.entity]);
+    const [entity] = await entities.all();
 
     if (!entity) {
       throw new PXValidationError(
@@ -80,9 +81,7 @@ export class PXEntityStatusManager {
       );
     }
 
-    const extractor = await this.dependencies.extractorsDS.getBySourceTemplate(
-      entity.template!.toString()
-    );
+    const extractor = await this.dependencies.extractorsDS.getBySourceTemplate(entity.template.id);
 
     if (!extractor) {
       throw new PXValidationError(

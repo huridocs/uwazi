@@ -11,12 +11,11 @@ class UsageReportRoute implements Route<NoInput, UsageReportOutput> {
 
   readonly name = 'report';
 
-  readonly describe =
-    'Report what a tenant consumes: content, storage, search index, last activity';
+  readonly describe = 'Report what a tenant consumes: content, storage, last activity';
 
   readonly tenancy = 'single-or-all';
 
-  readonly needs = { redis: false, elasticsearch: true };
+  readonly needs = { redis: false, sessions: true };
 
   /** Takes no input of its own: --tenant / --all-tenants come from its tenancy. */
   readonly request = NoInput;

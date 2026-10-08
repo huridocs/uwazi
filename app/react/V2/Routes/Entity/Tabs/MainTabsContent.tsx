@@ -1,10 +1,6 @@
 import React, { useEffect, type ReactNode } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import {
-  useMetadataEditing,
-  useEntityPageView,
-  EntityPageViewer,
-} from '../Components/context/index.js';
+import { useMetadataEditing } from '../Components/context/index.js';
 import { MAIN_TAB, type MainTabId } from './tabIds.js';
 import { MAIN_TAB_PAPER_PADDING, mainTabPanelSurfaceClass } from './tabSurface.js';
 import { keepMetadataTab } from '../Components/context/metadataEditingSession.js';
@@ -70,20 +66,15 @@ const useMainTabsPanel = ({
   const activeTabId = useResolvedEntityMainTab(urlActiveTabId, groupId);
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
-  const { hasEntityPageView } = useEntityPageView();
   const metadataActive = activeTabId === MAIN_TAB.METADATA;
   useEffect(() => {
-    registerMetadataActive('main', metadataActive && !hasEntityPageView);
+    registerMetadataActive('main', metadataActive);
     return () => registerMetadataActive('main', false);
-  }, [metadataActive, hasEntityPageView, registerMetadataActive]);
+  }, [metadataActive, registerMetadataActive]);
   return {
     activeTabId,
     metadataActive,
-    // When the template uses an entity view page, the main Metadata tab shows the page
-    // instead of MetadataTab. Side panel Metadata is unchanged.
-    showEntityPageOnMain: hasEntityPageView && metadataActive,
-    showMetadataOnMain:
-      keepMetadataTab(metadataActive, isEditing, formMountHost, 'main') && !hasEntityPageView,
+    showMetadataOnMain: keepMetadataTab(metadataActive, isEditing, formMountHost, 'main'),
     content: mainTabSwitchContent({
       activeTabId,
       entity,
@@ -98,7 +89,7 @@ const useMainTabsPanel = ({
 const MainTabsContentComponent = (props: MainTabsContentProps) => {
   const panel = useMainTabsPanel(props);
   const panelGroupId = props.groupId ?? 'entity-main';
-  if (!panel.content && !panel.showMetadataOnMain && !panel.showEntityPageOnMain) return null;
+  if (!panel.content && !panel.showMetadataOnMain) return null;
   return (
     <div
       role="tabpanel"
@@ -111,7 +102,6 @@ const MainTabsContentComponent = (props: MainTabsContentProps) => {
           <MetadataTab entity={props.entity} host="main" />
         </div>
       ) : null}
-      {panel.showEntityPageOnMain ? <EntityPageViewer /> : null}
       {!panel.metadataActive ? panel.content : null}
       {panel.activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
