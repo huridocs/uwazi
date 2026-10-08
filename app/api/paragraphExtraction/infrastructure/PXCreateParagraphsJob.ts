@@ -5,7 +5,7 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXExtractionService } from '../domain/PXExtractionService.js';
-import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
@@ -22,7 +22,7 @@ type PXCreateParagraphsJobParams = UwaziJobParams & {
 type Dependencies = {
   extractionService: PXExtractionService;
   useCase: PXCreateParagraphs;
-  pxEntitiesStatusDS: MongoPXEntitiesStatusDataSource;
+  pxEntitiesStatusDS: PXEntitiesStatusDataSource;
 };
 
 @QueueOptions({ lockWindow: 1000 * 60 })

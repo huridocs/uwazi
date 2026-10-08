@@ -1,6 +1,6 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
@@ -22,10 +22,10 @@ export class PXEntityDeletedListener {
   private setupDependencies() {
     if (!this.dependencies) {
       const connection = getConnection();
-      const mongoTransactionManager = TransactionManagerFactory.mongo();
+      const { transactionManager } = ExecutionContext;
       const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
-        mongoTransactionManager,
+        mongoTransactionManager: transactionManager,
       });
 
       this.dependencies = { entitiesStatusDS };

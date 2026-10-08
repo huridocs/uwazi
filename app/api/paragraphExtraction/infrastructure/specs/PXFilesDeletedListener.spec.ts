@@ -13,6 +13,9 @@ import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
 import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
 import { PXFilesDeletedListener } from '../PXFilesDeletedListener.js';
 
+const toPlainStrings = <T>(rows: T[]): Record<string, unknown>[] =>
+  JSON.parse(JSON.stringify(rows));
+
 type TestConfig = {
   name: string;
   usePostgres: boolean;
@@ -238,7 +241,7 @@ describe('PXFilesDeletedListener', () => {
         mongoPXEntitiesStatusCollection
       );
 
-      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+      expect(toPlainStrings(mongoEntitiesStatus)).toEqual(toPlainStrings([mongoEntityStatus]));
     });
 
     it('should do nothing if there are no Documents in UI languages among Documents deleted', async () => {
@@ -255,7 +258,7 @@ describe('PXFilesDeletedListener', () => {
         mongoPXEntitiesStatusCollection
       );
 
-      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+      expect(toPlainStrings(mongoEntitiesStatus)).toEqual(toPlainStrings([mongoEntityStatus]));
     });
 
     it('should do nothing if the deleted Document was not the one used to be extracted', async () => {
@@ -280,7 +283,7 @@ describe('PXFilesDeletedListener', () => {
         mongoPXEntitiesStatusCollection
       );
 
-      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+      expect(toPlainStrings(mongoEntitiesStatus)).toEqual(toPlainStrings([mongoEntityStatus]));
     });
 
     it('should do nothing if the source Entity was not the one used to be extracted', async () => {
@@ -297,7 +300,7 @@ describe('PXFilesDeletedListener', () => {
         mongoPXEntitiesStatusCollection
       );
 
-      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+      expect(toPlainStrings(mongoEntitiesStatus)).toEqual(toPlainStrings([mongoEntityStatus]));
     });
   });
 });

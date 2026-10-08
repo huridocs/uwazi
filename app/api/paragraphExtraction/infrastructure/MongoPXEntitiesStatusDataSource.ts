@@ -190,7 +190,7 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async deleteBySourceEntity(entitySharedId: string): Promise<void> {
-    await this.getCollection().deleteOne({ entitySharedId });
+    await this.getCollection().deleteMany({ entitySharedId });
   }
 
   getAll(input: Partial<PXEntityStatusModel>): ResultSet<PXEntityStatusModel> {

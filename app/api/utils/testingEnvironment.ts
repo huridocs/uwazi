@@ -146,6 +146,23 @@ const sanitizeConnectionForPostgres = (connection: Record<string, unknown>) => (
   range: toPostgresJsonb(connection.range),
 });
 
+const sanitizePXExtractorForPostgres = (extractor: Record<string, unknown>) => ({
+  _id: toPostgresId(extractor._id),
+  sourceTemplateId: toPostgresId(extractor.sourceTemplateId),
+  targetTemplateId: toPostgresId(extractor.targetTemplateId),
+  paragraphNumberPropertyId: toPostgresId(extractor.paragraphNumberPropertyId),
+  paragraphPropertyId: toPostgresId(extractor.paragraphPropertyId),
+  sourceRelationshipTypeId: toPostgresId(extractor.sourceRelationshipTypeId),
+  targetRelationshipTypeId: toPostgresId(extractor.targetRelationshipTypeId),
+});
+
+const sanitizePXEntityStatusForPostgres = (status: Record<string, unknown>) => ({
+  _id: toPostgresId(status._id),
+  entitySharedId: status.entitySharedId,
+  extractorId: toPostgresId(status.extractorId),
+  status: status.status,
+});
+
 // A mongo pages document holds its locales nested; in postgres they are their own table.
 const PG_FANOUT_BY_MONGO_COLLECTION: Record<
   string,
@@ -165,6 +182,8 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   translationsV2: sanitizeTranslationForPostgres,
   settings: sanitizeSettingsForPostgres,
   connections: sanitizeConnectionForPostgres,
+  px_extractors: sanitizePXExtractorForPostgres,
+  px_entities_status: sanitizePXEntityStatusForPostgres,
   pages: PageMigrationConfig.mapDocument,
   ixextractors: IXExtractorsMigrationConfig.mapDocument,
   ixmodels: IXModelsMigrationConfig.mapDocument,
@@ -190,6 +209,8 @@ const MIRRORED_COLLECTIONS = [
   'connections',
   'segmentations',
   'ocr_records',
+  'px_extractors',
+  'px_entities_status',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
@@ -477,6 +498,14 @@ const testingEnvironment = {
             ...(row.template ? { template: new ObjectId(String(row.template)) } : {}),
             ...(row.sharedId ? { sharedId: new ObjectId(String(row.sharedId)) } : {}),
           }));
+        }
+        if (collectionName === 'px_extractors') {
+          const rows = await testingPG.getAllFrom<Record<string, unknown>>('px_extractors');
+          return rows.map(({ tenant_id: _tenantId, ...rest }) => rest);
+        }
+        if (collectionName === 'px_entities_status') {
+          const rows = await testingPG.getAllFrom<Record<string, unknown>>('px_entities_status');
+          return rows.map(({ tenant_id: _tenantId, ...rest }) => rest);
         }
       }
       if (!testingDB.mongodb) {
