@@ -35,13 +35,14 @@ import { DatavizSchedulerService } from '../services/DatavizSchedulerService.js'
 import { DatavizScheduledRefreshJobHandler } from '../jobHandlers/DatavizScheduledRefreshJobHandler.js';
 
 class DatavizFactory {
-  private static getTransactionManager(): MongoTransactionManager {
+  private static getMongoTransactionManager(): MongoTransactionManager {
     return ExecutionContext.mongoTransactionManager;
   }
 
+  /** Flag-aware: the use cases' writes join the transaction of the backend that stores them. */
   private static getExecutionScope() {
-    const { tenant, actor } = ExecutionContext;
-    return { tenant, actor, transactionManager: this.getTransactionManager() };
+    const { tenant, actor, transactionManager } = ExecutionContext;
+    return { tenant, actor, transactionManager };
   }
 
   private static postgresDeps() {
@@ -69,7 +70,7 @@ class DatavizFactory {
   }
 
   static queryExecutor() {
-    const transactionManager = this.getTransactionManager();
+    const transactionManager = this.getMongoTransactionManager();
 
     const deps = {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
@@ -176,7 +177,7 @@ class DatavizFactory {
         datavizDS: this.dataSource(),
         snapshotsDS: this.snapshotsDataSource(),
         settingsDS: SettingsDataSourceFactory.default({
-          transactionManager: this.getTransactionManager(),
+          transactionManager: this.getMongoTransactionManager(),
         }),
         queryExecutor: this.queryExecutor(),
         templatesDS: TemplatesDataSourceFactory.default(),
