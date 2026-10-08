@@ -70,13 +70,11 @@ const NotificationsProbe = () => {
 
 const interceptCounts = (counts: { [id: string]: number } = {}) => {
   cy.intercept('GET', '**/references/count_by_relationtype*', req => {
-    const id = new URL(req.url).searchParams.get('relationtypeId') ?? '';
-    const count = counts[id];
-    if (count === undefined) {
+    if (new URL(req.url).searchParams.has('relationtypeId')) {
       req.reply({ statusCode: 500, body: {} });
       return;
     }
-    req.reply({ statusCode: 200, body: { value: count } });
+    req.reply({ statusCode: 200, body: counts });
   }).as('countRefs');
 };
 

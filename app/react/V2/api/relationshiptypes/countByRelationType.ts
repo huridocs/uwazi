@@ -28,18 +28,14 @@ const countByRelationType = async (
   return parseCount(data);
 };
 
-const countByRelationTypes = async (
-  ids: string[],
-  signal?: AbortSignal
-): Promise<{ [id: string]: number }> => {
-  if (ids.length === 0) return {};
-  const entries = await Promise.all(
-    ids.map(async id => ({ id, count: await countByRelationType(id, signal) }))
+const countByRelationTypes = async (signal?: AbortSignal): Promise<{ [id: string]: number }> => {
+  const [counts, error] = await apiClient.getJson<{ [id: string]: number }>(
+    'references/count_by_relationtype',
+    {},
+    { signal }
   );
-  return entries.reduce<{ [id: string]: number }>((acc, { id, count }) => {
-    if (count !== undefined) acc[id] = count;
-    return acc;
-  }, {});
+  if (error || counts === undefined) return {};
+  return counts;
 };
 
 export { countByRelationType, countByRelationTypes };

@@ -27,7 +27,7 @@ describe('ServerRelationshipTypesService', () => {
   });
 
   it('countByTypes returns an empty map', async () => {
-    const [data, error] = await service.countByTypes(['rt1']);
+    const [data, error] = await service.countByTypes();
 
     expect(error).toBeUndefined();
     expect(data).toEqual({});

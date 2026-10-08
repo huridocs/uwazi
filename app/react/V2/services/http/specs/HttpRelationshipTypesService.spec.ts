@@ -31,9 +31,9 @@ describe('HttpRelationshipTypesService', () => {
     const { signal } = new AbortController();
     jest.mocked(relationshipTypesApi.countByRelationTypes).mockResolvedValue({ rt1: 3 });
 
-    const [data, error] = await httpRelationshipTypesService.countByTypes(['rt1'], { signal });
+    const [data, error] = await httpRelationshipTypesService.countByTypes({ signal });
 
-    expect(relationshipTypesApi.countByRelationTypes).toHaveBeenCalledWith(['rt1'], signal);
+    expect(relationshipTypesApi.countByRelationTypes).toHaveBeenCalledWith(signal);
     expect(error).toBeUndefined();
     expect(data).toEqual({ rt1: 3 });
   });

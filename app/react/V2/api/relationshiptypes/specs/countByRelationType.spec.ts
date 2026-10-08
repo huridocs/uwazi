@@ -1,9 +1,9 @@
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
 import { ApiError } from '#shared/apiClient/index.js';
 import { apiClient } from '#V2/api/client.js';
-import { countByRelationType, countByRelationTypes } from './countByRelationType.js';
+import { countByRelationType, countByRelationTypes } from '../countByRelationType.js';
 
 jest.mock('#V2/api/client.js', () => ({
   apiClient: {
@@ -58,35 +58,26 @@ describe('countByRelationTypes', () => {
     jest.mocked(apiClient.getJson).mockReset();
   });
 
-  it('skips HTTP when ids is empty', async () => {
-    await expect(countByRelationTypes([])).resolves.toEqual({});
-    expect(apiClient.getJson).not.toHaveBeenCalled();
-  });
-
-  it('returns counts for each id and unwraps { value }', async () => {
-    jest
-      .mocked(apiClient.getJson)
-      .mockResolvedValueOnce([{ value: 1 }])
-      .mockResolvedValueOnce([4]);
+  it('requests every relation type count with no id', async () => {
     const controller = new AbortController();
-    await expect(countByRelationTypes(['a', 'b'], controller.signal)).resolves.toEqual({
-      a: 1,
-      b: 4,
-    });
-    expect(apiClient.getJson).toHaveBeenCalledTimes(2);
-    expect(apiClient.getJson).toHaveBeenNthCalledWith(
-      1,
+    jest.mocked(apiClient.getJson).mockResolvedValue([{ a: 1, b: 4 }]);
+
+    await expect(countByRelationTypes(controller.signal)).resolves.toEqual({ a: 1, b: 4 });
+    expect(apiClient.getJson).toHaveBeenCalledTimes(1);
+    expect(apiClient.getJson).toHaveBeenCalledWith(
       'references/count_by_relationtype',
-      { relationtypeId: 'a' },
-      { signal: controller.signal }
+      {},
+      {
+        signal: controller.signal,
+      }
     );
   });
 
-  it('omits ids whose count fails and does not fail the batch', async () => {
+  it('returns an empty map when the request fails', async () => {
     jest
       .mocked(apiClient.getJson)
-      .mockResolvedValueOnce([3])
-      .mockResolvedValueOnce([undefined, new ApiError('fail', { kind: 'http', status: 500 })]);
-    await expect(countByRelationTypes(['ok', 'bad'])).resolves.toEqual({ ok: 3 });
+      .mockResolvedValue([undefined, new ApiError('fail', { kind: 'http', status: 500 })]);
+
+    await expect(countByRelationTypes()).resolves.toEqual({});
   });
 });
