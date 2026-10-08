@@ -7,6 +7,9 @@ import { GetDatavizDataUseCase } from '#api/dataviz.v2/application/useCases/GetD
 import { GetPublicDatavizEmbedUseCase } from '#api/dataviz.v2/application/useCases/GetPublicDatavizEmbed.js';
 import { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
+import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
@@ -21,6 +24,8 @@ import { MongoDatavizDataSource } from '../mongodb/MongoDatavizDataSource.js';
 import { MongoDatavizSnapshotsDataSource } from '../mongodb/MongoDatavizSnapshotsDataSource.js';
 import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.js';
 import { PostgresDatavizQueryExecutor } from '../postgresql/PostgresDatavizQueryExecutor.js';
+import { PostgresDatavizDataSource } from '../postgresql/PostgresDatavizDataSource.js';
+import { PostgresDatavizSnapshotsDataSource } from '../postgresql/PostgresDatavizSnapshotsDataSource.js';
 import { DatavizQueryOrchestrator } from '#api/dataviz.v2/application/services/DatavizQueryOrchestrator.js';
 import type {
   EntitiesReadDAO,
@@ -39,12 +44,28 @@ class DatavizFactory {
     return { tenant, actor, transactionManager: this.getTransactionManager() };
   }
 
-  static dataSource() {
-    return new MongoDatavizDataSource(getConnection(), this.getTransactionManager());
+  private static postgresDeps() {
+    return {
+      tenantId: ExecutionContext.tenant.name,
+      pgTransactionManager: ExecutionContext.postgresTransactionManager,
+    };
   }
 
-  static snapshotsDataSource() {
-    return new MongoDatavizSnapshotsDataSource(getConnection(), this.getTransactionManager());
+  static dataSource(): DatavizDataSource {
+    if (isPostgresCoreActive()) {
+      return new PostgresDatavizDataSource(this.postgresDeps());
+    }
+    return new MongoDatavizDataSource(getConnection(), ExecutionContext.mongoTransactionManager);
+  }
+
+  static snapshotsDataSource(): DatavizSnapshotsDataSource {
+    if (isPostgresCoreActive()) {
+      return new PostgresDatavizSnapshotsDataSource(this.postgresDeps());
+    }
+    return new MongoDatavizSnapshotsDataSource(
+      getConnection(),
+      ExecutionContext.mongoTransactionManager
+    );
   }
 
   static queryExecutor() {
