@@ -6,11 +6,11 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
@@ -34,15 +34,15 @@ export class PXFilesDeletedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const filesDS = FilesDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const fileStorage = FileStorageFactory.default();
 

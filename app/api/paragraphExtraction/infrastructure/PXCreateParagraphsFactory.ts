@@ -1,10 +1,10 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
@@ -17,22 +17,22 @@ import { DispatcherFactory } from '#api/core/infrastructure/factories/Dispatcher
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.cached({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const templatesDS = TemplatesDataSourceFactory.cached({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const thesauriDS = ThesauriDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const translationsDS = TranslationsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const entitiesDS = EntitiesDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const jobsDispatcher = DispatcherFactory.default();
 
@@ -48,18 +48,18 @@ export class PXCreateParagraphsFactory {
       entitiesDS,
       eventBus: applicationEventsBus,
       settingsDS,
-      transactionManager: mongoTransactionManager,
+      transactionManager,
       dispatcher: jobsDispatcher,
     });
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     return new PXCreateParagraphs(
@@ -69,7 +69,7 @@ export class PXCreateParagraphsFactory {
         entitiesStatusDS,
         entitiesService,
         propertyAssignmentStrategy,
-        transactionManager: mongoTransactionManager,
+        transactionManager,
       },
       batchSize
     );

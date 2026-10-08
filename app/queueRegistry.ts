@@ -48,12 +48,11 @@ import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jo
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
-import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
 import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
-import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 import { AIAssistantFactory } from '#api/aiAssistant/infrastructure/AIAssistantFactory.js';
 import { AIAssistantPollRequestJob } from '#api/aiAssistant/infrastructure/jobs/AIAssistantPollRequestJob.js';
 import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
@@ -142,21 +141,14 @@ export function registerJobs(register: Register) {
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const connection = getConnection();
-    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-      connection,
-      transactionManager,
-    });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
       useCase: PXCreateParagraphsFactory.createDefault(),
-      pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
+      pxEntitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
-        transactionManager,
-        settingsDS,
-        extractorsQueryService
-      ),
+        mongoTransactionManager: transactionManager,
+      }),
     });
   });
 

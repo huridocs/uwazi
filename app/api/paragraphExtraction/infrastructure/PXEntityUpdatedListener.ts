@@ -2,7 +2,7 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
@@ -37,22 +37,22 @@ export class PXEntityUpdatedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const filesDS = FilesDataSourceFactory.default({ transactionManager });
 
     const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     this.dependencies = {
