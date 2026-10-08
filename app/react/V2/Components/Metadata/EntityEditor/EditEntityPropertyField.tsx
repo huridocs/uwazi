@@ -24,7 +24,7 @@ import {
 } from './Components/index.js';
 import type { EditEntityFormValues } from './functions/buildEditEntityDefaultValues.js';
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
-import type { FormMetadataProperty } from './functions/formatMetadataForForm.js';
+import { metadataFormPath, type FormMetadataProperty } from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
 import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
@@ -155,12 +155,12 @@ const EditEntityPropertyField = ({
   }
 
   if (property.type === 'relationship') {
-    const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
+    const fieldPath = metadataFormPath(property.groupedRelationshipNames?.[0] ?? property.name);
     return (
       <RelationshipField<EditEntityFormValues>
         context={context}
         label={property.label}
-        field={`metadata.${fieldName}`}
+        field={fieldPath}
         registerOptions={registerOptions}
         disabled={disabled}
         targetTemplateId={property.content}
@@ -172,7 +172,7 @@ const EditEntityPropertyField = ({
             : undefined
         }
         lookupSearch={async search => {
-          const selectedValues = getValues(`metadata.${fieldName}`) ?? [];
+          const selectedValues = getValues(fieldPath) ?? [];
           const lookedUp = await relationshipLookup({
             search,
             template: property.content,

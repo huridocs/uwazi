@@ -2,8 +2,12 @@ import type { Entity } from '#V2/api/entities/types.js';
 import type { ClientFile } from '#app/istore.js';
 import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
-import { buildEditEntitySaveInput, formatMetadataForEntity } from '../editEntityMetadata.js';
-import type { FormMetadataProperty } from '../formatMetadataForForm.js';
+import { metadataFormKey, type FormMetadataProperty } from '../formatMetadataForForm.js';
+import {
+  buildEditEntitySaveInput,
+  formatMetadataForEntity,
+  mediaPropertyNamesForSave,
+} from '../editEntityMetadata.js';
 import { EMPTY_ICON } from '../../Components/IconField.js';
 
 describe('formatMetadataForEntity', () => {
@@ -264,6 +268,27 @@ describe('buildEditEntitySaveInput', () => {
       expect(saved.translations).toEqual({
         es: { title: [{ value: 'Nuevo' }], photo: [{ value: 'esPhoto' }] },
       });
+    });
+
+    it('keeps a pending upload when the form stores an escaped media property name', () => {
+      const name = "hrd's_photo";
+      const photo: FormMetadataProperty = { _id: 'p', type: 'image', name, label: "HRD's photo" };
+      const names = mediaPropertyNamesForSave([photo, properties[0]]);
+      const saved = buildEditEntitySaveInput({
+        entity,
+        currentLanguage: 'en',
+        values: {
+          ...values,
+          metadata: { [metadataFormKey(name)]: [{ value: 'esPhoto' }] },
+        },
+        metadataProperties: [photo],
+        pendingAttachments: [pending],
+        mediaPropertyNames: names,
+        languages: langs,
+      });
+      expect([...names]).toEqual([name]);
+      expect(saved.metadata).toEqual({ [name]: [{ value: 'esPhoto' }] });
+      expect(saved.attachments).toEqual([{ _id: 'a1', filename: 'existing.pdf' }, pending]);
     });
   });
 });

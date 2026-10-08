@@ -5,10 +5,12 @@ import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 
 type FlowbiteTooltipProps = React.ComponentProps<typeof FlowbiteTooltip>;
 type TooltipSize = 'sm' | 'nano';
+type TooltipTone = 'theme' | 'ink';
 
 type TooltipProps = Omit<FlowbiteTooltipProps, 'theme'> & {
   size?: TooltipSize;
   theme?: FlowbiteTooltipProps['theme'];
+  tone?: TooltipTone;
 };
 
 const sizeBase: Record<TooltipSize, string> = {
@@ -16,24 +18,32 @@ const sizeBase: Record<TooltipSize, string> = {
   nano: 'absolute z-10 inline-block rounded-md px-2 py-1 text-micro font-medium leading-snug',
 };
 
-const lightSurface = 'tooltip-light-surface';
-
-const Tooltip = ({ style, theme, placement = 'top', size = 'sm', ...props }: TooltipProps) => {
+const Tooltip = ({
+  style,
+  theme,
+  placement = 'top',
+  size = 'sm',
+  tone = 'theme',
+  ...props
+}: TooltipProps) => {
   const themeMode = useAtomValue(effectiveThemeModeAtom);
+  const ink = tone === 'ink' || themeMode === 'dark';
 
   return (
     <FlowbiteTooltip
       placement={placement}
-      style={style ?? (themeMode === 'dark' ? 'dark' : 'light')}
+      style={ink ? 'dark' : (style ?? 'light')}
       theme={{
         ...theme,
         base: theme?.base ?? sizeBase[size],
         style: {
-          light: lightSurface,
+          light: 'tooltip-light-surface',
+          dark: 'bg-ink text-parchment',
           ...theme?.style,
         },
         arrow: {
-          placement: '-6px',
+          base: 'absolute z-10 h-2 w-2 rotate-45',
+          placement: '-4px',
           ...theme?.arrow,
           style: {
             light: 'bg-paper',
@@ -50,4 +60,4 @@ const Tooltip = ({ style, theme, placement = 'top', size = 'sm', ...props }: Too
 };
 
 export { Tooltip };
-export type { TooltipProps, TooltipSize };
+export type { TooltipProps, TooltipSize, TooltipTone };
