@@ -229,6 +229,7 @@ Click to select files,انقر لاختيار الملفات
 Close,غلق
 Close filters,إغلاق عوامل التصفية
 Close modal,إغلاق النافذة
+Close selection list,إغلاق قائمة التحديد
 Close side panel,إغلاق اللوحة الجانبية
 Code,الكود
 Collaborator,متعاون/ مساهم
@@ -513,6 +514,7 @@ Entity type,نوع الكيان
 Entity type (template),نوع الكيان (القالب)
 Entity types,أنواع الكيانات
 Entity updated,تم تحديث الكيان
+Entity view,عرض الكيان
 Error,خطأ
 Error adding thesauri.,حدث خطأ أثناء إضافة قواميس المرادفات.
 Error loading your image,حدث خطأ أثناء تحميل صورتك
@@ -1115,6 +1117,7 @@ Publish,انشر
 Publish release,نشر الإصدار
 Published,منشور
 Published and unpublished entities are counted.,يتم احتساب الكيانات المنشورة وغير المنشورة.
+Published view,العرض المنشور
 QR Code,رمز الاستجابة السريعة
 qr code,رمز QR
 Query,استعلام
@@ -1162,6 +1165,7 @@ Remove,إزالة
 Remove data source,إزالة مصدر البيانات
 Remove filter,إزالة عامل التصفية
 Remove from connection,إزالة من الارتباط
+Remove from selection,إزالة من التحديد
 Remove from training set,إزالة من مجموعة التدريب
 remove icon,إزالة الأيقونة
 Remove icon,إزالة الرمز
@@ -1284,9 +1288,11 @@ Select...,اختار...
 Select…,تحديد…
 Selected,مُختار
 selected,المحدد
+Selected entities,الكيانات المحددة
 selected of,مختار من
 Selected or suggested,مختارة أو مقترحة
 Selected templates,قوالب مختارة
+Selection,التحديد
 Send,إرسال
 Send message,إرسال الرسالة
 Send recovery email,إرسل بريد الكتروني للاستعادة
@@ -1505,6 +1511,7 @@ this template,هذا النموذج
 This template is in use by existing entities and cannot be deleted.,هذا القالب قيد الاستخدام من قبل كيانات قائمة ولا يمكن حذفه.
 Thumbnail,صورة مصغرة
 Thumbnail frame,إطار الصورة المصغرة
+Thumbnail size,حجم الصورة المصغرة
 Time,زمن
 Time (UTC),الوقت (UTC)
 Timeline,الجدول الزمني
@@ -1656,6 +1663,7 @@ Visibility,الرؤية
 Visualization data updated from your collection.,تم تحديث بيانات التصور المستمدة من مجموعتك.
 WARNING,تحذير
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,تنبيه: أنت تحرّر كيانات متعددة. ستُطبَّق قيمة كل حقل على جميعها.
 We can't find the page you're looking for.,لا يمكننا العثور على الصفحة التي تبحث عنها.
 Week,أسبوع
 Weekly,أسبوعي

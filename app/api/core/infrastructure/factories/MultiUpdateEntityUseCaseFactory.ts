@@ -10,16 +10,18 @@ import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class MultiUpdateEntityUseCaseFactory {
   static default() {
-    const { tenant } = ExecutionContext;
+    const { tenant, transactionManager } = ExecutionContext;
+    const deps = MultiUpdateEntityUseCaseFactory.dependencies(transactionManager);
 
-    const { transactionManager } = ExecutionContext;
+    return new MultiUpdateEntity(deps, { actor: ExecutionContext.actor, tenant });
+  }
 
+  private static dependencies(transactionManager: typeof ExecutionContext.transactionManager) {
     const settingsDS = SettingsDataSourceFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default();
     const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const templatesDS = TemplatesDataSourceFactory.default();
-
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.createWithRequired({
         entitiesDS,
@@ -28,20 +30,14 @@ class MultiUpdateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default();
-
-    const useCase = new MultiUpdateEntity(
-      {
-        entitiesDS,
-        entitiesService,
-        templatesDS,
-        propertyAssignmentCreatorServiceStrategy,
-        transactionManager,
-      },
-      { actor: ExecutionContext.actor, tenant }
-    );
-
-    return useCase;
+    return {
+      entitiesDS,
+      entitiesService: EntitiesServiceFactory.default(),
+      templatesDS,
+      settingsDS,
+      propertyAssignmentCreatorServiceStrategy,
+      transactionManager,
+    };
   }
 }
 

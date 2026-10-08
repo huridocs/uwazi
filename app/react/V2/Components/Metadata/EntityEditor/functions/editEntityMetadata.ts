@@ -10,7 +10,11 @@ import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js'
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { buildTranslationsForSave } from './entityTranslations.js';
-import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
+import {
+  formatMetadataForForm,
+  metadataFormKey,
+  type FormMetadataProperty,
+} from './formatMetadataForForm.js';
 import {
   groupRelationshipProperties,
   syncGroupedRelationshipMetadata,
@@ -44,6 +48,13 @@ const toSaveIcon = (showIcon: boolean, icon: EntityIcon): EntityIcon => {
   return EMPTY_ICON;
 };
 
+const mediaPropertyNamesForSave = (metadataProperties: FormMetadataProperty[]) =>
+  new Set(
+    metadataProperties
+      .filter(property => property.type === 'image' || property.type === 'media')
+      .map(property => property.name)
+  );
+
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
   metadataProperties: FormMetadataProperty[]
@@ -54,7 +65,9 @@ const formatMetadataForEntity = (
   );
 
   return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
-    const mapped = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
+    const mapped = (syncedMetadata[metadataFormKey(property.name)] ?? []).map(
+      toMetadataObjectSchema
+    );
     acc[property.name] =
       property.type === 'geolocation' ? mapped.filter(entry => entry.value !== null) : mapped;
     return acc;
@@ -117,7 +130,8 @@ const mergeSharedFormMetadata = (
 ): Record<string, MetadataValue[]> => {
   const defaults = formatMetadataForForm(metadataProperties, entityMetadata);
   return metadataProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
-    acc[property.name] = current[property.name] ?? defaults[property.name] ?? [];
+    const key = metadataFormKey(property.name);
+    acc[key] = current[key] ?? defaults[key] ?? [];
     return acc;
   }, {});
 };
@@ -129,10 +143,11 @@ const isSameMetadataShape = (
   const currentKeys = Object.keys(current);
   if (currentKeys.length !== metadataProperties.length) return false;
 
-  const propertyNames = new Set(metadataProperties.map(property => property.name));
+  const formKeys = metadataProperties.map(property => metadataFormKey(property.name));
+  const propertyNames = new Set(formKeys);
   return (
     currentKeys.every(key => propertyNames.has(key)) &&
-    metadataProperties.every(property => current[property.name] !== undefined)
+    formKeys.every(key => current[key] !== undefined)
   );
 };
 
@@ -169,6 +184,7 @@ const planSharedMetadataSync = ({
 export {
   formatMetadataForEntity,
   buildEditEntitySaveInput,
+  mediaPropertyNamesForSave,
   mergeSharedFormMetadata,
   planSharedMetadataSync,
   isEntityEditorDirty,

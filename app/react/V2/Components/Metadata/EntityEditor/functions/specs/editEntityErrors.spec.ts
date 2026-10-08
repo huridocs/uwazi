@@ -1,4 +1,4 @@
-import type { FormMetadataProperty } from '../formatMetadataForForm.js';
+import { metadataFormKey, type FormMetadataProperty } from '../formatMetadataForForm.js';
 import {
   apiValidationsToEditEntityErrors,
   applyEditEntityErrors,
@@ -36,6 +36,14 @@ describe('editEntityErrors', () => {
     expect(getMetadataFieldPath(properties[1])).toBe('metadata.status_selection');
     expect(getMetadataFieldPath(properties[4])).toBe('metadata.violations_table');
     expect(getMetadataFieldPath(properties[5])).toBe('metadata.location_on_map');
+    expect(
+      getMetadataFieldPath({
+        _id: '7',
+        type: 'markdown',
+        name: "hrd's_bio_and_work",
+        label: 'Bio',
+      })
+    ).toBe(`metadata.${metadataFormKey("hrd's_bio_and_work")}.0.value`);
   });
 
   it('should map grouped relationship errors to the primary field path', () => {

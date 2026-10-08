@@ -5,7 +5,7 @@ import {
   type LibraryTableDisplayState,
 } from './libraryTableColumns.js';
 
-const STORAGE_KEY = 'library-v2-table-display';
+const LIBRARY_TABLE_DISPLAY_STORAGE_KEY = 'library-v2-table-display';
 
 const isDensity = (value: unknown): value is LibraryTableDensity =>
   value === 'comfortable' || value === 'compact';
@@ -37,7 +37,7 @@ const storage = createJSONStorage<LibraryTableDisplayState>(() => {
 });
 
 const libraryTableDisplayAtom = atomWithStorage<LibraryTableDisplayState>(
-  STORAGE_KEY,
+  LIBRARY_TABLE_DISPLAY_STORAGE_KEY,
   DEFAULT_LIBRARY_TABLE_DISPLAY,
   {
     ...storage,
@@ -46,4 +46,4 @@ const libraryTableDisplayAtom = atomWithStorage<LibraryTableDisplayState>(
   { getOnInit: true }
 );
 
-export { libraryTableDisplayAtom };
+export { LIBRARY_TABLE_DISPLAY_STORAGE_KEY, libraryTableDisplayAtom };

@@ -11,7 +11,7 @@ const RecoverPasswordInputSchema = z.object({
 
 type Input = z.infer<typeof RecoverPasswordInputSchema>;
 
-type Output = void;
+type Output = { recoveryEmailQueued: boolean };
 
 type Deps = {
   usersDS: UsersDataSource;
@@ -21,7 +21,7 @@ type Deps = {
 class RecoverPassword extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const userResult = await this.deps.usersDS.getByEmail(input.email);
-    if (userResult.isError()) return;
+    if (userResult.isError()) return { recoveryEmailQueued: false };
     const user = userResult.getDataOrThrow();
 
     const token = crypto.randomBytes(32).toString('hex');
@@ -34,7 +34,10 @@ class RecoverPassword extends AbstractUseCase<Input, Output, Deps> {
         key: token,
       });
     });
+
+    return { recoveryEmailQueued: true };
   }
 }
 
 export { RecoverPassword, RecoverPasswordInputSchema };
+export type { Output as RecoverPasswordOutput };

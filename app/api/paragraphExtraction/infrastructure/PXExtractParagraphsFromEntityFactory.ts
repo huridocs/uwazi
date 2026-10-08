@@ -1,11 +1,11 @@
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SegmentationDirectoryFactory } from '#segmentation';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -20,26 +20,26 @@ import { User } from '#api/users.v2/model/User.js';
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.mongo();
+    const { transactionManager } = ExecutionContext;
 
     const entitiesDS = EntitiesDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
 
     const extractionService = PXExtractionServiceFactory.createDefault();
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      mongoTransactionManager: transactionManager,
     });
     const filesDS = FilesDataSourceFactory.default();
     const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
     const fileStorage = FileStorageFactory.default();
     const idGenerator = MongoIdHandler;
@@ -49,12 +49,12 @@ export class PXExtractParagraphsFromEntityFactory {
     const entitiesService = EntitiesServiceFactory.default({
       entitiesDS,
       settingsDS,
-      transactionManager: mongoTransactionManager,
+      transactionManager,
     });
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity(
       {
-        transactionManager: mongoTransactionManager,
+        transactionManager,
         entitiesService,
         entitiesDS,
         entitiesStatusDS,

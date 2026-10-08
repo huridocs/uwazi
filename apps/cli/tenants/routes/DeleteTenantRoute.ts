@@ -12,7 +12,7 @@ class DeleteTenantRoute implements Route<TenantNameInput, { name: string }> {
 
   readonly tenancy = 'none';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, sessions: false };
 
   readonly request = TenantNameInputSchema;
 

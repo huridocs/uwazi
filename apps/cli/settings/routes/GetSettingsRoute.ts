@@ -15,7 +15,7 @@ class GetSettingsRoute implements Route<NoInput, SettingsOutput> {
 
   readonly tenancy = 'single';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, sessions: false };
 
   readonly request = NoInput;
 

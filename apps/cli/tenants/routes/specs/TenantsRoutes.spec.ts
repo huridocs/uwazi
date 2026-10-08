@@ -35,7 +35,7 @@ describe('TenantsRoutes', () => {
   });
 
   it('should only need MongoDB and PostgreSQL, never Redis', () => {
-    TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false }));
+    TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
   });
 
   describe('list', () => {

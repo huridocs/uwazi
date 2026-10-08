@@ -230,6 +230,7 @@ Click to select files,Click to select files
 Close,Close
 Close filters,Close filters
 Close modal,Close modal
+Close selection list,Close selection list
 Close side panel,Close side panel
 Code,Code
 Collaborator,Collaborator
@@ -514,6 +515,7 @@ Entity type,Entity type
 Entity type (template),Entity type (template)
 Entity types,Entity types
 Entity updated,Entity updated
+Entity view,Entity view
 Error,Error
 Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
@@ -1116,6 +1118,7 @@ Publish,Publish
 Publish release,Publish release
 Published,Published
 Published and unpublished entities are counted.,Published and unpublished entities are counted.
+Published view,Published view
 QR Code,QR Code
 qr code,qr code
 Query,Query
@@ -1163,6 +1166,7 @@ Remove,Remove
 Remove data source,Remove data source
 Remove filter,Remove filter
 Remove from connection,Remove from connection
+Remove from selection,Remove from selection
 Remove from training set,Remove from training set
 remove icon,remove icon
 Remove icon,Remove icon
@@ -1285,9 +1289,11 @@ Select...,Select...
 Select…,Select…
 Selected,Selected
 selected,selected
+Selected entities,Selected entities
 selected of,selected of
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
+Selection,Selection
 Send,Send
 Send message,Send message
 Send recovery email,Send recovery email
@@ -1506,6 +1512,7 @@ this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Thumbnail,Thumbnail
 Thumbnail frame,Thumbnail frame
+Thumbnail size,Thumbnail size
 Time,Time
 Time (UTC),Time (UTC)
 Timeline,Timeline
@@ -1657,6 +1664,7 @@ Visibility,Visibility
 Visualization data updated from your collection.,Visualization data updated from your collection.
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Warning: you are editing multiple entities. The value of each field will be applied to all of them.
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Week,Week
 Weekly,Weekly

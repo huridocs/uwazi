@@ -15,7 +15,7 @@ class UserStatsRoute implements Route<NoInput, RoleCountsOutput> {
 
   readonly tenancy = 'single-or-all';
 
-  readonly needs = { redis: false };
+  readonly needs = { redis: false, sessions: false };
 
   /** Takes no input of its own: --tenant / --all-tenants come from its tenancy. */
   readonly request = NoInput;

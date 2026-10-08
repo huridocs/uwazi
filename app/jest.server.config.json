@@ -38,8 +38,13 @@
   "moduleNameMapper": {
     "^#api/(.*)\\.js$": "<rootDir>/api/$1",
     "^#api/(.*)": "<rootDir>/api/$1",
+    "^#ocr$": "<rootDir>/../packages/ocr/index",
+    "^#ocr/composition$": "<rootDir>/../packages/ocr/composition",
     "^#segmentation$": "<rootDir>/../packages/segmentation/index",
     "^#segmentation/composition$": "<rootDir>/../packages/segmentation/composition",
+    "^#activitylog$": "<rootDir>/../packages/activitylog/index",
+    "^#usage$": "<rootDir>/../packages/usage/index",
+    "^#usage/composition$": "<rootDir>/../packages/usage/composition",
     "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
     "^#shared/(.*)": "<rootDir>/shared/$1",
     "^#app/(.*)\\.js$": "<rootDir>/react/$1",

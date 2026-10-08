@@ -230,6 +230,7 @@ Click to select files,Dosyaları seçmek için tıklayın
 Close,Kapat
 Close filters,Filtreleri kapat
 Close modal,Pencereyi kapat
+Close selection list,Seçim listesini kapat
 Close side panel,Yan paneli kapat
 Code,Kod
 Collaborator,Katkı Sunan
@@ -514,6 +515,7 @@ Entity type,Varlık türü
 Entity type (template),Varlık türü (şablon)
 Entity types,Varlık türü
 Entity updated,Varlık güncellendi
+Entity view,Varlık görünümü
 Error,Hata
 Error adding thesauri.,Thesaurus eklenirken hata oluştu.
 Error loading your image,Resminiz yüklenirken hata oluştu
@@ -1115,6 +1117,7 @@ Publish,Yayınla
 Publish release,Sürümü yayınla
 Published,Yayınlanan
 Published and unpublished entities are counted.,Yayınlanmış ve yayınlanmamış varlıklar sayılmaktadır.
+Published view,Yayımlanmış görünüm
 QR Code,QR Kodu
 qr code,QR kodu
 Query,Sorgulama
@@ -1162,6 +1165,7 @@ Remove,Kaldır
 Remove data source,Veri kaynağını kaldır
 Remove filter,Filtreyi kaldır
 Remove from connection,Bağlantıyı kes
+Remove from selection,Seçimden kaldır
 Remove from training set,Eğitim kümesinden çıkar
 remove icon,simgeyi kaldır
 Remove icon,Simgeyi kaldır
@@ -1284,9 +1288,11 @@ Select...,Seç...
 Select…,Seçin…
 Selected,Seçilen
 selected,seçilmiş
+Selected entities,Seçili varlıklar
 selected of,arasından seçildi
 Selected or suggested,Seçilmiş veya önerilen
 Selected templates,Seçilmiş şablonlar
+Selection,Seçim
 Send,Gönder
 Send message,Mesaj gönder
 Send recovery email,Kurtarma e-postası gönder
@@ -1505,6 +1511,7 @@ this template,bu şablon
 This template is in use by existing entities and cannot be deleted.,"Bu şablon, mevcut varlıklar tarafından kullanılmaktadır ve silinemez."
 Thumbnail,Küçük resim
 Thumbnail frame,Küçük resim çerçevesi
+Thumbnail size,Küçük resim boyutu
 Time,Saat
 Time (UTC),Saat (UTC)
 Timeline,Zaman Çizelgesi
@@ -1656,6 +1663,7 @@ Visibility,Görünürlük
 Visualization data updated from your collection.,Koleksiyonunuzdan alınan görselleştirme verileri güncellendi.
 WARNING,UYARI
 Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Uyarı: birden çok varlığı düzenliyorsunuz. Her alanın değeri tümüne uygulanacak.
 We can't find the page you're looking for.,Aradığınız sayfayı bulamıyoruz.
 Week,Hafta
 Weekly,Haftalık

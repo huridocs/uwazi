@@ -8,7 +8,7 @@ const route = (handle: Route['handle']): Route => ({
   name: 'list',
   describe: 'List things',
   tenancy: 'none',
-  needs: { redis: false },
+  needs: { redis: false, sessions: false },
   request: z.object({}),
   fieldMap: {},
   handle,

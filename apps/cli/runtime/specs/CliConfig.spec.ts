@@ -40,18 +40,27 @@ describe('CliConfig', () => {
     ];
 
     it('should require nothing outside production, where local defaults apply', () => {
-      expect(CliConfig.requiredFor({ redis: true }, { NODE_ENV: 'development' })).toEqual([]);
+      expect(
+        CliConfig.requiredFor({ redis: true, sessions: true }, { NODE_ENV: 'development' })
+      ).toEqual([]);
     });
 
     it('should require the database variables in production', () => {
-      expect(CliConfig.requiredFor({ redis: false }, { NODE_ENV: 'production' })).toEqual(database);
+      expect(
+        CliConfig.requiredFor({ redis: false, sessions: false }, { NODE_ENV: 'production' })
+      ).toEqual(database);
     });
 
     it('should also require REDIS_HOST in production when the command needs Redis', () => {
-      expect(CliConfig.requiredFor({ redis: true }, { NODE_ENV: 'production' })).toEqual([
-        ...database,
-        'REDIS_HOST',
-      ]);
+      expect(
+        CliConfig.requiredFor({ redis: true, sessions: false }, { NODE_ENV: 'production' })
+      ).toEqual([...database, 'REDIS_HOST']);
+    });
+
+    it('should also require the sessions backend when the command reads the session store', () => {
+      expect(
+        CliConfig.requiredFor({ redis: false, sessions: true }, { NODE_ENV: 'production' })
+      ).toEqual([...database, 'SESSIONS_BACKEND']);
     });
   });
 });

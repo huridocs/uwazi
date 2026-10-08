@@ -4,13 +4,14 @@ Manage the user accounts of a tenant. Every command runs in one tenant (`--tenan
 `stats` can also run in every tenant (`--all-tenants`). Shared options, output and exit codes are
 in the [README](../README.md).
 
-| Command        | Tenancy                       | Does                                                  |
-| -------------- | ----------------------------- | ----------------------------------------------------- |
-| `users create` | `--tenant`                    | Creates a user and, by default, emails them a welcome |
-| `users update` | `--tenant`                    | Changes a user's username, email, role or groups      |
-| `users delete` | `--tenant`                    | Soft deletes a user                                   |
-| `users list`   | `--tenant` or `--all-tenants` | Lists the active users with their groups              |
-| `users stats`  | `--tenant` or `--all-tenants` | Counts the active users by role                       |
+| Command                  | Tenancy                       | Does                                                  |
+| ------------------------ | ----------------------------- | ----------------------------------------------------- |
+| `users create`           | `--tenant`                    | Creates a user and, by default, emails them a welcome |
+| `users update`           | `--tenant`                    | Changes a user's username, email, role or groups      |
+| `users delete`           | `--tenant`                    | Soft deletes a user                                   |
+| `users list`             | `--tenant` or `--all-tenants` | Lists the active users with their groups              |
+| `users stats`            | `--tenant` or `--all-tenants` | Counts the active users by role                       |
+| `users recover-password` | `--tenant`                    | Emails a user a link to set a new password            |
 
 The commands run as the system actor, which acts as an admin. They run the same use cases as the
 admin screens, so the same rules apply, with the differences noted below.
@@ -162,6 +163,42 @@ Output: `{"id":"…"}`, the deleted user's id.
 | `user.delete_system_user` | 5    | The `id` is the public user's         |
 | `user.last_user`          | 5    | The tenant has a single active user   |
 | `user.last_admin`         | 5    | The user is the only active admin     |
+
+## users recover-password
+
+```sh
+yarn uwazi users recover-password --tenant acme --request '{"email":"bob@acme.org"}'
+```
+
+Takes `email`, nothing else. The same as "forgot password" on the login screen.
+
+What it does:
+
+1. Looks up the active user with that email. Soft-deleted users and the public user are not found.
+2. Stores a new recovery key for them, valid for 24 hours.
+3. Queues the recovery email. It is sent later by the queue worker, and links to the tenant's
+   domain so the user can set a new password. Links always use `https://`.
+
+The key and the email are written together: if one fails, neither is kept.
+
+An email that matches no active user is not an error: nothing is stored or queued, the output says
+`"recoveryEmailQueued": false` and the command exits 0. Check the field, not only the exit code.
+
+Each call creates a new key. Earlier keys are not revoked: they stay valid until they expire. The
+key and the link are never printed.
+
+The tenant must have a `domain` in the registry. Without one the command fails with
+`tenant.domain_missing` and stores nothing.
+
+Output:
+
+```json
+{ "recoveryEmailQueued": true }
+```
+
+| Code                    | Exit | When                       |
+| ----------------------- | ---- | -------------------------- |
+| `tenant.domain_missing` | 5    | The tenant has no `domain` |
 
 ## users list
 

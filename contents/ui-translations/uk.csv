@@ -230,6 +230,7 @@ Click to select files,"Натисніть, щоб вибрати файли"
 Close,Закрити
 Close filters,Закрити фільтри
 Close modal,Закрити вікно
+Close selection list,Закрити список вибору
 Close side panel,Закрити бічну панель
 Code,Код
 Collaborator,Співкористувач
@@ -514,6 +515,7 @@ Entity type,Тип об’єкта
 Entity type (template),Тип сутності (шаблон)
 Entity types,Типи об'єктів
 Entity updated,Сутність оновлено
+Entity view,Перегляд об'єкта
 Error,Помилка
 Error adding thesauri.,Помилка додавання тезаурусів.
 Error loading your image,Помилка завантаження зображення
@@ -1116,6 +1118,7 @@ Publish,Опублікувати
 Publish release,Опублікувати реліз
 Published,У відкритому доступі
 Published and unpublished entities are counted.,"До підрахунку включаються як опубліковані, так і неопубліковані об’єкти."
+Published view,Опублікований вигляд
 QR Code,QR-код
 qr code,QR-код
 Query,Запит
@@ -1163,6 +1166,7 @@ Remove,Видалити
 Remove data source,Видалити джерело даних
 Remove filter,Видалити фільтр
 Remove from connection,Видалити зі зв’язку
+Remove from selection,Вилучити з вибору
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму
 Remove icon,Видалити піктограму
@@ -1285,9 +1289,11 @@ Select...,Вибрати...
 Select…,Вибрати…
 Selected,Вибране
 selected,вибраний
+Selected entities,Вибрані об'єкти
 selected of,вибраний із
 Selected or suggested,Вибрані або запропоновані
 Selected templates,Вибрані шаблони
+Selection,Вибір
 Send,Відправити
 Send message,Надіслати повідомлення
 Send recovery email,Відправити лист для відновлення на електронну пошту
@@ -1506,6 +1512,7 @@ this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
 Thumbnail,Ескіз
 Thumbnail frame,Рамка мініатюри
+Thumbnail size,Розмір мініатюри
 Time,Час
 Time (UTC),Час (UTC)
 Timeline,Часова шкала
@@ -1657,6 +1664,7 @@ Visibility,Видимість
 Visualization data updated from your collection.,Оновлено дані візуалізації з вашої колекції.
 WARNING,ПОПЕРЕДЖЕННЯ
 Warning: you are editing multiple entities. Fields marked with a,"Попередження: ви редагуєте декілька об'єктів. Поля, позначені"
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Попередження: ви редагуєте кілька об'єктів. Значення кожного поля буде застосовано до всіх.
 We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
 Week,Тиждень
 Weekly,Щотижня

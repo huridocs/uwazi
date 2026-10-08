@@ -228,6 +228,7 @@ Click to select files,Click para seleccionar archivos
 Close,Cerrar
 Close filters,Cerrar filtros
 Close modal,Cerrar ventana
+Close selection list,Cerrar lista de selección
 Close side panel,Cerrar panel lateral
 Code,Código
 Collaborator,Colaboradora
@@ -512,6 +513,7 @@ Entity type,Tipo de entidad
 Entity type (template),Tipo de entidad (plantilla)
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
+Entity view,Vista de entidad
 Error,Error
 Error adding thesauri.,Error al añadir tesauros.
 Error loading your image,Error al cargar la imagen
@@ -1113,6 +1115,7 @@ Publish,Publicar
 Publish release,Publicar versión
 Published,Publicado
 Published and unpublished entities are counted.,Se contabilizan tanto las entidades publicadas como las no publicadas.
+Published view,Vista publicada
 QR Code,Código QR
 qr code,Código QR
 Query,Consulta
@@ -1159,6 +1162,7 @@ Remove,Eliminar
 Remove data source,Quitar fuente de datos
 Remove filter,Quitar filtro
 Remove from connection,Eliminar de la conexión
+Remove from selection,Quitar de la selección
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
 Remove icon,Eliminar ícono
@@ -1281,9 +1285,11 @@ Select...,Seleccionar
 Select…,Seleccionar…
 Selected,Seleccionado
 selected,seleccionado(s)
+Selected entities,Entidades seleccionadas
 selected of,seleccionados de
 Selected or suggested,Seleccionado o sugerido
 Selected templates,Plantillas seleccionadas
+Selection,Selección
 Send,Enviar
 Send message,Enviar mensaje
 Send recovery email,Enviar correo electrónico de recuperación
@@ -1500,6 +1506,7 @@ this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,Esta plantilla está en uso por parte de entidades existentes y no se puede eliminar.
 Thumbnail,Miniatura
 Thumbnail frame,Marco de miniatura
+Thumbnail size,Tamaño de miniatura
 Time,Tiempo
 Time (UTC),Hora (UTC)
 Timeline,Cronología
@@ -1651,6 +1658,7 @@ Visibility,Visibilidad
 Visualization data updated from your collection.,Datos de visualización actualizados a partir de tu colección.
 WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Aviso: estás editando varias entidades. El valor de cada campo se aplicará a todas ellas.
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
 Week,Semana
 Weekly,Semanal

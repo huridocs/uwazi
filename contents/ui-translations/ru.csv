@@ -230,6 +230,7 @@ Click to select files,"Нажмите, чтобы выбрать файлы"
 Close,Закрыть
 Close filters,Закрыть фильтры
 Close modal,Закрыть окно
+Close selection list,Закрыть список выбора
 Close side panel,Закрыть боковую панель
 Code,Код
 Collaborator,Соавтор
@@ -514,6 +515,7 @@ Entity type,Тип объекта
 Entity type (template),Тип сущности (шаблон)
 Entity types,Типы объектов
 Entity updated,Объект обновлен
+Entity view,Просмотр объекта
 Error,Ошибка
 Error adding thesauri.,Ошибка при добавлении тезаурусов.
 Error loading your image,Ошибка при загрузке изображения
@@ -1114,6 +1116,7 @@ Publish,Опубликовать
 Publish release,Опубликовать версию
 Published,В открытом доступе
 Published and unpublished entities are counted.,"Учитываются как опубликованные, так и неопубликованные объекты."
+Published view,Опубликованный вид
 QR Code,QR-код
 qr code,QR-код
 Query,Запрос
@@ -1159,6 +1162,7 @@ Remove,Удалить
 Remove data source,Удалить источник данных
 Remove filter,Удалить фильтр
 Remove from connection,Удалить связь
+Remove from selection,Убрать из выбора
 Remove from training set,Исключить из обучающей выборки
 remove icon,удалить иконку
 Remove icon,Удалить значок
@@ -1281,9 +1285,11 @@ Select...,Выбрать...
 Select…,Выбрать…
 Selected,Выбрано
 selected,выбранный
+Selected entities,Выбранные объекты
 selected of,выбран из
 Selected or suggested,Выбранное или предложенное
 Selected templates,Выбранные шаблоны
+Selection,Выбор
 Send,Отправить
 Send message,Отправить сообщение
 Send recovery email,Отправить письмо для восстановления на электронную почту
@@ -1501,6 +1507,7 @@ this template,этот шаблон
 This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
 Thumbnail,Миниатюра
 Thumbnail frame,Рамка миниатюры
+Thumbnail size,Размер миниатюры
 Time,Время
 Time (UTC),Время (UTC)
 Timeline,Хронология
@@ -1652,6 +1659,7 @@ Visibility,Видимость
 Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
 WARNING,ПРЕДУПРЕЖДЕНИЕ
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
+Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Предупреждение: вы редактируете несколько объектов. Значение каждого поля будет применено ко всем.
 We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
 Week,Неделя
 Weekly,Еженедельно

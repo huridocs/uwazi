@@ -12,6 +12,9 @@ import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusMode
 
 import { PXEntityStatusManagerFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusManagerFactory.js';
 
+const toPlainStrings = <T>(rows: T[]): Record<string, unknown>[] =>
+  JSON.parse(JSON.stringify(rows));
+
 type TestConfig = {
   name: string;
   usePostgres: boolean;
@@ -36,6 +39,7 @@ const createFixtures = (): DBFixture => ({
   entities: [entity, entity2],
   templates: [targetTemplate, sourceTemplate],
   [mongoPXExtractorsCollection]: [extractor],
+  [mongoPXEntitiesStatusCollection]: [],
   relationtypes: [sourceRelationship, targetRelationship],
   settings: [
     {
@@ -89,15 +93,15 @@ describe('PXEntityStatusManager', () => {
         },
       });
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus).toMatchObject([
         {
-          _id: expect.any(ObjectId),
+          _id: expect.any(String),
           status: EntityStatus.New,
-          extractorId: extractor._id,
+          extractorId: extractor._id.toString(),
           entitySharedId: entity.sharedId,
         },
       ]);
@@ -144,15 +148,15 @@ describe('PXEntityStatusManager', () => {
         },
       });
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus).toMatchObject([
         {
-          _id: mongoEntityStatus._id,
+          _id: mongoEntityStatus._id.toString(),
           status: EntityStatus.Obsolete,
-          extractorId: mongoEntityStatus.extractorId,
+          extractorId: mongoEntityStatus.extractorId.toString(),
           entitySharedId: mongoEntityStatus.entitySharedId,
         },
       ]);
@@ -199,15 +203,15 @@ describe('PXEntityStatusManager', () => {
         },
       });
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus).toMatchObject([
         {
-          _id: mongoEntityStatus._id,
+          _id: mongoEntityStatus._id.toString(),
           status: EntityStatus.ProcessingObsolete,
-          extractorId: mongoEntityStatus.extractorId,
+          extractorId: mongoEntityStatus.extractorId.toString(),
           entitySharedId: mongoEntityStatus.entitySharedId,
         },
       ]);
@@ -245,15 +249,15 @@ describe('PXEntityStatusManager', () => {
         },
       });
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
       expect(entitiesStatus).toMatchObject([
         {
-          _id: expect.any(ObjectId),
+          _id: expect.any(String),
           status: EntityStatus.New,
-          extractorId: extractor._id,
+          extractorId: extractor._id.toString(),
           entitySharedId: entity.sharedId,
         },
       ]);
@@ -298,11 +302,11 @@ describe('PXEntityStatusManager', () => {
         },
       });
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
+      const entitiesStatus = toPlainStrings(
+        await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection)
       );
 
-      expect(entitiesStatus).toMatchObject([mongoEntityStatus]);
+      expect(entitiesStatus).toMatchObject(toPlainStrings([mongoEntityStatus]));
     });
 
     it('should throw if the File is not a Document', async () => {

@@ -26,6 +26,7 @@ describe('ListenerRegistration', () => {
       ]);
       expect(registeredFor(registry, 'FileCreatedEvent')).toEqual(['SegmentOnFileCreated']);
       expect(registeredFor(registry, 'FileDeletedEvent')).toEqual([
+        'CleanupOcrRecordsOnFilesDeleted',
         'DeleteSegmentationsOnFileDeleted',
       ]);
       expect(registeredFor(registry, 'LanguageAddedEvent')).toEqual(['AddLanguagePagesListener']);
@@ -69,6 +70,10 @@ describe('ListenerRegistration', () => {
           built: 'ProcessRelationshipAfterEntityUpdatedListener',
         },
         { name: 'FileCreatedEvent:SegmentOnFileCreated', built: 'SegmentOnFileCreated' },
+        {
+          name: 'FileDeletedEvent:CleanupOcrRecordsOnFilesDeleted',
+          built: 'CleanupOcrRecordsOnFilesDeleted',
+        },
         {
           name: 'FileDeletedEvent:DeleteSegmentationsOnFileDeleted',
           built: 'DeleteSegmentationsOnFileDeleted',

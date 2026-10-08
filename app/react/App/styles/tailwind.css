@@ -45,7 +45,7 @@
 }
 
 /* Beat Bootstrap/vendor.css h1–h6/p margins; :where() stays overrideable by utilities */
-.tw-content :where(h1, h2, h3, h4, h5, h6, p) {
+.tw-content :where(h1, h2, h3, h4, h5, h6, p):not(:where(.page-viewer *)) {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -508,6 +508,10 @@
 
 @utility border-border-soft {
   border-color: var(--color-theme-border-soft);
+}
+
+@utility bg-border-soft {
+  background-color: var(--color-theme-border-soft);
 }
 
 @utility border-emphasis {
