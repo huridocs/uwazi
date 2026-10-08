@@ -5,6 +5,10 @@ import type { EditEntityFormValues } from '#V2/Components/Metadata/EntityEditor/
 import type { EntitiesService } from '#V2/services/index.js';
 import { applyCopyFromMetadata } from './applyCopyFromMetadata.js';
 import { copyFromMatchingProperties, type CopyFromTemplate } from './copyFromMatchingProperties.js';
+import {
+  metadataFormKey,
+  metadataFormPath,
+} from '../EntityEditor/functions/formatMetadataForForm.js';
 
 const loadCopyFromSource = async (
   entities: EntitiesService,
@@ -67,7 +71,8 @@ const useCopyFromSource = ({
         matchingProperties: selectedProperties,
       });
       selectedProperties.forEach(property => {
-        form.setValue(`metadata.${property.name}`, nextMetadata[property.name], {
+        const key = metadataFormKey(property.name);
+        form.setValue(metadataFormPath(property.name), nextMetadata[key], {
           shouldDirty: true,
           shouldTouch: true,
         });

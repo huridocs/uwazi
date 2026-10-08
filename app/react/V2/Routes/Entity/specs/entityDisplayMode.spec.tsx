@@ -201,15 +201,12 @@ describe('entity display mode', () => {
   it('places the switch on the tab row without reserving space on desktop', async () => {
     renderEntity();
     const toggle = await screen.findByRole('button', { name: 'Entity view' });
-    expect(toggle).toHaveClass(
+    expect(toggle).toHaveClass('h-7', 'w-7', 'rounded-md', 'bg-warm');
+    expect(toggle.parentElement?.parentElement).toHaveClass(
       'fixed',
       'z-30',
       'top-16.25',
-      'inset-e-3',
-      'h-7',
-      'w-7',
-      'rounded-md',
-      'bg-warm'
+      'inset-e-3'
     );
     expect(toggle.querySelector('svg')).toHaveClass('rtl:-scale-x-100');
     fireEvent.click(toggle);
