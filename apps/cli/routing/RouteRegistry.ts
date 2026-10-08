@@ -1,4 +1,7 @@
+import { ActivityRoutes } from '../activity/ActivityRoutes.js';
+import { ArchivesRoutes } from '../archives/ArchivesRoutes.js';
 import { SegmentationRoutes } from '../segmentation/SegmentationRoutes.js';
+import { SessionsRoutes } from '../sessions/SessionsRoutes.js';
 import { SettingsRoutes } from '../settings/SettingsRoutes.js';
 import { TenantsRoutes } from '../tenants/TenantsRoutes.js';
 import { UsageRoutes } from '../usage/UsageRoutes.js';
@@ -14,6 +17,9 @@ class RouteRegistry {
       ...TenantsRoutes.all(),
       ...SegmentationRoutes.all(),
       ...UsageRoutes.all(),
+      ...SessionsRoutes.all(),
+      ...ActivityRoutes.all(),
+      ...ArchivesRoutes.all(),
     ];
   }
 }
