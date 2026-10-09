@@ -16,6 +16,7 @@ import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
+import { previewThemeCustomization } from '#app/utils/v2Preview.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import * as tips from './collectionSettingsTips.js';
@@ -31,7 +32,7 @@ type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
+  async ({ request }) => {
     const [raw] = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
@@ -44,7 +45,9 @@ const collectionLoader =
     return {
       settings,
       templates,
-      themeCustomization: themeCustomizationFlag ?? false,
+      themeCustomization: previewThemeCustomization(themeCustomizationFlag, {
+        search: new URL(request.url).search,
+      }),
       customUploadFiles,
     };
   };
