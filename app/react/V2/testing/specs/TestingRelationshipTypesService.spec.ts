@@ -14,7 +14,7 @@ describe('TestingRelationshipTypesService', () => {
     const [afterUpsert] = await service.getAll();
     expect(afterUpsert).toHaveLength(2);
 
-    const [counts] = await service.countByTypes(['rt1', 'missing']);
+    const [counts] = await service.countByTypes();
     expect(counts).toEqual({ rt1: 4 });
 
     await service.delete(['rt1']);

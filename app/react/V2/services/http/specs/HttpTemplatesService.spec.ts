@@ -68,9 +68,9 @@ describe('HttpTemplatesService', () => {
   it('checkEntityCounts delegates to the templates API', async () => {
     jest.mocked(templatesApi.checkEntityCounts).mockResolvedValue([{ t1: 3 }, undefined]);
 
-    const [data, error] = await httpTemplatesService.checkEntityCounts(['t1']);
+    const [data, error] = await httpTemplatesService.checkEntityCounts();
 
-    expect(templatesApi.checkEntityCounts).toHaveBeenCalledWith(['t1'], undefined);
+    expect(templatesApi.checkEntityCounts).toHaveBeenCalledWith(undefined);
     expect(error).toBeUndefined();
     expect(data).toEqual({ t1: 3 });
   });

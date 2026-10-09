@@ -2,17 +2,9 @@ import { apiClient } from '#V2/api/client.js';
 
 type CountPayload = number | { value: number };
 
-const parseCount = (data: unknown): number | undefined => {
+const parseCount = (data: CountPayload | undefined): number | undefined => {
   if (typeof data === 'number') return data;
-  if (
-    typeof data === 'object' &&
-    data !== null &&
-    'value' in data &&
-    typeof data.value === 'number'
-  ) {
-    return data.value;
-  }
-  return undefined;
+  return typeof data?.value === 'number' ? data.value : undefined;
 };
 
 const countByRelationType = async (
@@ -28,18 +20,14 @@ const countByRelationType = async (
   return parseCount(data);
 };
 
-const countByRelationTypes = async (
-  ids: string[],
-  signal?: AbortSignal
-): Promise<{ [id: string]: number }> => {
-  if (ids.length === 0) return {};
-  const entries = await Promise.all(
-    ids.map(async id => ({ id, count: await countByRelationType(id, signal) }))
+const countByRelationTypes = async (signal?: AbortSignal): Promise<{ [id: string]: number }> => {
+  const [counts, error] = await apiClient.getJson<{ [id: string]: number }>(
+    'references/count_by_relationtype',
+    {},
+    { signal }
   );
-  return entries.reduce<{ [id: string]: number }>((acc, { id, count }) => {
-    if (count !== undefined) acc[id] = count;
-    return acc;
-  }, {});
+  if (error || counts === undefined) return {};
+  return counts;
 };
 
 export { countByRelationType, countByRelationTypes };

@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { RelationTypeCountQueryServiceFactory } from '#api/relationships/query/factory/RelationTypeCountQueryServiceFactory.js';
 import relationships from './relationships.js';
 import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
@@ -183,17 +184,18 @@ export default app => {
       properties: {
         query: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             relationtypeId: ObjectIdAsString,
           },
-          required: ['relationtypeId'],
         },
       },
       required: ['query'],
     }),
     (req, res, next) => {
-      void relationships
-        .countByRelationType(req.query.relationtypeId)
+      const counts = RelationTypeCountQueryServiceFactory.default();
+      const { relationtypeId } = req.query;
+      void (relationtypeId ? counts.one({ relationtypeId }) : counts.all())
         .then(response => res.json(response))
         .catch(next);
     }

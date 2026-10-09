@@ -34,15 +34,8 @@ const createTestingRelationshipTypesService = ({
     ],
 
     countByTypes: async (
-      ids: string[],
       _options?: ServiceRequestOptions
-    ): Promise<ApiResponse<{ [id: string]: number }>> => [
-      ids.reduce<{ [id: string]: number }>((acc, id) => {
-        const count = refCounts[id];
-        if (count !== undefined) acc[id] = count;
-        return acc;
-      }, {}),
-    ],
+    ): Promise<ApiResponse<{ [id: string]: number }>> => [{ ...refCounts }],
 
     upsert: async (
       input: RelationshipTypeInput,

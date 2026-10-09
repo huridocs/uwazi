@@ -10,39 +10,58 @@ import {
   useRelationshipsActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useServices } from '#V2/services/index.js';
-import { useRelationshipTypeMutations } from '#V2/services/useRelationshipTypeMutations.js';
+import {
+  useRelationshipTypeMutations,
+  type CreateRelationshipTypeResult,
+  type DeleteRelationshipTypeResult,
+} from '#V2/services/useRelationshipTypeMutations.js';
 import { RelationshipTypeRow } from './RelationshipTypeRow.js';
 
 const typeInputClassName =
   'flex-1 rounded-md border border-border bg-warm px-3 py-2 text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
-const ManageRelationTypesModal = () => {
-  const { manageRelationTypesOpen } = useRelationships();
-  const { closeManageRelationTypes } = useRelationshipsActions();
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const templates = useAtomValue(templatesAtom);
-  const { relationshipTypes: relationshipTypesService } = useServices();
-  const { create, delete: deleteType } = useRelationshipTypeMutations();
-  const { notify } = useRequestStatus();
-  const [draftName, setDraftName] = useState('');
-  const [pendingDeleteId, setPendingDeleteId] = useState<string>();
-  const [duplicateError, setDuplicateError] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [refCounts, setRefCounts] = useState<{ [id: string]: number | undefined }>({});
+type Notify = ReturnType<typeof useRequestStatus>['notify'];
 
-  const idsKey = relationshipTypes.map(relationshipType => relationshipType._id).join(',');
-
-  const inUseIds = useMemo(() => {
-    const ids = new Set<string>();
-    templates.forEach(template => {
-      template.properties?.forEach(property => {
-        if (property.relationType) {
-          ids.add(property.relationType);
-        }
-      });
+const relationTypeIdsInUse = (templates: { properties?: { relationType?: string }[] }[]) => {
+  const ids = new Set<string>();
+  templates.forEach(template => {
+    template.properties?.forEach(property => {
+      if (property.relationType) ids.add(property.relationType);
     });
-    return ids;
-  }, [templates]);
+  });
+  return ids;
+};
+
+const reportCreatedRelationType = (
+  result: CreateRelationshipTypeResult,
+  actions: {
+    notify: Notify;
+    setDraftName: (name: string) => void;
+    setDuplicateError: (value: boolean) => void;
+  }
+) => {
+  if (result.status === 'duplicate') {
+    actions.setDuplicateError(true);
+    return;
+  }
+  if (result.status === 'error') {
+    actions.notify('error', result.message);
+    return;
+  }
+  actions.notify(
+    'success',
+    t('System', 'Added relation type "{name}"', null, false).replace('{name}', result.type.name)
+  );
+  actions.setDraftName('');
+  actions.setDuplicateError(false);
+};
+
+const useRelationTypeCounts = () => {
+  const { manageRelationTypesOpen } = useRelationships();
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const { relationshipTypes: relationshipTypesService } = useServices();
+  const [refCounts, setRefCounts] = useState<{ [id: string]: number | undefined }>({});
+  const idsKey = relationshipTypes.map(relationshipType => relationshipType._id).join(',');
 
   useEffect(() => {
     if (!manageRelationTypesOpen) {
@@ -50,56 +69,25 @@ const ManageRelationTypesModal = () => {
       return undefined;
     }
     const controller = new AbortController();
-    const ids = idsKey === '' ? [] : idsKey.split(',');
     const loadCounts = async () => {
-      const [counts] = await relationshipTypesService.countByTypes(ids, {
+      const [counts] = await relationshipTypesService.countByTypes({
         signal: controller.signal,
       });
-      if (!controller.signal.aborted && counts) {
-        setRefCounts(counts);
-      }
+      if (!controller.signal.aborted && counts) setRefCounts(counts);
     };
     loadCounts().catch(() => undefined);
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [manageRelationTypesOpen, idsKey, relationshipTypesService]);
 
-  const handleClose = useCallback(() => {
-    setDraftName('');
-    setPendingDeleteId(undefined);
-    setDuplicateError(false);
-    closeManageRelationTypes();
-  }, [closeManageRelationTypes]);
+  return { manageRelationTypesOpen, relationshipTypes, refCounts };
+};
 
-  const handleAdd = useCallback(async () => {
-    if (!draftName.trim() || isSaving) return;
-    setIsSaving(true);
-    try {
-      const result = await create(draftName);
-      if (result.status === 'duplicate') {
-        setDuplicateError(true);
-        return;
-      }
-      if (result.status === 'error') {
-        notify('error', result.message);
-        return;
-      }
-      notify(
-        'success',
-        t('System', 'Added relation type "{name}"', null, false).replace('{name}', result.type.name)
-      );
-      setDraftName('');
-      setDuplicateError(false);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        notify('error', error.message);
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  }, [create, draftName, isSaving, notify]);
-
+const usePendingRelationTypeDelete = (
+  deleteType: (id: string) => Promise<DeleteRelationshipTypeResult>,
+  notify: Notify
+) => {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string>();
+  const clearPending = useCallback(() => setPendingDeleteId(undefined), []);
   const handleDelete = useCallback(
     async (id: string) => {
       const result = await deleteType(id);
@@ -111,6 +99,83 @@ const ManageRelationTypesModal = () => {
     },
     [deleteType, notify]
   );
+  return { pendingDeleteId, setPendingDeleteId, clearPending, handleDelete };
+};
+
+const useDraftRelationType = (
+  create: (name: string) => Promise<CreateRelationshipTypeResult>,
+  notify: Notify,
+  clearPending: () => void
+) => {
+  const { closeManageRelationTypes } = useRelationshipsActions();
+  const [draftName, setDraftName] = useState('');
+  const [duplicateError, setDuplicateError] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setDraftName('');
+    setDuplicateError(false);
+    clearPending();
+    closeManageRelationTypes();
+  }, [clearPending, closeManageRelationTypes]);
+
+  const handleAdd = useCallback(async () => {
+    if (!draftName.trim() || isSaving) return;
+    setIsSaving(true);
+    try {
+      reportCreatedRelationType(await create(draftName), {
+        notify,
+        setDraftName,
+        setDuplicateError,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) notify('error', error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [create, draftName, isSaving, notify]);
+
+  return {
+    draftName,
+    setDraftName,
+    duplicateError,
+    setDuplicateError,
+    isSaving,
+    handleClose,
+    handleAdd,
+  };
+};
+
+const useManageRelationTypesModal = () => {
+  const templates = useAtomValue(templatesAtom);
+  const { notify } = useRequestStatus();
+  const { create, delete: deleteType } = useRelationshipTypeMutations();
+  const counts = useRelationTypeCounts();
+  const inUseIds = useMemo(() => relationTypeIdsInUse(templates), [templates]);
+  const { clearPending, ...pending } = usePendingRelationTypeDelete(deleteType, notify);
+  const draft = useDraftRelationType(create, notify, clearPending);
+
+  return { ...counts, inUseIds, notify, ...pending, ...draft };
+};
+
+const ManageRelationTypesModal = () => {
+  const {
+    manageRelationTypesOpen,
+    relationshipTypes,
+    refCounts,
+    inUseIds,
+    notify,
+    pendingDeleteId,
+    setPendingDeleteId,
+    handleDelete,
+    draftName,
+    setDraftName,
+    duplicateError,
+    setDuplicateError,
+    isSaving,
+    handleClose,
+    handleAdd,
+  } = useManageRelationTypesModal();
 
   if (!manageRelationTypesOpen) return null;
   return (

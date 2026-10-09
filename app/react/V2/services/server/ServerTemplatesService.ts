@@ -1,6 +1,5 @@
-import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { EntityCountByTemplateQueryServiceFactory } from '#api/core/infrastructure/factories/EntityCountByTemplateQueryServiceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
-import { User } from '#api/users.v2/model/User.js';
 import type { Template } from '#shared/contracts/Template.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
@@ -24,7 +23,7 @@ const serializeTemplates = (
   rows: Array<{ _id: { toString(): string } } & Record<string, unknown>>
 ): Template[] => rows.map(serializeTemplate);
 
-const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesService => ({
+const createServerTemplatesService = (_ctx: ServerServiceContext): TemplatesService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<Template[]>> => {
     try {
       const rows = await TemplatesDAOFactory.default().get();
@@ -55,21 +54,21 @@ const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesServi
   },
 
   checkEntityCounts: async (
-    templateIds: string[],
     _options?: ServiceRequestOptions
   ): Promise<ApiResponse<Record<string, number>>> => {
     try {
-      if (!templateIds.length) {
-        return [{}];
-      }
+      return [await EntityCountByTemplateQueryServiceFactory.default().all()];
+    } catch (e) {
+      return [undefined as never, toApiError(e)];
+    }
+  },
 
-      const dao = EntitiesDAOFactory.default({
-        user: User.createFrom(ctx.user ?? null),
-      });
-      const entries = await Promise.all(
-        templateIds.map(async id => [id, await dao.countByTemplate(id)] as const)
-      );
-      return [Object.fromEntries(entries)];
+  checkEntityCount: async (
+    templateId: string,
+    _options?: ServiceRequestOptions
+  ): Promise<ApiResponse<number>> => {
+    try {
+      return [await EntityCountByTemplateQueryServiceFactory.default().one({ templateId })];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }
