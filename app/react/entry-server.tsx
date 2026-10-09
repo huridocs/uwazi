@@ -48,6 +48,7 @@ import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 import type { ClientFeatureFlags } from '#V2/shared/types.js';
+import { applyV2Preview } from '#app/utils/v2Preview.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   ENTITY_VIEWER_LEGACY_REDIRECT_STATUS,
@@ -394,19 +395,30 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     translationService: featureFlags?.translationService,
     experimentalFeatures: featureFlags?.experimentalFeatures,
   };
-  const settingsWithFeatureFlags = {
+  const settingsWithTenantFlags = {
     ...settings,
     features: {
       ...(settings.features || {}),
       ...clientFeatureFlags,
     },
   };
+  const search = req.originalUrl.includes('?')
+    ? req.originalUrl.slice(req.originalUrl.indexOf('?'))
+    : '';
+  const { settings: settingsWithFeatureFlags, setCookie } = applyV2Preview(
+    settingsWithTenantFlags,
+    {
+      search,
+      cookieHeader: req.headers.cookie,
+    }
+  );
+  if (setCookie) res.append('Set-Cookie', setCookie);
 
   // TEMPORARY (issue #9522): early 301 for deprecated /document and V1 /entity/:id/<tab>
   // paths before route loaders / React render. Remove with entityViewerLegacyRedirect.ts.
   const legacyEntityRedirect = getEntityViewerLegacyRedirect(req.path, {
     languageKeys,
-    entityViewerV2: Boolean(clientFeatureFlags.featureFlagEntityViewerv2),
+    entityViewerV2: Boolean(settingsWithFeatureFlags.features?.featureFlagEntityViewerv2),
   });
   if (legacyEntityRedirect) {
     res.redirect(ENTITY_VIEWER_LEGACY_REDIRECT_STATUS, legacyEntityRedirect.pathname);
