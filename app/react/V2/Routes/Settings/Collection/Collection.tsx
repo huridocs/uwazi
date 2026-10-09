@@ -17,6 +17,8 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { previewThemeCustomization } from '#app/utils/v2Preview.js';
+import { isClient } from '#app/utils/index.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import * as tips from './collectionSettingsTips.js';
@@ -36,6 +38,15 @@ const collectionLoader =
     const [raw] = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
+    const headerCookie = typeof headers?.cookie === 'string' ? headers.cookie : undefined;
+    const cookieHeader = headerCookie ?? request.headers.get('cookie') ?? undefined;
+    const hydratedPreview =
+      isClient &&
+      !cookieHeader &&
+      !themeCustomizationFlag &&
+      Boolean(getStore().get(settingsAtom).themeCustomization)
+        ? 'uwazi_v2_preview=1'
+        : undefined;
     const [[templates, templatesError], customFilesRaw] = await Promise.all([
       TemplatesAPI.getAll(headers),
       FilesAPI.getByType('custom', headers),
@@ -47,6 +58,7 @@ const collectionLoader =
       templates,
       themeCustomization: previewThemeCustomization(themeCustomizationFlag, {
         search: new URL(request.url).search,
+        cookieHeader: cookieHeader ?? hydratedPreview,
       }),
       customUploadFiles,
     };

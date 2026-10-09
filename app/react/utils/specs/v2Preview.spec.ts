@@ -78,6 +78,12 @@ describe('applyV2Preview', () => {
       previewThemeCustomization(true, { search: '?v2=0', cookieHeader: 'uwazi_v2_preview=1' })
     ).toBe(true);
     expect(previewThemeCustomization(false, { search: '' })).toBe(false);
+    expect(
+      previewThemeCustomization(false, {
+        search: '?v2=0',
+        cookieHeader: 'uwazi_v2_preview=1',
+      })
+    ).toBe(false);
   });
 
   it('ignores an unknown v2 value and falls through to the cookie', () => {
