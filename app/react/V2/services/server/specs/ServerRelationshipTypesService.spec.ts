@@ -1,4 +1,5 @@
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { RelationTypeCountQueryServiceFactory } from '#api/relationships/query/factory/RelationTypeCountQueryServiceFactory.js';
 import { createServerRelationshipTypesService } from '../ServerRelationshipTypesService.js';
 
 const ctx = { headers: { cookie: 'session=1' } };
@@ -26,11 +27,16 @@ describe('ServerRelationshipTypesService', () => {
     ]);
   });
 
-  it('countByTypes returns an empty map', async () => {
+  it('countByTypes returns every relation type count', async () => {
+    jest.spyOn(RelationTypeCountQueryServiceFactory, 'default').mockReturnValue({
+      all: async () => ({ rel1: 2, rel2: 0 }),
+      one: async () => 0,
+    });
+
     const [data, error] = await service.countByTypes();
 
     expect(error).toBeUndefined();
-    expect(data).toEqual({});
+    expect(data).toEqual({ rel1: 2, rel2: 0 });
   });
 
   it('upsert returns not implemented', async () => {

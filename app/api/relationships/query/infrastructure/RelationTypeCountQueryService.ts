@@ -13,7 +13,12 @@ type CountOneByRelationTypeInput = {
   relationtypeId: string;
 };
 
-class RelationTypeCountQueryService {
+type RelationTypeCountQuery = {
+  all(): Promise<Record<string, number>>;
+  one(input: CountOneByRelationTypeInput): Promise<number>;
+};
+
+class RelationTypeCountQueryService implements RelationTypeCountQuery {
   constructor(private deps: Deps) {}
 
   async all(): Promise<Record<string, number>> {
@@ -33,3 +38,4 @@ class RelationTypeCountQueryService {
 }
 
 export { RelationTypeCountQueryService };
+export type { RelationTypeCountQuery };
