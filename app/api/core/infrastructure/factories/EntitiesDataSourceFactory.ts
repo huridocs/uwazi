@@ -33,7 +33,6 @@ export class EntitiesDataSourceFactory {
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         templatesDAO: overrides?.templatesDAO ?? TemplatesDAOFactory.default(),
         settingsDataSource: overrides?.settingsDataSource ?? SettingsDataSourceFactory.default(),
-        mongoDb: getConnection(),
         accessContext: accessContext ?? AccessContext.system(),
       });
     }

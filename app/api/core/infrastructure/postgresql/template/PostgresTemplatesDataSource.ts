@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import {
@@ -21,7 +21,6 @@ import type { TemplateRow } from './PostgresTemplateMapper.js';
 
 type Deps = {
   tenantId: string;
-  mongoDb: Db;
   transactionManager: TransactionManager;
   dao: PostgresTemplatesDAO;
   pgTransactionManager: PostgresTransactionManager;
@@ -41,7 +40,7 @@ export class PostgresTemplatesDataSource
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
+      sync: { syncNamespace: 'templates' },
     });
 
     this.dao = deps.dao;

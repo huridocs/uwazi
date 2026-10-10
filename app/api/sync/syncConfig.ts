@@ -1,6 +1,8 @@
 import { SyncConfig } from '#api/sync/syncWorker.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import { model as updateLog, UpdateLog } from '#api/updatelogs/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { readUpdateLogs } from '#api/core/infrastructure/postgresql/common/SyncLogWriter.js';
 import { explicitOrdering } from '#shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
@@ -96,6 +98,31 @@ const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
+const lastChangesFromPostgres = async (
+  collection: string,
+  lastSync: number,
+  limit: number
+): Promise<UpdateLog[]> => {
+  const transactionManager = ExecutionContext.postgresTransactionManager;
+  const firstBatch = await readUpdateLogs(transactionManager, {
+    namespace: collection,
+    since: lastSync,
+    limit,
+  });
+
+  if (!firstBatch.length) {
+    return [];
+  }
+
+  const endTimestamp = firstBatch[firstBatch.length - 1].timestamp;
+  const changes = await readUpdateLogs(transactionManager, {
+    namespace: collection,
+    since: lastSync,
+    until: endTimestamp,
+  });
+  return changes as UpdateLog[];
+};
+
 export const createSyncConfig = async (
   config: SyncConfig,
   targetName: string,
@@ -108,6 +135,10 @@ export const createSyncConfig = async (
     config: await removeDeletedTemplatesFromConfig(config.config),
 
     async lastChangesForCollection(collection: string, lastSync: number, limit: number) {
+      if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
+        return lastChangesFromPostgres(collection, lastSync, limit);
+      }
+
       const firstBatch = await updateLog.find(
         {
           timestamp: { $gt: lastSync },

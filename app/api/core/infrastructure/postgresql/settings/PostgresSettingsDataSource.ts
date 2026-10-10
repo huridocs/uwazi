@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Settings } from '#api/core/domain/settings/Settings.js';
@@ -23,14 +22,13 @@ export class PostgresSettingsDataSource
 
   constructor(deps: {
     tenantId: string;
-    mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
     idGenerator: IdGenerator;
   }) {
     super('settings', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'settings' },
+      sync: { syncNamespace: 'settings' },
     });
     this.idGenerator = deps.idGenerator;
   }

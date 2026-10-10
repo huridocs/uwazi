@@ -2,7 +2,6 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresDataSource } from '../PostgresDataSource.js';
@@ -166,17 +165,15 @@ describe('PostgresDataSource', () => {
       }
     }
 
-    const makeSyncedDS = (tenantId: string) => {
-      const syncDb = getConnection();
-      return new SyncedTestDataSource({
+    const makeSyncedDS = (tenantId: string) =>
+      new SyncedTestDataSource({
         tenantId,
         pgTransactionManager: managerFor(tenantId),
-        sync: { syncDb, syncNamespace: SYNC_NS },
+        sync: { syncNamespace: SYNC_NS },
       });
-    };
 
     beforeEach(async () => {
-      await getConnection().collection('updatelogs').deleteMany({});
+      await testingPG.clear(['updatelogs']);
     });
 
     it('should write sync logs through the wired SyncLogWriter', async () => {
@@ -185,10 +182,10 @@ describe('PostgresDataSource', () => {
 
       await ds.insertRow(id, 'synced');
 
-      const logs = await getConnection().collection('updatelogs').find({}).toArray();
+      const logs = await testingPG.getAllFrom('updatelogs');
       expect(logs).toHaveLength(1);
       expect(logs[0].namespace).toBe(SYNC_NS);
-      expect(logs[0].mongoId.toString()).toBe(id);
+      expect(logs[0].id).toBe(id);
       expect(logs[0].deleted).toBe(false);
     });
 
@@ -196,13 +193,13 @@ describe('PostgresDataSource', () => {
       const ds = makeSyncedDS('tenant-a');
       const id = new ObjectId().toHexString();
       await ds.insertRow(id, 'to-delete');
-      await getConnection().collection('updatelogs').deleteMany({});
+      await testingPG.clear(['updatelogs']);
 
       await ds.deleteRow(id);
 
-      const logs = await getConnection().collection('updatelogs').find({}).toArray();
+      const logs = await testingPG.getAllFrom('updatelogs');
       expect(logs).toHaveLength(1);
-      expect(logs[0].mongoId.toString()).toBe(id);
+      expect(logs[0].id).toBe(id);
       expect(logs[0].deleted).toBe(true);
     });
 
@@ -215,7 +212,7 @@ describe('PostgresDataSource', () => {
 
       await ds.insertRow(id, 'no-log');
 
-      const logs = await getConnection().collection('updatelogs').find({}).toArray();
+      const logs = await testingPG.getAllFrom('updatelogs');
       expect(logs).toHaveLength(0);
     });
   });

@@ -13,7 +13,6 @@ class TemplatesDAOFactory {
 
       return new PostgresTemplatesDAO({
         tenantId: tenant.name,
-        mongoDb: getConnection(),
         pgTransactionManager: pgTM,
       });
     }

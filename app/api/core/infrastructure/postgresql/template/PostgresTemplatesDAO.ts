@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
@@ -9,7 +8,6 @@ type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: Pr
 
 type Deps = {
   tenantId: string;
-  mongoDb: Db;
   pgTransactionManager: PostgresTransactionManager;
 };
 
@@ -18,7 +16,7 @@ class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
+      sync: { syncNamespace: 'templates' },
     });
   }
 

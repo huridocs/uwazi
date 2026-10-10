@@ -1,4 +1,4 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+// oxlint-disable max-statements max-lines
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -23,7 +23,6 @@ describe('PostgresTemplatesDAO', () => {
     const tenantName = tenants.current().name;
     return new PostgresTemplatesDAO({
       tenantId: tenantName,
-      mongoDb: getConnection(),
       pgTransactionManager: new PostgresTransactionManager(
         PostgresDB.knex,
         tenantName,

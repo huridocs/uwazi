@@ -42,6 +42,7 @@ import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgr
 import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
 import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
+import { UpdateLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UpdateLogsMigrationConfig.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -84,6 +85,7 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   segmentations: SegmentationsMigrationConfig,
   ocr_records: OcrRecordsMigrationConfig,
   settings: SettingsMigrationConfig,
+  updatelogs: UpdateLogsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
   page_locales: PageLocalesMigrationConfig,
@@ -125,6 +127,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'settings',
     'dataviz',
     'dataviz_snapshots',
+    'updatelogs',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
   postgresCsv: [

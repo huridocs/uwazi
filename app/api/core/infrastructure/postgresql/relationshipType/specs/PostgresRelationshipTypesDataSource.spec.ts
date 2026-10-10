@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
@@ -16,7 +15,6 @@ const managerFor = (tenantId: string) =>
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresRelationshipTypesDataSource({
     tenantId,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
   });
 

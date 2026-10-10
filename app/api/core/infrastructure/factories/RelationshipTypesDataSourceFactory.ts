@@ -18,7 +18,6 @@ export class RelationshipTypesDataSourceFactory {
     if (tenant.featureFlags?.postgresCore) {
       return new PostgresRelationshipTypesDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
       });
     }

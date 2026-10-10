@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
@@ -55,15 +54,11 @@ export class PostgresTranslationsSyncHandler
   extends PostgresDataSource<TranslationRow>
   implements SyncHandler<TranslationSyO>
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('translations', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'translationsV2' },
+      sync: { syncNamespace: 'translationsV2' },
     });
   }
 
