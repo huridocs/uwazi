@@ -95,12 +95,11 @@ export class PostgresTransactionManager implements TransactionManager {
    */
   async withConnection<T>(
     fn: (executor: Knex.Transaction) => Promise<T>,
-    permissionContext?: { bypass: boolean; refIds: string[] }
+    permissionContext?: { bypass: boolean; refIds: string[] },
+    options?: { preservePermission?: boolean }
   ): Promise<T> {
     if (this.activeTransaction) {
-      await this.setTenant(this.activeTransaction);
-      await this.setPermissionVars(this.activeTransaction, permissionContext);
-      return fn(this.activeTransaction);
+      return this.joinActiveTransaction(fn, permissionContext, options);
     }
 
     const handle = await this.beginTransaction(permissionContext);
@@ -116,6 +115,22 @@ export class PostgresTransactionManager implements TransactionManager {
       }
       throw error;
     }
+  }
+
+  private async joinActiveTransaction<T>(
+    fn: (executor: Knex.Transaction) => Promise<T>,
+    permissionContext: { bypass: boolean; refIds: string[] } | undefined,
+    options: { preservePermission?: boolean } | undefined
+  ): Promise<T> {
+    const trx = this.activeTransaction;
+    if (!trx) {
+      throw new Error('PostgresTransactionManager has no active transaction');
+    }
+    await this.setTenant(trx);
+    if (!options?.preservePermission) {
+      await this.setPermissionVars(trx, permissionContext);
+    }
+    return fn(trx);
   }
 
   private async setTenant(trx: Knex.Transaction): Promise<void> {

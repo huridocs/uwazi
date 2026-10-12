@@ -1,4 +1,3 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -23,7 +22,6 @@ describe('PostgresTemplatesDataSource', () => {
   });
 
   const createDS = () => {
-    const db = getConnection();
     const transactionManager = TransactionManagerFactory.default();
     const tenantId = tenants.current().name;
     const pgTransactionManager = new PostgresTransactionManager(
@@ -33,12 +31,10 @@ describe('PostgresTemplatesDataSource', () => {
     );
     const dao = new PostgresTemplatesDAO({
       tenantId,
-      mongoDb: db,
       pgTransactionManager,
     });
     return new PostgresTemplatesDataSource({
       tenantId,
-      mongoDb: db,
       transactionManager,
       pgTransactionManager,
       dao,
