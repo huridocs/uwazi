@@ -19,6 +19,9 @@ type LibrarySelectionPanelProps = {
   onRemove: (sharedId: string) => void;
   onPreview: (sharedId: string) => void;
   onAction?: (action: LibraryBulkAction) => void;
+  editing?: boolean;
+  onEdit?: () => void;
+  onCancelEdit?: () => void;
 };
 
 const LibrarySelectionPanel = ({
@@ -29,26 +32,27 @@ const LibrarySelectionPanel = ({
   onRemove,
   onPreview,
   onAction,
+  editing = false,
+  onEdit,
+  onCancelEdit,
 }: LibrarySelectionPanelProps) => {
   const { showThumbnail, showMetadata, thumbSize } = useLibraryCardDisplay();
   const [visible, setVisible] = useState(LIST_STEP);
-  const [editKey, setEditKey] = useState('');
   const hits = useMemo(() => new Map(rows.map(row => [row.sharedId, row])), [rows]);
   const listedIds = orderedSelectionIds(
     rows.map(row => row.sharedId),
     selectedIds
   );
-  const selectionKey = selectedIds.join('\0');
 
-  if (editKey && editKey === selectionKey) {
+  if (editing) {
     return (
       <LibraryMultiEdit
         hits={listedIds.flatMap(sharedId => {
           const hit = hits.get(sharedId);
           return hit ? [hit] : [];
         })}
-        onCancel={() => setEditKey('')}
-        onSaved={() => setEditKey('')}
+        onCancel={() => onCancelEdit?.()}
+        onSaved={() => onCancelEdit?.()}
       />
     );
   }
@@ -132,7 +136,7 @@ const LibrarySelectionPanel = ({
         <LibrarySingleSelectActions
           includeViewEntity={false}
           onAction={onAction}
-          onEdit={() => setEditKey(selectionKey)}
+          onEdit={onEdit}
           onClose={onClose}
         />
       </div>
