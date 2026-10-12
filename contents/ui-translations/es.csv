@@ -735,6 +735,7 @@ Lengthy reindex process,Proceso de reindexación largo
 Library,Colección
 library list view,vista de lista de la colección
 library map view,vista de mapa de la colección
+Library panes,Paneles de la biblioteca
 Library results,Resultados de la biblioteca
 library table view,vista de tabla de la colección
 Light,Claro
@@ -1188,6 +1189,7 @@ Resize panels,Cambiar el tamaño de los paneles
 Restore,Restaurar
 Restore previous version,Restaurar la versión anterior
 Restricted,Restringido
+Results,Resultados
 Retryable,Reintentable
 Retrying,Reintentando
 Return to login,Regresar al inicio de sesión

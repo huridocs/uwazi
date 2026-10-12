@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import {
@@ -31,14 +30,13 @@ export class PostgresTranslationsDataSource
 
   constructor(deps: {
     tenantId: string;
-    mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
     idGenerator: IdGenerator;
   }) {
     super('translations', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'translationsV2' },
+      sync: { syncNamespace: 'translationsV2' },
     });
     this.idGenerator = deps.idGenerator;
   }

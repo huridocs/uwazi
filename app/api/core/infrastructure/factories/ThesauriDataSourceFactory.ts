@@ -18,7 +18,6 @@ export class ThesauriDataSourceFactory {
 
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: pgTM,
       });
     }
@@ -36,7 +35,6 @@ export class ThesauriDataSourceFactory {
 
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: pgTM,
       });
     }

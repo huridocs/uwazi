@@ -135,6 +135,13 @@ const toPostgresJsonb = (value: unknown): unknown | null => {
   return typeof value === 'object' ? value : JSON.stringify(value);
 };
 
+const sanitizeUpdateLogForPostgres = (log: Record<string, unknown>) => ({
+  id: String(log.mongoId),
+  namespace: log.namespace,
+  timestamp: Number(log.timestamp),
+  deleted: Boolean(log.deleted),
+});
+
 const sanitizeConnectionForPostgres = (connection: Record<string, unknown>) => ({
   _id: toPostgresId(connection._id),
   entity: connection.entity ?? null,
@@ -192,6 +199,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   ixsuggestions: IXSuggestionsMigrationConfig.mapDocument,
   segmentations: SegmentationsMigrationConfig.mapDocument,
   ocr_records: OcrRecordsMigrationConfig.mapDocument,
+  updatelogs: sanitizeUpdateLogForPostgres,
   dataviz: DatavizMigrationConfig.mapDocument,
   dataviz_snapshots: DatavizSnapshotsMigrationConfig.mapDocument,
 };
@@ -213,6 +221,7 @@ const MIRRORED_COLLECTIONS = [
   'connections',
   'segmentations',
   'ocr_records',
+  'updatelogs',
   'px_extractors',
   'px_entities_status',
   'dataviz',
@@ -494,6 +503,15 @@ const testingEnvironment = {
         }
         if (['files', 'templates', 'thesauri'].includes(collectionName)) {
           return testingPG.getAllFrom(collectionName);
+        }
+        if (collectionName === 'updatelogs') {
+          const rows = await testingPG.getAllFrom<Record<string, unknown>>('updatelogs');
+          return rows.map(row => ({
+            mongoId: new ObjectId(String(row.id)),
+            namespace: row.namespace,
+            timestamp: Number(row.timestamp),
+            deleted: Boolean(row.deleted),
+          }));
         }
         if (collectionName === 'connections') {
           const rows = await testingPG.getAllFrom<Record<string, unknown>>('connections');

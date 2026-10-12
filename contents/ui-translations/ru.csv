@@ -737,6 +737,7 @@ Lengthy reindex process,Длительный процесс повторной �
 Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
+Library panes,Панели библиотеки
 Library results,Результаты библиотеки
 library table view,просмотр библиотеки в табличном виде
 Light,Светлый
@@ -1188,6 +1189,7 @@ Resize panels,Изменение размера панелей
 Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
+Results,Результаты
 Retryable,С возможностью повторной попытки
 Retrying,Повторная попытка
 Return to login,Вернуться к авторизации

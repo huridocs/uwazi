@@ -28,7 +28,6 @@ export class EntityAccessPolicyDataSourceFactory {
           ? ExecutionContext.postgresTransactionManager
           : PostgresTransactionManagerFactory.default(),
         transactionManager,
-        mongoDb: getConnection(),
       });
     }
 

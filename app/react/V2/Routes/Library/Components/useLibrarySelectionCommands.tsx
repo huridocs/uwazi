@@ -53,11 +53,26 @@ const runSelectionDelete = async (
   return notifyDeleted(error, ids.length);
 };
 
-const useLibrarySelectionCommands = (
-  selectedIds: readonly string[],
-  rows: readonly LibrarySearchHit[],
-  onDeleted: () => void
-) => {
+const selectionKeyOf = (selectedIds: readonly string[]) => selectedIds.join('\0');
+
+const useSelectionEdit = (selectedIds: readonly string[]) => {
+  const [editKey, setEditKey] = useState('');
+  const selectionKey = selectionKeyOf(selectedIds);
+  return {
+    editingSelection: selectedIds.length > 1 && editKey === selectionKey,
+    startEdit: () => setEditKey(selectionKeyOf(selectedIds)),
+    stopEdit: () => setEditKey(''),
+  };
+};
+
+type SelectionDialogsArgs = {
+  selectedIds: readonly string[];
+  rows: readonly LibrarySearchHit[];
+  onDeleted: () => void;
+  stopEdit: () => void;
+};
+
+const useSelectionDialogs = ({ selectedIds, rows, onDeleted, stopEdit }: SelectionDialogsArgs) => {
   const { entities } = useServices();
   const revalidator = useRevalidator();
   const [dialog, setDialog] = useState<'delete' | 'permissions' | null>(null);
@@ -69,16 +84,8 @@ const useLibrarySelectionCommands = (
     setDialog(next);
   };
 
-  const onAction = (action: LibraryBulkAction) => {
-    if (action === 'delete' || action === 'permissions') {
-      open(action);
-    }
-  };
-
   const confirmDelete = async () => {
-    if (deleting || frozenIds.length === 0) {
-      return;
-    }
+    if (deleting || frozenIds.length === 0) return;
     setDeleting(true);
     try {
       const deleted = await runSelectionDelete(
@@ -87,6 +94,7 @@ const useLibrarySelectionCommands = (
       );
       if (deleted) {
         setDialog(null);
+        stopEdit();
         onDeleted();
         void revalidator.revalidate();
       }
@@ -95,22 +103,55 @@ const useLibrarySelectionCommands = (
     }
   };
 
-  const dialogs = (
-    <LibrarySelectionDialogs
-      dialog={dialog}
-      count={frozenIds.length}
-      deleting={deleting}
-      entity={entityForShare(rows, frozenIds[0])}
-      sharedIds={frozenIds}
-      onCancel={() => {
-        if (!deleting) setDialog(null);
-      }}
-      onConfirmDelete={confirmDelete}
-      onClosePermissions={() => setDialog(null)}
-    />
-  );
+  return {
+    open,
+    dialogs: (
+      <LibrarySelectionDialogs
+        dialog={dialog}
+        count={frozenIds.length}
+        deleting={deleting}
+        entity={entityForShare(rows, frozenIds[0])}
+        sharedIds={frozenIds}
+        onCancel={() => {
+          if (!deleting) setDialog(null);
+        }}
+        onConfirmDelete={confirmDelete}
+        onClosePermissions={() => setDialog(null)}
+      />
+    ),
+  };
+};
 
-  return { onAction, dialogs };
+const useLibrarySelectionCommands = (
+  selectedIds: readonly string[],
+  rows: readonly LibrarySearchHit[],
+  onDeleted: () => void
+) => {
+  const edit = useSelectionEdit(selectedIds);
+  const { open, dialogs } = useSelectionDialogs({
+    selectedIds,
+    rows,
+    onDeleted,
+    stopEdit: edit.stopEdit,
+  });
+
+  const onAction = (action: LibraryBulkAction) => {
+    if (action === 'edit') {
+      edit.startEdit();
+      return;
+    }
+    if (action === 'delete' || action === 'permissions') {
+      open(action);
+    }
+  };
+
+  return {
+    onAction,
+    dialogs,
+    editingSelection: edit.editingSelection,
+    startEdit: edit.startEdit,
+    stopEdit: edit.stopEdit,
+  };
 };
 
 export { useLibrarySelectionCommands };
