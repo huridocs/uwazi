@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { t, Translate } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
@@ -100,12 +100,13 @@ const LibraryView = ({
     clear();
     onClosePreview();
   };
-  const { selectionPanelOpen, onAction, dialogs } = useLibrarySelectionChrome({
-    selectedIds,
-    rows,
-    addEntity,
-    onDeleted: dismissSelection,
-  });
+  const { selectionPanelOpen, onAction, dialogs, editingSelection, startEdit, stopEdit } =
+    useLibrarySelectionChrome({
+      selectedIds,
+      rows,
+      addEntity,
+      onDeleted: dismissSelection,
+    });
   const {
     focusFieldKey,
     selectRow,
@@ -176,18 +177,6 @@ const LibraryView = ({
               onToggleTableColumn={onToggleTableColumn}
               onTableDensityChange={onTableDensityChange}
             />
-            {isMobile ? (
-              <button
-                type="button"
-                onClick={() => {
-                  closePreview();
-                  openFilters();
-                }}
-                className="mx-3 mb-1 inline-flex h-7 items-center self-start rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink md:hidden"
-              >
-                <Translate>Filters</Translate>
-              </button>
-            ) : null}
             <div
               className={
                 view === 'map'
@@ -242,6 +231,15 @@ const LibraryView = ({
                 onCreateEntity={openCreate}
                 onUploadPdf={uploadChosenPdfs}
                 onExportCsv={() => onAction('export')}
+                onOpenFilters={() => {
+                  closePreview();
+                  openFilters();
+                }}
+                onShowResults={() => {
+                  closeFilters();
+                  closePreview();
+                  requestPane(0);
+                }}
               />
             )}
           </div>
@@ -267,12 +265,18 @@ const LibraryView = ({
           onFiltersChange,
           onAndFiltersChange,
           onClosePreview: closePreview,
-          onCloseSelection: dismissSelection,
+          onCloseSelection: () => {
+            stopEdit();
+            dismissSelection();
+          },
           onRemoveSelection: sharedId =>
             onSelectedIdsChange(selectedIds.filter(id => id !== sharedId)),
           onPreviewSelection: sharedId => selectEntity(sharedId),
           onCreated: finishCreated,
           onAction,
+          editingSelection,
+          onEditSelection: startEdit,
+          onCancelEditSelection: stopEdit,
         })}
       </PaneLayout>
       {dialogs}
