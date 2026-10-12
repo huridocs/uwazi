@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { SyncHandler } from './SyncHandler.js';
@@ -32,15 +31,11 @@ export class PostgresRelationshipTypesSyncHandler
   extends PostgresDataSource<RelationshipTypeRow>
   implements SyncHandler<RelationshipTypeRow>
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('relationship_types', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'relationtypes' },
+      sync: { syncNamespace: 'relationtypes' },
     });
   }
 

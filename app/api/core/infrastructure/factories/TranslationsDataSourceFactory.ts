@@ -17,7 +17,6 @@ export class TranslationsDataSourceFactory {
     if (tenant.featureFlags?.postgresCore) {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         idGenerator: IdGeneratorFactory.default(),
       });
@@ -34,7 +33,6 @@ export class TranslationsDataSourceFactory {
     if (tenant.featureFlags?.postgresCore) {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         idGenerator: IdGeneratorFactory.default(),
       });
