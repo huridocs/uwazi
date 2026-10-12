@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
@@ -10,15 +9,11 @@ export class PostgresTemplatesSyncHandler
   extends PostgresDataSource<TemplateRow>
   implements SyncHandler<TemplateSyncRow>
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
+      sync: { syncNamespace: 'templates' },
     });
   }
 

@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { EntityAccessPolicyDataSource } from '#api/core/application/contracts/EntityAccessPolicyDataSource.js';
 import { EntityAccessPolicy } from '#api/core/domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPolicy/errors.js';
@@ -11,6 +10,7 @@ import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDa
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { entitySyncLogging } from '../common/entitySyncLogging.js';
 
 type EntityAccessPolicyRow = {
   sharedId: string;
@@ -20,7 +20,6 @@ type EntityAccessPolicyRow = {
 
 type Deps = PostgresDataSourceDeps & {
   transactionManager: TransactionManager;
-  mongoDb: Db;
 };
 
 class PostgresEntityAccessPolicyDataSource
@@ -37,16 +36,23 @@ class PostgresEntityAccessPolicyDataSource
     super('entities', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'entities' },
+      sync: { syncNamespace: 'entities' },
     });
 
     this.transactionManager = deps.transactionManager;
 
+    const logging = entitySyncLogging({
+      transactionManager: deps.pgTransactionManager,
+      tenantId: deps.tenantId,
+      accessContext: AccessContext.system(),
+    });
     this.permissionTable = PostgresPermissionEnforcedTable.for<EntityAccessPolicyRow>({
       tableName: 'entities',
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
       accessContext: AccessContext.system(),
+      syncWriter: logging.syncWriter,
+      afterSyncLog: logging.afterSyncLog,
     });
 
     this.transactionManager.onCommitted(async () => {
@@ -133,12 +139,14 @@ class PostgresEntityAccessPolicyDataSource
     const placeholders = rows.map(() => '(?, ?, ?)').join(', ');
     const bindings = rows.flat();
 
-    await this.permissionTable.raw(
+    const result = await this.permissionTable.raw<{ rows: { _id: string }[] }>(
       `UPDATE ?? AS t SET permissions = v.permissions::jsonb, published = v.published::boolean
        FROM (VALUES ${placeholders}) AS v("sharedId", permissions, published)
-       WHERE t."sharedId" = v."sharedId"`,
+       WHERE t."sharedId" = v."sharedId"
+       RETURNING t."_id"`,
       [this.permissionTable.tableName, ...bindings]
     );
+    await this.permissionTable.recordSync(result.rows.map(row => row._id));
 
     if (shouldIndex) {
       policies.forEach(policy => this.updatedSharedIds.add(policy.sharedId));

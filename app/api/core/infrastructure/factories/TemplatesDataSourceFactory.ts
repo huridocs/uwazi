@@ -25,7 +25,6 @@ export class TemplatesDataSourceFactory {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         transactionManager: mongoTM,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         dao,
@@ -51,7 +50,6 @@ export class TemplatesDataSourceFactory {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         transactionManager: mongoTM,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         dao,

@@ -1,6 +1,11 @@
 import type { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PostgresTable, type QueryState, type TableConfig } from './PostgresTable.js';
+import {
+  PostgresTable,
+  type AfterSyncLog,
+  type QueryState,
+  type TableConfig,
+} from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -14,6 +19,7 @@ type ForParams = {
   accessContext: AccessContext;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
 };
 
@@ -63,6 +69,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      afterSyncLog: params.afterSyncLog,
       identityColumn: params.identityColumn,
     };
     return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName), {
