@@ -50,7 +50,7 @@ So the belief in the task is right: a file log is accepted or rejected by the pa
 
 ### Who writes the logs
 
-Update logs are one row per document id (`mongoId`), upserted with a new `timestamp` and `namespace`. With `postgresCore` off they live in Mongo `updatelogs`. With the flag on they live in the Postgres `updatelogs` table, and the sync worker reads that table. The `syncs` cursor (`lastSyncs`, `consecutiveFailures`) stays in Mongo.
+Update logs are one row per document id (`mongoId`), upserted with a new `timestamp` and `namespace`. With `postgresCore` off they live in Mongo `updatelogs`. With the flag on they live in the Postgres `updatelogs` table, and the sync worker reads that table. The `syncs` cursor (`lastSyncs`, `consecutiveFailures`) moves with the same flag. See `syncs-to-postgres.md`.
 
 **Mongo, current entity saves** (`postgresCore` off). `POST /api/entities` goes through `UpdateEntity` → `MongoEntitiesDataSource.bulkUpdate` → `SyncedCollection`. That writes an `entities` log for the entity `_id`s touched. It does not look at `files`.
 
@@ -198,7 +198,7 @@ The lookup uses the writer's permission context (`bypass` for a privileged actor
 
 The table is `tenant_id`, `id`, `namespace`, `timestamp`, `deleted`. `id` is the changed document's id, stored as text. Unique on `(tenant_id, id)`, matching the Mongo upsert, which keys on `mongoId` alone and overwrites `namespace`. Index `(tenant_id, namespace, timestamp)` for the worker query. Tenant row-level security only. Entity permissions do not apply.
 
-`createSyncConfig.lastChangesForCollection` reads that table when the flag is on, and the mongoose model when it is off. The reader maps the `id` column back to `mongoId` on the object the worker already uses. `syncs` stays in Mongo. `lastSyncs` is a timestamp and stays valid if the copied log timestamps are the same.
+`createSyncConfig.lastChangesForCollection` reads that table when the flag is on, and the mongoose model when it is off. The reader maps the `id` column back to `mongoId` on the object the worker already uses. `lastSyncs` is a timestamp and stays valid if the copied log timestamps are the same. The cursor itself is in `syncs-to-postgres.md`.
 
 Existing Mongo logs are copied by `migrateToPostgres.ts` under the `postgresCore` group (`UpdateLogsMigrationConfig`). A tenant that flips the flag without that copy has an empty Postgres log, and the worker will not see changes that were still only in Mongo.
 
