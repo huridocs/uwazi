@@ -3,11 +3,13 @@ import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
+import { useLogoFrame, useTrimmedLogo } from '#V2/theme/logoFrame.js';
 import type { ImageSizeRule } from './customUploadImagePickerLib.js';
 import { CustomUploadImagePickerModal } from './CustomUploadImagePickerModal.js';
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
+import { LogoAdjustModal } from './LogoAdjustModal.js';
 import { useCustomUploadImagePickerLogic } from './useCustomUploadImagePickerLogic.js';
 
 const defaultPreviewClass =
@@ -29,6 +31,8 @@ type CustomUploadImagePickerProps = {
   recommendedSize?: string;
   sizeRule?: ImageSizeRule;
   emptyGalleryHint?: React.ReactNode;
+  adjustable?: boolean;
+  projectHeaderLogo?: boolean;
 };
 
 const CustomUploadImagePicker = ({
@@ -44,8 +48,18 @@ const CustomUploadImagePicker = ({
   recommendedSize,
   sizeRule,
   emptyGalleryHint,
+  adjustable = false,
+  projectHeaderLogo = false,
 }: CustomUploadImagePickerProps) => {
-  const logic = useCustomUploadImagePickerLogic({ sizeRule, files, value, onChange });
+  const logic = useCustomUploadImagePickerLogic({
+    sizeRule,
+    files,
+    value,
+    onChange,
+    adjustable,
+  });
+  const projectedSrc = useTrimmedLogo(projectHeaderLogo ? logic.trimmed : undefined);
+  const projectedLogo = useLogoFrame(projectedSrc, 'preview');
 
   const urlValidationControl =
     logic.validationFeedback === null ? null : (
@@ -87,12 +101,26 @@ const CustomUploadImagePicker = ({
           <div className="flex min-w-0 w-full flex-col items-center justify-center gap-4 min-[1400px]:flex-row min-[1400px]:flex-wrap min-[1400px]:items-center">
             <div className="flex min-w-0 items-center justify-center gap-2 min-[1400px]:justify-start">
               <div className={previewWrapperClassName}>
-                <img src={logic.trimmed} alt="" className={previewImgClassName} />
+                <img
+                  src={projectHeaderLogo ? projectedSrc : logic.trimmed}
+                  alt=""
+                  className={projectHeaderLogo ? projectedLogo.className : previewImgClassName}
+                />
               </div>
               {!logic.open && urlValidationControl ? urlValidationControl : null}
             </div>
             <div className="flex shrink-0 flex-col items-center gap-2 min-[1400px]:ml-auto min-[1400px]:items-end">
               {actionButton}
+              {adjustable ? (
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => logic.setAdjustSrc(logic.trimmed)}
+                  className="inline-flex items-center gap-1.5 px-2 py-1.5"
+                >
+                  <Translate>Adjust logo</Translate>
+                </Button>
+              ) : null}
               <Button
                 variant="dangerSecondary"
                 type="button"
@@ -129,6 +157,30 @@ const CustomUploadImagePicker = ({
           modalGridImages={logic.modalGridImages}
           trimmed={logic.trimmed}
           onPick={logic.pick}
+          mismatchMessage={logic.confirm?.message}
+          onUseMismatch={() => {
+            logic.acceptConfirm().catch(() => undefined);
+          }}
+        />
+      ) : null}
+      {logic.adjustSrc ? (
+        <LogoAdjustModal
+          src={logic.adjustSrc}
+          onClose={() => logic.setAdjustSrc(null)}
+          onApply={(file, dimensions) => {
+            logic.submitAdjusted(file, dimensions).catch(() => undefined);
+          }}
+        />
+      ) : null}
+      {logic.confirm && !logic.open ? (
+        <ConfirmationModal
+          header={<Translate>Use this image?</Translate>}
+          body={<span>{logic.confirm.message}</span>}
+          acceptButton={<Translate>Use image</Translate>}
+          onAcceptClick={() => {
+            logic.acceptConfirm().catch(() => undefined);
+          }}
+          onCancelClick={logic.cancelConfirm}
         />
       ) : null}
     </div>

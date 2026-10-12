@@ -12,6 +12,7 @@ import {
   THEME_PALETTE,
 } from '#V2/theme/themes.js';
 import type { ThemeMode } from '#V2/theme/themes.js';
+import { ThemePreviewLogo } from './ThemePreviewLogo.js';
 
 type ThemeVars = Record<string, string | undefined>;
 
@@ -64,7 +65,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
       }}
     >
       <div
-        className="flex items-center justify-between gap-3 border-b px-4 py-3"
+        className="flex min-h-13 items-center justify-between gap-3 border-b px-3"
         style={{
           backgroundColor: 'var(--color-theme-chrome-app-bar)',
           borderColor: 'var(--color-theme-chrome-app-bar-separator)',
@@ -72,7 +73,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
       >
         <div className="flex min-w-0 items-center gap-3">
           {siteLogo ? (
-            <img src={siteLogo} alt="" className="logo-img h-7 max-w-24 object-contain" />
+            <ThemePreviewLogo siteLogo={siteLogo} />
           ) : (
             <div
               className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold"

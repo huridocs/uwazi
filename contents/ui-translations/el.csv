@@ -87,6 +87,7 @@ added to hub.,προστέθηκε στον κόμβο.
 Adding a group and its items.,Προσθήκη μιας ομάδας και των στοιχείων της.
 Adding items to the thesauri,Προσθήκη στοιχείων στους θησαυρούς
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Προσαρμόστε μερικά χρώματα· το δευτερεύον κείμενο και τα απαλά φόντα ενημερώνονται αυτόματα.
+Adjust logo,Προσαρμογή λογότυπου
 Admin,Διαχειριστής
 Administrators and Editors,Διαχειριστές και επιμελητές
 Administrators and Editors always have edit access,Οι διαχειριστές και οι συντάκτες έχουν πάντα δικαιώματα επεξεργασίας
@@ -331,6 +332,8 @@ Creating entities,Δημιουργία οντοτήτων
 Creating relationships,Δημιουργία σχέσεων
 Creating thesauri,Δημιουργία θησαυρών όρων
 Creation date,Ημερομηνία δημιουργίας
+Crop changes how the logo fits in the header. Resize changes the saved file.,Η περικοπή αλλάζει τον τρόπο που το λογότυπο χωράει στην κεφαλίδα. Η αλλαγή μεγέθους αλλάζει το αποθηκευμένο αρχείο.
+Crop or resize logo,Περικοπή ή αλλαγή μεγέθους λογότυπου
 CSS,CSS
 csv blank state message,Εισαγάγετε αρχεία CSV ή ZIP για να δημιουργήσετε οντότητες μαζικά. Επιλέξτε **+ Εισαγωγή CSV** για να ξεκινήσετε.
 CSV Import,Εισαγωγή αρχείου CSV
@@ -1215,6 +1218,7 @@ Save password,Αποθήκευση κωδικού πρόσβασης
 Save the visualization before refreshing.,Αποθηκεύστε την απεικόνιση πριν κάνετε ανανέωση.
 Save the visualization to get embed code.,Αποθηκεύστε την απεικόνιση για να λάβετε τον κώδικα ενσωμάτωσης.
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
+Saved image,Αποθηκευμένη εικόνα
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
 Saved with warnings,Αποθηκεύτηκε με προειδοποιήσεις.
 Saving,Αποθήκευση
@@ -1336,12 +1340,13 @@ Show remaining in panel,Εμφάνιση του υπολοίπου στο πλα
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
 Showing the top,Εμφάνιση των κορυφαίων
+Shown in the header at,Εμφανίζεται στην κεφαλίδα σε
 shown of,εμφανιζόμενα από
 Side panel tabs,Καρτέλες πλευρικού πίνακα
 Sign in,Είσοδος
 Simple mode,Απλή λειτουργία
 Single relationships must have a hub,Οι μεμονωμένες σχέσεις πρέπει να έχουν έναν κόμβο
-Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×32 εικονοστοιχεία).
+Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×48 εικονοστοιχεία).
 
 1. Μεταφορτώστε εικόνες στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
 2. Κάντε κλικ στο ""Επιλογή εικόνας λογότυπου ιστότοπου"" και επιλέξτε αρχείο· εμφανίζονται μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις."
@@ -1613,9 +1618,11 @@ URL,URL
 Use,Χρήση
 Use as filter,Χρήση ως φίλτρο
 Use for training,Χρήση για εκπαίδευση
+Use image,Χρήση εικόνας
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Χρησιμοποιήστε αυτό το iframe σε εξωτερικούς ιστότοπους. Αλλάξτε την παράμετρο ερωτήματος «locale» στη διεύθυνση URL, αν
  χρειαστεί."
+Use this image?,Χρήση αυτής της εικόνας;
 Use URL,Χρήση URL
 Used in {n} refs — cannot delete,Χρησιμοποιείται σε {n} αναφορές — δεν είναι δυνατή η διαγραφή
 Used in templates — cannot delete,Χρησιμοποιείται σε πρότυπα — δεν είναι δυνατή η διαγραφή
@@ -1661,6 +1668,7 @@ Vimeo video player,Πρόγραμμα αναπαραγωγής βίντεο Vime
 Violated articles,Παραβιασθέντα άρθρα
 Visibility,Ορατότητα
 Visualization data updated from your collection.,Τα δεδομένα οπτικοποίησης ενημερώθηκαν από τη συλλογή σας.
+Wait for translations to finish before saving or leaving.,Περιμένετε να ολοκληρωθούν οι μεταφράσεις πριν αποθηκεύσετε ή φύγετε.
 WARNING,ΠΡΟΕΙΔΟΠΟΙΗΣΗ
 Warning: you are editing multiple entities. Fields marked with a,Προειδοποίηση: επεξεργάζεστε πολλαπλές οντότητες. Τα πεδία που σημειώνονται με
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Προειδοποίηση: επεξεργάζεστε πολλές οντότητες. Η τιμή κάθε πεδίου θα εφαρμοστεί σε όλες.

@@ -29,7 +29,7 @@ export const customFavIcon = (
 
 export const customSiteLogo = (
   <Translate translationKey="Site logo description">
-    {`The logo appears in the top bar next to your collection name (about 200×32 pixels).
+    {`The logo appears in the top bar next to your collection name (about 200×48 pixels).
 
 1. Upload images in Custom Uploads if needed.
 2. Open the logo picker and pick a file; only images from Custom Uploads are listed.`}

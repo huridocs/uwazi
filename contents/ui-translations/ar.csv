@@ -87,6 +87,7 @@ added to hub.,أُضيفت إلى المركز.
 Adding a group and its items.,إضافة مجموعة وعناصرها.
 Adding items to the thesauri,إضافة عناصر إلى المكنز
 Adjust a few colors; secondary text and muted backgrounds update automatically.,قم بتعديل بعض الألوان؛ وسيتم تحديث النص الثانوي والخلفيات ذات الألوان الهادئة تلقائيًا.
+Adjust logo,ضبط الشعار
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
 Administrators and Editors always have edit access,يتمتع المسؤولون والمحررون دائمًا بحق الوصول للتحرير
@@ -331,6 +332,8 @@ Creating entities,إنشاء الكيانات
 Creating relationships,إنشاء العلاقات
 Creating thesauri,إنشاء قواميس المرادفات
 Creation date,تاريخ الإنشاء
+Crop changes how the logo fits in the header. Resize changes the saved file.,القص يغيّر كيف يتناسب الشعار مع الترويسة. تغيير الحجم يغيّر الملف المحفوظ.
+Crop or resize logo,قص الشعار أو تغيير حجمه
 CSS,CSS
 csv blank state message,استيراد ملفات CSV أو ZIP لإنشاء كيانات بشكل جماعي. حدد **+ استيراد CSV** للبدء.
 CSV Import,استيراد ملف CSV
@@ -1215,6 +1218,7 @@ Save password,حفظ كلمة المرور
 Save the visualization before refreshing.,احفظ التمثيل البياني قبل التحديث.
 Save the visualization to get embed code.,احفظ العرض المرئي للحصول على رمز التضمين.
 Save your work to make change permanent,احفظ عملك لتثبيت التغييرات بشكل دائم
+Saved image,الصورة المحفوظة
 Saved successfully.,تم الحفظ بنجاح.
 Saved with warnings,تم الحفظ مع تحذيرات
 Saving,جارٍ الحفظ...
@@ -1336,12 +1340,13 @@ Show remaining in panel,إظهار ما تبقى في اللوحة
 Show toolbar,إظهار شريط الأدوات
 Showing,عرض
 Showing the top,عرض الجزء العلوي
+Shown in the header at,يظهر في الترويسة بحجم
 shown of,مبين
 Side panel tabs,علامات تبويب اللوحة الجانبية
 Sign in,تسجيل الدخول
 Simple mode,الوضع البسيط
 Single relationships must have a hub,يجب أن يكون للعلاقات الفردية مركزًا
-Site logo description,"يظهر الشعار في الشريط العلوي بجوار اسم مجموعتك (بحجم 200×32 بكسل تقريبًا).
+Site logo description,"يظهر الشعار في الشريط العلوي بجوار اسم مجموعتك (بحجم 200×48 بكسل تقريبًا).
 
 1. قم بتحميل الصور في قسم «التحميلات المخصصة» إذا لزم الأمر.
 2. انقر على «تحديد صورة شعار الموقع» واختر ملفًا؛ حيث لا تظهر في القائمة سوى الصور الموجودة في قسم «التحميلات المخصصة»."
@@ -1613,9 +1618,11 @@ URL,عنوان URL
 Use,استخدام
 Use as filter,استخدامه كمرشح
 Use for training,يُستخدم للتدريب
+Use image,استخدام الصورة
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","استخدم إطار iframe هذا على المواقع الخارجية. قم بتغيير معلمة الاستعلام الخاصة بالإعدادات المحلية في عنوان URL إذا
  لزم الأمر."
+Use this image?,استخدام هذه الصورة؟
 Use URL,استخدام عنوان URL
 Used in {n} refs — cannot delete,تم استخدامه في {n} مرجع — لا يمكن حذفه
 Used in templates — cannot delete,يُستخدم في القوالب — لا يمكن حذفه
@@ -1661,6 +1668,7 @@ Vimeo video player,مشغل فيديو Vimeo
 Violated articles,المواد المنتهكة
 Visibility,الرؤية
 Visualization data updated from your collection.,تم تحديث بيانات التصور المستمدة من مجموعتك.
+Wait for translations to finish before saving or leaving.,انتظر اكتمال الترجمات قبل الحفظ أو المغادرة.
 WARNING,تحذير
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,تنبيه: أنت تحرّر كيانات متعددة. ستُطبَّق قيمة كل حقل على جميعها.

@@ -6,8 +6,10 @@ import { notify } from '#V2/utils/notifyBridge.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import {
   assetUrl,
+  getImageFeedback,
   isImageFile,
   sizeRuleKey,
+  type ImageDimensions,
   type ImageFeedback,
   type ImageSizeRule,
 } from './customUploadImagePickerLib.js';
@@ -17,14 +19,26 @@ import { useModalGridFilter } from './useModalGridFilter.js';
 
 const localFileKey = (file: File) => `${file.name}:${file.size}:${file.lastModified}`;
 
+type PendingConfirm =
+  | { message: string; action: 'pick'; url: string }
+  | { message: string; action: 'upload'; files: File[] }
+  | { message: string; action: 'adjusted'; file: File };
+
 type Args = {
   sizeRule: ImageSizeRule | undefined;
   files: FileType[];
   value: string | undefined;
   onChange: (url: string) => void;
+  adjustable?: boolean;
 };
 
-export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChange }: Args) => {
+export const useCustomUploadImagePickerLogic = ({
+  sizeRule,
+  files,
+  value,
+  onChange,
+  adjustable = false,
+}: Args) => {
   const revalidator = useRevalidator();
   const [open, setOpen] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
@@ -37,6 +51,8 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
   const [uploadFileFeedback, setUploadFileFeedback] = useState<
     Record<string, ImageFeedback | null>
   >({});
+  const [confirm, setConfirm] = useState<PendingConfirm | null>(null);
+  const [adjustSrc, setAdjustSrc] = useState<string | null>(null);
   const { uploadService, images, imagesKey } = useCustomUploadPickerBasics(files);
   const { validateAssetUrl, validateFiles } = useImageValidators(sizeRule);
   const trimmed = value?.trim() ?? '';
@@ -56,6 +72,11 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     setValidationFeedback(feedback);
 
     if (feedback?.type === 'error') {
+      return;
+    }
+
+    if (feedback?.type === 'warning') {
+      setConfirm({ message: feedback.message, action: 'pick', url });
       return;
     }
 
@@ -145,6 +166,15 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
         return;
       }
 
+      if (feedback?.type === 'warning') {
+        setConfirm({ message: feedback.message, action: 'pick', url: uploadedUrl });
+        setFilesToUpload([]);
+        setUploadFileFeedback({});
+        setUploadProgress({});
+        setUploading(false);
+        return;
+      }
+
       onChange(uploadedUrl);
       setOpen(false);
     }
@@ -159,13 +189,40 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
   const handleDropzoneFiles = async (newFiles: File[]) => {
     const result = await validateFiles(newFiles);
     setFilesToUpload(result.acceptedFiles);
-    setDropzoneFeedback(result.feedback);
+    setDropzoneFeedback(result.feedback?.type === 'error' ? result.feedback : null);
     setUploadFileFeedback(
       Object.fromEntries(result.perFile.map(({ file, feedback }) => [localFileKey(file), feedback]))
     );
-    if (result.acceptedFiles.length) {
-      await handleUpload(result.acceptedFiles);
+    if (result.feedback?.type === 'error' || result.acceptedFiles.length === 0) return;
+    await handleUpload(result.acceptedFiles);
+  };
+
+  const acceptConfirm = async () => {
+    const pending = confirm;
+    setConfirm(null);
+    if (!pending) return;
+    if (pending.action === 'pick') {
+      onChange(pending.url);
+      setOpen(false);
+      if (adjustable) setAdjustSrc(pending.url);
+      return;
     }
+    await handleUpload(pending.action === 'adjusted' ? [pending.file] : pending.files);
+    if (pending.action === 'adjusted') setAdjustSrc(null);
+  };
+
+  const submitAdjusted = async (file: File, dimensions: ImageDimensions) => {
+    const feedback = sizeRule ? getImageFeedback(sizeRule, dimensions) : null;
+    if (feedback?.type === 'error') {
+      setValidationFeedback(feedback);
+      return;
+    }
+    if (feedback?.type === 'warning') {
+      setConfirm({ message: feedback.message, action: 'adjusted', file });
+      return;
+    }
+    await handleUpload([file]);
+    setAdjustSrc(null);
   };
 
   return {
@@ -188,5 +245,11 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     pick,
     handleUpload,
     sizeRule,
+    confirm,
+    acceptConfirm,
+    cancelConfirm: () => setConfirm(null),
+    adjustSrc,
+    setAdjustSrc,
+    submitAdjusted,
   };
 };

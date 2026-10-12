@@ -87,6 +87,7 @@ added to hub.,додано до хабу.
 Adding a group and its items.,Додавання групи та її елементів.
 Adding items to the thesauri,Додавання елементів до тезаурусів
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Змініть кілька кольорів — додатковий текст і приглушені фони оновляться автоматично.
+Adjust logo,Налаштувати логотип
 Admin,Адмін
 Administrators and Editors,Адміністратори та Редактори
 Administrators and Editors always have edit access,Адміністратори та редактори завжди мають права на редагування
@@ -332,6 +333,8 @@ Creating entities,Створення об’єктів
 Creating relationships,Створення зв’язків
 Creating thesauri,Створення тезаурусів
 Creation date,Дата створення
+Crop changes how the logo fits in the header. Resize changes the saved file.,"Обрізання змінює те, як логотип вміщується в шапці. Зміна розміру змінює збережений файл."
+Crop or resize logo,Обрізати або змінити розмір логотипа
 CSS,CSS
 csv blank state message,"Імпортуйте файли CSV або ZIP для масового створення об’єктів. Щоб розпочати, натисніть **+ Імпортувати CSV**."
 CSV Import,Імпорт CSV
@@ -1216,6 +1219,7 @@ Save password,Зберегти пароль
 Save the visualization before refreshing.,Збережіть візуалізацію перед оновленням.
 Save the visualization to get embed code.,"Збережіть візуалізацію, щоб отримати код для вбудовування."
 Save your work to make change permanent,"Збережіть свою роботу, щоб зробити зміни постійними"
+Saved image,Збережене зображення
 Saved successfully.,Врятовано успішно.
 Saved with warnings,Збережено з попередженнями
 Saving,Збереження
@@ -1337,12 +1341,13 @@ Show remaining in panel,Показати залишок у панелі
 Show toolbar,Показати панель інструментів
 Showing,Показати
 Showing the top,Показано найпопулярніші
+Shown in the header at,Показано в шапці у розмірі
 shown of,показано від
 Side panel tabs,Вкладки бічної панелі
 Sign in,Увійти
 Simple mode,Простий режим
 Single relationships must have a hub,Одинокі стосунки повинні мати центр
-Site logo description,"Логотип відображається у верхній панелі поруч із назвою вашої колекції (близько 200×32 пікселів).
+Site logo description,"Логотип відображається у верхній панелі поруч із назвою вашої колекції (близько 200×48 пікселів).
 
 1. За потреби завантажте зображення в Користувацькі завантаження.
 2. Натисніть ""Вибрати зображення логотипу сайту"" і оберіть файл; показуються лише зображення з Користувацьких завантажень."
@@ -1614,9 +1619,11 @@ URL,URL
 Use,Використати
 Use as filter,Використовувати як фільтр
 Use for training,Використання для навчання
+Use image,Використати зображення
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Використовуйте цей iframe на зовнішніх сайтах. За потреби змініть параметр запиту ""locale"" в URL-адресі,
  якщо це необхідно."
+Use this image?,Використати це зображення?
 Use URL,Використовувати URL-адресу
 Used in {n} refs — cannot delete,Використовується в {n} посиланнях — видалити не можна
 Used in templates — cannot delete,Використовується в шаблонах — видалити не можна
@@ -1662,6 +1669,7 @@ Vimeo video player,Відеоплеєр Vimeo
 Violated articles,Порушені статті
 Visibility,Видимість
 Visualization data updated from your collection.,Оновлено дані візуалізації з вашої колекції.
+Wait for translations to finish before saving or leaving.,"Зачекайте, доки переклад завершиться, перш ніж зберігати або виходити."
 WARNING,ПОПЕРЕДЖЕННЯ
 Warning: you are editing multiple entities. Fields marked with a,"Попередження: ви редагуєте декілька об'єктів. Поля, позначені"
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Попередження: ви редагуєте кілька об'єктів. Значення кожного поля буде застосовано до всіх.
