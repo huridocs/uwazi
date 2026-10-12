@@ -50,7 +50,7 @@ So the belief in the task is right: a file log is accepted or rejected by the pa
 
 ### Who writes the logs
 
-Update logs are one row per document id (`mongoId`), upserted with a new `timestamp` and `namespace`. With `postgresCore` off they live in Mongo `updatelogs`. With the flag on they live in the Postgres `updatelogs` table, and the sync worker reads that table. The `syncs` cursor (`lastSyncs`, `consecutiveFailures`) moves with the same flag. See `syncs-to-postgres.md`.
+Update logs are one row per document id (`mongoId`), upserted with a new `timestamp` and `namespace`. With `postgresCore` off they live in Mongo `updatelogs`. With the flag on they live in the Postgres `updatelogs` table, and the sync worker reads that table. The `syncs` cursor (`lastSyncs`, `consecutiveFailures`) moves with the same flag. The V1 module is `app/api/sync/syncs.ts`. See `syncs-to-postgres.md`.
 
 **Mongo, current entity saves** (`postgresCore` off). `POST /api/entities` goes through `UpdateEntity` → `MongoEntitiesDataSource.bulkUpdate` → `SyncedCollection`. That writes an `entities` log for the entity `_id`s touched. It does not look at `files`.
 

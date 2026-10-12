@@ -1,15 +1,15 @@
-import { SyncConfig } from '#api/sync/syncWorker.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import { model as updateLog, UpdateLog } from '#api/updatelogs/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { readUpdateLogs } from '#api/core/infrastructure/postgresql/common/SyncLogWriter.js';
 import { explicitOrdering } from '#shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
+import { SettingsSyncSchema, SettingsSyncTemplateSchema } from '#shared/types/settingsType.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import { ProcessNamespaces } from './processNamespaces.js';
-import syncsModel from './syncsModel.js';
+import { syncs } from './syncs.js';
 
-const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
+const removeDeletedTemplatesFromConfig = async (config: SettingsSyncSchema['config']) => {
   const newConfig = { ...config };
   const templatesIds = await templates.getAllIds();
   newConfig.templates = Object.keys(newConfig.templates || {}).reduce(
@@ -20,13 +20,13 @@ const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) =>
       }
       return newTemplatesConfig;
     },
-    {} as SyncConfig['config']['templates']
+    {} as SettingsSyncSchema['config']['templates']
   );
   return newConfig;
 };
 
 const getValuesFromTemplateProperties = async (
-  config: SyncConfig['config'],
+  config: SettingsSyncSchema['config'],
   validTypes: string[],
   valueProperty: keyof PropertySchema
 ) => {
@@ -36,7 +36,11 @@ const getValuesFromTemplateProperties = async (
     async (prev, templateId) => {
       const validList = await prev;
       const template = await templates.getById(templateId);
-      const templateConfigProperties = templatesConfig[templateId].properties;
+      const templateConfig = templatesConfig[templateId];
+      if (!templateConfig) {
+        return Promise.resolve(validList);
+      }
+      const templateConfigProperties = templateConfig.properties;
       (template?.properties || []).forEach(property => {
         if (
           templateConfigProperties.includes(property._id?.toString() || '') &&
@@ -75,7 +79,7 @@ const TEMPLATE_DEPENDENCIES = [
   'relationtypes',
 ];
 
-const getApprovedCollections = (config: SyncConfig['config']) => {
+const getApprovedCollections = (config: SettingsSyncSchema['config']) => {
   let collections = Object.keys(config);
   collections = collections.includes('templates')
     ? collections.concat(TEMPLATE_DEPENDENCIES)
@@ -85,10 +89,10 @@ const getApprovedCollections = (config: SyncConfig['config']) => {
   return collections;
 };
 
-const getApprovedThesauri = async (config: SyncConfig['config']) =>
+const getApprovedThesauri = async (config: SettingsSyncSchema['config']) =>
   getValuesFromTemplateProperties(config, ['select', 'multiselect'], 'content');
 
-const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
+const getApprovedRelationtypes = async (config: SettingsSyncSchema['config']) => {
   const relationtypesConfig = config.relationtypes || [];
   const validTemplateRelationtypes = await getValuesFromTemplateProperties(
     config,
@@ -124,11 +128,15 @@ const lastChangesFromPostgres = async (
 };
 
 export const createSyncConfig = async (
-  config: SyncConfig,
+  config: SettingsSyncSchema,
   targetName: string,
   updateLogTargetCount: number = 50
 ) => {
-  const [{ lastSyncs }] = await syncsModel.find({ name: targetName });
+  const cursor = await syncs.read(targetName);
+  if (!cursor) {
+    throw new Error(`Sync cursor "${targetName}" was not found`);
+  }
+  const { lastSyncs } = cursor;
 
   return {
     lastSyncs: lastSyncs || {},
@@ -193,7 +201,11 @@ export const createSyncConfig = async (
 
     async shouldSync(change: UpdateLog) {
       if (change.deleted) return { skip: true };
-      const templatesConfig = this.config.templates || {};
+      const templatesConfig = Object.fromEntries(
+        Object.entries(this.config.templates ?? {}).filter(
+          (entry): entry is [string, SettingsSyncTemplateSchema] => entry[1] !== undefined
+        )
+      );
 
       const relationtypesConfig = this.config.relationtypes || [];
 

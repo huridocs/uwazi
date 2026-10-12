@@ -10,23 +10,17 @@ import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { handleError } from '#api/utils/handleError.js';
 import { synchronizer } from './synchronizer.js';
 import { createSyncConfig } from './syncConfig.js';
-import syncsModel from './syncsModel.js';
+import { syncs } from './syncs.js';
 
 const updateSyncs = async (name: string, collection: string, lastSync: number) =>
-  syncsModel._updateMany({ name }, { $set: { [`lastSyncs.${collection}`]: lastSync } }, {});
+  syncs.setNamespaceTimestamp(name, collection, lastSync);
 
 async function createSyncIfNotExists(config: SettingsSyncSchema) {
-  const syncs = await syncsModel.find({ name: config.name });
-  if (syncs.length === 0) {
-    await syncsModel.create([{ lastSyncs: {}, name: config.name, consecutiveFailures: 0 }]);
-  }
+  if (!config.name) return;
+  await syncs.ensure(config.name);
 }
 
 const CONSECUTIVE_FAILURES_BEFORE_DISABLE = 5;
-
-const resetConsecutiveFailures = async (name: string) => {
-  await syncsModel._updateMany({ name }, { $set: { consecutiveFailures: 0 } }, {});
-};
 
 const disableConfigAndNotify = async (
   config: SettingsSyncSchema,
@@ -62,16 +56,7 @@ const recordConfigFailure = async (config: SettingsSyncSchema, error: unknown) =
     return;
   }
 
-  const updated = await syncsModel.findOneAndUpdate(
-    { name: config.name },
-    {
-      $inc: { consecutiveFailures: 1 },
-      $setOnInsert: { lastSyncs: {}, name: config.name },
-    },
-    { upsert: true, new: true, lean: true }
-  );
-
-  const consecutiveFailures = updated?.consecutiveFailures ?? 0;
+  const consecutiveFailures = await syncs.recordFailure(config.name);
   if (consecutiveFailures < CONSECUTIVE_FAILURES_BEFORE_DISABLE) {
     return;
   }
@@ -86,29 +71,11 @@ class InvalidSyncConfig extends Error {
   }
 }
 
-interface SyncConfig {
-  url: string;
-  username: string;
-  active?: boolean;
-  password: string;
-  name: string;
-  config: {
-    templates?: {
-      [k: string]: {
-        properties: string[];
-        filter?: string;
-        attachments?: boolean;
-      };
-    };
-    relationtypes?: string[];
-  };
-}
-
 const validateConfig = (config: SettingsSyncSchema) => {
   if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
   if (!config.url) throw new InvalidSyncConfig('url is not defined on sync config');
   if (!config.config) throw new InvalidSyncConfig('config is not defined on sync config');
-  return config as SyncConfig;
+  return config;
 };
 
 const reportSyncFailure = (
@@ -162,7 +129,7 @@ export const syncWorker = {
         if (!syncConfig?.active) return;
 
         await this.syncronizeConfig(syncConfig);
-        await resetConsecutiveFailures(syncConfig.name);
+        await syncs.resetConsecutiveFailures(syncConfig.name);
       } catch (error) {
         reportSyncFailure(error, {
           tenant: tenants.current().name,
@@ -178,7 +145,7 @@ export const syncWorker = {
     }, Promise.resolve());
   },
 
-  async syncronizeConfig(config: SyncConfig) {
+  async syncronizeConfig(config: SettingsSyncSchema) {
     await createSyncIfNotExists(config);
 
     const syncConfig = await createSyncConfig(config, config.name, this.UPDATE_LOG_TARGET_COUNT);
@@ -211,11 +178,9 @@ export const syncWorker = {
     }
   },
 
-  async login({ url, username, password }: SyncConfig) {
+  async login({ url, username, password }: SettingsSyncSchema) {
     const response = await request.post(urljoin(url, 'api/login'), { username, password });
 
     return response.cookie || '';
   },
 };
-
-export type { SyncConfig };

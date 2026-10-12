@@ -4,14 +4,20 @@ The `syncs` collection is the worker's cursor. It is not a synced namespace. One
 
 ## Decision
 
-`postgresCore` selects the store, the same flag as update logs.
+`postgresCore` selects Mongo or Postgres, the same flag as update logs.
 
-- Flag off: the mongoose `syncs` model.
+- Flag off: the mongoose `syncs` model (`syncsModel`).
 - Flag on: the Postgres `syncs` table. The worker already runs inside the tenant context, so it branches the same way `lastChangesForCollection` does.
 
 One row per config name. Columns: `tenant_id`, `name`, `last_syncs` (jsonb), `consecutive_failures`. Primary key `(tenant_id, name)`. The jsonb keys stay the wire namespaces (`files`, `entities`, `dictionaries`, and the rest). There is no id column. The worker looks up by `name`, and the Mongo `_id` is unused.
 
-A small store used only by `syncWorker` and `createSyncConfig`. It does not write update logs. `syncs` is not in the sync order. Pushing the cursor to a target would be wrong.
+The module is `app/api/sync/syncs.ts`. It exports `syncs`, a bare object of functions, the same shape as `synchronizer`. The `postgresCore` branch lives inside that module. Postgres SQL stays in `PostgresSyncs`. Callers are `syncWorker` and `createSyncConfig`. The spec is `app/api/sync/specs/syncs.spec.ts`, and it imports the module with a relative path.
+
+This stays V1. A DAO, a DataSource, a service, or a factory would mean the cursor had moved into the V2 hexagon, and the worker has not. "Store" is not a role in the architecture notes. The suffix was dropped for that reason.
+
+`syncs` does not write update logs. It is not in the sync order. Pushing the cursor to a target would be wrong.
+
+The worker and `createSyncConfig` both take `SettingsSyncSchema` from `app/shared/types/settingsType.ts`. There is no second sync-config interface. `syncConfig` does not import the worker, so the two files no longer depend on each other.
 
 The five operations stay:
 
