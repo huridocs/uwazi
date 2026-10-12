@@ -100,12 +100,13 @@ const LibraryView = ({
     clear();
     onClosePreview();
   };
-  const { selectionPanelOpen, onAction, dialogs } = useLibrarySelectionChrome({
-    selectedIds,
-    rows,
-    addEntity,
-    onDeleted: dismissSelection,
-  });
+  const { selectionPanelOpen, onAction, dialogs, editingSelection, startEdit, stopEdit } =
+    useLibrarySelectionChrome({
+      selectedIds,
+      rows,
+      addEntity,
+      onDeleted: dismissSelection,
+    });
   const {
     focusFieldKey,
     selectRow,
@@ -264,12 +265,18 @@ const LibraryView = ({
           onFiltersChange,
           onAndFiltersChange,
           onClosePreview: closePreview,
-          onCloseSelection: dismissSelection,
+          onCloseSelection: () => {
+            stopEdit();
+            dismissSelection();
+          },
           onRemoveSelection: sharedId =>
             onSelectedIdsChange(selectedIds.filter(id => id !== sharedId)),
           onPreviewSelection: sharedId => selectEntity(sharedId),
           onCreated: finishCreated,
           onAction,
+          editingSelection,
+          onEditSelection: startEdit,
+          onCancelEditSelection: stopEdit,
         })}
       </PaneLayout>
       {dialogs}
