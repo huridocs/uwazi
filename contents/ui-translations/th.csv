@@ -87,6 +87,7 @@ added to hub.,เพิ่มเข้าไปใน hub.
 Adding a group and its items.,การเพิ่มกลุ่มและรายการในกลุ่มนั้น
 Adding items to the thesauri,การเพิ่มรายการลงในฐานข้อมูลคำพ้องความหมาย
 Adjust a few colors; secondary text and muted backgrounds update automatically.,ปรับสีไม่กี่สี; ข้อความรองและพื้นหลังสีอ่อนจะอัปเดตอัตโนมัติ
+Adjust logo,ปรับโลโก้
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 Administrators and Editors always have edit access,ผู้ดูแลระบบและผู้บรรณาธิการมีสิทธิ์แก้ไขเสมอ
@@ -332,6 +333,8 @@ Creating entities,การสร้างเอนทิตี
 Creating relationships,การสร้างความสัมพันธ์
 Creating thesauri,การสร้างพจนานุกรมคำพ้องความหมาย
 Creation date,วันที่สร้าง
+Crop changes how the logo fits in the header. Resize changes the saved file.,การครอบตัดเปลี่ยนวิธีที่โลโก้พอดีกับส่วนหัว การปรับขนาดเปลี่ยนไฟล์ที่บันทึก
+Crop or resize logo,ครอบตัดหรือปรับขนาดโลโก้
 CSS,CSS
 csv blank state message,นำเข้าไฟล์ CSV หรือ ZIP เพื่อสร้างเอนทิตีแบบจำนวนมาก เลือก **+ นำเข้า CSV** เพื่อเริ่มต้น
 CSV Import,นำเข้าไฟล์ CSV
@@ -1218,6 +1221,7 @@ Save password,บันทึกรหัสผ่าน
 Save the visualization before refreshing.,บันทึกการแสดงผลก่อนที่จะรีเฟรช
 Save the visualization to get embed code.,บันทึกภาพแสดงข้อมูลเพื่อรับรหัสฝัง
 Save your work to make change permanent,บันทึกงานของคุณเพื่อให้การเปลี่ยนแปลงมีผลถาวร
+Saved image,ภาพที่บันทึก
 Saved successfully.,บันทึกสำเร็จแล้ว
 Saved with warnings,บันทึกไว้พร้อมคำเตือน
 Saving,กำลังบันทึก
@@ -1339,12 +1343,13 @@ Show remaining in panel,แสดงจำนวนที่เหลือใ�
 Show toolbar,แสดงแถบเครื่องมือ
 Showing,กำลังแสดง
 Showing the top,แสดงส่วนบน
+Shown in the header at,แสดงในส่วนหัวที่
 shown of,แสดงโดย
 Side panel tabs,แท็บแผงด้านข้าง
 Sign in,เข้าสู่ระบบ
 Simple mode,โหมดง่าย
 Single relationships must have a hub,ความสัมพันธ์แบบเดี่ยวต้องมีศูนย์กลาง
-Site logo description,"โลโก้จะปรากฏในแถบด้านบนข้างชื่อคอลเลกชันของคุณ (ขนาดประมาณ 200×32 พิกเซล)
+Site logo description,"โลโก้จะปรากฏในแถบด้านบนข้างชื่อคอลเลกชันของคุณ (ขนาดประมาณ 200×48 พิกเซล)
 
 1. อัปโหลดรูปภาพในส่วน ""Custom Uploads"" หากจำเป็น
 2. คลิก ""เลือกภาพโลโก้เว็บไซต์"" และเลือกไฟล์; จะแสดงเฉพาะรูปภาพจากส่วน ""Custom Uploads"" เท่านั้น"
@@ -1618,9 +1623,11 @@ URL,url
 Use,ใช้
 Use as filter,ใช้เป็นตัวกรอง
 Use for training,ใช้สำหรับการฝึกอบรม
+Use image,ใช้ภาพ
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","ใช้ iframe นี้บนเว็บไซต์ภายนอก หากจำเป็น ให้เปลี่ยนพารามิเตอร์การค้นหาภาษา (locale) ใน URL
 ตามความจำเป็น"
+Use this image?,ใช้ภาพนี้หรือไม่
 Use URL,ใช้ URL
 Used in {n} refs — cannot delete,ใช้ใน {n} การอ้างอิง — ไม่สามารถลบได้
 Used in templates — cannot delete,ใช้ในเทมเพลต — ไม่สามารถลบได้
