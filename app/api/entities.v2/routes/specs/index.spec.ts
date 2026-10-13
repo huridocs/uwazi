@@ -20,6 +20,7 @@ describe('entities countByTemplate V2 routes', () => {
     };
     next();
   });
+  const anonymousApp = setUpApp(entitiesRoutes);
 
   const template1 = createTemplate('Template 1');
   const template2 = createTemplate('Template 2');
@@ -44,7 +45,7 @@ describe('entities countByTemplate V2 routes', () => {
             'entity_1',
             'Template 1',
             {},
-            {}
+            { published: true }
           ),
           ...factory.entityInMultipleLanguages(
             ['en', 'es', 'fr'],
@@ -124,6 +125,17 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toEqual(
         expect.objectContaining({ prettyMessage: 'validation failed' })
       );
+    });
+
+    it('counts only published entities when the request has no user', async () => {
+      const response = await request(anonymousApp).get('/api/v2/entities/count_by_template');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        [template1._id.toString()]: 1,
+        [template2._id.toString()]: 0,
+        [emptyTemplate._id.toString()]: 0,
+      });
     });
 
     it('should not depend on Accept-Language header', async () => {
