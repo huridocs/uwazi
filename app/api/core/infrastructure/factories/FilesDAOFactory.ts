@@ -17,6 +17,7 @@ class FilesDAOFactory {
       return new PostgresFilesDAO({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
       }) as any as MongoFilesDAO;
     }
 

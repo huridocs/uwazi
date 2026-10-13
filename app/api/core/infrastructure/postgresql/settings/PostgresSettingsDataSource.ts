@@ -1,5 +1,6 @@
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Settings } from '#api/core/domain/settings/Settings.js';
 import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 import { LanguageUtils } from '#shared/language/index.js';
@@ -23,11 +24,13 @@ export class PostgresSettingsDataSource
   constructor(deps: {
     tenantId: string;
     pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
     idGenerator: IdGenerator;
   }) {
     super('settings', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'settings' },
     });
     this.idGenerator = deps.idGenerator;

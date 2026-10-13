@@ -6,6 +6,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTemplatesDataSource } from '../PostgresTemplatesDataSource.js';
 import { PostgresTemplatesDAO } from '../PostgresTemplatesDAO.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
@@ -32,11 +33,13 @@ describe('PostgresTemplatesDataSource', () => {
     const dao = new PostgresTemplatesDAO({
       tenantId,
       pgTransactionManager,
+      accessContext: AccessContext.system(),
     });
     return new PostgresTemplatesDataSource({
       tenantId,
       transactionManager,
       pgTransactionManager,
+      accessContext: AccessContext.system(),
       dao,
     });
   };

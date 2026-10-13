@@ -14,6 +14,7 @@ class TemplatesDAOFactory {
       return new PostgresTemplatesDAO({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

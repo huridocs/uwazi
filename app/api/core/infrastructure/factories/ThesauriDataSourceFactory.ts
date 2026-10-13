@@ -19,6 +19,7 @@ export class ThesauriDataSourceFactory {
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 
@@ -36,6 +37,7 @@ export class ThesauriDataSourceFactory {
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

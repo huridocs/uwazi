@@ -89,8 +89,9 @@ const toRecomputeRow = ({ _id, extractorId, ...row }: StoredRow) =>
  * subquery on `entities`, so rows stream straight off `ix_suggestions`.
  *
  * `entities` carries permission RLS. A recompute walks every suggestion whoever triggered it, so it
- * reads entities bypassing it; otherwise a collaborator's recompute would judge suggestions against
- * an empty value wherever they cannot see the entity.
+ * must run with a privileged access context (the `AcceptSuggestionsJob` is `@PrivilegedJob`);
+ * otherwise a collaborator's recompute would judge suggestions against an empty value wherever they
+ * cannot see the entity.
  */
 export class PostgresIXSuggestionsStateQueryService
   extends PostgresDataSource<IXSuggestionsRow>
@@ -104,7 +105,7 @@ export class PostgresIXSuggestionsStateQueryService
     const rows = inScope(this.table.query<StoredRow>(), scope)
       .select(columns)
       .selectRaw(currentValue, languageBindings(languages))
-      .stream({ bypass: true, refIds: [] });
+      .stream();
 
     for await (const row of rows) {
       yield toRecomputeRow(row);

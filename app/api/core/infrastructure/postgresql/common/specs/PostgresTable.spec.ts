@@ -6,6 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTable } from '../PostgresTable.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
 import { SyncLogWriter } from '../SyncLogWriter.js';
@@ -26,6 +27,7 @@ const createTable = (tenantId = DEFAULT_TENANT) =>
     tableName: 'thesauri',
     tenantId,
     transactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const jsonVal = (v: unknown) => JSON.stringify(v);
@@ -38,6 +40,7 @@ const createTableWithSync = (tenantId = DEFAULT_TENANT, namespace = SYNC_NAMESPA
     tableName: 'thesauri',
     tenantId,
     transactionManager,
+    accessContext: AccessContext.system(),
     syncWriter: new SyncLogWriter(transactionManager, tenantId, namespace),
   });
 };
@@ -835,6 +838,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri_categories',
         tenantId,
         transactionManager: managerFor(tenantId),
+        accessContext: AccessContext.system(),
       });
 
     it('should join thesauri with categories and enforce tenant_id on the base table', async () => {
@@ -986,6 +990,7 @@ describe('PostgresTable', () => {
         tableName: 'page_locales',
         tenantId: DEFAULT_TENANT,
         transactionManager: managerFor(DEFAULT_TENANT),
+        accessContext: AccessContext.system(),
         identityColumn: null,
       });
       await locales.insert({ page_id: 'p-1', language: 'en', title: 'Home' });
@@ -1451,6 +1456,7 @@ describe('PostgresTable', () => {
         tableName: 'nonexistent_table',
         tenantId: DEFAULT_TENANT,
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       let error: Error | undefined;
@@ -1499,6 +1505,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: 'tenant-a',
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       await manager.run(async () => {
@@ -1516,6 +1523,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: 'tenant-a',
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       await expect(
@@ -1536,6 +1544,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: 'tenant-a',
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       await manager.run(async () => {
@@ -1551,6 +1560,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: 'tenant-a',
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       await tableA.insert({ _id: 'trx-bu-1', name: 'original', values: jsonVal([]) });
@@ -1569,6 +1579,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: 'tenant-a',
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       await tableA.insert({ _id: 'trx-bu-2', name: 'original', values: jsonVal([]) });
@@ -1593,6 +1604,7 @@ describe('PostgresTable', () => {
         tableName: 'thesauri',
         tenantId: DEFAULT_TENANT,
         transactionManager: manager,
+        accessContext: AccessContext.system(),
       });
 
       const result = await table.raw<{ rows: { n: number }[] }>('SELECT ?::int AS n', [42]);

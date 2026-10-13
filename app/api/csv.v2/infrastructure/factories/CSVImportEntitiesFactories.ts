@@ -7,6 +7,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { CsvImportEntities } from '../../CsvImportEntities.js';
@@ -38,6 +39,7 @@ import { PostgresCsvImportsDataSource } from '../postgresql/PostgresCsvImportsDa
 type CsvPostgresDeps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 const csvDataSource = <T>(
@@ -49,6 +51,7 @@ const csvDataSource = <T>(
     return postgres({
       tenantId: ExecutionContext.currentTenant.name,
       pgTransactionManager: ExecutionContext.postgresTransactionManager,
+      accessContext: ExecutionContext.accessContext,
     });
   }
   return mongo(getConnection(), transactionManager ?? ExecutionContext.mongoTransactionManager);

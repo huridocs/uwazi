@@ -3,6 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import {
   ThesaurusNameAlreadyExistsError,
@@ -20,6 +21,7 @@ const makeDS = () =>
   new PostgresThesauriDataSource({
     tenantId: TENANT_ID,
     pgTransactionManager: managerFor(TENANT_ID),
+    accessContext: AccessContext.system(),
   });
 
 const makeThesaurus = (overrides: Partial<{ id: string; name: string; values: any[] }> = {}) =>

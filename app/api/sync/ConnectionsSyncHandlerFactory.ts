@@ -11,6 +11,7 @@ export class ConnectionsSyncHandlerFactory {
       return new PostgresConnectionsSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 
