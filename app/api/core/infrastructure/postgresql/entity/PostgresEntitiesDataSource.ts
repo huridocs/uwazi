@@ -59,6 +59,7 @@ export class PostgresEntitiesDataSource
     super('entities', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'entities' },
     });
 

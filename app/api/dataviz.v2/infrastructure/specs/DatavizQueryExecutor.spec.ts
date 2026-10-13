@@ -6,6 +6,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { User } from '#api/users.v2/model/User.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
@@ -362,6 +363,7 @@ describe('DatavizQueryExecutor', () => {
           ? new PostgresDatavizQueryExecutor({
               tenantId: ExecutionContext.tenant.name,
               pgTransactionManager: ExecutionContext.postgresTransactionManager,
+              accessContext: AccessContext.system(),
             })
           : new MongoDatavizQueryExecutor(getConnection(), tm);
         return new DatavizQueryOrchestrator(deps, strategy);

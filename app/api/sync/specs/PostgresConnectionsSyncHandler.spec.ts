@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PostgresConnectionsSyncHandler } from '../PostgresConnectionsSyncHandler.js';
 
@@ -25,6 +26,7 @@ describe('PostgresConnectionsSyncHandler', () => {
         tenantName,
         LoggerFactory.forTests()
       ),
+      accessContext: AccessContext.system(),
     });
   };
 

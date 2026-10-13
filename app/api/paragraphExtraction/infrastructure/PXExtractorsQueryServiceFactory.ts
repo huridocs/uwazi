@@ -23,6 +23,7 @@ export class PXExtractorsQueryServiceFactory {
       return new PostgresPXExtractorsQueryService({
         tenantId: tenant.name,
         pgTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

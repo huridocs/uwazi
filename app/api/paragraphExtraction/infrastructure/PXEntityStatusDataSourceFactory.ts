@@ -23,6 +23,7 @@ export class PXEntitiesStatusDataSourceFactory {
       return new PostgresPXEntitiesStatusDataSource({
         tenantId: tenant.name,
         pgTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

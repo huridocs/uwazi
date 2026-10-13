@@ -23,6 +23,7 @@ export class FilesDataSourceFactory {
         tenantId: tenant.name,
         transactionManager: tm,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
         fileStorage: FileStorageFactory.default(),
       });
     }
