@@ -20,8 +20,15 @@ type MetadataDisplayFooterProps = {
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   const entity = useEntityScopedEntity();
-  const { isEditing, isSaving, formMountHost, formId, startEditing, requestDiscard } =
-    useMetadataEditing();
+  const {
+    isEditing,
+    isSaving,
+    formMountHost,
+    formId,
+    startEditing,
+    requestDiscard,
+    requestStopTranslations,
+  } = useMetadataEditing();
   const [sharing, setSharing] = useState(false);
   const { confirming, isDeleting, requestDelete, cancelDelete, confirmDelete } = useDeleteEntity();
   const showSaveCancel = isEditing && formMountHost === host;
@@ -32,7 +39,12 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
         <div className="flex w-full flex-wrap items-center gap-3">
           <CopyFromTrigger disabled={isSaving} />
           <div className="flex-1" />
-          <Button type="button" variant="warm" onClick={() => requestDiscard('discard')}>
+          <Button
+            type="button"
+            variant="warm"
+            onClick={() => requestStopTranslations(() => requestDiscard('discard'))}
+            disabled={isSaving}
+          >
             <Translate>Cancel</Translate>
           </Button>
           <Button type="submit" variant="success" form={formId} disabled={isSaving}>

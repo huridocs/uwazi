@@ -1348,6 +1348,8 @@ Skip to main content,Перейти к основному содержанию
 Snapshot (manual),Снимок (вручную)
 Snapshot (scheduled),Снимок (по расписанию)
 Some tasks may take a while. Bert will reply when it's done.,"Некоторые задачи могут занять некоторое время. Bert ответит, когда они будут выполнены."
+"Some translations are still pending, saving would stop the translation process.","Некоторые переводы ещё выполняются, сохранение остановит процесс перевода."
+Translations are still pending,Переводы ещё выполняются
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
 Sort ascending,Сортировать по возрастанию

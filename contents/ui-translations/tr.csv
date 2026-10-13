@@ -1351,6 +1351,8 @@ Skip to main content,Ana içeriğe atla
 Snapshot (manual),Anlık görüntü (manuel)
 Snapshot (scheduled),Anlık görüntü (zamanlanmış)
 Some tasks may take a while. Bert will reply when it's done.,Bazı işlemler biraz zaman alabilir. İşlem tamamlandığında Bert size yanıt verecektir.
+"Some translations are still pending, saving would stop the translation process.","Bazı çeviriler hâlâ sürüyor, kaydetmek çeviri işlemini durdurur."
+Translations are still pending,Çeviriler hâlâ sürüyor
 Something went wrong,Bir şey ters gitti
 Sort,Sırala
 Sort ascending,Artan sıraya göre sırala

@@ -66,4 +66,76 @@ describe('probeTranslationService', () => {
       .mockResolvedValue([undefined, new ApiError('unavailable', { kind: 'http', status: 400 })]);
     await expect(probeTranslationService('en', 'es')).resolves.toBe(false);
   });
+
+  it('stays available when the probe only times out', async () => {
+    jest
+      .mocked(apiClient.postJson)
+      .mockResolvedValue([undefined, new ApiError('Timed out', { kind: 'timeout', status: 0 })]);
+    await expect(probeTranslationService('en', 'es')).resolves.toBe(true);
+  });
+});
+
+type PendingPost = (value: [{ translated_text: string }, undefined]) => void;
+
+const hangTranslations = () => {
+  const pending: PendingPost[] = [];
+  jest.mocked(apiClient.postJson).mockImplementation(
+    () =>
+      new Promise(resolve => {
+        pending.push(resolve);
+      })
+  );
+  return pending;
+};
+
+const startThree = () => {
+  const input = { text: 'Hearing', language_from: 'en', language_to: 'es' };
+  return [
+    translateText(input),
+    translateText({ ...input, language_to: 'fr' }),
+    translateText({ ...input, language_to: 'ar' }),
+  ];
+};
+
+const finish = (pending: PendingPost[], index: number) => {
+  pending[index]?.([{ translated_text: 'ok' }, undefined]);
+};
+
+const queueThird = () => {
+  const pending = hangTranslations();
+  const input = { text: 'Hearing', language_from: 'en', language_to: 'es' };
+  const running = [translateText(input), translateText({ ...input, language_to: 'fr' })];
+  const controller = new AbortController();
+  const queued = translateText({ ...input, language_to: 'ar' }, { signal: controller.signal });
+  return { pending, running, controller, queued };
+};
+
+describe('translateText concurrency', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('leaves a connection free while earlier translations are still running', async () => {
+    const pending = hangTranslations();
+    const requests = startThree();
+    await Promise.resolve();
+    expect(apiClient.postJson).toHaveBeenCalledTimes(2);
+    finish(pending, 0);
+    await requests[0];
+    expect(apiClient.postJson).toHaveBeenCalledTimes(3);
+    [1, 2].forEach(index => finish(pending, index));
+    await Promise.all(requests.slice(1));
+  });
+
+  it('drops a queued translation when its signal aborts', async () => {
+    const { pending, running, controller, queued } = queueThird();
+    await Promise.resolve();
+    expect(apiClient.postJson).toHaveBeenCalledTimes(2);
+    controller.abort();
+    const [, error] = await queued;
+    expect(error?.kind).toBe('cancelled');
+    expect(apiClient.postJson).toHaveBeenCalledTimes(2);
+    [0, 1].forEach(index => finish(pending, index));
+    await Promise.all(running);
+  });
 });

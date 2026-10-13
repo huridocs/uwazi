@@ -1344,6 +1344,8 @@ Skip to main content,본문으로 건너뛰기
 Snapshot (manual),스냅샷(수동)
 Snapshot (scheduled),스냅샷(예약)
 Some tasks may take a while. Bert will reply when it's done.,일부 작업은 시간이 좀 걸릴 수 있습니다. 작업이 완료되면 Bert가 답장을 드릴 것입니다.
+"Some translations are still pending, saving would stop the translation process.","일부 번역이 아직 진행 중이며, 저장하면 번역 과정이 중단됩니다."
+Translations are still pending,번역이 아직 진행 중입니다
 Something went wrong,오류
 Sort,분류하기
 Sort ascending,오름차순으로 정렬

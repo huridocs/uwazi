@@ -1351,6 +1351,8 @@ Skip to main content,Μετάβαση στο κύριο περιεχόμενο
 Snapshot (manual),Στιγμιότυπο (χειροκίνητο)
 Snapshot (scheduled),Στιγμιότυπο (προγραμματισμένο)
 Some tasks may take a while. Bert will reply when it's done.,Ορισμένες εργασίες μπορεί να διαρκέσουν λίγο. Ο Bert θα απαντήσει όταν ολοκληρωθούν.
+"Some translations are still pending, saving would stop the translation process.","Ορισμένες μεταφράσεις εκκρεμούν ακόμη, η αποθήκευση θα σταματούσε τη διαδικασία μετάφρασης."
+Translations are still pending,Οι μεταφράσεις εκκρεμούν ακόμη
 Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
