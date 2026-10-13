@@ -1,4 +1,5 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import {
@@ -13,10 +14,15 @@ export class PostgresThesauriDataSource
   extends PostgresDataSource<ThesaurusRow>
   implements ThesauriDataSource
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('thesauri', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'dictionaries' },
     });
   }

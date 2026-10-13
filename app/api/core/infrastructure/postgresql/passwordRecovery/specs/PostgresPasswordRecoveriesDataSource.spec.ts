@@ -3,6 +3,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresPasswordRecoveriesDataSource } from '../PostgresPasswordRecoveriesDataSource.js';
 
@@ -16,6 +17,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresPasswordRecoveriesDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
     idGenerator: IdGeneratorFactory.default(),
   });
 

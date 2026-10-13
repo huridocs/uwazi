@@ -16,6 +16,7 @@ class IXTrainingMaterialsQueryServiceFactory {
       return new PostgresIXTrainingMaterialsQueryService({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
+        accessContext: ExecutionContext.accessContext,
         segmentationDirectory: SegmentationDirectoryFactory.default(),
       });
     }

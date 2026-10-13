@@ -4,6 +4,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresRelationshipTypesDataSource } from '../PostgresRelationshipTypesDataSource.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
@@ -16,6 +17,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresRelationshipTypesDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const createType = (name: string, id = new ObjectId().toHexString()) =>

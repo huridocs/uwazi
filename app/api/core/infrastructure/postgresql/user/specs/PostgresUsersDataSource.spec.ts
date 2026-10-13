@@ -3,6 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { User, UserRole } from '#api/core/domain/user/User.js';
@@ -21,6 +22,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresUsersDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const insertUser = async (tenantId: string, overrides: Record<string, unknown> = {}) => {

@@ -13,6 +13,7 @@ class ThesauriDAOFactory {
       return new PostgresThesauriDAO({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

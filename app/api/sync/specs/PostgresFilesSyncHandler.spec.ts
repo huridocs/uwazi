@@ -5,6 +5,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PostgresFilesSyncHandler } from '../PostgresFilesSyncHandler.js';
 
@@ -19,6 +20,7 @@ const createHandler = () => {
       tenantName,
       LoggerFactory.forTests()
     ),
+    accessContext: AccessContext.system(),
   });
 };
 

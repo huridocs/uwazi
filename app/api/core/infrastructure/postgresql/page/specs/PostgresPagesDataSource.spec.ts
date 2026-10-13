@@ -5,6 +5,7 @@ import { Page, PageLocaleData } from '#api/pages.v2/domain/Page.js';
 import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTable } from '../../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PageLocaleRow } from '../PostgresPageMapper.js';
@@ -19,6 +20,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresPagesDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const localesTable = (tenantId = TENANT_ID) =>
@@ -26,6 +28,7 @@ const localesTable = (tenantId = TENANT_ID) =>
     tableName: 'page_locales',
     tenantId,
     transactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const locale = (title: string, content = ''): PageLocaleData => ({
