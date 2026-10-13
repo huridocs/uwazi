@@ -87,6 +87,7 @@ added to hub.,hub'a eklendi.
 Adding a group and its items.,Bir grubu ve içindeki öğeleri ekleme.
 Adding items to the thesauri,Thesaurus'a öğe ekleme
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Birkaç rengi ayarlayın; ikincil metinler ve soluk arka planlar otomatik olarak güncellenir.
+Adjust logo,Logoyu ayarla
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
 Administrators and Editors always have edit access,Yöneticiler ve Editörler her zaman düzenleme erişimine sahiptir
@@ -332,6 +333,8 @@ Creating entities,Varlıklar oluşturuluyor
 Creating relationships,İlişkiler oluşturuluyor
 Creating thesauri,Thesaurus oluşturuluyor
 Creation date,Oluşturulma tarihi
+Crop changes how the logo fits in the header. Resize changes the saved file.,"Kırpma, logonun üst bilgiye nasıl sığdığını değiştirir. Yeniden boyutlandırma kayıtlı dosyayı değiştirir."
+Crop or resize logo,Logoyu kırp veya yeniden boyutlandır
 CSS,CSS
 csv blank state message,CSV veya ZIP dosyalarını içe aktararak varlıkları toplu olarak oluşturun. Başlamak için **+ CSV'yi İçe Aktar** seçeneğini seçin.
 CSV Import,CSV İçe Aktarma
@@ -1217,6 +1220,7 @@ Save password,Parolayı kaydet
 Save the visualization before refreshing.,Yenilemeden önce görselleştirmeyi kaydedin.
 Save the visualization to get embed code.,Gömme kodunu almak için görselleştirmeyi kaydedin.
 Save your work to make change permanent,Değişikliği kalıcı hale getirmek için çalışmanızı kaydedin
+Saved image,Kaydedilen görsel
 Saved successfully.,Başarıyla kaydedildi.
 Saved with warnings,Uyarılarla kaydedildi
 Saving,Kaydediliyor
@@ -1338,12 +1342,13 @@ Show remaining in panel,Panelde kalanları göster
 Show toolbar,Araç çubuğunu göster
 Showing,Gösteriliyor
 Showing the top,Gösterilen ilk
+Shown in the header at,Üst bilgide gösterilen boyut
 shown of,gösterilen
 Side panel tabs,Yan panel sekmeleri
 Sign in,Oturum aç
 Simple mode,Basit mod
 Single relationships must have a hub,Tekli ilişkilerin bir merkez noktası olması gerekir
-Site logo description,"Logo, koleksiyon adınızın yanındaki üst çubukta görünür (yaklaşık 200×32 piksel).
+Site logo description,"Logo, koleksiyon adınızın yanındaki üst çubukta görünür (yaklaşık 200×48 piksel).
 
 1. Gerekirse, Özel Yüklemeler bölümüne görseller yükleyin.
 2. ""Site logosu görselini seç"" seçeneğine tıklayın ve bir dosya seçin; yalnızca Özel Yüklemeler bölümündeki görseller listelenir."
@@ -1353,6 +1358,8 @@ Skip to main content,Ana içeriğe atla
 Snapshot (manual),Anlık görüntü (manuel)
 Snapshot (scheduled),Anlık görüntü (zamanlanmış)
 Some tasks may take a while. Bert will reply when it's done.,Bazı işlemler biraz zaman alabilir. İşlem tamamlandığında Bert size yanıt verecektir.
+"Some translations are still pending, saving would stop the translation process.","Bazı çeviriler hâlâ sürüyor, kaydetmek çeviri işlemini durdurur."
+Translations are still pending,Çeviriler hâlâ sürüyor
 Something went wrong,Bir şey ters gitti
 Sort,Sırala
 Sort ascending,Artan sıraya göre sırala
@@ -1615,9 +1622,11 @@ URL,URL
 Use,Kullan
 Use as filter,Filtre olarak kullanın
 Use for training,Eğitim amacıyla kullanın
+Use image,Görseli kullan
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Bu iframe’i harici sitelerde kullanın. Gerekirse URL’deki yerel ayar sorgu parametresini
 değiştirin."
+Use this image?,Bu görsel kullanılsın mı?
 Use URL,URL'yi kullan
 Used in {n} refs — cannot delete,{n} referansta kullanılıyor — silinemez
 Used in templates — cannot delete,Şablonlarda kullanılıyor — silinemez

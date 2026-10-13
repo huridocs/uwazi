@@ -206,7 +206,11 @@ describe('entity save stack integration', () => {
         id: '1',
         error: new ApiError('Bad request', { kind: 'http', status: 400, detail: 'Invalid' }),
       });
-      expect(notify).toHaveBeenCalledWith('error', expect.any(String), undefined, 'Invalid');
+      expect(notify).toHaveBeenCalledWith({
+        type: 'error',
+        title: expect.any(String),
+        details: 'Invalid',
+      });
       expect(end).toHaveBeenCalledTimes(1);
 
       eventBus.emit({
