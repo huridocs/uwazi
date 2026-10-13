@@ -63,6 +63,22 @@ const bindableCondition = (condition: Record<string, unknown>): Record<string, u
   Object.fromEntries(Object.entries(condition).map(([key, value]) => [key, bindable(value)]));
 
 /**
+ * Translates an access context into the RLS session variables
+ * (`uwazi.bypass_rls` / `uwazi.ref_ids`) the permission policies read.
+ * Privileged actors bypass entirely; anonymous actors get no refIds;
+ * collaborators get their user + group refIds.
+ */
+export const buildPermissionContext = (accessContext: AccessContext): PermissionContext => {
+  if (accessContext.isPrivileged()) {
+    return { bypass: true, refIds: [] };
+  }
+  if (accessContext.isAnonymous()) {
+    return { bypass: false, refIds: [] };
+  }
+  return { bypass: false, refIds: accessContext.refIds };
+};
+
+/**
  * Immutable, tenant-scoped query builder over a single Postgres table.
  *
  * Tenant isolation is enforced by Row-Level Security (see migration 004): every
@@ -266,25 +282,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    */
   protected applyInsertPolicy(): void {}
 
-  /**
-   * Translates the table's access context into the RLS session variables
-   * (`uwazi.bypass_rls` / `uwazi.ref_ids`) the policies read. Privileged
-   * actors bypass entirely; anonymous actors get no refIds; collaborators
-   * get their user + group refIds.
-   */
-  protected buildPermissionContext(): PermissionContext {
-    if (this.cfg.accessContext.isPrivileged()) {
-      return { bypass: true, refIds: [] };
-    }
-    if (this.cfg.accessContext.isAnonymous()) {
-      return { bypass: false, refIds: [] };
-    }
-    return { bypass: false, refIds: this.cfg.accessContext.refIds };
-  }
-
   protected async run<T>(
     fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder,
-    permissionContext: PermissionContext = this.buildPermissionContext()
+    permissionContext: PermissionContext = buildPermissionContext(this.cfg.accessContext)
   ): Promise<T> {
     return this.cfg.transactionManager.withConnection(
       async trx => fn(this.qb.clone().transacting(trx)),
@@ -302,7 +302,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * opening a separate short transaction when no outer `run()` is active.
    */
   async *stream(
-    permissionContext: PermissionContext = this.buildPermissionContext()
+    permissionContext: PermissionContext = buildPermissionContext(this.cfg.accessContext)
   ): AsyncGenerator<TRow, void, unknown> {
     const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
     let completed = false;
@@ -369,7 +369,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     const rows = this.rowsWithTenant(doc);
     await this.cfg.transactionManager.withConnection(
       async trx => trx(this.cfg.tableName).insert(rows),
-      this.buildPermissionContext()
+      buildPermissionContext(this.cfg.accessContext)
     );
     await this.notifySync(rows, false);
   }
@@ -396,7 +396,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
         : inserted.onConflict(conflict.columns ?? ['_id', 'tenant_id']);
       const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
       return conflicting.returning(['_id']);
-    }, this.buildPermissionContext());
+    }, buildPermissionContext(this.cfg.accessContext));
 
     await this.notifySync(
       PostgresTable.idsOf(result).map(_id => ({ _id })),
@@ -486,7 +486,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
     return this.cfg.transactionManager.withConnection(
       async trx => trx.raw(sql, bindings as any),
-      this.buildPermissionContext()
+      buildPermissionContext(this.cfg.accessContext)
     ) as Promise<Knex.Raw<TResult>>;
   }
 

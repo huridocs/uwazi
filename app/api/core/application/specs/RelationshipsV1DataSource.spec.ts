@@ -229,7 +229,7 @@ describe('RelationshipsV1DataSource', () => {
     });
 
     (postgresCore ? it : it.skip)(
-      'filters unpublished related entities out of entityData for a collaborator',
+      'filters unpublished related entities out of entityData for an anonymous actor',
       async () => {
         const sut = createSut(User.createFrom(null));
 

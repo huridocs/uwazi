@@ -6,6 +6,7 @@ import { EntityUpdatedEventPayload } from '#api/core/domain/entity/EntityUpdated
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '../ProcessRelationshipAfterEntityUpdatedListener.js';
+import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 const factory = getFixturesFactory();
 
@@ -73,6 +74,12 @@ describe('ProcessRelationshipAfterEntityUpdatedListener', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
+  });
+
+  it('is a privileged job, so entity references resolve against every entity', () => {
+    expect(
+      isPrivilegedJob(ProcessRelationshipAfterEntityUpdatedListener as unknown as { name: string })
+    ).toBe(true);
   });
 
   it('should save the entity-based references once for all changed languages', async () => {

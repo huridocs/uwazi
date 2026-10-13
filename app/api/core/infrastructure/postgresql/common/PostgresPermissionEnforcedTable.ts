@@ -2,6 +2,7 @@ import type { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import {
   PostgresTable,
+  buildPermissionContext,
   type AfterSyncLog,
   type QueryState,
   type TableConfig,
@@ -136,7 +137,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
           .onConflict(conflictColumns)
           .ignore()
           .returning(['_id']),
-      this.buildPermissionContext()
+      buildPermissionContext(this.cfg.accessContext)
     );
     await this.notifySync(
       PostgresTable.idsOf(result).map(_id => ({ _id })),
