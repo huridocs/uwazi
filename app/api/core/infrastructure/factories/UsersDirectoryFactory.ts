@@ -33,6 +33,7 @@ class UsersDirectoryFactory {
       const usersDAO = new PostgresUsersDAO({
         tenantId: tenant.name,
         pgTransactionManager: tm,
+        accessContext: ExecutionContext.accessContext,
       });
 
       return new PostgresUsersDirectory({
@@ -40,6 +41,7 @@ class UsersDirectoryFactory {
         userGroupsDAO: new PostgresUserGroupsDAO({
           tenantId: tenant.name,
           pgTransactionManager: tm,
+          accessContext: ExecutionContext.accessContext,
         }),
       });
     }

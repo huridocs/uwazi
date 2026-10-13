@@ -1,4 +1,5 @@
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result } from '#api/core/libs/Result.js';
 import { PageReleasesDataSource } from '#api/pages.v2/application/contracts/PageReleasesDataSource.js';
 import { PageReleaseSnapshot } from '#api/pages.v2/domain/Page.js';
@@ -16,11 +17,13 @@ export class PostgresPageReleasesDataSource
   constructor(deps: {
     tenantId: string;
     pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
     idGenerator: IdGenerator;
   }) {
     super('page_releases', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
     this.idGenerator = deps.idGenerator;
   }

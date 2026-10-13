@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
 import {
   CsvImportThesauriAppliedValue,
@@ -15,10 +16,15 @@ export class PostgresCsvImportThesauriValuesDataSource
   extends PostgresDataSource<CsvImportThesauriValuesRow>
   implements CsvImportThesauriValuesDataSource
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('csv_import_thesauri_values', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 

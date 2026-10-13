@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresResultSet } from '#api/core/infrastructure/postgresql/common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
@@ -19,6 +20,7 @@ import { PostgresPXEntityStatusMapper } from './PostgresPXEntityStatusMapper.js'
 type Deps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 const UNIQUE_VIOLATION = '23505';
@@ -31,6 +33,7 @@ export class PostgresPXEntitiesStatusDataSource
     super('px_entities_status', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 

@@ -15,6 +15,7 @@ class IXSuggestionsTableQueryServiceFactory {
       return new PostgresIXSuggestionsTableQueryService({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

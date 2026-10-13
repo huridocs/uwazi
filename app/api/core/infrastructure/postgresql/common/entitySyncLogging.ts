@@ -1,24 +1,14 @@
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
-import type { AfterSyncLog } from './PostgresTable.js';
+import { buildPermissionContext, type AfterSyncLog } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
-
-const permissionOf = (accessContext: AccessContext) => {
-  if (accessContext.isPrivileged()) {
-    return { bypass: true, refIds: [] as string[] };
-  }
-  if (accessContext.isAnonymous()) {
-    return { bypass: false, refIds: [] as string[] };
-  }
-  return { bypass: false, refIds: accessContext.refIds };
-};
 
 const entitySyncLogging = (deps: {
   transactionManager: PostgresTransactionManager;
   tenantId: string;
   accessContext: AccessContext;
 }): { syncWriter: SyncLogWriter; afterSyncLog: AfterSyncLog } => {
-  const permission = permissionOf(deps.accessContext);
+  const permission = buildPermissionContext(deps.accessContext);
 
   const afterSyncLog: AfterSyncLog = async (ids, deleted) => {
     if (deleted || ids.length === 0) return;

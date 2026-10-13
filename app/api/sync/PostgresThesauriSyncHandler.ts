@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { SyncHandler } from './SyncHandler.js';
 
 type ThesaurusRow = {
@@ -12,10 +13,15 @@ export class PostgresThesauriSyncHandler
   extends PostgresDataSource<ThesaurusRow>
   implements SyncHandler<ThesaurusRow>
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('thesauri', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'dictionaries' },
     });
   }

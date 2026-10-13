@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
 import {
@@ -11,10 +12,15 @@ export class PostgresCsvImportRelationshipPendingValuesDataSource
   extends PostgresDataSource<CsvImportRelationshipPendingValuesRow>
   implements CsvImportRelationshipPendingValuesDataSource
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('csv_import_relationships_pending_values', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 

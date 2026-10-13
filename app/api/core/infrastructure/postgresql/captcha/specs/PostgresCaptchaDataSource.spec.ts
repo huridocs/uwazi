@@ -4,6 +4,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { CaptchaNotFound } from '#api/core/domain/captcha/errors.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresCaptchaDataSource } from '../PostgresCaptchaDataSource.js';
 
@@ -17,6 +18,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresCaptchaDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
     idGenerator: IdGeneratorFactory.default(),
   });
 

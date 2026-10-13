@@ -2,10 +2,13 @@ import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDa
 import { ThesaurusRow } from './PostgresThesaurusMapper.js';
 
 class PostgresThesauriDAO extends PostgresDataSource<ThesaurusRow> {
-  constructor(deps: Pick<PostgresDataSourceDeps, 'tenantId' | 'pgTransactionManager'>) {
+  constructor(
+    deps: Pick<PostgresDataSourceDeps, 'tenantId' | 'pgTransactionManager' | 'accessContext'>
+  ) {
     super('thesauri', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 
