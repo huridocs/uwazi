@@ -23,7 +23,10 @@ const createLoadingPolicy = (
     if (pending.delete(id) && pending.size === 0) controls.end();
   };
 
-  const disposeStart = eventBus.on('request:start', event => trackStart(event.id));
+  const disposeStart = eventBus.on('request:start', event => {
+    if (event.path === 'translationService') return;
+    trackStart(event.id);
+  });
   const disposeSuccess = eventBus.on('request:success', event => trackEnd(event.id));
   const disposeError = eventBus.on('request:error', event => trackEnd(event.id));
 
@@ -57,9 +60,16 @@ const notificationForError = (error: ApiError) => {
   };
 };
 
+type PolicyNotice = {
+  type: NotificationType;
+  title: string;
+  message?: string;
+  details?: string;
+};
+
 const createNotificationPolicy = (
   eventBus: ApiClientEventBus,
-  notify: (type: NotificationType, title: string, message?: string, details?: string) => void
+  notify: (notice: PolicyNotice) => void
 ): Policy => ({
   dispose: eventBus.on('request:error', event => {
     if (event.policies?.notification === false) return;
@@ -67,7 +77,7 @@ const createNotificationPolicy = (
     if (event.error.kind === 'cancelled') return;
 
     const { type, title, details } = notificationForError(event.error);
-    notify(type, title, undefined, details);
+    notify({ type, title, details });
   }),
 });
 
@@ -82,12 +92,7 @@ const createAuthPolicy = (
   }),
 });
 
-const notifyFromPolicy = (
-  type: NotificationType,
-  title: string,
-  message?: string,
-  details?: string
-) => {
+const notifyFromPolicy = ({ type, title, message, details }: PolicyNotice) => {
   const id = createUuid();
   getStore().set(requestStatusAtom, prev => ({
     ...prev,

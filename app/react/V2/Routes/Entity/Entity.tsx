@@ -135,13 +135,20 @@ const EntityView = () => {
     filesSideTabs,
   });
   const isMobile = useEntityMobileOverlay(entityTabs.showSidePane);
-  const { isDirty, isSaving, isEditing, cancelEdit } = useMetadataEditing();
+  const { isDirty, isSaving, isEditing, translationsPending, cancelEdit, cancelTranslations } =
+    useMetadataEditing();
 
   return (
     <EntityMainTabsProvider value={entityTabs}>
       <FilesDeleteConfirmationModal />
       <AddFileModal />
-      <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
+      <BlockDirtyNavigation
+        when={isEditing && (isDirty || isSaving || translationsPending)}
+        onDiscard={cancelEdit}
+        translationsPending={translationsPending}
+        onStopTranslations={cancelTranslations}
+        dirty={isDirty || isSaving}
+      />
       <div className="h-full min-h-0 flex-1">
         <PaneLayout
           defaultRatios={[0.637, 0.363]}

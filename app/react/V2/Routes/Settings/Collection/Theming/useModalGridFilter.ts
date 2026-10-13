@@ -40,7 +40,11 @@ export const useModalGridFilter = ({
   }, [open, ruleKey, imagesKey, sizeRule, images.length]);
 
   useEffect(() => {
-    if (!open || !sizeRule || images.length === 0) {
+    if (!open || !sizeRule || images.length === 0 || sizeRule.policy === 'soft') {
+      if (open && sizeRule?.policy === 'soft') {
+        setModalGridImages(images);
+        setModalGridPending(false);
+      }
       return undefined;
     }
 

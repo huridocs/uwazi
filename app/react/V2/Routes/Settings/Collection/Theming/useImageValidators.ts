@@ -46,7 +46,7 @@ export const useImageValidators = (sizeRule: ImageSizeRule | undefined) =>
 
       return {
         acceptedFiles: validations
-          .filter(validation => validation.feedback === null)
+          .filter(validation => validation.feedback?.type !== 'error')
           .map(validation => validation.file),
         feedback: validations.find(validation => validation.feedback)?.feedback ?? null,
         perFile: validations,

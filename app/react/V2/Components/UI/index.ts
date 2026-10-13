@@ -56,6 +56,8 @@ export { BlockDirtyNavigation } from './BlockDirtyNavigation.js';
 export type { BlockDirtyNavigationProps } from './BlockDirtyNavigation.js';
 export { DirtyDiscardModal } from './DirtyDiscardModal.js';
 export type { DirtyDiscardModalProps } from './DirtyDiscardModal.js';
+export { PendingTranslationModal } from './PendingTranslationModal.js';
+export type { PendingTranslationModalProps } from './PendingTranslationModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';

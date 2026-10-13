@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import type { TranslationWriteOrigin } from './aiTranslatedText.js';
+import { useTranslationServiceAvailability } from './TranslationServiceAvailability.js';
 
-type TranslateToken = { language: string; started: number; sourceAtStart: number };
+type TranslateToken = {
+  language: string;
+  started: number;
+  sourceAtStart: number;
+  cancelAtStart: number;
+};
 
 const nextSeq = (seq: Record<string, number>, language: string) => {
   const started = (seq[language] ?? 0) + 1;
@@ -10,42 +17,130 @@ const nextSeq = (seq: Record<string, number>, language: string) => {
 
 const isLive = (
   token: TranslateToken,
-  ctx: { cancelled: boolean; seq: Record<string, number>; sourceGen: number }
+  ctx: { cancelled: boolean; seq: Record<string, number>; sourceGen: number; cancelGen: number }
 ) =>
   !ctx.cancelled &&
   ctx.seq[token.language] === token.started &&
-  ctx.sourceGen === token.sourceAtStart;
+  ctx.sourceGen === token.sourceAtStart &&
+  ctx.cancelGen === token.cancelAtStart;
 
 const applyIfLive = async ({
   token,
   onTranslate,
   onChange,
-  setMachine,
   cancelled,
   seq,
   sourceGen,
+  cancelGen,
+  signal,
 }: {
   token: TranslateToken;
-  onTranslate: (language: string) => Promise<string>;
-  onChange: (language: string, value: string) => void;
-  setMachine: (update: (prev: Record<string, boolean>) => Record<string, boolean>) => void;
+  onTranslate: (language: string, signal: AbortSignal) => Promise<string>;
+  onChange: (language: string, value: string, origin?: TranslationWriteOrigin) => void;
   cancelled: { current: boolean };
   seq: { current: Record<string, number> };
   sourceGen: { current: number };
+  cancelGen: { current: number };
+  signal: AbortSignal;
 }) => {
-  const translated = await onTranslate(token.language);
+  const translated = await onTranslate(token.language, signal);
   if (
     !isLive(token, {
       cancelled: cancelled.current,
       seq: seq.current,
       sourceGen: sourceGen.current,
+      cancelGen: cancelGen.current,
     }) ||
     !translated
   ) {
     return;
   }
-  onChange(token.language, translated);
-  setMachine(prev => ({ ...prev, [token.language]: true }));
+  onChange(token.language, translated, 'translation');
+};
+
+const runTrackedTranslation = async ({
+  token,
+  onTranslate,
+  onChange,
+  cancelled,
+  seq,
+  sourceGen,
+  cancelGen,
+  track,
+  begin,
+  end,
+  clearWorking,
+}: {
+  token: TranslateToken;
+  onTranslate: (language: string, signal: AbortSignal) => Promise<string>;
+  onChange: (language: string, value: string, origin?: TranslationWriteOrigin) => void;
+  cancelled: { current: boolean };
+  seq: { current: Record<string, number> };
+  sourceGen: { current: number };
+  cancelGen: { current: number };
+  track: (controller: AbortController) => () => void;
+  begin: () => void;
+  end: () => void;
+  clearWorking: (language: string) => void;
+}) => {
+  const controller = new AbortController();
+  const release = track(controller);
+  begin();
+  try {
+    await applyIfLive({
+      token,
+      onTranslate,
+      onChange,
+      cancelled,
+      seq,
+      sourceGen,
+      cancelGen,
+      signal: controller.signal,
+    });
+  } finally {
+    release();
+    if (cancelGen.current === token.cancelAtStart) {
+      end();
+      if (!cancelled.current && seq.current[token.language] === token.started) {
+        clearWorking(token.language);
+      }
+    }
+  }
+};
+
+const useSourceGeneration = (source: string) => {
+  const sourceGen = useRef(0);
+  const active = useRef(new Set<AbortController>());
+  useEffect(() => {
+    sourceGen.current += 1;
+    active.current.forEach(controller => controller.abort());
+  }, [source]);
+  return { sourceGen, active };
+};
+
+const trackActiveController = (
+  active: { current: Set<AbortController> },
+  track: (controller: AbortController) => () => void,
+  controller: AbortController
+) => {
+  active.current.add(controller);
+  const release = track(controller);
+  return () => {
+    active.current.delete(controller);
+    release();
+  };
+};
+
+const useClearWorkingOnCancel = (
+  cancelGeneration: number,
+  setWorking: (languages: string[]) => void
+) => {
+  const seenCancel = useRef(cancelGeneration);
+  useEffect(() => {
+    if (seenCancel.current === cancelGeneration) return;
+    seenCancel.current = cancelGeneration;
+    setWorking([]);
+  }, [cancelGeneration, setWorking]);
 };
 
 const useFieldTranslate = ({
@@ -54,58 +149,54 @@ const useFieldTranslate = ({
   disabled,
   source,
 }: {
-  onChange: (language: string, value: string) => void;
-  onTranslate?: (language: string) => Promise<string>;
+  onChange: (language: string, value: string, origin?: TranslationWriteOrigin) => void;
+  onTranslate?: (language: string, signal: AbortSignal) => Promise<string>;
   disabled: boolean;
   source: string;
 }) => {
   const [working, setWorking] = useState<string[]>([]);
-  const [machine, setMachine] = useState<Record<string, boolean>>({});
+  const {
+    beginTranslation,
+    endTranslation,
+    cancelGeneration,
+    cancelGenerationRef,
+    trackTranslation,
+  } = useTranslationServiceAvailability();
   const cancelled = useRef(false);
   const seq = useRef<Record<string, number>>({});
-  const sourceGen = useRef(0);
+  const { sourceGen, active } = useSourceGeneration(source);
   useEffect(
     () => () => {
       cancelled.current = true;
     },
     []
   );
-  useEffect(() => {
-    sourceGen.current += 1;
-  }, [source]);
+  useClearWorkingOnCancel(cancelGeneration, setWorking);
 
   const translate = async (language: string) => {
     if (!onTranslate || disabled) return;
-    const token: TranslateToken = {
-      language,
-      started: nextSeq(seq.current, language),
-      sourceAtStart: sourceGen.current,
-    };
     setWorking(prev => (prev.includes(language) ? prev : [...prev, language]));
-    try {
-      await applyIfLive({
-        token,
-        onTranslate,
-        onChange,
-        setMachine,
-        cancelled,
-        seq,
-        sourceGen,
-      });
-    } finally {
-      if (!cancelled.current && seq.current[language] === token.started) {
-        setWorking(prev => prev.filter(item => item !== language));
-      }
-    }
+    await runTrackedTranslation({
+      token: {
+        language,
+        started: nextSeq(seq.current, language),
+        sourceAtStart: sourceGen.current,
+        cancelAtStart: cancelGenerationRef.current,
+      },
+      onTranslate,
+      onChange,
+      cancelled,
+      seq,
+      sourceGen,
+      cancelGen: cancelGenerationRef,
+      track: controller => trackActiveController(active, trackTranslation, controller),
+      begin: beginTranslation,
+      end: endTranslation,
+      clearWorking: item => setWorking(prev => prev.filter(entry => entry !== item)),
+    });
   };
 
-  return {
-    working,
-    machine,
-    translate,
-    markUser: (language: string) =>
-      setMachine(prev => (prev[language] ? { ...prev, [language]: false } : prev)),
-  };
+  return { working, translate };
 };
 
 export { useFieldTranslate };

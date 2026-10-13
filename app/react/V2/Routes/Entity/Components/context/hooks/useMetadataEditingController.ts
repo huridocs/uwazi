@@ -10,16 +10,24 @@ import { useMetadataEditingForm } from './useMetadataEditingForm.js';
 import { useMetadataEditingLifecycle } from './useMetadataEditingLifecycle.js';
 import { useMetadataHostPresence } from './useMetadataHostPresence.js';
 import { useMetadataSaveGate } from './useMetadataSaveGate.js';
+import { useTranslationStop } from './useTranslationStop.js';
 
 const useMetadataEditingController = (): {
   state: MetadataEditingState;
   actions: MetadataEditingActions;
 } => {
   const flags = useMetadataEditingFlags();
+  const stop = useTranslationStop(flags.translationsPendingRef);
   const save = useMetadataSaveGate();
   const hosts = useMetadataHostPresence();
   const formSession = useMetadataEditingForm();
-  const lifecycle = useMetadataEditingLifecycle({ flags, save, hosts, formSession });
+  const lifecycle = useMetadataEditingLifecycle({
+    flags,
+    save,
+    hosts,
+    formSession,
+    cancelTranslations: stop.cancelTranslations,
+  });
   const { setSaveError, setEditErrors, registerCancelEdit } = formSession;
 
   const state = useMemo(
@@ -27,6 +35,8 @@ const useMetadataEditingController = (): {
       isEditing: flags.isEditing,
       isSaving: save.isSaving,
       isDirty: flags.isDirty,
+      translationsPending: flags.translationsPending,
+      translationStopOpen: stop.translationStopOpen,
       pendingDiscardAction: lifecycle.discard.pendingDiscardAction,
       lastMetadataAnchor: hosts.lastMetadataAnchor,
       formMountHost: flags.isEditing
@@ -45,7 +55,9 @@ const useMetadataEditingController = (): {
     [
       flags.isDirty,
       flags.isEditing,
+      flags.translationsPending,
       formSession.editErrors,
+      stop.translationStopOpen,
       formSession.form,
       formSession.mediaUpload,
       formSession.saveError,
@@ -60,6 +72,7 @@ const useMetadataEditingController = (): {
     (): MetadataEditingActions => ({
       setIsSaving: save.setIsSaving,
       setIsDirty: flags.setIsDirty,
+      setTranslationsPending: flags.setTranslationsPending,
       setSaveError,
       setEditErrors,
       startEditing: lifecycle.startEditing,
@@ -72,9 +85,20 @@ const useMetadataEditingController = (): {
       requestDiscard: lifecycle.discard.requestDiscard,
       confirmDiscard: lifecycle.discard.confirmDiscard,
       dismissDiscard: lifecycle.discard.dismissDiscard,
+      registerCancelTranslations: stop.registerCancelTranslations,
+      requestStopTranslations: stop.requestStopTranslations,
+      confirmStopTranslations: stop.confirmStopTranslations,
+      dismissStopTranslations: stop.dismissStopTranslations,
+      cancelTranslations: stop.cancelTranslations,
     }),
     [
       flags.setIsDirty,
+      flags.setTranslationsPending,
+      stop.cancelTranslations,
+      stop.confirmStopTranslations,
+      stop.dismissStopTranslations,
+      stop.registerCancelTranslations,
+      stop.requestStopTranslations,
       hosts.registerMetadataActive,
       lifecycle.cancelEdit,
       lifecycle.discard.confirmDiscard,
