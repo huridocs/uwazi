@@ -5,7 +5,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
-import { logoFrameClass, useTrimmedLogo } from '#V2/theme/logoFrame.js';
+import { logoFrameClass } from '#V2/theme/logoFrame.js';
 import type { ImageSizeRule } from './customUploadImagePickerLib.js';
 import { CustomUploadImagePickerModal } from './CustomUploadImagePickerModal.js';
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
@@ -58,8 +58,6 @@ const CustomUploadImagePicker = ({
     onChange,
     adjustable,
   });
-  const projectedSrc = useTrimmedLogo(projectHeaderLogo ? logic.trimmed : undefined);
-
   const urlValidationControl =
     logic.validationFeedback === null ? null : (
       <div className="inline-flex">
@@ -101,7 +99,7 @@ const CustomUploadImagePicker = ({
             <div className="flex min-w-0 items-center justify-center gap-2 min-[1400px]:justify-start">
               <div className={previewWrapperClassName}>
                 <img
-                  src={projectHeaderLogo ? projectedSrc : logic.trimmed}
+                  src={logic.trimmed}
                   alt=""
                   className={projectHeaderLogo ? logoFrameClass('preview') : previewImgClassName}
                 />
