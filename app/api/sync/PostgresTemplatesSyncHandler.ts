@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
 import { SyncHandler } from './SyncHandler.js';
 
@@ -9,10 +10,15 @@ export class PostgresTemplatesSyncHandler
   extends PostgresDataSource<TemplateRow>
   implements SyncHandler<TemplateSyncRow>
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'templates' },
     });
   }

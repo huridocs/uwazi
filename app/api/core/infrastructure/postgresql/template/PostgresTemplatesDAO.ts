@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateRow } from './PostgresTemplateMapper.js';
@@ -9,6 +10,7 @@ type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: Pr
 type Deps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
@@ -16,6 +18,7 @@ class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'templates' },
     });
   }

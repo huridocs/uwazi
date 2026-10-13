@@ -19,6 +19,7 @@ export class RelationshipTypesDataSourceFactory {
       return new PostgresRelationshipTypesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

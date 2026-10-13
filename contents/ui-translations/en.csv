@@ -1354,6 +1354,8 @@ Skip to main content,Skip to main content
 Snapshot (manual),Snapshot (manual)
 Snapshot (scheduled),Snapshot (scheduled)
 Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
+"Some translations are still pending, saving would stop the translation process.","Some translations are still pending, saving would stop the translation process."
+Translations are still pending,Translations are still pending
 Something went wrong,Something went wrong
 Sort,Sort
 Sort ascending,Sort ascending

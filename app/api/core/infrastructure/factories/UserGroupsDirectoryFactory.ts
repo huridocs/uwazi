@@ -16,6 +16,7 @@ class UserGroupsDirectoryFactory {
         dao: new PostgresUserGroupsDAO({
           tenantId: tenant.name,
           pgTransactionManager: ExecutionContext.postgresTransactionManager,
+          accessContext: ExecutionContext.accessContext,
         }),
       });
     }

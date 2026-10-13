@@ -1,11 +1,12 @@
-import { useCallback, useRef, useState, type MutableRefObject } from 'react';
+import { useCallback, useRef, useState, type RefObject } from 'react';
 import type { MetadataDirtyLeaveAction } from '../metadataEditingTypes.js';
 
-const useMetadataDiscard = (
-  isEditingRef: MutableRefObject<boolean>,
-  isDirtyRef: MutableRefObject<boolean>,
-  onCancelEdit: () => void
-) => {
+type DiscardRefs = {
+  isEditing: RefObject<boolean>;
+  isDirty: RefObject<boolean>;
+};
+
+const useMetadataDiscard = (refs: DiscardRefs, onCancelEdit: () => void) => {
   const [pendingDiscardAction, setPendingDiscardAction] = useState<MetadataDirtyLeaveAction>();
   const pendingProceedRef = useRef<(() => void) | null>(null);
   const pendingStayRef = useRef<(() => void) | null>(null);
@@ -18,7 +19,7 @@ const useMetadataDiscard = (
 
   const requestDiscard = useCallback(
     (action: MetadataDirtyLeaveAction, proceed?: () => void, onStay?: () => void) => {
-      if (isEditingRef.current && isDirtyRef.current) {
+      if (refs.isEditing.current && refs.isDirty.current) {
         pendingProceedRef.current = proceed ?? null;
         pendingStayRef.current = onStay ?? null;
         setPendingDiscardAction(action);
@@ -30,7 +31,7 @@ const useMetadataDiscard = (
       }
       proceed?.();
     },
-    [isDirtyRef, isEditingRef, onCancelEdit]
+    [onCancelEdit, refs]
   );
 
   const confirmDiscard = useCallback(() => {

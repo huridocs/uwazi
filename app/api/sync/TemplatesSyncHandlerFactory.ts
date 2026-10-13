@@ -10,6 +10,7 @@ export class TemplatesSyncHandlerFactory {
       return new PostgresTemplatesSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

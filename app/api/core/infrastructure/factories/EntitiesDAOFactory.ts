@@ -1,5 +1,5 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { User } from '#api/users.v2/model/User.js';
+import type { User } from '#api/users.v2/model/User.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { PostgresEntitiesDAO } from '../postgresql/entity/PostgresEntitiesDAO.js';
@@ -17,8 +17,9 @@ export class EntitiesDAOFactory {
     transactionManager?: TransactionManager;
     accessContext?: AccessContext;
   }): EntitiesDAO {
-    const user = overrides?.user ?? ExecutionContext.actor ?? User.createFrom(null);
-    const accessContext = overrides?.accessContext ?? AccessContext.forActor(user);
+    const accessContext =
+      overrides?.accessContext ??
+      (overrides?.user ? AccessContext.forActor(overrides.user) : ExecutionContext.accessContext);
     const transactionManager =
       overrides?.transactionManager ??
       (ExecutionContext.getStore()

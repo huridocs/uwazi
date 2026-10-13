@@ -13,6 +13,7 @@ class PasswordRecoveriesDataSourceFactory {
       return new PostgresPasswordRecoveriesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         idGenerator: IdGeneratorFactory.default(),
       });
     }

@@ -1,5 +1,6 @@
 import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
@@ -31,11 +32,13 @@ export class PostgresTranslationsDataSource
   constructor(deps: {
     tenantId: string;
     pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
     idGenerator: IdGenerator;
   }) {
     super('translations', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'translationsV2' },
     });
     this.idGenerator = deps.idGenerator;

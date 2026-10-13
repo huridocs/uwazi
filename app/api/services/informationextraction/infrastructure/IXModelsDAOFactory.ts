@@ -15,6 +15,7 @@ class IXModelsDAOFactory {
       return new PostgresIXModelsDataSource({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

@@ -23,13 +23,12 @@ const EntityMainPaneHeaderComponent = ({
         <TemplateLabel templateId={entity.template} variant="tag" />
         <h1
           data-field-key="title"
-          className="m-0 mt-1 line-clamp-2 text-sm font-semibold leading-snug text-ink"
+          className="m-0 mt-1 flex min-w-0 items-start gap-1.5 text-sm font-semibold leading-snug text-ink"
           no-translate="true"
-          title={entity.title}
         >
-          <span className="inline-flex min-w-0 items-center gap-1.5">
-            <EntityIcon data={entity.icon} />
-            <span className="min-w-0">{entity.title}</span>
+          <EntityIcon data={entity.icon} className="mt-px shrink-0" />
+          <span className="line-clamp-2 min-w-0 break-words" title={entity.title}>
+            {entity.title}
           </span>
         </h1>
       </div>
