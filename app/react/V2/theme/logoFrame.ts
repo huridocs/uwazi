@@ -168,7 +168,6 @@ const imagePixels = (image: HTMLImageElement): PixelSample | null => {
 };
 
 const logoNeedsTrim = (sample: PixelSample, bounds: Crop) =>
-  pixelAt(sample.data, 0).a !== 0 &&
   bounds.width * bounds.height < sample.width * sample.height * TRIM_AREA_LIMIT;
 
 const trimmedLogoUrl = (image: HTMLImageElement) => {
@@ -217,5 +216,6 @@ export {
   scaledCropSize,
   defaultOutputScale,
   currentTrimmedLogo,
+  logoNeedsTrim,
   useTrimmedLogo,
 };
