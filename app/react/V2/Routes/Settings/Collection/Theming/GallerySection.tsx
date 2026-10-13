@@ -27,7 +27,9 @@ const GallerySection = ({
     return <div className={muted}>{emptyGalleryHint}</div>;
   }
 
-  if (modalGridPending && sizeRule) {
+  const strict = sizeRule?.policy === 'strict';
+
+  if (modalGridPending && strict) {
     return (
       <div className={muted}>
         <Translate>Checking which images fit the requirements</Translate>
@@ -35,7 +37,7 @@ const GallerySection = ({
     );
   }
 
-  if (sizeRule && modalGridImages.length === 0) {
+  if (strict && modalGridImages.length === 0) {
     return (
       <div className={muted}>
         <Translate>No uploaded images fit the requirements</Translate>
@@ -43,7 +45,7 @@ const GallerySection = ({
     );
   }
 
-  const gridSource = sizeRule ? modalGridImages : images;
+  const gridSource = strict ? modalGridImages : images;
 
   return (
     <>
