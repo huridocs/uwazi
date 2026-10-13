@@ -87,6 +87,7 @@ added to hub.,добавлено в хаб.
 Adding a group and its items.,Добавление группы и элементов в неё.
 Adding items to the thesauri,Добавление элементов в тезаурусы
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Измените несколько цветов — второстепенный текст и приглушенные фоны обновятся автоматически.
+Adjust logo,Настроить логотип
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
 Administrators and Editors always have edit access,Администраторы и редакторы всегда имеют права на редактирование
@@ -332,6 +333,8 @@ Creating entities,Создание объектов
 Creating relationships,Создание связей
 Creating thesauri,Создание тезаурусов
 Creation date,Дата создания
+Crop changes how the logo fits in the header. Resize changes the saved file.,"Обрезка меняет то, как логотип помещается в шапке. Изменение размера меняет сохранённый файл."
+Crop or resize logo,Обрезать или изменить размер логотипа
 CSS,CSS
 csv blank state message,"Импортируйте файлы CSV или ZIP, чтобы создать объекты массово. Выберите **+ Импортировать CSV**, чтобы начать."
 CSV Import,Импорт из CSV
@@ -1214,6 +1217,7 @@ Save password,Сохранить пароль
 Save the visualization before refreshing.,Сохраните визуализацию перед обновлением.
 Save the visualization to get embed code.,"Сохраните визуализацию, чтобы получить код для вставки."
 Save your work to make change permanent,"Сохраните результаты своей работы, чтобы изменения вступили в силу"
+Saved image,Сохранённое изображение
 Saved successfully.,Сохранено успешно.
 Saved with warnings,Сохранено с предупреждениями
 Saving,Сохранение
@@ -1335,12 +1339,13 @@ Show remaining in panel,Показать оставшуюся часть в па
 Show toolbar,Показать панель инструментов
 Showing,Показано
 Showing the top,Отображаются первые
+Shown in the header at,Показан в шапке в размере
 shown of,показано от
 Side panel tabs,Вкладки боковой панели
 Sign in,Войти
 Simple mode,Простой режим
 Single relationships must have a hub,Одиночные связи должны иметь узел
-Site logo description,"Логотип отображается в верхней панели рядом с названием вашей коллекции (примерно 200×32 пикселя).
+Site logo description,"Логотип отображается в верхней панели рядом с названием вашей коллекции (примерно 200×48 пикселя).
 
 1. При необходимости загрузите изображения в разделе ""Пользовательские загрузки"".
 2. Нажмите ""Выбрать изображение логотипа сайта"" и выберите файл; отображаются только изображения из ""Пользовательских загрузок""."
@@ -1350,6 +1355,8 @@ Skip to main content,Перейти к основному содержанию
 Snapshot (manual),Снимок (вручную)
 Snapshot (scheduled),Снимок (по расписанию)
 Some tasks may take a while. Bert will reply when it's done.,"Некоторые задачи могут занять некоторое время. Bert ответит, когда они будут выполнены."
+"Some translations are still pending, saving would stop the translation process.","Некоторые переводы ещё выполняются, сохранение остановит процесс перевода."
+Translations are still pending,Переводы ещё выполняются
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
 Sort ascending,Сортировать по возрастанию
@@ -1443,7 +1450,7 @@ Theme colors,Цвета темы
 Theme colors imported,Цвета темы импортированы
 Theme favicon,Фавикон темы
 Theme instance file invalid,Файл экземпляра темы недействителен
-Theme logotype,Логотип темы
+Theme logo,Логотип темы
 Theme presets,Предустановленные темы
 Theme preview,Предварительный просмотр темы
 Theme preview label,Подпись предпросмотра темы
@@ -1611,9 +1618,11 @@ URL,URL
 Use,Использовать
 Use as filter,Использовать в качестве фильтра
 Use for training,Использовать для обучения
+Use image,Использовать изображение
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Используйте этот iframe на внешних сайтах. При необходимости измените параметр запроса locale в URL-адресе,
 если это требуется."
+Use this image?,Использовать это изображение?
 Use URL,Использовать URL
 Used in {n} refs — cannot delete,Используется в {n} ссылках — удалить нельзя
 Used in templates — cannot delete,Используется в шаблонах — удалить нельзя

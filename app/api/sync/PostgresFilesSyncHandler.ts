@@ -1,5 +1,6 @@
 import { PostgresFilesDAO } from '#api/core/infrastructure/postgresql/files/PostgresFilesDAO.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import type { FilesRow } from '#api/core/infrastructure/postgresql/files/PostgresFilesRow.js';
 import { SyncHandler } from './SyncHandler.js';
 
@@ -25,10 +26,15 @@ const ALLOWED_FILES_COLUMNS: (keyof FilesRow)[] = [
 export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   private dao: PostgresFilesDAO;
 
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     this.dao = new PostgresFilesDAO({
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 

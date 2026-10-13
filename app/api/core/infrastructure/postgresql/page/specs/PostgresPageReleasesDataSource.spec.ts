@@ -6,6 +6,7 @@ import { PageReleaseSnapshot } from '#api/pages.v2/domain/Page.js';
 import { PageReleaseNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresPageReleasesDataSource } from '../PostgresPageReleasesDataSource.js';
 
@@ -20,6 +21,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresPageReleasesDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
     idGenerator: IdGeneratorFactory.default(),
   });
 

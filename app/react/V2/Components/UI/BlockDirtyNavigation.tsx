@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useBlocker } from 'react-router';
 import { DirtyDiscardModal } from './DirtyDiscardModal.js';
+import { PendingTranslationModal } from './PendingTranslationModal.js';
 
 type BlockDirtyNavigationProps = {
   when: boolean;
   onDiscard?: () => void;
+  translationsPending?: boolean;
+  onStopTranslations?: () => void;
+  dirty?: boolean;
 };
 
 const entityIdFromPath = (pathname: string) => {
@@ -25,19 +29,41 @@ const shouldBlockDirtyLeave = (when: boolean, currentPathname: string, nextPathn
   return !(currentId && nextId && currentId === nextId);
 };
 
-const BlockDirtyNavigation = ({ when, onDiscard }: BlockDirtyNavigationProps) => {
+const BlockDirtyNavigation = ({
+  when,
+  onDiscard,
+  translationsPending = false,
+  onStopTranslations,
+  dirty = false,
+}: BlockDirtyNavigationProps) => {
   const blocker = useBlocker(({ currentLocation, nextLocation }) =>
     shouldBlockDirtyLeave(when, currentLocation.pathname, nextLocation.pathname)
   );
+  const leaving = useRef(false);
 
   useEffect(() => {
-    if (!when && blocker.state === 'blocked') {
+    if (!when && blocker.state === 'blocked' && !leaving.current) {
       blocker.reset?.();
     }
   }, [when, blocker]);
 
   if (blocker.state !== 'blocked') {
     return null;
+  }
+
+  if (translationsPending) {
+    return (
+      <PendingTranslationModal
+        onAccept={() => {
+          onStopTranslations?.();
+          if (dirty) return;
+          leaving.current = true;
+          onDiscard?.();
+          blocker.proceed?.();
+        }}
+        onCancel={() => blocker.reset?.()}
+      />
+    );
   }
 
   return (

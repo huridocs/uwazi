@@ -9,6 +9,7 @@ import { PostgresFilesDAO, arrayCastFor } from '../PostgresFilesDAO.js';
 import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 
 const TENANT_ID = 'test-tenant';
 
@@ -78,6 +79,7 @@ const createSut = () =>
   new PostgresFilesDAO({
     tenantId: TENANT_ID,
     pgTransactionManager: managerFor(TENANT_ID),
+    accessContext: AccessContext.system(),
   });
 
 describe('arrayCastFor()', () => {

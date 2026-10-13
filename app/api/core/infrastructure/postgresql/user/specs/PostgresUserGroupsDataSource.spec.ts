@@ -2,6 +2,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
@@ -16,6 +17,7 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresUserGroupsDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 const setGroupFixtures = async () => {

@@ -21,6 +21,7 @@ export class RelationshipsV1DataSourceFactory {
       return new PostgresRelationshipsV1DataSource({
         tenantId: tenant.name,
         pgTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         entitiesDAO: EntitiesDAOFactory.default(),
         settingsDS: SettingsDataSourceFactory.default(),
       });

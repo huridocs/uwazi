@@ -87,6 +87,7 @@ added to hub.,añadido al nodo.
 Adding a group and its items.,Añadir un grupo y sus elementos.
 Adding items to the thesauri,Añadir elementos a los tesauros
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Ajusta algunos colores; el texto secundario y los fondos en tonos apagados se actualizan automáticamente.
+Adjust logo,Ajustar logotipo
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
 Administrators and Editors always have edit access,Los administradores y los editores siempre tienen acceso de edición
@@ -330,6 +331,8 @@ Creating entities,Creación de entidades
 Creating relationships,Creación de relaciones
 Creating thesauri,Creación de tesauros
 Creation date,Fecha de creación
+Crop changes how the logo fits in the header. Resize changes the saved file.,El recorte cambia cómo encaja el logotipo en el encabezado. El cambio de tamaño modifica el archivo guardado.
+Crop or resize logo,Recortar o cambiar el tamaño del logotipo
 CSS,CSS
 csv blank state message,"Importa archivos CSV o ZIP para crear entidades en lote. Para empezar, selecciona **+ Importar CSV**."
 CSV Import,Importación de CSV
@@ -1214,6 +1217,7 @@ Save password,Guardar contraseña
 Save the visualization before refreshing.,Guarda la visualización antes de actualizarla.
 Save the visualization to get embed code.,Guarda la visualización para obtener el código de incrustación.
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
+Saved image,Imagen guardada
 Saved successfully.,Guardado exitoso.
 Saved with warnings,Guardado con advertencias
 Saving,Guardando
@@ -1335,12 +1339,13 @@ Show remaining in panel,Mostrar los elementos restantes en el panel
 Show toolbar,Mostrar la barra de herramientas
 Showing,Mostrando
 Showing the top,Mostrando los principales
+Shown in the header at,Se muestra en el encabezado a
 shown of,listados de
 Side panel tabs,Pestañas del panel lateral
 Sign in,Registrarse
 Simple mode,Modo sencillo
 Single relationships must have a hub,Las relaciones simples deben tener un nodo
-Site logo description,"El logotipo aparece en la barra superior junto al nombre de tu colección (unos 200×32 píxeles).
+Site logo description,"El logotipo aparece en la barra superior junto al nombre de tu colección (unos 200×48 píxeles).
 
 1. Sube imágenes en Subidas personalizadas si hace falta.
 2. Haz clic en ""Seleccionar imagen del logotipo del sitio"" y elige un archivo; solo se listan imágenes de Subidas personalizadas."
@@ -1350,6 +1355,8 @@ Skip to main content,Ir al contenido principal
 Snapshot (manual),Instantánea (manual)
 Snapshot (scheduled),Instantánea (programada)
 Some tasks may take a while. Bert will reply when it's done.,Algunas tareas pueden tardar un rato. Bert te responderá cuando haya terminado.
+"Some translations are still pending, saving would stop the translation process.","Algunas traducciones siguen pendientes, guardar detendría el proceso de traducción."
+Translations are still pending,Las traducciones siguen pendientes
 Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente
@@ -1442,7 +1449,7 @@ Theme colors,Colores del tema
 Theme colors imported,Colores del tema importados
 Theme favicon,Favicon del tema
 Theme instance file invalid,El archivo de la instancia del tema no es válido
-Theme logotype,Logotipo del tema
+Theme logo,Logo del tema
 Theme presets,Preajustes de temas
 Theme preview,Vista previa del tema
 Theme preview label,Etiqueta de vista previa del tema
@@ -1610,9 +1617,11 @@ URL,URL
 Use,Usar
 Use as filter,Usar como filtro
 Use for training,Para uso en formación
+Use image,Usar imagen
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Utiliza este iframe en sitios web externos. Modifica el parámetro de consulta ""locale"" en la URL si
 es necesario."
+Use this image?,¿Usar esta imagen?
 Use URL,Utilizar la URL
 Used in {n} refs — cannot delete,Usado en {n} referencias — no se puede eliminar
 Used in templates — cannot delete,Usado en plantillas — no se puede eliminar

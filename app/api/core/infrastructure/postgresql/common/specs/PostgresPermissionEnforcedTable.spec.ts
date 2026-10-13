@@ -902,6 +902,7 @@ describe('PostgresPermissionEnforcedTable', () => {
           tableName: TEST_TABLE,
           tenantId: DEFAULT_TENANT,
           transactionManager: sharedManager,
+          accessContext: AccessContext.forActor(User.createFrom(null)),
         });
 
         const rows = await innerTable.all();

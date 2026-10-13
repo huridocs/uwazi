@@ -13,6 +13,7 @@ class CaptchaDataSourceFactory {
       return new PostgresCaptchaDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         idGenerator: IdGeneratorFactory.default(),
       });
     }
