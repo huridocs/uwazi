@@ -1,16 +1,20 @@
 /* eslint-disable max-lines */
 import { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 
 type AfterSyncLog = (ids: string[], deleted: boolean) => Promise<void>;
+
+type PermissionContext = { bypass: boolean; refIds: string[] };
 
 type TableConfig = {
   knex: Knex;
   tableName: string;
   tenantId: string;
   transactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
   syncWriter?: SyncLogWriter;
   afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
@@ -20,6 +24,7 @@ type ForParams = {
   tableName: string;
   tenantId: string;
   transactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
   afterSyncLog?: AfterSyncLog;
@@ -87,6 +92,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       tableName: params.tableName,
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
+      accessContext: params.accessContext,
       syncWriter: params.syncWriter,
       afterSyncLog: params.afterSyncLog,
       identityColumn: params.identityColumn,
@@ -260,9 +266,25 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    */
   protected applyInsertPolicy(): void {}
 
+  /**
+   * Translates the table's access context into the RLS session variables
+   * (`uwazi.bypass_rls` / `uwazi.ref_ids`) the policies read. Privileged
+   * actors bypass entirely; anonymous actors get no refIds; collaborators
+   * get their user + group refIds.
+   */
+  protected buildPermissionContext(): PermissionContext {
+    if (this.cfg.accessContext.isPrivileged()) {
+      return { bypass: true, refIds: [] };
+    }
+    if (this.cfg.accessContext.isAnonymous()) {
+      return { bypass: false, refIds: [] };
+    }
+    return { bypass: false, refIds: this.cfg.accessContext.refIds };
+  }
+
   protected async run<T>(
     fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder,
-    permissionContext?: { bypass: boolean; refIds: string[] }
+    permissionContext: PermissionContext = this.buildPermissionContext()
   ): Promise<T> {
     return this.cfg.transactionManager.withConnection(
       async trx => fn(this.qb.clone().transacting(trx)),
@@ -279,10 +301,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * Writes issued from within the loop go through `withConnection` again,
    * opening a separate short transaction when no outer `run()` is active.
    */
-  async *stream(permissionContext?: {
-    bypass: boolean;
-    refIds: string[];
-  }): AsyncGenerator<TRow, void, unknown> {
+  async *stream(
+    permissionContext: PermissionContext = this.buildPermissionContext()
+  ): AsyncGenerator<TRow, void, unknown> {
     const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
     let completed = false;
     try {
@@ -346,8 +367,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   async insert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
-    await this.cfg.transactionManager.withConnection(async trx =>
-      trx(this.cfg.tableName).insert(rows)
+    await this.cfg.transactionManager.withConnection(
+      async trx => trx(this.cfg.tableName).insert(rows),
+      this.buildPermissionContext()
     );
     await this.notifySync(rows, false);
   }
@@ -374,7 +396,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
         : inserted.onConflict(conflict.columns ?? ['_id', 'tenant_id']);
       const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
       return conflicting.returning(['_id']);
-    });
+    }, this.buildPermissionContext());
 
     await this.notifySync(
       PostgresTable.idsOf(result).map(_id => ({ _id })),
@@ -462,8 +484,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * builder's accumulated WHERE/filter state from the chain.
    */
   async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
-    return this.cfg.transactionManager.withConnection(async trx =>
-      trx.raw(sql, bindings as any)
+    return this.cfg.transactionManager.withConnection(
+      async trx => trx.raw(sql, bindings as any),
+      this.buildPermissionContext()
     ) as Promise<Knex.Raw<TResult>>;
   }
 
@@ -521,4 +544,4 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 }
 
-export type { AfterSyncLog, TableConfig, QueryState };
+export type { AfterSyncLog, TableConfig, QueryState, PermissionContext };

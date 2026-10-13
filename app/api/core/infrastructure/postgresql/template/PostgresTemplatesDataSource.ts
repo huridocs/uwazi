@@ -2,6 +2,7 @@
 import { ObjectId } from 'mongodb';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
@@ -24,6 +25,7 @@ type Deps = {
   transactionManager: TransactionManager;
   dao: PostgresTemplatesDAO;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 export class PostgresTemplatesDataSource
@@ -40,6 +42,7 @@ export class PostgresTemplatesDataSource
     super('templates', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'templates' },
     });
 

@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
@@ -158,6 +159,7 @@ class MigrateCollectionToPostgres {
       tableName: pgTable,
       tenantId: this.tenantId,
       transactionManager: pgTransactionManager,
+      accessContext: AccessContext.system(),
     });
   }
 

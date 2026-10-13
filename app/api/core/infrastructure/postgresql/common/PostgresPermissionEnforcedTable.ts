@@ -48,17 +48,6 @@ class PermissionDeniedError extends Error {
  * (RLS would silently filter INSERTs instead).
  */
 class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
-  private readonly accessContext: AccessContext;
-
-  protected constructor(
-    cfg: TableConfig,
-    qb: Knex.QueryBuilder,
-    scope: { accessContext: AccessContext; state?: QueryState }
-  ) {
-    super(cfg, qb, scope.state);
-    this.accessContext = scope.accessContext;
-  }
-
   static for<TRow = Record<string, unknown>>(
     params: ForParams
   ): PostgresPermissionEnforcedTable<TRow> {
@@ -68,20 +57,16 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
       tableName: params.tableName,
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
+      accessContext: params.accessContext,
       syncWriter: params.syncWriter,
       afterSyncLog: params.afterSyncLog,
       identityColumn: params.identityColumn,
     };
-    return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName), {
-      accessContext: params.accessContext,
-    });
+    return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName));
   }
 
   protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
-    return new PostgresPermissionEnforcedTable(this.cfg, qb, {
-      accessContext: this.accessContext,
-      state,
-    }) as any as this;
+    return new PostgresPermissionEnforcedTable(this.cfg, qb, state) as any as this;
   }
 
   /**
@@ -160,10 +145,10 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   }
 
   private upsertWriteCondition(): { sql: string; bindings: (string | string[])[] } | null {
-    if (this.accessContext.isPrivileged()) {
+    if (this.cfg.accessContext.isPrivileged()) {
       return null;
     }
-    const { refIds } = this.accessContext;
+    const { refIds } = this.cfg.accessContext;
     if (refIds.length === 0) {
       return { sql: 'FALSE', bindings: [] };
     }
@@ -177,51 +162,10 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   }
 
   protected applyInsertPolicy(): void {
-    if (this.accessContext.isPrivileged()) return;
-    if (this.accessContext.isAnonymous()) {
+    if (this.cfg.accessContext.isPrivileged()) return;
+    if (this.cfg.accessContext.isAnonymous()) {
       throw new PermissionDeniedError('Anonymous users cannot insert');
     }
-  }
-
-  protected async run<T>(
-    fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder
-  ): Promise<T> {
-    return super.run(fn, this.buildPermissionContext());
-  }
-
-  stream(): AsyncGenerator<TRow, void, unknown> {
-    return super.stream(this.buildPermissionContext());
-  }
-
-  /**
-   * Runs raw SQL with the actor's permission context applied, so the RLS
-   * policies see the correct `uwazi.bypass_rls` / `uwazi.ref_ids` session
-   * variables.
-   *
-   * The base implementation executes the SQL via a `withConnection` call that
-   * carries no permission context, which resets those variables to their
-   * defaults (bypass=false, refIds=''). On an RLS-enforced table the
-   * `permission_write` policy then matches zero rows, silently discarding
-   * writes even for privileged actors.
-   */
-  override async raw<TResult = unknown>(
-    sql: string,
-    bindings?: unknown
-  ): Promise<Knex.Raw<TResult>> {
-    return this.cfg.transactionManager.withConnection(
-      async trx => trx.raw(sql, bindings as any),
-      this.buildPermissionContext()
-    ) as Promise<Knex.Raw<TResult>>;
-  }
-
-  private buildPermissionContext(): { bypass: boolean; refIds: string[] } {
-    if (this.accessContext.isPrivileged()) {
-      return { bypass: true, refIds: [] };
-    }
-    if (this.accessContext.isAnonymous()) {
-      return { bypass: false, refIds: [] };
-    }
-    return { bypass: false, refIds: this.accessContext.refIds };
   }
 
   /**
@@ -232,7 +176,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   protected override cleanRow(row: Record<string, unknown>): Record<string, unknown> {
     return filterPermissionsForActor(
       super.cleanRow(row) as PermissionedDocument,
-      this.accessContext
+      this.cfg.accessContext
     ) as Record<string, unknown>;
   }
 }

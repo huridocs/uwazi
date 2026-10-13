@@ -7,6 +7,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoCaptchaDataSource } from '#api/core/infrastructure/mongodb/captcha/MongoCaptchaDataSource.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '../../postgresql/common/PostgresTransactionManager.js';
 import { PostgresCaptchaDataSource } from '../../postgresql/captcha/PostgresCaptchaDataSource.js';
 
@@ -42,6 +43,7 @@ describe('CaptchaDataSource consistency', () => {
               TENANT_ID,
               LoggerFactory.forTests()
             ),
+            accessContext: AccessContext.system(),
             idGenerator: IdGeneratorFactory.default(),
           })
         : new MongoCaptchaDataSource({

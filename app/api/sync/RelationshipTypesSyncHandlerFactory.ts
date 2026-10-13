@@ -10,6 +10,7 @@ export class RelationshipTypesSyncHandlerFactory {
       return new PostgresRelationshipTypesSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

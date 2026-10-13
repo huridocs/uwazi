@@ -31,6 +31,7 @@ export class PXExtractorsDataSourceFactory {
       return new PostgresPXExtractorsDataSource({
         tenantId: tenant.name,
         pgTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         extractorsQueryService,
         templatesDAO: TemplatesDAOFactory.default(),
       });

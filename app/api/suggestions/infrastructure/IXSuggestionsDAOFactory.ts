@@ -15,6 +15,7 @@ class IXSuggestionsDAOFactory {
       return new PostgresIXSuggestionsDataSource({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

@@ -2,6 +2,7 @@ import { Translation } from '#api/core/domain/translation/Translation.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import {
   PostgresTranslationMapper,
   TranslationRow,
@@ -54,10 +55,15 @@ export class PostgresTranslationsSyncHandler
   extends PostgresDataSource<TranslationRow>
   implements SyncHandler<TranslationSyO>
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('translations', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'translationsV2' },
     });
   }

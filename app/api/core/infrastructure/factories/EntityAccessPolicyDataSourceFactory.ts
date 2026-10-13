@@ -27,6 +27,7 @@ export class EntityAccessPolicyDataSourceFactory {
         pgTransactionManager: ExecutionContext.getStore()
           ? ExecutionContext.postgresTransactionManager
           : PostgresTransactionManagerFactory.default(),
+        accessContext: ExecutionContext.accessContext,
         transactionManager,
       });
     }

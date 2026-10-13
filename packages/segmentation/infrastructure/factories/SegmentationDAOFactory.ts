@@ -27,6 +27,7 @@ class SegmentationDAOFactory {
           pgTransactionManager: inContext
             ? ExecutionContext.postgresTransactionManager
             : PostgresTransactionManagerFactory.default(),
+          accessContext: ExecutionContext.accessContext,
         }),
       };
     }

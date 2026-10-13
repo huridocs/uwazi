@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
 import { CsvImportRowRow, PostgresCsvImportRowMapper } from './PostgresCsvImportRowMapper.js';
@@ -8,10 +9,15 @@ export class PostgresCsvImportRowsDataSource
   extends PostgresDataSource<CsvImportRowRow>
   implements CsvImportRowsDataSource
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('csv_import_rows', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 

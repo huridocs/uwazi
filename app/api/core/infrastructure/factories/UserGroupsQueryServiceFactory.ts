@@ -17,6 +17,7 @@ class UserGroupsQueryServiceFactory {
       const deps = {
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       };
 
       return new PostgresUserGroupsQueryService({

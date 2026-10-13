@@ -2,6 +2,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUsersDAO } from '../PostgresUsersDAO.js';
@@ -36,7 +37,11 @@ const managerFor = (tenantId: string) =>
   new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
 const makeDAO = (tenantId = TENANT_ID) =>
-  new PostgresUsersDAO({ tenantId, pgTransactionManager: managerFor(tenantId) });
+  new PostgresUsersDAO({
+    tenantId,
+    pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
+  });
 
 const userFixture = (overrides: Record<string, unknown>) => ({
   tenant_id: TENANT_ID,

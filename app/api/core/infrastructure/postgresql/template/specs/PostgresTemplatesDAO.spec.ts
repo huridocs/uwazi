@@ -5,6 +5,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTemplatesDAO } from '../PostgresTemplatesDAO.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
@@ -28,6 +29,7 @@ describe('PostgresTemplatesDAO', () => {
         tenantName,
         LoggerFactory.forTests()
       ),
+      accessContext: AccessContext.system(),
     });
   };
 

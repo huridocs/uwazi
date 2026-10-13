@@ -5,6 +5,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const factory = getFixturesFactory();
 
@@ -21,7 +22,7 @@ const fixtures: DBFixture = {
   ],
   entities: [
     factory.entity('A', 'templateA', {}),
-    factory.entity('B', 'templateB', {}),
+    factory.entity('B', 'templateB', {}, { published: true }),
     factory.entity('C', 'templateB', {}),
   ],
   connections: [
@@ -60,13 +61,13 @@ describe('RelationshipsV1DataSource', () => {
       testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
     });
 
-    const createSut = (): RelationshipsV1DataSource =>
-      testingEnvironment.runWithContext(
-        () => RelationshipsV1DataSourceFactory.default(),
-        postgresCore
+    const createSut = (actor?: User): RelationshipsV1DataSource =>
+      testingEnvironment.runWithContext(() => RelationshipsV1DataSourceFactory.default(), {
+        ...(postgresCore
           ? { tenant: { ...testingTenants.current(), featureFlags: { postgresCore: true } } }
-          : {}
-      );
+          : {}),
+        ...(actor ? { actor } : {}),
+      });
 
     const storedConnections = async () => testingEnvironment.db.getAllFrom('connections');
 
@@ -210,6 +211,39 @@ describe('RelationshipsV1DataSource', () => {
       expect(Object.keys(references[rel1Id]).sort()).toEqual(['B', 'C']);
       expect(references[rel1Id].B.rightSide.entity).toBe('B');
     });
+
+    it('returns entityData for published and unpublished related entities to a privileged actor', async () => {
+      const sut = createSut();
+
+      const references = await sut.getEntityReferencesByRelationshipTypes('A', [
+        factory.idString('rel1'),
+      ]);
+
+      const templateBId = factory.idString('templateB');
+      expect(references[factory.idString('rel1')].B.rightSide.entityData).toEqual([
+        { template: templateBId },
+      ]);
+      expect(references[factory.idString('rel1')].C.rightSide.entityData).toEqual([
+        { template: templateBId },
+      ]);
+    });
+
+    (postgresCore ? it : it.skip)(
+      'filters unpublished related entities out of entityData for a collaborator',
+      async () => {
+        const sut = createSut(User.createFrom(null));
+
+        const references = await sut.getEntityReferencesByRelationshipTypes('A', [
+          factory.idString('rel1'),
+        ]);
+
+        const templateBId = factory.idString('templateB');
+        expect(references[factory.idString('rel1')].B.rightSide.entityData).toEqual([
+          { template: templateBId },
+        ]);
+        expect(references[factory.idString('rel1')].C.rightSide.entityData).toEqual([]);
+      }
+    );
 
     it('guesses a relationship property hub with exactly one candidate template', async () => {
       const sut = createSut();

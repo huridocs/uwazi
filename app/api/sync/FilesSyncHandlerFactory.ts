@@ -10,6 +10,7 @@ export class FilesSyncHandlerFactory {
       return new PostgresFilesSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 
