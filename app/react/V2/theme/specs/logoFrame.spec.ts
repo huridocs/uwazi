@@ -1,6 +1,7 @@
 import {
   applyCropDrag,
   contentBounds,
+  currentTrimmedLogo,
   defaultOutputScale,
   logoDisplaySize,
   scaledCropSize,
@@ -21,6 +22,13 @@ describe('logoFrame', () => {
     });
   });
 
+  it('keeps the previous trim from covering a new logo', () => {
+    const previous = { src: '/old.png', url: 'data:image/png;base64,old' };
+    expect(currentTrimmedLogo('/new.png', previous)).toBe('/new.png');
+    expect(currentTrimmedLogo('/old.png', previous)).toBe('data:image/png;base64,old');
+    expect(currentTrimmedLogo(undefined, { src: undefined, url: '' })).toBe('');
+  });
+
   it('drops empty margins around the artwork', () => {
     const pixels = new Uint8ClampedArray([
       0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255,
@@ -34,7 +42,7 @@ describe('logoFrame', () => {
     expect(logoDisplaySize(40, 40)).toEqual({ width: 40, height: 40 });
   });
 
-  it('moves and clamps a crop inside the image', () => {
+  it('lets the frame move past the image so the artwork can be centered', () => {
     expect(
       applyCropDrag({
         origin: { x: 10, y: 10, width: 40, height: 20 },
@@ -43,7 +51,28 @@ describe('logoFrame', () => {
         dy: 5,
         bounds: { width: 100, height: 80 },
       })
-    ).toEqual({ x: 0, y: 15, width: 40, height: 20 });
+    ).toEqual({ x: -20, y: 15, width: 40, height: 20 });
+  });
+
+  it('grows the frame past the image and stops at twice its size', () => {
+    expect(
+      applyCropDrag({
+        origin: { x: 0, y: 0, width: 100, height: 80 },
+        mode: 'se',
+        dx: 40,
+        dy: 20,
+        bounds: { width: 100, height: 80 },
+      })
+    ).toEqual({ x: 0, y: 0, width: 140, height: 100 });
+    expect(
+      applyCropDrag({
+        origin: { x: 0, y: 0, width: 100, height: 80 },
+        mode: 'se',
+        dx: 500,
+        dy: 500,
+        bounds: { width: 100, height: 80 },
+      })
+    ).toEqual({ x: 0, y: 0, width: 200, height: 160 });
   });
 
   it('shrinks the saved file toward the recommended maximum', () => {

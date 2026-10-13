@@ -5,8 +5,8 @@ import {
   applyCropDrag,
   defaultOutputScale,
   logoDisplaySize,
+  logoFrameClass,
   scaledCropSize,
-  useLogoFrame,
   type Crop,
 } from '#V2/theme/logoFrame.js';
 import type { ImageDimensions } from './customUploadImagePickerLib.js';
@@ -35,7 +35,13 @@ const drawCrop = (image: HTMLImageElement, crop: Crop, scale: number) => {
   canvas.height = size.height;
   canvas
     .getContext('2d')
-    ?.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, size.width, size.height);
+    ?.drawImage(
+      image,
+      -crop.x * scale,
+      -crop.y * scale,
+      image.naturalWidth * scale,
+      image.naturalHeight * scale
+    );
   return { canvas, size };
 };
 
@@ -59,25 +65,21 @@ const useLogoCropDrag = (session: {
       const drag = dragRef.current;
       if (!image || !drag || bounds.width === 0) return;
       const rect = image.getBoundingClientRect();
-      setCrop(
-        applyCropDrag({
-          origin: drag.origin,
-          mode: drag.mode,
-          dx: ((event.clientX - drag.startX) / rect.width) * bounds.width,
-          dy: ((event.clientY - drag.startY) / rect.height) * bounds.height,
-          bounds,
-        })
-      );
+      const next = applyCropDrag({
+        origin: drag.origin,
+        mode: drag.mode,
+        dx: ((event.clientX - drag.startX) / rect.width) * bounds.width,
+        dy: ((event.clientY - drag.startY) / rect.height) * bounds.height,
+        bounds,
+      });
+      cropRef.current = next;
+      setCrop(next);
     };
     const up = () => {
       const image = imgRef.current;
       const wasDragging = dragRef.current;
       dragRef.current = null;
       if (!image || !wasDragging) return;
-      setCrop(current => {
-        cropRef.current = current;
-        return current;
-      });
       setPreviewUrl(previewDataUrl(image, cropRef.current));
     };
     window.addEventListener('pointermove', move);
@@ -109,12 +111,12 @@ const useLogoCrop = () => {
     setScale,
     previewUrl,
     setPreviewUrl,
+    cropRef,
   };
 };
 
 const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
   const session = useLogoCrop();
-  const logo = useLogoFrame(session.previewUrl, 'preview');
   const shown = logoDisplaySize(session.crop.width, session.crop.height);
   const saved = scaledCropSize(session.crop, session.scale);
   const { bounds, crop, scale } = session;
@@ -137,43 +139,46 @@ const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
             Crop changes how the logo fits in the header. Resize changes the saved file.
           </Translate>
         </p>
-        <div className="relative inline-block max-w-full">
-          <img
-            ref={session.imgRef}
-            src={src}
-            alt=""
-            crossOrigin="anonymous"
-            className="max-h-64 max-w-full"
-            onLoad={event => {
-              const image = event.currentTarget;
-              const nextBounds = { width: image.naturalWidth, height: image.naturalHeight };
-              const full = { x: 0, y: 0, width: nextBounds.width, height: nextBounds.height };
-              session.setBounds(nextBounds);
-              session.setCrop(full);
-              session.setScale(defaultOutputScale(full));
-              session.setPreviewUrl(previewDataUrl(image, full));
-            }}
-          />
-          {bounds.width > 0 ? (
-            <div
-              className="absolute border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
-              style={{
-                left: `${(crop.x / bounds.width) * 100}%`,
-                top: `${(crop.y / bounds.height) * 100}%`,
-                width: `${(crop.width / bounds.width) * 100}%`,
-                height: `${(crop.height / bounds.height) * 100}%`,
+        <div className="flex justify-center overflow-visible px-16 py-10">
+          <div className="relative inline-block max-w-full">
+            <img
+              ref={session.imgRef}
+              src={src}
+              alt=""
+              crossOrigin="anonymous"
+              className="max-h-64 max-w-full"
+              onLoad={event => {
+                const image = event.currentTarget;
+                const nextBounds = { width: image.naturalWidth, height: image.naturalHeight };
+                const full = { x: 0, y: 0, width: nextBounds.width, height: nextBounds.height };
+                session.setBounds(nextBounds);
+                session.cropRef.current = full;
+                session.setCrop(full);
+                session.setScale(defaultOutputScale(full));
+                session.setPreviewUrl(previewDataUrl(image, full));
               }}
-              onPointerDown={startDrag('move')}
-            >
-              {handles.map(handle => (
-                <span
-                  key={handle}
-                  className={`absolute h-3 w-3 bg-white ${handleClass[handle]}`}
-                  onPointerDown={startDrag(handle)}
-                />
-              ))}
-            </div>
-          ) : null}
+            />
+            {bounds.width > 0 ? (
+              <div
+                className="absolute border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
+                style={{
+                  left: `${(crop.x / bounds.width) * 100}%`,
+                  top: `${(crop.y / bounds.height) * 100}%`,
+                  width: `${(crop.width / bounds.width) * 100}%`,
+                  height: `${(crop.height / bounds.height) * 100}%`,
+                }}
+                onPointerDown={startDrag('move')}
+              >
+                {handles.map(handle => (
+                  <span
+                    key={handle}
+                    className={`absolute h-3 w-3 bg-white ${handleClass[handle]}`}
+                    onPointerDown={startDrag(handle)}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
         <label className="block text-xs text-ink-tertiary">
           <Translate>Saved image</Translate>
@@ -198,7 +203,7 @@ const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
             style={{ backgroundColor: 'var(--color-theme-chrome-app-bar)' }}
           >
             {session.previewUrl ? (
-              <img src={session.previewUrl} alt="" className={logo.className} />
+              <img src={session.previewUrl} alt="" className={logoFrameClass('preview')} />
             ) : null}
           </div>
         </div>

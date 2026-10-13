@@ -5,7 +5,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
-import { useLogoFrame, useTrimmedLogo } from '#V2/theme/logoFrame.js';
+import { logoFrameClass, useTrimmedLogo } from '#V2/theme/logoFrame.js';
 import type { ImageSizeRule } from './customUploadImagePickerLib.js';
 import { CustomUploadImagePickerModal } from './CustomUploadImagePickerModal.js';
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
@@ -59,7 +59,6 @@ const CustomUploadImagePicker = ({
     adjustable,
   });
   const projectedSrc = useTrimmedLogo(projectHeaderLogo ? logic.trimmed : undefined);
-  const projectedLogo = useLogoFrame(projectedSrc, 'preview');
 
   const urlValidationControl =
     logic.validationFeedback === null ? null : (
@@ -104,7 +103,7 @@ const CustomUploadImagePicker = ({
                 <img
                   src={projectHeaderLogo ? projectedSrc : logic.trimmed}
                   alt=""
-                  className={projectHeaderLogo ? projectedLogo.className : previewImgClassName}
+                  className={projectHeaderLogo ? logoFrameClass('preview') : previewImgClassName}
                 />
               </div>
               {!logic.open && urlValidationControl ? urlValidationControl : null}

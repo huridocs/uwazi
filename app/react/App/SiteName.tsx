@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Helmet } from 'react-helmet';
 import { I18NLink } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { useTrimmedLogo, useLogoFrame } from '#V2/theme/logoFrame.js';
+import { logoFrameClass, useTrimmedLogo } from '#V2/theme/logoFrame.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
 interface SiteNameProps {
@@ -21,9 +21,8 @@ const useCollectionMarks = () => {
 
 const useSiteHeaderLogo = (logoUrl: string, enabled: boolean) => {
   const showLogo = Boolean(enabled && logoUrl);
-  const logo = useLogoFrame(logoUrl);
   const displayLogo = useTrimmedLogo(showLogo ? logoUrl : undefined);
-  return { showLogo, className: logo.className, displayLogo };
+  return { showLogo, className: logoFrameClass(), displayLogo };
 };
 
 export const SiteName: React.FC<SiteNameProps> = ({

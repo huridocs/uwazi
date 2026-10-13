@@ -1,10 +1,9 @@
 import React from 'react';
-import { useTrimmedLogo, useLogoFrame } from '#V2/theme/logoFrame.js';
+import { logoFrameClass, useTrimmedLogo } from '#V2/theme/logoFrame.js';
 
 const ThemePreviewLogo = ({ siteLogo }: { siteLogo: string }) => {
   const src = useTrimmedLogo(siteLogo);
-  const logo = useLogoFrame(src, 'preview');
-  return <img src={src} alt="" className={logo.className} />;
+  return <img src={src} alt="" className={logoFrameClass('preview')} />;
 };
 
 export { ThemePreviewLogo };

@@ -115,7 +115,9 @@ const usePickerActions = (controller: PickerController) => {
       controller.setUploadProgress({ filename, progress });
     });
     const responses = await controller.uploadService.upload([...pendingFiles]);
-    await publishUpload(controller, responses, () => revalidator.revalidate());
+    await publishUpload(controller, responses, async () => {
+      await revalidator.revalidate();
+    });
     clearUploadDraft(controller);
   };
 

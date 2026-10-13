@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const MIN_CROP = 8;
+const MAX_CROP_SCALE = 2;
 const HEADER_LOGO_MAX_WIDTH = 200;
 const HEADER_LOGO_MAX_HEIGHT = 48;
 const BACKGROUND_TOLERANCE = 24;
@@ -9,10 +10,10 @@ const TRIM_AREA_LIMIT = 0.92;
 type Crop = { x: number; y: number; width: number; height: number };
 type Bounds = { width: number; height: number };
 
-const HEADER_LOGO_CLASS =
-  'logo-img h-auto max-h-12 w-auto max-w-[8rem] shrink-0 object-contain sm:max-w-[10rem] lg:max-w-[12.5rem]';
-const HEADER_LOGO_PREVIEW_CLASS =
-  'logo-img h-auto max-h-12 w-auto max-w-[12.5rem] shrink-0 object-contain';
+const logoFrameClass = (variant: 'header' | 'preview' = 'header') =>
+  `logo-img h-auto max-h-12 w-auto shrink-0 object-contain ${
+    variant === 'preview' ? 'max-w-[12.5rem]' : 'max-w-[8rem] sm:max-w-[10rem] lg:max-w-[12.5rem]'
+  }`;
 
 const logoDisplaySize = (width: number, height: number) => {
   if (width === 0 || height === 0) return { width: 0, height: 0 };
@@ -79,11 +80,11 @@ const contentBounds = (pixels: Uint8ClampedArray, width: number, height: number)
 };
 
 const clampCrop = (crop: Crop, bounds: Bounds): Crop => {
-  const width = Math.min(Math.max(MIN_CROP, crop.width), bounds.width);
-  const height = Math.min(Math.max(MIN_CROP, crop.height), bounds.height);
+  const width = Math.min(Math.max(MIN_CROP, crop.width), bounds.width * MAX_CROP_SCALE);
+  const height = Math.min(Math.max(MIN_CROP, crop.height), bounds.height * MAX_CROP_SCALE);
   return {
-    x: Math.min(Math.max(0, crop.x), bounds.width - width),
-    y: Math.min(Math.max(0, crop.y), bounds.height - height),
+    x: Math.min(Math.max(crop.x, MIN_CROP - width), bounds.width - MIN_CROP),
+    y: Math.min(Math.max(crop.y, MIN_CROP - height), bounds.height - MIN_CROP),
     width,
     height,
   };
@@ -166,52 +167,55 @@ const imagePixels = (image: HTMLImageElement): PixelSample | null => {
   }
 };
 
+const logoNeedsTrim = (sample: PixelSample, bounds: Crop) =>
+  pixelAt(sample.data, 0).a !== 0 &&
+  bounds.width * bounds.height < sample.width * sample.height * TRIM_AREA_LIMIT;
+
 const trimmedLogoUrl = (image: HTMLImageElement) => {
   const sample = imagePixels(image);
   if (!sample) return null;
   const bounds = contentBounds(sample.data, sample.width, sample.height);
-  const area = bounds ? bounds.width * bounds.height : 0;
-  const filled = area >= sample.width * sample.height * TRIM_AREA_LIMIT;
-  if (!bounds || filled) return null;
+  if (!bounds || !logoNeedsTrim(sample, bounds)) return null;
   return croppedLogoUrl(image, bounds);
 };
 
+type TrimmedLogo = { src: string | undefined; url: string };
+
+const currentTrimmedLogo = (src: string | undefined, trimmed: TrimmedLogo) =>
+  trimmed.src === src ? trimmed.url || src || '' : src || '';
+
 const useTrimmedLogo = (src: string | undefined) => {
-  const [trimmed, setTrimmed] = useState(src);
+  const [trimmed, setTrimmed] = useState<TrimmedLogo>({ src, url: src ?? '' });
   useEffect(() => {
     if (!src) {
-      setTrimmed(src);
+      setTrimmed({ src, url: '' });
       return undefined;
     }
     let cancelled = false;
     const image = new Image();
     image.crossOrigin = 'anonymous';
     image.onload = () => {
-      if (!cancelled) setTrimmed(trimmedLogoUrl(image) ?? src);
+      if (!cancelled) setTrimmed({ src, url: trimmedLogoUrl(image) ?? src });
     };
     image.onerror = () => {
-      if (!cancelled) setTrimmed(src);
+      if (!cancelled) setTrimmed({ src, url: src });
     };
     image.src = src;
     return () => {
       cancelled = true;
     };
   }, [src]);
-  return trimmed || src || '';
+  return currentTrimmedLogo(src, trimmed);
 };
-
-const useLogoFrame = (_src: string | undefined, variant: 'header' | 'preview' = 'header') => ({
-  className: variant === 'preview' ? HEADER_LOGO_PREVIEW_CLASS : HEADER_LOGO_CLASS,
-});
 
 export type { Crop, Bounds };
 export {
   contentBounds,
   logoDisplaySize,
-  clampCrop,
+  logoFrameClass,
   applyCropDrag,
   scaledCropSize,
   defaultOutputScale,
+  currentTrimmedLogo,
   useTrimmedLogo,
-  useLogoFrame,
 };
