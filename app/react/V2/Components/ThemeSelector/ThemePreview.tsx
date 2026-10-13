@@ -10,8 +10,9 @@ import {
   mergeScopedThemeAndChrome,
   SEMANTIC_VAR_LABELS,
   THEME_PALETTE,
+  type ResolvedThemeVars,
+  type ThemeMode,
 } from '#V2/theme/themes.js';
-import type { ThemeMode } from '#V2/theme/themes.js';
 import { ThemePreviewLogo } from './ThemePreviewLogo.js';
 
 type ThemeVars = Record<string, string | undefined>;
@@ -26,9 +27,7 @@ type ThemePreviewProps = {
 const resolveAccessibleText = (background: string, preferred: string, fallback: string) =>
   checkContrast(background, preferred).passesAA ? preferred : fallback;
 
-const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps) => {
-  const resolved = appliedTheme(themeVars, mode, true);
-  const presetId = getPresetId(themeVars, true);
+const previewTextColors = (resolved: ResolvedThemeVars) => {
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
   const surfaceBg = resolved['--color-theme-bg-surface'];
   const primaryText = resolveAccessibleText(
@@ -41,8 +40,20 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
     resolved['--color-theme-text-secondary'],
     primaryText
   );
-  const accentText = getContrastTextColor(accent);
-  const outlineColor = resolveAccessibleText(surfaceBg, accent, primaryText);
+  return {
+    accent,
+    surfaceBg,
+    primaryText,
+    secondaryText,
+    accentText: getContrastTextColor(accent),
+    outlineColor: resolveAccessibleText(surfaceBg, accent, primaryText),
+  };
+};
+
+const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps) => {
+  const resolved = appliedTheme(themeVars, mode, true);
+  const presetId = getPresetId(themeVars, true);
+  const colors = previewTextColors(resolved);
   const chromeStyle = getChromeStyleOverrides(themeVars, mode);
   const style: React.CSSProperties & Record<string, string> = {
     colorScheme: mode,
@@ -127,7 +138,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
             borderColor: 'var(--color-theme-border-primary)',
           }}
         >
-          <p className="text-sm font-semibold" style={{ color: primaryText }}>
+          <p className="text-sm font-semibold" style={{ color: colors.primaryText }}>
             <Translate>Theme preview</Translate>
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -135,9 +146,9 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
               type="button"
               className="rounded-lg border px-3 py-2 text-xs font-medium"
               style={{
-                backgroundColor: accent,
-                borderColor: accent,
-                color: accentText,
+                backgroundColor: colors.accent,
+                borderColor: colors.accent,
+                color: colors.accentText,
               }}
             >
               <Translate>Primary button</Translate>
@@ -146,9 +157,9 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
               type="button"
               className="rounded-lg border px-3 py-2 text-xs font-medium"
               style={{
-                backgroundColor: surfaceBg,
-                borderColor: outlineColor,
-                color: outlineColor,
+                backgroundColor: colors.surfaceBg,
+                borderColor: colors.outlineColor,
+                color: colors.outlineColor,
               }}
             >
               <Translate>Secondary button</Translate>
@@ -170,12 +181,15 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
                 className="h-10 rounded-md"
                 style={{ backgroundColor: `var(${entry.semanticKey})` }}
               />
-              <p className="mt-2 truncate text-xs font-medium" style={{ color: primaryText }}>
+              <p
+                className="mt-2 truncate text-xs font-medium"
+                style={{ color: colors.primaryText }}
+              >
                 {SEMANTIC_VAR_LABELS[entry.semanticKey]}
               </p>
               <p
                 className="truncate text-[0.6875rem]"
-                style={{ color: secondaryText }}
+                style={{ color: colors.secondaryText }}
                 title={entry.semanticKey}
               >
                 {entry.semanticKey}
