@@ -133,6 +133,10 @@ describe('activity log routes', () => {
         expect((await get(validQuery)).status).toBe(200);
       });
 
+      it.each([1, 500])('should allow a limit of %s', async limit => {
+        expect((await get({ limit })).status).toBe(200);
+      });
+
       it.each([
         {
           changedProperty: { additional: 'abc' },
@@ -145,6 +149,24 @@ describe('activity log routes', () => {
           expectedError: 'type',
           expectedPath: '/query/limit',
           case: 'a limit type error',
+        },
+        {
+          changedProperty: { limit: 0 },
+          expectedError: 'minimum',
+          expectedPath: '/query/limit',
+          case: 'a limit of zero',
+        },
+        {
+          changedProperty: { limit: -5 },
+          expectedError: 'minimum',
+          expectedPath: '/query/limit',
+          case: 'a negative limit',
+        },
+        {
+          changedProperty: { limit: 501 },
+          expectedError: 'maximum',
+          expectedPath: '/query/limit',
+          case: 'a limit over 500',
         },
         {
           changedProperty: { before: 'abc' },
