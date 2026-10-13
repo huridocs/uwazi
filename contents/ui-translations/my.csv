@@ -1336,6 +1336,8 @@ Skip to main content,အဓိကအကြောင်းအရာသို့ �
 Snapshot (manual),ရုပ်သံပုံ (ကိုယ်တိုင်)
 Snapshot (scheduled),ရုပ်သံပုံ (အချိန်ဇယား)
 Some tasks may take a while. Bert will reply when it's done.,အချို့တာဝန်တွေက အချိန်ယူနိုင်ပါတယ်။ ပြီးသွားရင် Bert က ပြန်ဖြေကြားပါလိမ့်မယ်။
+"Some translations are still pending, saving would stop the translation process.",ဘာသာပြန်အချို့ မပြီးသေးပါ၊ သိမ်းဆည်းပါက ဘာသာပြန်လုပ်ငန်းစဉ် ရပ်တန့်မည်။
+Translations are still pending,ဘာသာပြန်များ မပြီးသေးပါ
 Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
 Sort ascending,တက်လာအောင် စီရန်
