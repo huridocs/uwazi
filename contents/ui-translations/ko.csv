@@ -734,6 +734,7 @@ Lengthy reindex process,오래 걸리는 재색인 과정
 Library,라이브러리
 library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
+Library panes,라이브러리 패널
 Library results,라이브러리 결과
 library table view,라이브러리 테이블 뷰
 Light,라이트
@@ -1184,6 +1185,7 @@ Resize panels,패널 크기 조정
 Restore,복원
 Restore previous version,이전 버전 복원
 Restricted,비공개 게시물
+Results,결과
 Retryable,재시도 가능
 Retrying,다시 시도 중
 Return to login,로그인으로 돌아가기

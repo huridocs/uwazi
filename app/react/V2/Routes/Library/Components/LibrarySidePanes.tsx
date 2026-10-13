@@ -50,6 +50,9 @@ const libraryRightPaneElement = (pane: LibraryRightPaneProps, onClosePreview: ()
     onPreviewSelection={pane.onPreviewSelection}
     onCreated={pane.onCreated}
     onAction={pane.onAction}
+    editingSelection={pane.editingSelection}
+    onEditSelection={pane.onEditSelection}
+    onCancelEditSelection={pane.onCancelEditSelection}
   />
 );
 

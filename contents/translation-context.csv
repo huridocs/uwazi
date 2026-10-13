@@ -1563,3 +1563,5 @@ Entity view,Accessible label,Entity view,"Accessible name and tooltip of the but
 Published view,Accessible label,Entity view,"Accessible name and tooltip of the button that returns to the published page, shown while the entity viewer is open.",false
 Translations are still pending,UI text,Entity view,"Dialog title when saving, cancelling, closing, or leaving while automatic translations are still running.",false
 "Some translations are still pending, saving would stop the translation process.",UI text,Entity view,"Dialog body under that title. Confirming stops the translations; cancelling waits.",false
+Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
+Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false

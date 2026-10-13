@@ -1,10 +1,12 @@
 import React, { type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction, LibrarySelectionAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import { LibrarySelectAllBox } from './LibrarySelectAllBox.js';
+import { editorRoles } from './libraryResultsFooterActions.js';
 
 const barLeadClassName = 'text-ink font-medium hover:bg-warm';
 const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
@@ -82,6 +84,23 @@ const LibraryMultiSelectFooter = ({
     </button>
   );
 
+  const renderLeadAction = (action: LibrarySelectionAction) => {
+    const button = barButton({
+      icon: action.icon,
+      label: action.label,
+      tone: actionTone(action),
+      onClick: () => onAction?.(action.id),
+    });
+    if (action.id === 'export') {
+      return button;
+    }
+    return (
+      <NeedAuthorization key={action.id} roles={editorRoles}>
+        {button}
+      </NeedAuthorization>
+    );
+  };
+
   return (
     <div data-testid="library-multi-select-footer" className="w-full shrink-0">
       <div
@@ -89,23 +108,18 @@ const LibraryMultiSelectFooter = ({
         style={{ borderTop: '1px solid var(--border-primary)' }}
       >
         <div data-testid="library-multi-select-actions" className="flex min-w-0 items-center">
-          {leadActions.map(action =>
-            barButton({
-              icon: action.icon,
-              label: action.label,
-              tone: actionTone(action),
-              onClick: () => onAction?.(action.id),
-            })
-          )}
-          <LibraryFooterDivider />
-          {deleteAction
-            ? barButton({
-                icon: deleteAction.icon,
-                label: deleteAction.label,
-                tone: 'danger',
-                onClick: () => onAction?.(deleteAction.id),
-              })
-            : null}
+          {leadActions.map(renderLeadAction)}
+          <NeedAuthorization roles={editorRoles}>
+            <LibraryFooterDivider />
+            {deleteAction
+              ? barButton({
+                  icon: deleteAction.icon,
+                  label: deleteAction.label,
+                  tone: 'danger',
+                  onClick: () => onAction?.(deleteAction.id),
+                })
+              : null}
+          </NeedAuthorization>
         </div>
         <div className="ms-auto flex shrink-0 items-center gap-2">
           <LibrarySelectAllBox

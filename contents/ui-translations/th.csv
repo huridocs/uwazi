@@ -737,6 +737,7 @@ Lengthy reindex process,กระบวนการสร้างดัชน�
 Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
+Library panes,แผงไลบรารี
 Library results,ผลลัพธ์คลังเอกสาร
 library table view,มุมมองตารางไลบรารี
 Light,สว่าง
@@ -1192,6 +1193,7 @@ Resize panels,ปรับขนาดแผง
 Restore,กู้คืน
 Restore previous version,คืนสู่เวอร์ชันก่อนหน้า
 Restricted,ถูก จำกัด
+Results,ผลลัพธ์
 Retryable,สามารถลองใหม่ได้
 Retrying,ลองอีกครั้ง
 Return to login,กลับไปที่การเข้าสู่ระบบ
