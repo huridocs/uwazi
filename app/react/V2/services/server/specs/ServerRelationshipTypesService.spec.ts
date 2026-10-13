@@ -1,5 +1,5 @@
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
-import { RelationTypeCountQueryServiceFactory } from '#api/relationships/query/factory/RelationTypeCountQueryServiceFactory.js';
+import { RelationTypesQueryServiceFactory } from '#api/relationships/query/factory/RelationTypesQueryServiceFactory.js';
 import { createServerRelationshipTypesService } from '../ServerRelationshipTypesService.js';
 
 const ctx = { headers: { cookie: 'session=1' } };
@@ -28,10 +28,10 @@ describe('ServerRelationshipTypesService', () => {
   });
 
   it('countByTypes returns every relation type count', async () => {
-    jest.spyOn(RelationTypeCountQueryServiceFactory, 'default').mockReturnValue({
-      all: async () => ({ rel1: 2, rel2: 0 }),
-      one: async () => 0,
-    });
+    jest.spyOn(RelationTypesQueryServiceFactory, 'default').mockReturnValue({
+      countByTypes: async () => ({ rel1: 2, rel2: 0 }),
+      countByType: async () => 0,
+    } as never);
 
     const [data, error] = await service.countByTypes();
 

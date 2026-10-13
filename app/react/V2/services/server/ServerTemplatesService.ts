@@ -1,5 +1,6 @@
-import { EntityCountByTemplateQueryServiceFactory } from '#api/core/infrastructure/factories/EntityCountByTemplateQueryServiceFactory.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 import type { Template } from '#shared/contracts/Template.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
@@ -23,7 +24,7 @@ const serializeTemplates = (
   rows: Array<{ _id: { toString(): string } } & Record<string, unknown>>
 ): Template[] => rows.map(serializeTemplate);
 
-const createServerTemplatesService = (_ctx: ServerServiceContext): TemplatesService => ({
+const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<Template[]>> => {
     try {
       const rows = await TemplatesDAOFactory.default().get();
@@ -57,7 +58,11 @@ const createServerTemplatesService = (_ctx: ServerServiceContext): TemplatesServ
     _options?: ServiceRequestOptions
   ): Promise<ApiResponse<Record<string, number>>> => {
     try {
-      return [await EntityCountByTemplateQueryServiceFactory.default().all()];
+      return [
+        await EntitiesQueryServiceFactory.default(
+          User.createFrom(ctx.user ?? null)
+        ).countByTemplates(),
+      ];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }
@@ -68,7 +73,11 @@ const createServerTemplatesService = (_ctx: ServerServiceContext): TemplatesServ
     _options?: ServiceRequestOptions
   ): Promise<ApiResponse<number>> => {
     try {
-      return [await EntityCountByTemplateQueryServiceFactory.default().one({ templateId })];
+      return [
+        await EntitiesQueryServiceFactory.default(
+          User.createFrom(ctx.user ?? null)
+        ).countByTemplate({ templateId }),
+      ];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }
