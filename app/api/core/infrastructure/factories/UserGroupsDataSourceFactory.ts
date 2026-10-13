@@ -12,6 +12,7 @@ class UserGroupsDataSourceFactory {
       return new PostgresUserGroupsDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

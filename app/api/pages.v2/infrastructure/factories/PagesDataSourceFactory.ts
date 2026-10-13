@@ -15,6 +15,7 @@ export class PagesDataSourceFactory {
       return new PostgresPagesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

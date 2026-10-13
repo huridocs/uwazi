@@ -16,6 +16,7 @@ export class PageReleasesDataSourceFactory {
       return new PostgresPageReleasesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         idGenerator: IdGeneratorFactory.default(),
       });
     }

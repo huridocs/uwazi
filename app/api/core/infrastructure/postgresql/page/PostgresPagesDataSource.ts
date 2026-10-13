@@ -1,4 +1,5 @@
 import { Result } from '#api/core/libs/Result.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PagesDataSource } from '#api/pages.v2/application/contracts/PagesDataSource.js';
 import { Page } from '#api/pages.v2/domain/Page.js';
 import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
@@ -19,15 +20,21 @@ export class PostgresPagesDataSource
    */
   private readonly locales: PostgresTable<PageLocaleRow>;
 
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('pages', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
     this.locales = PostgresTable.for<PageLocaleRow>({
       tableName: LOCALES_TABLE,
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       identityColumn: null,
     });
   }

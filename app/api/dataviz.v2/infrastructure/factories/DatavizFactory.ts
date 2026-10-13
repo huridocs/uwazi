@@ -50,6 +50,7 @@ class DatavizFactory {
     return {
       tenantId: ExecutionContext.tenant.name,
       pgTransactionManager: ExecutionContext.postgresTransactionManager,
+      accessContext: ExecutionContext.accessContext,
     };
   }
 
@@ -85,6 +86,7 @@ class DatavizFactory {
       ? new PostgresDatavizQueryExecutor({
           tenantId: ExecutionContext.tenant.name,
           pgTransactionManager: ExecutionContext.postgresTransactionManager,
+          accessContext: ExecutionContext.accessContext,
         })
       : new MongoDatavizQueryExecutor(getConnection(), transactionManager);
 

@@ -12,6 +12,7 @@ class SettingsDocumentQueryServiceFactory {
       return new PostgresSettingsDocumentQueryService({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

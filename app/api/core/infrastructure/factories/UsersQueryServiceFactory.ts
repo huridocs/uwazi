@@ -25,6 +25,7 @@ class UsersQueryServiceFactory {
         usersDAO: new PostgresUsersDAO({
           tenantId: tenant.name,
           pgTransactionManager: ExecutionContext.postgresTransactionManager,
+          accessContext: ExecutionContext.accessContext,
         }),
       });
     }

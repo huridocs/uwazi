@@ -12,6 +12,7 @@ class UsersDAOFactory {
       return new PostgresUsersDAO({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       }) as any as MongoUsersDAO;
     }
 

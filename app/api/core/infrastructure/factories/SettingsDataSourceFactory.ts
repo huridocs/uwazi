@@ -34,6 +34,7 @@ const buildPostgresSettingsDataSource = (cached = false) => {
   const deps = {
     tenantId: tenant.name,
     pgTransactionManager,
+    accessContext: ExecutionContext.accessContext,
     idGenerator: IdGeneratorFactory.default(),
   };
 

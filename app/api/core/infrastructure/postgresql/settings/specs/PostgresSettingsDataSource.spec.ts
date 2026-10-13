@@ -6,6 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 import { Settings } from '#api/core/domain/settings/Settings.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresSettingsDataSource } from '../PostgresSettingsDataSource.js';
 
@@ -22,6 +23,7 @@ const makeDS = (
   new PostgresSettingsDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
     idGenerator: IdGeneratorFactory.default(),
     ...overrides,
   });

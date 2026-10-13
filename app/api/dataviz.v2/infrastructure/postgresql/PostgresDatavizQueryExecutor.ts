@@ -62,8 +62,8 @@ class PostgresDatavizQueryExecutor
 {
   private permissionTable: PostgresPermissionEnforcedTable<EntityRow>;
 
-  constructor({ tenantId, pgTransactionManager }: Deps) {
-    super('entities', { tenantId, pgTransactionManager });
+  constructor({ tenantId, pgTransactionManager, accessContext }: Deps) {
+    super('entities', { tenantId, pgTransactionManager, accessContext });
     this.permissionTable = PostgresPermissionEnforcedTable.for<EntityRow>({
       tableName: 'entities',
       tenantId,

@@ -21,6 +21,7 @@ class PXEntityStatusesQueryServiceFactory {
       return new PostgresPXEntityStatusesQueryService({
         tenantId: tenant.name,
         pgTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 
