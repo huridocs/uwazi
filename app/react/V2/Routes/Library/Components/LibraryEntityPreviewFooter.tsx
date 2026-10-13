@@ -119,7 +119,8 @@ const LibraryEntityPreviewFooter = ({
 }: LibraryEntityPreviewFooterProps) => {
   const entity = useEntityScopedEntity();
   const { requestAddFile } = useEntityFiles();
-  const { isEditing, isSaving, formMountHost, formId, requestDiscard } = useMetadataEditing();
+  const { isEditing, isSaving, formMountHost, formId, requestDiscard, requestStopTranslations } =
+    useMetadataEditing();
   const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
   const editingMetadata = isEditing && formMountHost === 'main';
   const onEdit = usePreviewMetadataEdit();
@@ -149,12 +150,12 @@ const LibraryEntityPreviewFooter = ({
           editingMetadata,
           isSaving,
           formId,
-          onDiscard: () => requestDiscard('discard'),
+          onDiscard: () => requestStopTranslations(() => requestDiscard('discard')),
           entityBasePath,
           sharedId: entity.sharedId,
           onAction,
           onEdit,
-          onClose,
+          onClose: () => requestStopTranslations(onClose),
           href,
           tabActions,
         })}

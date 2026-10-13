@@ -69,7 +69,7 @@ const languageRowSummary = ({
   current: string;
   values: Record<string, string>;
   working: string[];
-  onTranslate?: (language: string) => Promise<string>;
+  onTranslate?: (language: string, signal: AbortSignal) => Promise<string>;
   label: string;
   serviceAvailable?: boolean;
 }) => {

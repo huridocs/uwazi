@@ -9,6 +9,7 @@ import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import {
   EditEntity,
   apiValidationsToEditEntityErrors,
+  submitEditEntityForm,
 } from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
   useMetadataEditing,
@@ -173,7 +174,10 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     formMountHost,
     mediaUpload,
     setIsDirty,
+    setTranslationsPending,
     registerCancelEdit,
+    registerCancelTranslations,
+    requestStopTranslations,
     setEditErrors,
   } = editing;
   const {
@@ -248,6 +252,11 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
               disabled={isSaving}
               errors={editErrors}
               onDirtyChange={setIsDirty}
+              onTranslationPendingChange={setTranslationsPending}
+              onRegisterCancelTranslations={registerCancelTranslations}
+              onTranslationSaveAttempt={() => {
+                requestStopTranslations(() => submitEditEntityForm(formId));
+              }}
               mainDocumentId={mainDocument?._id}
               onEditSource={(sharedId, title, templateId) =>
                 openEntityOverlayTarget({

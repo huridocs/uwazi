@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { FormProvider } from 'react-hook-form';
-import { DirtyDiscardModal } from '#V2/Components/UI/index.js';
+import { DirtyDiscardModal, PendingTranslationModal } from '#V2/Components/UI/index.js';
 import { useMetadataEditingController } from './hooks/useMetadataEditingController.js';
 import type { MetadataEditingActions, MetadataEditingState } from './metadataEditingTypes.js';
 
@@ -17,6 +17,12 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...state.form}>
           {children}
+          {state.translationStopOpen ? (
+            <PendingTranslationModal
+              onAccept={actions.confirmStopTranslations}
+              onCancel={actions.dismissStopTranslations}
+            />
+          ) : null}
           {state.pendingDiscardAction ? (
             <DirtyDiscardModal
               onDiscard={actions.confirmDiscard}

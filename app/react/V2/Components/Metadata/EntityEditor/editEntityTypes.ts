@@ -14,6 +14,9 @@ type EditEntityProps = {
   disabled?: boolean;
   errors?: EditEntityErrors;
   onDirtyChange?: (isDirty: boolean) => void;
+  onTranslationPendingChange?: (pending: boolean) => void;
+  onRegisterCancelTranslations?: (cancel: () => void) => () => void;
+  onTranslationSaveAttempt?: () => void;
   onEditSource?: (entityId: string, label: string, templateId?: string) => void;
   relationshipLookup?: (params: {
     search: string;

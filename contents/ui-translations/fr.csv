@@ -1358,6 +1358,8 @@ Skip to main content,Aller directement au contenu principal
 Snapshot (manual),Instantané (manuel)
 Snapshot (scheduled),Instantané (planifié)
 Some tasks may take a while. Bert will reply when it's done.,Certaines tâches peuvent prendre un certain temps. Bert vous répondra dès qu'elles seront terminées.
+"Some translations are still pending, saving would stop the translation process.","Certaines traductions sont encore en attente, enregistrer arrêterait le processus de traduction."
+Translations are still pending,Des traductions sont encore en attente
 Something went wrong,Quelque chose a mal tourné
 Sort,Trier
 Sort ascending,Trier par ordre croissant

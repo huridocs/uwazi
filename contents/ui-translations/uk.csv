@@ -1359,6 +1359,8 @@ Skip to main content,Перейти до основного змісту
 Snapshot (manual),Знімок (вручну)
 Snapshot (scheduled),Знімок (за розкладом)
 Some tasks may take a while. Bert will reply when it's done.,"Деякі завдання можуть зайняти деякий час. Bert відповість, коли все буде готово."
+"Some translations are still pending, saving would stop the translation process.","Деякі переклади ще виконуються, збереження зупинить процес перекладу."
+Translations are still pending,Переклади ще виконуються
 Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням

@@ -1,13 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { useTabGroup } from '#V2/Components/UI/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import {
@@ -18,14 +17,13 @@ import {
   FilesDeleteConfirmationModal,
   useEntityLanguage,
   useEntityScopedEntity,
+  useMetadataEditing,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
-import { useEntityOverlayTarget } from '#V2/Routes/Entity/Components/context/EntityOverlayContext.js';
 import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
-import { pickMainTab } from '#V2/Routes/Entity/Tabs/entityTabState.js';
 import {
   MAIN_TAB,
   MainTabsContent,
@@ -40,7 +38,11 @@ import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
 import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
-import { focusMetadataFieldAtom } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
+import {
+  useLibraryPreviewTab,
+  usePreviewEscape,
+  usePreviewFieldFocus,
+} from './useLibraryEntityPreview.js';
 
 type LibraryEntityPreviewProps = {
   sharedId: string;
@@ -88,36 +90,6 @@ const EntityCreateRelationshipModal = () => {
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
-const usePreviewFieldFocus = (sharedId: string, focusFieldKey?: string) => {
-  const { selectTab } = useTabGroup('entity-main');
-  const setFocusField = useSetAtom(focusMetadataFieldAtom);
-  useEffect(() => {
-    if (!focusFieldKey) return undefined;
-    selectTab(MAIN_TAB.METADATA);
-    setFocusField({ fieldKey: focusFieldKey });
-    return undefined;
-  }, [focusFieldKey, selectTab, setFocusField, sharedId]);
-};
-
-const usePreviewEscape = (onClose: () => void) => {
-  const { target } = useEntityOverlayTarget();
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented || target) return;
-      onClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose, target]);
-};
-
-const useLibraryPreviewTab = () => {
-  const { mainDocument } = useEntityLanguage();
-  const hasMainDocument = Boolean(mainDocument?.filename);
-  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
-  return pickMainTab(atomMainTabId, hasMainDocument);
-};
-
 const LibraryEntityPreviewView = ({
   entityBasePath,
   onClose,
@@ -135,8 +107,9 @@ const LibraryEntityPreviewView = ({
   const mainTabId = useLibraryPreviewTab();
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
   const isMobile = useIsMobile();
+  const { requestStopTranslations } = useMetadataEditing();
   usePreviewFieldFocus(entity.sharedId, focusFieldKey);
-  usePreviewEscape(onClose);
+  usePreviewEscape(() => requestStopTranslations(onClose));
 
   return (
     <EntityTabsProvider value={entityTabs}>
@@ -153,7 +126,7 @@ const LibraryEntityPreviewView = ({
             {isMobile ? null : (
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => requestStopTranslations(onClose)}
                 className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
                 aria-label={t('System', 'Close', null, false)}
               >

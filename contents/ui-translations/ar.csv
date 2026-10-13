@@ -1358,6 +1358,8 @@ Skip to main content,الانتقال إلى المحتوى الرئيسي
 Snapshot (manual),لقطة (يدوية)
 Snapshot (scheduled),لقطة (مجدولة)
 Some tasks may take a while. Bert will reply when it's done.,قد تستغرق بعض المهام بعض الوقت. سيقوم Bert بالرد عند الانتهاء منها.
+"Some translations are still pending, saving would stop the translation process.",بعض الترجمات لا تزال قيد الانتظار، والحفظ سيوقف عملية الترجمة.
+Translations are still pending,الترجمات لا تزال قيد الانتظار
 Something went wrong,حدث خطأ ما
 Sort,تصنيف
 Sort ascending,الترتيب تصاعديًّا
