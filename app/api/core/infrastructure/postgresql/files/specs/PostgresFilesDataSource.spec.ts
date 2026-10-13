@@ -10,6 +10,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
 import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
@@ -29,6 +30,7 @@ const createSut = () => {
     tenantId: TENANT_ID,
     transactionManager,
     pgTransactionManager: managerFor(TENANT_ID),
+    accessContext: AccessContext.system(),
     fileStorage: FileStorageFactory.default(),
   });
   return { sut, transactionManager };

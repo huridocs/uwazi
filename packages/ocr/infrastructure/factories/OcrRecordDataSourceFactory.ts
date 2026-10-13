@@ -22,6 +22,7 @@ class OcrRecordDataSourceFactory {
         pgTransactionManager: inContext
           ? ExecutionContext.postgresTransactionManager
           : PostgresTransactionManagerFactory.default(),
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

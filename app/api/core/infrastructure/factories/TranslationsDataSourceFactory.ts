@@ -18,6 +18,7 @@ export class TranslationsDataSourceFactory {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         idGenerator: IdGeneratorFactory.default(),
       });
     }
@@ -34,6 +35,7 @@ export class TranslationsDataSourceFactory {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         idGenerator: IdGeneratorFactory.default(),
       });
     }
