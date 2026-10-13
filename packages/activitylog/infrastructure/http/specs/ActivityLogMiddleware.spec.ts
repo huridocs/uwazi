@@ -7,6 +7,7 @@ import waitForExpect from 'wait-for-expect';
 import { legacyLogger } from '#api/log/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { seed, setUpBackends } from '../../../application/specs/ActivityLogContractFixtures.js';
 import { ActivityLogMiddleware } from '../ActivityLogMiddleware.js';
 
 const USER_ID = '5d9f1a2b3c4d5e6f7a8b9c0d';
@@ -43,11 +44,11 @@ describe('ActivityLogMiddleware', () => {
   };
 
   beforeAll(async () => {
-    await testingEnvironment.setUp({});
+    await setUpBackends();
   });
 
   beforeEach(async () => {
-    await testingEnvironment.setFixtures({ activitylogs: [] });
+    await seed(false, []);
     next = jest.fn();
   });
 
@@ -164,6 +165,29 @@ describe('ActivityLogMiddleware', () => {
       answer(req, response(statusCode));
 
       await settle();
+      expect(await stored()).toEqual([]);
+    });
+  });
+
+  describe('for a tenant on Postgres', () => {
+    beforeEach(async () => {
+      await seed(true, []);
+    });
+
+    it('should log the request once it has been answered, outside any execution context', async () => {
+      answer(request());
+
+      await waitForExpect(async () => {
+        expect(await testingEnvironment.pg.getAllFrom('activitylogs')).toMatchObject([
+          {
+            method: 'POST',
+            url: '/api/entities',
+            body: '{"title":"Hi","password":"*****"}',
+            user_id: USER_ID,
+            username: 'admin',
+          },
+        ]);
+      });
       expect(await stored()).toEqual([]);
     });
   });

@@ -4,7 +4,7 @@ import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import {
-  listFixtures,
+  listEntries,
   NEWEST_FIRST,
   T,
 } from '../../../application/specs/ActivityLogContractFixtures.js';
@@ -32,7 +32,7 @@ describe('activity log routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp({
-      ...listFixtures,
+      activitylogs: listEntries,
       settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
     });
   });
