@@ -36,12 +36,37 @@ describe('ActivityLogEntry', () => {
       expect(entry.props.body).toBe('{"title":"Hi","password":"*****"}');
     });
 
+    it('should mask a password wherever it is in the body', () => {
+      const entry = ActivityLogEntry.record({
+        ...request,
+        body: {
+          user: { username: 'ana', password: '12345', profile: { password: 'deeper' } },
+          users: [{ password: 'first' }, { name: 'no password' }],
+          title: 'password',
+        },
+      });
+
+      expect(JSON.parse(entry.props.body)).toEqual({
+        user: { username: 'ana', password: '*****', profile: { password: '*****' } },
+        users: [{ password: '*****' }, { name: 'no password' }],
+        title: 'password',
+      });
+    });
+
+    it('should not look for passwords inside JSON carried as text', () => {
+      const entity = '{"password":"12345"}';
+
+      const entry = ActivityLogEntry.record({ ...request, body: { entity } });
+
+      expect(JSON.parse(entry.props.body)).toEqual({ entity });
+    });
+
     it('should leave the body it was given untouched', () => {
-      const body = { password: '12345' };
+      const body = { password: '12345', user: { password: 'nested' } };
 
       ActivityLogEntry.record({ ...request, body });
 
-      expect(body).toEqual({ password: '12345' });
+      expect(body).toEqual({ password: '12345', user: { password: 'nested' } });
     });
 
     it('should not add a password to a body that carries none', () => {
