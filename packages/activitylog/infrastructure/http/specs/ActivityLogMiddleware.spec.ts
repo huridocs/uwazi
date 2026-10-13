@@ -158,6 +158,8 @@ describe('ActivityLogMiddleware', () => {
       ['a request outside the API', request({ url: '/entities' }), 200],
       ['an ignored endpoint', request({ url: '/api/login' }), 200],
       ['an endpoint that does not exist', request(), 404],
+      ['a request that was refused', request(), 401],
+      ['a request the server failed to carry out', request(), 500],
     ])('should not log %s', async (_case, req, statusCode) => {
       answer(req, response(statusCode));
 

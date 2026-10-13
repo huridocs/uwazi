@@ -117,11 +117,20 @@ describe('RecordActivity', () => {
       expect(await stored()).toEqual([]);
     });
 
-    it('should ignore a request to an endpoint that does not exist', async () => {
-      await record({ statusCode: 404 });
+    it.each([400, 401, 403, 404, 422, 500, 503])(
+      'should ignore a request that failed with %s',
+      async statusCode => {
+        await record({ statusCode });
 
-      expect(await stored()).toEqual([]);
-    });
+        expect(await stored()).toEqual([]);
+      }
+    );
+  });
+
+  it.each([200, 201, 204, 302])('should store a request answered with %s', async statusCode => {
+    await record({ statusCode });
+
+    expect(await stored()).toHaveLength(1);
   });
 
   describe('requests that carry no body', () => {

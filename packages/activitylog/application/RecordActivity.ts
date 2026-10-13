@@ -19,11 +19,12 @@ type Deps = {
   activityLogDS: ActivityLogDataSource;
 };
 
-const NOT_FOUND = 404;
+/** From here up, the request was refused or failed. */
+const FIRST_FAILURE_STATUS = 400;
 
 /**
- * Logs one answered API request, when it is activity worth keeping: a request that changes
- * something. Reads, requests to endpoints that do not exist and the endpoints listed here are left
+ * Logs one answered API request, when it is activity worth keeping: a request that changed
+ * something. Reads, requests that were refused or failed, and the endpoints listed here are left
  * out.
  */
 class RecordActivity extends AbstractUseCase<Input, void, Deps> {
@@ -55,7 +56,7 @@ class RecordActivity extends AbstractUseCase<Input, void, Deps> {
   }
 
   private static isActivity({ method, url, statusCode }: Input): boolean {
-    if (statusCode === NOT_FOUND) return false;
+    if (statusCode >= FIRST_FAILURE_STATUS) return false;
 
     return (
       url.includes('/api/') &&
