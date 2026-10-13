@@ -1569,3 +1569,5 @@ Saved image,Field label,Settings > Collection,Label for the slider that sets the
 Shown in the header at,UI text,Settings > Collection,Label before the pixel size at which the cropped logo will appear in the header.,false
 Use this image?,UI text,Settings > Collection,Confirmation title when the chosen image is outside the recommended size.,false
 Use image,Button label,Settings > Collection,Confirms using an image that is outside the recommended size.,false
+Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
+Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false

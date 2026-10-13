@@ -739,6 +739,7 @@ Lengthy reindex process,Χρονοβόρα διαδικασία επαναευρ
 Library,Βιβλιοθήκη
 library list view,προβολή λίστας βιβλιοθήκης
 library map view,προβολή χάρτη βιβλιοθήκης
+Library panes,Παράθυρα βιβλιοθήκης
 Library results,Αποτελέσματα βιβλιοθήκης
 library table view,προβολή πίνακα βιβλιοθήκης
 Light,Ανοιχτόχρωμο
@@ -1194,6 +1195,7 @@ Resize panels,Αλλαγή μεγέθους πλαισίων
 Restore,Επαναφορά
 Restore previous version,Επαναφορά προηγούμενης έκδοσης
 Restricted,Περιορισμένα
+Results,Αποτελέσματα
 Retryable,Μπορεί να επαναληφθεί
 Retrying,Επανάληψη προσπάθειας
 Return to login,Επιστροφή στη σύνδεση

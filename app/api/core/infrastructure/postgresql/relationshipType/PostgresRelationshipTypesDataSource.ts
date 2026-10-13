@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
@@ -12,16 +11,12 @@ export class PostgresRelationshipTypesDataSource
   extends PostgresDataSource<RelationshipTypeRow>
   implements RelationshipTypesDataSource
 {
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('relationship_types', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
       // syncNamespace matches Mongo collection / sync registry for updatelogs compatibility
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'relationtypes' },
+      sync: { syncNamespace: 'relationtypes' },
     });
   }
 

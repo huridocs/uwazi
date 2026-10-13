@@ -1,5 +1,4 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoThesauriSyncHandler } from './MongoThesauriSyncHandler.js';
 import { PostgresThesauriSyncHandler } from './PostgresThesauriSyncHandler.js';
 
@@ -10,7 +9,6 @@ export class ThesauriSyncHandlerFactory {
     if (tenant.featureFlags?.postgresCore) {
       return new PostgresThesauriSyncHandler({
         tenantId: tenant.name,
-        mongoDb: getConnection(),
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
       });
     }

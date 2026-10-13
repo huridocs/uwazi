@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
@@ -12,6 +12,7 @@ import {
   templatesAtom,
   thesauriAtom,
   translationsAtom,
+  userAtom,
 } from '#V2/atoms/index.js';
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { Template } from '#app/apiResponseTypes.js';
@@ -164,6 +165,23 @@ describe('LibraryMultiEdit', () => {
   });
 
   it('returns to the selection list on cancel', async () => {
+    const PanelHarness = () => {
+      const [editing, setEditing] = useState(false);
+      return (
+        <LibrarySelectionPanel
+          rows={[hit('a', 'case', 'Alpha'), hit('b', 'case', 'Beta')]}
+          selectedIds={['a', 'b']}
+          entityBasePath="/entityv2"
+          onClose={jest.fn()}
+          onRemove={jest.fn()}
+          onPreview={jest.fn()}
+          editing={editing}
+          onEdit={() => setEditing(true)}
+          onCancelEdit={() => setEditing(false)}
+        />
+      );
+    };
+
     render(
       <TestRouterContext>
         <ServicesProvider value={createTestServices({ entities: { multipleUpdate: jest.fn() } })}>
@@ -174,16 +192,10 @@ describe('LibraryMultiEdit', () => {
               [thesauriAtom, []],
               [translationsAtom, translations],
               [settingsAtom, { languages }],
+              [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
             ]}
           >
-            <LibrarySelectionPanel
-              rows={[hit('a', 'case', 'Alpha'), hit('b', 'case', 'Beta')]}
-              selectedIds={['a', 'b']}
-              entityBasePath="/entityv2"
-              onClose={jest.fn()}
-              onRemove={jest.fn()}
-              onPreview={jest.fn()}
-            />
+            <PanelHarness />
           </TestAtomStoreProvider>
         </ServicesProvider>
       </TestRouterContext>

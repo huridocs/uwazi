@@ -740,6 +740,7 @@ Lengthy reindex process,Uzun süren yeniden indeksleme işlemi
 Library,Kütüphane
 library list view,kütüphane listesi görünümü
 library map view,kütüphane harita görünümü
+Library panes,Kütüphane panelleri
 Library results,Kütüphane sonuçları
 library table view,kütüphane tablo görünümü
 Light,Açık
@@ -1194,6 +1195,7 @@ Resize panels,Panellerin boyutunu değiştir
 Restore,Geri Yükle
 Restore previous version,Önceki sürümü geri yükle
 Restricted,Kısıtlanmış
+Results,Sonuçlar
 Retryable,Tekrar denenebilir
 Retrying,Yeniden deneniyor
 Return to login,Girişe dön

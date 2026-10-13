@@ -740,6 +740,7 @@ Lengthy reindex process,Lengthy reindex process
 Library,Library
 library list view,library list view
 library map view,library map view
+Library panes,Library panes
 Library results,Library results
 library table view,library table view
 Light,Light
@@ -1195,6 +1196,7 @@ Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
 Restricted,Restricted
+Results,Results
 Retryable,Retryable
 Retrying,Retrying
 Return to login,Return to login

@@ -1,10 +1,8 @@
-import { Db } from 'mongodb';
 import { PostgresTable } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 
 type SyncOptions = {
-  syncDb: Db;
   syncNamespace: string;
 };
 
@@ -21,7 +19,7 @@ export abstract class PostgresDataSource<TRow = Record<string, unknown>> {
 
   constructor(tableName: string, { tenantId, pgTransactionManager, sync }: Deps) {
     if (sync) {
-      this._syncWriter = new SyncLogWriter(sync.syncDb, sync.syncNamespace);
+      this._syncWriter = new SyncLogWriter(pgTransactionManager, tenantId, sync.syncNamespace);
     }
 
     this._table = PostgresTable.for<TRow>({

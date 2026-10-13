@@ -740,6 +740,7 @@ Lengthy reindex process,Тривалий процес реіндексації
 Library,Бібліотека
 library list view,перегляд бібліотеки у вигляді списку
 library map view,перегляд бібліотеки у вигляді карти
+Library panes,Панелі бібліотеки
 Library results,Результати бібліотеки
 library table view,перегляд бібліотеки у табличному вигляді
 Light,Світла
@@ -1195,6 +1196,7 @@ Resize panels,Змінити розмір панелей
 Restore,Відновити
 Restore previous version,Відновити попередню версію
 Restricted,Для обмеженого кола осіб
+Results,Результати
 Retryable,Можливість повторної спроби
 Retrying,Повторна спроба
 Return to login,Повернутись до авторизації

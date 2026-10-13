@@ -4,7 +4,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -32,7 +31,6 @@ describe('PostgresEntitiesSyncHandler', () => {
     const tenantName = tenants.current().name;
     return new PostgresEntitiesSyncHandler({
       tenantId: tenantName,
-      mongoDb: getConnection(),
       pgTransactionManager: new PostgresTransactionManager(
         PostgresDB.knex,
         tenantName,
