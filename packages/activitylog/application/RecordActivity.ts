@@ -10,7 +10,7 @@ type Input = {
   query: unknown;
   body: Record<string, unknown>;
   /** null for a request made without a user. */
-  user: { id: string; username: string } | null;
+  user: { id: string; username: string | null } | null;
   /** The status the request was answered with. */
   statusCode: number;
 };

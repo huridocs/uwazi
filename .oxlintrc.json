@@ -350,8 +350,12 @@
                 "message": "The usage package is private. Import its public contract from '#usage', or its host wiring from '#usage/composition'."
               },
               {
-                "group": ["**/packages/activitylog/**", "#activitylog/**"],
-                "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+                "group": [
+                  "**/packages/activitylog/**",
+                  "#activitylog/**",
+                  "!#activitylog/composition"
+                ],
+                "message": "The activitylog package is private. Import its public contract from '#activitylog', or its host wiring from '#activitylog/composition'."
               }
             ]
           }

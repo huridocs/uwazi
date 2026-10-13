@@ -1,20 +1,17 @@
 // oxlint-disable max-statements
 export default async (app, server) => {
   // Load TypeScript modules dynamically
-  const [
-    { default: activitylogMiddleware },
-    { default: CSRFMiddleware },
-    { default: languageMiddleware },
-  ] = await Promise.all([
-    import('./activitylog/activitylogMiddleware.js'),
-    import('./auth/CSRFMiddleware.js'),
-    import('./utils/languageMiddleware.js'),
-  ]);
+  const [{ ActivityLogComposition }, { default: CSRFMiddleware }, { default: languageMiddleware }] =
+    await Promise.all([
+      import('#activitylog/composition'),
+      import('./auth/CSRFMiddleware.js'),
+      import('./utils/languageMiddleware.js'),
+    ]);
 
   //common middlewares
   app.use(CSRFMiddleware);
   app.use(languageMiddleware);
-  app.use(activitylogMiddleware);
+  app.use(ActivityLogComposition.middleware);
 
   const { setupApiSockets } = await import('./socketio/setupSockets.js');
   setupApiSockets(server, app);

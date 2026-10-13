@@ -22,7 +22,7 @@ type RecordedRequest = {
   params: unknown;
   query: unknown;
   body: Record<string, unknown>;
-  user: { id: string; username: string } | null;
+  user: { id: string; username: string | null } | null;
   time: number;
 };
 

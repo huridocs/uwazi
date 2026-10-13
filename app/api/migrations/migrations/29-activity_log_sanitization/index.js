@@ -1,8 +1,29 @@
-import {
-  BODY_REQUIRED_ENDPOINTS,
-  IGNORED_ENDPOINTS,
-} from '#api/activitylog/activitylogMiddleware.js';
 import date from '#api/utils/date.js';
+
+/** Pinned here, as the activity log had them: a migration does not import production code. */
+const IGNORED_ENDPOINTS = [
+  '/api/login',
+  '/api/contact',
+  '/api/unlockaccount',
+  '/api/resetpassword',
+  '/api/recoverpassword',
+  '/api/documents/pdfInfo',
+  '/api/documents/download',
+  '/api/attachments/download',
+  '/api/semantic-search/notify-updates',
+  '/api/sync',
+  '/api/sync/upload',
+  '/api/export',
+];
+
+const BODY_REQUIRED_ENDPOINTS = [
+  '/api/files/upload/document',
+  '/api/files/upload/custom',
+  '/api/attachments/upload',
+  '/api/public',
+  '/api/entities',
+  '/api/users',
+];
 
 export default {
   delta: 29,
