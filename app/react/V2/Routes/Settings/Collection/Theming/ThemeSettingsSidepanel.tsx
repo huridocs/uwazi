@@ -62,7 +62,7 @@ const ThemeSettingsSidepanel = ({
             <div className="space-y-6">
               <div>
                 <SectionHeading>
-                  <Translate>Theme logotype</Translate>
+                  <Translate>Theme logo</Translate>
                 </SectionHeading>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {(['light', 'dark'] as const).map(mode => (

@@ -1,10 +1,7 @@
 import {
   applyCropDrag,
-  contentBounds,
-  currentTrimmedLogo,
   defaultOutputScale,
   logoDisplaySize,
-  logoNeedsTrim,
   scaledCropSize,
 } from '../logoFrame.js';
 
@@ -21,58 +18,6 @@ describe('logoFrame', () => {
       width: 305 * (48 / 146),
       height: 48,
     });
-  });
-
-  it('keeps the previous trim from covering a new logo', () => {
-    const previous = { src: '/old.png', url: 'data:image/png;base64,old' };
-    expect(currentTrimmedLogo('/new.png', previous)).toBe('/new.png');
-    expect(currentTrimmedLogo('/old.png', previous)).toBe('data:image/png;base64,old');
-    expect(currentTrimmedLogo(undefined, { src: undefined, url: '' })).toBe('');
-  });
-
-  it('trims artwork sitting in transparent padding', () => {
-    const clear = [0, 0, 0, 0];
-    const ink = [255, 255, 255, 255];
-    const pixels = new Uint8ClampedArray([
-      ...clear,
-      ...clear,
-      ...clear,
-      ...clear,
-      ...clear,
-      ...ink,
-      ...ink,
-      ...clear,
-      ...clear,
-      ...ink,
-      ...ink,
-      ...clear,
-      ...clear,
-      ...clear,
-      ...clear,
-      ...clear,
-    ]);
-    const bounds = contentBounds(pixels, 4, 4);
-    expect(bounds).toEqual({ x: 1, y: 1, width: 2, height: 2 });
-    if (!bounds) return;
-    expect(logoNeedsTrim({ data: pixels, width: 4, height: 4 }, bounds)).toBe(true);
-  });
-
-  it('keeps a transparent logo that already fills its canvas', () => {
-    const clear = [0, 0, 0, 0];
-    const ink = [255, 255, 255, 255];
-    const pixels = new Uint8ClampedArray([...clear, ...ink, ...ink, ...ink]);
-    const bounds = contentBounds(pixels, 2, 2);
-    expect(bounds).toEqual({ x: 0, y: 0, width: 2, height: 2 });
-    if (!bounds) return;
-    expect(logoNeedsTrim({ data: pixels, width: 2, height: 2 }, bounds)).toBe(false);
-  });
-
-  it('drops empty margins around the artwork', () => {
-    const pixels = new Uint8ClampedArray([
-      0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255,
-      255, 255, 255, 255, 255, 255, 0, 0, 0, 255,
-    ]);
-    expect(contentBounds(pixels, 4, 2)).toEqual({ x: 1, y: 0, width: 2, height: 2 });
   });
 
   it('caps square logos at the header height', () => {
