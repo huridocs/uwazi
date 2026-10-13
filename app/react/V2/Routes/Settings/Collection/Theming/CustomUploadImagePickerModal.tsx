@@ -34,6 +34,8 @@ type CustomUploadImagePickerModalProps = {
   modalGridImages: FileType[];
   trimmed: string;
   onPick: (file: FileType) => void | Promise<void>;
+  mismatchMessage?: string;
+  onUseMismatch?: () => void;
 };
 
 const CustomUploadImagePickerModal = ({
@@ -51,6 +53,8 @@ const CustomUploadImagePickerModal = ({
   modalGridImages,
   trimmed,
   onPick,
+  mismatchMessage,
+  onUseMismatch,
 }: CustomUploadImagePickerModalProps) => (
   <Modal size="xxl">
     <Modal.Header>
@@ -87,6 +91,11 @@ const CustomUploadImagePickerModal = ({
             >
               {dropzoneFeedback?.message ?? validationFeedback?.message}
             </p>
+          ) : null}
+          {mismatchMessage && onUseMismatch ? (
+            <Button type="button" variant="primary" className="mt-3" onClick={onUseMismatch}>
+              <Translate>Use image</Translate>
+            </Button>
           ) : null}
         </div>
 
