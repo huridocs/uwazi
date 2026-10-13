@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Helmet } from 'react-helmet';
 import { I18NLink } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { logoFrameClass, useTrimmedLogo } from '#V2/theme/logoFrame.js';
+import { logoFrameClass } from '#V2/theme/logoFrame.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
 interface SiteNameProps {
@@ -17,12 +17,6 @@ const useCollectionMarks = () => {
   const themeMode = useAtomValue(effectiveThemeModeAtom);
   const enabled = Boolean(settings.themeCustomization);
   return { settings, themeMode, enabled };
-};
-
-const useSiteHeaderLogo = (logoUrl: string, enabled: boolean) => {
-  const showLogo = Boolean(enabled && logoUrl);
-  const displayLogo = useTrimmedLogo(showLogo ? logoUrl : undefined);
-  return { showLogo, className: logoFrameClass(), displayLogo };
 };
 
 export const SiteName: React.FC<SiteNameProps> = ({
@@ -47,8 +41,8 @@ export const SiteName: React.FC<SiteNameProps> = ({
     settings.favicon?.trim() ?? '',
     enabled
   );
-  const logo = useSiteHeaderLogo(logoUrl, enabled);
-  const showText = !hideTextWhenLogo || !logo.showLogo;
+  const showLogo = Boolean(enabled && logoUrl);
+  const showText = !hideTextWhenLogo || !showLogo;
   const linkClass = ['flex', 'items-center', 'gap-2', className].filter(Boolean).join(' ');
   return (
     <>
@@ -63,7 +57,7 @@ export const SiteName: React.FC<SiteNameProps> = ({
         }
       />
       <I18NLink className={linkClass} to="/" aria-label={settings.site_name}>
-        {logo.showLogo ? <img src={logo.displayLogo} alt="" className={logo.className} /> : null}
+        {showLogo ? <img src={logoUrl} alt="" className={logoFrameClass()} /> : null}
         {showText ? <span className={textClassName}>{settings.site_name}</span> : null}
       </I18NLink>
     </>
