@@ -3,7 +3,6 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
@@ -26,7 +25,6 @@ describe('PostgresTranslationsSyncHandler', () => {
     const tenantName = tenants.current().name;
     return new PostgresTranslationsSyncHandler({
       tenantId: tenantName,
-      mongoDb: getConnection(),
       pgTransactionManager: new PostgresTransactionManager(
         PostgresDB.knex,
         tenantName,

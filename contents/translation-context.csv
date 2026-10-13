@@ -1561,3 +1561,5 @@ Selected entities,Accessible label,Library,Accessible name of the list of entiti
 Remove from selection,Tooltip,Library,Tooltip on the button that removes one entity from the Library selection.,false
 Entity view,Accessible label,Entity view,"Accessible name and tooltip of the button that opens the entity viewer on Metadata, shown while the published page is open.",false
 Published view,Accessible label,Entity view,"Accessible name and tooltip of the button that returns to the published page, shown while the entity viewer is open.",false
+Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
+Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false

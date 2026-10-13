@@ -1,78 +1,48 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import {
+import type {
   EntitiesDAO,
+  EntityFilters,
+  EntityWithFiles,
   FindByLanguagePairsQuery,
   FindByMetadataCriteriaQuery,
   FindByTemplateIdRangeQuery,
+  FindOptions,
+  FindWithFilesOptions,
   LabelInfo,
 } from '#api/core/application/contracts/EntitiesDAO.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import type { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
 import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresTable } from '../common/PostgresTable.js';
+import { entitySyncLogging } from '../common/entitySyncLogging.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 import type { PostgresFilesDAO } from '../files/PostgresFilesDAO.js';
-import type { FilesRow } from '../files/PostgresFilesRow.js';
+import { entitiesWithFiles } from './entityFilesJoin.js';
+import { cloneEntitiesForLanguage, deleteEntitiesForLanguage } from './entityLanguageBatches.js';
+import {
+  applyEntityFilters,
+  applyFindOptions,
+  applyMetadataCriteria,
+  applyTemplateIdBounds,
+} from './entityQuery.js';
+import { toEntityDBO } from './entityRow.js';
 import type { EntityRow } from './PostgresEntityRow.js';
-
-import type {
-  EntityFilters,
-  EntityWithFiles,
-  FindOptions,
-  FindWithFilesOptions,
-} from '#api/core/application/contracts/EntitiesDAO.js';
-
-import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 
 type Deps = PostgresDataSourceDeps & {
   filesDAO: PostgresFilesDAO;
   accessContext: AccessContext;
 };
 
-/**
- * Identity may not be invented. `new ObjectId(undefined)` mints a fresh id, so a row that lost its
- * `_id` to a projection used to map to an entity that exists nowhere — and that id was written
- * into suggestions which could then never be accepted (F49).
- *
- * Every other column is projectable and simply absent when it was not selected; identity is not,
- * so a row without one is a programming error upstream, and this is where it is cheapest to see.
- */
-const requireId = (value: string | undefined | null, table: string) => {
-  if (!value) {
-    throw new Error(`${table}: cannot map a row with no "_id" — the projection dropped it`);
-  }
-  return new ObjectId(value);
-};
-
-const toDBO = (row: EntityRow): EntityDBO => ({
-  _id: requireId(row._id, 'entities'),
-  sharedId: row.sharedId,
-  language: row.language,
-  template: (row.template ? new ObjectId(row.template) : undefined) as EntityDBO['template'],
-  title: row.title,
-  icon: (row.icon ?? undefined) as EntityDBO['icon'],
-  metadata: row.metadata as EntityDBO['metadata'],
-  obsoleteMetadata: [],
-  user: row.user ? new ObjectId(row.user) : undefined,
-  published: row.published as boolean,
-  creationDate: Number(row.creationDate),
-  editDate: Number(row.editDate),
-  generatedToc: row.generatedToc ?? undefined,
-  permissions: row.permissions as EntityDBO['permissions'],
-  preview: row.preview ?? undefined,
-});
+type FileLoadOptions = { select?: string[]; limit?: number; fullText?: boolean };
 
 class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements EntitiesDAO {
   private filesDAO: PostgresFilesDAO;
-
-  private accessContext: AccessContext;
 
   private tenantId: string;
 
@@ -85,15 +55,21 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
   constructor(deps: Deps) {
     super('entities', deps);
     this.filesDAO = deps.filesDAO;
-    this.accessContext = deps.accessContext;
     this.tenantId = deps.tenantId;
     this.pgTransactionManager = deps.pgTransactionManager;
 
+    const logging = entitySyncLogging({
+      transactionManager: deps.pgTransactionManager,
+      tenantId: deps.tenantId,
+      accessContext: deps.accessContext,
+    });
     this.permissionTable = PostgresPermissionEnforcedTable.for<EntityRow>({
       tableName: 'entities',
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
       accessContext: deps.accessContext,
+      syncWriter: logging.syncWriter,
+      afterSyncLog: logging.afterSyncLog,
     });
   }
 
@@ -113,100 +89,9 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     return this.unrestrictedInstance;
   }
 
-  private applyFilters(filters: EntityFilters) {
-    return this.applyFilterBranches(this.table, filters);
-  }
-
-  private applyFilterBranches(
-    q: ReturnType<typeof this.table.where>,
-    filters: EntityFilters
-  ): ReturnType<typeof this.table.where> {
-    if (filters._id !== undefined) {
-      q = q.where({ _id: filters._id });
-    }
-
-    if (filters.ids !== undefined) {
-      q = q.whereIn('_id', filters.ids);
-    }
-
-    if (filters.sharedId !== undefined) {
-      q = q.where({ sharedId: filters.sharedId });
-    }
-
-    if (filters.sharedIds !== undefined) {
-      q = q.whereIn('sharedId', filters.sharedIds);
-    }
-
-    if (filters.language !== undefined) {
-      q = q.where({ language: filters.language });
-    }
-
-    if (filters.languages !== undefined) {
-      q = q.whereIn('language', filters.languages);
-    }
-
-    if (filters.template !== undefined) {
-      q = q.where({ template: filters.template });
-    }
-
-    if (filters.templateIds !== undefined) {
-      q = q.whereIn('template', filters.templateIds);
-    }
-
-    if (filters.title !== undefined) {
-      q = q.where({ title: filters.title });
-    }
-
-    if (filters.titleNotEmpty) {
-      q = q.whereNot('title', '');
-    }
-
-    if (filters.published !== undefined) {
-      q = q.where({ published: filters.published });
-    }
-
-    if (filters.metadataValueIn !== undefined) {
-      if (filters.metadataValueIn.length === 0) {
-        // An empty OR list must match nothing, not everything.
-        q = q.whereIn('_id', []);
-      } else {
-        q = q.whereJsonSupersetOfAny(
-          'metadata',
-          filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
-        );
-      }
-    }
-
-    return q;
-  }
-
-  private applyFindOptions(
-    q: ReturnType<typeof this.table.where>,
-    options: FindOptions
-  ): ReturnType<typeof this.table.where> {
-    let result = q;
-
-    if (options.select && options.select.length > 0) {
-      result = result.select(options.select);
-    }
-
-    if (options.sort && options.sort.length > 0) {
-      options.sort.forEach(({ field, direction }) => {
-        result = result.orderBy(field, direction);
-      });
-    }
-
-    if (options.limit) {
-      result = result.limit(options.limit);
-    }
-
-    return result;
-  }
-
   async getIds(filters: EntityFilters = {}): Promise<string[]> {
-    const q = this.applyFilters(filters).select(['_id']);
-    const rows = await q.all();
-    return rows.map(r => r._id);
+    const rows = await applyEntityFilters(this.table, filters).select(['_id']).all();
+    return rows.map(row => row._id);
   }
 
   async findByLanguagePairs(
@@ -216,11 +101,13 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     if (query.pairs.length === 0) {
       return [];
     }
-    const q = this.table.whereAny(
-      query.pairs.map(pair => ({ sharedId: pair.sharedId, language: pair.language }))
-    );
-    const rows = await this.applyFindOptions(q, options).all();
-    return rows.map(toDBO);
+    const rows = await applyFindOptions(
+      this.table.whereAny(
+        query.pairs.map(pair => ({ sharedId: pair.sharedId, language: pair.language }))
+      ),
+      options
+    ).all();
+    return rows.map(toEntityDBO);
   }
 
   async findByTemplateIdRange(
@@ -230,51 +117,18 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     if (query.from && !ObjectId.isValid(query.from)) return [];
     if (query.to && !ObjectId.isValid(query.to)) return [];
 
-    let q = this.table.where({ template: query.templateId });
-
-    if (query.from && query.to) {
-      q = q.whereBetween('_id', [query.from, query.to]);
-    } else if (query.from) {
-      q = q.whereRaw('?? >= ?', ['_id', query.from]);
-    } else if (query.to) {
-      q = q.whereRaw('?? <= ?', ['_id', query.to]);
-    }
-
-    if (query.language !== undefined) {
-      q = q.where({ language: query.language });
-    }
-
-    const rows = await this.applyFindOptions(q, options).all();
-    return rows.map(toDBO);
+    const rows = await applyFindOptions(applyTemplateIdBounds(this.table, query), options).all();
+    return rows.map(toEntityDBO);
   }
 
   async findByMetadataCriteria(
     query: FindByMetadataCriteriaQuery,
     options: FindOptions = {}
   ): Promise<EntityDBO[]> {
-    let q: ReturnType<typeof this.table.where> = this.table;
-
-    query.criteria.forEach(criteria => {
-      if (criteria.exists) {
-        q = q.whereRaw('?? @> ?', ['metadata', JSON.stringify({ [criteria.property]: [] })]);
-      }
-      if (criteria.nonEmpty) {
-        q = q.whereRaw('jsonb_array_length(??->?) > 0', ['metadata', criteria.property]);
-      }
-      if (criteria.hasValues) {
-        q = q.whereRaw(
-          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' <> '')",
-          ['metadata', criteria.property]
-        );
-      }
-    });
-
-    if (query.filters) {
-      q = this.applyFilterBranches(q, query.filters);
-    }
-
-    const rows = await this.applyFindOptions(q, options).all();
-    return rows.map(toDBO);
+    const matched = applyMetadataCriteria(this.table, query.criteria);
+    const filtered = query.filters ? applyEntityFilters(matched, query.filters) : matched;
+    const rows = await applyFindOptions(filtered, options).all();
+    return rows.map(toEntityDBO);
   }
 
   async find(
@@ -293,69 +147,20 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
         fullText: options.withFiles === true ? false : Boolean(options.withFiles?.fullText),
       });
     }
-    const rows = await this.applyFindOptions(this.applyFilters(filters), options).all();
-    return rows.map(toDBO);
+    const rows = await applyFindOptions(applyEntityFilters(this.table, filters), options).all();
+    return rows.map(toEntityDBO);
   }
 
   async findOne(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO | null> {
-    let q = this.applyFilters(filters);
-
-    if (options.select && options.select.length > 0) {
-      q = q.select(options.select);
-    }
-
-    const row = await q.first();
-    return row ? toDBO(row) : null;
+    const filtered = applyEntityFilters(this.table, filters);
+    const selected =
+      options.select && options.select.length > 0 ? filtered.select(options.select) : filtered;
+    const row = await selected.first();
+    return row ? toEntityDBO(row) : null;
   }
 
   async count(filters: EntityFilters = {}): Promise<number> {
-    return this.applyFilters(filters).count();
-  }
-
-  private async getWithFiles(
-    filters: EntityFilters,
-    options: { select?: string[]; limit?: number; fullText?: boolean } = {}
-  ): Promise<EntityWithFiles[]> {
-    let q = this.applyFilters(filters);
-
-    if (options.select?.length) {
-      q = q.select([...new Set([...options.select, '_id', 'sharedId'])]);
-    }
-
-    if (options.limit) {
-      q = q.limit(options.limit);
-    }
-
-    const entities = await q.all();
-
-    if (entities.length === 0) {
-      return [];
-    }
-
-    const sharedIds = [...new Set(entities.map(e => e.sharedId))];
-    const fileOptions: Record<string, unknown> = {};
-    if (options.fullText) {
-      fileOptions.withFullText = true;
-    }
-    const files = await this.filesDAO.getByEntitySharedIds(sharedIds, fileOptions as any);
-
-    const filesByEntity = new Map<string, FilesRow[]>();
-    for (const file of files) {
-      const key = file.entity ?? '';
-      if (!filesByEntity.has(key)) {
-        filesByEntity.set(key, []);
-      }
-      filesByEntity.get(key)!.push(file);
-    }
-
-    return entities.map(e => {
-      const entityFiles = filesByEntity.get(e.sharedId) ?? [];
-      return {
-        ...toDBO(e),
-        documents: entityFiles.filter(f => f.type === 'document'),
-        attachments: entityFiles.filter(f => f.type === 'attachment'),
-      } as unknown as EntityWithFiles;
-    });
+    return applyEntityFilters(this.table, filters).count();
   }
 
   async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
@@ -401,10 +206,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       .where({ language })
       .all();
 
-    return rows.map(r => ({
-      sharedId: r.sharedId,
-      title: r.title,
-      icon: r.icon as LabelInfo['icon'],
+    return rows.map(row => ({
+      sharedId: row.sharedId,
+      title: row.title,
+      icon: row.icon as LabelInfo['icon'],
     }));
   }
 
@@ -438,74 +243,39 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     to: LanguageISO6391,
     onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
   ): Promise<void> {
-    const BATCH_SIZE = 500;
-
-    let batch: EntityRow[] = [];
-    for await (const row of this.table.where({ language: from }).stream()) {
-      batch.push(row);
-      if (batch.length >= BATCH_SIZE) {
-        await this.insertClonedBatch(batch, to, onBatch);
-        batch = [];
-      }
-    }
-    if (batch.length > 0) {
-      await this.insertClonedBatch(batch, to, onBatch);
-    }
-  }
-
-  private async insertClonedBatch(
-    rows: EntityRow[],
-    to: LanguageISO6391,
-    onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
-  ): Promise<void> {
-    const toInsert = rows.map(({ _id: _discarded, ...rest }) => ({
-      ...rest,
-      _id: MongoIdHandler.generate(),
-      language: to,
-    }));
-
-    // An entity created while the language was installing already has its row for `to`.
-    await this.table.upsert(toInsert, {
-      columns: ['tenant_id', 'sharedId', 'language'],
-      ignore: true,
-    });
-    if (onBatch) {
-      await onBatch(
-        toInsert.map(({ _id: _discarded, ...rest }) => rest as unknown as Omit<EntityDBO, '_id'>)
-      );
-    }
+    await cloneEntitiesForLanguage({ table: this.table, from, to, onBatch });
   }
 
   async deleteByLanguage(
     language: LanguageISO6391,
     onBatch?: (sharedIds: string[]) => Promise<void>
   ): Promise<void> {
-    const BATCH_SIZE = 500;
-
-    let batch: { _id: string; sharedId: string }[] = [];
-    for await (const row of this.table.select(['_id', 'sharedId']).where({ language }).stream()) {
-      batch.push(row);
-      if (batch.length >= BATCH_SIZE) {
-        await this.deleteBatch(batch, language, onBatch);
-        batch = [];
-      }
-    }
-    if (batch.length > 0) {
-      await this.deleteBatch(batch, language, onBatch);
-    }
+    await deleteEntitiesForLanguage({ table: this.table, language, onBatch });
   }
 
-  private async deleteBatch(
-    rows: { _id: string; sharedId: string }[],
-    language: LanguageISO6391,
-    onBatch?: (sharedIds: string[]) => Promise<void>
-  ): Promise<void> {
-    const sharedIds = rows.map(r => r.sharedId);
-    // eslint-disable-next-line no-await-in-loop
-    await this.table.where({ language }).whereIn('sharedId', sharedIds).delete();
-    if (onBatch) {
-      await onBatch(sharedIds);
+  private async entitiesForFiles(filters: EntityFilters, options: FileLoadOptions) {
+    const filtered = applyEntityFilters(this.table, filters);
+    const selected = options.select?.length
+      ? filtered.select([...new Set([...options.select, '_id', 'sharedId'])])
+      : filtered;
+    return (options.limit ? selected.limit(options.limit) : selected).all();
+  }
+
+  private async getWithFiles(
+    filters: EntityFilters,
+    options: FileLoadOptions = {}
+  ): Promise<EntityWithFiles[]> {
+    const entities = await this.entitiesForFiles(filters, options);
+    if (entities.length === 0) {
+      return [];
     }
+
+    const sharedIds = [...new Set(entities.map(entity => entity.sharedId))];
+    const files = await this.filesDAO.getByEntitySharedIds(
+      sharedIds,
+      options.fullText ? { withFullText: true } : undefined
+    );
+    return entitiesWithFiles(entities, files);
   }
 }
 

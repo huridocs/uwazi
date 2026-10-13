@@ -27,6 +27,9 @@ type LibraryRightPaneProps = {
   onPreviewSelection: (sharedId: string) => void;
   onCreated: (sharedId?: string) => void;
   onAction?: (action: LibraryBulkAction) => void;
+  editingSelection?: boolean;
+  onEditSelection?: () => void;
+  onCancelEditSelection?: () => void;
 };
 
 const LibraryRightPane = ({
@@ -48,6 +51,9 @@ const LibraryRightPane = ({
   onPreviewSelection,
   onCreated,
   onAction,
+  editingSelection = false,
+  onEditSelection,
+  onCancelEditSelection,
 }: LibraryRightPaneProps) => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
@@ -62,6 +68,9 @@ const LibraryRightPane = ({
         onRemove={onRemoveSelection}
         onPreview={onPreviewSelection}
         onAction={onAction}
+        editing={editingSelection}
+        onEdit={onEditSelection}
+        onCancelEdit={onCancelEditSelection}
       />
     );
   }

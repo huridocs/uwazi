@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import {
   processRelationshipCollection,
   withConnectedData,
@@ -45,7 +45,6 @@ export class PostgresRelationshipsV1DataSource
 {
   constructor(deps: {
     tenantId: string;
-    mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
     entitiesDAO: EntitiesDAO;
     settingsDS: SettingsDataSource;
@@ -53,7 +52,7 @@ export class PostgresRelationshipsV1DataSource
     super('connections', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'connections' },
+      sync: { syncNamespace: 'connections' },
     });
     this.entitiesDAO = deps.entitiesDAO;
     this.settingsDS = deps.settingsDS;
