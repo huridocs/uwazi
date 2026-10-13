@@ -13,7 +13,7 @@ const TRANSLATION_SLOTS = 2;
 let activeSlots = 0;
 const slotQueue: Array<() => void> = [];
 
-const waitForSlot = (signal?: AbortSignal) =>
+const waitForSlot = async (signal?: AbortSignal) =>
   new Promise<void>(resolve => {
     if (signal?.aborted) {
       resolve();

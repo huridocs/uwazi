@@ -31,7 +31,7 @@ const ProbeStatus = ({
     useTranslationServiceAvailability();
   const { translate } = useFieldTranslate({
     onChange: (_language, value) => onChange(value),
-    onTranslate: (_language, signal) =>
+    onTranslate: async (_language, signal) =>
       new Promise<string>(resolve => {
         holder.resolve = resolve;
         holder.signal = signal;

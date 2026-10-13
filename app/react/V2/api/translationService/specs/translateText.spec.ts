@@ -80,7 +80,7 @@ type PendingPost = (value: [{ translated_text: string }, undefined]) => void;
 const hangTranslations = () => {
   const pending: PendingPost[] = [];
   jest.mocked(apiClient.postJson).mockImplementation(
-    () =>
+    async () =>
       new Promise(resolve => {
         pending.push(resolve);
       })
