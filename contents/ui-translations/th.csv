@@ -1354,6 +1354,8 @@ Skip to main content,ข้ามไปยังเนื้อหาหลั�
 Snapshot (manual),สแนปชอต (ด้วยตนเอง)
 Snapshot (scheduled),สแนปชอต (ตามกำหนด)
 Some tasks may take a while. Bert will reply when it's done.,บางงานอาจใช้เวลาสักพัก Bert จะตอบกลับเมื่อเสร็จแล้ว
+"Some translations are still pending, saving would stop the translation process.","การแปลบางส่วนยังไม่เสร็จ, การบันทึกจะหยุดกระบวนการแปล"
+Translations are still pending,การแปลยังไม่เสร็จ
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
 Sort ascending,เรียงตามลำดับจากน้อยไปมาก

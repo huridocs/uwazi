@@ -15,6 +15,8 @@ type MetadataEditingState = {
   isEditing: boolean;
   isSaving: boolean;
   isDirty: boolean;
+  translationsPending: boolean;
+  translationStopOpen: boolean;
   pendingDiscardAction?: MetadataDirtyLeaveAction;
   lastMetadataAnchor: MetadataEditingHost | null;
   formMountHost: MetadataEditingHost | null;
@@ -28,6 +30,7 @@ type MetadataEditingState = {
 type MetadataEditingActions = {
   setIsSaving: Dispatch<SetStateAction<boolean>>;
   setIsDirty: Dispatch<SetStateAction<boolean>>;
+  setTranslationsPending: Dispatch<SetStateAction<boolean>>;
   setSaveError: Dispatch<SetStateAction<string | undefined>>;
   setEditErrors: Dispatch<SetStateAction<EditEntityErrors | undefined>>;
   startEditing: (host: MetadataEditingHost) => void;
@@ -44,6 +47,11 @@ type MetadataEditingActions = {
   ) => void;
   confirmDiscard: () => void;
   dismissDiscard: () => void;
+  registerCancelTranslations: (cancel: () => void) => () => void;
+  requestStopTranslations: (run: () => void) => void;
+  confirmStopTranslations: () => void;
+  dismissStopTranslations: () => void;
+  cancelTranslations: () => void;
 };
 
 export { EDIT_ENTITY_FORM_ID };
