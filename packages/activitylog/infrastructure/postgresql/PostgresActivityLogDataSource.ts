@@ -31,6 +31,40 @@ class PostgresActivityLogDataSource
       time: props.time,
     });
   }
+
+  async count(): Promise<number> {
+    return this.table.query().count();
+  }
+
+  async oldest(limit: number): Promise<ActivityLogEntry[]> {
+    const rows = await this.table.query().orderByRaw('"time" ASC, "_id" ASC').limit(limit).all();
+
+    return rows.map(row =>
+      ActivityLogEntry.restore({
+        id: row._id,
+        method: row.method,
+        url: row.url,
+        params: row.params ?? null,
+        query: row.query ?? null,
+        body: row.body ?? null,
+        userId: row.user_id ?? null,
+        username: row.username ?? null,
+        time: Number(row.time),
+      })
+    );
+  }
+
+  async remove(entries: ActivityLogEntry[]): Promise<void> {
+    if (entries.length === 0) return;
+
+    await this.table
+      .query()
+      .whereIn(
+        '_id',
+        entries.map(({ props }) => props.id)
+      )
+      .delete();
+  }
 }
 
 export { PostgresActivityLogDataSource };

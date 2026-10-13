@@ -3,7 +3,14 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { RecordActivityFactory } from '../../infrastructure/factories/RecordActivityFactory.js';
 import type { RecordActivityInput } from '../RecordActivity.js';
-import { seed, setUpBackends, testConfigs } from './ActivityLogContractFixtures.js';
+import {
+  mongoDocuments,
+  postgresRows,
+  seed,
+  setUpBackends,
+  storedIn,
+  testConfigs,
+} from './ActivityLogContractFixtures.js';
 
 const USER_ID = '5d9f1a2b3c4d5e6f7a8b9c0d';
 
@@ -39,37 +46,6 @@ const expiryOf = (time: number) => {
   expiry.setFullYear(expiry.getFullYear() + 1);
   return expiry;
 };
-
-const mongoDocuments = async () =>
-  (await testingEnvironment.db.getCollection('activitylogs')?.find().toArray()) ?? [];
-
-const postgresRows = async () => testingEnvironment.pg.getAllFrom('activitylogs');
-
-/** What the selected backend holds, in one shape whichever it is. */
-const storedIn = async (postgresCore: boolean) =>
-  postgresCore
-    ? (await postgresRows()).map(row => ({
-        id: String(row._id),
-        method: row.method,
-        url: row.url,
-        params: row.params,
-        query: row.query,
-        body: row.body,
-        userId: row.user_id,
-        username: row.username,
-        time: Number(row.time),
-      }))
-    : (await mongoDocuments()).map(doc => ({
-        id: String(doc._id),
-        method: doc.method,
-        url: doc.url,
-        params: doc.params,
-        query: doc.query,
-        body: doc.body,
-        userId: doc.user ? String(doc.user) : null,
-        username: doc.username ?? null,
-        time: doc.time,
-      }));
 
 describe('RecordActivity', () => {
   const record = async (overrides: Partial<RecordActivityInput> = {}) =>

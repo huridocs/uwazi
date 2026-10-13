@@ -2,12 +2,12 @@ type ActivityLogEntryProps = {
   id: string;
   method: string;
   url: string;
-  /** JSON, as the request carried it. */
-  params: string;
-  /** JSON, as the request carried it. */
-  query: string;
-  /** JSON, with the password masked. */
-  body: string;
+  /** JSON, as the request carried it; null on an old entry stored without it. */
+  params: string | null;
+  /** JSON, as the request carried it; null on an old entry stored without it. */
+  query: string | null;
+  /** JSON, with the passwords masked; null on an old entry stored without it. */
+  body: string | null;
   /** null for a request made without a user. */
   userId: string | null;
   username: string | null;

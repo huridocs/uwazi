@@ -46,7 +46,7 @@ describe('ActivityLogEntry', () => {
         },
       });
 
-      expect(JSON.parse(entry.props.body)).toEqual({
+      expect(JSON.parse(entry.props.body ?? '')).toEqual({
         user: { username: 'ana', password: '*****', profile: { password: '*****' } },
         users: [{ password: '*****' }, { name: 'no password' }],
         title: 'password',
@@ -58,7 +58,7 @@ describe('ActivityLogEntry', () => {
 
       const entry = ActivityLogEntry.record({ ...request, body: { entity } });
 
-      expect(JSON.parse(entry.props.body)).toEqual({ entity });
+      expect(JSON.parse(entry.props.body ?? '')).toEqual({ entity });
     });
 
     it('should leave the body it was given untouched', () => {

@@ -61,6 +61,38 @@ const seed = async (postgresCore: boolean, entries: StoredEntry[]) => {
   );
 };
 
+const mongoDocuments = async () =>
+  (await testingEnvironment.db.getCollection('activitylogs')?.find().toArray()) ?? [];
+
+const postgresRows = async () => testingEnvironment.pg.getAllFrom('activitylogs');
+
+/** What a backend holds, in one shape whichever it is, oldest first. */
+const storedIn = async (postgresCore: boolean) =>
+  (postgresCore
+    ? (await postgresRows()).map(row => ({
+        id: String(row._id),
+        method: row.method,
+        url: row.url,
+        params: row.params,
+        query: row.query,
+        body: row.body,
+        userId: row.user_id,
+        username: row.username,
+        time: Number(row.time),
+      }))
+    : (await mongoDocuments()).map(doc => ({
+        id: String(doc._id),
+        method: doc.method,
+        url: doc.url,
+        params: doc.params,
+        query: doc.query,
+        body: doc.body,
+        userId: doc.user ? String(doc.user) : null,
+        username: doc.username ?? null,
+        time: doc.time,
+      }))
+  ).sort((a, b) => a.time - b.time || a.id.localeCompare(b.id));
+
 const T = {
   templatesPut: 1000011600000,
   entitiesDelete: 1100001600000,
@@ -128,5 +160,17 @@ const NEWEST_FIRST = [
   T.templatesPut,
 ];
 
-export { listEntries, NEWEST_FIRST, seed, selectBackend, setUpBackends, T, testConfigs };
+export {
+  idOf,
+  listEntries,
+  mongoDocuments,
+  NEWEST_FIRST,
+  postgresRows,
+  seed,
+  selectBackend,
+  setUpBackends,
+  storedIn,
+  T,
+  testConfigs,
+};
 export type { StoredEntry };

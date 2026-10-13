@@ -26,14 +26,50 @@ class MongoActivityLogDataSource
     await this.getCollection().insertOne(MongoActivityLogDataSource.toDBO(entry));
   }
 
+  async count(): Promise<number> {
+    return this.getCollection().countDocuments();
+  }
+
+  async oldest(limit: number): Promise<ActivityLogEntry[]> {
+    const documents = await this.getCollection()
+      .find({}, { session: this.getSession() })
+      .sort({ time: 1, _id: 1 })
+      .limit(limit)
+      .toArray();
+
+    return documents.map(MongoActivityLogDataSource.toEntry);
+  }
+
+  async remove(entries: ActivityLogEntry[]): Promise<void> {
+    if (entries.length === 0) return;
+
+    await this.getCollection().deleteMany({
+      _id: { $in: entries.map(({ props }) => new ObjectId(props.id)) },
+    });
+  }
+
+  private static toEntry(this: void, document: MongoActivityLogDBO): ActivityLogEntry {
+    return ActivityLogEntry.restore({
+      id: document._id.toHexString(),
+      method: document.method,
+      url: document.url,
+      params: document.params ?? null,
+      query: document.query ?? null,
+      body: document.body ?? null,
+      userId: document.user ? document.user.toHexString() : null,
+      username: document.username ?? null,
+      time: document.time,
+    });
+  }
+
   private static toDBO({ props }: ActivityLogEntry): MongoActivityLogDBO {
     return {
       _id: new ObjectId(props.id),
       method: props.method,
       url: props.url,
-      params: props.params,
-      query: props.query,
-      body: props.body,
+      ...(props.params !== null && { params: props.params }),
+      ...(props.query !== null && { query: props.query }),
+      ...(props.body !== null && { body: props.body }),
       ...(props.userId !== null && { user: new ObjectId(props.userId) }),
       ...(props.username !== null && { username: props.username }),
       time: props.time,

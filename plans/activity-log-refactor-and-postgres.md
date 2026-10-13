@@ -7,11 +7,12 @@ Locked decisions (do not re-open):
 - No query use case. `ActivityLogQueryService` gains `list()`; the controller calls it directly.
 - Describer + route catalog are injected into both query service adapters; `list()` returns described rows. Descriptions stay read-time.
 - Domain model is thin: immutable `ActivityLogEntry`, creation owns redaction. Nothing more.
-- Couple to core `FileStorage` + `FileStorageFactory` directly. No module-own storage contract.
+- Archives are stored as V1 stored its per-request files: `storage.storeFile(name, stream, 'activitylog')` from `#api/files`. Core `FileStorage` cannot write to the `activityLogs` folder without a `BaseFile`. No module-own storage contract.
 - Per-request file (`{tenant}_{time}_activity.log`) is removed.
 - Search stays pattern matching over text. `body`/`query`/`params` are `TEXT`, never `JSONB` (filters match on `{"_id"` prefix).
 - Gated by `postgresCore`. Plain shared table + RLS, no partitioning.
-- Retention: Mongo tenants keep the 1y TTL. Postgres has no time bound: keep 50,000 rows per tenant, archive overflow oldest-first in files of 10,000 rows, then delete. Count, not MB. Cap overridable by feature flag.
+- Retention: Mongo tenants keep the 1y TTL. Postgres has no time bound: keep 50,000 rows per tenant, archive overflow oldest-first in files of 10,000 rows, then delete. Count, not MB. Cap is a system setting (`ACTIVITY_LOG_MAX_ROWS`), not a tenant flag.
+- Archiving is triggered by a daily system job on the queue. No CLI command.
 - Copy to Postgres drops `expireAt`.
 - Screen shows database rows only. Reading archives back is out of scope.
 - `app/api/migrations/logger.js` and `activitylogModel.js` are left alone.
@@ -282,58 +283,71 @@ export const ActivityLogsMigrationConfig: MigrationConfig = {
 
 ## Step 9: Archive overflow rows to storage
 
-**Files:** app/api/tenants/featureFlags.ts, app/api/tenants/specs/featureFlags.spec.ts, packages/activitylog/application/ArchiveActivityOverflow.ts, packages/activitylog/application/specs/ArchiveActivityOverflow.spec.ts, packages/activitylog/application/contracts/ActivityLogDataSource.ts, packages/activitylog/infrastructure/postgresql/PostgresActivityLogDataSource.ts, packages/activitylog/infrastructure/mongodb/MongoActivityLogDataSource.ts, packages/activitylog/infrastructure/factories/ArchiveActivityOverflowFactory.ts
+**Files:** app/api/config.ts, packages/activitylog/application/ActivityLogArchive.ts, packages/activitylog/application/specs/ActivityLogArchive.spec.ts, packages/activitylog/application/ArchiveActivityOverflow.ts, packages/activitylog/application/specs/ArchiveActivityOverflow.spec.ts, packages/activitylog/application/specs/ActivityLogDataSource.spec.ts, packages/activitylog/application/contracts/ActivityLogDataSource.ts, packages/activitylog/infrastructure/postgresql/PostgresActivityLogDataSource.ts, packages/activitylog/infrastructure/mongodb/MongoActivityLogDataSource.ts, packages/activitylog/infrastructure/factories/ArchiveActivityOverflowFactory.ts
 
 **Skeleton:**
 ```ts
-// featureFlags.ts
-activityLog: { maxRows: 'number' },
+// config.ts — a system setting, not a tenant one
+activityLog: { maxRows: number }            // ACTIVITY_LOG_MAX_ROWS, default 50_000
 
 interface ActivityLogDataSource {
   append(entry: ActivityLogEntry): Promise<void>;
   count(): Promise<number>;
-  oldest(limit: number): Promise<ActivityLogEntry[]>;       // time ASC, _id ASC
+  oldest(limit: number): Promise<ActivityLogEntry[]>;       // time ASC, id ASC
   remove(entries: ActivityLogEntry[]): Promise<void>;
+}
+
+class ActivityLogArchive {                                  // not a BaseFile
+  static of(entries: ActivityLogEntry[]): ActivityLogArchive // gzipped JSONL, name from first/last entry
+  readonly filename: string; content(): Readable
 }
 
 type ArchiveOutput = { archivedRows: number; files: string[] };
 
 class ArchiveActivityOverflow extends AbstractUseCase<void, ArchiveOutput, Deps> {
-  static readonly DEFAULT_MAX_ROWS = 50_000;
   static readonly CHUNK_ROWS = 10_000;
   execute(): Promise<ArchiveOutput>
 }
-// Deps: { dataSource: ActivityLogDataSource; fileStorage: FileStorage; maxRows: number; enabled: boolean }
+// Deps: { activityLogDS; storage: { storeFile(name, stream, 'activitylog') }; maxRows; chunkRows; enabled }
 ```
 
 **Do:**
-- Loop while `count - maxRows >= CHUNK_ROWS`: take the oldest chunk, store it, then delete it. Never archive a partial chunk.
-- File: gzipped JSONL, one raw entry per line, in the tenant's `activitylog` storage type, named from the chunk's first and last `time` + first id so a retry overwrites the same file.
-- `enabled` is false for Mongo tenants (factory reads `postgresCore`) → returns zeros; they keep the TTL.
-- `maxRows` from `featureFlags.activityLog?.maxRows`, else the default.
-- Verify first: `FileStorage.storeFile` takes a `BaseFile` — confirm one can be built for type `activitylog` and that disk and S3 land under `tenant.activityLogs`; if not, stop and ask.
+- Loop while `count - maxRows >= chunkRows`: take the oldest chunk, store it, then delete it. Never archive a partial chunk.
+- File: gzipped JSONL, one raw entry per line, stored as V1 did — `storage.storeFile(name, stream, 'activitylog')` from `#api/files` — under the tenant's `activityLogs` folder, named from the chunk's first and last entry so a retry overwrites the same file.
+- `enabled` is false for tenants not on `postgresCore` (factory reads the flag) → returns zeros; they keep the TTL.
+- `maxRows` from `config.activityLog.maxRows`. No feature flag.
 
-**Test:** integration spec through the factory with a small `maxRows`/chunk override and `FakeFileStorage`-style storage: under cap → nothing; overflow below one chunk → nothing; two chunks → two files with the oldest rows, rows gone, newest kept; re-run after a simulated failed delete overwrites the same file; Mongo tenant → no-op — run `yarn test packages/activitylog/application/specs/ArchiveActivityOverflow.spec.ts app/api/tenants/specs/featureFlags.spec.ts`
+**Test:** unit spec for `ActivityLogArchive` (name, content round-trip); `ActivityLogDataSource` contract spec over `[mongo, postgres]` for `count`/`oldest`/`remove`; integration spec for the use case through its factory with small `maxRows`/`chunkRows` and tenant tmp storage: under cap → nothing; overflow below one chunk → nothing; two chunks → two files with the oldest rows, rows gone, newest kept; re-run after a failed delete overwrites the same file; Mongo tenant → no-op — run `yarn test packages/activitylog`
 
 ---
 
-## Step 10: Expose the archive run to operations
+## Step 10: Run the archive daily from the queue
 
-**Files:** apps/cli/activity/ActivityRoutes.ts, apps/cli/activity/routes/ArchiveActivityRoute.ts, apps/cli/activity/controllers/ArchiveActivityController.ts, apps/cli/activity/controllers/specs/ArchiveActivityController.spec.ts, apps/cli/activity/contracts.ts, packages/activitylog/composition.ts, apps/cli/docs/ (only if asked)
+**Files:** packages/activitylog/infrastructure/jobs/ScheduleActivityLogArchivesJob.ts, packages/activitylog/infrastructure/jobs/ScheduleActivityLogArchivesJobScheduler.ts, packages/activitylog/infrastructure/jobs/ArchiveActivityOverflowJobHandler.ts, packages/activitylog/infrastructure/jobs/specs/, packages/activitylog/composition.ts, app/queueRegistry.ts, app/setupQueueWorker.ts, .oxlintrc.json
 
 **Skeleton:**
 ```ts
-class ActivityLogComposition {
-  static archiveOverflowForCurrentTenant(): Promise<ArchiveOutput>
+@PrivilegedJob()
+class ScheduleActivityLogArchivesJob implements Dispatchable {   // 'system' namespace, daily
+  handleDispatch(heartbeat, params?, jobInfo?): Promise<void>
 }
 
-const ArchiveActivityOutputSchema = z.object({ archivedRows: z.number(), files: z.array(z.string()) });
+class ScheduleActivityLogArchivesJobScheduler { ensureScheduled(): Promise<void> }
 
-class ArchiveActivityController { static handle(): Promise<ArchiveActivityOutput> }
+@PrivilegedJob()
+class ArchiveActivityOverflowJobHandler extends UwaziJobHandler { handle(): Promise<void> }  // tenant namespace
+
+class ActivityLogComposition {
+  static registerJobs(register: Register): void
+  static ensureArchivingScheduled(): Promise<void>
+}
 ```
 
 **Do:**
-- Follow the `apps/cli/segmentation` `QueueIdleSegmentations` route/controller precedent (a per-tenant command scheduled externally); the queue has no recurring-job primitive.
-- Map the output field by field onto the CLI contract.
+- Follow `app/api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/`: the job re-dispatches itself for the next day on success or final attempt; the scheduler dispatches it once if none is queued.
+- The system job runs one query over the whole table (admin pool) for tenants holding at least `maxRows + CHUNK_ROWS` entries, and dispatches `ArchiveActivityOverflowJobHandler` into each of those tenants' namespaces.
+- The tenant handler runs `ArchiveActivityOverflowFactory.default().execute()`.
+- `setupQueueWorker.ts` calls `ensureArchivingScheduled()` next to the other system jobs (Mongo queue worker only, as they are); add it to the host files allowed to import `#activitylog/composition`.
+- No CLI command.
 
-**Test:** controller spec as `ListActivityController.spec.ts` — run `yarn test apps/cli/activity`
+**Test:** specs as `CleanupExpiredCaptchasJob.spec.ts` and its scheduler spec: only tenants over the threshold get a job; the job reschedules itself; the handler archives for its tenant — run `yarn test packages/activitylog`
