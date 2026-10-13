@@ -16,6 +16,8 @@ class RelatedDataLoader {
   static async entity(this: void, data: ActivityData): Promise<ActivityData> {
     const _id = data.entityId || data._id;
     const sharedId = data.sharedId || data.entity;
+    if (!_id && !sharedId) return { ...data, entity: undefined, title: undefined };
+
     const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
     const [entity] = await entities.getUnrestricted(query);
     return { ...data, entity, title: entity ? entity.title : undefined };

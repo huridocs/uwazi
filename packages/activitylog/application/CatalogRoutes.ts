@@ -259,7 +259,7 @@ const CATALOG_ROUTES: Readonly<Record<string, RouteDescriptor>> = {
   'POST/api/files/upload/custom': {
     desc: 'Uploaded custom file',
     method: 'CREATE',
-    extra: data => ` originalname ${data.originalname} `,
+    extra: data => (data.originalname ? ` originalname ${data.originalname} ` : null),
   },
 };
 

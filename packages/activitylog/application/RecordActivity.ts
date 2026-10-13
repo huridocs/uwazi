@@ -44,16 +44,6 @@ class RecordActivity extends AbstractUseCase<Input, void, Deps> {
     '/api/export',
   ];
 
-  /** Endpoints whose requests are activity only when they arrive with a body. */
-  static readonly BODY_REQUIRED_ENDPOINTS: readonly string[] = [
-    '/api/files/upload/document',
-    '/api/files/upload/custom',
-    '/api/attachments/upload',
-    '/api/public',
-    '/api/entities',
-    '/api/users',
-  ];
-
   async execute(input: Input): Promise<void> {
     if (!RecordActivity.isActivity(input)) return;
 
@@ -64,18 +54,14 @@ class RecordActivity extends AbstractUseCase<Input, void, Deps> {
     );
   }
 
-  private static isActivity({ method, url, body, statusCode }: Input): boolean {
+  private static isActivity({ method, url, statusCode }: Input): boolean {
     if (statusCode === NOT_FOUND) return false;
 
-    const isLoggedRequest =
+    return (
       url.includes('/api/') &&
       !RecordActivity.IGNORED_METHODS.includes(method) &&
-      !RecordActivity.IGNORED_ENDPOINTS.includes(url);
-
-    const hasTheBodyItNeeds =
-      !RecordActivity.BODY_REQUIRED_ENDPOINTS.includes(url) || JSON.stringify(body) !== '{}';
-
-    return isLoggedRequest && hasTheBodyItNeeds;
+      !RecordActivity.IGNORED_ENDPOINTS.includes(url)
+    );
   }
 }
 

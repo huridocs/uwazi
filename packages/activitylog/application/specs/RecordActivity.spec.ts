@@ -30,15 +30,6 @@ const IGNORED_ENDPOINTS = [
   '/api/export',
 ];
 
-const BODY_REQUIRED_ENDPOINTS = [
-  '/api/files/upload/document',
-  '/api/files/upload/custom',
-  '/api/attachments/upload',
-  '/api/public',
-  '/api/entities',
-  '/api/users',
-];
-
 /** Midnight of the day the entry was recorded, one year on — what the collection's TTL index reads. */
 const expiryOf = (time: number) => {
   const expiry = new Date(time);
@@ -131,20 +122,21 @@ describe('RecordActivity', () => {
 
       expect(await stored()).toEqual([]);
     });
+  });
 
-    it.each(BODY_REQUIRED_ENDPOINTS)(
-      'should ignore a request to %s that arrives without a body',
-      async url => {
-        await record({ url, body: {} });
+  describe('requests that carry no body', () => {
+    it.each([
+      ['an entity deletion', 'DELETE', '/api/entities', { sharedId: 'entity1' }],
+      ['a deletion of users', 'DELETE', '/api/users', { ids: '["user1"]' }],
+      ['an upload of nothing but a file', 'POST', '/api/files/upload/custom', {}],
+      ['an upload of a document', 'POST', '/api/files/upload/document', {}],
+      ['a request to any other endpoint', 'POST', '/api/templates', {}],
+    ])('should store %s', async (_case, method, url, query) => {
+      await record({ method, url, query, body: {} });
 
-        expect(await stored()).toEqual([]);
-      }
-    );
-
-    it('should store a request without a body to any other endpoint', async () => {
-      await record({ url: '/api/templates', body: {} });
-
-      expect(await stored()).toMatchObject([{ url: '/api/templates', body: '{}' }]);
+      expect(await stored()).toMatchObject([
+        { method, url, query: JSON.stringify(query), body: '{}' },
+      ]);
     });
   });
 });

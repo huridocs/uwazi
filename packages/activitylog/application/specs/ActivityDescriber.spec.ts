@@ -974,11 +974,25 @@ describe('ActivityDescriber', () => {
             }
           );
         });
+
+        it('should leave the file name out when the request carried none', async () => {
+          await testBeautified(
+            { method: 'POST', url: '/api/files/upload/custom', body: '{}' },
+            { action: 'CREATE', description: 'Uploaded custom file' }
+          );
+        });
       });
     });
 
     describe('routes: /api/files', () => {
       describe('method: POST /api/files/upload/document', () => {
+        it('should name no entity when the request did not say which one', async () => {
+          await testBeautified(
+            { method: 'POST', url: '/api/files/upload/document', body: '{}' },
+            { action: 'CREATE', description: 'Uploaded file' }
+          );
+        });
+
         it('should beautify as CREATE and include entity title', async () => {
           const body = {
             entity: firstDocSharedId,

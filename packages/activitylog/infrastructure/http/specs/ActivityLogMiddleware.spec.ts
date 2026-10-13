@@ -158,11 +158,6 @@ describe('ActivityLogMiddleware', () => {
       ['a request outside the API', request({ url: '/entities' }), 200],
       ['an ignored endpoint', request({ url: '/api/login' }), 200],
       ['an endpoint that does not exist', request(), 404],
-      [
-        'an upload answered before its body was read',
-        request({ url: '/api/files/upload/document', body: {} }),
-        200,
-      ],
     ])('should not log %s', async (_case, req, statusCode) => {
       answer(req, response(statusCode));
 
