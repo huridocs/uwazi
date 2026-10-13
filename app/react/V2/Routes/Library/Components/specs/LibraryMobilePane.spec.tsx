@@ -19,10 +19,21 @@ jest.mock('../LibraryToolbar', () => ({
 }));
 
 jest.mock('../LibraryResultsFooter', () => ({
-  LibraryResultsFooter: ({ onCreateEntity }: { onCreateEntity: () => void }) => (
-    <button type="button" onClick={onCreateEntity}>
-      create entity
-    </button>
+  LibraryResultsFooter: ({
+    onCreateEntity,
+    onOpenFilters,
+  }: {
+    onCreateEntity: () => void;
+    onOpenFilters?: () => void;
+  }) => (
+    <>
+      <button type="button" onClick={onCreateEntity}>
+        create entity
+      </button>
+      <button type="button" onClick={() => onOpenFilters?.()}>
+        Filters
+      </button>
+    </>
   ),
 }));
 

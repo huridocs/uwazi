@@ -736,6 +736,7 @@ Lengthy reindex process,عملية إعادة الفهرسة المطولة
 Library,مكتبة
 library list view,معاينة القائمة المكتبية
 library map view,معاينة خريطة المكتبة
+Library panes,لوحات المكتبة
 Library results,نتائج المكتبة
 library table view,معاينة جدول المكتبة
 Light,فاتح
@@ -1191,6 +1192,7 @@ Resize panels,تغيير حجم الألواح
 Restore,استعادة
 Restore previous version,استعادة الإصدار السابق
 Restricted,مُقَيَّد
+Results,النتائج
 Retryable,قابل لإعادة المحاولة
 Retrying,إعادة المحاولة
 Return to login,العودة لتسجيل الدخول

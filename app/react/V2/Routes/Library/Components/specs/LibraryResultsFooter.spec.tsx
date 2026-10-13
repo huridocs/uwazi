@@ -2,23 +2,38 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
-import { localeAtom, settingsAtom, translationsAtom, userAtom } from '#V2/atoms/index.js';
+import {
+  isMobileOverrideAtom,
+  localeAtom,
+  settingsAtom,
+  translationsAtom,
+  userAtom,
+} from '#V2/atoms/index.js';
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
 import { LibraryResultsFooter } from '../LibraryResultsFooter.js';
 
 const adminUser = { _id: 'admin1', role: 'admin', username: 'admin', email: 'admin@uwazi.io' };
 
+type FooterProps = {
+  onCreateEntity?: () => void;
+  onUploadPdf?: (files: File[]) => void;
+  onExportCsv?: () => void;
+  onOpenFilters?: () => void;
+  onShowResults?: () => void;
+};
+
 const renderFooter = (
-  props: { onCreateEntity?: () => void; onUploadPdf?: () => void } = {},
+  props: FooterProps = {},
   options: {
     user?: typeof adminUser | Record<string, never>;
     featureFlagLibraryV2?: boolean;
+    mobile?: boolean;
   } = {}
 ) => {
-  const { user = adminUser, featureFlagLibraryV2 = false } = options;
+  const { user = adminUser, featureFlagLibraryV2 = false, mobile = false } = options;
   return render(
     <MemoryRouter>
       <TestAtomStoreProvider
@@ -27,11 +42,15 @@ const renderFooter = (
           [translationsAtom, translations],
           [userAtom, user],
           [settingsAtom, { features: { featureFlagLibraryV2 } }],
+          ...(mobile ? [[isMobileOverrideAtom, true] as const] : []),
         ]}
       >
         <LibraryResultsFooter
           onCreateEntity={props.onCreateEntity}
           onUploadPdf={props.onUploadPdf}
+          onExportCsv={props.onExportCsv}
+          onOpenFilters={props.onOpenFilters}
+          onShowResults={props.onShowResults}
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
@@ -44,16 +63,6 @@ const pdfFileInput = () => {
   return input as HTMLInputElement;
 };
 
-const expectPickerOpens = (input: HTMLInputElement, onUploadPdf: jest.Mock) => {
-  expect(input).toHaveAttribute('accept', 'application/pdf,.pdf');
-  expect(input).toHaveAttribute('multiple');
-  const openPicker = jest.spyOn(input, 'click');
-  fireEvent.click(screen.getByRole('button', { name: 'Upload PDF' }));
-  expect(openPicker).toHaveBeenCalled();
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(onUploadPdf).not.toHaveBeenCalled();
-};
-
 const expectChosenPdf = (input: HTMLInputElement, onUploadPdf: jest.Mock) => {
   const pdf = new File(['%PDF'], 'judgment.pdf', { type: 'application/pdf' });
   fireEvent.change(input, { target: { files: [pdf] } });
@@ -62,32 +71,101 @@ const expectChosenPdf = (input: HTMLInputElement, onUploadPdf: jest.Mock) => {
 
 const expectNativePdfPicker = (onUploadPdf: jest.Mock) => {
   const input = pdfFileInput();
-  expectPickerOpens(input, onUploadPdf);
+  expect(input).toHaveAttribute('accept', 'application/pdf,.pdf');
+  expect(input).toHaveAttribute('multiple');
+  const openPicker = jest.spyOn(input, 'click');
+  fireEvent.click(screen.getByRole('button', { name: 'Upload PDF' }));
+  expect(openPicker).toHaveBeenCalled();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onUploadPdf).not.toHaveBeenCalled();
   expectChosenPdf(input, onUploadPdf);
+};
+
+const openActionsMenu = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+  return screen.getByRole('menu', { name: 'Actions' });
+};
+
+const openPaneMenu = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Library panes' }));
+  return screen.getByRole('menu', { name: 'Library panes' });
+};
+
+const expectDesktopActionBar = () => {
+  expect(screen.getByTestId('library-results-footer')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Upload PDF' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Import CSV' })).toHaveAttribute(
+    'href',
+    '/en/settings/csv'
+  );
+  expect(screen.getByRole('button', { name: 'Export CSV' }).querySelector('svg')).toBeTruthy();
+};
+
+const expectNoMobileChrome = () => {
+  expect(screen.queryByRole('button', { name: 'Actions' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Library panes' })).not.toBeInTheDocument();
+  expect(screen.queryByTestId('library-single-select-actions')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Change template' })).not.toBeInTheDocument();
+};
+
+const expectNoEditorActions = () => {
+  expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Upload PDF' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Import CSV' })).not.toBeInTheDocument();
+};
+
+const expectMobileActionsCollapsed = () => {
+  expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Upload PDF' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Import CSV' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Export CSV' })).not.toBeInTheDocument();
+};
+
+const expectActionsMenuContents = (menu: HTMLElement) => {
+  expect(within(menu).getByRole('menuitem', { name: 'Create entity' })).toBeInTheDocument();
+  expect(within(menu).getByRole('menuitem', { name: 'Upload PDF' })).toBeInTheDocument();
+  expect(within(menu).getByRole('menuitem', { name: 'Import CSV' })).toHaveAttribute(
+    'href',
+    '/en/settings/csv'
+  );
+  expect(within(menu).getByRole('menuitem', { name: 'Export CSV' })).toBeInTheDocument();
+};
+
+const expectMenuTrigger = (name: string) => {
+  const trigger = screen.getByRole('button', { name });
+  expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+  expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  return trigger;
+};
+
+const expectPaneMenuOpensFilters = (onOpenFilters: jest.Mock) => {
+  const paneTrigger = expectMenuTrigger('Library panes');
+  const menu = openPaneMenu();
+  expect(paneTrigger).toHaveAttribute('aria-expanded', 'true');
+  fireEvent.click(within(menu).getByRole('menuitem', { name: 'Filters' }));
+  expect(onOpenFilters).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('menu', { name: 'Library panes' })).not.toBeInTheDocument();
+};
+
+const expectPaneMenuOpensResults = (onShowResults: jest.Mock) => {
+  openPaneMenu();
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Results' }));
+  expect(onShowResults).toHaveBeenCalledTimes(1);
 };
 
 describe('LibraryResultsFooter', () => {
   it('renders the library action bar when featureFlagLibraryV2 is off', () => {
     renderFooter({}, { featureFlagLibraryV2: false });
-    expect(screen.getByTestId('library-results-footer')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Upload PDF' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Import CSV' })).toHaveAttribute(
-      'href',
-      '/en/settings/csv'
-    );
-    expect(screen.getByRole('button', { name: 'Export CSV' }).querySelector('svg')).toBeTruthy();
-    expect(screen.queryByTestId('library-single-select-actions')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Change template' })).not.toBeInTheDocument();
+    expectDesktopActionBar();
+    expectNoMobileChrome();
   });
 
   it('hides editor actions for anonymous users even when the V2 flag is on', () => {
     renderFooter({}, { user: {}, featureFlagLibraryV2: true });
     expect(screen.getByTestId('library-results-footer')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Upload PDF' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Import CSV' })).not.toBeInTheDocument();
+    expectNoEditorActions();
   });
 
   it('opens create and the native PDF file picker', () => {
@@ -97,5 +175,57 @@ describe('LibraryResultsFooter', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create entity' }));
     expect(onCreateEntity).toHaveBeenCalledTimes(1);
     expectNativePdfPicker(onUploadPdf);
+  });
+
+  it('groups create actions under Actions on mobile', () => {
+    const onCreateEntity = jest.fn();
+    renderFooter({ onCreateEntity }, { featureFlagLibraryV2: true, mobile: true });
+    expectMobileActionsCollapsed();
+    const actionsTrigger = expectMenuTrigger('Actions');
+    const menu = openActionsMenu();
+    expect(actionsTrigger).toHaveAttribute('aria-expanded', 'true');
+    expectActionsMenuContents(menu);
+    fireEvent.click(within(menu).getByRole('menuitem', { name: 'Create entity' }));
+    expect(onCreateEntity).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeInTheDocument();
+  });
+
+  it('opens the native PDF picker from the mobile Actions menu', () => {
+    const onUploadPdf = jest.fn();
+    renderFooter({ onUploadPdf }, { mobile: true });
+    openActionsMenu();
+    const input = pdfFileInput();
+    const openPicker = jest.spyOn(input, 'click');
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Upload PDF' }));
+    expect(openPicker).toHaveBeenCalled();
+    expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeInTheDocument();
+    expectChosenPdf(input, onUploadPdf);
+  });
+
+  it('hides editor items in the mobile Actions menu for anonymous users', () => {
+    renderFooter({}, { user: {}, mobile: true });
+    const menu = openActionsMenu();
+    expect(within(menu).queryByRole('menuitem', { name: 'Create entity' })).not.toBeInTheDocument();
+    expect(within(menu).queryByRole('menuitem', { name: 'Upload PDF' })).not.toBeInTheDocument();
+    expect(within(menu).queryByRole('menuitem', { name: 'Import CSV' })).not.toBeInTheDocument();
+    expect(within(menu).getByRole('menuitem', { name: 'Export CSV' })).toBeInTheDocument();
+  });
+
+  it('opens Filters and Results from the mobile pane menu', () => {
+    const onOpenFilters = jest.fn();
+    const onShowResults = jest.fn();
+    renderFooter({ onOpenFilters, onShowResults }, { mobile: true });
+    expectPaneMenuOpensFilters(onOpenFilters);
+    expectPaneMenuOpensResults(onShowResults);
+  });
+
+  it('closes mobile menus on Escape', () => {
+    renderFooter({}, { mobile: true });
+    openActionsMenu();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeInTheDocument();
+    openPaneMenu();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu', { name: 'Library panes' })).not.toBeInTheDocument();
   });
 });
