@@ -1,4 +1,5 @@
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { RelationTypesQueryServiceFactory } from '#api/relationships/query/factory/RelationTypesQueryServiceFactory.js';
 import type { RelationshipType } from '#shared/contracts/RelationshipType.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
@@ -22,7 +23,15 @@ const createServerRelationshipTypesService = (
     }
   },
 
-  countByTypes: async () => [{}],
+  countByTypes: async (
+    _options?: ServiceRequestOptions
+  ): Promise<ApiResponse<{ [id: string]: number }>> => {
+    try {
+      return [await RelationTypesQueryServiceFactory.default().countByTypes()];
+    } catch (e) {
+      return [undefined as never, toApiError(e)];
+    }
+  },
 
   upsert: async () => notImplemented<RelationshipType>(),
 
