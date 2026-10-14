@@ -615,6 +615,7 @@ group expressions,นิพจน์กลุ่ม
 Group Options,ตัวเลือกกลุ่ม
 Group saved,กลุ่มถูกบันทึกแล้ว
 Group updated,กลุ่มได้รับการอัปเดตแล้ว
+Grouped,จัดกลุ่ม
 Grouped geolocation properties,คุณสมบัติตำแหน่งทางภูมิศาสตร์ที่จัดกลุ่ม
 Groups,กลุ่ม
 Header and button preview,ตัวอย่างส่วนหัวและปุ่ม
@@ -632,6 +633,7 @@ Hide details,ซ่อนรายละเอียด
 Hide label,ซ่อนป้าย
 Hide restricted relationships from public,ซ่อนความสัมพันธ์ที่ถูกจำกัดไม่ให้แสดงต่อสาธารณะ
 Hide task,ซ่อนงาน
+Hide the matches in,ซ่อนรายการที่ตรงกันใน
 Hide toolbar,ซ่อนแถบเครื่องมือ
 Hours,ชั่วโมง
 How to combine sources,วิธีรวมแหล่งข้อมูล
@@ -739,6 +741,7 @@ library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
 Library panes,แผงไลบรารี
 Library results,ผลลัพธ์คลังเอกสาร
+Library side panel,แผงด้านข้างของคลังเอกสาร
 library table view,มุมมองตารางไลบรารี
 Light,สว่าง
 Light Theme,ธีมสีอ่อน
@@ -919,6 +922,7 @@ No Relationships description,ความสัมพันธ์คือคว
 No relationships found,ไม่พบความสัมพันธ์ใด
 No relationships to graph,ไม่มีความสัมพันธ์ที่จะแสดงในกราฟ
 No releases yet,ยังไม่มีเวอร์ชันที่เผยแพร่
+No results for the selected match types.,ไม่มีผลลัพธ์สำหรับประเภทการตรงกันที่เลือก
 No results found,ไม่พบผลลัพธ์ใด
 No supporting files yet. Add a file to get started.,ยังไม่มีไฟล์สนับสนุน เพิ่มไฟล์เพื่อเริ่มใช้งาน
 No table of contents,ไม่มีสารบัญ
@@ -1021,6 +1025,7 @@ Paragraph text extraction property (rich text),คุณสมบัติกา
 Paragraphs,ย่อหน้า
 Paragraphs deleted,ย่อหน้าที่ถูกลบ
 parties,ฝ่ายต่างๆ
+Passages,ข้อความที่ตรงกัน
 Password,รหัสผ่าน
 Password + 2fa,รหัสผ่าน + 2FA
 Password changed success,เปลี่ยนรหัสผ่านสำเร็จแล้ว
@@ -1194,6 +1199,8 @@ Restore,กู้คืน
 Restore previous version,คืนสู่เวอร์ชันก่อนหน้า
 Restricted,ถูก จำกัด
 Results,ผลลัพธ์
+Results layout,รูปแบบผลลัพธ์
+Results show the passages behind each hit.,ผลลัพธ์แสดงข้อความที่อยู่เบื้องหลังแต่ละรายการที่ตรงกัน
 Retryable,สามารถลองใหม่ได้
 Retrying,ลองอีกครั้ง
 Return to login,กลับไปที่การเข้าสู่ระบบ
@@ -1249,6 +1256,7 @@ Search Tips: one char wildcard,"ใช้ ? แทนอักขระตัว
 Search Tips: proximity,"ใช้ ~ สำหรับการค้นหาแบบใกล้เคียง เช่น ""สถานภาพ ทางกฎหมาย""~5 จะค้นหาข้อความที่มีคำว่า ""สถานภาพ"" และ ""ทางกฎหมาย"" อยู่ห่างกันไม่เกิน 5 คำ"
 Search Tips: wildcard,"ใช้ * สำหรับการค้นหาแบบไวลด์การ์ด เช่น ""นิติ*"" จะจับคู่กับคำต่าง ๆ เช่น นิติศาสตร์ นิติกร นิติบุคคล เป็นต้น"
 Search title & metadata,ค้นหาชื่อและข้อมูลเมตา
+Search to see where terms match,ค้นหาเพื่อดูว่าคำตรงกับส่วนใด
 Searching...,กำลังค้นหา...
 Second dimension (series / stacks),มิติที่สอง (ชุด / กอง)
 Secondary button,ปุ่มรอง
@@ -1336,6 +1344,7 @@ Show information,แสดงข้อมูล
 Show less,แสดงน้อยลง
 Show more,แสดงมากขึ้น
 Show remaining in panel,แสดงจำนวนที่เหลือในแผง
+Show the matches in,แสดงรายการที่ตรงกันใน
 Show toolbar,แสดงแถบเครื่องมือ
 Showing,กำลังแสดง
 Showing the top,แสดงส่วนบน

@@ -242,13 +242,7 @@ const LibraryFilters = ({
   return (
     <NestedGroupsExpansionProvider value={expansion}>
       <div className="flex h-full min-h-0 flex-col bg-warm">
-        <div className="shrink-0 px-3.5 py-2">
-          <span className="inline-flex h-7 items-center rounded-md bg-vellum px-3 text-[13px] font-semibold text-ink">
-            <Translate>Filters</Translate>
-          </span>
-        </div>
-
-        <div className="flex-1 space-y-2 overflow-auto px-3.5 pb-3">
+        <div className="flex-1 space-y-2 overflow-auto px-3.5 pt-2 pb-3">
           {showStatus && (
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <FacetCard title={<Translate>Status</Translate>}>

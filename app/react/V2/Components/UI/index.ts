@@ -61,6 +61,10 @@ export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
 export { UwaziLoader } from './UwaziLoader.js';
 export { ActiveFilterChip } from './ActiveFilterChip.js';
+export { ToggleChip } from './ToggleChip.js';
+export type { ToggleChipProps } from './ToggleChip.js';
+export { CountBadge } from './CountBadge.js';
+export type { CountBadgeProps } from './CountBadge.js';
 export {
   SegmentedControl,
   SegmentedControlItem,

@@ -615,6 +615,7 @@ group expressions,групові вирази
 Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
+Grouped,Згруповано
 Grouped geolocation properties,Згруповані властивості геолокації
 Groups,Групи
 Header and button preview,Попередній перегляд заголовка та кнопки
@@ -632,6 +633,7 @@ Hide details,Приховати деталі
 Hide label,Приховати мітку
 Hide restricted relationships from public,Приховати обмежені зв’язки від загального доступу
 Hide task,Приховати завдання
+Hide the matches in,Сховати збіги в
 Hide toolbar,Приховати панель інструментів
 Hours,Години
 How to combine sources,Як поєднати джерела
@@ -739,6 +741,7 @@ library list view,перегляд бібліотеки у вигляді спи
 library map view,перегляд бібліотеки у вигляді карти
 Library panes,Панелі бібліотеки
 Library results,Результати бібліотеки
+Library side panel,Бічна панель бібліотеки
 library table view,перегляд бібліотеки у табличному вигляді
 Light,Світла
 Light Theme,Світла тема
@@ -919,6 +922,7 @@ No Relationships description,Відносини - це зв'язки між су
 No relationships found,Не знайдено жодних зв’язків
 No relationships to graph,Немає зв’язків для відображення на графі
 No releases yet,Поки що немає версій
+No results for the selected match types.,Немає результатів для вибраних типів збігів.
 No results found,Результатів не знайдено
 No supporting files yet. Add a file to get started.,"Поки що немає супровідних файлів. Додайте файл, щоб розпочати роботу."
 No table of contents,Немає змісту
@@ -1021,6 +1025,7 @@ Paragraph text extraction property (rich text),Властивість вилуч
 Paragraphs,Абзаци
 Paragraphs deleted,Абзаци вилучено
 parties,сторони
+Passages,Фрагменти
 Password,Пароль
 Password + 2fa,Пароль + 2fa
 Password changed success,Успішно змінено пароль
@@ -1194,6 +1199,8 @@ Restore,Відновити
 Restore previous version,Відновити попередню версію
 Restricted,Для обмеженого кола осіб
 Results,Результати
+Results layout,Вигляд результатів
+Results show the passages behind each hit.,У результатах показано фрагменти кожного збігу.
 Retryable,Можливість повторної спроби
 Retrying,Повторна спроба
 Return to login,Повернутись до авторизації
@@ -1249,6 +1256,7 @@ Search Tips: one char wildcard,"? для одного символу підст�
 Search Tips: proximity,"~ для пошуку за близькістю слів. Тобто: ""правовий статус""~5 знайде все, що має ""правовий"" і ""статус"" на відстані 5 слів, наприклад ""правовий процесуальний статус"", ""правовий та соціальний статус""."
 Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""юрис*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
 Search title & metadata,Пошук за назвою та метаданими
+Search to see where terms match,"Виконайте пошук, щоб побачити, де збігаються терміни"
 Searching...,Пошук...
 Second dimension (series / stacks),Другий вимір (ряди / стоси)
 Secondary button,Додаткова кнопка
@@ -1336,6 +1344,7 @@ Show information,Показати інформацію
 Show less,Показати менше
 Show more,Показати більше
 Show remaining in panel,Показати залишок у панелі
+Show the matches in,Показати збіги в
 Show toolbar,Показати панель інструментів
 Showing,Показати
 Showing the top,Показано найпопулярніші

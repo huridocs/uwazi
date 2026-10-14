@@ -615,6 +615,7 @@ group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
+Grouped,Grouped
 Grouped geolocation properties,Grouped geolocation properties
 Groups,Groups
 Header and button preview,Header and button preview
@@ -632,6 +633,7 @@ Hide details,Hide details
 Hide label,Hide label
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide task,Hide task
+Hide the matches in,Hide the matches in
 Hide toolbar,Hide toolbar
 Hours,Hours
 How to combine sources,How to combine sources
@@ -739,6 +741,7 @@ library list view,library list view
 library map view,library map view
 Library panes,Library panes
 Library results,Library results
+Library side panel,Library side panel
 library table view,library table view
 Light,Light
 Light Theme,Light Theme
@@ -919,6 +922,7 @@ No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
+No results for the selected match types.,No results for the selected match types.
 No results found,No results found
 No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
 No table of contents,No table of contents
@@ -1021,6 +1025,7 @@ Paragraph text extraction property (rich text),Paragraph text extraction propert
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
 parties,parties
+Passages,Passages
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -1194,6 +1199,8 @@ Restore,Restore
 Restore previous version,Restore previous version
 Restricted,Restricted
 Results,Results
+Results layout,Results layout
+Results show the passages behind each hit.,Results show the passages behind each hit.
 Retryable,Retryable
 Retrying,Retrying
 Return to login,Return to login
@@ -1249,6 +1256,7 @@ Search Tips: one char wildcard,"? for one character wildcard. Ie: ""198?"" will 
 Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find anything having ""the"" and""status"" within a distance of 5 words, such as ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
 Search title & metadata,Search title & metadata
+Search to see where terms match,Search to see where terms match
 Searching...,Searching...
 Second dimension (series / stacks),Second dimension (series / stacks)
 Secondary button,Secondary button
@@ -1336,6 +1344,7 @@ Show information,Show information
 Show less,Show less
 Show more,Show more
 Show remaining in panel,Show remaining in panel
+Show the matches in,Show the matches in
 Show toolbar,Show toolbar
 Showing,Showing
 Showing the top,Showing the top
