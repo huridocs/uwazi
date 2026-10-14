@@ -1184,7 +1184,7 @@ Theme and branding,Card heading and sidepanel title,Settings > Collection,Title 
 Theme colors imported,Toast notification,Settings > Theme and branding,Success toast shown after a theme instance file is successfully imported and applied.
 Theme favicon,Section heading,Settings > Collection,Heading over the light/dark favicon upload pickers in the theme sidepanel.
 Theme instance file invalid,Toast notification,Settings > Theme and branding,Error toast shown when an imported theme JSON file fails to parse or fails validation.
-Theme logotype,Section heading,Settings > Collection,Heading over the light/dark site logo upload pickers in the theme sidepanel.
+Theme logo,Section heading,Settings > Collection,Heading over the light/dark site logo upload pickers in the theme sidepanel.
 Theme presets,Section label,Settings > Theme and branding,"Label above the row of selectable theme preset cards (Default, Legacy, Custom, etc.) in the theme editor."
 Theme preview,Section subtitle,Settings > Theme and branding,"Heading text inside the live preview card, above the sample primary/secondary buttons."
 Then by,Menu row label,Entity view,Label for the secondary grouping control shown when relationships are grouped by a field.
