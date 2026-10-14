@@ -25,16 +25,20 @@ class ActivityCatalog {
     const httpMethods = asked.map(action =>
       ['CREATE', 'UPDATE'].includes(action) ? 'POST' : action
     );
-    const madeWith = new RegExp(`(${httpMethods.join('|')}).*`);
-    const describedAs = new RegExp(`(${asked.join('|')}).*`);
 
     return ActivityCatalog.entries
       .filter(
         ([key, { method, desc }]) =>
-          madeWith.test(key.toUpperCase()) &&
-          (describedAs.test((method ?? '').toUpperCase()) || describedAs.test(desc.toUpperCase()))
+          ActivityCatalog.containsAny(key, httpMethods) &&
+          (ActivityCatalog.containsAny(method ?? '', asked) ||
+            ActivityCatalog.containsAny(desc, asked))
       )
       .map(([key]) => ActivityCatalog.toReference(key));
+  }
+
+  private static containsAny(text: string, words: string[]): boolean {
+    const upperCased = text.toUpperCase();
+    return words.some(word => upperCased.includes(word));
   }
 
   private static get entries(): [string, RouteDescriptor][] {

@@ -57,6 +57,11 @@ describe('ActivityCatalog', () => {
       expect(ActivityCatalog.routesForActions(['PUT'])).toEqual([]);
     });
 
+    it('should take an action as plain text, not as a pattern', () => {
+      expect(ActivityCatalog.routesForActions(['.'])).toEqual([]);
+      expect(ActivityCatalog.routesForActions(['(A+)+$'])).toEqual([]);
+    });
+
     it('should find nothing when no action is asked for', () => {
       expect(ActivityCatalog.routesForActions([])).toEqual([]);
     });
