@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
@@ -71,7 +70,6 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    activitylogMiddleware,
     async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     MutateEntityController.createHandler()
@@ -147,7 +145,6 @@ export default app => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next),
-    CreateEntityFromPDFController.createHandler(),
-    activitylogMiddleware
+    CreateEntityFromPDFController.createHandler()
   );
 };

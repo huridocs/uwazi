@@ -1,6 +1,5 @@
 import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
-import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
@@ -13,7 +12,6 @@ export const customUploadsRoutes = (app: Application) => {
     async (req, res, next) => {
       await new UploadMiddleware(LoggerFactory.default()).singleUpload('custom')(req, res, next);
     },
-    activitylogMiddleware,
     CustomFileUploadController.createHandler()
   );
 
