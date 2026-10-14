@@ -30,7 +30,7 @@ const ActivityLogGetRequestSchema = {
           },
         },
         before: { type: 'number' },
-        limit: { type: 'number' },
+        limit: { type: 'number', minimum: 1, maximum: 500 },
         page: { type: 'number', minimum: 1 },
         method: { type: 'array', items: { type: 'string' } },
         search: { type: 'string' },
