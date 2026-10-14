@@ -18,10 +18,7 @@ const createTemplatesLoader =
     const [templates, templatesError] = await services.templates.getAll({ headers });
     if (templatesError) throw apiErrorToRequestError(templatesError);
 
-    const templateIds = templates.map(template => template._id);
-    const [entityCounts, countsError] = await services.templates.checkEntityCounts(templateIds, {
-      headers,
-    });
+    const [entityCounts, countsError] = await services.templates.checkEntityCounts({ headers });
     if (countsError) throw apiErrorToRequestError(countsError);
 
     return templates.map(template => {

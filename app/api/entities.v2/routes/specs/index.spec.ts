@@ -20,9 +20,11 @@ describe('entities countByTemplate V2 routes', () => {
     };
     next();
   });
+  const anonymousApp = setUpApp(entitiesRoutes);
 
   const template1 = createTemplate('Template 1');
   const template2 = createTemplate('Template 2');
+  const emptyTemplate = createTemplate('Empty');
 
   beforeEach(async () => {
     await testingEnvironment.setUp(
@@ -36,14 +38,14 @@ describe('entities countByTemplate V2 routes', () => {
             ],
           },
         ],
-        templates: [template1, template2],
+        templates: [template1, template2, emptyTemplate],
         entities: [
           ...factory.entityInMultipleLanguages(
             ['en', 'es', 'fr'],
             'entity_1',
             'Template 1',
             {},
-            {}
+            { published: true }
           ),
           ...factory.entityInMultipleLanguages(
             ['en', 'es', 'fr'],
@@ -102,15 +104,15 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toBe(0);
     });
 
-    it('should handle missing templateId parameter', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .set('Accept-Language', 'en');
+    it('should return every template count when no id is passed, including zeros', async () => {
+      const response = await request(app).get('/api/v2/entities/count_by_template');
 
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual(
-        expect.objectContaining({ prettyMessage: 'validation failed' })
-      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        [template1._id.toString()]: 3,
+        [template2._id.toString()]: 2,
+        [emptyTemplate._id.toString()]: 0,
+      });
     });
 
     it('should handle invalid templateId format', async () => {
@@ -123,6 +125,17 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toEqual(
         expect.objectContaining({ prettyMessage: 'validation failed' })
       );
+    });
+
+    it('counts only published entities when the request has no user', async () => {
+      const response = await request(anonymousApp).get('/api/v2/entities/count_by_template');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        [template1._id.toString()]: 1,
+        [template2._id.toString()]: 0,
+        [emptyTemplate._id.toString()]: 0,
+      });
     });
 
     it('should not depend on Accept-Language header', async () => {
