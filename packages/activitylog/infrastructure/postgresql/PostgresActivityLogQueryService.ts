@@ -2,14 +2,14 @@ import {
   PostgresDataSource,
   PostgresDataSourceDeps,
 } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
-import type { ActivityDescriber } from '../../application/ActivityDescriber.js';
+import type { ActivityDescriber } from '../query/ActivityDescriber.js';
 import type {
   ActivityLogFilters,
   ActivityLogPage,
   ActivityLogQueryService,
   ActivityLogSummary,
   ListedActivity,
-} from '../../application/contracts/ActivityLogQueryService.js';
+} from '../query/ActivityLogQueryService.js';
 import { PostgresActivityLogFilter } from './PostgresActivityLogFilter.js';
 import { PostgresActivityLogRow } from './PostgresActivityLogRow.js';
 

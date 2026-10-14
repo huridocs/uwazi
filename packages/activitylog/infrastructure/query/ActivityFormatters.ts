@@ -1,6 +1,6 @@
 import { availableLanguages } from '#shared/language/index.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
-import type { ActivityData } from './contracts/RelatedData.js';
+import type { ActivityData } from './RelatedData.js';
 
 type Permission = { refId: string; type: string; level: string };
 
@@ -75,7 +75,6 @@ class ActivityFormatters {
     }${data.public ? '; PUBLIC' : ''}`;
   }
 
-  /** A holder that could not be found is named by its raw id. */
   private static holderName(source: ActivityData[], field: string) {
     return (p: Permission) => {
       const holder = source.find(u => u._id.toString() === p.refId);

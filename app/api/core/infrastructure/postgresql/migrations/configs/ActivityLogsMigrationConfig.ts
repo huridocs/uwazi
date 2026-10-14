@@ -1,6 +1,5 @@
 import { MigrationConfig } from '../MigrateCollectionToPostgres.js';
 
-/** A request detail is kept as the text it was stored as; anything else becomes its JSON. */
 const asText = (value: unknown): string | null => {
   if (value === undefined || value === null) return null;
   return typeof value === 'string' ? value : JSON.stringify(value);

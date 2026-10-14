@@ -6,9 +6,7 @@ import { ActivityLogEntry } from '../../domain/ActivityLogEntry.js';
  */
 interface ActivityLogDataSource {
   append(entry: ActivityLogEntry): Promise<void>;
-  /** How many entries the tenant holds. */
   count(): Promise<number>;
-  /** The oldest entries, oldest first; among entries made at the same time, the first stored. */
   oldest(limit: number): Promise<ActivityLogEntry[]>;
   remove(entries: ActivityLogEntry[]): Promise<void>;
 }

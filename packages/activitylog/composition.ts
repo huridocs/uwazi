@@ -9,7 +9,6 @@ import { ScheduleActivityLogArchivesJobScheduler } from './infrastructure/jobs/S
 
 /** How the host wires the activity log module in. */
 class ActivityLogComposition {
-  /** Mounted once, before every route, so each answered request is logged. */
   static readonly middleware: RequestHandler = ActivityLogMiddleware.handle;
 
   static registerRoutes(app: Application) {
@@ -21,12 +20,12 @@ class ActivityLogComposition {
       ScheduleActivityLogArchivesJobFactory.default()
     );
 
-    register(ArchiveActivityOverflowJobHandler, async () =>
-      ArchiveActivityOverflowJobHandler.default()
+    register(
+      ArchiveActivityOverflowJobHandler,
+      async () => new ArchiveActivityOverflowJobHandler()
     );
   }
 
-  /** Starts the daily run that archives what tenants hold beyond the limit. */
   static async ensureArchivingScheduled() {
     await ScheduleActivityLogArchivesJobScheduler.default().ensureScheduled();
   }

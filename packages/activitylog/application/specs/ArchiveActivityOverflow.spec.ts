@@ -2,6 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { gunzipSync } from 'zlib';
+import { config } from '#api/config.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { ArchiveActivityOverflowFactory } from '../../infrastructure/factories/ArchiveActivityOverflowFactory.js';
@@ -16,12 +17,12 @@ const entries = (count: number): StoredEntry[] =>
     time: index + 1,
   }));
 
-const LIMITS = { maxRows: 4, chunkRows: 3 };
+const SYSTEM_LIMITS = { ...config.activityLog };
 
 describe('ArchiveActivityOverflow', () => {
-  const archive = async (limits = LIMITS) =>
+  const archive = async () =>
     testingEnvironment.runWithContext(async () =>
-      ArchiveActivityOverflowFactory.default(limits).execute()
+      ArchiveActivityOverflowFactory.default().execute()
     );
 
   const folder = () => testingTenants.current().activityLogs;
@@ -47,9 +48,11 @@ describe('ArchiveActivityOverflow', () => {
 
   beforeAll(async () => {
     await setUpBackends();
+    Object.assign(config.activityLog, { maxRows: 4, chunkRows: 3 });
   });
 
   afterAll(async () => {
+    Object.assign(config.activityLog, SYSTEM_LIMITS);
     await testingEnvironment.tearDown();
   });
 
@@ -131,13 +134,5 @@ describe('ArchiveActivityOverflow', () => {
 
     await expect(archive()).rejects.toThrow(/ENOENT/);
     expect(await keptUrls()).toHaveLength(7);
-  });
-
-  it('should leave a tenant that is not on Postgres alone', async () => {
-    await setUp(false, 12);
-
-    expect(await archive()).toEqual({ archivedRows: 0, files: [] });
-    expect(await archivedFiles()).toEqual([]);
-    expect(await keptUrls(false)).toHaveLength(12);
   });
 });

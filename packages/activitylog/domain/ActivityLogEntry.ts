@@ -2,16 +2,11 @@ type ActivityLogEntryProps = {
   id: string;
   method: string;
   url: string;
-  /** JSON, as the request carried it; null on an old entry stored without it. */
   params: string | null;
-  /** JSON, as the request carried it; null on an old entry stored without it. */
   query: string | null;
-  /** JSON, with the passwords masked; null on an old entry stored without it. */
   body: string | null;
-  /** null for a request made without a user. */
   userId: string | null;
   username: string | null;
-  /** Epoch ms. */
   time: number;
 };
 
@@ -49,7 +44,6 @@ class ActivityLogEntry {
     });
   }
 
-  /** A copy with every password masked, at any depth. JSON carried as text is not looked into. */
   private static withoutPasswords(value: unknown): unknown {
     if (Array.isArray(value)) return value.map(ActivityLogEntry.withoutPasswords);
     if (typeof value !== 'object' || value === null) return value;
@@ -62,7 +56,6 @@ class ActivityLogEntry {
     );
   }
 
-  /** An entry already stored, taken as it is. */
   static restore(props: ActivityLogEntryProps): ActivityLogEntry {
     return new ActivityLogEntry({ ...props });
   }

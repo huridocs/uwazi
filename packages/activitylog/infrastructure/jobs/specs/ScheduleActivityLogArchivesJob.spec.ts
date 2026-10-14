@@ -1,3 +1,4 @@
+import { config } from '#api/config.js';
 import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -9,6 +10,7 @@ const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 /** A tenant is due once it holds what it may keep plus one whole file: 4 + 3. */
 const LIMITS = { maxRows: 4, chunkRows: 3 };
+const SYSTEM_LIMITS = { ...config.activityLog };
 
 const DUE = 'activitylog-due';
 const ALSO_DUE = 'activitylog-also-due';
@@ -42,10 +44,9 @@ const noopHeartbeat = async () => undefined;
 /** The admin pool reads across tenants; under test only the testing pool may. */
 const run = async () =>
   testingEnvironment.runWithContext(async () =>
-    ScheduleActivityLogArchivesJobFactory.default({
-      ...LIMITS,
-      pool: testingPG.pool!,
-    }).handleDispatch(noopHeartbeat)
+    ScheduleActivityLogArchivesJobFactory.default({ pool: testingPG.pool! }).handleDispatch(
+      noopHeartbeat
+    )
   );
 
 /** Jobs sent to tenants go to the Postgres queue, each in its tenant's namespace. */
@@ -76,6 +77,7 @@ const makeFailingJob = () => {
 describe('ScheduleActivityLogArchivesJob', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
+    Object.assign(config.activityLog, LIMITS);
     REGISTERED.forEach(({ name, postgresCore }) => {
       tenants.add({ name, dbName: name, featureFlags: { postgresCore } });
     });
@@ -101,6 +103,7 @@ describe('ScheduleActivityLogArchivesJob', () => {
     REGISTERED.forEach(({ name }) => {
       delete tenants.tenants[name];
     });
+    Object.assign(config.activityLog, SYSTEM_LIMITS);
     await testingEnvironment.tearDown();
   });
 

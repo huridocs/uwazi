@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ActivityLogQueryServiceFactory } from '../../infrastructure/factories/ActivityLogQueryServiceFactory.js';
-import type { ActivityLogFilters } from '../contracts/ActivityLogQueryService.js';
+import { ActivityLogQueryServiceFactory } from '../../factories/ActivityLogQueryServiceFactory.js';
+import type { ActivityLogFilters } from '../ActivityLogQueryService.js';
 import {
   listEntries,
   NEWEST_FIRST,
@@ -9,7 +9,7 @@ import {
   StoredEntry,
   T,
   testConfigs,
-} from './ActivityLogContractFixtures.js';
+} from '../../../application/specs/ActivityLogContractFixtures.js';
 
 /** As the middleware stores them: every request detail is kept next to the four exposed fields. */
 const stored = (fields: {

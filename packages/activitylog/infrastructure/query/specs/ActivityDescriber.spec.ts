@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { testingDB as db } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ActivityDescriberFactory } from '../../infrastructure/factories/ActivityDescriberFactory.js';
+import { ActivityDescriberFactory } from '../../factories/ActivityDescriberFactory.js';
 import {
   fixtures,
   firstTemplate,

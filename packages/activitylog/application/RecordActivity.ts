@@ -4,14 +4,11 @@ import { ActivityLogDataSource } from './contracts/ActivityLogDataSource.js';
 
 type Input = {
   method: string;
-  /** The path alone, without the query string. */
   url: string;
   params: unknown;
   query: unknown;
   body: Record<string, unknown>;
-  /** null for a request made without a user. */
   user: { id: string; username: string | null } | null;
-  /** The status the request was answered with. */
   statusCode: number;
 };
 
@@ -19,7 +16,6 @@ type Deps = {
   activityLogDS: ActivityLogDataSource;
 };
 
-/** From here up, the request was refused or failed. */
 const FIRST_FAILURE_STATUS = 400;
 
 /**

@@ -1,5 +1,5 @@
 import type { ActivityDescription } from './ActivityDescription.js';
-import type { ActivityData } from './contracts/RelatedData.js';
+import type { ActivityData } from './RelatedData.js';
 
 /** Describes the entries migrations write to the activity log, by the type each one carries. */
 class MigrationLogDescriber {

@@ -248,8 +248,8 @@ export const config = {
     batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },
   activityLog: {
-    /** How many entries each tenant keeps in the database before the oldest are archived. */
     maxRows: parseInt(process.env.ACTIVITY_LOG_MAX_ROWS || '', 10) || 50_000,
+    chunkRows: parseInt(process.env.ACTIVITY_LOG_CHUNK_ROWS || '', 10) || 10_000,
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',

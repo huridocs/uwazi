@@ -1,8 +1,8 @@
 import moment from 'moment';
 import type { Filter } from 'mongodb';
 import { escapeEspecialChars } from '#shared/data_utils/stringUtils.js';
-import { ActivityCatalog, RouteReference } from '../../application/ActivityCatalog.js';
-import type { ActivityLogFilters } from '../../application/contracts/ActivityLogQueryService.js';
+import { ActivityCatalog, RouteReference } from '../query/ActivityCatalog.js';
+import type { ActivityLogFilters } from '../query/ActivityLogQueryService.js';
 import type { MongoActivityLogDBO } from './MongoActivityLogDBO.js';
 
 type Condition = Filter<MongoActivityLogDBO>;

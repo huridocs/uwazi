@@ -1,12 +1,12 @@
 import type { Db, Sort } from 'mongodb';
-import type { ActivityDescriber } from '../../application/ActivityDescriber.js';
+import type { ActivityDescriber } from '../query/ActivityDescriber.js';
 import type {
   ActivityLogFilters,
   ActivityLogPage,
   ActivityLogQueryService,
   ActivityLogSummary,
   ListedActivity,
-} from '../../application/contracts/ActivityLogQueryService.js';
+} from '../query/ActivityLogQueryService.js';
 import type { MongoActivityLogDBO } from './MongoActivityLogDBO.js';
 import { MongoActivityLogFilter } from './MongoActivityLogFilter.js';
 

@@ -1,6 +1,5 @@
 import { CATALOG_ROUTES, RouteDescriptor } from './CatalogRoutes.js';
 
-/** One catalogued route: the HTTP method it is made with and its exact path. */
 type RouteReference = { method: string; url: string };
 
 /** The routes the activity log knows how to describe, and how to find them. */

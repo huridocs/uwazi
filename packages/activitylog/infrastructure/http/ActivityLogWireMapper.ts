@@ -3,7 +3,7 @@ import type {
   ActivityLogFilters,
   ActivityLogPage,
   ListedActivity,
-} from '../../application/contracts/ActivityLogQueryService.js';
+} from '../query/ActivityLogQueryService.js';
 import type { ActivityLogResponse, ActivityLogResponseRow } from './ActivityLogResponse.js';
 
 type RequestQuery = NonNullable<ActivityLogGetRequest['query']>;

@@ -8,7 +8,6 @@ import { RecordActivityFactory } from '../factories/RecordActivityFactory.js';
  * fails because of it: an entry that cannot be stored is reported and dropped.
  */
 class ActivityLogMiddleware {
-  /** A request can reach the middleware more than once; it is logged the first time only. */
   private static readonly attached = new WeakSet<Request>();
 
   static handle(this: void, req: Request, res: Response, next: NextFunction): void {

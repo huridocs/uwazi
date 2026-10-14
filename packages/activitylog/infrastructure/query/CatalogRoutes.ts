@@ -1,17 +1,15 @@
 import type { ActivityAction } from './ActivityDescription.js';
 import { ActivityFormatters } from './ActivityFormatters.js';
-import type { ActivityData, RelatedDataKind } from './contracts/RelatedData.js';
+import type { ActivityData, RelatedDataKind } from './RelatedData.js';
 
 /** How the requests to one route are described. */
 type RouteDescriptor = {
   desc: string;
-  /** UPDATE when left out. A CREATE whose body carries `idField` is described as an UPDATE. */
   method?: ActivityAction;
   idField?: string;
   nameField?: string;
   nameFunc?: (data: ActivityData) => string;
   extra?: (data: ActivityData) => string | null;
-  /** What to load from the rest of the application before naming the entry. */
   related?: RelatedDataKind;
 };
 

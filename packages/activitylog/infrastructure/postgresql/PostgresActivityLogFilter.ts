@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { escapeEspecialChars } from '#shared/data_utils/stringUtils.js';
-import { ActivityCatalog, RouteReference } from '../../application/ActivityCatalog.js';
-import type { ActivityLogFilters } from '../../application/contracts/ActivityLogQueryService.js';
+import { ActivityCatalog, RouteReference } from '../query/ActivityCatalog.js';
+import type { ActivityLogFilters } from '../query/ActivityLogQueryService.js';
 
 /** A boolean SQL expression with the values it binds: `??` for a column, `?` for a value. */
 type Condition = { sql: string; bindings: (string | number)[] };

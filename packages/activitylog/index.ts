@@ -4,5 +4,5 @@ export type {
   ActivityLogQueryService,
   ActivityLogSummary,
   ListedActivity,
-} from './application/contracts/ActivityLogQueryService.js';
+} from './infrastructure/query/ActivityLogQueryService.js';
 export { ActivityLogQueryServiceFactory } from './infrastructure/factories/ActivityLogQueryServiceFactory.js';

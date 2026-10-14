@@ -1,4 +1,4 @@
-import type { ActivityDescription } from '../../application/ActivityDescription.js';
+import type { ActivityDescription } from '../query/ActivityDescription.js';
 
 /** One entry as the activity log screen reads it. Fields the entry lacks are left out. */
 type ActivityLogResponseRow = {

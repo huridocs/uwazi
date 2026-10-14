@@ -10,10 +10,9 @@ import {
 } from '#api/core/libs/queue/configuration/factories.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/index.js';
-import { ArchiveActivityOverflow } from '../../application/ArchiveActivityOverflow.js';
 import { ScheduleActivityLogArchivesJob } from '../jobs/ScheduleActivityLogArchivesJob.js';
 
-type Options = { pool?: pg.Pool; maxRows?: number; chunkRows?: number };
+type Options = { pool?: pg.Pool };
 
 /**
  * The job reads every tenant's rows, so it counts on the admin pool. Only tenants on Postgres are
@@ -21,15 +20,12 @@ type Options = { pool?: pg.Pool; maxRows?: number; chunkRows?: number };
  */
 class ScheduleActivityLogArchivesJobFactory {
   static default(options: Options = {}): ScheduleActivityLogArchivesJob {
-    const maxRows = options.maxRows ?? config.activityLog.maxRows;
-    const chunkRows = options.chunkRows ?? ArchiveActivityOverflow.CHUNK_ROWS;
-
     return new ScheduleActivityLogArchivesJob({
       pool: options.pool ?? PostgresDB.adminPool(),
       jobsDispatcher: ExecutionContext.jobsDispatcher,
       dispatcherFor: ScheduleActivityLogArchivesJobFactory.postgresQueueOf,
       tenantNames: tenants.getTenantsForFeatureFlag('postgresCore').map(tenant => tenant.name),
-      dueFrom: maxRows + chunkRows,
+      dueFrom: config.activityLog.maxRows + config.activityLog.chunkRows,
     });
   }
 

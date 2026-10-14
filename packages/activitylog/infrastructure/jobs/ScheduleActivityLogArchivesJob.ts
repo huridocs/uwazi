@@ -13,13 +13,9 @@ const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 type Deps = {
   pool: pg.Pool;
-  /** Schedules the next run, in the namespace this job runs in. */
   jobsDispatcher: JobsDispatcher;
-  /** Dispatches into a tenant's namespace. */
   dispatcherFor: (tenantName: string) => JobsDispatcher;
-  /** The tenants whose activity log is archived: the ones on Postgres. */
   tenantNames: string[];
-  /** How many entries a tenant holds once it has a whole file to archive. */
   dueFrom: number;
 };
 

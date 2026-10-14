@@ -1,7 +1,7 @@
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import type { ActivityLogQueryService } from '../../application/contracts/ActivityLogQueryService.js';
+import type { ActivityLogQueryService } from '../query/ActivityLogQueryService.js';
 import { MongoActivityLogQueryService } from '../mongodb/MongoActivityLogQueryService.js';
 import { PostgresActivityLogQueryService } from '../postgresql/PostgresActivityLogQueryService.js';
 import { ActivityDescriberFactory } from './ActivityDescriberFactory.js';

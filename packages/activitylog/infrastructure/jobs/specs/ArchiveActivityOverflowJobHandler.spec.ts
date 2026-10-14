@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import { config } from '#api/config.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { ArchiveActivityOverflow } from '../../../application/ArchiveActivityOverflow.js';
 import {
   seed,
   setUpBackends,
@@ -19,15 +18,11 @@ const entries: StoredEntry[] = Array.from({ length: 7 }, (_, index) => ({
   time: index + 1,
 }));
 
-const SYSTEM_LIMITS = {
-  maxRows: config.activityLog.maxRows,
-  chunkRows: ArchiveActivityOverflow.CHUNK_ROWS,
-};
+const SYSTEM_LIMITS = { ...config.activityLog };
 
 /** The handler takes its limits from the system, so the system is given small ones. */
-const setSystemLimits = ({ maxRows, chunkRows }: typeof SYSTEM_LIMITS) => {
-  config.activityLog.maxRows = maxRows;
-  Object.assign(ArchiveActivityOverflow, { CHUNK_ROWS: chunkRows });
+const setSystemLimits = (limits: typeof SYSTEM_LIMITS) => {
+  Object.assign(config.activityLog, limits);
 };
 
 describe('ArchiveActivityOverflowJobHandler', () => {
@@ -46,7 +41,7 @@ describe('ArchiveActivityOverflowJobHandler', () => {
     await seed(true, entries);
 
     await testingEnvironment.runWithContext(async () =>
-      ArchiveActivityOverflowJobHandler.default().handleDispatch(async () => undefined, {})
+      new ArchiveActivityOverflowJobHandler().handleDispatch(async () => undefined, {})
     );
 
     expect(await fs.readdir(testingTenants.current().activityLogs)).toContain(

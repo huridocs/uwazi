@@ -6,7 +6,7 @@ import entities from '#api/entities/entities.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
-import type { ActivityData } from '../application/contracts/RelatedData.js';
+import type { ActivityData } from './RelatedData.js';
 
 /**
  * Reads what the describer needs from the modules that own it, V1 ones included. Stateless: the

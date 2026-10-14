@@ -13,7 +13,6 @@ class ActivityLogArchive {
     private readonly entries: ActivityLogEntry[]
   ) {}
 
-  /** The entries must be given oldest first, and there must be at least one. */
   static of(entries: ActivityLogEntry[]): ActivityLogArchive {
     const first = entries[0].props;
     const last = entries[entries.length - 1].props;

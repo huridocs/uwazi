@@ -1,14 +1,14 @@
 import { ActivityCatalog, RouteDescriptor } from './ActivityCatalog.js';
 import type { ActivityDescription } from './ActivityDescription.js';
-import type { ActivityData, RelatedData } from './contracts/RelatedData.js';
+import type { ActivityData, RelatedData } from './RelatedData.js';
 import { MigrationLogDescriber } from './MigrationLogDescriber.js';
+
+//cc: it seems this component is used to display data to clients, if that true it should be colocated inside infrastructure/query
 
 type DescribedRequest = {
   method: string;
   url: string;
-  /** JSON. */
   body?: string;
-  /** JSON; read when there is no body. */
   query?: string;
 };
 
@@ -74,7 +74,6 @@ class ActivityDescriber {
     return descriptor.related ? this.deps.related[descriptor.related](data) : data;
   }
 
-  /** A request to a creating route that names an existing record changed it instead. */
   private static asUpdateWhenItCarriesAnId(
     descriptor: RouteDescriptor,
     body: string
