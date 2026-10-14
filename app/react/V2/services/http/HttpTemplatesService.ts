@@ -6,8 +6,10 @@ const httpTemplatesService: TemplatesService = {
 
   getById: async (id, { headers } = {}) => templatesApi.getById(id, headers),
 
-  checkEntityCounts: async (templateIds, { headers } = {}) =>
-    templatesApi.checkEntityCounts(templateIds, headers),
+  checkEntityCounts: async ({ headers } = {}) => templatesApi.checkEntityCounts(headers),
+
+  checkEntityCount: async (templateId, { headers } = {}) =>
+    templatesApi.checkEntityCount(templateId, headers),
 
   upsert: async (template, { headers } = {}) => templatesApi.upsert(template, headers),
 

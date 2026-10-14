@@ -4,8 +4,8 @@ import type { RelationshipTypesService } from '../contracts/RelationshipTypesSer
 const httpRelationshipTypesService: RelationshipTypesService = {
   getAll: async ({ headers } = {}) => relationshipTypesApi.getAll(headers),
 
-  countByTypes: async (ids, { signal } = {}) => [
-    await relationshipTypesApi.countByRelationTypes(ids, signal),
+  countByTypes: async ({ signal } = {}) => [
+    await relationshipTypesApi.countByRelationTypes(signal),
   ],
 
   upsert: async (relationshipType, { headers } = {}) =>
