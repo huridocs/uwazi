@@ -1,6 +1,10 @@
 # Preserve cursor on Postgres
 
-The `preserveSync` collection is the Preserve integration's cursor. It is not a synced namespace and it is not the Preserve configuration. One document per Preserve token, in the tenant database: `token`, `lastImport`. `settings.features.preserve` (host, master token, template, user) stays where settings already live.
+The Preserve cursor is the integration's pointer. It is not a synced namespace and it is not the Preserve configuration. One document per token, in the tenant database: `token`, `lastImport`. The mongoose model is named `preserveSync`; the collection it writes is `preservesyncs`, because mongoose pluralizes that name. `settings.features.preserve` (host, master token, template, user) stays where settings already live.
+
+## Status
+
+Implemented. Schema `035`, `preserveSyncs` branching on `postgresCore`, `PostgresPreserveSync`, and `PreserveSyncMigrationConfig` (`preservesyncs` → `preserve_sync`) in the `postgresCore` copy group. The worker still has to be copied before a `postgresCore` tenant runs the new code.
 
 ## Decision
 
@@ -41,18 +45,18 @@ Settings, users, entities, and files on this path already go through V2 factorie
 
 - `postgresCore` is the single core cutover flag (`app/api/tenants/featureFlags.ts`, `FEATURE_FLAG_POSTGRES_CORE` in `config.ts`). `isPostgresCoreActive()` in `app/api/core/libs/featureFlags.ts` is the helper. Relationship types, settings, update logs, and sync cursors all branch on it. The per-module flags in `AI Contexts/Relationship Types/relationship-types-postgres.md` (`postgresTemplates`, `postgresRelationshipTypes`, …) are gone.
 - The copy script groups collections by that flag. `scripts/scripts.v2/migrateToPostgres.ts` `FLAG_GROUPS.postgresCore` already includes `updatelogs` and `syncs`. A new table is one more name in that list. Re-running the script migrates a table that is still empty for the tenant and skips tables that already have rows.
-- Schema files in `app/api/core/infrastructure/postgresql/schema_migrations/` are applied in order by the test helper and by `yarn migrate`. The latest is `034-create-activitylogs-table.sql`. `current_tenant()` and the `tenant_isolation` policy pattern already exist (`033-create-syncs-table.sql` is the closest copy: small table, RLS in the same file, no `_id`).
+- Schema files in `app/api/core/infrastructure/postgresql/schema_migrations/` are applied in order by the test helper and by `yarn migrate`. `current_tenant()` and the `tenant_isolation` policy pattern already exist (`033-create-syncs-table.sql` is the closest copy: small table, RLS in the same file, no `_id`).
 - `MigrateCollectionToPostgres` plus a `MigrationConfig` (`mongoCollection`, `pgTable`, `mapDocument`, `conflictColumns`) is the copy. `SyncsMigrationConfig` is the model: drop `_id`, conflict on the natural key, spec covers the mapper and one real copy.
 - The worker tick already has a Postgres transaction manager. `preserveSync.syncAllTenants` uses `runInJobContext`, so `ExecutionContext.postgresTransactionManager` is set before `sync` runs. `PostgresSyncs` shows the connection shape: `withConnection`, `preservePermission: true`, tenant id from `ExecutionContext.currentTenant.name`.
 - Preserve settings are not part of this move. `SettingsDataSourceFactory` already reads `features.preserve` from whichever backend `postgresCore` selected.
 - The existing spec pins the Mongo behavior and forces the flag off: `app/api/services/preserve/specs/preserveSync.spec.ts` builds its tenant with `featureFlags: { postgresCore: false }` and reads the cursor through `preserveSyncModel`. That spec stays the Mongo integration test.
 
-## Missing
+## Landed
 
 - Schema `035-create-preserve-sync-table.sql`: `preserve_sync` with `tenant_id`, `token`, `last_import TEXT NOT NULL`, primary key `(tenant_id, token)`, RLS in the same file.
 - `PostgresPreserveSync` with `read(token)` and `save(token, lastImport)` (upsert on conflict).
 - A V1 module the tick calls, branching on `postgresCore`. Mongo branch keeps using `preserveSyncModel`. `preserveSync.ts` stops calling the model directly.
-- `PreserveSyncMigrationConfig`: collection `preserveSync` → table `preserve_sync`, drop `_id`, `conflictColumns: ['tenant_id', 'token']`. Register it in `configs/index.ts`, in the `COLLECTIONS` map, and at the end of `FLAG_GROUPS.postgresCore` (no foreign keys; order only has to stay after the tables it does not reference).
+- `PreserveSyncMigrationConfig`: collection `preservesyncs` → table `preserve_sync`, drop `_id`, `conflictColumns: ['tenant_id', 'token']`. Register it in `configs/index.ts`, in the `COLLECTIONS` map, and at the end of `FLAG_GROUPS.postgresCore` (no foreign keys; order only has to stay after the tables it does not reference). Copying `preserveSync` would miss every row.
 - A dual-backend spec in the style of `app/api/sync/specs/syncs.spec.ts`: first save creates the row, second save for the same token replaces `lastImport`, a missing token reads null, and the other tenant's row is invisible. The existing `preserveSync.spec.ts` does not need a Postgres twin; it reaches past the module into mongoose.
 - One flag-on check that the second tick's Preserve query uses the Postgres `last_import`. The big spec cannot see that, because it reads the mongoose model between ticks.
 
