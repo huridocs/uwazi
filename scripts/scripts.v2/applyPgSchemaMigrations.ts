@@ -1,9 +1,8 @@
 /**
  * Applies pending PostgreSQL schema migrations (schema_migrations/*.sql).
  *
- * Used by `database/blank_state_base.sh` after restoring PG blank-state data and
- * before `yarn migrate`, so Mongo data migrations that declare `requiresSchema`
- * are not blocked on a fresh database (currentSchema would otherwise stay at 0).
+ * Run it before `yarn migrate` on a fresh database, so Mongo data migrations that declare
+ * `requiresSchema` are not blocked (currentSchema would otherwise stay at 0).
  *
  * Invoked via: node scripts/runner.js scripts/scripts.v2/applyPgSchemaMigrations.ts
  */

@@ -1,19 +1,36 @@
 // eslint-disable-next-line no-restricted-imports
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
+import { ConflictError } from '#api/core/domain/error/ConflictError.js';
 import { serializePgValue } from '#api/core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
   return identifier.replace(/"/g, '""');
 }
 
-export class TenantDataExistsError extends Error {
+export class TenantDataExistsError extends ConflictError {
   constructor(tenantId: string) {
-    super(`PostgreSQL data for tenant '${tenantId}' already exists.`);
-    this.name = 'TenantDataExistsError';
+    super(
+      `PostgreSQL data for tenant '${tenantId}' already exists.`,
+      'blank_state.tenant_data_exists'
+    );
   }
 }
+
+/** Tenant tables that constitute a blank state. History and user-data tables are excluded. */
+const BLANK_STATE_TABLES = new Set([
+  'settings',
+  'templates',
+  'thesauri',
+  'relationship_types',
+  'users',
+  'usergroups',
+  'translations',
+  'pages',
+  'page_locales',
+  'page_releases',
+]);
 
 export class PgBlankState {
   constructor(
@@ -51,6 +68,39 @@ export class PgBlankState {
     } finally {
       client.release();
     }
+  }
+
+  /** Dumps this tenant's current rows to fixture files. Empty tables are skipped. */
+  async dump(): Promise<string[]> {
+    const tables = (await this.getTenantTables()).filter(t => BLANK_STATE_TABLES.has(t));
+    const written: string[] = [];
+
+    await Promise.all(
+      tables.map(async table => {
+        const result = await this.pool.query<{ row: Record<string, unknown> }>(
+          `SELECT row_to_json(t) AS row FROM "${escapeIdentifier(table)}" t WHERE tenant_id = $1`,
+          [this.tenantId]
+        );
+        if (result.rows.length === 0) return;
+
+        const rows = result.rows
+          .map(({ row }) => row)
+          .map(({ tenant_id: _tenantId, ...rest }) => rest)
+          .sort(
+            (a, b) =>
+              String(a._id ?? '').localeCompare(String(b._id ?? '')) ||
+              JSON.stringify(a).localeCompare(JSON.stringify(b))
+          );
+
+        writeFileSync(
+          path.join(this.dataDir, `${table}.json`),
+          `${JSON.stringify(rows, null, 2)}\n`
+        );
+        written.push(table);
+      })
+    );
+
+    return written.sort();
   }
 
   /** Returns all public tables that have a tenant_id column, excluding pg_migrations. */

@@ -56,7 +56,7 @@ describe('PgBlankState', () => {
   };
 
   describe('run', () => {
-    it('should throw TenantDataExistsError when tenant data exists without force', async () => {
+    it('should throw a conflict TenantDataExistsError when tenant data exists without force', async () => {
       createFixture('templates', [
         {
           _id: 'new1',
@@ -69,7 +69,11 @@ describe('PgBlankState', () => {
       ]);
 
       const bs = new PgBlankState(pool, TENANT_A, dataDir);
-      await expect(bs.run()).rejects.toThrow(TenantDataExistsError);
+      const error = await bs.run().catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(TenantDataExistsError);
+      expect((error as TenantDataExistsError).category).toBe('conflict');
+      expect((error as TenantDataExistsError).code).toBe('blank_state.tenant_data_exists');
     });
 
     it('should delete and restore when force is true', async () => {

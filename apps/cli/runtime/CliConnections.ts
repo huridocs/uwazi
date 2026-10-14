@@ -1,7 +1,7 @@
 import { config } from '#api/config.js';
 
 /** sessions opens nothing: the session store is read through MongoDB or PostgreSQL. */
-type ConnectionNeeds = { redis: boolean; sessions: boolean };
+type ConnectionNeeds = { redis: boolean; sessions: boolean; postgresAdmin?: boolean };
 
 class CliConnections {
   private static drivers?: ReturnType<typeof CliConnections.loadDrivers>;
