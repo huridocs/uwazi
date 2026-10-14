@@ -617,6 +617,7 @@ group expressions,ομαδικές εκφράσεις
 Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
 Group updated,Η ομάδα ενημερώθηκε
+Grouped,Ομαδοποιημένα
 Grouped geolocation properties,Ομαδοποιημένες ιδιότητες γεωγραφικής θέσης
 Groups,Ομάδες
 Header and button preview,Προεπισκόπηση επικεφαλίδας και κουμπιού
@@ -634,6 +635,7 @@ Hide details,Απόκρυψη λεπτομερειών
 Hide label,Απόκρυψη ετικέτας
 Hide restricted relationships from public,Απόκρυψη σχέσεων με περιορισμένη πρόσβαση από το κοινό
 Hide task,Απόκρυψη εργασίας
+Hide the matches in,Απόκρυψη των αντιστοιχίσεων σε
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
 Hours,Ώρες
 How to combine sources,Πώς να συνδυάσετε πηγές
@@ -741,6 +743,7 @@ library list view,προβολή λίστας βιβλιοθήκης
 library map view,προβολή χάρτη βιβλιοθήκης
 Library panes,Παράθυρα βιβλιοθήκης
 Library results,Αποτελέσματα βιβλιοθήκης
+Library side panel,Πλευρικός πίνακας βιβλιοθήκης
 library table view,προβολή πίνακα βιβλιοθήκης
 Light,Ανοιχτόχρωμο
 Light Theme,Ανοιχτόχρωμο θέμα
@@ -921,6 +924,7 @@ No Relationships description,Οι σχέσεις είναι δεσμοί μετ�
 No relationships found,Δεν βρέθηκαν σχέσεις
 No relationships to graph,Δεν υπάρχουν σχέσεις προς απεικόνιση.
 No releases yet,Δεν υπάρχουν ακόμη εκδόσεις
+No results for the selected match types.,Δεν υπάρχουν αποτελέσματα για τους επιλεγμένους τύπους αντιστοίχισης.
 No results found,Δεν βρέθηκαν αποτελέσματα
 No supporting files yet. Add a file to get started.,Δεν υπάρχουν ακόμη υποστηρικτικά αρχεία. Προσθέστε ένα αρχείο για να ξεκινήσετε.
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
@@ -1023,6 +1027,7 @@ Paragraph text extraction property (rich text),Ιδιότητα εξαγωγής
 Paragraphs,Παράγραφοι
 Paragraphs deleted,Οι παράγραφοι διαγράφηκαν
 parties,μέρη
+Passages,Αποσπάσματα
 Password,Κωδικός πρόσβασης
 Password + 2fa,Κωδικός πρόσβασης + 2fa
 Password changed success,Ο κωδικός πρόσβασης άλλαξε επιτυχώς
@@ -1196,6 +1201,8 @@ Restore,Επαναφορά
 Restore previous version,Επαναφορά προηγούμενης έκδοσης
 Restricted,Περιορισμένα
 Results,Αποτελέσματα
+Results layout,Διάταξη αποτελεσμάτων
+Results show the passages behind each hit.,Τα αποτελέσματα δείχνουν τα αποσπάσματα πίσω από κάθε εύρημα.
 Retryable,Μπορεί να επαναληφθεί
 Retrying,Επανάληψη προσπάθειας
 Return to login,Επιστροφή στη σύνδεση
@@ -1252,6 +1259,7 @@ Search Tips: one char wildcard,"? για μπαλαντέρ ενός χαρακ�
 Search Tips: proximity,"~ για αναζητήσεις εγγύτητας. Δηλαδή: ""η κατάσταση""~5 θα βρει οτιδήποτε έχει ""η"" και ""κατάσταση"" σε απόσταση 5 λέξεων, όπως ""η διαδικαστική κατάσταση"", ""η συγκεκριμένη νομική κατάσταση""."
 Search Tips: wildcard,"Χρησιμοποιήστε * για αναζήτηση με μπαλαντέρ. Δηλαδή: ""δικαιο*"" θα αντιστοιχίσει λέξεις όπως δικαιοδοσία, δικαιοδοτικό, δικαιολογητικό, δικαιολογία, κ.λπ."
 Search title & metadata,Αναζήτηση τίτλου και μεταδεδομένων
+Search to see where terms match,Αναζητήστε για να δείτε πού ταιριάζουν οι όροι
 Searching...,Αναζήτηση...
 Second dimension (series / stacks),Δεύτερη διάσταση (σειρές / στοίβες)
 Secondary button,Δευτερεύον κουμπί
@@ -1339,6 +1347,7 @@ Show information,Εμφάνιση πληροφοριών
 Show less,Εμφάνιση λιγότερων
 Show more,Εμφάνιση περισσότερων
 Show remaining in panel,Εμφάνιση του υπολοίπου στο πλαίσιο
+Show the matches in,Εμφάνιση των αντιστοιχίσεων σε
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
 Showing the top,Εμφάνιση των κορυφαίων

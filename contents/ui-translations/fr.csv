@@ -618,6 +618,7 @@ group expressions,expressions de groupe
 Group Options,Options de groupe
 Group saved,Groupe enregistré
 Group updated,Groupe mis à jour
+Grouped,Groupés
 Grouped geolocation properties,Propriétés de géolocalisation regroupées
 Groups,Groupes
 Header and button preview,Aperçu de l'en-tête et du bouton
@@ -635,6 +636,7 @@ Hide details,Masquer les détails
 Hide label,Masquer l'étiquette
 Hide restricted relationships from public,Masquer les relations restreintes au public
 Hide task,Masquer la tâche
+Hide the matches in,Masquer les correspondances dans
 Hide toolbar,Masquer la barre d'outils
 Hours,Heures
 How to combine sources,Comment combiner les sources
@@ -742,6 +744,7 @@ library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
 Library panes,Panneaux de la bibliothèque
 Library results,Résultats de la bibliothèque
+Library side panel,Panneau latéral de la bibliothèque
 library table view,Bilbliothèque en vue tabulaire
 Light,Clair
 Light Theme,Thème clair
@@ -922,6 +925,7 @@ No Relationships description,Les relations sont des liens entre les entités.
 No relationships found,Aucune relation trouvée
 No relationships to graph,Aucune relation à représenter dans le graphe
 No releases yet,Aucune version publiée pour l'instant
+No results for the selected match types.,Aucun résultat pour les types de correspondance sélectionnés.
 No results found,Aucun résultat trouvé
 No supporting files yet. Add a file to get started.,Il n'y a pas encore de fichiers joints. Ajoutez un fichier pour commencer.
 No table of contents,Aucune table des matières
@@ -1024,6 +1028,7 @@ Paragraph text extraction property (rich text),Propriété d’extraction de tex
 Paragraphs,Paragraphes
 Paragraphs deleted,Paragraphes supprimés
 parties,parties
+Passages,Passages
 Password,Mot de passe
 Password + 2fa,Mot de passe + authentification à deux facteurs
 Password changed success,Le mot de passe a été modifié avec succès
@@ -1196,6 +1201,8 @@ Restore,Restaurer
 Restore previous version,Restaurer la version précédente
 Restricted,Limité
 Results,Résultats
+Results layout,Disposition des résultats
+Results show the passages behind each hit.,Les résultats montrent les passages de chaque occurrence.
 Retryable,Peut être réessayé
 Retrying,Nouvelle tentative
 Return to login,Retourner à la connexion
@@ -1252,6 +1259,7 @@ Search Tips: one char wildcard,"? pour un caractère générique unique. Par exe
 Search Tips: proximity,"~ pour les recherches de proximité. Par exemple : ""le statut""~5 trouvera tout contenu ayant ""le"" et ""statut"" à une distance de 5 mots, comme ""le statut procédural"", ""le statut juridique spécifique""."
 Search Tips: wildcard,"Utilisez un * pour la recherche par caractère générique. Par exemple : ""juri*"" correspondra à des mots comme juridiction, juridique, juriste, jurisprudence, etc."
 Search title & metadata,Rechercher dans le titre et les métadonnées
+Search to see where terms match,Recherchez pour voir où les termes correspondent
 Searching...,Recherche en cours...
 Second dimension (series / stacks),Seconde dimension (séries / piles)
 Secondary button,Bouton secondaire
@@ -1339,6 +1347,7 @@ Show information,Afficher les informations
 Show less,Afficher moins
 Show more,Afficher plus
 Show remaining in panel,Afficher le reste dans le panneau
+Show the matches in,Afficher les correspondances dans
 Show toolbar,Afficher la barre d'outils
 Showing,Affichage
 Showing the top,Affichage des

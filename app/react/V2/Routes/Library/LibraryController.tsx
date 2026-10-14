@@ -125,6 +125,7 @@ const LibraryController = () => {
       totalRows={data.totalRows}
       aggregations={data.aggregations}
       search={searchInput}
+      committedSearch={urlState.search}
       onSearchChange={setSearchInput}
       onSearchSubmit={commitSearchNow}
       view={urlState.view}

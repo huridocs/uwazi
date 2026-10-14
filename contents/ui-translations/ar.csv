@@ -617,6 +617,7 @@ group expressions,تجميع التعبيرات
 Group Options,خيارات المجموعة
 Group saved,تم حفظ المجموعة
 Group updated,تم تحديث المجموعة
+Grouped,مجمّعة
 Grouped geolocation properties,خصائص تحديد الموقع الجغرافي المجمعة
 Groups,مجموعات
 Header and button preview,معاينة العنوان والزر
@@ -634,6 +635,7 @@ Hide details,إخفاء التفاصيل
 Hide label,إخفاء التسمية
 Hide restricted relationships from public,إخفاء العلاقات المقيدة عن الجمهور
 Hide task,إخفاء المهمة
+Hide the matches in,إخفاء المطابقات في
 Hide toolbar,إخفاء شريط الأدوات
 Hours,ساعات
 How to combine sources,كيفية دمج المصادر
@@ -741,6 +743,7 @@ library list view,معاينة القائمة المكتبية
 library map view,معاينة خريطة المكتبة
 Library panes,لوحات المكتبة
 Library results,نتائج المكتبة
+Library side panel,اللوحة الجانبية للمكتبة
 library table view,معاينة جدول المكتبة
 Light,فاتح
 Light Theme,السمة الفاتحة
@@ -921,6 +924,7 @@ No Relationships description,العلاقات هي الروابط بين الك�
 No relationships found,لم يتم العثور على أي علاقات
 No relationships to graph,لا توجد علاقات يمكن تمثيلها بيانيًّا
 No releases yet,لم تصدر أي إصدارات حتى الآن
+No results for the selected match types.,لا توجد نتائج لأنواع المطابقة المحددة.
 No results found,لم يتم العثور على أي نتائج
 No supporting files yet. Add a file to get started.,لا توجد ملفات داعمة حتى الآن. أضف ملفًا لتبدأ.
 No table of contents,لا يوجد جدول المحتويات
@@ -1023,6 +1027,7 @@ Paragraph text extraction property (rich text),خاصية استخراج نص ا
 Paragraphs,الفقرات
 Paragraphs deleted,تم حذف الفقرات
 parties,الأطراف
+Passages,مقاطع
 Password,كلمه المرور
 Password + 2fa,كلمة المرور + المصادقة الثنائية
 Password changed success,تم تغيير كلمة المرور بنجاح
@@ -1196,6 +1201,8 @@ Restore,استعادة
 Restore previous version,استعادة الإصدار السابق
 Restricted,مُقَيَّد
 Results,النتائج
+Results layout,تخطيط النتائج
+Results show the passages behind each hit.,تعرض النتائج المقاطع التي تقف خلف كل مطابقة.
 Retryable,قابل لإعادة المحاولة
 Retrying,إعادة المحاولة
 Return to login,العودة لتسجيل الدخول
@@ -1252,6 +1259,7 @@ Search Tips: one char wildcard,"استخدم ? للبحث عن حرف واحد �
 Search Tips: proximity,"استخدم ~ لعمليات البحث بالقرب. على سبيل المثال: ستجد ""الوضع القانوني""~5 أي نص يحتوي على كلمتَي ""الوضع"" و""القانوني"" ضمن مسافة 5 كلمات، مثل ""الوضع القانوني الإجرائي"" أو ""الوضع القانوني والاجتماعي""."
 Search Tips: wildcard,"استخدم * للبحث بحرف بديل متعدد. على سبيل المثال: ستطابق ""قانون*"" كلمات مثل قانون، وقانوني، وقانونية، وغيرها."
 Search title & metadata,البحث في العنوان والبيانات الوصفية
+Search to see where terms match,ابحث لترى أين تتطابق المصطلحات
 Searching...,جاري البحث...
 Second dimension (series / stacks),البعد الثاني (سلاسل / تكديس)
 Secondary button,الزر الثانوي
@@ -1339,6 +1347,7 @@ Show information,عرض المعلومات
 Show less,إظهار أقل
 Show more,أظهر المزيد
 Show remaining in panel,إظهار ما تبقى في اللوحة
+Show the matches in,إظهار المطابقات في
 Show toolbar,إظهار شريط الأدوات
 Showing,عرض
 Showing the top,عرض الجزء العلوي
