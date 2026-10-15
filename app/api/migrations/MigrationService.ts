@@ -6,7 +6,10 @@ import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { MigrationKind, PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
+import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
+import { migrator } from './migrator.js';
 import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
@@ -49,6 +52,15 @@ type MigrationRunResult =
       reason: string;
     };
 
+type MigrationStatusReport = {
+  postgres: {
+    applied: number[];
+    pending: Array<{ delta: number; name: string; kind: MigrationKind }>;
+  };
+  /** Only tenants with something pending. */
+  mongo: { pendingByTenant: Record<string, number[]> };
+};
+
 type DBConnector = {
   connect: (host: string, auth: ConnectOptions) => Promise<Connection>;
   disconnect: () => Promise<void>;
@@ -72,6 +84,7 @@ type MigrationServiceDeps = {
   createDispatcher: DispatcherFactory;
   createLogger: LoggerFactoryFn;
   pgMigratorFactory: (pool: any, logger: Logger) => PgMigrator;
+  tenantMigrationRunner: Pick<TenantMigrationRunner, 'getPendingMigrations'>;
   transactionManagerFactory: () => any;
   postgresTransactionManagerFactory: () => any;
   eventEmitterFactory: () => any;
@@ -113,6 +126,7 @@ const defaultDeps: MigrationServiceDeps = {
   createDispatcher: createDefaultDispatcher,
   createLogger: createDefaultLogger,
   pgMigratorFactory: createDefaultPgMigrator,
+  tenantMigrationRunner: new TenantMigrationRunnerAdapter(migrator.migrationsDir, migrator.loader),
   transactionManagerFactory: TransactionManagerFactory.mongo,
   postgresTransactionManagerFactory: PostgresTransactionManagerFactory.default,
   eventEmitterFactory: EventEmitterFactory.default,
@@ -121,6 +135,45 @@ const defaultDeps: MigrationServiceDeps = {
 
 class MigrationService {
   constructor(private deps: MigrationServiceDeps) {}
+
+  /** What is pending in both databases. Applies nothing. */
+  async status(): Promise<MigrationStatusReport> {
+    await this.deps.db.connect(config.DBHOST, config.DBAUTH);
+    await this.deps.tenants.setupTenants();
+
+    try {
+      const logger = this.deps.createLogger({ async: false, structuredLogs: false });
+      const pgMigrator = this.deps.pgMigratorFactory(this.deps.postgresDB.adminPool(), logger);
+      const { applied, pending } = await pgMigrator.status();
+
+      return {
+        postgres: {
+          applied: applied.map(({ delta }) => delta),
+          pending: pending.map(({ delta, name, kind }) => ({ delta, name, kind })),
+        },
+        mongo: { pendingByTenant: await this.pendingMongoMigrations() },
+      };
+    } finally {
+      await this.deps.db.disconnect();
+      await this.deps.postgresDB.disconnect();
+    }
+  }
+
+  private async pendingMongoMigrations(): Promise<Record<string, number[]>> {
+    const pendingByTenant: Record<string, number[]> = {};
+    for (const tenant of Object.values(this.deps.tenants.tenants)) {
+      // eslint-disable-next-line no-await-in-loop
+      const { runnable, blocked } = await this.deps.tenantMigrationRunner.getPendingMigrations(
+        tenant,
+        Number.MAX_SAFE_INTEGER
+      );
+      const deltas = [...runnable.map(({ delta }) => delta), ...(blocked ? [blocked.delta] : [])];
+      if (deltas.length > 0) {
+        pendingByTenant[tenant.name] = deltas;
+      }
+    }
+    return pendingByTenant;
+  }
 
   async run(options: { async: boolean; structuredLogs: boolean }): Promise<MigrationRunResult> {
     await this.deps.db.connect(config.DBHOST, config.DBAUTH);
@@ -193,5 +246,9 @@ async function runNewMigration(
   return service.run(options);
 }
 
-export { MigrationService, runNewMigration };
-export type { MigrationRunResult, MigrationServiceDeps };
+async function migrationStatus(): Promise<MigrationStatusReport> {
+  return new MigrationService(defaultDeps).status();
+}
+
+export { MigrationService, runNewMigration, migrationStatus };
+export type { MigrationRunResult, MigrationServiceDeps, MigrationStatusReport };

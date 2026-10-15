@@ -6,12 +6,6 @@ import pg from 'pg';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { PgDataMigration, PgDataMigrationContext } from './PgDataMigration.js';
 
-type MigrationStatus = {
-  delta: number;
-  name: string;
-  applied: boolean;
-};
-
 /** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
 const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
 const TRACKING_TABLE = 'pg_migrations';
@@ -21,6 +15,13 @@ const MIGRATION_LOCK_KEY = 7_586_011;
 type MigrationKind = 'sql' | 'data';
 
 type MigrationFile = { delta: number; name: string; kind: MigrationKind; filePath: string };
+
+type MigrationStatus = {
+  delta: number;
+  name: string;
+  kind: MigrationKind;
+  applied: boolean;
+};
 
 type MigrateOptions = {
   until?: number;
@@ -123,6 +124,7 @@ export class PgMigrator {
     const statuses = migrationFiles.map(m => ({
       delta: m.delta,
       name: m.name,
+      kind: m.kind,
       applied: appliedDeltas.has(m.delta),
     }));
 
@@ -245,4 +247,4 @@ export class PgMigrator {
   }
 }
 
-export type { MigrateOptions, MigrateResult, PgMigratorDeps };
+export type { MigrateOptions, MigrateResult, MigrationKind, MigrationStatus, PgMigratorDeps };

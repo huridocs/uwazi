@@ -150,6 +150,18 @@ export const migration = {
     expect(logger.info).toHaveBeenCalledWith('batch done');
   });
 
+  it('should report the kind of every migration in status', async () => {
+    createMigration('001-schema.sql', 'SELECT 1');
+    createMigration('002-data.ts', dataMigration({ reindex: false, up: '' }));
+    const migrator = createMigrator();
+    await migrator.migrate({ until: 1 });
+
+    expect(await migrator.status()).toEqual({
+      applied: [{ delta: 1, name: 'schema', kind: 'sql', applied: true }],
+      pending: [{ delta: 2, name: 'data', kind: 'data', applied: false }],
+    });
+  });
+
   it('should reject a .ts and a .sql migration sharing a delta', async () => {
     createMigration('001-schema.sql', 'SELECT 1');
     createMigration('001-data.ts', dataMigration({ reindex: false, up: '' }));
