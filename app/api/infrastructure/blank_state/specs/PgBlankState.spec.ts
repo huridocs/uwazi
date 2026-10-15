@@ -3,7 +3,10 @@ import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { PgBlankState, TenantDataExistsError } from '../PgBlankState.js';
+import { BlankStateEmptyError } from '../BlankStateEmptyError.js';
+import { BlankStateTablesMissingError } from '../BlankStateTablesMissingError.js';
+import { PgBlankState } from '../PgBlankState.js';
+import { TenantDataExistsError } from '../TenantDataExistsError.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -122,7 +125,34 @@ describe('PgBlankState', () => {
       expect(result.rows[0].name).toBe('Fresh Template');
     });
 
+    it('should throw a BlankStateEmptyError when there are no fixtures to restore', async () => {
+      const bs = new PgBlankState(pool, 'fresh-tenant', dataDir);
+
+      await expect(bs.run()).rejects.toBeInstanceOf(BlankStateEmptyError);
+    });
+
+    it('should throw a BlankStateTablesMissingError when a fixture targets a missing table', async () => {
+      createFixture('no_such_table', [
+        { _id: 'new1', name: 'Missing Table', tenant_id: '__TENANT_ID__' },
+      ]);
+
+      const bs = new PgBlankState(pool, 'fresh-tenant', dataDir);
+
+      await expect(bs.run()).rejects.toBeInstanceOf(BlankStateTablesMissingError);
+    });
+
     it('should not affect pg_migrations table', async () => {
+      createFixture('templates', [
+        {
+          _id: 'new1',
+          name: 'Restored Template',
+          properties: [],
+          commonProperties: [],
+          default: false,
+          tenant_id: '__TENANT_ID__',
+        },
+      ]);
+
       const before = await pool.query('SELECT COUNT(*) as count FROM pg_migrations');
       const countBefore = parseInt(before.rows[0].count, 10);
 

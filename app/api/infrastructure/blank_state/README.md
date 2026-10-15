@@ -7,7 +7,9 @@ The only entry point is the `uwazi` CLI (see `apps/cli/docs/blank-state.md`):
 
 - **Restore** — `uwazi blank-state restore --tenant <name>` (add `--force` to overwrite an
   existing tenant). `PgBlankState.run()` deletes existing tenant data when forced and inserts the
-  fixtures with the target `tenant_id`. It refuses to run on a non-empty tenant without `force`.
+  fixtures with the target `tenant_id`. It refuses to run on a non-empty tenant without `force`,
+  errors when a fixture table is missing from the schema, and errors when there are no fixtures to
+  restore.
 - **Dump** — `uwazi blank-state dump --tenant <name>`. `PgBlankState.dump()` reads every
   blank-state table for the golden tenant and writes one `<table>.json` per non-empty table, with
   `tenant_id` stripped and Prettier-formatted.

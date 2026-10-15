@@ -2,20 +2,13 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
-import { ConflictError } from '#api/core/domain/error/ConflictError.js';
 import { serializePgValue } from '#api/core/infrastructure/postgresql/serializePgValue.js';
+import { BlankStateEmptyError } from './BlankStateEmptyError.js';
+import { BlankStateTablesMissingError } from './BlankStateTablesMissingError.js';
+import { TenantDataExistsError } from './TenantDataExistsError.js';
 
 function escapeIdentifier(identifier: string): string {
   return identifier.replace(/"/g, '""');
-}
-
-export class TenantDataExistsError extends ConflictError {
-  constructor(tenantId: string) {
-    super(
-      `PostgreSQL data for tenant '${tenantId}' already exists.`,
-      'blank_state.tenant_data_exists'
-    );
-  }
 }
 
 /** Tenant tables that constitute a blank state. History and user-data tables are excluded. */
@@ -60,7 +53,13 @@ export class PgBlankState {
         }
         /* eslint-enable no-await-in-loop */
       }
-      await this.restoreFixtures(client);
+      const { restored, missingTables } = await this.restoreFixtures(client);
+      if (missingTables.length > 0) {
+        throw new BlankStateTablesMissingError(missingTables);
+      }
+      if (restored.length === 0) {
+        throw new BlankStateEmptyError();
+      }
       await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
@@ -135,9 +134,16 @@ export class PgBlankState {
   /* eslint-enable no-await-in-loop */
 
   /* eslint-disable no-await-in-loop, no-continue */
-  /** Restores fixture JSON files for this tenant. */
-  private async restoreFixtures(client: pg.PoolClient): Promise<void> {
+  /**
+   * Restores fixture JSON files for this tenant, returning the tables that had rows inserted and
+   * the fixture tables that do not exist in the schema.
+   */
+  private async restoreFixtures(
+    client: pg.PoolClient
+  ): Promise<{ restored: string[]; missingTables: string[] }> {
     const jsonFiles = readdirSync(this.dataDir).filter(f => f.endsWith('.json'));
+    const restored: string[] = [];
+    const missingTables: string[] = [];
 
     for (const file of jsonFiles) {
       const tableName = file.replace('.json', '');
@@ -157,6 +163,7 @@ export class PgBlankState {
       );
 
       if (columnsResult.rows.length === 0) {
+        missingTables.push(tableName);
         continue;
       }
 
@@ -178,7 +185,10 @@ export class PgBlankState {
           values
         );
       }
+      restored.push(tableName);
     }
+
+    return { restored, missingTables };
   }
   /* eslint-enable no-await-in-loop, no-continue */
 }

@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-restricted-imports
-import { mkdirSync, rmSync } from 'fs';
+import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import path from 'path';
 import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
-import {
-  PgBlankState,
-  TenantDataExistsError,
-} from '#api/infrastructure/blank_state/PgBlankState.js';
+import { BlankStateEmptyError } from '#api/infrastructure/blank_state/BlankStateEmptyError.js';
+import { BlankStateTablesMissingError } from '#api/infrastructure/blank_state/BlankStateTablesMissingError.js';
+import { PgBlankState } from '#api/infrastructure/blank_state/PgBlankState.js';
+import { TenantDataExistsError } from '#api/infrastructure/blank_state/TenantDataExistsError.js';
 import type { Tenant } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RestoreBlankStateController } from '../RestoreBlankStateController.js';
@@ -104,34 +104,51 @@ describe('RestoreBlankStateController', () => {
       { tenant: tenantFor(tenantId) }
     );
 
-  it('should restore fixtures into an empty tenant', async () => {
-    expect(await restoreInto(TARGET_TENANT)).toEqual({ restored: true });
+  describe('handle', () => {
+    it('should restore fixtures into an empty tenant', async () => {
+      expect(await restoreInto(TARGET_TENANT)).toEqual({ restored: true });
 
-    const templates = await pool.query('SELECT name FROM templates WHERE tenant_id = $1', [
-      TARGET_TENANT,
-    ]);
-    expect(templates.rows).toEqual([{ name: 'Document' }]);
+      const templates = await pool.query('SELECT name FROM templates WHERE tenant_id = $1', [
+        TARGET_TENANT,
+      ]);
+      expect(templates.rows).toEqual([{ name: 'Document' }]);
 
-    const users = await pool.query('SELECT username FROM users WHERE tenant_id = $1', [
-      TARGET_TENANT,
-    ]);
-    expect(users.rows).toEqual([{ username: 'admin' }]);
-  });
+      const users = await pool.query('SELECT username FROM users WHERE tenant_id = $1', [
+        TARGET_TENANT,
+      ]);
+      expect(users.rows).toEqual([{ username: 'admin' }]);
+    });
 
-  it('should refuse a tenant that already has data', async () => {
-    await seed(pool, TARGET_TENANT);
+    it('should refuse a tenant that already has data', async () => {
+      await seed(pool, TARGET_TENANT);
 
-    await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(TenantDataExistsError);
-  });
+      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(TenantDataExistsError);
+    });
 
-  it('should replace the tenant data when forced', async () => {
-    await seed(pool, TARGET_TENANT, 'Old Site');
+    it('should replace the tenant data when forced', async () => {
+      await seed(pool, TARGET_TENANT, 'Old Site');
 
-    await expect(restoreInto(TARGET_TENANT, { force: true })).resolves.toEqual({ restored: true });
+      await expect(restoreInto(TARGET_TENANT, { force: true })).resolves.toEqual({
+        restored: true,
+      });
 
-    const settings = await pool.query('SELECT site_name FROM settings WHERE tenant_id = $1', [
-      TARGET_TENANT,
-    ]);
-    expect(settings.rows).toEqual([{ site_name: 'Uwazi' }]);
+      const settings = await pool.query('SELECT site_name FROM settings WHERE tenant_id = $1', [
+        TARGET_TENANT,
+      ]);
+      expect(settings.rows).toEqual([{ site_name: 'Uwazi' }]);
+    });
+
+    it('should reject when there are no fixtures to restore', async () => {
+      rmSync(dataDir, { recursive: true, force: true });
+      mkdirSync(dataDir, { recursive: true });
+
+      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(BlankStateEmptyError);
+    });
+
+    it('should reject when a fixture targets a missing table', async () => {
+      writeFileSync(path.join(dataDir, 'no_such_table.json'), JSON.stringify([{ _id: 'x' }]));
+
+      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(BlankStateTablesMissingError);
+    });
   });
 });

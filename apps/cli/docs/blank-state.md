@@ -50,6 +50,10 @@ Mongo blank state is handled separately by `database/blank_state_base.sh`, which
 - **An empty tenant** gets the fixtures as-is.
 - **A tenant that already has data** fails with `blank_state.tenant_data_exists` (exit 4), so a
   live tenant is never silently overwritten.
+- **No fixtures to restore** fails with `blank_state.empty` (exit 3), so an empty blank state is
+  never reported as `restored`.
+- **A fixture table missing from the schema** fails with `blank_state.tables_missing` (exit 3),
+  telling you to run the schema migrations.
 - **With `--force`** (equivalent to `--request '{"force":true}'`) the tenant's blank-state tables
   are deleted first and the fixtures are restored, atomically. This is destructive: use it only on
   a tenant you mean to reset.
@@ -63,6 +67,8 @@ Prints:
 | Code                             | Exit | When                                                |
 | -------------------------------- | ---- | --------------------------------------------------- |
 | `tenant.not_found`               | 3    | The tenant is not registered                        |
+| `blank_state.empty`              | 3    | There are no fixtures to restore                    |
+| `blank_state.tables_missing`     | 3    | A fixture table does not exist in the schema        |
 | `blank_state.tenant_data_exists` | 4    | The tenant already has data and `force` was not set |
 
 Every command can also return the shared codes: `validation.failed` and `usage.invalid` (exit 2),
