@@ -18,6 +18,12 @@ const DATABASE_VARIABLES = [
  */
 const SESSIONS_VARIABLES = ['SESSIONS_BACKEND'];
 
+/**
+ * Commands that write through the PostgreSQL admin/migrator pool (bypasses Row-Level Security).
+ * POSTGRES_APP_USER is not enough: the app role is subject to RLS.
+ */
+const POSTGRES_ADMIN_VARIABLES = ['POSTGRES_USER', 'POSTGRES_PASSWORD'];
+
 class CliConfig {
   /**
    * Only production is strict: development and tests rely on config.ts's local defaults, which
@@ -32,6 +38,7 @@ class CliConfig {
       ...DATABASE_VARIABLES,
       ...(needs.redis ? ['REDIS_HOST'] : []),
       ...(needs.sessions ? SESSIONS_VARIABLES : []),
+      ...(needs.postgresAdmin ? POSTGRES_ADMIN_VARIABLES : []),
     ];
   }
 
