@@ -28,6 +28,15 @@ import { collectRelationshipTitlesFromRows } from '../services/CsvPreflightRelat
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
 import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
+const HEADER_ISSUE_MESSAGE_LIMIT = 5;
+
+const headerValidationErrorMessage = (issues: { message: string }[]) => {
+  const shown = issues.slice(0, HEADER_ISSUE_MESSAGE_LIMIT).map(issue => issue.message);
+  const extraCount = issues.length - shown.length;
+  const extra = extraCount > 0 ? ` (+${extraCount} more)` : '';
+  return `${shown.join(' ')}${extra}` || 'Header validation failed';
+};
+
 type Input = {
   importId: string;
   tenantName: string;
@@ -307,7 +316,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
       } catch (error) {
         if (error instanceof CsvHeaderAnalyzerError) {
           failureRecorded = true;
-          throw new NonRetryableJobError(new Error('Header validation failed'));
+          throw new NonRetryableJobError(new Error(headerValidationErrorMessage(error.issues)));
         }
         throw error;
       }

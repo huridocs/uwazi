@@ -73,6 +73,60 @@ describe('CsvImportEntities imports read use cases (integration)', () => {
       );
     });
 
+    itWithContext('should list failure issues so the import page can explain them', async () => {
+      const csvImportEntitiesImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault();
+      const listUseCase = CSVImportEntitiesFactories.listCsvImportEntitiesImportsUseCaseDefault();
+      const f = getFixturesFactory();
+      const issueMessage = 'Property "title" uses languages, but is missing columns for: fr.';
+
+      const failed = CsvImportDomain.withFailure(
+        CsvImportDomain.withStatus(
+          CsvImportDomain.create({
+            id: f.idString('list-failed'),
+            templateId: 'template-a',
+            file: { originalName: 'broken.csv', mimeType: 'text/csv', size: 11 },
+            createdBy: f.idString('user-failed'),
+          }),
+          CsvImportStatus.Failed
+        ),
+        {
+          message: 'Header validation failed',
+          retryable: false,
+          at: 1,
+          stage: 'preflight:preparation:headers',
+          code: 'HEADER_VALIDATION_FAILED',
+          issues: [
+            {
+              reason: 'MissingLanguageColumn',
+              message: issueMessage,
+              property: 'title',
+              columns: ['fr'],
+            },
+          ],
+        }
+      );
+
+      await csvImportEntitiesImportsDS.insert(failed);
+
+      const result = await listUseCase.execute();
+      const row = result.rows.find(item => item.id === failed.id);
+
+      expect(row?.failure).toEqual(
+        expect.objectContaining({
+          message: 'Header validation failed',
+          code: 'HEADER_VALIDATION_FAILED',
+          issues: [
+            expect.objectContaining({
+              reason: 'MissingLanguageColumn',
+              message: issueMessage,
+              property: 'title',
+              columns: ['fr'],
+            }),
+          ],
+        })
+      );
+    });
+
     itWithContext('should return the raw import object for details', async () => {
       const csvImportEntitiesImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault();
       const getUseCase = CSVImportEntitiesFactories.getCsvImportEntitiesImportUseCaseDefault();

@@ -300,7 +300,7 @@ describe('CsvPreflightJob (integration)', () => {
 
         const callbacks = createCallbacks();
         await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
-          'Header validation failed'
+          'Property "select_property" uses languages, but is missing columns for: en.'
         );
 
         const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
@@ -308,11 +308,24 @@ describe('CsvPreflightJob (integration)', () => {
         expect(failedImport.failure).toEqual(
           expect.objectContaining({
             message: 'Header validation failed',
+            code: 'HEADER_VALIDATION_FAILED',
             retryable: false,
+            issues: expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'select_property',
+                columns: ['en'],
+              }),
+            ]),
           })
         );
         expect(callbacks.onError).toHaveBeenCalledWith(
-          expect.objectContaining({ importId, error: expect.any(Error) })
+          expect.objectContaining({
+            importId,
+            error: expect.objectContaining({
+              message: 'Property "select_property" uses languages, but is missing columns for: en.',
+            }),
+          })
         );
       }
     );
@@ -348,7 +361,7 @@ describe('CsvPreflightJob (integration)', () => {
 
         const callbacks = createCallbacks();
         await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
-          'Header validation failed'
+          'Property "title" uses languages, but is missing columns for: fr.'
         );
 
         const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
@@ -365,6 +378,14 @@ describe('CsvPreflightJob (integration)', () => {
                 columns: expect.arrayContaining(['fr']),
               }),
             ]),
+          })
+        );
+        expect(callbacks.onError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            importId,
+            error: expect.objectContaining({
+              message: 'Property "title" uses languages, but is missing columns for: fr.',
+            }),
           })
         );
       }

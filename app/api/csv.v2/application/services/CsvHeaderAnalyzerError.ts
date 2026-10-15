@@ -3,7 +3,6 @@ import { inspect } from 'util';
 type CsvHeaderAnalyzerErrorReason =
   | 'MixedLanguageColumns'
   | 'UnsupportedLanguageColumn'
-  | 'MissingDefaultLanguage'
   | 'MissingLanguageColumn'
   | 'UnknownProperty';
 
