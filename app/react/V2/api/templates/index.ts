@@ -95,42 +95,29 @@ const setDefault = async (
 
 type CountPayload = number | { value: number };
 
-const readCount = (count: CountPayload | undefined): number => {
-  if (typeof count === 'number') return count;
-  if (count !== undefined && typeof count.value === 'number') return count.value;
-  return 0;
-};
+const readCount = (count: CountPayload | undefined): number =>
+  typeof count === 'number' ? count : (count?.value ?? 0);
 
 const checkEntityCounts = async (
-  templateIds: string[],
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<Record<string, number>>> => {
-  if (!templateIds || !Array.isArray(templateIds) || templateIds.length === 0) {
-    return [{}];
-  }
-
-  const results = await Promise.all(
-    templateIds.map(async id => {
-      const [count, error] = await apiClient.getJson<CountPayload>(
-        'v2/entities/count_by_template',
-        { templateId: id },
-        { headers: requestHeaders(headers) }
-      );
-      return { id, count, error };
-    })
+): Promise<ApiResponse<Record<string, number>>> =>
+  apiClient.getJson<Record<string, number>>(
+    'v2/entities/count_by_template',
+    {},
+    { headers: requestHeaders(headers) }
   );
 
-  const failed = results.find(result => result.error);
-  if (failed?.error) {
-    return [undefined as never, failed.error];
-  }
-
-  return [
-    results.reduce<Record<string, number>>((acc, { id, count }) => {
-      acc[id] = readCount(count);
-      return acc;
-    }, {}),
-  ];
+const checkEntityCount = async (
+  templateId: string,
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<number>> => {
+  const [count, error] = await apiClient.getJson<CountPayload>(
+    'v2/entities/count_by_template',
+    { templateId },
+    { headers: requestHeaders(headers) }
+  );
+  if (error) return [undefined as never, error];
+  return [readCount(count)];
 };
 
-export { getAll, getById, upsert, remove, setDefault, checkEntityCounts };
+export { getAll, getById, upsert, remove, setDefault, checkEntityCounts, checkEntityCount };

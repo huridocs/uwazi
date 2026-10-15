@@ -1,20 +1,17 @@
 // oxlint-disable max-statements
 export default async (app, server) => {
   // Load TypeScript modules dynamically
-  const [
-    { default: activitylogMiddleware },
-    { default: CSRFMiddleware },
-    { default: languageMiddleware },
-  ] = await Promise.all([
-    import('./activitylog/activitylogMiddleware.js'),
-    import('./auth/CSRFMiddleware.js'),
-    import('./utils/languageMiddleware.js'),
-  ]);
+  const [{ ActivityLogComposition }, { default: CSRFMiddleware }, { default: languageMiddleware }] =
+    await Promise.all([
+      import('#activitylog/composition'),
+      import('./auth/CSRFMiddleware.js'),
+      import('./utils/languageMiddleware.js'),
+    ]);
 
   //common middlewares
   app.use(CSRFMiddleware);
   app.use(languageMiddleware);
-  app.use(activitylogMiddleware);
+  app.use(ActivityLogComposition.middleware);
 
   const { setupApiSockets } = await import('./socketio/setupSockets.js');
   setupApiSockets(server, app);
@@ -22,7 +19,7 @@ export default async (app, server) => {
   (await import('./auth2fa/routes.js')).default(app);
   (await import('./relationships/routes.js')).default(app);
   (await import('./relationships/query/express/routes.js')).relationshipsQueryRoutes(app);
-  (await import('./activitylog/routes.js')).default(app);
+  ActivityLogComposition.registerRoutes(app);
   (await import('./core/infrastructure/express/users/routes.js')).userRoutes(app);
   (await import('./core/infrastructure/express/template/routes.js')).default(app);
   (await import('./dataviz.v2/infrastructure/http/routes.js')).default(app);

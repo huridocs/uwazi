@@ -13,10 +13,7 @@ import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
  */
 interface RelationshipTypesService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<RelationshipType[]>>;
-  countByTypes(
-    ids: string[],
-    options?: ServiceRequestOptions
-  ): Promise<ApiResponse<{ [id: string]: number }>>;
+  countByTypes(options?: ServiceRequestOptions): Promise<ApiResponse<{ [id: string]: number }>>;
   upsert(
     relationshipType: RelationshipTypeInput,
     options?: ServiceRequestOptions

@@ -82,6 +82,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { SendAccountLockedEmailHandler } from '#api/core/infrastructure/jobs/SendAccountLockedEmailHandler.js';
+import { ActivityLogComposition } from '#activitylog/composition';
 import { OcrComposition } from '#ocr/composition';
 import { SegmentationComposition } from '#segmentation/composition';
 import { ListenerRegistration } from '#api/ListenerRegistration.js';
@@ -131,6 +132,8 @@ export function registerJobs(register: Register) {
   SegmentationComposition.registerJobs(register);
 
   OcrComposition.registerJobs(register);
+
+  ActivityLogComposition.registerJobs(register);
 
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 

@@ -195,6 +195,23 @@ class EntitiesQueryService {
     );
   }
 
+  @TimedMethod('EntitiesQueryService.countByTemplates')
+  async countByTemplates(): Promise<Record<string, number>> {
+    const templates = await this.deps.templatesDAO.get();
+    const entries = await Promise.all(
+      templates.map(async (template): Promise<[string, number]> => {
+        const templateId = template._id.toString();
+        return [templateId, await this.deps.entityDAO.countByTemplate(templateId)];
+      })
+    );
+    return Object.fromEntries(entries);
+  }
+
+  @TimedMethod('EntitiesQueryService.countByTemplate')
+  async countByTemplate(input: { templateId: string }): Promise<number> {
+    return this.deps.entityDAO.countByTemplate(input.templateId);
+  }
+
   @TimedMethod('EntitiesQueryService.applyPermissionsFieldSecurity')
   private async applyPermissionsFieldSecurity(
     entity: EntityWithFiles,
