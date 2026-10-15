@@ -10,6 +10,7 @@ import { MigrationJobFactory } from '#api/core/infrastructure/factories/Migratio
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { SyncJobsDispatcher } from '#api/core/libs/queue/infrastructure/SyncJobsDispatcher.js';
 import { tenants } from '#api/tenants/index.js';
@@ -69,7 +70,10 @@ const createRunChain = (migrationsDir: string, reindexFails = false) => {
   spiesToRestore.push(setMaintenanceSpy);
 
   const runner = new TenantMigrationRunnerAdapter(migrationsDir, loadMigration);
-  const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any);
+  const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any, {
+    knex: PostgresDB.adminKnex(),
+    logger: createMockLogger(),
+  });
 
   let dispatcher: SyncJobsDispatcher | undefined;
   const createJob = async () =>
@@ -247,7 +251,10 @@ describe('MigrationJob (real chain)', () => {
     // delta 1 requires schema 1: blocked -> real pg migration 001 applied -> unblocked ->
     // data migration applied -> finish applies the remaining pg migration 002
     expect(dispatchSpy).toHaveBeenCalledTimes(1); // no re-dispatch: everything finished in one run
-    const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any);
+    const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any, {
+      knex: PostgresDB.adminKnex(),
+      logger: createMockLogger(),
+    });
     expect(await pgMigrator.getCurrentVersion()).toBe(2);
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);

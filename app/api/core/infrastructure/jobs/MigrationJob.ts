@@ -82,7 +82,9 @@ class MigrationJob implements Dispatchable {
         `Data migration ${nextDelta} blocked, requires schema version ${blockedInfo.requiresSchema}`,
         { delta: nextDelta, requiresSchema: blockedInfo.requiresSchema }
       );
-      const appliedSchemas = await this.deps.pgMigrator.migrate(blockedInfo.requiresSchema);
+      const { applied: appliedSchemas } = await this.deps.pgMigrator.migrate({
+        until: blockedInfo.requiresSchema,
+      });
       jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
       schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
       this.deps.logger.info(`Applied schema migrations: [${appliedSchemas.join(', ')}]`, {
@@ -264,7 +266,7 @@ class MigrationJob implements Dispatchable {
   ): Promise<void> {
     this.deps.logger.info('No pending data migrations, running remaining schema migrations');
 
-    const appliedSchemas = await this.deps.pgMigrator.migrate();
+    const { applied: appliedSchemas } = await this.deps.pgMigrator.migrate();
     jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
 
     this.deps.logger.info(

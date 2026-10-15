@@ -71,7 +71,7 @@ type MigrationServiceDeps = {
   tenants: TenantsManager;
   createDispatcher: DispatcherFactory;
   createLogger: LoggerFactoryFn;
-  pgMigratorFactory: (pool: any) => PgMigrator;
+  pgMigratorFactory: (pool: any, logger: Logger) => PgMigrator;
   transactionManagerFactory: () => any;
   postgresTransactionManagerFactory: () => any;
   eventEmitterFactory: () => any;
@@ -103,7 +103,8 @@ const createDefaultLogger: LoggerFactoryFn = (options: {
   return LoggerFactory.migrationLogger(MigrationHumanReadableWriter);
 };
 
-const createDefaultPgMigrator = (pool: any) => new PgMigrator(PG_MIGRATIONS_DIR, pool);
+const createDefaultPgMigrator = (pool: any, logger: Logger) =>
+  new PgMigrator(PG_MIGRATIONS_DIR, pool, { knex: PostgresDB.adminKnex(), logger });
 
 const defaultDeps: MigrationServiceDeps = {
   db: DB,
@@ -163,7 +164,7 @@ class MigrationService {
       }
     );
 
-    const pgMigrator = this.deps.pgMigratorFactory(this.deps.postgresDB.adminPool());
+    const pgMigrator = this.deps.pgMigratorFactory(this.deps.postgresDB.adminPool(), logger);
     const schemaVersion = await pgMigrator.getCurrentVersion();
 
     await this.deps.db.disconnect();

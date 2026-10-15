@@ -607,6 +607,11 @@ const testingEnvironment = {
     get pool() {
       return testingPG.pool;
     },
+
+    /** Admin connection config for the per-test database. */
+    get config() {
+      return testingPG.config;
+    },
   },
 };
 

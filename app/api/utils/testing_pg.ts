@@ -1,12 +1,14 @@
 /* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
+import knex from 'knex';
 import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { LoggerFactory } from '../core/infrastructure/factories/LoggerFactory.js';
 import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
@@ -126,8 +128,16 @@ const testingPG = {
 
     this.pool = pool;
 
-    const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
-    await migrator.migrate();
+    const migrationsKnex = knex({ client: 'pg', connection: this.config });
+    try {
+      const migrator = new PgMigrator(MIGRATIONS_DIR, pool, {
+        knex: migrationsKnex,
+        logger: LoggerFactory.migrationLogger(() => {}),
+      });
+      await migrator.migrate();
+    } finally {
+      await migrationsKnex.destroy();
+    }
 
     await this.grantAppUser();
 

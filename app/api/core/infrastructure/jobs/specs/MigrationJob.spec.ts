@@ -6,7 +6,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingDB } from '#api/utils/testing_db.js';
-import { PgMigrator } from '../../postgresql/PgMigrator.js';
+import { MigrateResult, PgMigrator } from '../../postgresql/PgMigrator.js';
 
 class FakePgMigrator {
   private currentVersion: number;
@@ -29,7 +29,7 @@ class FakePgMigrator {
     return this.currentVersion;
   }
 
-  async migrate(until?: number): Promise<number[]> {
+  async migrate({ until }: { until?: number } = {}): Promise<MigrateResult> {
     const target = Math.min(until ?? this.maxDelta, this.maxDelta);
     const deltas: number[] = [];
     for (let delta = this.currentVersion + 1; delta <= target; delta += 1) {
@@ -37,7 +37,7 @@ class FakePgMigrator {
       deltas.push(delta);
       this.currentVersion = delta;
     }
-    return deltas;
+    return { applied: deltas, reindexTenants: [] };
   }
 }
 

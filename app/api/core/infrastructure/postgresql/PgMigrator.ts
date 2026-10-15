@@ -1,7 +1,10 @@
 // eslint-disable-next-line no-restricted-imports
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
+import { Knex } from 'knex';
 import pg from 'pg';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { PgDataMigration, PgDataMigrationContext } from './PgDataMigration.js';
 
 type MigrationStatus = {
   delta: number;
@@ -9,26 +12,44 @@ type MigrationStatus = {
   applied: boolean;
 };
 
-const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.sql$/;
+/** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
+const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
 const TRACKING_TABLE = 'pg_migrations';
 /** Session advisory lock held for a whole run, so only one migrator applies migrations at a time. */
 const MIGRATION_LOCK_KEY = 7_586_011;
 
-type MigrationFile = { delta: number; name: string; filePath: string };
+type MigrationKind = 'sql' | 'data';
 
-function parseMigrationFile(fileName: string): { delta: number; name: string } | null {
+type MigrationFile = { delta: number; name: string; kind: MigrationKind; filePath: string };
+
+type MigrateOptions = {
+  until?: number;
+  heartbeat?: () => Promise<void>;
+};
+
+type MigrateResult = { applied: number[]; reindexTenants: string[] };
+
+type PgMigratorDeps = { knex: Knex; logger: Logger };
+
+const noHeartbeat = async () => Promise.resolve();
+
+function parseMigrationFile(
+  fileName: string
+): { delta: number; name: string; kind: MigrationKind } | null {
   const match = fileName.match(MIGRATION_FILE_PATTERN);
   if (!match) return null;
   return {
     delta: parseInt(match[1], 10),
     name: match[2],
+    kind: match[3] === 'sql' ? 'sql' : 'data',
   };
 }
 
 export class PgMigrator {
   constructor(
     private migrationsDir: string,
-    private pool: pg.Pool
+    private pool: pg.Pool,
+    private deps: PgMigratorDeps
   ) {}
 
   private async ensureTrackingTable(): Promise<void> {
@@ -136,53 +157,91 @@ export class PgMigrator {
     }
   }
 
-  async migrate(until?: number): Promise<number[]> {
-    return this.withLock(async () => this.applyPending(until));
+  async migrate(options: MigrateOptions = {}): Promise<MigrateResult> {
+    return this.withLock(async () => this.applyPending(options));
   }
 
-  /* eslint-disable max-statements */
-  private async applyPending(until?: number): Promise<number[]> {
+  private async pendingMigrations(until?: number): Promise<MigrationFile[]> {
     await this.ensureTrackingTable();
 
-    const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
-    let pending = migrationFiles.filter(m => !appliedDeltas.has(m.delta));
+    const pending = this.readMigrationFiles().filter(m => !appliedDeltas.has(m.delta));
     PgMigrator.assertForwardOnly(pending, appliedDeltas);
 
-    if (until !== undefined) {
-      pending = pending.filter(m => m.delta <= until);
-    }
+    return pending.filter(m => until === undefined || m.delta <= until);
+  }
 
+  private async applyPending({
+    until,
+    heartbeat = noHeartbeat,
+  }: MigrateOptions): Promise<MigrateResult> {
     const applied: number[] = [];
-    for (const migration of pending) {
-      const sql = readFileSync(migration.filePath, 'utf-8');
+    const reindexTenants = new Set<string>();
 
+    for (const migration of await this.pendingMigrations(until)) {
       // eslint-disable-next-line no-await-in-loop
-      const client = await this.pool.connect();
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('BEGIN');
-        // eslint-disable-next-line no-await-in-loop
-        await client.query(sql);
-        // eslint-disable-next-line no-await-in-loop
-        await client.query(`INSERT INTO ${TRACKING_TABLE} (delta, name) VALUES ($1, $2)`, [
-          migration.delta,
-          migration.name,
-        ]);
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('COMMIT');
-      } catch (error) {
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('ROLLBACK');
-        throw error;
-      } finally {
-        client.release();
-      }
-
+      await (migration.kind === 'sql'
+        ? this.applySql(migration)
+        : this.applyData(migration, heartbeat, reindexTenants));
       applied.push(migration.delta);
     }
 
-    return applied;
+    return { applied, reindexTenants: [...reindexTenants] };
   }
-  /* eslint-enable max-statements */
+
+  private async applySql(migration: MigrationFile): Promise<void> {
+    const sql = readFileSync(migration.filePath, 'utf-8');
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(sql);
+      await PgMigrator.record(migration, client);
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  /** Runs with no transaction open; recorded only once `up` resolves. */
+  private async applyData(
+    migration: MigrationFile,
+    heartbeat: () => Promise<void>,
+    reindexTenants: Set<string>
+  ): Promise<void> {
+    // An absolute path, not a file URL: Jest's resolver cannot resolve file URLs.
+    const module = await import(migration.filePath);
+    const dataMigration: PgDataMigration = module.default;
+
+    const ctx: PgDataMigrationContext = {
+      knex: this.deps.knex,
+      logger: this.deps.logger,
+      heartbeat,
+      reindex: tenantIds => {
+        if (!dataMigration.reindex) {
+          throw new Error(
+            `Migration ${migration.delta} (${migration.name}) reported tenants to reindex but declares reindex: false`
+          );
+        }
+        tenantIds.forEach(tenantId => reindexTenants.add(tenantId));
+      },
+    };
+
+    await dataMigration.up(ctx);
+    await PgMigrator.record(migration, this.pool);
+  }
+
+  private static async record(
+    migration: MigrationFile,
+    queryable: Pick<pg.Pool | pg.PoolClient, 'query'>
+  ): Promise<void> {
+    await queryable.query(`INSERT INTO ${TRACKING_TABLE} (delta, name) VALUES ($1, $2)`, [
+      migration.delta,
+      migration.name,
+    ]);
+  }
 }
+
+export type { MigrateOptions, MigrateResult, PgMigratorDeps };
