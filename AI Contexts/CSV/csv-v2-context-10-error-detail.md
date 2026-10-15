@@ -2,7 +2,7 @@
 
 Date: 2026-10-15  
 Owner: CSV Import V2 initiative  
-Status: design alignment only. No code in this pass.
+Status: implemented (2026-10-15). The sections below are the design that was built.
 
 ## 1) Why this file exists
 
@@ -56,8 +56,7 @@ Requirement 2 is: fail once, and leave a stable, user-facing failure on the impo
 
 `CsvHeaderAnalyzer` aggregates every header problem and throws `CsvHeaderAnalyzerError`. For languages it already records:
 
-- `MissingDefaultLanguage` — property uses language columns and has no default-language column. Message does not name the default language. `columns` is unset.
-- `MissingLanguageColumn` — property, plus `columns` = the missing language keys, message `Property "<name>" uses languages, but is missing columns for: <keys>.`
+- `MissingLanguageColumn` — property, plus `columns` = every missing language key, default included. Message: `Property "<name>" uses languages, but is missing columns for: <keys>.` There is no separate default-language error. A missing default is the same gap as any other missing language.
 
 `CsvPreflightJob.analyzeHeaders` persists that list:
 
@@ -106,13 +105,13 @@ On a parse failure, persist:
 
 Suggested copy, driven by csvtojson's `err` code when we still have it:
 
-| Parser code | `issues[0].reason` | User message |
-| --- | --- | --- |
-| `unclosed_quote` | `UnclosedQuote` | `The CSV could not be read because a quoted value was not closed (line <n>). Close the quote and upload the file again.` |
-| `column_mismatched` | `ColumnMismatch` | `The CSV could not be read because a row does not have the same number of columns as the header (line <n>).` |
-| anything else `CsvReaderError` | `CsvUnreadable` | `The CSV could not be read. Check that the file is valid CSV and upload it again.` |
+| Parser code                    | `issues[0].reason` | User message                                                                                                            |
+| ------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `unclosed_quote`               | `UnclosedQuote`    | `The CSV could not be read because a quoted value was not closed (row <n>). Close the quote and upload the file again.` |
+| `column_mismatched`            | `ColumnMismatch`   | `The CSV could not be read because a row does not have the same number of columns as the header (row <n>).`             |
+| anything else `CsvReaderError` | `CsvUnreadable`    | `The CSV could not be read. Check that the file is valid CSV and upload it again.`                                      |
 
-Line number comes from `CSVError.line` (csvtojson's parsed line, header is line 0 in that library — confirm against a fixture before freezing the number we show). Do not put `extra` (the raw buffer) in the user message; it can be most of the file. If we keep it at all, store a short truncation only as an internal detail, not as the sentence the page prints.
+csvtojson's `line` is a 0-based data index (the header is not counted; the first data row is `0`). The user sentence shows the spreadsheet row, `line + 2`, and says "row" rather than "line". Confirmed: `value1,"value2` on the first data row reports `line: 0` and is shown as row 2. Do not put `extra` (the raw buffer) in the user message; it can be most of the file.
 
 `CsvReaderError` should carry `reason` and `line` so the job does not scrape them back out of `error.message`.
 
@@ -120,12 +119,11 @@ Line number comes from `CSVError.line` (csvtojson's parsed line, header is line 
 
 ### 4.3 Header issues are shown, not recomputed
 
-No new analyzer rules. Two small message fixes, then display.
+No new analyzer rules. One message for every missing language, then display.
 
-Message fixes, still inside `CsvHeaderAnalyzer`:
+Message, still inside `CsvHeaderAnalyzer`:
 
-- `MissingDefaultLanguage`: name the default language key in the message and set `columns` to that key. Today the sentence says "the default language column" and does not say `en`.
-- `MissingLanguageColumn`: keep the current sentence. `property` is the column base name (`title`). `columns` is the missing keys (`fr`). Those keys are the suffix the file must add (`title__fr`). Language labels ("French") are optional polish; the key is what the partner types into the header. Skip labels in this slice.
+- One `MissingLanguageColumn` issue per property. `columns` lists every missing language key, including the default. `property` is the column base name (`title`). Those keys are the suffix the file must add (`title__fr`). Language labels ("French") are optional polish; the key is what the partner types into the header. Skip labels in this slice.
 
 Display:
 
@@ -141,7 +139,7 @@ Example the page should be able to show, for a template whose languages are `en`
 
 And for `title__es` with no `title__en`:
 
-- Property "title" uses languages, but does not have the default language column (en).
+- Property "title" uses languages, but is missing columns for: en.
 
 ## 5) Implementation order
 
@@ -150,7 +148,7 @@ Tests first, red for the assertion, then the production change. Scope stays on t
 1. Extract job: a fixture with an unclosed quote fails as `NonRetryableJobError`, status `failed`, `failure.retryable === false`, `failure.code === 'CSV_PARSE_FAILED'`, and `failure.message` is the user sentence (includes the line when we have one). Assert the socket callback receives that same message. A second case for `column_mismatched` if cheap. Do not assert that S3/storage errors become non-retryable.
 2. `CsvReaderError` carries parser `reason` and `line`; `CsvReader` copies them off csvtojson's `CSVError` instead of only `error.message`.
 3. Extract `handleError` persists the user message, code, and one issue when the error is a parse failure.
-4. Header analyzer: `MissingDefaultLanguage` names the default language key and sets `columns`.
+4. Header analyzer: a missing default language is the same `MissingLanguageColumn` issue as any other missing language.
 5. Client: `CsvImportFailure.issues`, and `UploadStatus` renders them. List use case returns `issues` on `failure`.
 6. Preflight socket message includes the issue text, covered by the existing preflight spec that already expects `HEADER_VALIDATION_FAILED` and the `MissingLanguageColumn` issue.
 
@@ -170,5 +168,5 @@ Frontend work in step 5 follows `docs/frontend.md` when that step starts. This d
 1. An unclosed quote fails the extract job once. Status is `failed`, `retryable` is false, and the queue does not requeue that job.
 2. The import page Failure details and the task notification show the same user sentence, including the line number when the parser provides one.
 3. A file missing a non-default language column shows the property name and the missing language key on the import page, not only `HEADER_VALIDATION_FAILED`.
-4. A file missing the default language column names that language key.
+4. A file missing the default language column uses the same missing-column message and code as any other missing language.
 5. A storage/S3 failure during extract is still `retrying` / retryable.

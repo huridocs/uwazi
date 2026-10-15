@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /**
  * @jest-environment jsdom
  */
@@ -74,6 +75,36 @@ describe('CSV import status view', () => {
   it('should not fail if the import is not found', async () => {
     await renderComponent();
     expect(screen.getAllByText('Not Found')[0]).toBeInTheDocument();
+  });
+
+  it('should display persisted failure issues', async () => {
+    const failed = csvImportsList.find(row => row.id === 'csv-import-4');
+    expect(failed).toBeDefined();
+    await renderComponent({
+      ...failed!,
+      failure: {
+        message: 'Header validation failed',
+        retryable: false,
+        at: 1712755500000,
+        stage: 'preflight:preparation:headers',
+        code: 'HEADER_VALIDATION_FAILED',
+        issues: [
+          {
+            reason: 'MissingLanguageColumn',
+            message: 'Property "title" uses languages, but is missing columns for: fr.',
+            property: 'title',
+            columns: ['fr'],
+          },
+        ],
+      },
+    });
+
+    expect(screen.getByText('Header validation failed')).toBeInTheDocument();
+    expect(
+      screen.getByText('Property "title" uses languages, but is missing columns for: fr.')
+    ).toBeInTheDocument();
+    expect(screen.getByText('title')).toBeInTheDocument();
+    expect(screen.getByText('fr')).toBeInTheDocument();
   });
 
   it('should display the current status', async () => {
