@@ -28,7 +28,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { preserveSyncModel } from './preserveSyncModel.js';
+import { preserveSyncs } from './preserveSyncs.js';
 
 const getSourceThesauriId = async (template: EnforcedWithId<TemplateSchema> | null) =>
   (template?.properties || []).find(
@@ -231,12 +231,12 @@ const preserveSync = {
   async sync(preserveConfig: PreserveConfig) {
     await preserveConfig.config.reduce(async (promise, config) => {
       await promise;
-      const preservationSync = await preserveSyncModel.db.findOne({ token: config.token }, {});
+      const cursor = await preserveSyncs.read(config.token);
 
       const queryString = qs.stringify({
         filter: {
           status: 'PROCESSED',
-          ...(preservationSync ? { date: { gt: preservationSync.lastImport } } : {}),
+          ...(cursor ? { date: { gt: cursor.lastImport } } : {}),
         },
       });
 
@@ -254,11 +254,10 @@ const preserveSync = {
       );
 
       if (evidences.json.data.length) {
-        await preserveSyncModel.save({
-          ...(preservationSync ? { _id: preservationSync._id } : {}),
-          lastImport: evidences.json.data[evidences.json.data.length - 1].attributes.date,
-          token: config.token,
-        });
+        await preserveSyncs.save(
+          config.token,
+          evidences.json.data[evidences.json.data.length - 1].attributes.date
+        );
       }
     }, Promise.resolve());
   },
