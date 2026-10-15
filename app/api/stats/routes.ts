@@ -1,7 +1,6 @@
 import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
@@ -9,7 +8,6 @@ import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/Use
 export default (app: Application) => {
   app.get('/api/stats', needsAuthorization(['admin']), async (req, res, _next) => {
     const action = new RetrieveStatsService(
-      getConnection(),
       FilesDAOFactory.default(),
       EntitiesDAOFactory.default(),
       UsersQueryServiceFactory.default()
