@@ -23,9 +23,10 @@ code.
 **Always scaffold with `yarn add-migration`.** The generator picks the next number by reading the
 directory, so hand-written numbers collide, and it puts every file where the runner expects it.
 
-**The generated migration fails on purpose.** Its body rejects and its spec asserts something false.
-That is the red you start from — replace it with a real assertion about the data before you write
-the migration.
+**The generated spec fails on purpose** — it asserts something false. That is the red you start
+from: replace it with a real assertion about the data before you write the migration. A generated
+Mongo migration also rejects; a generated Postgres data migration does nothing instead, because every
+test database runs the whole Postgres sequence and a rejecting one would break every Postgres spec.
 
 **`reindex`** is a decision, not boilerplate: set it when the migration changes data that
 Elasticsearch indexes. Getting it wrong leaves search serving stale results with no error anywhere.
@@ -140,8 +141,11 @@ guess.
 
 ## Running
 
-- `yarn migrate` — run pending migrations.
-- `yarn migrate-and-reindex` — use when any pending migration sets `reindex: true`.
+- `yarn migrate --new` — run pending migrations of all three kinds, through the migration job, which
+  reindexes the tenants that need it. Add `--async` to queue the job instead of running it inline.
+- `yarn migrate` — the legacy runner: Mongo data migrations only, never Postgres ones.
+- `yarn migrate --status` — list what is pending in both databases; applies nothing.
+- `yarn migrate-and-reindex` — the legacy runner, then a full reindex.
 - `yarn reindex` — Elasticsearch only.
 
 Long migrations run through the asynchronous migration job, not inline in a deploy.
