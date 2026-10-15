@@ -122,14 +122,16 @@ class CliApplication {
           groupParser.command(
             route.name,
             route.describe,
-            y =>
-              TenantOptions.options(route.tenancy, y)
+            y => {
+              const withFlags = route.options ? route.options(y) : y;
+              return TenantOptions.options(route.tenancy, withFlags)
                 .option('request', RequestInput.option)
                 .option('schema', {
                   type: 'boolean',
                   default: false,
                   describe: 'Print the JSON schema of --request and exit',
-                }),
+                });
+            },
             async args => {
               onExit(await this.execute(route, args));
             }
@@ -208,7 +210,10 @@ class CliApplication {
 
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
     const tenants = TenantOptions.parse(route.tenancy, argv);
-    const input = route.request.parse(await RequestInput.read(argv.request, this.stdin));
+    const request = await RequestInput.read(argv.request, this.stdin);
+    const input = route.request.parse(
+      route.requestFromFlags ? route.requestFromFlags(argv, request) : request
+    );
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
     const { TenantMiddleware } = await this.loadBackend(route);
 

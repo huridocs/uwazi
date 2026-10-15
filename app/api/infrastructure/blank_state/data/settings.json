@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "58ad7d240d44252fee4e6213",
+    "languages": [
+      {
+        "key": "en",
+        "label": "English",
+        "default": true
+      }
+    ],
+    "links": [],
+    "filters": [],
+    "features": null,
+    "theme_vars": null,
+    "theme_assets": null,
+    "site_name": "Uwazi",
+    "custom_css": null,
+    "custom_js": null,
+    "sync": null,
+    "private": true,
+    "new_name_generation": true,
+    "open_public_endpoint": null,
+    "allowed_public_templates": null,
+    "public_form_destination": null,
+    "ocr_service_enabled": null,
+    "filter_unauthorized_related": null,
+    "project": null,
+    "custom": null,
+    "mail": null,
+    "analytics": null,
+    "map": {
+      "mapLayers": ["Streets", "Hybrid", "Satellite"]
+    },
+    "branding": null,
+    "site_preferences": null,
+    "extras": {},
+    "seo": null
+  }
+]
