@@ -44,6 +44,7 @@ import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/mig
 import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
 import { UpdateLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UpdateLogsMigrationConfig.js';
 import { SyncsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SyncsMigrationConfig.js';
+import { PreserveSyncMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PreserveSyncMigrationConfig.js';
 import { ActivityLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ActivityLogsMigrationConfig.js';
 import {
   PageLocalesMigrationConfig,
@@ -89,6 +90,7 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   settings: SettingsMigrationConfig,
   updatelogs: UpdateLogsMigrationConfig,
   syncs: SyncsMigrationConfig,
+  preserve_sync: PreserveSyncMigrationConfig,
   activitylogs: ActivityLogsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
@@ -133,6 +135,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'dataviz_snapshots',
     'updatelogs',
     'syncs',
+    'preserve_sync',
     'activitylogs',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
