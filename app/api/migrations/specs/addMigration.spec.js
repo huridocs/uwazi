@@ -51,7 +51,7 @@ describe('add-migration generator', () => {
     const kindPrompt = plop.generators.migration.prompts.find(prompt => prompt.name === 'kind');
     expect(kindPrompt).toMatchObject({
       type: 'list',
-      choices: ['data', 'schema'],
+      choices: ['data', 'schema', 'pg-data'],
       default: 'data',
     });
   });
@@ -102,6 +102,32 @@ describe('add-migration generator', () => {
       path: './migrations/{{nextMigrationDelta}}-{{dashName name}}/index.ts',
       templateFile: './templates/migration.txt',
     });
+  });
+
+  it('should generate a postgres data migration and its spec when kind is pg-data', () => {
+    const answers = { kind: 'pg-data', name: 'my dummy migration', description: 'does nothing' };
+    const actions = plop.generators.migration.actions(answers);
+
+    expect(actions).toEqual([
+      {
+        type: 'add',
+        path: '../core/infrastructure/postgresql/schema_migrations/{{nextSchemaDelta}}-{{dashName name}}.ts',
+        templateFile: './templates/pg-data-migration.txt',
+      },
+      {
+        type: 'add',
+        path: '../core/infrastructure/postgresql/schema_migrations/specs/{{nextSchemaDelta}}-{{dashName name}}.spec.ts',
+        templateFile: './templates/pg-data-migration.spec.txt',
+      },
+    ]);
+  });
+
+  it('should count postgres data migrations when calculating nextSchemaDelta', () => {
+    readdirSyncSpy.mockImplementation(dirPath =>
+      dirPath.includes('postgresql/schema_migrations') ? ['001-a.sql', '002-b.ts', 'specs'] : []
+    );
+
+    expect(plop.helpers.nextSchemaDelta()).toBe('003');
   });
 
   it('should calculate nextSchemaDelta based on existing schema migrations', () => {

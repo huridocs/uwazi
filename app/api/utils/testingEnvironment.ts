@@ -612,6 +612,11 @@ const testingEnvironment = {
     get config() {
       return testingPG.config;
     },
+
+    /** The context PgMigrator hands a data migration, on the per-test database. */
+    migrationContext() {
+      return testingPG.migrationContext();
+    },
   },
 };
 

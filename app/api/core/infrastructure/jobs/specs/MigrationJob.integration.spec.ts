@@ -273,7 +273,7 @@ describe('MigrationJob (real chain)', () => {
   it('reindexes the tenants a postgres data migration reports', async () => {
     writeFileSync(
       path.join(pgMigrationsDir, '001-backfill.ts'),
-      `export default {
+      `export const migration = {
         description: 'backfill',
         reindex: true,
         async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}']); },
@@ -293,7 +293,7 @@ describe('MigrationJob (real chain)', () => {
   it('skips tenants a postgres data migration reports that are not registered', async () => {
     writeFileSync(
       path.join(pgMigrationsDir, '001-backfill.ts'),
-      `export default {
+      `export const migration = {
         description: 'backfill',
         reindex: true,
         async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}', 'deleted-tenant']); },
@@ -311,7 +311,7 @@ describe('MigrationJob (real chain)', () => {
   it('hands the job heartbeat to postgres data migrations', async () => {
     writeFileSync(
       path.join(pgMigrationsDir, '001-long_backfill.ts'),
-      `export default {
+      `export const migration = {
         description: 'long backfill',
         reindex: false,
         async up(ctx) { await ctx.heartbeat(); await ctx.heartbeat(); },

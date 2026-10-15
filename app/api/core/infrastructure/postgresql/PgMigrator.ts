@@ -212,8 +212,9 @@ export class PgMigrator {
     reindexTenants: Set<string>
   ): Promise<void> {
     // An absolute path, not a file URL: Jest's resolver cannot resolve file URLs.
-    const module = await import(migration.filePath);
-    const dataMigration: PgDataMigration = module.default;
+    const { migration: dataMigration }: { migration: PgDataMigration } = await import(
+      migration.filePath
+    );
 
     const ctx: PgDataMigrationContext = {
       knex: this.deps.knex,

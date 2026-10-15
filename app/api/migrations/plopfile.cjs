@@ -57,7 +57,7 @@ module.exports = (plop) => {
         type: 'list',
         name: 'kind',
         message: 'what kind of migration do you want to create?',
-        choices: ['data', 'schema'],
+        choices: ['data', 'schema', 'pg-data'],
         default: 'data',
       },
       {
@@ -85,6 +85,21 @@ module.exports = (plop) => {
             type: 'add',
             path: '../core/infrastructure/postgresql/schema_migrations/{{nextSchemaDelta}}-{{dashName name}}.sql',
             templateFile: './templates/schema-migration.txt',
+          },
+        ];
+      }
+
+      if (answers.kind === 'pg-data') {
+        return [
+          {
+            type: 'add',
+            path: '../core/infrastructure/postgresql/schema_migrations/{{nextSchemaDelta}}-{{dashName name}}.ts',
+            templateFile: './templates/pg-data-migration.txt',
+          },
+          {
+            type: 'add',
+            path: '../core/infrastructure/postgresql/schema_migrations/specs/{{nextSchemaDelta}}-{{dashName name}}.spec.ts',
+            templateFile: './templates/pg-data-migration.spec.txt',
           },
         ];
       }

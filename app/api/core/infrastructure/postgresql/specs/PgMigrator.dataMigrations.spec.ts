@@ -41,7 +41,7 @@ describe('PgMigrator data migrations', () => {
   };
 
   const dataMigration = (fields: { reindex: boolean; up: string }) => `
-export default {
+export const migration = {
   description: 'test data migration',
   reindex: ${fields.reindex},
   async up(ctx) {

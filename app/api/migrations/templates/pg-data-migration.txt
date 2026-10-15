@@ -1,0 +1,22 @@
+import type { PgDataMigration } from '#api/core/infrastructure/postgresql/PgDataMigration.js';
+
+/*
+ * Runs once for the whole database: every tenant's rows, as the table owner (no RLS), with no
+ * transaction open. Read docs/backend/migrations.md before writing it:
+ *  - safe to run twice: select only rows still in the old shape;
+ *  - every join and subquery matches on tenant_id as well as the key;
+ *  - large tables: commit in batches (per tenant or key range) and call ctx.heartbeat();
+ *  - no production imports: declare the rows you touch here.
+ *
+ * Every test database runs this migration on an empty schema: it must be a fast no-op there.
+ */
+
+export const migration: PgDataMigration = {
+  description: '{{ description }}',
+
+  reindex: false,
+
+  async up(_ctx) {
+    // The spec fails on purpose until this is written.
+  },
+};

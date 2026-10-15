@@ -14,7 +14,7 @@ type PgDataMigrationContext = {
   reindex: (tenantIds: string[]) => void;
 };
 
-/** The default export of a `.ts` file in `schema_migrations`. */
+/** What a `.ts` file in `schema_migrations` exports, as `migration`. */
 type PgDataMigration = {
   description: string;
   reindex: boolean;
