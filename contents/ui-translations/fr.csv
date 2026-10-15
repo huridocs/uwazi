@@ -87,6 +87,7 @@ added to hub.,ajouté au hub.
 Adding a group and its items.,Ajouter un groupe et ses éléments.
 Adding items to the thesauri,Ajouter des éléments aux thésaurus
 Adjust a few colors; secondary text and muted backgrounds update automatically.,Modifiez quelques couleurs : le texte secondaire et les arrière-plans aux teintes douces s'adaptent automatiquement.
+Adjust logo,Ajuster le logo
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
 Administrators and Editors always have edit access,Les administrateurs et les rédacteurs disposent toujours d'un accès en modification
@@ -332,6 +333,8 @@ Creating entities,Création d'entités
 Creating relationships,Création de relations
 Creating thesauri,Création de thésaurus
 Creation date,Date de création
+Crop changes how the logo fits in the header. Resize changes the saved file.,Le recadrage change la façon dont le logo tient dans l'en-tête. Le redimensionnement modifie le fichier enregistré.
+Crop or resize logo,Recadrer ou redimensionner le logo
 CSS,CSS
 csv blank state message,Importez des fichiers CSV ou ZIP pour créer des entités en masse. Sélectionnez **+ Importer CSV** pour commencer.
 CSV Import,Importation CSV
@@ -738,6 +741,7 @@ Lengthy reindex process,Processus de réindexation fastidieux
 Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
+Library panes,Panneaux de la bibliothèque
 Library results,Résultats de la bibliothèque
 library table view,Bilbliothèque en vue tabulaire
 Light,Clair
@@ -1192,6 +1196,7 @@ Resize panels,Redimensionner les panneaux
 Restore,Restaurer
 Restore previous version,Restaurer la version précédente
 Restricted,Limité
+Results,Résultats
 Retryable,Peut être réessayé
 Retrying,Nouvelle tentative
 Return to login,Retourner à la connexion
@@ -1216,6 +1221,7 @@ Save password,Sauvegarder le mot de passe
 Save the visualization before refreshing.,Enregistrez la visualisation avant de l'actualiser.
 Save the visualization to get embed code.,Enregistrez la visualisation pour obtenir le code d'intégration.
 Save your work to make change permanent,Enregistrez votre travail pour que les modifications soient définitives
+Saved image,Image enregistrée
 Saved successfully.,Enregistrement effectué.
 Saved with warnings,Enregistré avec des avertissements
 Saving,Enregistrement
@@ -1337,12 +1343,13 @@ Show remaining in panel,Afficher le reste dans le panneau
 Show toolbar,Afficher la barre d'outils
 Showing,Affichage
 Showing the top,Affichage des
+Shown in the header at,Affiché dans l'en-tête à
 shown of,Listé sur un total de
 Side panel tabs,Onglets du panneau latéral
 Sign in,S'identifier
 Simple mode,Mode simple
 Single relationships must have a hub,Les relations isolées doivent avoir un nœud central
-Site logo description,"Le logo apparaît dans la barre supérieure à côté du nom de votre collection (environ 200×32 pixels).
+Site logo description,"Le logo apparaît dans la barre supérieure à côté du nom de votre collection (environ 200×48 pixels).
 
 1. Téléchargez des images dans Téléchargements personnalisés si nécessaire.
 2. Cliquez sur ""Sélectionner l'image du logo du site"" et choisissez un fichier ; seules les images des Téléchargements personnalisés sont listées."
@@ -1352,6 +1359,8 @@ Skip to main content,Aller directement au contenu principal
 Snapshot (manual),Instantané (manuel)
 Snapshot (scheduled),Instantané (planifié)
 Some tasks may take a while. Bert will reply when it's done.,Certaines tâches peuvent prendre un certain temps. Bert vous répondra dès qu'elles seront terminées.
+"Some translations are still pending, saving would stop the translation process.","Certaines traductions sont encore en attente, enregistrer arrêterait le processus de traduction."
+Translations are still pending,Des traductions sont encore en attente
 Something went wrong,Quelque chose a mal tourné
 Sort,Trier
 Sort ascending,Trier par ordre croissant
@@ -1446,7 +1455,7 @@ Theme colors,Couleurs du thème
 Theme colors imported,Couleurs du thème importées
 Theme favicon,Favicon du thème
 Theme instance file invalid,Fichier d'instance du thème non valide
-Theme logotype,Logo du thème
+Theme logo,Logo du thème
 Theme presets,Préréglages de thèmes
 Theme preview,Aperçu du thème
 Theme preview label,Libellé d’aperçu du thème
@@ -1614,9 +1623,11 @@ URL,URL
 Use,Utilisez
 Use as filter,Utiliser comme filtre
 Use for training,À utiliser pour l'entraînement
+Use image,Utiliser l'image
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Utilisez cet iframe sur des sites externes. Modifiez le paramètre de requête ""locale"" dans l'URL si
  nécessaire."
+Use this image?,Utiliser cette image ?
 Use URL,Utiliser l'URL
 Used in {n} refs — cannot delete,Utilisé dans {n} références — ne peut pas être supprimé
 Used in templates — cannot delete,Utilisé dans des modèles — ne peut pas être supprimé

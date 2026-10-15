@@ -1,6 +1,5 @@
 import cors from 'cors';
 import proxy from 'express-http-proxy';
-import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -38,7 +37,6 @@ const routes = app => {
     async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     publicAPIMiddleware,
-    activitylogMiddleware,
     (req, _res, next) => {
       try {
         req.body.entity = JSON.parse(req.body.entity);

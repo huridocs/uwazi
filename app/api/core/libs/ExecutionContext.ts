@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
@@ -132,6 +133,15 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
       throw new Error('ExecutionContext is not initialized');
     }
     store.actor = user;
+  }
+
+  /**
+   * The permission context for the current request: the actor's context when
+   * one is set, otherwise the anonymous actor's. Factories use this instead of
+   * repeating `AccessContext.forActor(ExecutionContext.actor ?? User.createFrom(null))`.
+   */
+  get accessContext(): AccessContext {
+    return AccessContext.forActor(this.actor ?? User.createFrom(null));
   }
 
   get correlationId() {

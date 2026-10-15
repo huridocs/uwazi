@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { buildEditEntityDefaultValues } from '#V2/Components/Metadata/EntityEditor/index.js';
 import type { MetadataEditingHost } from '../metadataEditingSession.js';
 import { useMetadataDiscard } from './useMetadataDiscard.js';
@@ -12,20 +12,34 @@ type LifecycleDeps = {
   save: ReturnType<typeof useMetadataSaveGate>;
   hosts: ReturnType<typeof useMetadataHostPresence>;
   formSession: ReturnType<typeof useMetadataEditingForm>;
+  cancelTranslations: () => void;
 };
 
 const useMetadataEditingLifecycle = ({
-  flags: { setIsDirty, setIsEditing, isEditingRef, isDirtyRef },
+  flags: { setIsDirty, setIsEditing, isEditingRef, isDirtyRef, setTranslationsPending },
   save: { abortSave, setIsSaving, saveInFlightRef },
   hosts: { setLastMetadataAnchor },
   formSession: { entity, templates, form, mediaUpload, setSaveError, setEditErrors, formCancelRef },
+  cancelTranslations,
 }: LifecycleDeps) => {
   const cancelEditRef = useRef<() => void>(() => undefined);
   const runCancelEdit = useCallback(() => {
     cancelEditRef.current();
   }, []);
+  const discardRefs = useMemo(
+    () => ({
+      isEditing: isEditingRef,
+      isDirty: isDirtyRef,
+    }),
+    [isDirtyRef, isEditingRef]
+  );
   const { pendingDiscardAction, requestDiscard, confirmDiscard, dismissDiscard, clearPending } =
-    useMetadataDiscard(isEditingRef, isDirtyRef, runCancelEdit);
+    useMetadataDiscard(discardRefs, runCancelEdit);
+  const stopEditing = useCallback(() => {
+    cancelTranslations();
+    setTranslationsPending(false);
+    setIsEditing(false);
+  }, [cancelTranslations, setIsEditing, setTranslationsPending]);
 
   const finishEditing = useCallback(() => {
     saveInFlightRef.current = false;
@@ -35,7 +49,7 @@ const useMetadataEditingLifecycle = ({
     setEditErrors(undefined);
     setIsDirty(false);
     setIsSaving(false);
-    setIsEditing(false);
+    stopEditing();
     clearPending();
     setLastMetadataAnchor(null);
   }, [
@@ -46,8 +60,8 @@ const useMetadataEditingLifecycle = ({
     saveInFlightRef,
     setEditErrors,
     setIsDirty,
-    setIsEditing,
     setIsSaving,
+    stopEditing,
     setLastMetadataAnchor,
     setSaveError,
     templates,

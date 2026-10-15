@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { ConnectionsSyncHandler, ConnectionSyncDocument } from './ConnectionsSyncHandler.js';
 
 type ConnectionRow = {
@@ -48,10 +49,15 @@ export class PostgresConnectionsSyncHandler
   extends PostgresDataSource<ConnectionRow>
   implements ConnectionsSyncHandler
 {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('connections', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'connections' },
     });
   }

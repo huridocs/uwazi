@@ -87,6 +87,7 @@ added to hub.,hub သို့ ထည့်သွင်းခဲ့သည်။
 Adding a group and its items.,အုပ်စုတစ်ခုနှင့် ၎င်း၏ ပစ္စည်းများကို ထည့်ခြင်း။
 Adding items to the thesauri,အဓိပ္ပာယ်တူစာရင်းများတွင် ပစ္စည်းများ ထည့်သွင်းခြင်း
 Adjust a few colors; secondary text and muted backgrounds update automatically.,အရောင်အနည်းငယ်ကို ချိန်ညှိလိုက်ပါ၊ ဒုတိယစာသားနှင့် နူးညံ့သက်သောင့်သက်သာသော နောက်ခံများသည် အလိုအလျောက် ပြောင်းလဲသွားပါမည်။
+Adjust logo,လိုဂို ချိန်ညှိရန်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
 Administrators and Editors always have edit access,အုပ်ချုပ်သူများနှင့် တည်းဖြတ်သူများသည် အမြဲတမ်း တည်းဖြတ်ခွင့် ရှိသည်။
@@ -329,6 +330,8 @@ Creating entities,အဖွဲ့အစည်းများ ဖန်တီး�
 Creating relationships,ဆက်နွယ်မှုများ ဖန်တီးခြင်း
 Creating thesauri,အဓိပ္ပာယ်တူစာရင်းများ ဖန်တီးခြင်း
 Creation date,ဖန်တီးသည့်ရက်စွဲ
+Crop changes how the logo fits in the header. Resize changes the saved file.,ဖြတ်တောက်ခြင်းသည် လိုဂို ခေါင်းစီးနှင့် ကိုက်ညီပုံကို ပြောင်းသည်။ အရွယ်အစားပြောင်းခြင်းသည် သိမ်းထားသော ဖိုင်ကို ပြောင်းသည်။
+Crop or resize logo,လိုဂိုကို ဖြတ်တောက်ရန် သို့မဟုတ် အရွယ်အစားပြောင်းရန်
 CSS,CSS
 csv blank state message,CSV သို့မဟုတ် ZIP ဖိုင်များကို တစ်ပြိုင်နက်အများကြီး အဖွဲ့အစည်းများ ဖန်တီးရန် အပ်လိုဒ်လုပ်ပါ။ စတင်ရန် **+ Import CSV** ကို ရွေးပါ။
 CSV Import,CSV တင်သွင်းခြင်း
@@ -730,6 +733,7 @@ Lengthy reindex process,ကြာရှည်သော ပြန်လည်ည�
 Library,စာကြည့်တိုက်
 library list view,စာကြည့်တိုက် စာရင်း မြင်ကွင်း
 library map view,စာကြည့်တိုက် မြေပုံ မြင်ကွင်း
+Library panes,စာကြည့်တိုက်အကန့်များ
 Library results,စာကြည့်တိုက် ရလဒ်များ
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
 Light,အလင်းရောင်
@@ -1175,6 +1179,7 @@ Resize panels,ပန်နယ်များ၏ အရွယ်အစား ပ�
 Restore,ပြန်လည်ထူထောင်
 Restore previous version,ယခင်ဗားရှင်းကို ပြန်လည်ထူထောင်ပါ။
 Restricted,ကန့်သတ်ထားသည်
+Results,ရလဒ်များ
 Retryable,ပြန်လည်ကြိုးစားနိုင်သော
 Retrying,ထပ်မံကြိုးစားနေသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
@@ -1199,6 +1204,7 @@ Save password,စကားဝှက် သိမ်းဆည်းရန်
 Save the visualization before refreshing.,ပြန်လည်အသစ်တင်မပြုမီ မြင်ကွင်းကို သိမ်းဆည်းပါ။
 Save the visualization to get embed code.,embed ကုဒ် ရယူရန် visualization ကို သိမ်းဆည်းပါ။
 Save your work to make change permanent,ပြောင်းလဲမှုကို အမြဲတမ်း ထိန်းသိမ်းရန် သင့်အလုပ်ကို သိမ်းဆည်းပါ။
+Saved image,သိမ်းထားသော ပုံ
 Saved successfully.,အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။
 Saved with warnings,သတိပေးချက်များဖြင့် သိမ်းဆည်းထားသည်
 Saving,သိမ်းဆည်းခြင်း
@@ -1320,12 +1326,13 @@ Show remaining in panel,ပန်နယ်တွင် ကျန်ရှိန�
 Show toolbar,ကိရိယာတန်းပြရန်
 Showing,ပြသနေသည်
 Showing the top,ထိပ်ဆုံးကို ပြနေသည်
+Shown in the header at,ခေါင်းစီးတွင် ပြသသည့် အရွယ်အစား
 shown of,ပြသထားသည််
 Side panel tabs,ဘေးဘောင် တဘ်များ
 Sign in,လက်မှတ်ထိုးဝင်ရန်
 Simple mode,ရိုးရှင်းသော မုဒ်
 Single relationships must have a hub,တစ်ခုချင်း ဆက်နွယ်မှုများတွင် hub တစ်ခုရှိရမည်။
-Site logo description,"လိုဂိုကို သင့်စုစည်းမှုအမည်အနားရှိ ထိပ်ဆုံးဘားတွင် (အရွယ်အစား ခန့်မှန်း 200×32 ပစ်ကစ်) တွေ့မြင်ရပါမည်။
+Site logo description,"လိုဂိုကို သင့်စုစည်းမှုအမည်အနားရှိ ထိပ်ဆုံးဘားတွင် (အရွယ်အစား ခန့်မှန်း 200×48 ပစ်ကစ်) တွေ့မြင်ရပါမည်။
 
 ၁။ လိုအပ်ပါက Custom Uploads တွင် ပုံများ တင်ပါ။
 ၂။ ""Select site logo image"" ကို နှိပ်ပြီး ဖိုင်တစ်ခုကို ရွေးချယ်ပါ၍ Custom Uploads မှ ပုံများသာ စာရင်းထဲတွင် ပြထားပါမည်။"
@@ -1335,6 +1342,8 @@ Skip to main content,အဓိကအကြောင်းအရာသို့ �
 Snapshot (manual),ရုပ်သံပုံ (ကိုယ်တိုင်)
 Snapshot (scheduled),ရုပ်သံပုံ (အချိန်ဇယား)
 Some tasks may take a while. Bert will reply when it's done.,အချို့တာဝန်တွေက အချိန်ယူနိုင်ပါတယ်။ ပြီးသွားရင် Bert က ပြန်ဖြေကြားပါလိမ့်မယ်။
+"Some translations are still pending, saving would stop the translation process.",ဘာသာပြန်အချို့ မပြီးသေးပါ၊ သိမ်းဆည်းပါက ဘာသာပြန်လုပ်ငန်းစဉ် ရပ်တန့်မည်။
+Translations are still pending,ဘာသာပြန်များ မပြီးသေးပါ
 Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
 Sort ascending,တက်လာအောင် စီရန်
@@ -1426,7 +1435,7 @@ Theme colors,အသွင်အပြင် အရောင်များ
 Theme colors imported,အသွင်အပြင် အရောင်များ တင်သွင်းပြီးပါပြီ။
 Theme favicon,အသွင်အပြင် Favicon
 Theme instance file invalid,Theme instance ဖိုင် မမှန်ကန်ပါ။
-Theme logotype,အသွင်အပြင် အမှတ်တံဆိပ်
+Theme logo,အသွင်အပြင် လိုဂို
 Theme presets,အသွင်အပြင် ကြိုတင်ညှိထားချက်များ
 Theme preview,အသွင်အပြင် ကြိုကြည့်ခြင်း
 Theme preview label,အလှဆင် အကြိုကြည့် အညွှန်း
@@ -1587,8 +1596,10 @@ URL,URL
 Use,အသုံးပြုရန်
 Use as filter,စစ်ထုတ်အဖြစ် အသုံးပြုပါ
 Use for training,လေ့ကျင့်ရန် အသုံးပြုပါ
+Use image,ပုံကို သုံးရန်
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.",ဤ iframe ကို ပြင်ပဆိုဒ်များတွင် အသုံးပြုပါ။ လိုအပ်ပါက URL တွင် locale query parameter ကို ပြောင်းလဲပါ။
+Use this image?,ဤပုံကို သုံးမလား။
 Use URL,URL ကို အသုံးပြုပါ
 Used in {n} refs — cannot delete,{n} ကိုးကားချက်များတွင် အသုံးပြုထားသည် — ဖျက်၍ မရနိုင်ပါ။
 Used in templates — cannot delete,ပုံစံများတွင် အသုံးပြုထားသည် — ဖျက်၍ မရနိုင်ပါ။

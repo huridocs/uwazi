@@ -10,6 +10,7 @@ export class ThesauriSyncHandlerFactory {
       return new PostgresThesauriSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

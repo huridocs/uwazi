@@ -1,10 +1,12 @@
 import React, { type ReactNode } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
+import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
+import { editorRoles } from './libraryResultsFooterActions.js';
 
 const textButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-warm';
@@ -39,28 +41,30 @@ const LibrarySingleSelectActions = ({
 }: LibrarySingleSelectActionsProps) => (
   <>
     <div className="flex min-w-0 items-center gap-2">
-      <div data-testid="library-single-select-actions" className="flex shrink-0 items-center">
-        <LibraryFooterButton onClick={() => onEdit?.()}>
-          <Translate>Edit</Translate>
-        </LibraryFooterButton>
-        <button
-          type="button"
-          aria-label={t('System', 'Permissions', null, false)}
-          onClick={() => onAction?.('permissions')}
-          className={iconButtonClassName}
-        >
-          {actionById('permissions')?.icon}
-        </button>
-        <LibraryFooterDivider />
-        <button
-          type="button"
-          aria-label={t('System', 'Delete', null, false)}
-          onClick={() => onAction?.('delete')}
-          className={deleteButtonClassName}
-        >
-          {actionById('delete')?.icon}
-        </button>
-      </div>
+      <NeedAuthorization roles={editorRoles}>
+        <div data-testid="library-single-select-actions" className="flex shrink-0 items-center">
+          <LibraryFooterButton onClick={() => onEdit?.()}>
+            <Translate>Edit</Translate>
+          </LibraryFooterButton>
+          <button
+            type="button"
+            aria-label={t('System', 'Permissions', null, false)}
+            onClick={() => onAction?.('permissions')}
+            className={iconButtonClassName}
+          >
+            {actionById('permissions')?.icon}
+          </button>
+          <LibraryFooterDivider />
+          <button
+            type="button"
+            aria-label={t('System', 'Delete', null, false)}
+            onClick={() => onAction?.('delete')}
+            className={deleteButtonClassName}
+          >
+            {actionById('delete')?.icon}
+          </button>
+        </div>
+      </NeedAuthorization>
       {leading}
     </div>
     <div className="ms-auto flex shrink-0 items-center">

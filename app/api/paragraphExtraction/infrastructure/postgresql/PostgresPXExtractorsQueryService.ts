@@ -3,6 +3,7 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresResultSet } from '#api/core/infrastructure/postgresql/common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
@@ -21,8 +22,6 @@ import { EntityStatus } from '../../domain/PXEntityStatusModel.js';
 import { PXEntityStatusMapper } from '../PXEntityStatusMapper.js';
 import { PXExtractorRow } from './PXExtractorRow.js';
 
-const PRIVILEGED = { bypass: true, refIds: [] as string[] };
-
 const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
   const number = inputNumber || 1;
   const size = inputSize || 10;
@@ -33,6 +32,7 @@ const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
 type Deps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 type StatusCountsRow = {
@@ -73,6 +73,7 @@ export class PostgresPXExtractorsQueryService
     super('px_extractors', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 
@@ -379,10 +380,7 @@ export class PostgresPXExtractorsQueryService
     sql: string,
     bindings: unknown[] = []
   ): Promise<T[]> {
-    const result = (await this.table.transactionManager.withConnection(
-      async trx => trx.raw(sql, bindings as any),
-      PRIVILEGED
-    )) as { rows: T[] };
+    const result = await this.table.raw<{ rows: T[] }>(sql, bindings);
     return result.rows ?? [];
   }
 

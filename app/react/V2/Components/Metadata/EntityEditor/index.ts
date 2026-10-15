@@ -1,4 +1,4 @@
-export { EditEntity } from './EditEntity.js';
+export { EditEntity, submitEditEntityForm } from './EditEntity.js';
 export type { EditEntityErrors, EditEntityFormValues, EditEntityProps } from './EditEntity.js';
 export { apiValidationsToEditEntityErrors } from './functions/editEntityErrors.js';
 export { buildEditEntityDefaultValues } from './functions/buildEditEntityDefaultValues.js';

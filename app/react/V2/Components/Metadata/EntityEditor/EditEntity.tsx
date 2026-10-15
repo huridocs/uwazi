@@ -43,6 +43,7 @@ import {
   type RelationshipLookupSearchArgs,
 } from './functions/relationshipFieldHelpers.js';
 import { usePdfFill } from './Components/EntityPdfFill.js';
+import { TranslationPendingReporter } from './Components/TranslationPendingReporter.js';
 import { TranslationServiceAvailabilityProvider } from './Components/TranslationServiceAvailability.js';
 
 /* eslint-disable max-statements, max-lines -- orchestrator: watches, sync effects, submit, lookup cache */
@@ -55,6 +56,9 @@ const EditEntity = ({
   disabled = false,
   errors,
   onDirtyChange,
+  onTranslationPendingChange,
+  onRegisterCancelTranslations,
+  onTranslationSaveAttempt,
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
   mainDocumentId,
@@ -70,6 +74,14 @@ const EditEntity = ({
   const [metadataEpoch, setMetadataEpoch] = useState(0);
   const { draftPropertySelections } = usePdfFill();
   const languageRef = useRef(language);
+  const translationCount = useRef(0);
+  const reportTranslationCount = useCallback(
+    (count: number) => {
+      translationCount.current = count;
+      onTranslationPendingChange?.(count > 0);
+    },
+    [onTranslationPendingChange]
+  );
 
   useEffect(() => {
     onDirtyChange?.(isEntityEditorDirty(isDirty, draftPropertySelections.length));
@@ -214,6 +226,10 @@ const EditEntity = ({
 
   const submit = handleSubmit(
     async values => {
+      if (translationCount.current > 0) {
+        onTranslationSaveAttempt?.();
+        return;
+      }
       await onSave?.(
         buildEditEntitySaveInput({
           entity,
@@ -233,6 +249,10 @@ const EditEntity = ({
 
   return (
     <TranslationServiceAvailabilityProvider>
+      <TranslationPendingReporter
+        onCount={reportTranslationCount}
+        onCancel={onRegisterCancelTranslations}
+      />
       <form
         id={formId}
         onSubmit={submit}
@@ -286,5 +306,10 @@ const EditEntity = ({
   );
 };
 
-export { EditEntity };
+const submitEditEntityForm = (formId: string) => {
+  const formElement = document.getElementById(formId);
+  if (formElement instanceof HTMLFormElement) formElement.requestSubmit();
+};
+
+export { EditEntity, submitEditEntityForm };
 export type { EditEntityErrors, EditEntityFormValues, EditEntityProps };

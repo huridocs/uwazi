@@ -43,14 +43,13 @@ const createTestingTemplatesService = ({
     ],
 
     checkEntityCounts: async (
-      templateIds: string[],
       _options?: ServiceRequestOptions
-    ): Promise<ApiResponse<Record<string, number>>> => [
-      templateIds.reduce<Record<string, number>>((acc, id) => {
-        acc[id] = entityCounts[id] ?? 0;
-        return acc;
-      }, {}),
-    ],
+    ): Promise<ApiResponse<Record<string, number>>> => [{ ...entityCounts }],
+
+    checkEntityCount: async (
+      templateId: string,
+      _options?: ServiceRequestOptions
+    ): Promise<ApiResponse<number>> => [entityCounts[templateId] ?? 0],
 
     upsert: async (
       input: TemplateInput,

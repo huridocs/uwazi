@@ -90,7 +90,9 @@ const renderWithExtra = (
 
 describe('MultiLanguageField', () => {
   it('summarizes empty languages and fills only empties on auto-translate', async () => {
-    const onTranslate = jest.fn(async (language: string) => `translated-${language}`);
+    const onTranslate = jest.fn(
+      async (language: string) => `(AI translated) translated-${language}`
+    );
     render(<Harness onTranslate={onTranslate} />);
 
     expect(screen.getByRole('button', { name: /Languages:/ })).toHaveAccessibleName(
@@ -100,12 +102,13 @@ describe('MultiLanguageField', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Auto-translate' }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Français title')).toHaveValue('translated-fr');
+      expect(screen.getByLabelText('Français title')).toHaveValue('(AI translated) translated-fr');
     });
     expect(onTranslate).toHaveBeenCalledTimes(1);
-    expect(onTranslate).toHaveBeenCalledWith('fr');
+    expect(onTranslate).toHaveBeenCalledWith('fr', expect.any(AbortSignal));
     expect(screen.getByLabelText('Español title')).toHaveValue('Audiencia');
     expect(screen.getByText('Auto')).toBeInTheDocument();
+    expect(screen.getByText('Auto').parentElement).toHaveClass('w-22');
   });
 
   it('hides auto-translate when the service is not provided', () => {
@@ -152,6 +155,8 @@ describe('MultiLanguageField', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Auto-translate' }));
     await waitFor(() => {
       expect(onTranslate).toHaveBeenCalled();
+      expect(screen.getByLabelText('Français title')).toHaveClass('bg-carbon-tint');
+      expect(screen.getByLabelText('Français title')).not.toHaveClass('bg-paper');
     });
     fireEvent.click(screen.getByRole('button', { name: 'change source' }));
     resolveFr('stale-fr');
@@ -202,6 +207,20 @@ describe('MultiLanguageField', () => {
     fireEvent.change(input, { target: { value: 'Hola' } });
     fireEvent.blur(input);
     expect(onChange).toHaveBeenCalledWith('es', 'Hola');
+  });
+
+  it('shows Auto from the row draft and hides it on edit', () => {
+    render(
+      <Harness
+        onTranslate={jest.fn(async () => '(AI translated) Hola')}
+        initial={{ en: 'Hearing', es: '(AI translated) Audiencia', fr: '' }}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+    expect(screen.getByText('Auto')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Re-translate Español/ })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Español title'), { target: { value: 'Audiencia' } });
+    expect(screen.queryByText('Auto')).not.toBeInTheDocument();
   });
 
   it('edits an extra value in the same languages section', () => {

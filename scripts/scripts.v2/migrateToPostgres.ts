@@ -43,6 +43,8 @@ import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
 import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
 import { UpdateLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UpdateLogsMigrationConfig.js';
+import { SyncsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SyncsMigrationConfig.js';
+import { ActivityLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ActivityLogsMigrationConfig.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -86,6 +88,8 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   ocr_records: OcrRecordsMigrationConfig,
   settings: SettingsMigrationConfig,
   updatelogs: UpdateLogsMigrationConfig,
+  syncs: SyncsMigrationConfig,
+  activitylogs: ActivityLogsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
   page_locales: PageLocalesMigrationConfig,
@@ -128,6 +132,8 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'dataviz',
     'dataviz_snapshots',
     'updatelogs',
+    'syncs',
+    'activitylogs',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
   postgresCsv: [

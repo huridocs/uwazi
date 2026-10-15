@@ -62,7 +62,7 @@ const ThemeSettingsSidepanel = ({
             <div className="space-y-6">
               <div>
                 <SectionHeading>
-                  <Translate>Theme logotype</Translate>
+                  <Translate>Theme logo</Translate>
                 </SectionHeading>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {(['light', 'dark'] as const).map(mode => (
@@ -85,7 +85,9 @@ const ThemeSettingsSidepanel = ({
                         recommendedSize="48x16 to 800x256 px"
                         sizeRule={themeLogotypeImageSizeRule}
                         emptyGalleryHint={<Translate>Site logo no images hint</Translate>}
-                        previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-32`}
+                        previewWrapperClassName={`${assetPreviewWrapperClassName} h-auto w-fit max-w-full`}
+                        adjustable
+                        projectHeaderLogo
                       />
                     </SurfacePanel>
                   ))}

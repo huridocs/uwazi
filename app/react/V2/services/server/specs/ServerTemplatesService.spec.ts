@@ -1,5 +1,5 @@
-import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { createServerTemplatesService } from '../ServerTemplatesService.js';
 
 const ctx = { headers: { cookie: 'session=1' } };
@@ -27,12 +27,13 @@ describe('ServerTemplatesService', () => {
     ]);
   });
 
-  it('checkEntityCounts returns counts by template id', async () => {
-    jest.spyOn(EntitiesDAOFactory, 'default').mockReturnValue({
-      countByTemplate: async (id: string) => (id === 'tmpl1' ? 4 : 0),
+  it('checkEntityCounts returns every template count', async () => {
+    jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue({
+      countByTemplates: async () => ({ tmpl1: 4, tmpl2: 0 }),
+      countByTemplate: async () => 0,
     } as never);
 
-    const [data, error] = await service.checkEntityCounts(['tmpl1', 'tmpl2']);
+    const [data, error] = await service.checkEntityCounts();
 
     expect(error).toBeUndefined();
     expect(data).toEqual({ tmpl1: 4, tmpl2: 0 });

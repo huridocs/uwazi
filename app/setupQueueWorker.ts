@@ -32,6 +32,7 @@ import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/Execution
 import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
+import { ActivityLogComposition } from '#activitylog/composition';
 import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJobScheduler.js';
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -154,6 +155,9 @@ function setupQueueWorker(props?: Props) {
 
         await CleanupExpiredCaptchasJobScheduler.default().ensureScheduled();
         logger.info('Ensured CleanupExpiredCaptchasJob is scheduled');
+
+        await ActivityLogComposition.ensureArchivingScheduled();
+        logger.info('Ensured ScheduleActivityLogArchivesJob is scheduled');
       }
 
       if (standAloneProcess) {
