@@ -11,6 +11,10 @@ type MigrationStatus = {
 
 const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.sql$/;
 const TRACKING_TABLE = 'pg_migrations';
+/** Session advisory lock held for a whole run, so only one migrator applies migrations at a time. */
+const MIGRATION_LOCK_KEY = 7_586_011;
+
+type MigrationFile = { delta: number; name: string; filePath: string };
 
 function parseMigrationFile(fileName: string): { delta: number; name: string } | null {
   const match = fileName.match(MIGRATION_FILE_PATTERN);
@@ -37,7 +41,7 @@ export class PgMigrator {
     `);
   }
 
-  private readMigrationFiles(): Array<{ delta: number; name: string; filePath: string }> {
+  private readMigrationFiles(): MigrationFile[] {
     const files = readdirSync(this.migrationsDir);
     const migrations = files
       .map(fileName => {
@@ -48,7 +52,7 @@ export class PgMigrator {
           filePath: path.join(this.migrationsDir, fileName),
         };
       })
-      .filter((m): m is { delta: number; name: string; filePath: string } => m !== null)
+      .filter((m): m is MigrationFile => m !== null)
       .sort((a, b) => a.delta - b.delta);
 
     const seen = new Set<number>();
@@ -107,13 +111,43 @@ export class PgMigrator {
     };
   }
 
-  /* eslint-disable max-statements */
+  private async withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('SELECT pg_advisory_lock($1)', [MIGRATION_LOCK_KEY]);
+      try {
+        return await fn();
+      } finally {
+        await client.query('SELECT pg_advisory_unlock($1)', [MIGRATION_LOCK_KEY]);
+      }
+    } finally {
+      client.release();
+    }
+  }
+
+  private static assertForwardOnly(pending: MigrationFile[], appliedDeltas: Set<number>): void {
+    const highestApplied = Math.max(0, ...appliedDeltas);
+    const behind = pending.filter(m => m.delta < highestApplied);
+    if (behind.length > 0) {
+      const names = behind.map(m => `${m.delta} (${m.name})`).join(', ');
+      throw new Error(
+        `Pending migration delta(s) ${names} are below the highest applied delta ${highestApplied}: renumber them above it`
+      );
+    }
+  }
+
   async migrate(until?: number): Promise<number[]> {
+    return this.withLock(async () => this.applyPending(until));
+  }
+
+  /* eslint-disable max-statements */
+  private async applyPending(until?: number): Promise<number[]> {
     await this.ensureTrackingTable();
 
     const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
     let pending = migrationFiles.filter(m => !appliedDeltas.has(m.delta));
+    PgMigrator.assertForwardOnly(pending, appliedDeltas);
 
     if (until !== undefined) {
       pending = pending.filter(m => m.delta <= until);

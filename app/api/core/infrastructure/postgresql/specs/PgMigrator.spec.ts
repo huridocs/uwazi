@@ -191,6 +191,44 @@ describe('PgMigrator', () => {
       );
       expect(columnExists.rows[0].exists).toBe(false);
     });
+
+    it('should apply each migration once when several migrators run at the same time', async () => {
+      createMigration(
+        '001-create_test_table.sql',
+        'CREATE TABLE test_migrations_table (id INT PRIMARY KEY)'
+      );
+      createMigration(
+        '002-add_name_column.sql',
+        'ALTER TABLE test_migrations_table ADD COLUMN name TEXT'
+      );
+
+      const pool = getPool();
+      const runs = await Promise.all(
+        [1, 2, 3].map(async () => new PgMigrator(migrationsDir, pool as any).migrate())
+      );
+
+      expect(runs.flat().sort()).toEqual([1, 2]);
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows.map((r: any) => r.delta)).toEqual([1, 2]);
+    });
+
+    it('should refuse to apply a migration numbered below the highest applied one', async () => {
+      createMigration('002-second.sql', 'SELECT 2');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      await migrator.migrate();
+
+      createMigration('001-merged_late.sql', 'SELECT 1');
+      createMigration('003-third.sql', 'SELECT 3');
+
+      await expect(migrator.migrate()).rejects.toThrow(
+        'Pending migration delta(s) 1 (merged_late) are below the highest applied delta 2: renumber'
+      );
+
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows.map((r: any) => r.delta)).toEqual([2]);
+    });
   });
 
   describe('status', () => {
