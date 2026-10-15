@@ -21,6 +21,8 @@ type MigrationStatus = {
   name: string;
   kind: MigrationKind;
   applied: boolean;
+  /** Pending but numbered below the highest applied migration: migrate() refuses to run it. */
+  outOfOrder: boolean;
 };
 
 type MigrateOptions = {
@@ -121,11 +123,13 @@ export class PgMigrator {
     const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
 
+    const highestApplied = PgMigrator.highestApplied(appliedDeltas);
     const statuses = migrationFiles.map(m => ({
       delta: m.delta,
       name: m.name,
       kind: m.kind,
       applied: appliedDeltas.has(m.delta),
+      outOfOrder: !appliedDeltas.has(m.delta) && m.delta < highestApplied,
     }));
 
     return {
@@ -148,8 +152,12 @@ export class PgMigrator {
     }
   }
 
+  private static highestApplied(appliedDeltas: Set<number>): number {
+    return Math.max(0, ...appliedDeltas);
+  }
+
   private static assertForwardOnly(pending: MigrationFile[], appliedDeltas: Set<number>): void {
-    const highestApplied = Math.max(0, ...appliedDeltas);
+    const highestApplied = PgMigrator.highestApplied(appliedDeltas);
     const behind = pending.filter(m => m.delta < highestApplied);
     if (behind.length > 0) {
       const names = behind.map(m => `${m.delta} (${m.name})`).join(', ');

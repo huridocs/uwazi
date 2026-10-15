@@ -79,7 +79,7 @@ class MigrationJob implements Dispatchable {
     const blockedInfo = await this.getBlockedInfo(nextDelta, schemaVersion);
     if (blockedInfo) {
       this.deps.logger.warning(
-        `Data migration ${nextDelta} blocked, requires schema version ${blockedInfo.requiresSchema}`,
+        `Mongo data migration ${nextDelta} blocked, requires Postgres version ${blockedInfo.requiresSchema}`,
         { delta: nextDelta, requiresSchema: blockedInfo.requiresSchema }
       );
       const appliedSchemas = await this.migrateSchema(
@@ -88,7 +88,7 @@ class MigrationJob implements Dispatchable {
         blockedInfo.requiresSchema
       );
       schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
-      this.deps.logger.info(`Applied schema migrations: [${appliedSchemas.join(', ')}]`, {
+      this.deps.logger.info(`Applied Postgres migrations: [${appliedSchemas.join(', ')}]`, {
         targetSchema: blockedInfo.requiresSchema,
         applied: appliedSchemas,
         schemaVersion,
@@ -291,12 +291,14 @@ class MigrationJob implements Dispatchable {
     jobParams: Required<MigrationJobParams>,
     heartbeat: HeartbeatCallback
   ): Promise<void> {
-    this.deps.logger.info('No pending data migrations, running remaining schema migrations');
+    this.deps.logger.info(
+      'No pending Mongo data migrations, running remaining Postgres migrations'
+    );
 
     const appliedSchemas = await this.migrateSchema(jobParams, heartbeat);
 
     this.deps.logger.info(
-      `Schema migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
+      `Postgres migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
       {
         applied: appliedSchemas,
       }
@@ -312,8 +314,8 @@ class MigrationJob implements Dispatchable {
 
     const summary = [
       'Migration run complete',
-      `  Data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
-      `  Schema migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
+      `  Mongo data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
+      `  Postgres migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
       `  Reindexed tenants: [${jobParams.reindexTenants.join(', ') || 'none'}]`,
     ].join('\n');
 

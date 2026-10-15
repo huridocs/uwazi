@@ -157,9 +157,24 @@ export const migration = {
     await migrator.migrate({ until: 1 });
 
     expect(await migrator.status()).toEqual({
-      applied: [{ delta: 1, name: 'schema', kind: 'sql', applied: true }],
-      pending: [{ delta: 2, name: 'data', kind: 'data', applied: false }],
+      applied: [{ delta: 1, name: 'schema', kind: 'sql', applied: true, outOfOrder: false }],
+      pending: [{ delta: 2, name: 'data', kind: 'data', applied: false, outOfOrder: false }],
     });
+  });
+
+  it('should mark pending migrations numbered below the highest applied one', async () => {
+    createMigration('002-applied.sql', 'SELECT 2');
+    const migrator = createMigrator();
+    await migrator.migrate();
+    createMigration('001-merged_late.sql', 'SELECT 1');
+    createMigration('003-next.ts', dataMigration({ reindex: false, up: '' }));
+
+    const { pending } = await migrator.status();
+
+    expect(pending.map(({ delta, outOfOrder }) => ({ delta, outOfOrder }))).toEqual([
+      { delta: 1, outOfOrder: true },
+      { delta: 3, outOfOrder: false },
+    ]);
   });
 
   it('should reject a .ts and a .sql migration sharing a delta', async () => {

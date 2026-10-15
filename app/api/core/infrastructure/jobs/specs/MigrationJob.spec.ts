@@ -385,7 +385,12 @@ describe('MigrationJob', () => {
       expect.arrayContaining([expect.stringContaining('Migration run complete')])
     );
     expect(infoMessages).toEqual(
-      expect.arrayContaining([expect.stringContaining('Data migrations applied:')])
+      expect.arrayContaining([
+        expect.stringContaining('Mongo data migrations applied: [1, 2, 3, 10]'),
+      ])
+    );
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Postgres migrations applied: [none]')])
     );
     expect(infoMessages).toEqual(
       expect.arrayContaining([expect.stringContaining('Reindexed tenants: [default]')])

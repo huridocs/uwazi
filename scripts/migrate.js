@@ -17,7 +17,10 @@ const formatStatus = ({ postgres, mongo }) => {
   const tenants = Object.entries(mongo.pendingByTenant);
   return [
     `Postgres: ${postgres.applied.length} applied, ${postgres.pending.length} pending`,
-    ...postgres.pending.map(({ delta, name, kind }) => `  ${delta} ${name} (${kind})`),
+    ...postgres.pending.map(
+      ({ delta, name, kind, outOfOrder }) =>
+        `  ${delta} ${name} (${kind})${outOfOrder ? ' OUT OF ORDER: will be refused, renumber it' : ''}`
+    ),
     `Mongo: ${tenants.length} tenant(s) with pending migrations`,
     ...tenants.map(([tenant, deltas]) => `  ${tenant}: ${deltas.join(', ')}`),
     '',

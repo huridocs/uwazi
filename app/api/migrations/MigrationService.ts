@@ -55,7 +55,7 @@ type MigrationRunResult =
 type MigrationStatusReport = {
   postgres: {
     applied: number[];
-    pending: Array<{ delta: number; name: string; kind: MigrationKind }>;
+    pending: Array<{ delta: number; name: string; kind: MigrationKind; outOfOrder: boolean }>;
   };
   /** Only tenants with something pending. */
   mongo: { pendingByTenant: Record<string, number[]> };
@@ -149,7 +149,12 @@ class MigrationService {
       return {
         postgres: {
           applied: applied.map(({ delta }) => delta),
-          pending: pending.map(({ delta, name, kind }) => ({ delta, name, kind })),
+          pending: pending.map(({ delta, name, kind, outOfOrder }) => ({
+            delta,
+            name,
+            kind,
+            outOfOrder,
+          })),
         },
         mongo: { pendingByTenant: await this.pendingMongoMigrations() },
       };

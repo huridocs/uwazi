@@ -202,10 +202,19 @@ describe('MigrationService', () => {
       const dispatchedCalls: any[] = [];
       const pgMigrator = {
         status: jest.fn().mockResolvedValue({
-          applied: [{ delta: 34, name: 'create-activitylogs-table', kind: 'sql', applied: true }],
+          applied: [
+            {
+              delta: 34,
+              name: 'create-activitylogs-table',
+              kind: 'sql',
+              applied: true,
+              outOfOrder: false,
+            },
+          ],
           pending: [
-            { delta: 35, name: 'backfill-titles', kind: 'data', applied: false },
-            { delta: 36, name: 'add-index', kind: 'sql', applied: false },
+            { delta: 33, name: 'merged-late', kind: 'sql', applied: false, outOfOrder: true },
+            { delta: 35, name: 'backfill-titles', kind: 'data', applied: false, outOfOrder: false },
+            { delta: 36, name: 'add-index', kind: 'sql', applied: false, outOfOrder: false },
           ],
         }),
         migrate: jest.fn(),
@@ -241,8 +250,9 @@ describe('MigrationService', () => {
         postgres: {
           applied: [34],
           pending: [
-            { delta: 35, name: 'backfill-titles', kind: 'data' },
-            { delta: 36, name: 'add-index', kind: 'sql' },
+            { delta: 33, name: 'merged-late', kind: 'sql', outOfOrder: true },
+            { delta: 35, name: 'backfill-titles', kind: 'data', outOfOrder: false },
+            { delta: 36, name: 'add-index', kind: 'sql', outOfOrder: false },
           ],
         },
         mongo: { pendingByTenant: { default: [214, 215], tenantB: [215] } },
