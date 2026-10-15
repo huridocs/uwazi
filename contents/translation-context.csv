@@ -1572,3 +1572,4 @@ Translations are still pending,UI text,Entity view,"Dialog title when saving, ca
 "Some translations are still pending, saving would stop the translation process.",UI text,Entity view,"Dialog body under that title. Confirming stops the translations; cancelling waits.",false
 Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
 Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false
+File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the storage size figure in the Storage card, explaining it measures uploaded file usage only.",false
