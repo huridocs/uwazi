@@ -78,9 +78,9 @@ describe('CsvImportEntities (integration)', () => {
   const uniqueSubdir = (base: string) =>
     path.join(__dirname, base, `${Date.now()}_${Math.random().toString(36).slice(2)}`);
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       jest.clearAllMocks();
       await testingEnvironment.cleanupUploadPaths();
       await clearCsvStores();

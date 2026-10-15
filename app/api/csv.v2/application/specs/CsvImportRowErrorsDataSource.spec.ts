@@ -21,8 +21,8 @@ const anError = (overrides: Partial<{ id: string; rowIndex: number }> = {}) =>
     createdAt: 100,
   });
 
-const storedIds = async (postgresCsv: boolean) => {
-  if (postgresCsv) {
+const storedIds = async (postgresCore: boolean) => {
+  if (postgresCore) {
     const { rows } = await testingPG.pool!.query(
       `SELECT "_id" FROM csv_import_row_errors WHERE "import_id" = $1 ORDER BY "row_index", "_id"`,
       [IMPORT_ID]
@@ -47,11 +47,11 @@ describe('CsvImportRowErrorsDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvBackendConfigs)('$name', ({ postgresCsv }) => {
+  describe.each(csvBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp({}, { postgres: true });
-      applyCsvBackendFlags(postgresCsv);
-      if (postgresCsv) {
+      applyCsvBackendFlags(postgresCore);
+      if (postgresCore) {
         await testingPG.clear(['csv_import_row_errors']);
       }
     });
@@ -68,7 +68,7 @@ describe('CsvImportRowErrorsDataSource', () => {
         anError({ id: ERROR_A, rowIndex: 0 }),
       ]);
 
-      expect(await storedIds(postgresCsv)).toEqual([ERROR_A, ERROR_B]);
+      expect(await storedIds(postgresCore)).toEqual([ERROR_A, ERROR_B]);
       expect((await ds.getByImport(IMPORT_ID)).map(error => error.id)).toEqual([ERROR_A, ERROR_B]);
       expect((await ds.getByImport(IMPORT_ID)).map(error => error.rowIndex)).toEqual([0, 1]);
     });
@@ -80,7 +80,7 @@ describe('CsvImportRowErrorsDataSource', () => {
       expect(await ds.countByImport(IMPORT_ID)).toBe(2);
       await ds.deleteByImport(IMPORT_ID);
       expect(await ds.countByImport(IMPORT_ID)).toBe(0);
-      expect(await storedIds(postgresCsv)).toEqual([]);
+      expect(await storedIds(postgresCore)).toEqual([]);
     });
   });
 });

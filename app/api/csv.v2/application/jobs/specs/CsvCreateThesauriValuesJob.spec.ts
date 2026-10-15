@@ -106,9 +106,9 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       jest.clearAllMocks();
       await testingEnvironment.setFixtures(fixtures);
       await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
