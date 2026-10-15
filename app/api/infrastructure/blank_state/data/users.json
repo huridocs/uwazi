@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "58ad7d240d44252fee4e6212",
+    "username": "admin",
+    "password": "$2b$10$0d1beh7SC9YIRENPPZStjujNduFeRTp7Brecy8ExiveujuD9LNMkS",
+    "email": "admin@uwazi.local",
+    "role": "admin",
+    "failedLogins": null,
+    "accountLocked": null,
+    "accountUnlockCode": null,
+    "using2fa": false,
+    "secret": null,
+    "deletedAt": null
+  },
+  {
+    "_id": "698c35e7cf8880419d91fe4d",
+    "username": "PublicUser",
+    "password": "$2b$10$ewE.24lNAdxuCfo3bSQdQ..LslGkLKVD75xnV6QBtobSAdMwPhieG",
+    "email": "public@uwazi.local",
+    "role": "collaborator",
+    "failedLogins": null,
+    "accountLocked": null,
+    "accountUnlockCode": null,
+    "using2fa": false,
+    "secret": null,
+    "deletedAt": null
+  }
+]

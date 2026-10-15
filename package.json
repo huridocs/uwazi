@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.248",
+  "version": "1.229.249",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -313,7 +313,7 @@
     "@babel/preset-react": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
     "@babel/register": "^7.29.3",
-    "@babel/traverse": "^7.28.8",
+    "@babel/traverse": "^7.29.10",
     "@belzile/enzyme-adapter-react-19": "^19.0.0",
     "@chromatic-com/storybook": "^5.4.0",
     "@cypress/webpack-preprocessor": "8.0.0",
