@@ -5,61 +5,12 @@ import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PgBlankState } from '../PgBlankState.js';
+import { clearBlankState, seedBlankState } from './blankStateFixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const TENANT_A = 'tenant-a';
-
-async function seed(pool: Pool): Promise<void> {
-  await pool.query('DELETE FROM templates');
-  await pool.query('DELETE FROM settings');
-  await pool.query('DELETE FROM users');
-  await pool.query('DELETE FROM translations');
-  await pool.query('DELETE FROM updatelogs');
-
-  await pool.query(
-    `INSERT INTO templates ("_id","name","properties","commonProperties","color","default","tenant_id")
-     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-    [
-      'tpl-doc',
-      'Document',
-      '[{"name":"title","type":"text"}]',
-      '[{"name":"title","label":"Title"}]',
-      '#c03b22',
-      true,
-      TENANT_A,
-    ]
-  );
-  await pool.query(
-    `INSERT INTO settings ("tenant_id","_id","site_name","languages","private","new_name_generation")
-     VALUES ($1,$2,$3,$4,$5,$6)`,
-    [TENANT_A, 'settings-doc', 'Uwazi', '[{"key":"en","default":true}]', true, true]
-  );
-  await pool.query(
-    `INSERT INTO users ("_id","tenant_id","username","password","email","role")
-     VALUES ($1,$2,$3,$4,$5,$6)`,
-    ['user-admin', TENANT_A, 'admin', 'secret', 'admin@uwazi.local', 'admin']
-  );
-  await pool.query(
-    `INSERT INTO translations ("_id","language","key","value","context_id","context_type","context_label","tenant_id")
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-    ['tr-1', 'en', 'Document', 'Document', 'tpl-doc', 'Entity', 'Document', TENANT_A]
-  );
-  await pool.query(
-    `INSERT INTO translations ("_id","language","key","value","context_id","context_type","context_label","tenant_id")
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-    ['tr-2', 'en', 'Title', 'Title', 'tpl-doc', 'Entity', 'Document', TENANT_A]
-  );
-}
-
-async function clear(pool: Pool): Promise<void> {
-  await pool.query('DELETE FROM templates');
-  await pool.query('DELETE FROM settings');
-  await pool.query('DELETE FROM users');
-  await pool.query('DELETE FROM translations');
-  await pool.query('DELETE FROM updatelogs');
-}
 
 describe('PgBlankState dump', () => {
   let dataDir: string;
@@ -79,12 +30,18 @@ describe('PgBlankState dump', () => {
     pool = testPool;
     dataDir = path.join(__dirname, `dump-test-${Date.now()}`);
     mkdirSync(dataDir, { recursive: true });
-    await seed(pool);
+    await seedBlankState(pool, TENANT_A, {
+      ids: {
+        settings: 'settings-doc',
+        user: 'user-admin',
+        translations: ['tr-1', 'tr-2'],
+      },
+    });
   });
 
   afterEach(async () => {
     rmSync(dataDir, { recursive: true, force: true });
-    await clear(pool);
+    await clearBlankState(pool);
   });
 
   const readFixture = (name: string) =>

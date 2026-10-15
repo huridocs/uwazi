@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import path from 'path';
+import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { BlankStateEmptyError } from '../BlankStateEmptyError.js';
@@ -13,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 describe('PgBlankState', () => {
   let dataDir: string;
-  let pool: any;
+  let pool: Pool;
 
   const TENANT_A = 'tenant-a';
   const TENANT_B = 'tenant-b';
@@ -27,8 +28,9 @@ describe('PgBlankState', () => {
   });
 
   beforeEach(async () => {
-    pool = testingEnvironment.pg.pool;
-    if (!pool) throw new Error('PG pool not available');
+    const testPool = testingEnvironment.pg.pool;
+    if (!testPool) throw new Error('PG pool not available');
+    pool = testPool;
 
     dataDir = path.join(__dirname, `test-data-${Date.now()}`);
     mkdirSync(dataDir, { recursive: true });
@@ -49,9 +51,7 @@ describe('PgBlankState', () => {
   afterEach(async () => {
     rmSync(dataDir, { recursive: true, force: true });
     // Clean up tenant data
-    if (pool) {
-      await pool.query('DELETE FROM templates');
-    }
+    await pool.query('DELETE FROM templates');
   });
 
   const createFixture = (table: string, rows: Record<string, unknown>[]) => {

@@ -1,5 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
-import { readdirSync, readFileSync, writeFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
+// eslint-disable-next-line no-restricted-imports
+import { writeFile } from 'fs/promises';
 import path from 'path';
 import pg from 'pg';
 import { serializePgValue } from '#api/core/infrastructure/postgresql/serializePgValue.js';
@@ -9,6 +11,10 @@ import { TenantDataExistsError } from './TenantDataExistsError.js';
 
 function escapeIdentifier(identifier: string): string {
   return identifier.replace(/"/g, '""');
+}
+
+function stripTenantId(row: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(row).filter(([key]) => key !== 'tenant_id'));
 }
 
 /** Tenant tables that constitute a blank state. History and user-data tables are excluded. */
@@ -83,15 +89,14 @@ export class PgBlankState {
         if (result.rows.length === 0) return;
 
         const rows = result.rows
-          .map(({ row }) => row)
-          .map(({ tenant_id: _tenantId, ...rest }) => rest)
+          .map(({ row }) => stripTenantId(row))
           .sort(
             (a, b) =>
               String(a._id ?? '').localeCompare(String(b._id ?? '')) ||
               JSON.stringify(a).localeCompare(JSON.stringify(b))
           );
 
-        writeFileSync(
+        await writeFile(
           path.join(this.dataDir, `${table}.json`),
           `${JSON.stringify(rows, null, 2)}\n`
         );

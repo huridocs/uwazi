@@ -3,8 +3,7 @@
 Dump and restore the PostgreSQL blank state: the set of tenant tables a freshly provisioned
 tenant starts from. A golden tenant is configured through the app, dumped to fixture files, and
 those fixtures are restored into each new tenant. Shared options, output and exit codes are in
-the [README](../README.md); the format and workflow are documented in the
-[PostgreSQL blank state README](../../../app/api/infrastructure/blank_state/README.md).
+the [README](../README.md).
 
 | Command               | Does                                                        |
 | --------------------- | ----------------------------------------------------------- |
@@ -57,6 +56,10 @@ Mongo blank state is handled separately by `database/blank_state_base.sh`, which
 - **With `--force`** (equivalent to `--request '{"force":true}'`) the tenant's blank-state tables
   are deleted first and the fixtures are restored, atomically. This is destructive: use it only on
   a tenant you mean to reset.
+
+`restore` does not create tables: it assumes the schema already exists. On a fresh database, run
+the schema migrations first (e.g. `yarn migrate --new`), which creates the tenant tables before
+`restore` inserts into them.
 
 Prints:
 
