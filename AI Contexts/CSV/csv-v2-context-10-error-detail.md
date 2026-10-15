@@ -2,171 +2,94 @@
 
 Date: 2026-10-15  
 Owner: CSV Import V2 initiative  
-Status: implemented (2026-10-15). The sections below are the design that was built.
+Status: implemented. This file describes the code, not a plan.
 
 ## 1) Why this file exists
 
-Three partner-facing gaps showed up on the same surface: a CSV that can never succeed still burns the queue retry budget, and the import page does not tell the uploader what to fix.
-
-This file is the agreed scope for that slice. It records what the code does today, what we will change, and what we will leave alone.
+Three partner-facing gaps were fixed on the same surface: a CSV that can never succeed no longer burns the queue retry budget, and the import page says what to fix.
 
 Companion docs:
 
 - `AI Contexts/CSV/csv-v2-context-09.md` (canonical pipeline status)
 - `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md` (row-error taxonomy; this slice is import-level `failure`, not a new row-error code)
-- `AI Contexts/CSV/csv-v2-context-03-headerAnalyzer.md` (header analyzer already aggregates issues)
+- `AI Contexts/CSV/csv-v2-context-03-headerAnalyzer.md` (header analyzer; its `MissingDefaultLanguage` note is historical)
 - `AI Contexts/CSV/csv-v2-front-end-notes.md` (socket and read contracts the dashboard uses)
 
-## 2) The three requirements
+## 2) What shipped
 
-1. A malformed CSV is a deterministic failure. An unclosed quote (`value1,"value2,value3,value4`) and the other parse failures csvtojson already raises (`column_mismatched`, missing header row) must not enter the retry loop. Retry stays for outcomes that can change between runs (storage/S3 unreachable, a row still missing a translation). A static file that cannot be parsed will fail the same way every time.
-2. That same failure must be readable on the persisted import, on the CSV v2 import page, not only in the in-progress task notification. The uploader has to be able to open the import later and fix the file.
-3. A missing language column must say which property is missing which language. `HEADER_VALIDATION_FAILED` / "Header validation failed" is not enough. Reasonable effort: surface the issues the analyzer already builds. Do not rewrite header validation.
+1. A malformed CSV fails once. An unclosed quote, a column-count mismatch, and a missing header row are properties of the uploaded bytes. Retry stays for outcomes that can change between runs (storage/S3 unreachable).
+2. That failure is stored on the import and shown on the CSV v2 import page, in the same words as the task notification.
+3. A missing language column names the property and every missing language key. The default language is not a separate error.
 
-## 3) What the code does today
+## 3) Parse failures
 
-### 3.1 Malformed CSV is retried
+Parse happens while staging rows, inside extraction (`CsvReader` → `CsvImportRowsStager` → `CsvExtractUploadedZipJob`).
 
-Parse happens while staging rows, inside extraction:
+`CsvReader` turns csvtojson failures into `CsvReaderError` and keeps `reason` and `line`. csvtojson's `line` is a 0-based data index (the header is not counted; the first data row is `0`). The user sentence shows the spreadsheet row, `line + 2`. The raw parser buffer (`extra`) is not included.
 
-- `CsvReader.stream` turns parser failures into `CsvReaderError`, keeping `error.message`.
-- csvtojson's message for an unclosed quote is `Error: unclosed_quote. JSON Line number: <n> near: <buffered text>` (`node_modules/csvtojson/v2/CSVError.js`). `CsvReaderError` drops the structured `err` / `line` / `extra` fields and keeps only that string.
-- `CsvExtractUploadedZipJob.handleError` persists `failure` and emits `csvImport:extract:error` with that same `error.message`.
-- Retry is decided only by `error instanceof NonRetryableJobError`. `CsvReaderError` is a plain `Error`, so the import is stored as `retrying` with `failure.retryable: true`, and the original error is rethrown.
-- The queue retries until `retryCount` reaches `maxRetries`. Only then `markAsFailed` flips status to `failed`. It does not rewrite `failure`, so `retryable` stays `true`.
+| Parser code         | `CsvReaderError.reason` | User message                                                                                                            |
+| ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `unclosed_quote`    | `UnclosedQuote`         | `The CSV could not be read because a quoted value was not closed (row <n>). Close the quote and upload the file again.` |
+| `column_mismatched` | `ColumnMismatch`        | `The CSV could not be read because a row does not have the same number of columns as the header (row <n>).`             |
+| missing header row  | `CsvUnreadable`         | `The CSV could not be read because it has no header row.`                                                               |
+| anything else       | `CsvUnreadable`         | `The CSV could not be read. Check that the file is valid CSV and upload it again.`                                      |
 
-Contrast: a ZIP with no `import.csv` is already `NonRetryableJobError` (`CsvImportFileNormalizer`) and fails once.
+`column_mismatched` is mapped, but csvtojson only raises it when `checkColumn` is on. `CsvReader` does not enable that option, so this branch is not hit by current imports.
 
-Storage and S3 errors are not `CsvReaderError`. They must stay retryable.
+`CsvExtractUploadedZipJob.failExtraction` wraps a `CsvReaderError` in `NonRetryableJobError` before `handleError`. The import is stored as `failed` with `retryable: false` on the first attempt. The socket event `csvImport:extract:error` carries the same `error.message`.
 
-### 3.2 The toast has the parse text; the import page does not, while it matters
+Persisted `csv_imports.failure` for a parse error:
 
-The task notification (`CsvImportTasksSubscriber` → `notifyError`) shows the socket `message` as soon as `csvImport:extract:error` fires. That is the parser string.
+- `message`: the user sentence above
+- `code`: `CSV_PARSE_FAILED`
+- `retryable`: `false`
+- `stage`: `extracting files`
+- `issues`: one issue, `{ reason, message }`, reusing the existing issue shape
 
-`handleError` does write `csv_imports.failure.message` to that same string. The import page still hides it:
+No row is written to `csv_import_row_errors`. Staging never finishes, so the Errors table stays empty. Failure details on the import page are the place to read this.
 
-- `UploadStatus` renders Failure details only when `status === failed`.
-- During the retry loop the status is `retrying`, so the card is absent. The toast is the only place the text appears.
-- No `failure.code`, no `failure.issues`. Nothing is written to `csv_import_row_errors`, because staging never finishes. The Errors table stays empty.
-- After the queue gives up, the raw parser string can show up in Failure details, still without a code, and still marked retryable.
+Storage and S3 errors are not `CsvReaderError`. They stay `retrying` / retryable. A ZIP with no `import.csv` was already non-retryable (`CsvImportFileNormalizer`) and is unchanged.
 
-Requirement 2 is: fail once, and leave a stable, user-facing failure on the import that the page already knows how to show.
+## 4) Missing language columns
 
-### 3.3 Missing languages are already diagnosed, then thrown away in the UI
+A property is valid in one of two shapes:
 
-`CsvHeaderAnalyzer` aggregates every header problem and throws `CsvHeaderAnalyzerError`. For languages it already records:
+- No language suffix (`title`). That single value is copied onto every instance language.
+- A column for every instance language (`title__en`, `title__es`, `title__fr`). The default language is one of those columns, not a special case.
 
-- `MissingLanguageColumn` — property, plus `columns` = every missing language key, default included. Message: `Property "<name>" uses languages, but is missing columns for: <keys>.` There is no separate default-language error. A missing default is the same gap as any other missing language.
+`CsvHeaderAnalyzer.collectMissingLanguageColumnIssues` emits one issue per property:
 
-`CsvPreflightJob.analyzeHeaders` persists that list:
+- `reason`: `MissingLanguageColumn`
+- `property`: the column base name (`title`)
+- `columns`: every missing language key, default included, in `availableLanguages` order
+- `message`: `Property "<name>" uses languages, but is missing columns for: <keys>.`
 
-- `failure.message`: `"Header validation failed"`
+There is no `MissingDefaultLanguage` reason. `title__es` with no `title__en` and `title__en` with no `title__fr` use the same code and the same sentence. The keys are the suffix the file must add (`title__fr`). Language display labels are not included.
+
+`CsvPreflightJob.analyzeHeaders` persists that list and fails the import once:
+
+- `failure.message`: `Header validation failed`
 - `failure.code`: `HEADER_VALIDATION_FAILED`
 - `failure.retryable`: `false`
 - `failure.stage`: `preflight:preparation:headers`
 - `failure.issues`: the analyzer issues
-- status: `failed` (non-retryable). This path is already correct.
+- status: `failed`
 
-Then the job rethrows `new NonRetryableJobError(new Error('Header validation failed'))`. The socket payload is only that sentence.
+The thrown error, and therefore `csvImport:preflight:scan:error`, uses the issue messages joined with a space. At most five messages are included; further issues add ` (+N more)`. The persisted heading stays `Header validation failed`. The issue list is the explanation.
 
-The detail read (`GetCsvImportEntitiesImportUseCase`) returns the full import, issues included. Two later steps drop them:
+## 5) What the import page shows
 
-- `ListCsvImportEntitiesImportsUseCase` copies `failure` without `issues`.
-- `UploadStatus` prints `failure.message`, `failure.stage`, `failure.code`, and `failure.retryable`. The client type `CsvImportFailure` has no `issues` field, so the page shows "Header validation failed" and code `HEADER_VALIDATION_FAILED`.
+`UploadStatus` renders Failure details when `status === failed`. It prints `failure.message`, then each issue's `message`, and under that the `property` and `columns` when they are present. It also prints stage, code, and retryable.
 
-The analyzer does not need a new validation. The page needs to render `failure.issues`.
+`ListCsvImportEntitiesImportsUseCase` includes `failure.issues` when they exist, so list and detail describe the same object. The imports table does not render the issue list. The detail read (`GetCsvImportEntitiesImportUseCase`) returns the full import, issues included.
 
-## 4) Design
-
-Stay inside `app/api/csv.v2/**` plus the CSV upload page. Do not change the queue, dispatcher, or `NonRetryableJobError`. Classification stays "throw `NonRetryableJobError` from the CSV job", which is the existing contract.
-
-### 4.1 Parse failures fail once
-
-In the extract job, a `CsvReaderError` is wrapped in `NonRetryableJobError` before `handleError` (same pattern as "import.csv not found"). `handleError` then sets `failed` and `retryable: false` on the first attempt.
-
-Keep retryable:
-
-- file storage / S3 read or write failures
-- unexpected runtime errors that are not `CsvReaderError`
-
-`CsvReaderError` covers the deterministic parse cases we care about: unclosed quote, column count mismatch, missing header row, empty file with no headers. All of those are properties of the uploaded bytes.
-
-### 4.2 The persisted failure is what the toast and the page both show
-
-Keep using `csv_imports.failure`. Do not invent a row error for a file that never staged a row. The Failures card is the right place; the Errors table is for per-row import failures.
-
-On a parse failure, persist:
-
-- `message`: one user sentence, not the parser's `unclosed_quote` / "JSON Line number" wording. This is also the socket `message`, so the toast and the page match.
-- `code`: `CSV_PARSE_FAILED`
-- `retryable`: `false`
-- `stage`: `extracting files` (unchanged)
-- `issues`: one issue, reusing the existing shape `{ reason, message, property?, columns? }`
-
-Suggested copy, driven by csvtojson's `err` code when we still have it:
-
-| Parser code                    | `issues[0].reason` | User message                                                                                                            |
-| ------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `unclosed_quote`               | `UnclosedQuote`    | `The CSV could not be read because a quoted value was not closed (row <n>). Close the quote and upload the file again.` |
-| `column_mismatched`            | `ColumnMismatch`   | `The CSV could not be read because a row does not have the same number of columns as the header (row <n>).`             |
-| anything else `CsvReaderError` | `CsvUnreadable`    | `The CSV could not be read. Check that the file is valid CSV and upload it again.`                                      |
-
-csvtojson's `line` is a 0-based data index (the header is not counted; the first data row is `0`). The user sentence shows the spreadsheet row, `line + 2`, and says "row" rather than "line". Confirmed: `value1,"value2` on the first data row reports `line: 0` and is shown as row 2. Do not put `extra` (the raw buffer) in the user message; it can be most of the file.
-
-`CsvReaderError` should carry `reason` and `line` so the job does not scrape them back out of `error.message`.
-
-`failure.message` can be the issue message (one issue today). The page keeps rendering `failure.message`, and also renders `issues` (section 4.3), so a later multi-issue failure uses the same card.
-
-### 4.3 Header issues are shown, not recomputed
-
-No new analyzer rules. One message for every missing language, then display.
-
-Message, still inside `CsvHeaderAnalyzer`:
-
-- One `MissingLanguageColumn` issue per property. `columns` lists every missing language key, including the default. `property` is the column base name (`title`). Those keys are the suffix the file must add (`title__fr`). Language labels ("French") are optional polish; the key is what the partner types into the header. Skip labels in this slice.
-
-Display:
-
-- Add `issues` to the client `CsvImportFailure` type.
-- On the import page, under Failure details, list each issue's `message`. When `property` or `columns` is present, show them next to the message so a missing-language row reads as the property plus the language keys, not only a paragraph.
-- Include `issues` in the list-use-case `failure` projection so list and detail describe the same object. The imports table does not need to render them in this slice.
-- Socket: set the preflight error `message` from the issue messages (joined, capped if there are many) instead of only `"Header validation failed"`. Keep `failure.code` as `HEADER_VALIDATION_FAILED`. The page heading can stay the short message; the issue list is the explanation.
-
-Example the page should be able to show, for a template whose languages are `en` (default), `es`, `fr`, and a file that has `title__en` and `title__es` only:
-
-- Header validation failed
-- Property "title" uses languages, but is missing columns for: fr.
-
-And for `title__es` with no `title__en`:
-
-- Property "title" uses languages, but is missing columns for: en.
-
-## 5) Implementation order
-
-Tests first, red for the assertion, then the production change. Scope stays on these files.
-
-1. Extract job: a fixture with an unclosed quote fails as `NonRetryableJobError`, status `failed`, `failure.retryable === false`, `failure.code === 'CSV_PARSE_FAILED'`, and `failure.message` is the user sentence (includes the line when we have one). Assert the socket callback receives that same message. A second case for `column_mismatched` if cheap. Do not assert that S3/storage errors become non-retryable.
-2. `CsvReaderError` carries parser `reason` and `line`; `CsvReader` copies them off csvtojson's `CSVError` instead of only `error.message`.
-3. Extract `handleError` persists the user message, code, and one issue when the error is a parse failure.
-4. Header analyzer: a missing default language is the same `MissingLanguageColumn` issue as any other missing language.
-5. Client: `CsvImportFailure.issues`, and `UploadStatus` renders them. List use case returns `issues` on `failure`.
-6. Preflight socket message includes the issue text, covered by the existing preflight spec that already expects `HEADER_VALIDATION_FAILED` and the `MissingLanguageColumn` issue.
-
-Frontend work in step 5 follows `docs/frontend.md` when that step starts. This design pass does not.
+The task notification (`CsvImportTasksSubscriber`) shows the socket `message`. For a parse failure that is the user sentence. For a header failure that is the joined issue text.
 
 ## 6) Out of scope
 
 - Queue, dispatcher, lock window, `maxRetries`.
-- New row-error taxonomy codes. Parse failure is an import-level `failure` because no row was staged.
-- Rewriting `CsvHeaderAnalyzer` or the language-column rules.
+- New row-error taxonomy codes. A parse failure is an import-level `failure` because no row was staged.
 - Language display labels.
-- Thesauri preflight copy. That path has the same shape (`failure.message` is "Thesauri values contain errors", and each issue's `message` is the raw reason code). Fixing it is the same UI once `issues` render, but the copy cleanup is a follow-up, not this slice.
+- Turning on csvtojson `checkColumn`.
+- Thesauri preflight copy. That path still stores `failure.message` as "Thesauri values contain errors", and each issue's `message` is the raw reason code. The page now renders `issues`, but that copy is unchanged.
 - Failed-rows CSV. A file that fails parsing has no staged rows and no report.
-
-## 7) Acceptance
-
-1. An unclosed quote fails the extract job once. Status is `failed`, `retryable` is false, and the queue does not requeue that job.
-2. The import page Failure details and the task notification show the same user sentence, including the line number when the parser provides one.
-3. A file missing a non-default language column shows the property name and the missing language key on the import page, not only `HEADER_VALIDATION_FAILED`.
-4. A file missing the default language column uses the same missing-column message and code as any other missing language.
-5. A storage/S3 failure during extract is still `retrying` / retryable.
