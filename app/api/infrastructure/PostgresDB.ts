@@ -2,6 +2,14 @@ import knex, { Knex } from 'knex';
 import pg from 'pg';
 import { config } from '#api/config.js';
 
+/**
+ * Defaults for every connection handed to a migration: one that collides with live traffic fails
+ * fast instead of stalling it. A migration that needs longer overrides them with SET LOCAL.
+ */
+const MIGRATION_TIMEOUTS = { lockTimeout: '10s', statementTimeout: '5min' };
+
+type PgConnection = { query: (sql: string, callback: (error: Error | null) => void) => void };
+
 export type PostgresConnectionConfig = {
   host?: string;
   port?: number;
@@ -12,6 +20,8 @@ export type PostgresConnectionConfig = {
 
 export class PostgresDB {
   private static _knex: Knex | null = null;
+
+  private static _adminKnex: Knex | null = null;
 
   private static _pool: pg.Pool | null = null;
 
@@ -42,18 +52,16 @@ export class PostgresDB {
   }
 
   static async disconnect(): Promise<void> {
-    if (this._knex) {
-      await this._knex.destroy();
-      this._knex = null;
-    }
-    if (this._pool) {
-      await this._pool.end();
-      this._pool = null;
-    }
-    if (this._adminPool) {
-      await this._adminPool.end();
-      this._adminPool = null;
-    }
+    await Promise.all([
+      this._knex?.destroy(),
+      this._pool?.end(),
+      this._adminPool?.end(),
+      this._adminKnex?.destroy(),
+    ]);
+    this._knex = null;
+    this._pool = null;
+    this._adminPool = null;
+    this._adminKnex = null;
   }
 
   static get knex(): Knex {
@@ -78,20 +86,48 @@ export class PostgresDB {
     return this._pool;
   }
 
+  private static adminConnectionConfig(): PostgresConnectionConfig {
+    return (
+      this._activeConfig ?? {
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: config.postgres.database,
+        user: config.postgres.admin?.user,
+        password: config.postgres.admin?.password,
+      }
+    );
+  }
+
   static adminPool(): pg.Pool {
     if (!this._adminPool) {
-      this._adminPool = new pg.Pool(
-        this._activeConfig ?? {
-          host: config.postgres.host,
-          port: config.postgres.port,
-          database: config.postgres.database,
-          user: config.postgres.admin?.user,
-          password: config.postgres.admin?.password,
-        }
-      );
+      this._adminPool = new pg.Pool(this.adminConnectionConfig());
     }
 
     return this._adminPool;
+  }
+
+  /** Admin credentials, with migration timeouts set on every connection. For migrations only. */
+  static adminKnex(): Knex {
+    if (!this._adminKnex) {
+      this._adminKnex = knex({
+        client: 'pg',
+        connection: this.adminConnectionConfig(),
+        useNullAsDefault: true,
+        pool: {
+          afterCreate: (
+            connection: PgConnection,
+            done: (error: Error | null, connection: PgConnection) => void
+          ) => {
+            connection.query(
+              `SET lock_timeout = '${MIGRATION_TIMEOUTS.lockTimeout}'; SET statement_timeout = '${MIGRATION_TIMEOUTS.statementTimeout}'`,
+              error => done(error, connection)
+            );
+          },
+        },
+      });
+    }
+
+    return this._adminKnex;
   }
 
   static setConfig(cfg: PostgresConnectionConfig): void {
@@ -99,6 +135,7 @@ export class PostgresDB {
     this._knex = null;
     this._pool = null;
     this._adminPool = null;
+    this._adminKnex = null;
   }
 
   static resetConfig(): void {
@@ -106,6 +143,7 @@ export class PostgresDB {
     this._knex = null;
     this._pool = null;
     this._adminPool = null;
+    this._adminKnex = null;
   }
 
   static connectionConfig(): PostgresConnectionConfig {
