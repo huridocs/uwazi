@@ -1,16 +1,20 @@
 // eslint-disable-next-line no-restricted-imports
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import path from 'path';
+import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { PgBlankState, TenantDataExistsError } from '../PgBlankState.js';
+import { BlankStateEmptyError } from '../BlankStateEmptyError.js';
+import { BlankStateTablesMissingError } from '../BlankStateTablesMissingError.js';
+import { PgBlankState } from '../PgBlankState.js';
+import { TenantDataExistsError } from '../TenantDataExistsError.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe('PgBlankState', () => {
   let dataDir: string;
-  let pool: any;
+  let pool: Pool;
 
   const TENANT_A = 'tenant-a';
   const TENANT_B = 'tenant-b';
@@ -24,8 +28,9 @@ describe('PgBlankState', () => {
   });
 
   beforeEach(async () => {
-    pool = testingEnvironment.pg.pool;
-    if (!pool) throw new Error('PG pool not available');
+    const testPool = testingEnvironment.pg.pool;
+    if (!testPool) throw new Error('PG pool not available');
+    pool = testPool;
 
     dataDir = path.join(__dirname, `test-data-${Date.now()}`);
     mkdirSync(dataDir, { recursive: true });
@@ -46,9 +51,7 @@ describe('PgBlankState', () => {
   afterEach(async () => {
     rmSync(dataDir, { recursive: true, force: true });
     // Clean up tenant data
-    if (pool) {
-      await pool.query('DELETE FROM templates');
-    }
+    await pool.query('DELETE FROM templates');
   });
 
   const createFixture = (table: string, rows: Record<string, unknown>[]) => {
@@ -56,7 +59,7 @@ describe('PgBlankState', () => {
   };
 
   describe('run', () => {
-    it('should throw TenantDataExistsError when tenant data exists without force', async () => {
+    it('should throw a conflict TenantDataExistsError when tenant data exists without force', async () => {
       createFixture('templates', [
         {
           _id: 'new1',
@@ -69,7 +72,11 @@ describe('PgBlankState', () => {
       ]);
 
       const bs = new PgBlankState(pool, TENANT_A, dataDir);
-      await expect(bs.run()).rejects.toThrow(TenantDataExistsError);
+      const error = await bs.run().catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(TenantDataExistsError);
+      expect((error as TenantDataExistsError).category).toBe('conflict');
+      expect((error as TenantDataExistsError).code).toBe('blank_state.tenant_data_exists');
     });
 
     it('should delete and restore when force is true', async () => {
@@ -118,7 +125,34 @@ describe('PgBlankState', () => {
       expect(result.rows[0].name).toBe('Fresh Template');
     });
 
+    it('should throw a BlankStateEmptyError when there are no fixtures to restore', async () => {
+      const bs = new PgBlankState(pool, 'fresh-tenant', dataDir);
+
+      await expect(bs.run()).rejects.toBeInstanceOf(BlankStateEmptyError);
+    });
+
+    it('should throw a BlankStateTablesMissingError when a fixture targets a missing table', async () => {
+      createFixture('no_such_table', [
+        { _id: 'new1', name: 'Missing Table', tenant_id: '__TENANT_ID__' },
+      ]);
+
+      const bs = new PgBlankState(pool, 'fresh-tenant', dataDir);
+
+      await expect(bs.run()).rejects.toBeInstanceOf(BlankStateTablesMissingError);
+    });
+
     it('should not affect pg_migrations table', async () => {
+      createFixture('templates', [
+        {
+          _id: 'new1',
+          name: 'Restored Template',
+          properties: [],
+          commonProperties: [],
+          default: false,
+          tenant_id: '__TENANT_ID__',
+        },
+      ]);
+
       const before = await pool.query('SELECT COUNT(*) as count FROM pg_migrations');
       const countBefore = parseInt(before.rows[0].count, 10);
 
