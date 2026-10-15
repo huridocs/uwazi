@@ -62,5 +62,14 @@ describe('CliConfig', () => {
         CliConfig.requiredFor({ redis: false, sessions: true }, { NODE_ENV: 'production' })
       ).toEqual([...database, 'SESSIONS_BACKEND']);
     });
+
+    it('should also require the admin Postgres credentials when the command bypasses RLS', () => {
+      expect(
+        CliConfig.requiredFor(
+          { redis: false, sessions: false, postgresAdmin: true },
+          { NODE_ENV: 'production' }
+        )
+      ).toEqual([...database, 'POSTGRES_USER', 'POSTGRES_PASSWORD']);
+    });
   });
 });

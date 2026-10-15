@@ -1,3 +1,4 @@
+import type { Argv } from 'yargs';
 import type { z } from 'zod';
 import type { FieldMap } from '../errors/ErrorMapper.js';
 import type { ConnectionNeeds } from '../runtime/CliConnections.js';
@@ -23,6 +24,10 @@ interface Route<Input = unknown, Output = unknown> {
   request: z.ZodType<Input, z.ZodTypeDef, unknown>;
   /** Domain field → request field, for domain errors whose path is not the request's. */
   fieldMap: FieldMap;
+  /** Extra command-line flags, added alongside `--request`, `--tenant` and `--schema`. */
+  options?: (y: Argv) => Argv;
+  /** Combines the extra flags with the `--request` JSON into the command's input. */
+  requestFromFlags?: (argv: CliArgv, request: unknown) => unknown;
   handle(input: Input): Promise<Output>;
 }
 
