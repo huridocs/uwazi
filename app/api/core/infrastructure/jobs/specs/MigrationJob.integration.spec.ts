@@ -89,7 +89,7 @@ const createRunChain = (migrationsDir: string, reindexFails = false) => {
   const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
   spiesToRestore.push(dispatchSpy);
 
-  return { dispatcher, dispatchSpy, reindexTenant };
+  return { dispatcher, dispatchSpy, reindexTenant, createJob };
 };
 
 const initialResults = () => ({ appliedDataDeltas: [], appliedSchemaDeltas: [] });
@@ -111,6 +111,8 @@ describe('MigrationJob (real chain)', () => {
     maintenanceCalls = [];
     reindexCalls = [];
     pgMigrationsDir = mkdtempSync(path.join(os.tmpdir(), 'uwazi-pg-migrations-'));
+    // testing_pg applied the real schema migrations; start every test from an empty history
+    await testingEnvironment.pg.pool!.query('DROP TABLE IF EXISTS pg_migrations');
     // The real adapter only migrates tenants that have a settings collection.
     await testingDB.mongodb!.collection('settings').insertOne({});
   });
@@ -266,6 +268,63 @@ describe('MigrationJob (real chain)', () => {
 
     const defaultMigrations = await testingDB.mongodb!.collection('migrations').find().toArray();
     expect(defaultMigrations.map(m => m.delta)).toEqual([1]);
+  });
+
+  it('reindexes the tenants a postgres data migration reports', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export default {
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}']); },
+      };`
+    );
+
+    const { dispatcher, reindexTenant } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const results = initialResults();
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+    expect(results.appliedSchemaDeltas).toEqual([1]);
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(reindexCalls).toEqual(['default']);
+  });
+
+  it('skips tenants a postgres data migration reports that are not registered', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export default {
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}', 'deleted-tenant']); },
+      };`
+    );
+
+    const { dispatcher, reindexTenant } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() });
+
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(reindexCalls).toEqual(['default']);
+  });
+
+  it('hands the job heartbeat to postgres data migrations', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-long_backfill.ts'),
+      `export default {
+        description: 'long backfill',
+        reindex: false,
+        async up(ctx) { await ctx.heartbeat(); await ctx.heartbeat(); },
+      };`
+    );
+    const { createJob } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const heartbeat = jest.fn(async () => {});
+
+    await (
+      await createJob()
+    ).handleDispatch(heartbeat, { reindexTenants: [], results: initialResults() });
+
+    expect(heartbeat.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 
   it('keeps maintenance mode when the reindex fails', async () => {
