@@ -18,8 +18,8 @@ const aRow = (overrides: Partial<{ id: string; rowIndex: number; values: string[
     values: overrides.values ?? ['B'],
   });
 
-const storedIds = async (postgresCsv: boolean) => {
-  if (postgresCsv) {
+const storedIds = async (postgresCore: boolean) => {
+  if (postgresCore) {
     const { rows } = await testingPG.pool!.query(
       `SELECT "_id" FROM csv_import_rows WHERE "import_id" = $1 ORDER BY "row_index"`,
       [IMPORT_ID]
@@ -44,11 +44,11 @@ describe('CsvImportRowsDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvBackendConfigs)('$name', ({ postgresCsv }) => {
+  describe.each(csvBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp({}, { postgres: true });
-      applyCsvBackendFlags(postgresCsv);
-      if (postgresCsv) {
+      applyCsvBackendFlags(postgresCore);
+      if (postgresCore) {
         await testingPG.clear(['csv_import_rows']);
       }
     });
@@ -65,7 +65,7 @@ describe('CsvImportRowsDataSource', () => {
         aRow({ id: ROW_A, rowIndex: 0, values: ['A'] }),
       ]);
 
-      expect(await storedIds(postgresCsv)).toEqual([ROW_A, ROW_B]);
+      expect(await storedIds(postgresCore)).toEqual([ROW_A, ROW_B]);
 
       const loaded = await ds.getByImport(IMPORT_ID);
       expect(loaded.map(row => row.toObject())).toEqual([
@@ -88,7 +88,7 @@ describe('CsvImportRowsDataSource', () => {
 
       await ds.deleteByImport(IMPORT_ID);
       expect(await ds.countByImport(IMPORT_ID)).toBe(0);
-      expect(await storedIds(postgresCsv)).toEqual([]);
+      expect(await storedIds(postgresCore)).toEqual([]);
     });
   });
 });

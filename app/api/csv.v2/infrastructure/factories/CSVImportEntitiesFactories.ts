@@ -47,7 +47,7 @@ const csvDataSource = <T>(
   postgres: (deps: CsvPostgresDeps) => T,
   mongo: (db: Db, tm: TransactionManager) => T
 ): T => {
-  if (ExecutionContext.currentTenant.featureFlags?.postgresCsv) {
+  if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
     return postgres({
       tenantId: ExecutionContext.currentTenant.name,
       pgTransactionManager: ExecutionContext.postgresTransactionManager,
