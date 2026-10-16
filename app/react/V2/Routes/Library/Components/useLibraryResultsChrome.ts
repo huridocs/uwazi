@@ -12,6 +12,7 @@ type ChromeInput = {
   closeFilters: () => void;
   closePreview: () => void;
   openResults: () => void;
+  clearSelection: () => void;
 };
 
 const syncPaneTab = (
@@ -76,6 +77,7 @@ const resultsActions = (ctx: {
   closePreview: () => void;
   closeFilters: () => void;
   openResults: () => void;
+  clearSelection: () => void;
 }) => ({
   clearSearch: () => {
     ctx.onSearchChange('');
@@ -83,6 +85,7 @@ const resultsActions = (ctx: {
   },
   submitSearch: (value: string) => {
     ctx.onSearchSubmit?.(value);
+    if (value.trim()) ctx.clearSelection();
     if (!ctx.isMobile) return;
     openSubmittedResults(value, ctx);
   },
@@ -95,6 +98,15 @@ const resultsActions = (ctx: {
   },
 });
 
+const useClearSelectionOnSearch = (confirmedSearch: string, clearSelection: () => void) => {
+  const seenSearch = useRef(confirmedSearch);
+  useEffect(() => {
+    if (seenSearch.current === confirmedSearch) return;
+    seenSearch.current = confirmedSearch;
+    if (confirmedSearch) clearSelection();
+  }, [clearSelection, confirmedSearch]);
+};
+
 const useLibraryResultsChrome = ({
   search,
   committedSearch,
@@ -105,6 +117,7 @@ const useLibraryResultsChrome = ({
   closeFilters,
   closePreview,
   openResults,
+  clearSelection,
 }: ChromeInput) => {
   const confirmedSearch = (committedSearch ?? search).trim();
   const [trackedSearch, setTrackedSearch] = useState(confirmedSearch);
@@ -115,13 +128,13 @@ const useLibraryResultsChrome = ({
   useEffect(() => {
     const active = search.trim().length > 0;
     if (isMobile && active && !wasSearchActive.current) setResultsArmed(true);
-    if (!active) setResultsArmed(false);
+    if (!active) {
+      setResultsArmed(false);
+      closeResults();
+    }
     wasSearchActive.current = active;
-  }, [isMobile, search]);
-  useEffect(() => {
-    if (search.trim()) return;
-    closeResults();
-  }, [closeResults, search]);
+  }, [closeResults, isMobile, search]);
+  useClearSelectionOnSearch(confirmedSearch, clearSelection);
   const actions = resultsActions({
     onSearchChange,
     onSearchSubmit,
@@ -134,6 +147,7 @@ const useLibraryResultsChrome = ({
     closePreview,
     closeFilters,
     openResults,
+    clearSelection,
   });
 
   return { confirmedSearch, paneTab, setPaneTab, ...actions };

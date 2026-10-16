@@ -15,7 +15,17 @@ jest.mock('#V2/CustomHooks/useIsMobile.js', () => ({
 }));
 
 jest.mock('../LibraryToolbar', () => ({
-  LibraryToolbar: () => <div>toolbar</div>,
+  LibraryToolbar: ({
+    search,
+    onSearchSubmit,
+  }: {
+    search: string;
+    onSearchSubmit?: (value: string) => void;
+  }) => (
+    <button type="button" onClick={() => onSearchSubmit?.(search)}>
+      submit search
+    </button>
+  ),
 }));
 
 jest.mock('../LibraryResultsFooter', () => ({
@@ -28,6 +38,10 @@ jest.mock('../LibraryFilters', () => ({
 
 jest.mock('../LibraryResultsPanel', () => ({
   LibraryResultsPanel: ({ search }: { search: string }) => <div>results body {search}</div>,
+}));
+
+jest.mock('../LibraryEntityPreview', () => ({
+  LibraryEntityPreview: () => <div>entity preview</div>,
 }));
 
 jest.mock('../Viewers/index', () => ({
@@ -50,7 +64,15 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 })) as unknown as typeof ResizeObserver;
 
-const Harness = ({ committedSearch }: { committedSearch: string }) => (
+const Harness = ({
+  committedSearch,
+  selectedIds = [],
+  onSelectedIdsChange = () => undefined,
+}: {
+  committedSearch: string;
+  selectedIds?: string[];
+  onSelectedIdsChange?: (ids: string[]) => void;
+}) => (
   <LibraryView
     rows={[]}
     totalRows={0}
@@ -68,7 +90,8 @@ const Harness = ({ committedSearch }: { committedSearch: string }) => (
     andFilters={[]}
     onAndFiltersChange={() => undefined}
     chips={[]}
-    onSelectedIdsChange={() => undefined}
+    selectedIds={selectedIds}
+    onSelectedIdsChange={onSelectedIdsChange}
     onClosePreview={() => undefined}
     entityBasePath="/en/library"
     onLoadMore={() => undefined}
@@ -100,5 +123,62 @@ describe('LibraryView results tab', () => {
 
     rerender(<Harness committedSearch="" />);
     expect(screen.getByText('filters body')).toBeInTheDocument();
+  });
+
+  it('closes the open entity when a search is committed', () => {
+    const onSelectedIdsChange = jest.fn();
+    const { rerender } = render(
+      <Harness
+        committedSearch=""
+        selectedIds={['entity-1']}
+        onSelectedIdsChange={onSelectedIdsChange}
+      />
+    );
+    expect(screen.getByText('entity preview')).toBeInTheDocument();
+    expect(onSelectedIdsChange).not.toHaveBeenCalled();
+
+    rerender(
+      <Harness
+        committedSearch="egg"
+        selectedIds={['entity-1']}
+        onSelectedIdsChange={onSelectedIdsChange}
+      />
+    );
+    expect(onSelectedIdsChange).toHaveBeenCalledWith([]);
+  });
+
+  it('keeps the open entity when the search is cleared', () => {
+    const onSelectedIdsChange = jest.fn();
+    const { rerender } = render(
+      <Harness
+        committedSearch="egg"
+        selectedIds={['entity-1']}
+        onSelectedIdsChange={onSelectedIdsChange}
+      />
+    );
+
+    rerender(
+      <Harness
+        committedSearch=""
+        selectedIds={['entity-1']}
+        onSelectedIdsChange={onSelectedIdsChange}
+      />
+    );
+    expect(onSelectedIdsChange).not.toHaveBeenCalled();
+    expect(screen.getByText('entity preview')).toBeInTheDocument();
+  });
+
+  it('closes the open entity when the current search is submitted again', () => {
+    const onSelectedIdsChange = jest.fn();
+    render(
+      <Harness
+        committedSearch="egg"
+        selectedIds={['entity-1']}
+        onSelectedIdsChange={onSelectedIdsChange}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit search' }));
+    expect(onSelectedIdsChange).toHaveBeenCalledWith([]);
   });
 });

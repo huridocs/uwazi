@@ -141,6 +141,7 @@ const LibraryView = ({
       closeFilters,
       closePreview,
       openResults,
+      clearSelection: clear,
     });
 
   return (
