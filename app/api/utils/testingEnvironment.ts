@@ -608,6 +608,16 @@ const testingEnvironment = {
     get pool() {
       return testingPG.pool;
     },
+
+    /** Admin connection config for the per-test database. */
+    get config() {
+      return testingPG.config;
+    },
+
+    /** The context PgMigrator hands a data migration, on the per-test database. */
+    migrationContext() {
+      return testingPG.migrationContext();
+    },
   },
 };
 
