@@ -6,8 +6,8 @@
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions
  *   TENANTS_BACKEND=mongo node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenants
  *
- * --tenant migrates the collections gated by that tenant's active Postgres feature flags
- * (postgresCore, postgresPages, postgresCsv).
+ * --tenant migrates the collections gated by the tenant's active Postgres feature flag
+ * (postgresCore).
  *
  * --sessions copies the shared-database `sessions` collection into `http_sessions` once,
  * for every tenant. It does not take a tenant and it does not write a tenant column.
@@ -108,10 +108,9 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   dataviz_snapshots: DatavizSnapshotsMigrationConfig,
 };
 
-// Collections grouped by the feature flag that gates their migration. A group is
-// migrated only when its flag is active on the tenant, in the order listed: a table
-// comes after the tables its foreign keys reference.
-const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', string[]> = {
+// Collections migrated when the postgresCore feature flag is active on the tenant, in the
+// order listed: a table comes after the tables its foreign keys reference.
+const FLAG_GROUPS: Record<'postgresCore', string[]> = {
   postgresCore: [
     'thesauri',
     'templates',
@@ -137,9 +136,9 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'syncs',
     'preserve_sync',
     'activitylogs',
-  ],
-  postgresPages: ['pages', 'page_locales', 'page_releases'],
-  postgresCsv: [
+    'pages',
+    'page_locales',
+    'page_releases',
     'csv_imports',
     'csv_import_rows',
     'csv_import_row_errors',
