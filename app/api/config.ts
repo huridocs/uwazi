@@ -246,7 +246,7 @@ export const config = {
     batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },
   activityLog: {
-    maxRows: parseInt(process.env.ACTIVITY_LOG_MAX_ROWS || '', 10) || 50_000,
+    maxRows: parseInt(process.env.ACTIVITY_LOG_MAX_ROWS || '', 10) || 20_000,
     chunkRows: parseInt(process.env.ACTIVITY_LOG_CHUNK_ROWS || '', 10) || 10_000,
   },
   githubToken: process.env.GITHUB_TOKEN || '',

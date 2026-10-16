@@ -55,7 +55,7 @@ const Dashboard = () => {
                     {storageUnits}
                   </Translate>
                 </div>
-                <Translate className="text-ink-muted">Files and database usage</Translate>
+                <Translate className="text-ink-muted">File usage</Translate>
               </div>
             </Card>
             <Card title={<Translate>Entities</Translate>}>
@@ -66,7 +66,7 @@ const Dashboard = () => {
                     total entities
                   </Translate>
                 </div>
-                <Translate className="text-ink-muted">Entities across all languages</Translate>
+                <Translate className="text-ink-muted">Entities</Translate>
               </div>
             </Card>
             <Card title={<Translate>Files</Translate>}>
