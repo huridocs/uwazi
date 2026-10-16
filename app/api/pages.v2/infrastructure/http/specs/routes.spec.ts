@@ -24,120 +24,117 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each(pagesBackendConfigs)(
-  'Pages V2 HTTP routes - $name',
-  ({ postgresPages, postgresCore }) => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures, {
-        postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresCore),
-      });
-      applyPagesBackendFlags(postgresPages, postgresCore);
-      await testingPG.clear(['page_releases']);
+describe.each(pagesBackendConfigs)('Pages V2 HTTP routes - $name', ({ postgresCore }) => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures, {
+      postgres: true,
+      postgresMirror: pagesBackendPostgresMirror(postgresCore),
+    });
+    applyPagesBackendFlags(postgresCore);
+    await testingPG.clear(['page_releases']);
+  });
+
+  describe('POST /api/pages/release', () => {
+    it('should return 404 when the page does not exist', async () => {
+      const response = await request(app)
+        .post('/api/pages/release')
+        .set('content-language', 'en')
+        .send({ sharedId: 'missing-page', release_message: 'nope' });
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toContain('missing-page');
+    });
+  });
+
+  describe('POST /api/pages', () => {
+    it('should validate with minimum required props', async () => {
+      const response = await request(app)
+        .post('/api/pages')
+        .set('content-language', 'en')
+        .send({ title: 'good structure' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.title).toBe('good structure');
     });
 
-    describe('POST /api/pages/release', () => {
-      it('should return 404 when the page does not exist', async () => {
-        const response = await request(app)
-          .post('/api/pages/release')
-          .set('content-language', 'en')
-          .send({ sharedId: 'missing-page', release_message: 'nope' });
+    it('should not validate with wrong structure', async () => {
+      const response = await request(app).post('/api/pages').send({ withoutTitle: true });
 
-        expect(response.status).toBe(404);
-        expect(response.body.message).toContain('missing-page');
-      });
+      expect(response.status).toBe(422);
+      expect(response.text).toContain('validation failed');
     });
 
-    describe('POST /api/pages', () => {
-      it('should validate with minimum required props', async () => {
-        const response = await request(app)
-          .post('/api/pages')
-          .set('content-language', 'en')
-          .send({ title: 'good structure' });
+    it('should update an existing page when sharedId is present', async () => {
+      const response = await request(app)
+        .post('/api/pages')
+        .set('content-language', 'es')
+        .send({ sharedId: '2', title: 'Penguin almost done - updated' });
 
-        expect(response.status).toBe(200);
-        expect(response.body.title).toBe('good structure');
-      });
+      expect(response.status).toBe(200);
+      expect(response.body.sharedId).toBe('2');
+      expect(response.body.title).toBe('Penguin almost done - updated');
+    });
+  });
 
-      it('should not validate with wrong structure', async () => {
-        const response = await request(app).post('/api/pages').send({ withoutTitle: true });
+  describe('GET /api/pages', () => {
+    it('should return the page for the current locale', async () => {
+      const response = await request(app)
+        .get('/api/pages')
+        .query({ sharedId: '1' })
+        .set('content-language', 'es');
 
-        expect(response.status).toBe(422);
-        expect(response.text).toContain('validation failed');
-      });
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0].title).toBe('Batman finishes');
+    });
+  });
 
-      it('should update an existing page when sharedId is present', async () => {
-        const response = await request(app)
-          .post('/api/pages')
-          .set('content-language', 'es')
-          .send({ sharedId: '2', title: 'Penguin almost done - updated' });
+  describe('GET /api/page', () => {
+    it('should return the page for the current locale', async () => {
+      const response = await request(app)
+        .get('/api/page')
+        .query({ sharedId: '1' })
+        .set('content-language', 'es');
 
-        expect(response.status).toBe(200);
-        expect(response.body.sharedId).toBe('2');
-        expect(response.body.title).toBe('Penguin almost done - updated');
-      });
+      expect(response.status).toBe(200);
+      expect(response.body.sharedId).toBe('1');
+      expect(response.body.title).toBe('Batman finishes');
     });
 
-    describe('GET /api/pages', () => {
-      it('should return the page for the current locale', async () => {
-        const response = await request(app)
-          .get('/api/pages')
-          .query({ sharedId: '1' })
-          .set('content-language', 'es');
+    it('should return 404 for an unknown page', async () => {
+      const response = await request(app)
+        .get('/api/page')
+        .query({ sharedId: 'unexistent' })
+        .set('content-language', 'es');
 
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveLength(1);
-        expect(response.body[0].title).toBe('Batman finishes');
-      });
+      expect(response.status).toBe(404);
     });
 
-    describe('GET /api/page', () => {
-      it('should return the page for the current locale', async () => {
-        const response = await request(app)
-          .get('/api/page')
-          .query({ sharedId: '1' })
-          .set('content-language', 'es');
+    it('should require a sharedId', async () => {
+      const response = await request(app).get('/api/page').set('content-language', 'es');
 
-        expect(response.status).toBe(200);
-        expect(response.body.sharedId).toBe('1');
-        expect(response.body.title).toBe('Batman finishes');
-      });
+      expect(response.status).toBe(422);
+    });
+  });
 
-      it('should return 404 for an unknown page', async () => {
-        const response = await request(app)
-          .get('/api/page')
-          .query({ sharedId: 'unexistent' })
-          .set('content-language', 'es');
+  describe('DELETE /api/pages', () => {
+    it('should refuse to delete a page in use by templates', async () => {
+      const response = await request(app).delete('/api/pages').query({ sharedId: '1' });
 
-        expect(response.status).toBe(404);
-      });
-
-      it('should require a sharedId', async () => {
-        const response = await request(app).get('/api/page').set('content-language', 'es');
-
-        expect(response.status).toBe(422);
-      });
+      expect(response.status).toBe(409);
+      expect(response.body.message).toContain('This page is in use by the following templates:');
     });
 
-    describe('DELETE /api/pages', () => {
-      it('should refuse to delete a page in use by templates', async () => {
-        const response = await request(app).delete('/api/pages').query({ sharedId: '1' });
+    it('should delete the page by sharedId', async () => {
+      const response = await request(app).delete('/api/pages').query({ sharedId: '2' });
 
-        expect(response.status).toBe(409);
-        expect(response.body.message).toContain('This page is in use by the following templates:');
-      });
+      expect(response.status).toBe(200);
 
-      it('should delete the page by sharedId', async () => {
-        const response = await request(app).delete('/api/pages').query({ sharedId: '2' });
-
-        expect(response.status).toBe(200);
-
-        const getResponse = await request(app)
-          .get('/api/page')
-          .query({ sharedId: '2' })
-          .set('content-language', 'es');
-        expect(getResponse.status).toBe(404);
-      });
+      const getResponse = await request(app)
+        .get('/api/page')
+        .query({ sharedId: '2' })
+        .set('content-language', 'es');
+      expect(getResponse.status).toBe(404);
     });
-  }
-);
+  });
+});

@@ -56,44 +56,41 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each(pagesBackendConfigs)(
-  'AddLanguagePagesListener - $name',
-  ({ postgresPages, postgresCore }) => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures, {
-        postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresCore),
-      });
-      applyPagesBackendFlags(postgresPages, postgresCore);
+describe.each(pagesBackendConfigs)('AddLanguagePagesListener - $name', ({ postgresCore }) => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures, {
+      postgres: true,
+      postgresMirror: pagesBackendPostgresMirror(postgresCore),
     });
-    describe('when the language still exists in settings', () => {
-      it('should add locale to existing pages', async () => {
-        const listener = await createSUT();
-        await dispatch(listener, 'es');
+    applyPagesBackendFlags(postgresCore);
+  });
+  describe('when the language still exists in settings', () => {
+    it('should add locale to existing pages', async () => {
+      const listener = await createSUT();
+      await dispatch(listener, 'es');
 
-        const page = await testingEnvironment.runWithContext(async () =>
-          GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
-        );
-        expect(page.title).toBe('Test page');
-        expect(page.draft?.content).toBe('<p>en</p>');
-        const all = await testingEnvironment.runWithContext(async () =>
-          ListPagesUseCaseFactory.default().execute({ language: 'en' })
-        );
-        expect(all).toHaveLength(1);
-      });
+      const page = await testingEnvironment.runWithContext(async () =>
+        GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
+      );
+      expect(page.title).toBe('Test page');
+      expect(page.draft?.content).toBe('<p>en</p>');
+      const all = await testingEnvironment.runWithContext(async () =>
+        ListPagesUseCaseFactory.default().execute({ language: 'en' })
+      );
+      expect(all).toHaveLength(1);
     });
+  });
 
-    describe('when the language no longer exists in settings', () => {
-      it('should throw a NonRetryableJobError and not create locale', async () => {
-        const listener = await createSUT();
-        await expect(dispatch(listener, 'fr')).rejects.toThrow(NonRetryableJobError);
+  describe('when the language no longer exists in settings', () => {
+    it('should throw a NonRetryableJobError and not create locale', async () => {
+      const listener = await createSUT();
+      await expect(dispatch(listener, 'fr')).rejects.toThrow(NonRetryableJobError);
 
-        await expect(
-          testingEnvironment.runWithContext(async () =>
-            GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'fr' })
-          )
-        ).rejects.toThrow(PageNotFoundError);
-      });
+      await expect(
+        testingEnvironment.runWithContext(async () =>
+          GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'fr' })
+        )
+      ).rejects.toThrow(PageNotFoundError);
     });
-  }
-);
+  });
+});

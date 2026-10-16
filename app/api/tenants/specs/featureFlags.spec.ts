@@ -17,8 +17,6 @@ describe('feature flags registry', () => {
         featureFlagEntityViewerv2: true,
         featureFlagLibraryV2: true,
         postgresCore: true,
-        postgresPages: true,
-        postgresCsv: true,
         aiAssistant: true,
         aiAssistantServiceUrl: 'http://ai',
         translationService: true,
@@ -39,6 +37,8 @@ describe('feature flags registry', () => {
 
     it('should reject an unknown flag', () => {
       expect(() => FeatureFlagsSchema.parse({ notAFlag: true })).toThrow();
+      expect(() => FeatureFlagsSchema.parse({ postgresPages: true })).toThrow();
+      expect(() => FeatureFlagsSchema.parse({ postgresCsv: true })).toThrow();
       expect(() => FeatureFlagsSchema.parse({ telemetry: { notAFlag: true } })).toThrow();
     });
 

@@ -11,7 +11,7 @@ export class PagesDataSourceFactory {
   static default(overrides?: Overrides): PagesDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresPages) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresPagesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

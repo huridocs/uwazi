@@ -19,65 +19,62 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each(pagesBackendConfigs)(
-  'UpdatePage (integration) - $name',
-  ({ postgresPages, postgresCore }) => {
-    beforeEach(async () => {
-      jest.restoreAllMocks();
-      await testingEnvironment.setUp(fixtures, {
-        postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresCore),
-      });
-      applyPagesBackendFlags(postgresPages, postgresCore);
+describe.each(pagesBackendConfigs)('UpdatePage (integration) - $name', ({ postgresCore }) => {
+  beforeEach(async () => {
+    jest.restoreAllMocks();
+    await testingEnvironment.setUp(fixtures, {
+      postgres: true,
+      postgresMirror: pagesBackendPostgresMirror(postgresCore),
     });
+    applyPagesBackendFlags(postgresCore);
+  });
 
-    it('should update a page from a flat client payload and return it in client shape', async () => {
-      await withContext(async () => {
-        const updated = await UpdatePageUseCaseFactory.default().execute({
+  it('should update a page from a flat client payload and return it in client shape', async () => {
+    await withContext(async () => {
+      const updated = await UpdatePageUseCaseFactory.default().execute({
+        page: {
+          sharedId: '2',
+          title: 'Penguin almost done - updated',
+          draft: { content: '<p>Updated</p>', script: '', css: '' },
+        },
+        language: 'es',
+      });
+
+      expect(updated.title).toBe('Penguin almost done - updated');
+
+      const pagesDS = PagesDataSourceFactory.default();
+      const page = (await pagesDS.getBySharedId('2')).getDataOrThrow();
+      expect(page.getLocale('es').title).toBe('Penguin almost done - updated');
+    });
+  });
+
+  it('should update a page from an editor locales payload and return editor shape', async () => {
+    await withContext(async () => {
+      const updated = await UpdatePageUseCaseFactory.default().execute({
+        page: {
+          sharedId: '2',
+          locales: {
+            es: { title: 'ES updated', draft: { content: '<p>ES</p>', script: '', css: '' } },
+          },
+        },
+      });
+
+      expect(updated.locales?.es?.title).toBe('ES updated');
+    });
+  });
+
+  it('should throw when the page does not exist', async () => {
+    await withContext(async () => {
+      await expect(
+        UpdatePageUseCaseFactory.default().execute({
           page: {
-            sharedId: '2',
-            title: 'Penguin almost done - updated',
-            draft: { content: '<p>Updated</p>', script: '', css: '' },
+            sharedId: 'missing-shared-id',
+            title: 'x',
+            draft: { content: '', script: '', css: '' },
           },
           language: 'es',
-        });
-
-        expect(updated.title).toBe('Penguin almost done - updated');
-
-        const pagesDS = PagesDataSourceFactory.default();
-        const page = (await pagesDS.getBySharedId('2')).getDataOrThrow();
-        expect(page.getLocale('es').title).toBe('Penguin almost done - updated');
-      });
+        })
+      ).rejects.toThrow();
     });
-
-    it('should update a page from an editor locales payload and return editor shape', async () => {
-      await withContext(async () => {
-        const updated = await UpdatePageUseCaseFactory.default().execute({
-          page: {
-            sharedId: '2',
-            locales: {
-              es: { title: 'ES updated', draft: { content: '<p>ES</p>', script: '', css: '' } },
-            },
-          },
-        });
-
-        expect(updated.locales?.es?.title).toBe('ES updated');
-      });
-    });
-
-    it('should throw when the page does not exist', async () => {
-      await withContext(async () => {
-        await expect(
-          UpdatePageUseCaseFactory.default().execute({
-            page: {
-              sharedId: 'missing-shared-id',
-              title: 'x',
-              draft: { content: '', script: '', css: '' },
-            },
-            language: 'es',
-          })
-        ).rejects.toThrow();
-      });
-    });
-  }
-);
+  });
+});

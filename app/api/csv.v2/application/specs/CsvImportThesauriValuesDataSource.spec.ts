@@ -20,8 +20,8 @@ const aPending = (overrides: { id: string; thesaurusId: string }) =>
     createdAt: 100,
   });
 
-const storedIds = async (postgresCsv: boolean) => {
-  if (postgresCsv) {
+const storedIds = async (postgresCore: boolean) => {
+  if (postgresCore) {
     const { rows } = await testingPG.pool!.query(
       `SELECT "_id" FROM csv_import_thesauri_values WHERE "import_id" = $1 ORDER BY "thesaurus_id"`,
       [IMPORT_ID]
@@ -46,11 +46,11 @@ describe('CsvImportThesauriValuesDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvBackendConfigs)('$name', ({ postgresCsv }) => {
+  describe.each(csvBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp({}, { postgres: true });
-      applyCsvBackendFlags(postgresCsv);
-      if (postgresCsv) {
+      applyCsvBackendFlags(postgresCore);
+      if (postgresCore) {
         await testingPG.clear(['csv_import_thesauri_values']);
       }
     });
@@ -68,10 +68,10 @@ describe('CsvImportThesauriValuesDataSource', () => {
         aPending({ id: DOC_A, thesaurusId: THESAURUS_A }),
         aPending({ id: DOC_B, thesaurusId: THESAURUS_B }),
       ]);
-      expect(await storedIds(postgresCsv)).toEqual([DOC_A, DOC_B]);
+      expect(await storedIds(postgresCore)).toEqual([DOC_A, DOC_B]);
 
       await ds.replacePendingValues(IMPORT_ID, [aPending({ id: DOC_B, thesaurusId: THESAURUS_B })]);
-      expect(await storedIds(postgresCsv)).toEqual([DOC_B]);
+      expect(await storedIds(postgresCore)).toEqual([DOC_B]);
       expect((await ds.getByImport(IMPORT_ID)).map(doc => doc.id)).toEqual([DOC_B]);
     });
 
@@ -92,7 +92,7 @@ describe('CsvImportThesauriValuesDataSource', () => {
       expect(loaded.stats).toEqual({ valuesObserved: 1, valuesCreated: 1 });
 
       await ds.deleteByImport(IMPORT_ID);
-      expect(await storedIds(postgresCsv)).toEqual([]);
+      expect(await storedIds(postgresCore)).toEqual([]);
     });
   });
 });
