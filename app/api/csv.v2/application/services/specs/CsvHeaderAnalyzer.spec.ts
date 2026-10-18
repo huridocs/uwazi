@@ -220,8 +220,10 @@ describe('CsvHeaderAnalyzer', () => {
           expect(error.issues).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                reason: 'MissingDefaultLanguage',
+                reason: 'MissingLanguageColumn',
                 property: 'text_label',
+                columns: [DEFAULT_LANGUAGE],
+                message: 'Property "text_label" uses languages, but is missing columns for: en.',
               }),
             ])
           );
@@ -330,7 +332,11 @@ describe('CsvHeaderAnalyzer', () => {
             expect.arrayContaining([
               expect.objectContaining({ reason: 'MixedLanguageColumns' }),
               expect.objectContaining({ reason: 'UnsupportedLanguageColumn' }),
-              expect.objectContaining({ reason: 'MissingDefaultLanguage' }),
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'text_label',
+                columns: ['en'],
+              }),
               expect.objectContaining({
                 reason: 'MissingLanguageColumn',
                 property: 'unknown_field',

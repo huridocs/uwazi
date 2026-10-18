@@ -336,6 +336,66 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       expect(after.status).toBe(CsvImportStatus.ExtractingFiles);
     });
 
+    itWithContext('should fail once when the CSV has an unclosed quote', async () => {
+      const { useCase, csvImportsDS, fileStorage, jobsDispatcher } = setUp();
+      const f = getFixturesFactory();
+      const id = f.idString('csv-unclosed-quote');
+      const userId = f.idString('uploader-unclosed');
+      const destination = `csv-imports/${id}`;
+      const originalFilename = 'broken.csv';
+      const tempDir = path.join(
+        __dirname,
+        'tmp',
+        `${Date.now()}_${Math.random().toString(36).slice(2)}`
+      );
+      await fs.mkdir(tempDir, { recursive: true });
+      createdTempDirs.push(tempDir);
+      const csvPath = path.join(tempDir, originalFilename);
+      await fs.writeFile(csvPath, 'title,description\nvalue1,"value2,value3,value4\n');
+      await fileStorage.storeContent(
+        new DiskFile(csvPath).toContent(),
+        `${destination}/${originalFilename}`
+      );
+
+      const importDoc = CsvImportDomain.withStorage(
+        CsvImportDomain.create({
+          id,
+          templateId: 't1',
+          file: { originalName: 'broken.csv', mimeType: 'text/csv', size: 10 },
+          createdBy: userId,
+        }),
+        `${destination}/${originalFilename}`
+      );
+      await csvImportsDS.insert(importDoc);
+      createdImportIds.push(id);
+
+      const message =
+        'The CSV could not be read because a quoted value was not closed (row 2). Close the quote and upload the file again.';
+
+      await expect(useCase.execute(buildInput(id, userId))).rejects.toBeInstanceOf(
+        NonRetryableJobError
+      );
+
+      const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+      expect(updated.status).toBe(CsvImportStatus.Failed);
+      expect(updated.failure).toEqual(
+        expect.objectContaining({
+          message,
+          retryable: false,
+          stage: 'extracting files',
+          code: 'CSV_PARSE_FAILED',
+          issues: [expect.objectContaining({ reason: 'UnclosedQuote', message })],
+        })
+      );
+      expect(callbacks.onError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          importId: id,
+          error: expect.objectContaining({ message }),
+        })
+      );
+      expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+    });
+
     itWithContext('should set failed when ZIP is missing import.csv', async () => {
       const { useCase, csvImportsDS, fileStorage } = setUp();
       const f = getFixturesFactory();
