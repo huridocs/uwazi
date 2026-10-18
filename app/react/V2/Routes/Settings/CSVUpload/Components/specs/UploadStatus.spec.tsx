@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import * as reactRouter from 'react-router';
