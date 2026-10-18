@@ -26,10 +26,8 @@ import { hideBin } from 'yargs/helpers';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import {
-  AnyMigrationConfig,
-  MigrateCollectionToPostgres,
-} from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
+import { AnyMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
+import { runMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/runMigrationConfig.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
@@ -199,10 +197,12 @@ async function migrateCollection(
     log(`[${tenantName}] MongoDB collection: ${migrationConfig.mongoCollection}`);
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
-    const result = await new MigrateCollectionToPostgres(mongoDb, tenantName).migrate(
-      migrationConfig,
-      { force: argv.force }
-    );
+    const result = await runMigrationConfig({
+      mongoDb,
+      tenantId: tenantName,
+      migration: migrationConfig,
+      options: { force: argv.force },
+    });
 
     const orphans = result.orphansSkipped ? `, skipped ${result.orphansSkipped} orphans` : '';
     const summary = result.skipped
