@@ -81,12 +81,20 @@ type CsvImportExtraction = {
   files: CsvImportExtractionFile[];
 };
 
+type CsvImportFailureIssue = {
+  reason: string;
+  message: string;
+  property?: string;
+  columns?: string[];
+};
+
 type CsvImportFailure = {
   message: string;
   retryable: boolean;
   at: number;
   stage: string;
   code?: string;
+  issues?: CsvImportFailureIssue[];
 };
 
 type CsvImportListRow = {

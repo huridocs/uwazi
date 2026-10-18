@@ -120,33 +120,13 @@ const collectUnsupportedLanguageIssues = (
   });
 };
 
-const collectMissingDefaultLanguageIssues = (
-  languagesPerHeader: LanguagesPerHeader,
-  defaultLanguage: string,
-  issues: AnalyzerIssue[]
-) => {
-  Object.entries(languagesPerHeader).forEach(([headerName, languages]) => {
-    if (!languages.has(defaultLanguage)) {
-      issues.push({
-        reason: 'MissingDefaultLanguage',
-        message: `Property "${headerName}" uses languages, but does not have the default language column.`,
-        property: headerName,
-      });
-    }
-  });
-};
-
 const collectMissingLanguageColumnIssues = (
   languagesPerHeader: LanguagesPerHeader,
   availableLanguages: string[],
-  defaultLanguage: string,
   issues: AnalyzerIssue[]
 ) => {
   Object.entries(languagesPerHeader).forEach(([headerName, languages]) => {
-    // Default-language gaps are reported separately as MissingDefaultLanguage.
-    const missingLanguages = availableLanguages.filter(
-      language => language !== defaultLanguage && !languages.has(language)
-    );
+    const missingLanguages = availableLanguages.filter(language => !languages.has(language));
     if (!missingLanguages.length) {
       return;
     }
@@ -167,7 +147,6 @@ const collectHeaderIssues = (params: {
   languagesPerHeader: LanguagesPerHeader;
   propertiesByName: Record<string, Property>;
   availableLanguages: string[];
-  defaultLanguage: string;
 }): AnalyzerIssue[] => {
   const issues: AnalyzerIssue[] = [];
   collectMixedColumnsIssues(params.languagesPerHeader, params.headersWithoutLanguage, issues);
@@ -177,13 +156,7 @@ const collectHeaderIssues = (params: {
     params.propertiesByName,
     issues
   );
-  collectMissingDefaultLanguageIssues(params.languagesPerHeader, params.defaultLanguage, issues);
-  collectMissingLanguageColumnIssues(
-    params.languagesPerHeader,
-    params.availableLanguages,
-    params.defaultLanguage,
-    issues
-  );
+  collectMissingLanguageColumnIssues(params.languagesPerHeader, params.availableLanguages, issues);
   return issues;
 };
 
@@ -201,7 +174,6 @@ class CsvHeaderAnalyzer {
       languagesPerHeader,
       propertiesByName,
       availableLanguages: options.availableLanguages,
-      defaultLanguage: options.defaultLanguage,
     });
 
     if (issues.length) {

@@ -2,7 +2,7 @@ import csvtojson from 'csvtojson';
 import { Readable } from 'stream';
 import readline from 'readline';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { CsvReaderError } from './CsvReaderError.js';
+import { CsvReaderError, missingCsvHeaderError } from './CsvReaderError.js';
 
 type CsvReaderOptions = {
   delimiters?: string[];
@@ -15,6 +15,35 @@ type CsvReaderCallbacks = {
 
 const DEFAULT_DELIMITERS = [',', ';'];
 const BOM = '\ufeff';
+const UNREADABLE_CSV_MESSAGE =
+  'The CSV could not be read. Check that the file is valid CSV and upload it again.';
+
+const spreadsheetRow = (line: number) => line + 2;
+
+const unclosedQuoteMessage = (line: number) =>
+  `The CSV could not be read because a quoted value was not closed (row ${spreadsheetRow(line)}). Close the quote and upload the file again.`;
+
+const columnMismatchMessage = (line: number) =>
+  `The CSV could not be read because a row does not have the same number of columns as the header (row ${spreadsheetRow(line)}).`;
+
+const parserDetails = (error: Error) => {
+  const candidate = error as Error & { err?: unknown; line?: unknown };
+  return {
+    err: typeof candidate.err === 'string' ? candidate.err : undefined,
+    line: typeof candidate.line === 'number' ? candidate.line : undefined,
+  };
+};
+
+const fromParserError = (error: Error) => {
+  const { err, line } = parserDetails(error);
+  if (err === 'unclosed_quote' && line !== undefined) {
+    return new CsvReaderError(unclosedQuoteMessage(line), { reason: 'UnclosedQuote', line });
+  }
+  if (err === 'column_mismatched' && line !== undefined) {
+    return new CsvReaderError(columnMismatchMessage(line), { reason: 'ColumnMismatch', line });
+  }
+  return new CsvReaderError(UNREADABLE_CSV_MESSAGE, { reason: 'CsvUnreadable', line });
+};
 
 export class CsvReader {
   private static toReadableStream(file: FileContents) {
@@ -113,7 +142,7 @@ export class CsvReader {
         async (row: Record<string, string>, index: number) => {
           try {
             if (!headers) {
-              throw new CsvReaderError('CSV header row missing.');
+              throw missingCsvHeaderError();
             }
             await headersReady;
             const values = headers.map(header => (row[header] ?? '').toString());
@@ -127,14 +156,14 @@ export class CsvReader {
             safeReject(error);
             return;
           }
-          safeReject(new CsvReaderError(error.message || 'Failed to parse CSV content.'));
+          safeReject(fromParserError(error));
         },
         () => safeResolve()
       );
     });
 
     if (!headers) {
-      throw new CsvReaderError('CSV file must contain headers.');
+      throw missingCsvHeaderError();
     }
   }
 }
