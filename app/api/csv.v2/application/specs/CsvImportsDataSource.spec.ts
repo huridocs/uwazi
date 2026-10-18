@@ -21,8 +21,8 @@ const anImport = (id: string, createdAt: number) =>
     updatedAt: createdAt,
   });
 
-const storedStatus = async (id: string, postgresCsv: boolean) => {
-  if (postgresCsv) {
+const storedStatus = async (id: string, postgresCore: boolean) => {
+  if (postgresCore) {
     const { rows } = await testingPG.pool!.query(
       `SELECT "status" FROM csv_imports WHERE "_id" = $1`,
       [id]
@@ -44,11 +44,11 @@ describe('CsvImportsDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvBackendConfigs)('$name', ({ postgresCsv }) => {
+  describe.each(csvBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp({}, { postgres: true });
-      applyCsvBackendFlags(postgresCsv);
-      if (postgresCsv) {
+      applyCsvBackendFlags(postgresCore);
+      if (postgresCore) {
         await testingPG.clear(['csv_imports']);
       }
     });
@@ -63,7 +63,7 @@ describe('CsvImportsDataSource', () => {
       await ds.insert(anImport(IMPORT_A, 1));
       await ds.insert(anImport(IMPORT_B, 2));
 
-      expect(await storedStatus(IMPORT_A, postgresCsv)).toBe(CsvImportStatus.Queued);
+      expect(await storedStatus(IMPORT_A, postgresCore)).toBe(CsvImportStatus.Queued);
       expect((await ds.getAll()).map(doc => doc.id)).toEqual([IMPORT_B, IMPORT_A]);
       expect((await ds.getById(IMPORT_A)).getDataOrThrow().id).toBe(IMPORT_A);
       expect((await ds.getById('507f1f77bcf86cd799439099')).getError()).toBeInstanceOf(
@@ -89,13 +89,13 @@ describe('CsvImportsDataSource', () => {
       await ds.cancel(IMPORT_A);
       await ds.cancel(IMPORT_B);
 
-      expect(await storedStatus(IMPORT_A, postgresCsv)).toBe(CsvImportStatus.Cancelled);
-      expect(await storedStatus(IMPORT_B, postgresCsv)).toBe(CsvImportStatus.Completed);
+      expect(await storedStatus(IMPORT_A, postgresCore)).toBe(CsvImportStatus.Cancelled);
+      expect(await storedStatus(IMPORT_B, postgresCore)).toBe(CsvImportStatus.Completed);
       expect(await ds.isCancelled(IMPORT_A)).toBe(true);
       expect(await ds.isCancelled(IMPORT_B)).toBe(false);
 
       await ds.update(CsvImportDomain.withStatus(active, CsvImportStatus.ImportEntitiesDone));
-      expect(await storedStatus(IMPORT_A, postgresCsv)).toBe(CsvImportStatus.Cancelled);
+      expect(await storedStatus(IMPORT_A, postgresCore)).toBe(CsvImportStatus.Cancelled);
     });
   });
 });

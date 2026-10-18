@@ -43,8 +43,8 @@ class SyncLogWriter {
       async trx => {
         await trx('updatelogs')
           .insert(rows)
-          .onConflict(['tenant_id', 'id'])
-          .merge(['namespace', 'timestamp', 'deleted']);
+          .onConflict(['tenant_id', 'namespace', 'id'])
+          .merge(['timestamp', 'deleted']);
       },
       undefined,
       { preservePermission: true }

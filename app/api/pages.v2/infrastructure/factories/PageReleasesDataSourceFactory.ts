@@ -12,7 +12,7 @@ export class PageReleasesDataSourceFactory {
   static default(overrides?: Overrides): PageReleasesDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresPages) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresPageReleasesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

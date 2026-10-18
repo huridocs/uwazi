@@ -84,9 +84,9 @@ describe('csv v2 routes', () => {
     expect(response.text).toBe(csvContent);
   };
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       await testingEnvironment.cleanupUploadPaths();
       await clearCsvStores();
     });

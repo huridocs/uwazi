@@ -21,9 +21,9 @@ describe('CsvImportEntities imports read use cases (integration)', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       await clearCsvStores();
     });
 

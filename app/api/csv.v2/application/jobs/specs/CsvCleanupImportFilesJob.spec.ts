@@ -54,9 +54,9 @@ describe('CsvCleanupImportFilesJob (integration)', () => {
     sourceFilePath: string
   ) => fileStorage.storeContent(new DiskFile(sourceFilePath).toContent(), subpath);
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       jest.clearAllMocks();
       await testingEnvironment.cleanupUploadPaths();
       await clearCsvStores();

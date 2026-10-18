@@ -31,9 +31,9 @@ describe('CSV job transaction manager', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(() => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
     });
 
     itWithContext('uses ExecutionContext.transactionManager for the job run', async () => {

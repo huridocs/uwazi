@@ -71,9 +71,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     callbacks,
   });
 
-  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
-      applyCsvJobBackendFlags(postgresCsv, postgresCore);
+      applyCsvJobBackendFlags(postgresCore);
       jest.clearAllMocks();
       await testingEnvironment.cleanupUploadPaths();
       await clearCsvStores();

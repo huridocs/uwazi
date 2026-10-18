@@ -197,12 +197,14 @@ describe('TenantsDataSource', () => {
       });
 
       it('should merge feature flags, leaving the ones not sent alone', async () => {
-        const result = await sut.upsert('ds-tenant-b', { featureFlags: { postgresPages: true } });
+        const result = await sut.upsert('ds-tenant-b', {
+          featureFlags: { experimentalFeatures: true },
+        });
 
         expect(result.featureFlags).toEqual({
           postgresCore: true,
           fileCacheHeaders: true,
-          postgresPages: true,
+          experimentalFeatures: true,
           telemetry: { enabled: true },
         });
       });

@@ -3,15 +3,13 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 export const csvBackendConfigs = [
-  { name: 'Mongo', postgresCsv: false },
-  { name: 'Postgres', postgresCsv: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 export const csvJobBackendConfigs = [
-  { name: 'Mongo', postgresCsv: false, postgresCore: false },
-  { name: 'Postgres CSV', postgresCsv: true, postgresCore: false },
-  { name: 'Postgres core', postgresCsv: false, postgresCore: true },
-  { name: 'Postgres', postgresCsv: true, postgresCore: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 export const CSV_STORE_COLLECTIONS = [
@@ -29,15 +27,15 @@ export const itWithContext = (name: string, fn: () => Promise<void>) => {
   });
 };
 
-export const applyCsvBackendFlags = (postgresCsv: boolean) => {
+export const applyCsvBackendFlags = (postgresCore: boolean) => {
   testingTenants.changeCurrentTenant({
-    featureFlags: { postgresCsv },
+    featureFlags: { postgresCore },
   });
 };
 
-export const applyCsvJobBackendFlags = (postgresCsv: boolean, postgresCore: boolean) => {
+export const applyCsvJobBackendFlags = (postgresCore: boolean) => {
   testingTenants.changeCurrentTenant({
-    featureFlags: { postgresCsv, postgresCore },
+    featureFlags: { postgresCore },
   });
 };
 
