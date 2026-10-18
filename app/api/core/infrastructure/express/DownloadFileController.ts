@@ -16,6 +16,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
 import { EntityPermissionCheckerFactory } from '../factories/EntityPermissionCheckerFactory.js';
 import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
+import { fileDownloadHeaders } from './fileDownloadHeaders.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
@@ -61,30 +62,12 @@ class DownloadFileController extends AbstractController {
 
     const file = await this.getFile(filename);
 
-    if (tenants.current().featureFlags?.fileCacheHeaders) {
-      await this.addFileCacheHeaders(file);
-
-      if (this.checkNotModified(file)) {
-        this.response.status(304).end();
-        return;
-      }
+    if (await this.respondNotModified(file)) {
+      return;
     }
 
-    this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
-
-    const fileContents = this.fileStorage.getFile({
-      filename: file.filename,
-      type: file.type,
-    });
-
-    try {
-      await pipeline(fileContents.read(), this.response);
-    } catch (e) {
-      if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
-        throw new ClientAbortedRequestError('Client aborted file download', { cause: e });
-      }
-      throw e;
-    }
+    this.addContentHeaders(file, query);
+    await this.sendFile(file);
   }
 
   private async getFile(filename: string) {
@@ -134,23 +117,50 @@ class DownloadFileController extends AbstractController {
     return fileDateSeconds <= clientDateSeconds;
   }
 
-  private addContentHeaders(
-    headerFilename: string,
-    query: { download?: boolean },
-    mimetype?: string
-  ) {
-    this.response.setHeader(
-      'Content-Disposition',
-      `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-    );
-
-    if (query.download) {
-      this.response.setHeader(
-        'Content-Disposition',
-        `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-      );
+  private async respondNotModified(file: BaseFile): Promise<boolean> {
+    if (!tenants.current().featureFlags?.fileCacheHeaders) {
+      return false;
     }
-    this.response.setHeader('Content-Type', mimetype || 'application/octet-stream');
+
+    await this.addFileCacheHeaders(file);
+    if (!this.checkNotModified(file)) {
+      return false;
+    }
+
+    this.response.status(304).end();
+    return true;
+  }
+
+  private async sendFile(file: BaseFile): Promise<void> {
+    const fileContents = this.fileStorage.getFile({
+      filename: file.filename,
+      type: file.type,
+    });
+
+    try {
+      await pipeline(fileContents.read(), this.response);
+    } catch (e) {
+      if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
+        throw new ClientAbortedRequestError('Client aborted file download', { cause: e });
+      }
+      throw e;
+    }
+  }
+
+  private addContentHeaders(file: BaseFile, query: { download?: boolean }) {
+    const headers = fileDownloadHeaders({
+      storedFilename: file.filename,
+      originalFilename: file.originalname || file.filename,
+      mimetype: file.mimetype,
+      download: query.download,
+    });
+
+    this.response.setHeader('Content-Disposition', headers.contentDisposition);
+    this.response.setHeader('Content-Type', headers.contentType);
+    this.response.setHeader('X-Content-Type-Options', 'nosniff');
+    if (headers.contentSecurityPolicy) {
+      this.response.setHeader('Content-Security-Policy', headers.contentSecurityPolicy);
+    }
   }
 
   private async checkFileReadPermissions(file: BaseFile): Promise<boolean> {

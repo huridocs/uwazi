@@ -52,5 +52,14 @@ describe('ShellExecutor', () => {
       }
       expect(result.getError()).toBeUndefined();
     });
+
+    it('should not execute shell metacharacters passed as arguments', async () => {
+      const result = await shellExecutor.execute('echo', ['safe; echo injected']);
+
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.getData().trim()).toBe('safe; echo injected');
+      }
+    });
   });
 });
