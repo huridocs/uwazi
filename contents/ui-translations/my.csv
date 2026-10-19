@@ -612,6 +612,7 @@ group expressions,အုပ်စုဖော်ပြချက်များ
 Group Options,အုပ်စုရွေးချယ်စရာများ
 Group saved,အုပ်စု သိမ်းဆည်းပြီးပါပြီ။
 Group updated,အုပ်စုကို အပ်ဒိတ်လုပ်ပြီးပါပြီ။
+Grouped,အုပ်စုဖွဲ့
 Grouped geolocation properties,အုပ်စုခွဲထားသော တည်နေရာသတ်မှတ်ခြင်းဆိုင်ရာ အင်္ဂါရပ်များ
 Groups,အုပ်စုများ
 Header and button preview,ခေါင်းစီးနှင့် ခလုတ် ကြိုကြည့်
@@ -629,6 +630,7 @@ Hide details,အသေးစိတ် ဖျောက်ရန်
 Hide label,အမှတ်အသား ဖုံးကွယ်ပါ
 Hide restricted relationships from public,ကန့်သတ်ထားသော ဆက်နွယ်မှုများကို အများပြည်သူထံမှ ဖျောက်ပါ။
 Hide task,တာဝန် ဖုံးရန်
+Hide the matches in,ကိုက်ညီမှုများကို ဖျောက်ရန်
 Hide toolbar,ကိရိယာတန်းကို ဖျောက်ရန်
 Hours,နာရီ
 How to combine sources,ရင်းမြစ်များ ပေါင်းစည်းပုံ
@@ -735,6 +737,7 @@ library list view,စာကြည့်တိုက် စာရင်း မြ
 library map view,စာကြည့်တိုက် မြေပုံ မြင်ကွင်း
 Library panes,စာကြည့်တိုက်အကန့်များ
 Library results,စာကြည့်တိုက် ရလဒ်များ
+Library side panel,စာကြည့်တိုက် ဘေးဘောင်
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
 Light,အလင်းရောင်
 Light Theme,အလင်းရောင် အသွင်အပြင်
@@ -912,6 +915,7 @@ No Relationships description,ဆက်နွယ်မှုများသည်
 No relationships found,ဆက်နွယ်မှု မတွေ့ရှိပါ။
 No relationships to graph,Graph ပြရန် ဆက်နွယ်မှု မရှိပါ။
 No releases yet,ထွက်ရှိသေးခြင်းမရှိပါ။
+No results for the selected match types.,ရွေးထားသော ကိုက်ညီမှု အမျိုးအစားများအတွက် ရလဒ်မရှိပါ။
 No results found,ရလဒ် မတွေ့ပါ
 No supporting files yet. Add a file to get started.,ထောက်ခံဖိုင်များ မရှိသေးပါ။ စတင်ရန် ဖိုင်တစ်ခု ထည့်ပါ။
 No table of contents,မာတိကာ မရှိပါ
@@ -1010,6 +1014,7 @@ Paragraph text extraction property (rich text),ပိုဒ်စာသားထ
 Paragraphs,အပိုဒ်များ
 Paragraphs deleted,ပိုဒ်များ ဖျက်ထားသည်။
 parties,ပါဝင်သူများ
+Passages,ကောက်နုတ်ချက်များ
 Password,စကားဝှက်
 Password + 2fa,စကားဝှက် + 2FA
 Password changed success,စကားဝှက်ပြောင်းလဲမှု အောင်မြင်ပါပြီ။
@@ -1180,6 +1185,8 @@ Restore,ပြန်လည်ထူထောင်
 Restore previous version,ယခင်ဗားရှင်းကို ပြန်လည်ထူထောင်ပါ။
 Restricted,ကန့်သတ်ထားသည်
 Results,ရလဒ်များ
+Results layout,ရလဒ် အပြင်အဆင်
+Results show the passages behind each hit.,ရလဒ်များသည် ကိုက်ညီမှုတစ်ခုစီ၏ နောက်ကွယ်ရှိ ကောက်နုတ်ချက်များကို ပြသည်။
 Retryable,ပြန်လည်ကြိုးစားနိုင်သော
 Retrying,ထပ်မံကြိုးစားနေသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
@@ -1236,6 +1243,7 @@ Search Tips: one char wildcard,"စာလုံးတစ်လုံးကို
 Search Tips: proximity,"အနီးအနားရှာဖွေမှုအတွက် ~ ကို သုံးပါ။ ဥပမာ- ""ဥပဒေရေးရာ အခြေအနေ""~၅ ဆိုလျှင် ဥပဒေရေးရာ နှင့် အခြေအနေ ဟူသော စကားလုံးနှစ်ခုလုံးကို စကားလုံး ၅ လုံး အကွာအဝေးအတွင်း ပါဝင်သော အရာအားလုံးကို ရှာဖွေပေးပါမည်၊ ဥပမာ- ""ဥပဒေရေးရာ ဆိုင်ရာ အခြေအနေ""၊ ""ဥပဒေရေးရာ နှင့် လူမှုရေး အခြေအနေ"" စသည်တို့ကဲ့သို့။"
 Search Tips: wildcard,"ဝိုင်းကတ်ရှာဖွေမှုအတွက် * ကို သုံးပါ။ ဥပမာ- ""ဥပဒေ*"" ဆိုလျှင် ဥပဒေရေးရာလုပ်ပိုင်ခွင့်၊ ဥပဒေဆိုင်ရာ၊ ဥပဒေပညာရှင်၊ ဥပဒေဗေဒ စသော စကားလုံးများနှင့် ကိုက်ညီပါမည်။"
 Search title & metadata,ခေါင်းစဉ်နှင့် မီတာဒေတာ ရှာဖွေခြင်း
+Search to see where terms match,ဝေါဟာရများ ကိုက်ညီသည့်နေရာကို ကြည့်ရန် ရှာပါ
 Searching...,ရှာဖွေနေသည်...
 Second dimension (series / stacks),ဒုတိယ မျက်နှာစာ (စီးရီး / စုပုံ)
 Secondary button,ဒုတိယ ခလုတ်
@@ -1323,6 +1331,7 @@ Show information,အချက်အလက်ပြသပါ
 Show less,နည်းနည်းသာပြပါ
 Show more,ပိုမိုပြသရန်
 Show remaining in panel,ပန်နယ်တွင် ကျန်ရှိနေသည့် ပြသရန်
+Show the matches in,ကိုက်ညီမှုများကို ပြရန်
 Show toolbar,ကိရိယာတန်းပြရန်
 Showing,ပြသနေသည်
 Showing the top,ထိပ်ဆုံးကို ပြနေသည်

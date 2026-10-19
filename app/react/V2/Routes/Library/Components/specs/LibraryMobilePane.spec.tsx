@@ -15,16 +15,37 @@ jest.mock('#V2/CustomHooks/useIsMobile.js', () => ({
 }));
 
 jest.mock('../LibraryToolbar', () => ({
-  LibraryToolbar: () => <div>toolbar</div>,
+  LibraryToolbar: ({
+    search,
+    onSearchChange,
+    onSearchSubmit,
+  }: {
+    search: string;
+    onSearchChange: (value: string) => void;
+    onSearchSubmit?: (value: string) => void;
+  }) => (
+    <>
+      <input
+        aria-label="library search"
+        value={search}
+        onChange={event => onSearchChange(event.target.value)}
+      />
+      <button type="button" onClick={() => onSearchSubmit?.(search)}>
+        submit search
+      </button>
+    </>
+  ),
 }));
 
 jest.mock('../LibraryResultsFooter', () => ({
   LibraryResultsFooter: ({
     onCreateEntity,
     onOpenFilters,
+    onShowResults,
   }: {
     onCreateEntity: () => void;
     onOpenFilters?: () => void;
+    onShowResults?: () => void;
   }) => (
     <>
       <button type="button" onClick={onCreateEntity}>
@@ -32,6 +53,9 @@ jest.mock('../LibraryResultsFooter', () => ({
       </button>
       <button type="button" onClick={() => onOpenFilters?.()}>
         Filters
+      </button>
+      <button type="button" onClick={() => onShowResults?.()}>
+        Results
       </button>
     </>
   ),
@@ -76,6 +100,7 @@ jest.mock('#V2/services/index.js', () => ({
 
 const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () => void }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
   return (
     <>
       <span data-testid="selected-id">{selectedIds[0] ?? ''}</span>
@@ -83,8 +108,9 @@ const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () =
         rows={[]}
         totalRows={0}
         aggregations={aggregations}
-        search=""
-        onSearchChange={() => undefined}
+        search={search}
+        committedSearch={search}
+        onSearchChange={setSearch}
         view="cards"
         onViewChange={() => undefined}
         sort=""
@@ -99,7 +125,6 @@ const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () =
         onSelectedIdsChange={setSelectedIds}
         onClosePreview={() => setSelectedIds([])}
         entityBasePath="/en/library"
-        onLoadMore={() => undefined}
       />
     </>
   );
@@ -180,5 +205,27 @@ describe('LibraryView mobile sheets', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.getByTestId('library-v2')).toHaveAttribute('data-mode', 'filters');
     expect(document.querySelector('[data-part="sheet"]')).toBeNull();
+  });
+
+  it('opens the results sheet once when a search is submitted', () => {
+    render(<Harness />);
+    fireEvent.change(screen.getByRole('textbox', { name: 'library search' }), {
+      target: { value: 'test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit search' }));
+    expectSnap('No matches for', 'half');
+    expect(sheets()[0]).toHaveTextContent('Results');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close Results' }));
+    expect(document.querySelector('[data-part="sheet"]')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit search' }));
+    expect(document.querySelector('[data-part="sheet"]')).toBeNull();
+  });
+
+  it('opens the results sheet from the footer', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Results' }));
+    expectSnap('Search to see where terms match', 'half');
   });
 });

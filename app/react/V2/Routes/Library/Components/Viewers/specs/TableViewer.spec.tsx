@@ -74,7 +74,6 @@ const renderTable = (
           onSelect={overrides.onSelect ?? (() => undefined)}
           onFocusProperty={overrides.onFocusProperty}
           entityBasePath="/entityv2"
-          onLoadMore={() => undefined}
           showThumbnail
           showMetadata
           sort={overrides.sort}

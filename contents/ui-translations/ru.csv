@@ -619,6 +619,7 @@ group expressions,групповые выражения
 Group Options,Параметры группы
 Group saved,Группа сохранена
 Group updated,Группа обновлена
+Grouped,Сгруппировано
 Grouped geolocation properties,Сгруппированные свойства геолокации
 Groups,Группы
 Header and button preview,Предварительный просмотр заголовка и кнопки
@@ -636,6 +637,7 @@ Hide details,Скрыть подробности
 Hide label,Скрыть метку
 Hide restricted relationships from public,Скрыть связи с ограниченным доступом от публичных пользователей
 Hide task,Скрыть задачу
+Hide the matches in,Скрыть совпадения в
 Hide toolbar,Скрыть панель инструментов
 Hours,Часы
 How to combine sources,Как объединить источники
@@ -743,6 +745,7 @@ library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 Library panes,Панели библиотеки
 Library results,Результаты библиотеки
+Library side panel,Боковая панель библиотеки
 library table view,просмотр библиотеки в табличном виде
 Light,Светлый
 Light Theme,Светлая тема
@@ -923,6 +926,7 @@ No Relationships description,Взаимосвязи — это связи меж
 No relationships found,Связей не найдено
 No relationships to graph,Нет связей для отображения на графе
 No releases yet,Пока нет версий
+No results for the selected match types.,Нет результатов для выбранных типов совпадений.
 No results found,Результаты не найдены
 No supporting files yet. Add a file to get started.,"Пока нет сопутствующих файлов. Добавьте файл, чтобы приступить к работе."
 No table of contents,Нет содержания
@@ -1023,6 +1027,7 @@ Paragraph text extraction property (rich text),Свойство извлечен
 Paragraphs,Абзацы
 Paragraphs deleted,Абзацы удалены
 parties,стороны
+Passages,Фрагменты
 Password,Пароль
 Password + 2fa,Пароль + двухфакторная аутентификация
 Password changed success,Пароль успешно изменен
@@ -1194,6 +1199,8 @@ Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
 Results,Результаты
+Results layout,Вид результатов
+Results show the passages behind each hit.,В результатах показаны фрагменты каждого совпадения.
 Retryable,С возможностью повторной попытки
 Retrying,Повторная попытка
 Return to login,Вернуться к авторизации
@@ -1250,6 +1257,7 @@ Search Tips: one char wildcard,"? — подстановочный знак дл
 Search Tips: proximity,"~ для поиска по близости слов. Например, ""статус""~5 найдёт документы, где слово ""статус"" встречается рядом с другими словами запроса на расстоянии не более 5 слов, например ""текущий правовой статус"", ""процессуальный статус дела""."
 Search Tips: wildcard,"Используйте * для поиска с подстановочным знаком. Например, ""юрис*"" найдёт слова ""юрисдикция"", ""юрисдикционный"", ""юристы"", ""юриспруденция"" и другие."
 Search title & metadata,Поиск по названию и метаданным
+Search to see where terms match,"Выполните поиск, чтобы увидеть, где совпадают термины"
 Searching...,Поиск...
 Second dimension (series / stacks),Второе измерение (ряды / стопки)
 Secondary button,Дополнительная кнопка
@@ -1337,6 +1345,7 @@ Show information,Показать информацию
 Show less,Показать меньше
 Show more,Показать больше
 Show remaining in panel,Показать оставшуюся часть в панели
+Show the matches in,Показать совпадения в
 Show toolbar,Показать панель инструментов
 Showing,Показано
 Showing the top,Отображаются первые

@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
 import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { notify } from '#V2/utils/notifyBridge.js';
-import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
-import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
-import type { Chip } from './ActiveFiltersSheet.js';
-import { pdfFilesFromList, uploadPdfsAndCreateEntities } from './libraryUploadPdf.js';
+import type { LibraryViewProps } from './libraryViewProps.js';
+import { uploadChosenLibraryPdfs } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { librarySidePanes } from './LibrarySidePanes.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
 import { useLibraryPaneRequest } from './useLibraryMobilePane.js';
+import { useLibraryResultsChrome } from './useLibraryResultsChrome.js';
 import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
 
@@ -22,31 +20,6 @@ const libraryPaneMode = (creating: boolean, selectedCount: number) => {
   return 'filters';
 };
 
-type LibraryViewProps = {
-  rows: LibrarySearchHit[];
-  totalRows: number;
-  aggregations: LibraryAggregations;
-  search: string;
-  onSearchChange: (value: string) => void;
-  onSearchSubmit?: (value: string) => void;
-  view: LibraryViewMode;
-  onViewChange: (view: LibraryViewMode) => void;
-  sort: string;
-  order: LibrarySortOrder;
-  onSortChange: (sort: string, order: LibrarySortOrder) => void;
-  filters: LibraryFiltersState;
-  onFiltersChange: (filters: LibraryFiltersState) => void;
-  andFilters: string[];
-  onAndFiltersChange: (andFilters: string[]) => void;
-  chips: Chip[];
-  selectedIds?: readonly string[];
-  onSelectedIdsChange: (ids: string[]) => void;
-  onClosePreview: () => void;
-  entityBasePath: string;
-  onLoadMore: (amount: number) => void;
-  onEntityCreated?: (sharedId?: string) => void;
-};
-
 const LibraryView = ({
   rows,
   totalRows,
@@ -54,6 +27,7 @@ const LibraryView = ({
   search,
   onSearchChange,
   onSearchSubmit,
+  committedSearch,
   view,
   onViewChange,
   sort,
@@ -68,7 +42,10 @@ const LibraryView = ({
   onSelectedIdsChange,
   onClosePreview,
   entityBasePath,
-  onLoadMore,
+  page = 1,
+  limit = 30,
+  onPageChange = () => undefined,
+  onLimitChange = () => undefined,
   onEntityCreated,
 }: LibraryViewProps) => {
   const {
@@ -117,25 +94,30 @@ const LibraryView = ({
     openCreate,
     finishCreated,
   } = useLibraryCreateActions(selectEntity, dismissSelection, onEntityCreated);
-  const { isMobile, requestedPane, requestPane, filtersOpen, openFilters, closeFilters } =
-    useLibraryPaneRequest(selectedIds, creating);
-  const uploadChosenPdfs = (files: File[]) => {
-    const pdfs = pdfFilesFromList(files);
-    if (!pdfs.length) {
-      return;
-    }
-    void uploadPdfsAndCreateEntities(
-      pdfs,
-      () => undefined,
-      () => undefined
-    )
-      .then(created => {
-        finishCreated(created.at(-1)?.sharedId);
-      })
-      .catch((caught: unknown) => {
-        notify(caught instanceof Error ? caught.message : String(caught), 'error');
-      });
-  };
+  const {
+    isMobile,
+    requestedPane,
+    requestPane,
+    filtersOpen,
+    resultsOpen,
+    openFilters,
+    openResults,
+    closeFilters,
+    closeResults,
+  } = useLibraryPaneRequest(selectedIds, creating);
+  const { confirmedSearch, paneTab, setPaneTab, submitSearch, showResults, clearSearch } =
+    useLibraryResultsChrome({
+      search,
+      committedSearch,
+      onSearchChange,
+      onSearchSubmit,
+      isMobile,
+      closeResults,
+      closeFilters,
+      closePreview,
+      openResults,
+      clearSelection: clear,
+    });
 
   return (
     <div
@@ -156,7 +138,7 @@ const LibraryView = ({
             <LibraryToolbar
               search={search}
               onSearchChange={onSearchChange}
-              onSearchSubmit={onSearchSubmit}
+              onSearchSubmit={submitSearch}
               view={view}
               onViewChange={onViewChange}
               sort={sort}
@@ -197,7 +179,6 @@ const LibraryView = ({
                   selectCluster(sharedIds, modifiers);
                 }}
                 entityBasePath={entityBasePath}
-                onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
                 thumbFrame={thumbFrame}
@@ -229,17 +210,19 @@ const LibraryView = ({
             ) : (
               <LibraryResultsFooter
                 onCreateEntity={openCreate}
-                onUploadPdf={uploadChosenPdfs}
+                onUploadPdf={files => uploadChosenLibraryPdfs(files, finishCreated)}
                 onExportCsv={() => onAction('export')}
                 onOpenFilters={() => {
                   closePreview();
                   openFilters();
                 }}
-                onShowResults={() => {
-                  closeFilters();
-                  closePreview();
-                  requestPane(0);
-                }}
+                onShowResults={showResults}
+                page={page}
+                limit={limit}
+                total={totalRows}
+                showPagination={view !== 'map'}
+                onPageChange={onPageChange}
+                onLimitChange={onLimitChange}
               />
             )}
           </div>
@@ -247,10 +230,12 @@ const LibraryView = ({
         {librarySidePanes({
           isMobile,
           filtersOpen,
+          resultsOpen,
           onFiltersDismiss: () => {
             closeFilters();
             closePreview();
           },
+          onResultsDismiss: closeResults,
           requestPane,
           creating,
           rows,
@@ -277,6 +262,12 @@ const LibraryView = ({
           editingSelection,
           onEditSelection: startEdit,
           onCancelEditSelection: stopEdit,
+          search: confirmedSearch,
+          paneTab,
+          onPaneTabChange: setPaneTab,
+          onFocusProperty: selectProperty,
+          onSelectResult: selectRow,
+          onClearSearch: clearSearch,
         })}
       </PaneLayout>
       {dialogs}
@@ -284,5 +275,5 @@ const LibraryView = ({
   );
 };
 
-export type { LibraryViewProps };
+export type { LibraryViewProps } from './libraryViewProps.js';
 export { LibraryView };

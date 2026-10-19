@@ -12,7 +12,6 @@ import {
 } from '#V2/Components/Metadata/display/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
-import { LoadMore } from '../LoadMore.js';
 import { LibraryTableCell } from '../LibraryTableCell.js';
 import { formatLibraryTableDate, libraryTableCellValue } from '../libraryTableCellValue.js';
 import { nextLibrarySort } from '../librarySort.js';
@@ -79,10 +78,8 @@ const renderLibraryTableCell = ({
 
 const TableViewer = ({
   rows,
-  totalRows,
   selectedIds = [],
   onSelect,
-  onLoadMore,
   sort,
   order = 'desc',
   onSortChange,
@@ -124,42 +121,39 @@ const TableViewer = ({
   }
 
   return (
-    <>
-      <div
-        data-testid="library-table"
-        onMouseDown={event => {
-          if (event.shiftKey) {
-            event.preventDefault();
-          }
-        }}
-      >
-        <DataTable
-          columns={columns}
-          data={data}
-          density={tableDensity}
-          selectedRowIds={selectedIds}
-          rowSelectId={row => row.sharedId}
-          onRowClick={(row, event) =>
-            onSelect(row.sharedId, {
-              shiftKey: event.shiftKey,
-              ctrlKey: event.ctrlKey,
-              metaKey: event.metaKey,
-            })
-          }
-          sort={sortState}
-          onSort={
-            onSortChange
-              ? key => {
-                  const next = nextLibrarySort(sort || '', order, key);
-                  onSortChange(next.sort, next.order);
-                }
-              : undefined
-          }
-          minWidthRem={tableMinWidthRem(columns)}
-        />
-      </div>
-      <LoadMore loaded={rows.length} total={totalRows} onLoadMore={onLoadMore} />
-    </>
+    <div
+      data-testid="library-table"
+      onMouseDown={event => {
+        if (event.shiftKey) {
+          event.preventDefault();
+        }
+      }}
+    >
+      <DataTable
+        columns={columns}
+        data={data}
+        density={tableDensity}
+        selectedRowIds={selectedIds}
+        rowSelectId={row => row.sharedId}
+        onRowClick={(row, event) =>
+          onSelect(row.sharedId, {
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            metaKey: event.metaKey,
+          })
+        }
+        sort={sortState}
+        onSort={
+          onSortChange
+            ? key => {
+                const next = nextLibrarySort(sort || '', order, key);
+                onSortChange(next.sort, next.order);
+              }
+            : undefined
+        }
+        minWidthRem={tableMinWidthRem(columns)}
+      />
+    </div>
   );
 };
 

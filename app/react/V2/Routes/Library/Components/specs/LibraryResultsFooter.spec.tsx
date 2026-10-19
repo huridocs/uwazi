@@ -23,6 +23,12 @@ type FooterProps = {
   onExportCsv?: () => void;
   onOpenFilters?: () => void;
   onShowResults?: () => void;
+  page?: number;
+  limit?: number;
+  total?: number;
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
+  showPagination?: boolean;
 };
 
 const renderFooter = (
@@ -51,6 +57,12 @@ const renderFooter = (
           onExportCsv={props.onExportCsv}
           onOpenFilters={props.onOpenFilters}
           onShowResults={props.onShowResults}
+          page={props.page}
+          limit={props.limit}
+          total={props.total}
+          onPageChange={props.onPageChange}
+          onLimitChange={props.onLimitChange}
+          showPagination={props.showPagination}
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
@@ -217,6 +229,54 @@ describe('LibraryResultsFooter', () => {
     renderFooter({ onOpenFilters, onShowResults }, { mobile: true });
     expectPaneMenuOpensFilters(onOpenFilters);
     expectPaneMenuOpensResults(onShowResults);
+  });
+
+  describe('pagination', () => {
+    it('pages from the desktop footer', () => {
+      const onPageChange = jest.fn();
+      renderFooter(
+        { page: 1, limit: 30, total: 4398, onPageChange },
+        { featureFlagLibraryV2: true }
+      );
+      expect(screen.getByText('1-30')).toBeInTheDocument();
+      expect(screen.getByText('4,398')).toBeInTheDocument();
+      expect(screen.getByText('1 / 147')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(onPageChange).toHaveBeenCalledWith(2);
+    });
+
+    it('changes how many entities are shown per page', () => {
+      const onLimitChange = jest.fn();
+      renderFooter({ page: 1, limit: 30, total: 4398, onLimitChange });
+      fireEvent.click(screen.getByRole('button', { name: '30 per page' }));
+      fireEvent.click(screen.getByRole('menuitem', { name: '60 per page' }));
+      expect(onLimitChange).toHaveBeenCalledWith(60);
+    });
+
+    it('shows only the page control on mobile', () => {
+      renderFooter({ page: 2, limit: 30, total: 4398 }, { mobile: true });
+      expect(screen.getByText('2 / 147')).toBeInTheDocument();
+      expect(screen.queryByText('1-30')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: '30 per page' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Previous' })).toBeEnabled();
+    });
+
+    it('hides the pager when the map shows every result', () => {
+      renderFooter({ page: 1, limit: 30, total: 4398, showPagination: false });
+      expect(screen.getByRole('button', { name: 'Create entity' })).toBeInTheDocument();
+      expect(screen.queryByText('1-30')).not.toBeInTheDocument();
+      expect(screen.queryByText('1 / 147')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+    });
+
+    it('hides the mobile pager when the map shows every result', () => {
+      renderFooter({ page: 2, limit: 30, total: 4398, showPagination: false }, { mobile: true });
+      expect(screen.getByRole('button', { name: 'Actions' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Library panes' })).toBeInTheDocument();
+      expect(screen.queryByText('2 / 147')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Previous' })).not.toBeInTheDocument();
+    });
   });
 
   it('closes mobile menus on Escape', () => {

@@ -15,7 +15,7 @@ type LibraryUrlState = {
   andFilters: string[];
   search: string;
   limit: number;
-  from: number;
+  page: number;
   sort: string;
   order: LibrarySortOrder;
   view: LibraryViewMode;
@@ -26,7 +26,7 @@ const DEFAULT_LIBRARY_URL_STATE: LibraryUrlState = {
   andFilters: [],
   search: '',
   limit: 30,
-  from: 0,
+  page: 1,
   sort: '',
   order: 'desc',
   view: 'cards',
@@ -191,20 +191,31 @@ const parsePositiveInt = (raw: string | null, fallback: number): number => {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 };
 
+const parsePage = (params: URLSearchParams, limit: number): number => {
+  const rawPage = params.get('page');
+  if (rawPage) {
+    const parsed = Number.parseInt(rawPage, 10);
+    return Number.isFinite(parsed) && parsed >= 1 ? parsed : DEFAULT_LIBRARY_URL_STATE.page;
+  }
+  const from = parsePositiveInt(params.get('from'), 0);
+  return from > 0 ? Math.floor(from / limit) + 1 : DEFAULT_LIBRARY_URL_STATE.page;
+};
+
 const parseLibrarySearchParams = (params: URLSearchParams): LibraryUrlState => {
   const filters = parseCompactFilters(params.get('filters') || '') ?? {};
   const order = params.get('order') === 'asc' ? 'asc' : DEFAULT_LIBRARY_URL_STATE.order;
   const viewParam = params.get('view');
   const view = isLibraryViewMode(viewParam) ? viewParam : DEFAULT_LIBRARY_URL_STATE.view;
+  const limit =
+    parsePositiveInt(params.get('limit'), DEFAULT_LIBRARY_URL_STATE.limit) ||
+    DEFAULT_LIBRARY_URL_STATE.limit;
 
   return {
     filters: normalizeFilters(filters),
     andFilters: parseAndFilters(params.get('andFilters') || '') ?? [],
     search: params.get('search') || '',
-    limit:
-      parsePositiveInt(params.get('limit'), DEFAULT_LIBRARY_URL_STATE.limit) ||
-      DEFAULT_LIBRARY_URL_STATE.limit,
-    from: parsePositiveInt(params.get('from'), DEFAULT_LIBRARY_URL_STATE.from),
+    limit,
+    page: parsePage(params, limit),
     sort: params.get('sort') || '',
     order,
     view,
@@ -227,8 +238,8 @@ const serializeLibrarySearchParams = (state: Partial<LibraryUrlState>): URLSearc
   if (state.limit && state.limit !== DEFAULT_LIBRARY_URL_STATE.limit) {
     params.set('limit', String(state.limit));
   }
-  if (state.from) {
-    params.set('from', String(state.from));
+  if (state.page && state.page !== DEFAULT_LIBRARY_URL_STATE.page) {
+    params.set('page', String(state.page));
   }
   if (state.sort) {
     params.set('sort', state.sort);

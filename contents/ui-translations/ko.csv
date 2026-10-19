@@ -616,6 +616,7 @@ group expressions,집합 표현식
 Group Options,그룹 옵션
 Group saved,그룹 저장됨
 Group updated,그룹이 업데이트되었습니다
+Grouped,그룹
 Grouped geolocation properties,그룹화된 위치 정보 속성
 Groups,그룹
 Header and button preview,헤더 및 버튼 미리보기
@@ -633,6 +634,7 @@ Hide details,세부 정보 숨기기
 Hide label,라벨 숨기기
 Hide restricted relationships from public,일반 대중에게 비공개 관계 숨기기
 Hide task,작업 숨기기
+Hide the matches in,일치 항목 숨기기:
 Hide toolbar,도구 모음 숨기기
 Hours,시간
 How to combine sources,소스 결합 방법
@@ -740,6 +742,7 @@ library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
 Library panes,라이브러리 패널
 Library results,라이브러리 결과
+Library side panel,라이브러리 측면 패널
 library table view,라이브러리 테이블 뷰
 Light,라이트
 Light Theme,밝은 테마
@@ -915,6 +918,7 @@ No Relationships description,관계란 개체들 간의 유대입니다.
 No relationships found,관련 항목이 없습니다.
 No relationships to graph,그래프에 연결된 관계가 없음
 No releases yet,아직 릴리스가 없습니다
+No results for the selected match types.,선택한 일치 유형에 대한 결과가 없습니다.
 No results found,결과가 없습니다.
 No supporting files yet. Add a file to get started.,아직 첨부 파일이 없습니다. 시작하려면 파일을 추가하세요.
 No table of contents,목차 없음
@@ -1017,6 +1021,7 @@ Paragraph text extraction property (rich text),단락 텍스트 추출 속성 (�
 Paragraphs,단락
 Paragraphs deleted,삭제된 문단
 parties,당사자들
+Passages,구절
 Password,비밀번호
 Password + 2fa,비밀번호 + 2단계 인증
 Password changed success,비밀번호 변경 성공
@@ -1190,6 +1195,8 @@ Restore,복원
 Restore previous version,이전 버전 복원
 Restricted,비공개 게시물
 Results,결과
+Results layout,결과 레이아웃
+Results show the passages behind each hit.,결과에는 각 일치 항목의 해당 구절이 표시됩니다.
 Retryable,재시도 가능
 Retrying,다시 시도 중
 Return to login,로그인으로 돌아가기
@@ -1246,6 +1253,7 @@ Search Tips: one char wildcard,"물음표(?)는 한 글자를 대체하는 와�
 Search Tips: proximity,"물결표(~)는 근접 검색에 사용됩니다. 예: ""법적 상태""~5는 ""법적""과 ""상태""라는 두 단어가 서로 5단어 이내의 거리에 있는 텍스트를 찾으며, ""법적 절차상 상태"", ""법적으로 규정된 상태"" 같은 문구도 포함됩니다."
 Search Tips: wildcard,"별표(*)는 와일드카드 검색에 사용됩니다. 예: ""법*""는 법원, 법적, 법조인, 법학 등의 단어와 일치합니다."
 Search title & metadata,제목 및 메타데이터 검색
+Search to see where terms match,검색어가 어디에 일치하는지 보려면 검색하세요
 Searching...,검색 중...
 Second dimension (series / stacks),두 번째 차원(시리즈/스택)
 Secondary button,보조 버튼
@@ -1333,6 +1341,7 @@ Show information,정보 보기
 Show less,더 적게 보기
 Show more,자세히 보기
 Show remaining in panel,패널에 남은 항목 표시
+Show the matches in,일치 항목 표시:
 Show toolbar,도구 모음 표시
 Showing,표시 중
 Showing the top,상위 결과 표시
