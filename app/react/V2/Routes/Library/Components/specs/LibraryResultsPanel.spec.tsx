@@ -126,4 +126,50 @@ describe('LibraryResultsPanel', () => {
     await user.click(screen.getByRole('button', { name: 'Clear search' }));
     expect(onClearSearch).toHaveBeenCalled();
   });
+
+  describe('offscreen rows', () => {
+    const originalObserver = global.IntersectionObserver;
+    const manyRows = Array.from({ length: 16 }, (_, index) =>
+      row({
+        _id: String(index),
+        sharedId: `case-${index}`,
+        title: `Case ${index}`,
+        snippets: {
+          count: 1,
+          metadata: [{ field: 'metadata.resumen.value', texts: [`match ${index}`] }],
+          fullText: [],
+        },
+      })
+    );
+
+    beforeEach(() => {
+      global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+        observe: () => undefined,
+        unobserve: () => undefined,
+        disconnect: () => undefined,
+        takeRecords: () => [],
+        root: null,
+        rootMargin: '',
+        thresholds: [],
+      }));
+    });
+
+    afterEach(() => {
+      global.IntersectionObserver = originalObserver;
+    });
+
+    it('renders the first grouped cards and leaves the rest as placeholders', () => {
+      renderPanel('test', manyRows);
+      expect(screen.getByText('Case 0')).toBeInTheDocument();
+      expect(screen.queryByText('Case 15')).not.toBeInTheDocument();
+    });
+
+    it('renders the first passages and leaves the rest as placeholders', async () => {
+      const user = userEvent.setup();
+      renderPanel('test', manyRows);
+      await user.click(screen.getByRole('radio', { name: 'Passages' }));
+      expect(screen.getByText(/match 0/)).toBeInTheDocument();
+      expect(screen.queryByText(/match 15/)).not.toBeInTheDocument();
+    });
+  });
 });
