@@ -24,16 +24,20 @@ const createReindexTenant = () => async () => {
 
 class MigrationJobFactory {
   static create(deps: Partial<MigrationJobDeps> = {}): MigrationJob {
-    const pgPool = PostgresDB.adminPool();
-    const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
+    const logger = deps.logger || ExecutionContext.logger;
 
     const runner: TenantMigrationRunner =
       deps.runner || new TenantMigrationRunnerAdapter(migrator.migrationsDir, migrator.loader);
 
     return new MigrationJob({
       runner,
-      pgMigrator: deps.pgMigrator || pgMigrator,
-      logger: deps.logger || ExecutionContext.logger,
+      pgMigrator:
+        deps.pgMigrator ||
+        new PgMigrator(PG_MIGRATIONS_DIR, PostgresDB.adminPool(), {
+          knex: PostgresDB.adminKnex(),
+          logger,
+        }),
+      logger,
       dispatcher: deps.dispatcher || ExecutionContext.jobsDispatcher,
       reindexTenant: deps.reindexTenant || createReindexTenant(),
       tenantsManager: deps.tenantsManager || tenants,
