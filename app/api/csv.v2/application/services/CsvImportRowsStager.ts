@@ -2,7 +2,7 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
 import { CsvReader } from './CsvReader.js';
-import { CsvReaderError } from './CsvReaderError.js';
+import { missingCsvHeaderError } from './CsvReaderError.js';
 
 type StageRowsParams = {
   importId: string;
@@ -83,7 +83,7 @@ const pushRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams, row: Cs
 
 const assertHeaders = (ctx: AccumulatorContext) => {
   if (!ctx.headers) {
-    throw new CsvReaderError('CSV header row missing.');
+    throw missingCsvHeaderError();
   }
 };
 

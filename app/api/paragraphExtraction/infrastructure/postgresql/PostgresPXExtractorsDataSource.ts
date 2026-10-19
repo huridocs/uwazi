@@ -1,5 +1,6 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import {
   PostgresTemplateMapper,
   TemplateRow,
@@ -22,6 +23,7 @@ type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 type Deps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
   extractorsQueryService: PXExtractorsQueryService;
   templatesDAO: TemplatesDAO;
 };
@@ -38,6 +40,7 @@ export class PostgresPXExtractorsDataSource
     super('px_extractors', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
     this.extractorsQueryService = deps.extractorsQueryService;
     this.templatesDAO = deps.templatesDAO;

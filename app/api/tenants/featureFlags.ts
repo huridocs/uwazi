@@ -17,8 +17,6 @@ const FEATURE_FLAGS = {
   featureFlagEntityViewerv2: 'boolean',
   featureFlagLibraryV2: 'boolean',
   postgresCore: 'boolean',
-  postgresPages: 'boolean',
-  postgresCsv: 'boolean',
   aiAssistant: 'boolean',
   aiAssistantServiceUrl: 'string',
   translationService: 'boolean',

@@ -10,6 +10,7 @@ export class TranslationsSyncHandlerFactory {
       return new PostgresTranslationsSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
       });
     }
 

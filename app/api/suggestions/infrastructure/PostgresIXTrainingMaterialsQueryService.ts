@@ -57,8 +57,8 @@ const projection = `"ix_suggestions"."fileId" AS "fileId",
  * Suggestions, entities and files are joined in Postgres. Segmentations belong to the segmentation
  * module and are joined after, through its directory; a row with no ready segmentation drops out.
  *
- * `entities` carries permission RLS, and a training run walks every labeled document, so it reads
- * bypassing it.
+ * `entities` carries permission RLS, and a training run walks every labeled document, so it must
+ * run with a privileged access context (the `IXTrainModelJob` is `@PrivilegedJob`).
  */
 export class PostgresIXTrainingMaterialsQueryService
   extends PostgresDataSource<IXSuggestionsRow>
@@ -69,7 +69,7 @@ export class PostgresIXTrainingMaterialsQueryService
   constructor({ segmentationDirectory, ...deps }: Deps) {
     super('ix_suggestions', deps);
     this.segmentations = new TrainingSegmentationsJoin({
-      segmentationDirectory: segmentationDirectory,
+      segmentationDirectory,
     });
   }
 
@@ -89,6 +89,6 @@ export class PostgresIXTrainingMaterialsQueryService
           AND "files"."status" = 'ready'`
       )
       .selectRaw(projection, [property, property, property])
-      .stream({ bypass: true, refIds: [] });
+      .stream();
   }
 }

@@ -19,6 +19,7 @@ in the module's own page:
 | [sessions](docs/sessions.md)         | `last`                                                                                                 |
 | [activity](docs/activity.md)         | `list`                                                                                                 |
 | [archives](docs/archives.md)         | `list`                                                                                                 |
+| [blank-state](docs/blank-state.md)   | `dump`, `restore`                                                                                      |
 
 ## Running it
 
@@ -47,7 +48,9 @@ talking to the wrong database:
 
 `MONGO_URI`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_APP_USER`,
 `POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `SESSIONS_BACKEND` for
-commands that read the session store (`usage report`, `sessions last`).
+commands that read the session store (`usage report`, `sessions last`). The `blank-state` commands
+also require `POSTGRES_USER` and `POSTGRES_PASSWORD`: they write through the admin/migrator pool,
+which bypasses row-level security.
 
 Missing variables fail with `config.missing` (exit 1) before anything connects.
 

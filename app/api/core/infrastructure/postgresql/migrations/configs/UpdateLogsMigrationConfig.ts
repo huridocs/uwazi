@@ -1,17 +1,12 @@
-import { ObjectId } from 'mongodb';
 import { MigrationConfig } from '../MigrateCollectionToPostgres.js';
+import { copyUpdateLogs, mapUpdateLog } from './copyUpdateLogs.js';
 
-export const UpdateLogsMigrationConfig: MigrationConfig = {
+export const UpdateLogsMigrationConfig: MigrationConfig & {
+  copy: typeof copyUpdateLogs;
+} = {
   mongoCollection: 'updatelogs',
   pgTable: 'updatelogs',
-  conflictColumns: ['tenant_id', 'id'],
-  mapDocument(doc: Record<string, unknown>) {
-    const id = doc.mongoId instanceof ObjectId ? doc.mongoId.toHexString() : String(doc.mongoId);
-    return {
-      id,
-      namespace: doc.namespace,
-      timestamp: doc.timestamp,
-      deleted: Boolean(doc.deleted),
-    };
-  },
+  conflictColumns: ['tenant_id', 'namespace', 'id'],
+  mapDocument: mapUpdateLog,
+  copy: copyUpdateLogs,
 };

@@ -27,6 +27,7 @@ export class TemplatesDataSourceFactory {
         tenantId: tenant.name,
         transactionManager: mongoTM,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         dao,
       });
     }
@@ -52,6 +53,7 @@ export class TemplatesDataSourceFactory {
         tenantId: tenant.name,
         transactionManager: mongoTM,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        accessContext: ExecutionContext.accessContext,
         dao,
       });
     }

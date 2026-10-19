@@ -1,13 +1,13 @@
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PXEntityStatusesQueryService } from '../../domain/PXEntityStatusesQueryService.js';
-
-const PRIVILEGED = { bypass: true, refIds: [] as string[] };
 
 type Deps = {
   tenantId: string;
   pgTransactionManager: PostgresTransactionManager;
+  accessContext: AccessContext;
 };
 
 type Params = {
@@ -26,6 +26,7 @@ export class PostgresPXEntityStatusesQueryService
     super('entities', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
     });
   }
 
@@ -64,10 +65,7 @@ export class PostgresPXEntityStatusesQueryService
       params.batchSize,
     ];
 
-    const result = (await this.table.transactionManager.withConnection(
-      async trx => trx.raw(sql, bindings as any),
-      PRIVILEGED
-    )) as { rows: { sharedId: string }[] };
+    const result = await this.table.raw<{ rows: { sharedId: string }[] }>(sql, bindings);
 
     return result.rows ?? [];
   }

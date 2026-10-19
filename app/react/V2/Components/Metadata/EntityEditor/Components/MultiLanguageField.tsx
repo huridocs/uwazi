@@ -12,7 +12,7 @@ type MultiLanguageFieldProps = {
   current: string;
   values: Record<string, string>;
   onChange: (language: string, value: string) => void;
-  onTranslate?: (language: string) => Promise<string>;
+  onTranslate?: (language: string, signal: AbortSignal) => Promise<string>;
   multiline?: boolean;
   messageSlot?: ReactNode;
   disabled?: boolean;
@@ -41,7 +41,7 @@ const MultiLanguageField = React.memo(
     extra,
   }: MultiLanguageFieldProps) => {
     const [open, setOpen] = useState(false);
-    const { working, machine, translate, markUser } = useFieldTranslate({
+    const { working, translate } = useFieldTranslate({
       onChange,
       onTranslate,
       disabled,
@@ -118,7 +118,6 @@ const MultiLanguageField = React.memo(
                   value={values[language] ?? ''}
                   source={source}
                   busy={working.includes(language)}
-                  isMachine={Boolean(machine[language]) && !working.includes(language)}
                   multiline={multiline}
                   disabled={disabled}
                   showRetranslate={Boolean(onTranslate)}
@@ -127,7 +126,6 @@ const MultiLanguageField = React.memo(
                   onTranslate={next => {
                     void translate(next);
                   }}
-                  onUserEdit={markUser}
                 />
                 {extra ? (
                   <MultiLanguageFieldRow

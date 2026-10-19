@@ -5,6 +5,7 @@ import {
 } from '#api/relationships/relationshipProcessing.js';
 import type { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type {
   DeleteResult,
@@ -46,12 +47,14 @@ export class PostgresRelationshipsV1DataSource
   constructor(deps: {
     tenantId: string;
     pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
     entitiesDAO: EntitiesDAO;
     settingsDS: SettingsDataSource;
   }) {
     super('connections', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
+      accessContext: deps.accessContext,
       sync: { syncNamespace: 'connections' },
     });
     this.entitiesDAO = deps.entitiesDAO;

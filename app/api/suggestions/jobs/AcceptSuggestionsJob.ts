@@ -5,6 +5,7 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
 import { UwaziJobParams, UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type CustomParams = UwaziJobParams & {
   tenantName: string;
@@ -18,6 +19,7 @@ type Props = {
   batchSize: number;
 };
 
+@PrivilegedJob()
 export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
   private props: Required<
     Props & { useCase: AcceptSuggestionsUseCase; dispatcher: JobsDispatcher; batchSize: number }

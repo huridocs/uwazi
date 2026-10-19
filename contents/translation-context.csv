@@ -1184,7 +1184,7 @@ Theme and branding,Card heading and sidepanel title,Settings > Collection,Title 
 Theme colors imported,Toast notification,Settings > Theme and branding,Success toast shown after a theme instance file is successfully imported and applied.
 Theme favicon,Section heading,Settings > Collection,Heading over the light/dark favicon upload pickers in the theme sidepanel.
 Theme instance file invalid,Toast notification,Settings > Theme and branding,Error toast shown when an imported theme JSON file fails to parse or fails validation.
-Theme logotype,Section heading,Settings > Collection,Heading over the light/dark site logo upload pickers in the theme sidepanel.
+Theme logo,Section heading,Settings > Collection,Heading over the light/dark site logo upload pickers in the theme sidepanel.
 Theme presets,Section label,Settings > Theme and branding,"Label above the row of selectable theme preset cards (Default, Legacy, Custom, etc.) in the theme editor."
 Theme preview,Section subtitle,Settings > Theme and branding,"Heading text inside the live preview card, above the sample primary/secondary buttons."
 Then by,Menu row label,Entity view,Label for the secondary grouping control shown when relationships are grouped by a field.
@@ -1561,6 +1561,15 @@ Selected entities,Accessible label,Library,Accessible name of the list of entiti
 Remove from selection,Tooltip,Library,Tooltip on the button that removes one entity from the Library selection.,false
 Entity view,Accessible label,Entity view,"Accessible name and tooltip of the button that opens the entity viewer on Metadata, shown while the published page is open.",false
 Published view,Accessible label,Entity view,"Accessible name and tooltip of the button that returns to the published page, shown while the entity viewer is open.",false
+Adjust logo,Button label,Settings > Collection,Button that opens the crop and resize tool for the selected theme logo.,false
+Crop or resize logo,UI text,Settings > Collection,Title of the dialog used to crop or resize the theme logo.,false
+Crop changes how the logo fits in the header. Resize changes the saved file.,UI text,Settings > Collection,Explains that cropping changes the header appearance and resizing changes the saved file.,false
+Saved image,Field label,Settings > Collection,Label for the slider that sets the pixel size of the saved logo file.,false
+Shown in the header at,UI text,Settings > Collection,Label before the pixel size at which the cropped logo will appear in the header.,false
+Use this image?,UI text,Settings > Collection,Confirmation title when the chosen image is outside the recommended size.,false
+Use image,Button label,Settings > Collection,Confirms using an image that is outside the recommended size.,false
+Translations are still pending,UI text,Entity view,"Dialog title when saving, cancelling, closing, or leaving while automatic translations are still running.",false
+"Some translations are still pending, saving would stop the translation process.",UI text,Entity view,"Dialog body under that title. Confirming stops the translations; cancelling waits.",false
 Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
 Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false
 Library side panel,Accessible label,Library,Accessible name of the Filters and Results tabs in the library side panel.,false
@@ -1572,3 +1581,4 @@ No results for the selected match types.,UI text,Library,Message when Title Prop
 Results layout,Accessible label,Library,Accessible name of the Grouped and Passages switch in the Results panel.,false
 Grouped,Option label,Library,Results layout that lists one collapsible card per entity.,false
 Passages,Option label,Library,Results layout that lists every matching passage in one flat list.,false
+File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the storage size figure in the Storage card, explaining it measures uploaded file usage only.",false

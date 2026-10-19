@@ -3,6 +3,7 @@ import {
   PostgresDataSourceDeps,
 } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresIXSuggestionsMapper } from '#api/suggestions/infrastructure/PostgresIXSuggestionsMapper.js';
 import type { IXSuggestionsRow } from '#api/suggestions/infrastructure/PostgresIXSuggestionsRow.js';
 import { postgresTransactionManager } from '../infrastructure/contextTransactionManagers.js';
@@ -61,6 +62,7 @@ export class PostgresIXSuggestionsTestAccess
     return new PostgresIXSuggestionsTestAccess({
       tenantId: ExecutionContext.currentTenant.name,
       pgTransactionManager: postgresTransactionManager(),
+      accessContext: AccessContext.system(),
     });
   }
 

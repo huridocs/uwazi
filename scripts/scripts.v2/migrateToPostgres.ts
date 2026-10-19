@@ -6,8 +6,8 @@
  *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --sessions
  *   TENANTS_BACKEND=mongo node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenants
  *
- * --tenant migrates the collections gated by that tenant's active Postgres feature flags
- * (postgresCore, postgresPages, postgresCsv).
+ * --tenant migrates the collections gated by the tenant's active Postgres feature flag
+ * (postgresCore).
  *
  * --sessions copies the shared-database `sessions` collection into `http_sessions` once,
  * for every tenant. It does not take a tenant and it does not write a tenant column.
@@ -26,10 +26,8 @@ import { hideBin } from 'yargs/helpers';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import {
-  AnyMigrationConfig,
-  MigrateCollectionToPostgres,
-} from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
+import { AnyMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
+import { runMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/runMigrationConfig.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
@@ -43,6 +41,9 @@ import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
 import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
 import { UpdateLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UpdateLogsMigrationConfig.js';
+import { SyncsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SyncsMigrationConfig.js';
+import { PreserveSyncMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PreserveSyncMigrationConfig.js';
+import { ActivityLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ActivityLogsMigrationConfig.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -86,6 +87,9 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   ocr_records: OcrRecordsMigrationConfig,
   settings: SettingsMigrationConfig,
   updatelogs: UpdateLogsMigrationConfig,
+  syncs: SyncsMigrationConfig,
+  preserve_sync: PreserveSyncMigrationConfig,
+  activitylogs: ActivityLogsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
   page_locales: PageLocalesMigrationConfig,
@@ -102,10 +106,9 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   dataviz_snapshots: DatavizSnapshotsMigrationConfig,
 };
 
-// Collections grouped by the feature flag that gates their migration. A group is
-// migrated only when its flag is active on the tenant, in the order listed: a table
-// comes after the tables its foreign keys reference.
-const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', string[]> = {
+// Collections migrated when the postgresCore feature flag is active on the tenant, in the
+// order listed: a table comes after the tables its foreign keys reference.
+const FLAG_GROUPS: Record<'postgresCore', string[]> = {
   postgresCore: [
     'thesauri',
     'templates',
@@ -128,9 +131,12 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages' | 'postgresCsv', stri
     'dataviz',
     'dataviz_snapshots',
     'updatelogs',
-  ],
-  postgresPages: ['pages', 'page_locales', 'page_releases'],
-  postgresCsv: [
+    'syncs',
+    'preserve_sync',
+    'activitylogs',
+    'pages',
+    'page_locales',
+    'page_releases',
     'csv_imports',
     'csv_import_rows',
     'csv_import_row_errors',
@@ -191,10 +197,12 @@ async function migrateCollection(
     log(`[${tenantName}] MongoDB collection: ${migrationConfig.mongoCollection}`);
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
-    const result = await new MigrateCollectionToPostgres(mongoDb, tenantName).migrate(
-      migrationConfig,
-      { force: argv.force }
-    );
+    const result = await runMigrationConfig({
+      mongoDb,
+      tenantId: tenantName,
+      migration: migrationConfig,
+      options: { force: argv.force },
+    });
 
     const orphans = result.orphansSkipped ? `, skipped ${result.orphansSkipped} orphans` : '';
     const summary = result.skipped

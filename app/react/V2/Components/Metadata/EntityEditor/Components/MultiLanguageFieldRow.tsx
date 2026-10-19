@@ -3,6 +3,7 @@ import { RotateCwStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { UwaziLoader } from '#V2/Components/UI/index.js';
+import { isAiTranslated } from './aiTranslatedText.js';
 import {
   languageDir,
   languageLabel,
@@ -18,7 +19,6 @@ type MultiLanguageFieldRowProps = {
   value: string;
   source?: string;
   busy?: boolean;
-  isMachine?: boolean;
   multiline?: boolean;
   disabled: boolean;
   showRetranslate?: boolean;
@@ -26,11 +26,14 @@ type MultiLanguageFieldRowProps = {
   serviceUnavailable?: boolean;
   onChange: (language: string, value: string) => void;
   onTranslate?: (language: string) => void;
-  onUserEdit?: (language: string) => void;
 };
 
-const inputClass = (isMachine: boolean) =>
-  `min-w-0 flex-1 rounded-md border bg-paper px-3 text-sm text-ink placeholder:text-ink-muted transition-shadow focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20 ${isMachine ? 'border-carbon/30' : 'border-border'}`;
+const fieldClass = (busy: boolean, multiline: boolean) =>
+  [
+    'min-w-0 flex-1 rounded-md border border-border px-3 text-sm text-ink placeholder:text-ink-muted transition-shadow focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20',
+    busy ? 'bg-carbon-tint' : 'bg-paper',
+    multiline ? 'resize-y py-1' : 'h-8',
+  ].join(' ');
 
 const retranslateTitle = ({
   serviceUnavailable,
@@ -66,7 +69,6 @@ const MultiLanguageFieldRow = React.memo(
     value,
     source = '',
     busy = false,
-    isMachine = false,
     multiline = false,
     disabled,
     showRetranslate = false,
@@ -74,7 +76,6 @@ const MultiLanguageFieldRow = React.memo(
     serviceUnavailable = false,
     onChange,
     onTranslate = () => undefined,
-    onUserEdit = () => undefined,
   }: MultiLanguageFieldRowProps) => {
     const fieldId = `${idPrefix}-lang-${language}`;
     const commit = useCallback((next: string) => onChange(language, next), [language, onChange]);
@@ -82,7 +83,6 @@ const MultiLanguageFieldRow = React.memo(
       flushWhen: current,
     });
     const onInput = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onUserEdit(language);
       setDraft(event.target.value);
     };
     const placeholder = t(
@@ -92,8 +92,8 @@ const MultiLanguageFieldRow = React.memo(
       false
     );
     const ariaLabel = `${languageLabel(language)} ${label.toLowerCase()}`;
-    const className = inputClass(isMachine);
-    const showStatus = busy || isMachine || showRetranslate;
+    const showAiTranslated = !busy && isAiTranslated(draft);
+    const showStatus = busy || showAiTranslated || showRetranslate;
 
     return (
       <div className="flex items-start gap-2">
@@ -115,7 +115,7 @@ const MultiLanguageFieldRow = React.memo(
             placeholder={placeholder}
             aria-label={ariaLabel}
             rows={3}
-            className={`${className} resize-y py-1`}
+            className={fieldClass(busy, true)}
           />
         ) : (
           <input
@@ -128,7 +128,7 @@ const MultiLanguageFieldRow = React.memo(
             onBlur={() => commitNow(draft)}
             placeholder={placeholder}
             aria-label={ariaLabel}
-            className={`${className} h-8`}
+            className={fieldClass(busy, false)}
           />
         )}
         {showStatus ? (
@@ -142,16 +142,8 @@ const MultiLanguageFieldRow = React.memo(
               </span>
             ) : (
               <>
-                {isMachine ? (
-                  <span
-                    title={t(
-                      'System',
-                      'Machine translated — editing this row clears the marker',
-                      null,
-                      false
-                    )}
-                    className="inline-flex h-4 items-center rounded-md bg-carbon-tint px-1.5 text-meta leading-none text-carbon"
-                  >
+                {showAiTranslated ? (
+                  <span className="inline-flex h-4 items-center rounded-md bg-carbon-tint px-1.5 text-meta leading-none text-carbon">
                     <Translate>Auto</Translate>
                   </span>
                 ) : null}

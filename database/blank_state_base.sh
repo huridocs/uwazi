@@ -7,7 +7,6 @@ parent_path=$(
   pwd -P
 )
 cd "$parent_path" || exit
-repo_root=$(cd "$parent_path/.." && pwd -P)
 
 FORCE_FLAG=false
 MIGRATE_NEW_FLAG=false
@@ -87,38 +86,6 @@ recreate_database() {
     "$MONGORESTORE_BIN" -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_shared_db/" --db="$DB"
   else
     "$MONGORESTORE_BIN" -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_development/" --db="$DB"
-  fi
-
-  echo 'PG'
-
-  PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
-  PG_PORT="${POSTGRES_PORT:-5432}"
-  PG_USER="${POSTGRES_USER:-uwazi}"
-  PG_DB="${POSTGRES_DB:-uwazi_development}"
-
-  pg_is_ready_cmd() {
-    if command -v pg_isready &>/dev/null; then
-      pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q
-      return $?
-    fi
-
-    if command -v docker &>/dev/null && docker ps --format '{{.Names}}' | grep -q '^uwazi-postgres$'; then
-      docker exec uwazi-postgres pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q >/dev/null 2>&1
-      return $?
-    fi
-
-    return 1
-  }
-
-  # runner.js resolves .js → .ts via tsx in dev; production has compiled .js files
-  if pg_is_ready_cmd; then
-    echo "Restoring PostgreSQL initial data..."
-    local force_flag=""
-    [ "$FORCE_FLAG" = true ] && force_flag="--force"
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/app/api/infrastructure/blank_state/runPgBlankState.js" "$DB" $force_flag
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/scripts/scripts.v2/applyPgSchemaMigrations.ts"
-  else
-    echo "PostgreSQL is not ready on $PG_HOST:$PG_PORT, skipping schema."
   fi
 
   if [ "$DB" != "uwazi_shared_db" ]; then

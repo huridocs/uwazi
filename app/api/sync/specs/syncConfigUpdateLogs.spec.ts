@@ -19,7 +19,7 @@ describe('createSyncConfig update logs', () => {
 
   beforeEach(async () => {
     await testingDB.clear(['updatelogs', 'syncs']);
-    await testingPG.clear(['updatelogs']);
+    await testingPG.clear(['updatelogs', 'syncs']);
     await testingDB
       .db(testingDB.dbName)
       .collection('syncs')
@@ -27,6 +27,16 @@ describe('createSyncConfig update logs', () => {
         name: TARGET,
         lastSyncs: { entities: 50 },
       });
+    await testingPG.setFixtures({
+      syncs: [
+        {
+          tenant_id: testingTenants.current().name,
+          name: TARGET,
+          last_syncs: { entities: 50 },
+          consecutive_failures: 0,
+        },
+      ],
+    });
   });
 
   const changesForEntities = async () =>

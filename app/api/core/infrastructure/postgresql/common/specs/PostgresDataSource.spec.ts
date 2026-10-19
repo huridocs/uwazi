@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresDataSource } from '../PostgresDataSource.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
 import type { PostgresDataSourceDeps } from '../PostgresDataSource.js';
@@ -14,7 +15,11 @@ type TestRow = {
 };
 
 class TestDataSource extends PostgresDataSource<TestRow> {
-  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
+  constructor(deps: {
+    tenantId: string;
+    pgTransactionManager: PostgresTransactionManager;
+    accessContext: AccessContext;
+  }) {
     super('thesauri', deps);
   }
 
@@ -50,6 +55,7 @@ const makeDS = (tenantId: string) =>
   new TestDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
+    accessContext: AccessContext.system(),
   });
 
 beforeAll(async () => {
@@ -169,6 +175,7 @@ describe('PostgresDataSource', () => {
       new SyncedTestDataSource({
         tenantId,
         pgTransactionManager: managerFor(tenantId),
+        accessContext: AccessContext.system(),
         sync: { syncNamespace: SYNC_NS },
       });
 
@@ -207,6 +214,7 @@ describe('PostgresDataSource', () => {
       const ds = new SyncedTestDataSource({
         tenantId: 'tenant-a',
         pgTransactionManager: managerFor('tenant-a'),
+        accessContext: AccessContext.system(),
       });
       const id = new ObjectId().toHexString();
 

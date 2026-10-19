@@ -10,6 +10,11 @@ import {
   type LinkPart,
 } from '../functions/entityTranslations.js';
 import type { EditEntityFormValues } from '../functions/buildEditEntityDefaultValues.js';
+import {
+  prependAiTranslated,
+  stripAiTranslated,
+  type TranslationWriteOrigin,
+} from './aiTranslatedText.js';
 import { useTranslationServiceAvailability } from './TranslationServiceAvailability.js';
 
 const formPath = (path: string) => path as FieldPath<EditEntityFormValues>;
@@ -19,22 +24,30 @@ const requestFieldTranslation = async ({
   currentValue,
   language,
   onUnavailable,
+  signal,
 }: {
   current: string;
   currentValue: string;
   language: string;
   onUnavailable: () => void;
+  signal?: AbortSignal;
 }) => {
-  const [text, error] = await translateText({
-    text: currentValue,
-    language_from: current,
-    language_to: language,
-  });
+  const [text, error] = await translateText(
+    {
+      text: currentValue,
+      language_from: current,
+      language_to: language,
+    },
+    { policies: { notification: false }, signal }
+  );
+  if (error?.kind === 'cancelled' || error?.kind === 'timeout' || error?.kind === 'network') {
+    return '';
+  }
   if (error || !text) {
     onUnavailable();
     return '';
   }
-  return text;
+  return prependAiTranslated(text);
 };
 
 const useWatchedTranslationValues = ({
@@ -101,9 +114,10 @@ const useTranslationFieldHandlers = ({
   });
 
   const onChange = useCallback(
-    (language: string, value: string) => {
+    (language: string, value: string, origin: TranslationWriteOrigin = 'user') => {
+      const text = origin === 'user' ? stripAiTranslated(value) : value;
       if (language === current) {
-        onCurrentChange?.(value);
+        onCurrentChange?.(text);
         return;
       }
       const valuePath = formPath(translationValuePath(language, propertyName));
@@ -114,9 +128,9 @@ const useTranslationFieldHandlers = ({
               existing: storedTranslationValue(getValues(valuePath)),
               fallback: getValues(formPath(linkSource)),
               part: linkPart,
-              text: value,
+              text,
             })
-          : value;
+          : text;
       setValue(valuePath, [{ value: nextValue }], { shouldDirty: true });
       if (!getValues(touchedPath)) {
         setValue(touchedPath, true, { shouldDirty: true });
@@ -126,13 +140,14 @@ const useTranslationFieldHandlers = ({
   );
 
   const onTranslate = useCallback(
-    async (language: string) => {
+    async (language: string, signal?: AbortSignal) => {
       if (!current) return '';
       return requestFieldTranslation({
         current,
         currentValue: String(getValues(formPath(sourceField)) ?? ''),
         language,
         onUnavailable: markUnavailable,
+        signal,
       });
     },
     [current, getValues, markUnavailable, sourceField]

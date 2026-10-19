@@ -15,6 +15,7 @@ class IXExtractorsDAOFactory {
       return new PostgresIXExtractorsDataSource({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: postgresTransactionManager(),
+        accessContext: ExecutionContext.accessContext,
       });
     }
 
