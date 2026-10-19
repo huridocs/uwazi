@@ -11,7 +11,6 @@ type LibraryViewerProps = {
   onSelect: (sharedId: string, modifiers?: LibraryClickModifiers) => void;
   onSelectCluster?: (sharedIds: string[], modifiers?: LibraryClickModifiers) => void;
   entityBasePath: string;
-  onLoadMore: (amount: number) => void;
   showThumbnail: boolean;
   showMetadata: boolean;
   aggregations?: LibraryAggregations;

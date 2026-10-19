@@ -1,5 +1,6 @@
 import { UploadService } from '#V2/api/files/UploadService.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object';
@@ -47,4 +48,25 @@ const uploadPdfsAndCreateEntities = async (
     .filter((entity): entity is Entity => Boolean(entity));
 };
 
-export { entityFromCreatePdfResponse, pdfFilesFromList, uploadPdfsAndCreateEntities };
+const uploadChosenLibraryPdfs = (files: File[], onCreated: (sharedId?: string) => void) => {
+  const pdfs = pdfFilesFromList(files);
+  if (!pdfs.length) return;
+  void uploadPdfsAndCreateEntities(
+    pdfs,
+    () => undefined,
+    () => undefined
+  )
+    .then(created => {
+      onCreated(created.at(-1)?.sharedId);
+    })
+    .catch((caught: unknown) => {
+      notify(caught instanceof Error ? caught.message : String(caught), 'error');
+    });
+};
+
+export {
+  entityFromCreatePdfResponse,
+  pdfFilesFromList,
+  uploadChosenLibraryPdfs,
+  uploadPdfsAndCreateEntities,
+};

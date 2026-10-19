@@ -12,6 +12,7 @@ import {
   renderActionItems,
   renderPdfFileInput,
 } from './libraryResultsFooterActions.js';
+import { LibraryPagination } from './LibraryPagination.js';
 import { useLibraryResultsFooterMenus } from './useLibraryResultsFooterMenus.js';
 
 type LibraryResultsFooterProps = {
@@ -20,6 +21,12 @@ type LibraryResultsFooterProps = {
   onExportCsv?: () => void;
   onOpenFilters?: () => void;
   onShowResults?: () => void;
+  page?: number;
+  limit?: number;
+  total?: number;
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
+  showPagination?: boolean;
 };
 
 const LibraryResultsFooter = ({
@@ -28,14 +35,30 @@ const LibraryResultsFooter = ({
   onExportCsv,
   onOpenFilters,
   onShowResults,
+  page = 1,
+  limit = 30,
+  total = 0,
+  onPageChange = () => undefined,
+  onLimitChange = () => undefined,
+  showPagination = true,
 }: LibraryResultsFooterProps) => {
   const isMobile = useIsMobile() === true;
   const menus = useLibraryResultsFooterMenus();
+  const pagination = showPagination ? (
+    <LibraryPagination
+      compact={isMobile}
+      page={page}
+      limit={limit}
+      total={total}
+      onPageChange={onPageChange}
+      onLimitChange={onLimitChange}
+    />
+  ) : null;
 
   if (!isMobile) {
     return (
       <div
-        className="flex h-12 shrink-0 items-center gap-2 border-t border-border bg-paper px-3"
+        className="flex h-12 shrink-0 items-center justify-between gap-2 border-t border-border bg-paper px-3"
         data-testid="library-results-footer"
       >
         <div data-testid="library-results-actions" className="flex min-w-0 items-center gap-2">
@@ -49,6 +72,7 @@ const LibraryResultsFooter = ({
             {renderPdfFileInput({ inputRef: menus.pdfInputRef, onUploadPdf })}
           </NeedAuthorization>
         </div>
+        {pagination}
       </div>
     );
   }
@@ -92,7 +116,7 @@ const LibraryResultsFooter = ({
           })}
         </LibraryFooterMenu>
       </div>
-
+      {pagination}
       <button
         ref={menus.panesRef}
         type="button"

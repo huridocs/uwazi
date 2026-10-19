@@ -36,7 +36,7 @@ const librarySearchParams = {
   andFilters: parseAsAndFilters,
   search: parseAsString.withDefault(DEFAULT_LIBRARY_URL_STATE.search).withOptions(notifyLoader),
   limit: parseAsInteger.withDefault(DEFAULT_LIBRARY_URL_STATE.limit).withOptions(notifyLoader),
-  from: parseAsInteger.withDefault(DEFAULT_LIBRARY_URL_STATE.from).withOptions(notifyLoader),
+  page: parseAsInteger.withDefault(DEFAULT_LIBRARY_URL_STATE.page).withOptions(notifyLoader),
   sort: parseAsString.withDefault(DEFAULT_LIBRARY_URL_STATE.sort).withOptions(notifyLoader),
   order: parseAsStringLiteral(['asc', 'desc'])
     .withDefault(DEFAULT_LIBRARY_URL_STATE.order)
