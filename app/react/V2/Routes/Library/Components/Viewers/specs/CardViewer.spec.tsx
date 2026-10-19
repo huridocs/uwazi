@@ -91,7 +91,6 @@ const renderCards = ({
           onSelect={() => undefined}
           onFocusProperty={onFocusProperty}
           entityBasePath="/entityv2"
-          onLoadMore={() => undefined}
           showThumbnail={showThumbnail}
           showMetadata
           thumbFrame={thumbFrame}

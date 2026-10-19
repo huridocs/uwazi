@@ -1,26 +1,50 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 
+type SideSheet = 'filters' | 'results' | null;
+
+const useSideSheet = (requestPane: (index: number) => void) => {
+  const [side, setSide] = useState<SideSheet>(null);
+  const openFilters = useCallback(() => {
+    setSide('filters');
+    requestPane(1);
+  }, [requestPane]);
+  const openResults = useCallback(() => {
+    setSide('results');
+    requestPane(1);
+  }, [requestPane]);
+  const closeFilters = useCallback(() => {
+    setSide(current => (current === 'filters' ? null : current));
+  }, []);
+  const closeResults = useCallback(() => {
+    setSide(current => (current === 'results' ? null : current));
+  }, []);
+  return {
+    filtersOpen: side === 'filters',
+    resultsOpen: side === 'results',
+    openFilters,
+    openResults,
+    closeFilters,
+    closeResults,
+  };
+};
+
 const useLibraryMobilePane = (
   selectedId: string | undefined,
   creating: boolean,
   isMobile: boolean
 ) => {
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [requestedPane, setRequestedPane] = useState<{ index: number; id: number }>();
   const requestPane = useCallback((index: number) => {
     setRequestedPane(current => ({ index, id: (current?.id ?? 0) + 1 }));
   }, []);
-  const entityPane = isMobile && filtersOpen ? 2 : 1;
+  const side = useSideSheet(requestPane);
+  const sideOpen = side.filtersOpen || side.resultsOpen;
+  const entityPane = isMobile && sideOpen ? 2 : 1;
   useEffect(() => {
     if (selectedId || creating) requestPane(entityPane);
   }, [creating, entityPane, requestPane, selectedId]);
-  const openFilters = useCallback(() => {
-    setFiltersOpen(true);
-    requestPane(1);
-  }, [requestPane]);
-  const closeFilters = useCallback(() => setFiltersOpen(false), []);
-  return { requestedPane, requestPane, filtersOpen, entityPane, openFilters, closeFilters };
+  return { requestedPane, requestPane, entityPane, ...side };
 };
 
 const useLibraryPaneRequest = (selectedIds: readonly string[], creating: boolean) => {

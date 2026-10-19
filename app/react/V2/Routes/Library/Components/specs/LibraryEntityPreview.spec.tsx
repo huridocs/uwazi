@@ -351,7 +351,6 @@ describe('LibraryView preview pane', () => {
     onSelectedIdsChange: jest.fn(),
     onClosePreview: jest.fn(),
     entityBasePath: '/entityv2',
-    onLoadMore: jest.fn(),
   };
 
   const renderView = (selectedId?: string) =>
@@ -392,7 +391,10 @@ describe('LibraryView preview pane', () => {
 
   it('shows filters when no entity is selected', async () => {
     renderView();
-    expect(await screen.findByText('Filters')).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: 'Filters' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
     expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
   });
 

@@ -13,7 +13,6 @@ export { LibraryView } from './LibraryView.js';
 export type { LibraryViewProps } from './LibraryView.js';
 export { LibraryEntityPreview } from './LibraryEntityPreview.js';
 export type { LibraryEntityPreviewProps } from './LibraryEntityPreview.js';
-export { LoadMore } from './LoadMore.js';
 export { FacetCard, FacetRow } from './FacetCard.js';
 export { metadataFieldsForCard, thumbnailFromEntity } from './cardModel.js';
 export { LibraryViewerHost, CardViewer, MapViewer, TableViewer } from './Viewers/index.js';

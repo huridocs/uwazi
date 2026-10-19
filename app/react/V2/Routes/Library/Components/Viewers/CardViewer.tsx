@@ -13,18 +13,15 @@ import {
   DEFAULT_THUMB_SIZE,
   PORTRAIT_CARD_GRID_CLASS,
 } from '../libraryCardDisplay.js';
-import { LoadMore } from '../LoadMore.js';
 import type { LibraryViewerProps } from './types.js';
 
 type CardViewerProps = LibraryViewerProps;
 
 const CardViewer = ({
   rows,
-  totalRows,
   selectedIds = [],
   onSelect,
   entityBasePath,
-  onLoadMore,
   showThumbnail,
   showMetadata,
   onFocusProperty,
@@ -54,42 +51,39 @@ const CardViewer = ({
       : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
 
   return (
-    <>
-      <div className={`grid gap-3 ${cardGridCols}`}>
-        {rows.map(entity => {
-          const cardEntity = entity as Entity;
-          const template = templateById.get(entity.template);
-          const thumbnail = thumbnailFromEntity(cardEntity, template, {
-            locale,
-            defaultLanguage,
-          });
-          return (
-            <EntityCard
-              key={entity.sharedId}
-              title={entity.title}
-              templateId={entity.template}
-              fields={metadataFieldsForCard(cardEntity, template, {
-                excludeProperty: showThumbnail ? thumbnail.propertyName : undefined,
-                context: displayContext,
-              })}
-              thumbnailSrc={thumbnail.src}
-              thumbnailKind={thumbnail.kind}
-              thumbFit={thumbnail.fit}
-              thumbFrame={thumbFrame}
-              thumbSize={thumbSize}
-              showThumbnail={showThumbnail}
-              showMetadata={showMetadata}
-              selected={selectedIds.includes(entity.sharedId)}
-              selectId={entity.sharedId}
-              onSelect={modifiers => onSelect(entity.sharedId, modifiers)}
-              onFocusProperty={fieldKey => onFocusProperty?.(entity.sharedId, fieldKey)}
-              viewHref={`${entityBasePath}/${entity.sharedId}`}
-            />
-          );
-        })}
-      </div>
-      <LoadMore loaded={rows.length} total={totalRows} onLoadMore={onLoadMore} />
-    </>
+    <div className={`grid gap-3 ${cardGridCols}`}>
+      {rows.map(entity => {
+        const cardEntity = entity as Entity;
+        const template = templateById.get(entity.template);
+        const thumbnail = thumbnailFromEntity(cardEntity, template, {
+          locale,
+          defaultLanguage,
+        });
+        return (
+          <EntityCard
+            key={entity.sharedId}
+            title={entity.title}
+            templateId={entity.template}
+            fields={metadataFieldsForCard(cardEntity, template, {
+              excludeProperty: showThumbnail ? thumbnail.propertyName : undefined,
+              context: displayContext,
+            })}
+            thumbnailSrc={thumbnail.src}
+            thumbnailKind={thumbnail.kind}
+            thumbFit={thumbnail.fit}
+            thumbFrame={thumbFrame}
+            thumbSize={thumbSize}
+            showThumbnail={showThumbnail}
+            showMetadata={showMetadata}
+            selected={selectedIds.includes(entity.sharedId)}
+            selectId={entity.sharedId}
+            onSelect={modifiers => onSelect(entity.sharedId, modifiers)}
+            onFocusProperty={fieldKey => onFocusProperty?.(entity.sharedId, fieldKey)}
+            viewHref={`${entityBasePath}/${entity.sharedId}`}
+          />
+        );
+      })}
+    </div>
   );
 };
 

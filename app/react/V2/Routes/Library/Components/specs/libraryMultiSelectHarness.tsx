@@ -188,7 +188,6 @@ const Harness = ({ view }: { view: LibraryViewMode }) => {
       onSelectedIdsChange={setSelectedIds}
       onClosePreview={() => setSelectedIds([])}
       entityBasePath="/entityv2"
-      onLoadMore={() => undefined}
     />
   );
 };

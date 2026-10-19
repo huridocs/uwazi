@@ -619,6 +619,7 @@ group expressions,grup ifadeleri
 Group Options,Grup Seçenekleri
 Group saved,Grup kaydedildi
 Group updated,Grup güncellendi
+Grouped,Gruplanmış
 Grouped geolocation properties,Gruplandırılmış coğrafi konum özellikleri
 Groups,Gruplar
 Header and button preview,Başlık ve düğme önizlemesi
@@ -636,6 +637,7 @@ Hide details,Ayrıntıları gizle
 Hide label,Etiketi Gizle
 Hide restricted relationships from public,Kısıtlı ilişkileri herkesten gizle
 Hide task,Görevi gizle
+Hide the matches in,Eşleşmeleri gizle:
 Hide toolbar,Araç çubuğunu gizle
 Hours,Saat
 How to combine sources,Kaynaklar nasıl birleştirilir
@@ -743,6 +745,7 @@ library list view,kütüphane listesi görünümü
 library map view,kütüphane harita görünümü
 Library panes,Kütüphane panelleri
 Library results,Kütüphane sonuçları
+Library side panel,Kitaplık yan paneli
 library table view,kütüphane tablo görünümü
 Light,Açık
 Light Theme,Açık Tema
@@ -922,6 +925,7 @@ No Relationships description,"İlişkiler, varlıklar arasındaki bağlardır."
 No relationships found,Hiçbir ilişki bulunamadı
 No relationships to graph,Grafikteki ilişkiler yok
 No releases yet,Henüz sürüm yok
+No results for the selected match types.,Seçilen eşleşme türleri için sonuç yok.
 No results found,Sonuç bulunamadı
 No supporting files yet. Add a file to get started.,Henüz destekleyici dosya yok. Başlamak için bir dosya ekleyin.
 No table of contents,İçerik Tablosu yok
@@ -1024,6 +1028,7 @@ Paragraph text extraction property (rich text),Paragraf metni çıkarma özelli�
 Paragraphs,Paragraflar
 Paragraphs deleted,Paragraflar silindi
 parties,taraflar
+Passages,Pasajlar
 Password,Parola
 Password + 2fa,Şifre + 2FA
 Password changed success,Şifre başarıyla değiştirildi
@@ -1197,6 +1202,8 @@ Restore,Geri Yükle
 Restore previous version,Önceki sürümü geri yükle
 Restricted,Kısıtlanmış
 Results,Sonuçlar
+Results layout,Sonuç düzeni
+Results show the passages behind each hit.,Sonuçlar her eşleşmenin ardındaki pasajları gösterir.
 Retryable,Tekrar denenebilir
 Retrying,Yeniden deneniyor
 Return to login,Girişe dön
@@ -1253,6 +1260,7 @@ Search Tips: one char wildcard,"Tek karakterlik joker karakter için ? kullanın
 Search Tips: proximity,"Yakınlık araması için ~ kullanın. Örneğin: ""durum""~5 araması, ""usul durumu"" veya ""belirli hukuki durum"" gibi, ""durum"" kelimesinin en fazla 5 kelime mesafesinde geçtiği her şeyi bulur."
 Search Tips: wildcard,"Joker karakter araması için * kullanın. Örneğin: ""hukuk*"" araması; hukuki, hukukçu, hukuk bilimi gibi kelimelerle eşleşir."
 Search title & metadata,Başlık ve meta verileri ara
+Search to see where terms match,Terimlerin nerede eşleştiğini görmek için arayın
 Searching...,Aranıyor...
 Second dimension (series / stacks),İkinci boyut (seriler / yığınlar)
 Secondary button,İkincil düğme
@@ -1340,6 +1348,7 @@ Show information,Bilgileri göster
 Show less,Daha az göster
 Show more,Daha fazla göster
 Show remaining in panel,Panelde kalanları göster
+Show the matches in,Eşleşmeleri göster:
 Show toolbar,Araç çubuğunu göster
 Showing,Gösteriliyor
 Showing the top,Gösterilen ilk

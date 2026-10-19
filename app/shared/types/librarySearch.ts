@@ -36,6 +36,23 @@ type LibraryAggregations = {
   properties: Record<string, LibraryFacetBucket[]>;
 };
 
+type LibrarySnippetMetadata = {
+  field: string;
+  texts: string[];
+};
+
+type LibrarySnippetFullText = {
+  text: string;
+  page: number;
+};
+
+/** Highlight fragments `/api/search` already attaches via `snippetsFromSearchHit`. */
+type LibraryHitSnippets = {
+  count: number;
+  metadata: LibrarySnippetMetadata[];
+  fullText: LibrarySnippetFullText[];
+};
+
 type LibrarySearchHit = {
   _id: string;
   sharedId: string;
@@ -48,6 +65,7 @@ type LibrarySearchHit = {
   metadata?: Record<string, unknown>;
   documents?: unknown[];
   icon?: unknown;
+  snippets?: LibraryHitSnippets;
   [key: string]: unknown;
 };
 
@@ -60,9 +78,12 @@ type LibrarySearchResult = {
 export type {
   LibraryAggregations,
   LibraryFacetBucket,
+  LibraryHitSnippets,
   LibraryPublishedStatus,
   LibrarySearchHit,
   LibrarySearchQuery,
   LibrarySearchResult,
+  LibrarySnippetFullText,
+  LibrarySnippetMetadata,
   LibrarySortOrder,
 };

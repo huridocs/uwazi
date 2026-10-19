@@ -56,11 +56,11 @@ const chipLabel = (
  *  Result visualization is delegated to Viewers (cards, map, table, …). */
 const useLibrarySearchInput = (
   search: string,
-  updateUrl: (patch: { search: string | null; from: number }) => void
+  updateUrl: (patch: { search: string | null; page: null }) => void
 ) => {
   const commitSearch = useCallback(
     (value: string) => {
-      updateUrl({ search: value || null, from: 0 });
+      updateUrl({ search: value || null, page: null });
     },
     [updateUrl]
   );
@@ -110,7 +110,7 @@ const LibraryController = () => {
           onRemove: () => {
             updateUrl({
               filters: removeFilterValue(urlState.filters, key, value),
-              from: 0,
+              page: null,
             });
           },
         });
@@ -125,6 +125,7 @@ const LibraryController = () => {
       totalRows={data.totalRows}
       aggregations={data.aggregations}
       search={searchInput}
+      committedSearch={urlState.search}
       onSearchChange={setSearchInput}
       onSearchSubmit={commitSearchNow}
       view={urlState.view}
@@ -137,7 +138,7 @@ const LibraryController = () => {
         updateUrl({
           sort: nextSort || null,
           order: nextOrder === DEFAULT_LIBRARY_URL_STATE.order ? null : nextOrder,
-          from: 0,
+          page: null,
         });
       }}
       filters={urlState.filters}
@@ -146,19 +147,27 @@ const LibraryController = () => {
         updateUrl({
           filters,
           ...(Object.keys(filters).length === 0 ? { andFilters: null } : {}),
-          from: 0,
+          page: null,
         });
       }}
       onAndFiltersChange={andFilters => {
-        updateUrl({ andFilters: andFilters.length ? andFilters : null, from: 0 });
+        updateUrl({ andFilters: andFilters.length ? andFilters : null, page: null });
       }}
       chips={chips}
       selectedIds={selectedIds}
       onSelectedIdsChange={setSelectedIds}
       onClosePreview={onClosePreview}
       entityBasePath={entityBasePath}
-      onLoadMore={amount => {
-        updateUrl({ from: data.rows.length, limit: amount });
+      page={urlState.page}
+      limit={urlState.limit}
+      onPageChange={page => {
+        updateUrl({ page: page <= 1 ? null : page });
+      }}
+      onLimitChange={limit => {
+        updateUrl({
+          limit: limit === DEFAULT_LIBRARY_URL_STATE.limit ? null : limit,
+          page: null,
+        });
       }}
       onEntityCreated={onEntityCreated}
     />

@@ -8,6 +8,7 @@ import { httpServices } from '#V2/services/http/index.js';
 import {
   parseLibrarySearchParams,
   publishedStatusFromFilters,
+  serializeLibrarySearchString,
   type LibraryUrlState,
 } from './libraryUrlState.js';
 import { legacyLibraryRedirectUrl } from './risonLegacy.js';
@@ -43,8 +44,8 @@ const toSearchQuery = (urlState: LibraryUrlState, range: SearchRange): LibrarySe
 };
 
 const pageRange = (urlState: LibraryUrlState): SearchRange => ({
-  from: 0,
-  limit: urlState.from > 0 ? urlState.from + urlState.limit : urlState.limit,
+  from: (urlState.page - 1) * urlState.limit,
+  limit: urlState.limit,
 });
 
 const unwrapSearch = (result: LibrarySearchResult | undefined, error?: ApiError) => {
@@ -91,6 +92,10 @@ const createLibraryLoader =
     }
 
     const urlState = parseLibrarySearchParams(url.searchParams);
+    if (url.searchParams.has('from')) {
+      const next = serializeLibrarySearchString(urlState);
+      return redirect(`${url.pathname}${next ? `?${next}` : ''}`);
+    }
     const result = await loadLibraryResult(services, urlState, {
       headers,
       language:
