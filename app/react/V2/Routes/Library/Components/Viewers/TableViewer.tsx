@@ -152,6 +152,7 @@ const TableViewer = ({
             : undefined
         }
         minWidthRem={tableMinWidthRem(columns)}
+        virtualize
       />
     </div>
   );
