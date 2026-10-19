@@ -43,13 +43,18 @@ describe('library loader', () => {
     });
   });
 
-  it('expands from+limit on cold load so previous rows are not dropped', async () => {
-    await runLoader('http://localhost/en/libraryv2?from=30&limit=30');
+  it('requests one page slice and redirects a leftover from offset', async () => {
+    await runLoader('http://localhost/en/libraryv2?page=2&limit=30');
 
     expect(searchLibrary).toHaveBeenCalledWith(
-      expect.objectContaining({ from: 0, limit: 60 }),
+      expect.objectContaining({ from: 30, limit: 30 }),
       expect.anything()
     );
+
+    const redirected = await runLoader('http://localhost/en/libraryv2?from=60&limit=30');
+    expect(redirected).toBeInstanceOf(Response);
+    expect((redirected as Response).headers.get('Location')).toBe('/en/libraryv2?page=3');
+    expect(searchLibrary).toHaveBeenCalledTimes(1);
   });
 
   it('redirects legacy rison q= to the compact URL', async () => {

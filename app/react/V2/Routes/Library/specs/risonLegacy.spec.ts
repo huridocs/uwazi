@@ -40,11 +40,18 @@ describe('risonLegacy', () => {
       andFilters: [],
       search: 'batman',
       limit: 10,
-      from: 0,
+      page: 1,
       sort: 'title',
       order: 'asc',
       view: 'cards',
     });
+  });
+
+  it('turns a V1 from offset into a page', () => {
+    expect(legacyRisonToLibraryUrlState('(from:60,limit:30)').page).toBe(3);
+    expect(serializeLibrarySearchString(legacyRisonToLibraryUrlState('(from:60,limit:30)'))).toBe(
+      'page=3'
+    );
   });
 
   it('maps includeUnpublished:!t to omitted status (all)', () => {
@@ -93,7 +100,7 @@ describe('risonLegacy', () => {
       andFilters: [],
       search: 'arroz',
       limit: 30,
-      from: 0,
+      page: 1,
       sort: '_score',
       order: 'desc',
       view: 'cards',

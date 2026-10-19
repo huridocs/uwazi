@@ -94,7 +94,6 @@ const Harness = ({
     onSelectedIdsChange={onSelectedIdsChange}
     onClosePreview={() => undefined}
     entityBasePath="/en/library"
-    onLoadMore={() => undefined}
   />
 );
 

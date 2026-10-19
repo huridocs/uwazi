@@ -125,7 +125,6 @@ const Harness = ({ onFiltersChange = () => undefined }: { onFiltersChange?: () =
         onSelectedIdsChange={setSelectedIds}
         onClosePreview={() => setSelectedIds([])}
         entityBasePath="/en/library"
-        onLoadMore={() => undefined}
       />
     </>
   );

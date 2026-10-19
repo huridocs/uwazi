@@ -76,7 +76,6 @@ const renderUploadLibrary = (onEntityCreated: (sharedId?: string) => void) =>
           onSelectedIdsChange={jest.fn()}
           onClosePreview={() => undefined}
           entityBasePath="/entityv2"
-          onLoadMore={() => undefined}
           onEntityCreated={onEntityCreated}
         />
       </TestAtomStoreProvider>

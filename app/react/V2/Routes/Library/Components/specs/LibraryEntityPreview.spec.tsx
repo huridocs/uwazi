@@ -351,7 +351,6 @@ describe('LibraryView preview pane', () => {
     onSelectedIdsChange: jest.fn(),
     onClosePreview: jest.fn(),
     entityBasePath: '/entityv2',
-    onLoadMore: jest.fn(),
   };
 
   const renderView = (selectedId?: string) =>

@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
 import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
-import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
-import type { Chip } from './ActiveFiltersSheet.js';
+import type { LibraryViewProps } from './libraryViewProps.js';
 import { uploadChosenLibraryPdfs } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { librarySidePanes } from './LibrarySidePanes.js';
@@ -20,32 +18,6 @@ const libraryPaneMode = (creating: boolean, selectedCount: number) => {
   if (creating) return 'create';
   if (selectedCount > 0) return 'entity';
   return 'filters';
-};
-
-type LibraryViewProps = {
-  rows: LibrarySearchHit[];
-  totalRows: number;
-  aggregations: LibraryAggregations;
-  search: string;
-  onSearchChange: (value: string) => void;
-  onSearchSubmit?: (value: string) => void;
-  committedSearch?: string;
-  view: LibraryViewMode;
-  onViewChange: (view: LibraryViewMode) => void;
-  sort: string;
-  order: LibrarySortOrder;
-  onSortChange: (sort: string, order: LibrarySortOrder) => void;
-  filters: LibraryFiltersState;
-  onFiltersChange: (filters: LibraryFiltersState) => void;
-  andFilters: string[];
-  onAndFiltersChange: (andFilters: string[]) => void;
-  chips: Chip[];
-  selectedIds?: readonly string[];
-  onSelectedIdsChange: (ids: string[]) => void;
-  onClosePreview: () => void;
-  entityBasePath: string;
-  onLoadMore: (amount: number) => void;
-  onEntityCreated?: (sharedId?: string) => void;
 };
 
 const LibraryView = ({
@@ -70,7 +42,10 @@ const LibraryView = ({
   onSelectedIdsChange,
   onClosePreview,
   entityBasePath,
-  onLoadMore,
+  page = 1,
+  limit = 30,
+  onPageChange = () => undefined,
+  onLimitChange = () => undefined,
   onEntityCreated,
 }: LibraryViewProps) => {
   const {
@@ -204,7 +179,6 @@ const LibraryView = ({
                   selectCluster(sharedIds, modifiers);
                 }}
                 entityBasePath={entityBasePath}
-                onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
                 thumbFrame={thumbFrame}
@@ -243,6 +217,12 @@ const LibraryView = ({
                   openFilters();
                 }}
                 onShowResults={showResults}
+                page={page}
+                limit={limit}
+                total={totalRows}
+                showPagination={view !== 'map'}
+                onPageChange={onPageChange}
+                onLimitChange={onLimitChange}
               />
             )}
           </div>
@@ -295,5 +275,5 @@ const LibraryView = ({
   );
 };
 
-export type { LibraryViewProps };
+export type { LibraryViewProps } from './libraryViewProps.js';
 export { LibraryView };

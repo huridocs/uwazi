@@ -44,7 +44,6 @@ const renderViewer = (view: 'cards' | 'map' | 'table') =>
           totalRows={1}
           onSelect={() => undefined}
           entityBasePath="/entityv2"
-          onLoadMore={() => undefined}
           showThumbnail
           showMetadata
           tableColumns={libraryTableColumns(templates, ['template1'])}

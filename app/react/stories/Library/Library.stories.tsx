@@ -140,7 +140,6 @@ const LibraryPreview = ({ initialView = 'cards' }: { initialView?: LibraryViewMo
             onSelectedIdsChange={setSelectedIds}
             onClosePreview={() => setSelectedIds([])}
             entityBasePath="/entityv2"
-            onLoadMore={() => undefined}
           />
         </div>
       </Provider>
