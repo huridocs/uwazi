@@ -37,7 +37,7 @@ const fakePgMigrator = {
     return 0;
   },
   async migrate() {
-    return [];
+    return { applied: [], reindexTenants: [] };
   },
 };
 

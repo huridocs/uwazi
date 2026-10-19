@@ -1,0 +1,48 @@
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { migration } from '../{{nextSchemaDelta}}-{{dashName name}}.js';
+
+const TENANT_A = 'tenant-a';
+const TENANT_B = 'tenant-b';
+
+const run = async () => {
+  const ctx = testingEnvironment.pg.migrationContext();
+  await migration.up(ctx);
+  return ctx;
+};
+
+describe('{{nextSchemaDelta}}-{{dashName name}}', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  beforeEach(async () => {
+    // Rows in the old shape, for both tenants: { table: [{ tenant_id: TENANT_A, ... }, ...] }
+    await testingEnvironment.setFixtures({}, {});
+  });
+
+  it('should convert every tenant rows to the new shape, and nothing else', async () => {
+    await run();
+    expect([TENANT_A, TENANT_B]).toBe('asserted on the raw tables');
+  });
+
+  it('should give the same result when run twice', async () => {
+    await run();
+    await run();
+    expect(true).toBe(false);
+  });
+
+  it('should do nothing on an empty table', async () => {
+    await run();
+    expect(true).toBe(false);
+  });
+
+  it('should check if a reindex is needed', async () => {
+    const { reindexed } = await run();
+    expect(migration.reindex).toBe(undefined);
+    expect(reindexed).toEqual([]);
+  });
+});

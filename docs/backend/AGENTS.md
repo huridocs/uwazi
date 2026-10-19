@@ -41,5 +41,7 @@ Elasticsearch backs search. A change to indexed data may require a reindex — s
 
 **Run** — `yarn hot` (server + webpack + types), `yarn dev-worker`, `yarn dev-queue`.
 
-**Migrations** — `yarn add-migration schema|data <name> <description>` to scaffold, `yarn migrate` to
-run, `yarn migrate-and-reindex` when indexed data changed, `yarn reindex` for Elasticsearch alone.
+**Migrations** — `yarn add-migration schema|pg-data|data <name> <description>` to scaffold,
+`yarn migrate --new` to run all kinds (plain `yarn migrate` runs Mongo ones only),
+`yarn migrate --status` to see what is pending, `yarn migrate-and-reindex` when indexed data
+changed, `yarn reindex` for Elasticsearch alone.
