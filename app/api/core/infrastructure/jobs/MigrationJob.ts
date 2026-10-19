@@ -79,13 +79,16 @@ class MigrationJob implements Dispatchable {
     const blockedInfo = await this.getBlockedInfo(nextDelta, schemaVersion);
     if (blockedInfo) {
       this.deps.logger.warning(
-        `Data migration ${nextDelta} blocked, requires schema version ${blockedInfo.requiresSchema}`,
+        `Mongo data migration ${nextDelta} blocked, requires Postgres version ${blockedInfo.requiresSchema}`,
         { delta: nextDelta, requiresSchema: blockedInfo.requiresSchema }
       );
-      const appliedSchemas = await this.deps.pgMigrator.migrate(blockedInfo.requiresSchema);
-      jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
+      const appliedSchemas = await this.migrateSchema(
+        jobParams,
+        heartbeat,
+        blockedInfo.requiresSchema
+      );
       schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
-      this.deps.logger.info(`Applied schema migrations: [${appliedSchemas.join(', ')}]`, {
+      this.deps.logger.info(`Applied Postgres migrations: [${appliedSchemas.join(', ')}]`, {
         targetSchema: blockedInfo.requiresSchema,
         applied: appliedSchemas,
         schemaVersion,
@@ -134,6 +137,32 @@ class MigrationJob implements Dispatchable {
       reindexTenants: nextReindexTenants,
       results: jobParams.results,
     });
+  }
+
+  /** Runs Postgres migrations, recording what they applied and the tenants they ask to reindex. */
+  private async migrateSchema(
+    jobParams: Required<MigrationJobParams>,
+    heartbeat: HeartbeatCallback,
+    until?: number
+  ): Promise<number[]> {
+    const { applied, reindexTenants } = await this.deps.pgMigrator.migrate({ until, heartbeat });
+    jobParams.results.appliedSchemaDeltas.push(...applied);
+    jobParams.reindexTenants = Array.from(
+      new Set([...jobParams.reindexTenants, ...this.registeredTenants(reindexTenants)])
+    );
+    return applied;
+  }
+
+  /** Postgres rows can outlive their tenant: only registered tenants can be reindexed. */
+  private registeredTenants(tenantNames: string[]): string[] {
+    const unknown = tenantNames.filter(name => !this.deps.tenantsManager.tenants[name]);
+    if (unknown.length > 0) {
+      this.deps.logger.warning(
+        `Skipping reindex for unregistered tenants: [${unknown.join(', ')}]`,
+        { tenants: unknown }
+      );
+    }
+    return tenantNames.filter(name => this.deps.tenantsManager.tenants[name]);
   }
 
   private normalizeParams(params: MigrationJobParams): Required<MigrationJobParams> {
@@ -262,13 +291,14 @@ class MigrationJob implements Dispatchable {
     jobParams: Required<MigrationJobParams>,
     heartbeat: HeartbeatCallback
   ): Promise<void> {
-    this.deps.logger.info('No pending data migrations, running remaining schema migrations');
+    this.deps.logger.info(
+      'No pending Mongo data migrations, running remaining Postgres migrations'
+    );
 
-    const appliedSchemas = await this.deps.pgMigrator.migrate();
-    jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
+    const appliedSchemas = await this.migrateSchema(jobParams, heartbeat);
 
     this.deps.logger.info(
-      `Schema migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
+      `Postgres migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
       {
         applied: appliedSchemas,
       }
@@ -284,8 +314,8 @@ class MigrationJob implements Dispatchable {
 
     const summary = [
       'Migration run complete',
-      `  Data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
-      `  Schema migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
+      `  Mongo data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
+      `  Postgres migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
       `  Reindexed tenants: [${jobParams.reindexTenants.join(', ') || 'none'}]`,
     ].join('\n');
 
