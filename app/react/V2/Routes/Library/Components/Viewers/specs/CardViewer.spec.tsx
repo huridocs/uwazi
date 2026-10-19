@@ -143,6 +143,57 @@ describe('CardViewer thumbnail size', () => {
   });
 });
 
+describe('CardViewer offscreen rows', () => {
+  const originalObserver = global.IntersectionObserver;
+
+  afterEach(() => {
+    global.IntersectionObserver = originalObserver;
+  });
+
+  it('renders the first screen and leaves the rest as placeholders', () => {
+    global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+      observe: () => undefined,
+      unobserve: () => undefined,
+      disconnect: () => undefined,
+      takeRecords: () => [],
+      root: null,
+      rootMargin: '',
+      thresholds: [],
+    }));
+
+    const manyRows = Array.from({ length: 25 }, (_, index) => ({
+      ...rows[0]!,
+      _id: String(index),
+      sharedId: `case-${index}`,
+      title: `Hearing ${index}`,
+    }));
+
+    render(
+      <MemoryRouter>
+        <TestAtomStoreProvider
+          initialValues={[
+            [localeAtom, 'en'],
+            [templatesAtom, templates],
+            [translationsAtom, translations],
+          ]}
+        >
+          <CardViewer
+            rows={manyRows}
+            totalRows={manyRows.length}
+            onSelect={() => undefined}
+            entityBasePath="/entityv2"
+            showThumbnail
+            showMetadata
+          />
+        </TestAtomStoreProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Hearing 0')).toBeInTheDocument();
+    expect(screen.queryByText('Hearing 24')).not.toBeInTheDocument();
+  });
+});
+
 describe('CardViewer hidden thumbnail', () => {
   it('renders the visual property as a filename row and focuses it on click', () => {
     const onFocusProperty = jest.fn();

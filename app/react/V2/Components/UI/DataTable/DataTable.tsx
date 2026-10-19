@@ -42,6 +42,7 @@ import {
 } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
+import { RenderIfVisible } from '../RenderIfVisible.js';
 import type {
   DataTableColumn,
   DataTableDensity,
@@ -69,6 +70,13 @@ const ROW_DENSITY: Record<DataTableDensity, string> = {
   compact: 'min-h-8 py-1',
 };
 
+const TABLE_EAGER_COUNT = 40;
+const TABLE_VISIBLE_OFFSET = 600;
+const TABLE_ROW_HEIGHT: Record<DataTableDensity, number> = {
+  comfortable: 44,
+  compact: 36,
+};
+
 interface DataTableProps<T extends { rowId: string }> {
   columns: DataTableColumn<T>[];
   data: T[];
@@ -86,6 +94,8 @@ interface DataTableProps<T extends { rowId: string }> {
   density?: DataTableDensity;
   /** Applies extra px offset for minimum-width scroll containment */
   minWidthRem?: number;
+  /** Mounts only the rows near the viewport. Ignored while reordering or tree rows are on. */
+  virtualize?: boolean;
 }
 
 const SortIcon = ({ sortKey, sort }: { sortKey: string; sort?: DataTableSort }) => {
@@ -317,6 +327,7 @@ const DataTable = <T extends { rowId: string }>({
   tree,
   density = 'comfortable',
   minWidthRem,
+  virtualize = false,
 }: DataTableProps<T>) => {
   const [internalData, setInternalData] = useState(data);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -393,6 +404,7 @@ const DataTable = <T extends { rowId: string }>({
 
   const reorderEnabled = Boolean(reorder);
   const treeEnabled = Boolean(tree);
+  const deferOffscreen = virtualize && !reorderEnabled && !treeEnabled;
   const isClickable = Boolean(onRowClick);
 
   const gridTemplateColumns = [
@@ -471,27 +483,41 @@ const DataTable = <T extends { rowId: string }>({
                 {emptyState ?? <Translate>Nothing here yet.</Translate>}
               </div>
             ) : (
-              rows.map(row => (
-                <SortableRow
-                  key={row.id}
-                  row={row}
-                  gridTemplateColumns={gridTemplateColumns}
-                  columns={columns}
-                  reorderEnabled={reorderEnabled}
-                  treeEnabled={treeEnabled}
-                  isSelected={rowIsSelected({
-                    rowId: row.original.rowId,
-                    tanstackSelected: row.getIsSelected(),
-                    selectedRowId,
-                    selectedRowIds,
-                  })}
-                  isClickable={isClickable}
-                  density={density}
-                  depth={0}
-                  onRowClick={onRowClick}
-                  rowSelectId={rowSelectId}
-                />
-              ))
+              rows.map((row, index) => {
+                const sortableRow = (
+                  <SortableRow
+                    row={row}
+                    gridTemplateColumns={gridTemplateColumns}
+                    columns={columns}
+                    reorderEnabled={reorderEnabled}
+                    treeEnabled={treeEnabled}
+                    isSelected={rowIsSelected({
+                      rowId: row.original.rowId,
+                      tanstackSelected: row.getIsSelected(),
+                      selectedRowId,
+                      selectedRowIds,
+                    })}
+                    isClickable={isClickable}
+                    density={density}
+                    depth={0}
+                    onRowClick={onRowClick}
+                    rowSelectId={rowSelectId}
+                  />
+                );
+                if (!deferOffscreen) {
+                  return <React.Fragment key={row.id}>{sortableRow}</React.Fragment>;
+                }
+                return (
+                  <RenderIfVisible
+                    key={row.id}
+                    defaultHeight={TABLE_ROW_HEIGHT[density]}
+                    visibleOffset={TABLE_VISIBLE_OFFSET}
+                    initialVisible={index < TABLE_EAGER_COUNT}
+                  >
+                    {sortableRow}
+                  </RenderIfVisible>
+                );
+              })
             )}
           </SortableContext>
 

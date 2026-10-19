@@ -29,3 +29,64 @@ describe('DataTable density', () => {
     expect(container.querySelector('.min-h-11')).toBeFalsy();
   });
 });
+
+const manyRows = Array.from({ length: 41 }, (_, index) => ({
+  rowId: String(index),
+  name: `Row ${index}`,
+}));
+
+const nameColumn = [
+  {
+    id: 'name',
+    header: 'Name',
+    cell: (row: { rowId: string; name: string }) => row.name,
+  },
+];
+
+const installIdleObserver = () => {
+  global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+    observe: () => undefined,
+    unobserve: () => undefined,
+    disconnect: () => undefined,
+    takeRecords: () => [],
+    root: null,
+    rootMargin: '',
+    thresholds: [],
+  }));
+};
+
+describe('DataTable virtualize', () => {
+  const originalObserver = global.IntersectionObserver;
+
+  afterEach(() => {
+    global.IntersectionObserver = originalObserver;
+  });
+
+  it('renders every row when virtualize is off', () => {
+    installIdleObserver();
+    render(<DataTable columns={nameColumn} data={manyRows} />);
+    expect(screen.getByText('Row 0')).toBeInTheDocument();
+    expect(screen.getByText('Row 40')).toBeInTheDocument();
+  });
+
+  it('renders the first screen and leaves the rest as placeholders', () => {
+    installIdleObserver();
+    render(<DataTable columns={nameColumn} data={manyRows} virtualize />);
+    expect(screen.getByText('Row 0')).toBeInTheDocument();
+    expect(screen.queryByText('Row 40')).not.toBeInTheDocument();
+  });
+
+  it('keeps every row mounted when reordering is enabled', () => {
+    installIdleObserver();
+    render(
+      <DataTable
+        columns={nameColumn}
+        data={manyRows}
+        virtualize
+        reorder={{ onReorder: () => undefined }}
+      />
+    );
+    expect(screen.getByText('Row 0')).toBeInTheDocument();
+    expect(screen.getByText('Row 40')).toBeInTheDocument();
+  });
+});

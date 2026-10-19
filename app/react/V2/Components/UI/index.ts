@@ -104,6 +104,8 @@ export { TemplatePill } from './TemplatePill.js';
 export { EntityTypeChip } from './EntityTypeChip.js';
 export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
 export { IconButton } from './IconButton.js';
+export { RenderIfVisible } from './RenderIfVisible.js';
+export type { RenderIfVisibleProps } from './RenderIfVisible.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

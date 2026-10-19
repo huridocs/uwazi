@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate, t } from '#app/I18N/index.js';
-import { SegmentedControl, ToggleChip } from '#V2/Components/UI/index.js';
+import { SegmentedControl, ToggleChip, RenderIfVisible } from '#V2/Components/UI/index.js';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { LibraryResultsGroupedCard } from './LibraryResultsGroupedCard.js';
 import { LibraryResultsPassages } from './LibraryResultsPassages.js';
@@ -28,6 +28,10 @@ const matchTypes = (): { key: MatchType; label: string }[] => [
   { key: 'document', label: t('System', 'Document', null, false) },
 ];
 
+const RESULTS_EAGER_COUNT = 15;
+const RESULTS_VISIBLE_OFFSET = 600;
+const GROUPED_CARD_HEIGHT = 88;
+
 const LibraryResultsList = ({
   views,
   counts,
@@ -50,18 +54,24 @@ const LibraryResultsList = ({
   if (views.length > 0 && layout === 'grouped') {
     list = (
       <div className="flex flex-col gap-2.5 pb-2">
-        {views.map(view => {
+        {views.map((view, index) => {
           const hasBody = view.properties.length > 0 || view.fullText.length > 0;
           return (
-            <LibraryResultsGroupedCard
+            <RenderIfVisible
               key={view.sharedId}
-              view={view}
-              folded={collapsedIds.has(view.sharedId)}
-              template={templates.find(item => item._id === view.template)}
-              onToggle={hasBody ? () => onToggleCard(view.sharedId) : undefined}
-              onFocusProperty={onFocusProperty}
-              onSelect={onSelect}
-            />
+              defaultHeight={GROUPED_CARD_HEIGHT}
+              visibleOffset={RESULTS_VISIBLE_OFFSET}
+              initialVisible={index < RESULTS_EAGER_COUNT}
+            >
+              <LibraryResultsGroupedCard
+                view={view}
+                folded={collapsedIds.has(view.sharedId)}
+                template={templates.find(item => item._id === view.template)}
+                onToggle={hasBody ? () => onToggleCard(view.sharedId) : undefined}
+                onFocusProperty={onFocusProperty}
+                onSelect={onSelect}
+              />
+            </RenderIfVisible>
           );
         })}
       </div>
