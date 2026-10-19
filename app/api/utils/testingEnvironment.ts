@@ -210,6 +210,7 @@ const MIRRORED_COLLECTIONS = [
   'files',
   'entities',
   'relationtypes',
+  'pages',
   'captchas',
   'users',
   'usergroups',

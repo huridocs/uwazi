@@ -190,6 +190,26 @@ const UploadStatus = () => {
                   <Card>
                     <div className="flex flex-col gap-3">
                       <div className="font-medium text-ink">{entry.failure.message}</div>
+                      {entry.failure.issues?.length ? (
+                        <ul className="flex flex-col gap-2 text-sm text-ink">
+                          {entry.failure.issues.map(issue => (
+                            <li key={`${issue.reason}:${issue.property ?? ''}:${issue.message}`}>
+                              <div>{issue.message}</div>
+                              {issue.property || issue.columns?.length ? (
+                                <div className="text-ink-secondary">
+                                  {issue.property ? <span>{issue.property}</span> : null}
+                                  {issue.property && issue.columns?.length ? (
+                                    <span> · </span>
+                                  ) : null}
+                                  {issue.columns?.length ? (
+                                    <span>{issue.columns.join(', ')}</span>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
                       <div className="flex flex-wrap gap-6 text-sm text-ink-secondary">
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}

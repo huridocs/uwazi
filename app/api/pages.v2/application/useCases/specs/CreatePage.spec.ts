@@ -20,64 +20,61 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each(pagesBackendConfigs)(
-  'CreatePage (integration) - $name',
-  ({ postgresPages, postgresCore }) => {
-    beforeEach(async () => {
-      jest.restoreAllMocks();
-      await testingEnvironment.setUp(fixtures, {
-        postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresCore),
-      });
-      applyPagesBackendFlags(postgresPages, postgresCore);
+describe.each(pagesBackendConfigs)('CreatePage (integration) - $name', ({ postgresCore }) => {
+  beforeEach(async () => {
+    jest.restoreAllMocks();
+    await testingEnvironment.setUp(fixtures, {
+      postgres: true,
+      postgresMirror: pagesBackendPostgresMirror(postgresCore),
     });
+    applyPagesBackendFlags(postgresCore);
+  });
 
-    it('should create a page from a flat client payload and return it in client shape', async () => {
-      await withContext(async () => {
-        mockID('new-page-id');
+  it('should create a page from a flat client payload and return it in client shape', async () => {
+    await withContext(async () => {
+      mockID('new-page-id');
 
-        const created = await CreatePageUseCaseFactory.default().execute({
-          page: { title: 'Flow Page', draft: { content: '<p>Flow</p>', script: '', css: '' } },
-          language: 'es',
-        });
-
-        expect(created.sharedId).toBeDefined();
-        expect(created.title).toBe('Flow Page');
-
-        const pagesDS = PagesDataSourceFactory.default();
-        const page = (await pagesDS.getBySharedId(created.sharedId!)).getDataOrThrow();
-        expect(page.getLocale('es').title).toBe('Flow Page');
+      const created = await CreatePageUseCaseFactory.default().execute({
+        page: { title: 'Flow Page', draft: { content: '<p>Flow</p>', script: '', css: '' } },
+        language: 'es',
       });
-    });
 
-    it('should create a page from an editor locales payload and return editor shape', async () => {
-      await withContext(async () => {
-        const created = await CreatePageUseCaseFactory.default().execute({
-          page: {
-            locales: {
-              es: { title: 'Editor ES', draft: { content: '<p>ES</p>', script: '', css: '' } },
-              en: { title: 'Editor EN', draft: { content: '<p>EN</p>', script: '', css: '' } },
-            },
+      expect(created.sharedId).toBeDefined();
+      expect(created.title).toBe('Flow Page');
+
+      const pagesDS = PagesDataSourceFactory.default();
+      const page = (await pagesDS.getBySharedId(created.sharedId!)).getDataOrThrow();
+      expect(page.getLocale('es').title).toBe('Flow Page');
+    });
+  });
+
+  it('should create a page from an editor locales payload and return editor shape', async () => {
+    await withContext(async () => {
+      const created = await CreatePageUseCaseFactory.default().execute({
+        page: {
+          locales: {
+            es: { title: 'Editor ES', draft: { content: '<p>ES</p>', script: '', css: '' } },
+            en: { title: 'Editor EN', draft: { content: '<p>EN</p>', script: '', css: '' } },
           },
-        });
-
-        expect(created.locales?.es?.title).toBe('Editor ES');
-        expect(created.locales?.en?.title).toBe('Editor EN');
-      });
-    });
-
-    it('should throw when the actor is anonymous', async () => {
-      await testingEnvironment.runWithContext(
-        async () => {
-          await expect(
-            CreatePageUseCaseFactory.default().execute({
-              page: { title: 'No user page', draft: { content: '', script: '', css: '' } },
-              language: 'es',
-            })
-          ).rejects.toThrow('missing user');
         },
-        { actor: User.createFrom(null) }
-      );
+      });
+
+      expect(created.locales?.es?.title).toBe('Editor ES');
+      expect(created.locales?.en?.title).toBe('Editor EN');
     });
-  }
-);
+  });
+
+  it('should throw when the actor is anonymous', async () => {
+    await testingEnvironment.runWithContext(
+      async () => {
+        await expect(
+          CreatePageUseCaseFactory.default().execute({
+            page: { title: 'No user page', draft: { content: '', script: '', css: '' } },
+            language: 'es',
+          })
+        ).rejects.toThrow('missing user');
+      },
+      { actor: User.createFrom(null) }
+    );
+  });
+});

@@ -61,40 +61,37 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each(pagesBackendConfigs)(
-  'DeleteLanguagePagesListener - $name',
-  ({ postgresPages, postgresCore }) => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures, {
-        postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresCore),
-      });
-      applyPagesBackendFlags(postgresPages, postgresCore);
+describe.each(pagesBackendConfigs)('DeleteLanguagePagesListener - $name', ({ postgresCore }) => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures, {
+      postgres: true,
+      postgresMirror: pagesBackendPostgresMirror(postgresCore),
     });
-    it('should remove locale for the deleted language', async () => {
-      const listener = await createSUT();
-      await dispatch(listener, 'es');
+    applyPagesBackendFlags(postgresCore);
+  });
+  it('should remove locale for the deleted language', async () => {
+    const listener = await createSUT();
+    await dispatch(listener, 'es');
 
-      await expect(
-        testingEnvironment.runWithContext(async () =>
-          GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
-        )
-      ).rejects.toThrow(PageNotFoundError);
-      const enPage = await testingEnvironment.runWithContext(async () =>
-        GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'en' })
-      );
-      expect(enPage.title).toBe('Test page');
-    });
+    await expect(
+      testingEnvironment.runWithContext(async () =>
+        GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
+      )
+    ).rejects.toThrow(PageNotFoundError);
+    const enPage = await testingEnvironment.runWithContext(async () =>
+      GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'en' })
+    );
+    expect(enPage.title).toBe('Test page');
+  });
 
-    it('should keep the page document', async () => {
-      const listener = await createSUT();
-      await dispatch(listener, 'es');
+  it('should keep the page document', async () => {
+    const listener = await createSUT();
+    await dispatch(listener, 'es');
 
-      const enPages = await testingEnvironment.runWithContext(async () =>
-        ListPagesUseCaseFactory.default().execute({ language: 'en' })
-      );
-      expect(enPages).toHaveLength(1);
-      expect(enPages[0].sharedId).toBe('page1');
-    });
-  }
-);
+    const enPages = await testingEnvironment.runWithContext(async () =>
+      ListPagesUseCaseFactory.default().execute({ language: 'en' })
+    );
+    expect(enPages).toHaveLength(1);
+    expect(enPages[0].sharedId).toBe('page1');
+  });
+});
