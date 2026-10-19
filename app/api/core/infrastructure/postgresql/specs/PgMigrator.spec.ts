@@ -2,20 +2,25 @@
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import knex, { Knex } from 'knex';
 import { PgMigrator } from '../PgMigrator.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe('PgMigrator', () => {
   let migrationsDir: string;
+  let adminKnex: Knex;
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
+    adminKnex = knex({ client: 'pg', connection: testingEnvironment.pg.config });
   });
 
   afterAll(async () => {
+    await adminKnex.destroy();
     await testingEnvironment.tearDown();
   });
 
@@ -48,6 +53,9 @@ describe('PgMigrator', () => {
     return pool;
   };
 
+  const createMigrator = (logger = createMockLogger()) =>
+    new PgMigrator(migrationsDir, getPool(), { knex: adminKnex, logger });
+
   describe('migrate', () => {
     it('should create pg_migrations tracking table on first run', async () => {
       createMigration(
@@ -56,7 +64,7 @@ describe('PgMigrator', () => {
       );
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await migrator.migrate();
 
       const result = await pool.query(
@@ -79,8 +87,8 @@ describe('PgMigrator', () => {
       );
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
-      const applied = await migrator.migrate();
+      const migrator = createMigrator();
+      const { applied } = await migrator.migrate();
 
       expect(applied).toEqual([1, 2]);
 
@@ -106,7 +114,7 @@ describe('PgMigrator', () => {
       );
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await migrator.migrate();
 
       // Add a new migration after first run
@@ -115,7 +123,7 @@ describe('PgMigrator', () => {
         'ALTER TABLE test_migrations_table ADD COLUMN name TEXT'
       );
 
-      const applied = await migrator.migrate();
+      const { applied } = await migrator.migrate();
       expect(applied).toEqual([2]);
 
       const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
@@ -127,7 +135,7 @@ describe('PgMigrator', () => {
       createMigration('001-duplicate.sql', 'SELECT 1');
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
 
       await expect(migrator.migrate()).rejects.toThrow('Duplicate migration delta(s)');
       await expect(migrator.status()).rejects.toThrow('Duplicate migration delta(s)');
@@ -142,10 +150,9 @@ describe('PgMigrator', () => {
         'CREATE TABLE test_migrations_table (id INT PRIMARY KEY)'
       );
 
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await migrator.migrate();
-      const applied = await migrator.migrate();
+      const { applied } = await migrator.migrate();
 
       expect(applied).toEqual([]);
     });
@@ -165,7 +172,7 @@ describe('PgMigrator', () => {
       );
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
 
       await expect(migrator.migrate()).rejects.toThrow();
 
@@ -191,6 +198,42 @@ describe('PgMigrator', () => {
       );
       expect(columnExists.rows[0].exists).toBe(false);
     });
+
+    it('should apply each migration once when several migrators run at the same time', async () => {
+      createMigration(
+        '001-create_test_table.sql',
+        'CREATE TABLE test_migrations_table (id INT PRIMARY KEY)'
+      );
+      createMigration(
+        '002-add_name_column.sql',
+        'ALTER TABLE test_migrations_table ADD COLUMN name TEXT'
+      );
+
+      const pool = getPool();
+      const runs = await Promise.all([1, 2, 3].map(async () => createMigrator().migrate()));
+
+      expect(runs.flatMap(run => run.applied).sort()).toEqual([1, 2]);
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows.map((r: any) => r.delta)).toEqual([1, 2]);
+    });
+
+    it('should refuse to apply a migration numbered below the highest applied one', async () => {
+      createMigration('002-second.sql', 'SELECT 2');
+
+      const pool = getPool();
+      const migrator = createMigrator();
+      await migrator.migrate();
+
+      createMigration('001-merged_late.sql', 'SELECT 1');
+      createMigration('003-third.sql', 'SELECT 3');
+
+      await expect(migrator.migrate()).rejects.toThrow(
+        'Pending migration delta(s) 1 (merged_late) are below the highest applied delta 2: renumber'
+      );
+
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows.map((r: any) => r.delta)).toEqual([2]);
+    });
   });
 
   describe('status', () => {
@@ -198,8 +241,7 @@ describe('PgMigrator', () => {
       createMigration('001-first.sql', 'SELECT 1');
       createMigration('002-second.sql', 'SELECT 2');
 
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       const { applied, pending } = await migrator.status();
 
       expect(applied).toHaveLength(0);
@@ -213,7 +255,7 @@ describe('PgMigrator', () => {
       createMigration('003-third.sql', 'SELECT 3');
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await pool.query(`
         CREATE TABLE IF NOT EXISTS pg_migrations (delta INTEGER PRIMARY KEY, name TEXT NOT NULL, applied_at TIMESTAMP NOT NULL DEFAULT NOW())
       `);
@@ -228,8 +270,7 @@ describe('PgMigrator', () => {
 
   describe('getCurrentVersion', () => {
     it('should return 0 when no migrations applied', async () => {
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       const version = await migrator.getCurrentVersion();
       expect(version).toBe(0);
     });
@@ -238,8 +279,7 @@ describe('PgMigrator', () => {
       createMigration('001-first.sql', 'SELECT 1');
       createMigration('002-second.sql', 'SELECT 2');
 
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await migrator.migrate();
 
       const version = await migrator.getCurrentVersion();
@@ -254,8 +294,8 @@ describe('PgMigrator', () => {
       createMigration('003-third.sql', 'SELECT 3');
 
       const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
-      const applied = await migrator.migrate(2);
+      const migrator = createMigrator();
+      const { applied } = await migrator.migrate({ until: 2 });
 
       expect(applied).toEqual([1, 2]);
 
@@ -266,11 +306,10 @@ describe('PgMigrator', () => {
     it('should apply nothing when target is already reached', async () => {
       createMigration('001-first.sql', 'SELECT 1');
 
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const migrator = createMigrator();
       await migrator.migrate();
 
-      const applied = await migrator.migrate(1);
+      const { applied } = await migrator.migrate({ until: 1 });
       expect(applied).toEqual([]);
     });
 
@@ -278,9 +317,8 @@ describe('PgMigrator', () => {
       createMigration('001-first.sql', 'SELECT 1');
       createMigration('002-second.sql', 'SELECT 2');
 
-      const pool = getPool();
-      const migrator = new PgMigrator(migrationsDir, pool as any);
-      const applied = await migrator.migrate(999);
+      const migrator = createMigrator();
+      const { applied } = await migrator.migrate({ until: 999 });
 
       expect(applied).toEqual([1, 2]);
     });

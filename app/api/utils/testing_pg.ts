@@ -1,12 +1,15 @@
 /* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
+import knex, { Knex } from 'knex';
 import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { LoggerFactory } from '../core/infrastructure/factories/LoggerFactory.js';
+import type { PgDataMigrationContext } from '../core/infrastructure/postgresql/PgDataMigration.js';
 import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
@@ -29,6 +32,8 @@ const adminClient = () =>
   });
 
 let pool: pg.Pool | null = null;
+
+let migrationKnex: Knex | null = null;
 
 export type PGFixture = Record<string, Record<string, unknown>[]>;
 
@@ -126,8 +131,16 @@ const testingPG = {
 
     this.pool = pool;
 
-    const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
-    await migrator.migrate();
+    const migrationsKnex = knex({ client: 'pg', connection: this.config });
+    try {
+      const migrator = new PgMigrator(MIGRATIONS_DIR, pool, {
+        knex: migrationsKnex,
+        logger: LoggerFactory.migrationLogger(() => {}),
+      });
+      await migrator.migrate();
+    } finally {
+      await migrationsKnex.destroy();
+    }
 
     await this.grantAppUser();
 
@@ -204,6 +217,25 @@ const testingPG = {
     }
   },
 
+  /**
+   * What PgMigrator hands a data migration, on this test database. `reindexed` collects the
+   * tenants the migration reported.
+   */
+  migrationContext(): PgDataMigrationContext & { reindexed: string[] } {
+    if (!pool) throw new Error('testingPG not connected');
+    migrationKnex = migrationKnex ?? knex({ client: 'pg', connection: this.config });
+    const reindexed: string[] = [];
+    return {
+      knex: migrationKnex,
+      logger: LoggerFactory.migrationLogger(() => {}),
+      heartbeat: async () => Promise.resolve(),
+      reindex: tenantIds => {
+        reindexed.push(...tenantIds);
+      },
+      reindexed,
+    };
+  },
+
   async getAllFrom<T extends pg.QueryResultRow = Record<string, any>>(table: string): Promise<T[]> {
     if (!pool) throw new Error('testingPG not connected');
     const result = await pool.query<T>(`SELECT * FROM "${escapeIdentifier(table)}"`);
@@ -212,6 +244,11 @@ const testingPG = {
 
   async disconnect(): Promise<void> {
     await PostgresDB.disconnect();
+
+    if (migrationKnex) {
+      await migrationKnex.destroy();
+      migrationKnex = null;
+    }
 
     if (pool) {
       pool.on('error', () => {});

@@ -10,6 +10,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { MigrationService } from '#api/migrations/MigrationService.js';
+import { TenantPendingMigrations } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 
 const createFakeDispatcher = (calls: any[], existingJobCount: number = 0): JobsDispatcher => ({
   dispatch: async (_dispatchable: any, params: any) => {
@@ -177,5 +178,96 @@ describe('MigrationService', () => {
     });
     expect(dispatchedCalls).toHaveLength(1);
     expect(fakePgMigrator.getCurrentVersion).toHaveBeenCalled();
+  });
+
+  describe('status', () => {
+    const tenantsManager = {
+      setupTenants: jest.fn().mockResolvedValue(undefined),
+      run: jest.fn().mockImplementation(async (fn: any) => fn()),
+      current: jest.fn(),
+      tenants: {
+        default: { name: 'default', dbName: 'default' },
+        tenantB: { name: 'tenantB', dbName: 'tenant_b' },
+        upToDate: { name: 'upToDate', dbName: 'up_to_date' },
+      },
+    };
+
+    const pendingByDbName: Record<string, TenantPendingMigrations> = {
+      default: { runnable: [{ delta: 214 }, { delta: 215 }], blocked: null },
+      tenant_b: { runnable: [], blocked: { delta: 215, requiresSchema: 40 } },
+      up_to_date: { runnable: [], blocked: null },
+    };
+
+    const createStatusService = () => {
+      const dispatchedCalls: any[] = [];
+      const pgMigrator = {
+        status: jest.fn().mockResolvedValue({
+          applied: [
+            {
+              delta: 34,
+              name: 'create-activitylogs-table',
+              kind: 'sql',
+              applied: true,
+              outOfOrder: false,
+            },
+          ],
+          pending: [
+            { delta: 33, name: 'merged-late', kind: 'sql', applied: false, outOfOrder: true },
+            { delta: 35, name: 'backfill-titles', kind: 'data', applied: false, outOfOrder: false },
+            { delta: 36, name: 'add-index', kind: 'sql', applied: false, outOfOrder: false },
+          ],
+        }),
+        migrate: jest.fn(),
+      };
+      const tenantMigrationRunner = {
+        getPendingMigrations: jest.fn(
+          async (tenant: { dbName: string }) => pendingByDbName[tenant.dbName]
+        ),
+      };
+      const db = {
+        connect: jest.fn().mockResolvedValue(connection),
+        disconnect: jest.fn().mockResolvedValue(undefined),
+      };
+      const postgresDB = {
+        disconnect: jest.fn().mockResolvedValue(undefined),
+        adminPool: jest.fn().mockReturnValue({ query: jest.fn() }),
+      };
+      const { service } = createService({
+        db,
+        postgresDB,
+        tenants: tenantsManager,
+        pgMigratorFactory: () => pgMigrator,
+        tenantMigrationRunner,
+        createDispatcher: jest.fn().mockResolvedValue(createFakeDispatcher(dispatchedCalls)),
+      });
+      return { service, pgMigrator, dispatchedCalls, db, postgresDB };
+    };
+
+    it('should report pending postgres migrations and pending mongo migrations per tenant', async () => {
+      const { service } = createStatusService();
+
+      expect(await service.status()).toEqual({
+        postgres: {
+          applied: [34],
+          pending: [
+            { delta: 33, name: 'merged-late', kind: 'sql', outOfOrder: true },
+            { delta: 35, name: 'backfill-titles', kind: 'data', outOfOrder: false },
+            { delta: 36, name: 'add-index', kind: 'sql', outOfOrder: false },
+          ],
+        },
+        mongo: { pendingByTenant: { default: [214, 215], tenantB: [215] } },
+      });
+    });
+
+    it('should apply nothing and close both connections', async () => {
+      const { service, pgMigrator, dispatchedCalls, db, postgresDB } = createStatusService();
+
+      await service.status();
+
+      expect(pgMigrator.migrate).not.toHaveBeenCalled();
+      expect(dispatchedCalls).toHaveLength(0);
+      expect(db.disconnect).toHaveBeenCalled();
+      expect(postgresDB.disconnect).toHaveBeenCalled();
+    });
   });
 });
