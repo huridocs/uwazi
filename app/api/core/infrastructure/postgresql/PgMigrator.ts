@@ -200,6 +200,20 @@ export class PgMigrator {
   }
 
   private async applySql(migration: MigrationFile): Promise<void> {
+    const startedAt = Date.now();
+    await this.runSqlInTransaction(migration);
+    this.deps.logger.info(
+      `Postgres schema migration ${migration.delta} (${migration.name}) applied`,
+      {
+        event: 'pg_schema_migration.applied',
+        delta: migration.delta,
+        migrationName: migration.name,
+        durationMs: Date.now() - startedAt,
+      }
+    );
+  }
+
+  private async runSqlInTransaction(migration: MigrationFile): Promise<void> {
     const sql = readFileSync(migration.filePath, 'utf-8');
     const client = await this.pool.connect();
     try {
