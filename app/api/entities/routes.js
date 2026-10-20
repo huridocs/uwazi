@@ -9,6 +9,7 @@ import { GetEntityController } from '#api/core/infrastructure/express/entity/Get
 import { MultiUpdateEntityController } from '#api/core/infrastructure/express/entity/MultiUpdateEntityController.js';
 import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
 import { CreateEntityFromPDFController } from '#api/core/infrastructure/express/entity/CreateEntityFromPDFController.js';
+import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
@@ -89,7 +90,7 @@ export default app => {
         query: {
           type: 'object',
           properties: {
-            templateId: { type: 'string' },
+            templateId: ObjectIdAsString,
           },
           required: ['templateId'],
         },
