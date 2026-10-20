@@ -43,19 +43,28 @@ type Props = {
   standAloneProcess?: boolean;
 };
 
-const replaceTenantWithJobNamespace =
+const jobLogWriter =
   (writer: LogWriter): LogWriter =>
   (log: LogEntry) => {
+    const { params, ...job } = log.metadata?.job ?? {};
     writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, log.correlationId, {
-        ...log.metadata,
-        ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
-      })
+      new LogEntry(
+        log.message,
+        log.timestamp,
+        log.level,
+        log.tenant,
+        log.correlationId ?? params?.correlationId,
+        {
+          ...log.metadata,
+          ...(log.metadata?.job ? { job } : {}),
+          ...(job?.namespace ? { tenant: job.namespace } : {}),
+        }
+      )
     );
   };
 
 const logger = LoggerFactory.systemLogger(
-  replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
+  jobLogWriter(withFeature(StandardJSONWriter, 'Queue worker'))
 );
 
 function register<T extends Dispatchable>(
@@ -71,13 +80,14 @@ function register<T extends Dispatchable>(
     const isSystem = isPrivilegedJob(dispatchable);
 
     await tenants.run(async () => {
+      const { userId, correlationId } = job.params as any;
+
       deps = ExecutionContextFactory.build({
         tenant: tenants.current(),
+        correlationId,
         telemetry: { kind: 'queue_job' },
         overrides: { jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace) },
       });
-
-      const { userId } = job.params as any;
 
       if (isSystem) {
         deps.actor = User.system();
@@ -193,4 +203,4 @@ function setupQueueWorker(props?: Props) {
     });
 }
 
-export { setupQueueWorker, register };
+export { setupQueueWorker, register, jobLogWriter };

@@ -360,6 +360,28 @@ it('should not update lock window when job reaches max retries', async () => {
   expect(updateLockWindowSpy).toHaveBeenCalledTimes(1);
 });
 
+it('should pass the whole job, including params, to the logger', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+
+  const { worker, signals, logMock } = await setUpWorker();
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('ending-1');
+  await worker.stop();
+
+  expect(logMock.info).toHaveBeenCalledWith(
+    'Processing job',
+    expect.objectContaining({ job: expect.objectContaining({ params: { aNumber: 1 } }) })
+  );
+  expect(logMock.info).toHaveBeenCalledWith(
+    'Job processed',
+    expect.objectContaining({ job: expect.objectContaining({ params: { aNumber: 1 } }) })
+  );
+});
+
 describe('dispatchMany', () => {
   it('should process jobs dispatched in batch efficiently', async () => {
     const adapter = DefaultTestingQueueAdapter();
