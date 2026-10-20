@@ -68,9 +68,15 @@ Nothing is recorded for the migration, and the migrations after it in the sequen
 tenant with bad data stops the sequence for everyone, which keeps the order of schema and data
 changes the same in every tenant.
 
-The migration job is retried up to three times. **A retry runs the migration again for every
-tenant**, including the ones that succeeded, and finds in place every transaction the failed run
-committed. Progress per tenant is not tracked.
+The migration job is retried up to three times, five minutes after each failure. **A retry runs
+the migration again for every tenant**, including the ones that succeeded, and finds in place every
+transaction the failed run committed. Progress per tenant is not tracked. A retry loads the
+migration file as it is on disk then, so a fix to the migration itself is picked up without
+restarting the worker.
+
+After the third failure the job is marked failed and stays in the queue. **A failed migration job
+blocks every later `yarn migrate --new --async`**, which reports it as already queued: once the
+cause is fixed, delete the failed `MigrationJob` from the jobs store, then dispatch again.
 
 ### Safe to run twice
 
@@ -85,12 +91,17 @@ while it works, or the job running it is taken for dead and started again elsewh
 migration that changes indexed data calls `ctx.reindex()`, derived from the rows it changed, so
 only those tenants are reindexed; a global one passes the tenants to `ctx.reindex(tenantIds)`.
 
+The reindex runs in a migration job of its own, dispatched once the migrations are applied, with
+the tenants in its params: a reindex that fails is retried on its own, and a tenant stays in
+maintenance mode until its reindex succeeds.
+
 ### Monitoring
 
 Every run logs structured events (`event`, `delta`, `migrationName`, `scope`):
 `pg_data_migration.started`, `.tenant.started`, `.tenant.succeeded`, `.tenant.failed`,
 `.completed`, `.failed`, and `pg_schema_migration.applied`. The tenant an entry is about is in
-`migrationTenant`; durations are in `durationMs`, and a failure's SQLSTATE in `errorCode`.
+`migrationTenant`; durations are in `durationMs`, and a failure's SQLSTATE in `errorCode`. Every
+`yarn migrate` run has its own `correlation_id`, carried by every job of the run.
 
 ## Writing for a database every tenant shares
 
