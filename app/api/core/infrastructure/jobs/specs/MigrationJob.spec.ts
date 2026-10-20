@@ -239,8 +239,9 @@ describe('MigrationJob', () => {
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(4);
-    const lastCall = dispatchSpy.mock.calls[3][1] as {
+    // the last dispatch is the job that only reindexes, handed off by the one that applied delta 10
+    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    const lastCall = dispatchSpy.mock.calls[4][1] as {
       reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
@@ -326,8 +327,9 @@ describe('MigrationJob', () => {
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(4);
-    const lastCall = dispatchSpy.mock.calls[3][1] as {
+    // the last dispatch is the job that only reindexes, handed off by the one that applied delta 10
+    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    const lastCall = dispatchSpy.mock.calls[4][1] as {
       reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
@@ -357,7 +359,7 @@ describe('MigrationJob', () => {
     });
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
-    expect(dispatchSpy).toHaveBeenCalledTimes(3);
+    expect(dispatchSpy).toHaveBeenCalledTimes(4);
   });
 
   it('should log migration lifecycle events', async () => {

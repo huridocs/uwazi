@@ -159,11 +159,11 @@ describe('MigrationJob (real chain)', () => {
     await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
 
     // calls[0] is the initial dispatch; calls[1] is the run 1 -> run 2 handoff,
-    // carrying only the tenant that applied delta 1
+    // carrying only the tenant that applied delta 1; calls[2] is the job that only reindexes
     const redispatchedTenants = dispatchSpy.mock.calls.map(
       call => (call[1] as { reindexTenants: string[] }).reindexTenants
     );
-    expect(redispatchedTenants).toEqual([[], ['default']]);
+    expect(redispatchedTenants).toEqual([[], ['default'], ['default', TENANT_B]]);
 
     // run 2 merged tenantB (delta 2) into the accumulated list -> both reindexed
     expect(reindexTenant).toHaveBeenCalledTimes(2);
@@ -265,7 +265,8 @@ describe('MigrationJob (real chain)', () => {
 
     // delta 1 requires schema 1: blocked -> real pg migration 001 applied -> unblocked ->
     // data migration applied -> finish applies the remaining pg migration 002
-    expect(dispatchSpy).toHaveBeenCalledTimes(1); // no re-dispatch: everything finished in one run
+    // one run applies everything, then hands the reindex to a job of its own
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
     const pgMigrator = createPgMigrator();
     expect(await pgMigrator.getCurrentVersion()).toBe(2);
 
@@ -394,6 +395,29 @@ describe('MigrationJob (real chain)', () => {
     // maintenance is kept on: a failed reindex must not leave the tenant serving a
     // half-reindexed index
     expect(maintenanceCalls).toEqual([['default', true]]);
+  });
+
+  it('reindexes in a job of its own, so a retry of a failed reindex still knows the tenants', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export const migration = {
+        scope: 'global',
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}']); },
+      };`
+    );
+    const { dispatcher, dispatchSpy } = createRunChain(NO_REINDEX_MIGRATIONS_DIR, true);
+
+    await expect(
+      dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() })
+    ).rejects.toThrow('reindex failed');
+
+    // A queue retry reruns a job with the params it was dispatched with: the job that failed
+    // reindexing must carry the tenants, as the migrations it followed are already recorded.
+    const failedJobParams = dispatchSpy.mock.calls.at(-1)![1] as { reindexTenants: string[] };
+    expect(dispatchSpy.mock.calls.length).toBeGreaterThan(1);
+    expect(failedJobParams.reindexTenants).toEqual(['default']);
   });
 
   it('propagates errors thrown by a failing migration file', async () => {

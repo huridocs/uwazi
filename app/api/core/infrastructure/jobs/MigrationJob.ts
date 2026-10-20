@@ -48,7 +48,7 @@ class MigrationJob implements Dispatchable {
     const jobParams = this.normalizeParams(params as MigrationJobParams);
 
     try {
-      await this.runJob(jobParams, heartbeat);
+      await this.runJob(jobParams, heartbeat, MigrationJob.appliedCount(jobParams));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.deps.logger.error(`Migration failed: ${message}`);
@@ -58,7 +58,8 @@ class MigrationJob implements Dispatchable {
 
   private async runJob(
     jobParams: Required<MigrationJobParams>,
-    heartbeat: HeartbeatCallback
+    heartbeat: HeartbeatCallback,
+    appliedAtStart: number
   ): Promise<void> {
     this.deps.logger.info('Starting migration job');
 
@@ -68,7 +69,7 @@ class MigrationJob implements Dispatchable {
     const nextDelta = await this.getNextGlobalDelta(schemaVersion);
 
     if (nextDelta === null) {
-      await this.finishMigrationProcess(jobParams, heartbeat);
+      await this.finishMigrationProcess(jobParams, heartbeat, appliedAtStart);
       return;
     }
 
@@ -128,7 +129,7 @@ class MigrationJob implements Dispatchable {
 
     const nextGlobalDelta = await this.getNextGlobalDelta(schemaVersion);
     if (nextGlobalDelta === null) {
-      await this.finishMigrationProcess(jobParams, heartbeat);
+      await this.finishMigrationProcess(jobParams, heartbeat, appliedAtStart);
       return;
     }
 
@@ -289,7 +290,8 @@ class MigrationJob implements Dispatchable {
 
   private async finishMigrationProcess(
     jobParams: Required<MigrationJobParams>,
-    heartbeat: HeartbeatCallback
+    heartbeat: HeartbeatCallback,
+    appliedAtStart: number
   ): Promise<void> {
     this.deps.logger.info(
       'No pending Mongo data migrations, running remaining Postgres migrations'
@@ -303,6 +305,8 @@ class MigrationJob implements Dispatchable {
         applied: appliedSchemas,
       }
     );
+
+    if (await this.handOffReindex(jobParams, appliedAtStart)) return;
 
     if (jobParams.reindexTenants.length > 0) {
       this.deps.logger.info(
@@ -320,6 +324,33 @@ class MigrationJob implements Dispatchable {
     ].join('\n');
 
     this.deps.logger.info(summary);
+  }
+
+  /**
+   * A job that applied migrations does not reindex: it dispatches a job that only reindexes. The
+   * migrations are recorded by now, so a retry of a failed reindex finds nothing pending; it knows
+   * which tenants to reindex only from the params it was dispatched with.
+   */
+  private async handOffReindex(
+    jobParams: Required<MigrationJobParams>,
+    appliedAtStart: number
+  ): Promise<boolean> {
+    if (jobParams.reindexTenants.length === 0) return false;
+    if (MigrationJob.appliedCount(jobParams) === appliedAtStart) return false;
+
+    this.deps.logger.info(
+      `Dispatching a migration job to reindex tenants: [${jobParams.reindexTenants.join(', ')}]`,
+      { tenants: jobParams.reindexTenants }
+    );
+    await this.deps.dispatcher.dispatch(MigrationJob, {
+      reindexTenants: jobParams.reindexTenants,
+      results: jobParams.results,
+    });
+    return true;
+  }
+
+  private static appliedCount({ results }: Required<MigrationJobParams>): number {
+    return results.appliedDataDeltas.length + results.appliedSchemaDeltas.length;
   }
 
   private async reindexTenants(tenantNames: string[], heartbeat: HeartbeatCallback): Promise<void> {
