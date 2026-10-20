@@ -248,6 +248,29 @@ describe('MigrationJob', () => {
     expect(lastCall.reindexTenants).toEqual(['default']);
   });
 
+  it('should carry the correlation id of the run to every job it dispatches', async () => {
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({
+      logger: createMockLogger(),
+      reindexTenant: jest.fn(),
+      pgMigrator,
+      runner: createFakeRunner({ migrations: defaultCatalogue }),
+    });
+    const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindexTenants: [],
+      results: emptyResults(),
+      correlationId: 'run-1',
+    });
+
+    const correlationIds = dispatchSpy.mock.calls.map(
+      call => (call[1] as { correlationId?: string }).correlationId
+    );
+    expect(correlationIds.length).toBeGreaterThan(1);
+    expect(new Set(correlationIds)).toEqual(new Set(['run-1']));
+  });
+
   it('should advance schema when data migration is blocked', async () => {
     await saveMigration(1);
     await saveMigration(2);

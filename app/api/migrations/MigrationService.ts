@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { randomUUID } from 'crypto';
 import { Connection, ConnectOptions } from 'mongoose';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -66,7 +67,11 @@ type TenantsManager = {
 
 type DispatcherFactory = (options: { async: boolean }) => Promise<JobsDispatcher>;
 
-type LoggerFactoryFn = (options: { async: boolean; structuredLogs: boolean }) => Logger;
+type LoggerFactoryFn = (options: {
+  async: boolean;
+  structuredLogs: boolean;
+  correlationId?: string;
+}) => Logger;
 
 type MigrationServiceDeps = {
   db: DBConnector;
@@ -94,17 +99,20 @@ const createDefaultDispatcher: DispatcherFactory = async (options: { async: bool
   return dispatcher;
 };
 
-const createDefaultLogger: LoggerFactoryFn = (options: {
-  async: boolean;
-  structuredLogs: boolean;
-}) => {
+const createDefaultLogger: LoggerFactoryFn = options => {
   if (options.async) {
-    return LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration'));
+    return LoggerFactory.systemLogger(
+      withFeature(StandardJSONWriter, 'migration'),
+      options.correlationId
+    );
   }
   if (options.structuredLogs) {
-    return LoggerFactory.migrationLogger(withFeature(StandardJSONWriter, 'migration'));
+    return LoggerFactory.migrationLogger(
+      withFeature(StandardJSONWriter, 'migration'),
+      options.correlationId
+    );
   }
-  return LoggerFactory.migrationLogger(MigrationHumanReadableWriter);
+  return LoggerFactory.migrationLogger(MigrationHumanReadableWriter, options.correlationId);
 };
 
 const createDefaultPgMigrator = (pool: any, logger: Logger) =>
@@ -178,7 +186,9 @@ class MigrationService {
 
     const dispatcher = await this.deps.createDispatcher(options);
     const initialResults = { appliedDataDeltas: [], appliedSchemaDeltas: [] };
-    const logger = this.deps.createLogger(options);
+    // One id for the whole run: every job of the migration chain carries it to its logs.
+    const correlationId = randomUUID();
+    const logger = this.deps.createLogger({ ...options, correlationId });
 
     if (options.async) {
       const existingJobs = await dispatcher.countByName(MigrationJob);
@@ -194,6 +204,7 @@ class MigrationService {
 
     await ExecutionContextFactory.run(
       {
+        correlationId,
         telemetry: { kind: 'migration' },
         overrides: {
           transactionManager: this.deps.transactionManagerFactory,
@@ -209,6 +220,7 @@ class MigrationService {
         await dispatcher.dispatch(MigrationJob, {
           reindexTenants: [],
           results: initialResults,
+          correlationId,
         });
       }
     );
