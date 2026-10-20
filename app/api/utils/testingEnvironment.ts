@@ -466,6 +466,7 @@ const testingEnvironment = {
     const context: ExecutionContextDeps = {
       tenant: overrides?.tenant ?? tenant,
       actor: overrides?.actor ?? defaultActor,
+      correlationId: overrides?.correlationId,
       factories: { ...defaultFactories, ...overrides?.factories },
     };
 
