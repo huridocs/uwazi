@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-restricted-imports
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, statSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { PgDataMigration } from './PgDataMigration.js';
+import { LoadPgMigration, PgMigrationLoader } from './PgMigrationLoader.js';
 import { PgDataMigrationRunner } from './PgDataMigrationRunner.js';
 
 /** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
@@ -32,7 +32,12 @@ type MigrateOptions = {
 
 type MigrateResult = { applied: number[]; reindexTenants: string[] };
 
-type PgMigratorDeps = { dataRunner: PgDataMigrationRunner; logger: Logger };
+type PgMigratorDeps = {
+  dataRunner: PgDataMigrationRunner;
+  logger: Logger;
+  /** Defaults to a plain path import; production reloads migrations edited on disk. */
+  loadMigration?: LoadPgMigration;
+};
 
 const noHeartbeat = async () => Promise.resolve();
 
@@ -235,9 +240,10 @@ export class PgMigrator {
     heartbeat: () => Promise<void>,
     reindexTenants: Set<string>
   ): Promise<void> {
-    // An absolute path, not a file URL: Jest's resolver cannot resolve file URLs.
-    const { migration: dataMigration }: { migration: PgDataMigration } = await import(
-      migration.filePath
+    const load = this.deps.loadMigration ?? PgMigrationLoader.byPath;
+    const { migration: dataMigration } = await load(
+      migration.filePath,
+      statSync(migration.filePath).mtimeMs
     );
 
     const result = await this.deps.dataRunner.run(dataMigration, {

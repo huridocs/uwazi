@@ -4,6 +4,7 @@ import pg from 'pg';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { PgDataMigrationRunner } from '#api/core/infrastructure/postgresql/PgDataMigrationRunner.js';
+import { PgMigrationLoader } from '#api/core/infrastructure/postgresql/PgMigrationLoader.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { tenants } from '#api/tenants/index.js';
 
@@ -16,6 +17,7 @@ class PgMigratorFactory {
   static create(logger: Logger, pool: pg.Pool = PostgresDB.adminPool()): PgMigrator {
     return new PgMigrator(PG_MIGRATIONS_DIR, pool, {
       logger,
+      loadMigration: PgMigrationLoader.fromDisk,
       dataRunner: new PgDataMigrationRunner({
         adminKnex: PostgresDB.adminKnex(),
         appKnex: PostgresDB.appMigrationKnex(),

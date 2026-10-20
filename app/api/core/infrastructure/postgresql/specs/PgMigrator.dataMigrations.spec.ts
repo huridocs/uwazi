@@ -208,6 +208,33 @@ export const migration = {
     await expect(createMigrator().migrate()).rejects.toThrow('Duplicate migration delta(s)');
   });
 
+  it('should load data migrations through the loader it is given', async () => {
+    createMigration('001-loaded.ts', dataMigration({ reindex: false, up: '' }));
+    const up = jest.fn(async () => {});
+    const loadMigration = jest.fn(async () => ({
+      migration: { scope: 'global' as const, description: 'from loader', reindex: false, up },
+    }));
+    const logger = createMockLogger();
+    const migrator = new PgMigrator(migrationsDir, testingEnvironment.pg.pool!, {
+      logger,
+      loadMigration,
+      dataRunner: new PgDataMigrationRunner({
+        adminKnex,
+        appKnex: adminKnex,
+        listTenants: () => [],
+        logger,
+      }),
+    });
+
+    await migrator.migrate();
+
+    expect(loadMigration).toHaveBeenCalledWith(
+      path.join(migrationsDir, '001-loaded.ts'),
+      expect.any(Number)
+    );
+    expect(up).toHaveBeenCalledTimes(1);
+  });
+
   describe('tenant scoped', () => {
     it('should run the migration for every tenant and record it once', async () => {
       createTenantTable();
