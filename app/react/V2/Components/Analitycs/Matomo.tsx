@@ -1,8 +1,7 @@
-/* eslint-disable max-statements */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
+import { CONSENT_EVENT, canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
 import { isClient } from '#app/utils/index.js';
 
@@ -42,73 +41,93 @@ const buildScript = ({
   })();`;
 };
 
+const parseMatomoConfig = (matomoConfig?: string) => {
+  try {
+    return JSON.parse(matomoConfig || '{}') as { id?: string; url?: string };
+  } catch (_error) {
+    return {};
+  }
+};
+
+const matomoSnippet = ({
+  id,
+  url,
+  globalId,
+  globalUrl,
+}: {
+  id?: string;
+  url?: string;
+  globalId?: string;
+  globalUrl?: string;
+}) => {
+  const hasUserMatomo = Boolean(id && url);
+  const hasGlobalMatomo = Boolean(globalUrl && globalId);
+  if (hasGlobalMatomo && hasUserMatomo) {
+    return buildScript({ globalUrl, globalId, userUrl: url, userId: id });
+  }
+  if (hasGlobalMatomo) {
+    return buildScript({ globalUrl, globalId });
+  }
+  if (hasUserMatomo) {
+    return buildScript({ userUrl: url, userId: id });
+  }
+  return '';
+};
+
+const appendInlineScript = (scriptContent: string) => {
+  const script = document.createElement('script');
+  script.innerHTML = scriptContent;
+  document.body.appendChild(script);
+};
+
+const useAnalyticsAllowed = (cookiepolicy?: boolean) => {
+  const [, rememberConsent] = useState(0);
+
+  useEffect(() => {
+    const onConsent = () => rememberConsent(version => version + 1);
+    window.addEventListener(CONSENT_EVENT, onConsent);
+    return () => window.removeEventListener(CONSENT_EVENT, onConsent);
+  }, []);
+
+  return !cookiepolicy || canUseNonEssentialCookies();
+};
+
+const trackMatomoPage = () => {
+  if (!isClient || !window._paq) {
+    return;
+  }
+  window._paq.push(['setCustomUrl', window.location.href]);
+  window._paq.push(['deleteCustomVariables', 'page']);
+  window._paq.push(['trackPageView']);
+  window._paq.push(['enableLinkTracking']);
+};
+
 const Matomo = () => {
   const scriptIsPresent = useRef(false);
   const location = useLocation();
-  const { matomoConfig } = useAtomValue(settingsAtom);
-  const globalMatomo = useAtomValue(globalMatomoAtom);
-  const { id: globalId, url: globalUrl } = globalMatomo || {};
-  let id: string | undefined;
-  let url: string | undefined;
-
-  try {
-    ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
-    //silent fail
-    // eslint-disable-next-line no-empty
-  } catch (_) {}
+  const { matomoConfig, cookiepolicy } = useAtomValue(settingsAtom);
+  const { id: globalId, url: globalUrl } = useAtomValue(globalMatomoAtom) || {};
+  const { id, url } = parseMatomoConfig(matomoConfig);
+  const allowed = useAnalyticsAllowed(cookiepolicy);
 
   useEffect(() => {
-    if (!canUseNonEssentialCookies()) {
+    if (!allowed || scriptIsPresent.current) {
       return;
     }
-    if (!scriptIsPresent.current) {
-      const script = document.createElement('script');
-      const hasUserMatomo = Boolean(id && url);
-      const hasGlobalMatomo = Boolean(globalUrl && globalId);
-
-      let scriptContent = '';
-
-      switch (true) {
-        case hasGlobalMatomo && !hasUserMatomo:
-          scriptContent = buildScript({ globalUrl, globalId });
-          break;
-
-        case !hasGlobalMatomo && hasUserMatomo:
-          scriptContent = buildScript({ userUrl: url, userId: id });
-          break;
-
-        case hasGlobalMatomo && hasUserMatomo:
-          scriptContent = buildScript({
-            globalUrl,
-            globalId,
-            userUrl: url,
-            userId: id,
-          });
-          break;
-
-        default:
-          break;
-      }
-
-      if (scriptContent) {
-        script.innerHTML = scriptContent;
-        document.body.appendChild(script);
-        scriptIsPresent.current = true;
-      }
+    const scriptContent = matomoSnippet({ id, url, globalId, globalUrl });
+    if (!scriptContent) {
+      return;
     }
-  }, []);
+    appendInlineScript(scriptContent);
+    scriptIsPresent.current = true;
+  }, [allowed, globalId, globalUrl, id, url]);
 
   useEffect(() => {
-    if (!canUseNonEssentialCookies()) {
+    if (!allowed) {
       return;
     }
-    if (isClient && window._paq) {
-      window._paq.push(['setCustomUrl', window.location.href]);
-      window._paq.push(['deleteCustomVariables', 'page']);
-      window._paq.push(['trackPageView']);
-      window._paq.push(['enableLinkTracking']);
-    }
-  }, [location]);
+    trackMatomoPage();
+  }, [allowed, location]);
 
   return null;
 };
