@@ -8,6 +8,7 @@ import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { PgDataMigrationRunner } from '../core/infrastructure/postgresql/PgDataMigrationRunner.js';
 import { LoggerFactory } from '../core/infrastructure/factories/LoggerFactory.js';
 import type { PgGlobalMigrationContext } from '../core/infrastructure/postgresql/PgDataMigration.js';
 import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
@@ -133,9 +134,17 @@ const testingPG = {
 
     const migrationsKnex = knex({ client: 'pg', connection: this.config });
     try {
+      const logger = LoggerFactory.migrationLogger(() => {});
       const migrator = new PgMigrator(MIGRATIONS_DIR, pool, {
-        knex: migrationsKnex,
-        logger: LoggerFactory.migrationLogger(() => {}),
+        logger,
+        // A fresh database has no tenant rows, so tenant scoped migrations run for no tenant and
+        // the app knex is never used.
+        dataRunner: new PgDataMigrationRunner({
+          adminKnex: migrationsKnex,
+          appKnex: migrationsKnex,
+          listTenants: () => [],
+          logger,
+        }),
       });
       await migrator.migrate();
     } finally {

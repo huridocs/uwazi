@@ -1,6 +1,4 @@
 /* eslint-disable max-statements */
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { Connection, ConnectOptions } from 'mongoose';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -27,15 +25,8 @@ import {
   SyncJobsDispatcher,
 } from '#api/core/libs/queue/infrastructure/SyncJobsDispatcher.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
+import { PgMigratorFactory } from '#api/core/infrastructure/factories/PgMigratorFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const PG_MIGRATIONS_DIR = path.join(
-  __dirname,
-  '../core/infrastructure/postgresql/schema_migrations'
-);
 
 type MigrationRunResult =
   | {
@@ -117,7 +108,7 @@ const createDefaultLogger: LoggerFactoryFn = (options: {
 };
 
 const createDefaultPgMigrator = (pool: any, logger: Logger) =>
-  new PgMigrator(PG_MIGRATIONS_DIR, pool, { knex: PostgresDB.adminKnex(), logger });
+  PgMigratorFactory.create(logger, pool);
 
 const defaultDeps: MigrationServiceDeps = {
   db: DB,

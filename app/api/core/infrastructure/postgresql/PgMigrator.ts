@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-restricted-imports
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
-import { Knex } from 'knex';
 import pg from 'pg';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { PgDataMigration, PgGlobalMigrationContext } from './PgDataMigration.js';
+import { PgDataMigration } from './PgDataMigration.js';
+import { PgDataMigrationRunner } from './PgDataMigrationRunner.js';
 
 /** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
 const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
@@ -32,7 +32,7 @@ type MigrateOptions = {
 
 type MigrateResult = { applied: number[]; reindexTenants: string[] };
 
-type PgMigratorDeps = { knex: Knex; logger: Logger };
+type PgMigratorDeps = { dataRunner: PgDataMigrationRunner; logger: Logger };
 
 const noHeartbeat = async () => Promise.resolve();
 
@@ -215,7 +215,7 @@ export class PgMigrator {
     }
   }
 
-  /** Runs with no transaction open; recorded only once `up` resolves. */
+  /** Recorded only once the runner resolves: for a tenant migration, once every tenant succeeded. */
   private async applyData(
     migration: MigrationFile,
     heartbeat: () => Promise<void>,
@@ -226,27 +226,12 @@ export class PgMigrator {
       migration.filePath
     );
 
-    if (dataMigration.scope === 'tenant') {
-      throw new Error(
-        `Migration ${migration.delta} (${migration.name}): tenant scoped migrations are not supported yet`
-      );
-    }
-
-    const ctx: PgGlobalMigrationContext = {
-      knex: this.deps.knex,
-      logger: this.deps.logger,
+    const result = await this.deps.dataRunner.run(dataMigration, {
+      delta: migration.delta,
+      name: migration.name,
       heartbeat,
-      reindex: tenantIds => {
-        if (!dataMigration.reindex) {
-          throw new Error(
-            `Migration ${migration.delta} (${migration.name}) reported tenants to reindex but declares reindex: false`
-          );
-        }
-        tenantIds.forEach(tenantId => reindexTenants.add(tenantId));
-      },
-    };
-
-    await dataMigration.up(ctx);
+    });
+    result.reindexTenants.forEach(tenantId => reindexTenants.add(tenantId));
     await PgMigrator.record(migration, this.pool);
   }
 
