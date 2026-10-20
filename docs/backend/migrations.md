@@ -8,8 +8,8 @@
 indexes, constraints. They are plain SQL.
 
 **Postgres data migrations** change rows. They are TypeScript, live in the same numbered sequence as
-the schema migrations, and **run once for the whole database** — every tenant's rows at once, not
-once per tenant.
+the schema migrations, and declare a **scope**: `'tenant'` runs once per tenant, `'global'` runs once
+for the whole database.
 
 **Mongo data migrations** change MongoDB documents and run once per tenant. They are being phased out
 with MongoDB. Write one only when the fix must also reach tenants that have not moved to Postgres
@@ -27,44 +27,84 @@ directory, so hand-written numbers collide, and it puts every file where the run
 from: replace it with a real assertion about the data before you write the migration. A generated
 Mongo migration also rejects; a generated Postgres data migration does nothing instead, because every
 test database runs the whole Postgres sequence and a rejecting one would break every Postgres spec.
+Its run-twice and empty-table checks fail until you list the tables the migration touches; after
+that they are real.
 
 **`reindex`** is a decision, not boilerplate: set it when the migration changes data that
 Elasticsearch indexes. Getting it wrong leaves search serving stale results with no error anywhere.
 
-## A Postgres data migration owns its execution
+## How a Postgres data migration runs
 
-The runner hands the migration a database connection and little else. **It opens no transaction and
-applies no tenant scoping.** How the work is cut up is the author's decision:
+### Scope
 
-- A small fix can be one statement or one transaction.
-- A large backfill commits in batches — per tenant, or by key range — so no single transaction holds
-  locks for long.
+Since each tenant used to have its own database, keys are unique **per tenant**, not across the
+database: the same `_id` can belong to several tenants. A data migration is therefore written for
+one tenant at a time, and the database keeps it there.
 
-The runner records the migration as applied **only after it returns**. A migration that fails part
-way leaves the batches it committed in place and runs again from the start next time. So **every
-Postgres data migration must be safe to run twice**: select only the rows still in the old shape,
-and make each write a no-op on rows already converted.
+- **`scope: 'tenant'`** — what the generator writes, and the right one for nearly every
+  change. The runner calls `up` once per registered tenant, in name order, one after the other. It
+  runs as the application user, so **row level security applies**: every statement sees only
+  `ctx.tenantId`'s rows. Entity permissions are switched off; only tenant isolation applies. The
+  database is reached only through `ctx.transaction(async trx => ...)`, which scopes each
+  transaction to the tenant the way the application does. A tenant migration cannot change the
+  schema.
+- **`scope: 'global'`** — runs once, as the table owner, with `ctx.knex` and no RLS: nothing stops
+  one tenant's rows from mixing with another's. Use it only for tables without row level security
+  (`jobs`, `http_sessions`, `tenants`, `tenants_version`) or work that has to see every tenant at
+  once. Every join and subquery then matches on `tenant_id` as well as on the key.
 
-Long migrations report progress through the heartbeat the runner provides, or the job running them is
-taken for dead and started again elsewhere. A migration that changes indexed data reports which
-tenants it touched, derived from the rows it changed, so only those are reindexed.
+### Transactions
+
+The runner opens no transaction of its own, and a tenant migration has no connection outside
+`ctx.transaction`: every statement runs inside one. A small fix is one call. A large backfill calls
+it several times, committing in batches — by key range — so no single transaction holds locks for
+long. Each call commits or rolls back on its own.
+
+### Success and failure
+
+A migration is applied when it has succeeded **for every tenant**; only then is it recorded. The
+runner tries every tenant even when one fails, and reports the ones that failed in a single error.
+Nothing is recorded for the migration, and the migrations after it in the sequence do not run: one
+tenant with bad data stops the sequence for everyone, which keeps the order of schema and data
+changes the same in every tenant.
+
+The migration job is retried up to three times. **A retry runs the migration again for every
+tenant**, including the ones that succeeded, and finds in place every transaction the failed run
+committed. Progress per tenant is not tracked.
+
+### Safe to run twice
+
+So **every Postgres data migration must be safe to run twice**: select only the rows still in the
+old shape, and make each write a no-op on rows already converted. The generated spec checks it:
+run the migration, take the touched tables, run it again, and expect the same tables.
+
+### Heartbeat and reindex
+
+The runner sends a heartbeat after each tenant. A long migration also calls `ctx.heartbeat()`
+while it works, or the job running it is taken for dead and started again elsewhere. A tenant
+migration that changes indexed data calls `ctx.reindex()`, derived from the rows it changed, so
+only those tenants are reindexed; a global one passes the tenants to `ctx.reindex(tenantIds)`.
+
+### Monitoring
+
+Every run logs structured events (`event`, `delta`, `migrationName`, `scope`):
+`pg_data_migration.started`, `.tenant.started`, `.tenant.succeeded`, `.tenant.failed`,
+`.completed`, `.failed`, and `pg_schema_migration.applied`. The tenant an entry is about is in
+`migrationTenant`; durations are in `durationMs`, and a failure's SQLSTATE in `errorCode`.
 
 ## Writing for a database every tenant shares
 
-All tenants live in the same tables, separated by `tenant_id`. Migrations run as the table owner, so
-**row-level security does not apply** — nothing in the database stops one tenant's rows from mixing
-with another's.
+All tenants live in the same tables, separated by `tenant_id`.
 
-- **Every join and subquery matches on `tenant_id` as well as on the key.** Keys are unique per
-  tenant, not globally; a join on `_id` alone pairs rows from different tenants.
 - **Never change the schema and backfill in the same transaction.** DDL holds an exclusive lock on
   the table until commit, so a backfill inside it locks the table for its whole duration. Add the
   new shape in a schema migration, backfill in a data migration, remove the old shape in a later
   release.
 - **Keep transactions short on large tables.** A long transaction holds row locks against live
-  traffic, stops vacuum across the whole database, and loses all its work on one failure. Set a lock
-  timeout and a statement timeout, so a migration that collides with traffic fails fast instead of
-  stalling the application.
+  traffic, stops vacuum across the whole database, and loses all its work on one failure. Every
+  migration connection has a lock timeout and a statement timeout, so a migration that collides
+  with traffic fails fast instead of stalling the application; override them with `SET LOCAL` only
+  when a statement needs longer.
 - **Changing one key of a JSONB value rewrites the whole value.** Large JSONB backfills are expensive
   in time and in dead rows; batch them.
 - **It must be a fast no-op on an empty database.** Fresh installs and every test database run the
@@ -129,7 +169,8 @@ new shape. Cover the cases the migration must survive:
 
 - rows already in the new shape, rows missing the field entirely, and an empty table;
 - **at least two tenants** for a Postgres migration, asserting each ends up right and neither
-  receives the other's data;
+  receives the other's data — run it with `testingEnvironment.pg.runDataMigration(migration,
+tenants)`, which goes through the same runner as production;
 - **running it twice** gives the same result as running it once.
 
 Keep the generated checks honest: that the number is what you expect, and that `reindex` was set

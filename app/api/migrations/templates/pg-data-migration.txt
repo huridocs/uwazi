@@ -7,7 +7,6 @@ import type { PgDataMigration } from '#api/core/infrastructure/postgresql/PgData
  *  - safe to run twice: a retry reruns every tenant, including the ones that succeeded, and keeps
  *    the transactions a failed run committed. Select only rows still in the old shape;
  *  - large tables: commit in batches with several ctx.transaction calls and call ctx.heartbeat();
- *  - one statement at a time on ctx.transaction: do not query outside it while it is open;
  *  - no production imports: declare the rows you touch here;
  *  - tables without row level security (jobs, http_sessions, tenants, tenants_version) and work
  *    that spans tenants need scope: 'global', which runs once as the table owner with ctx.knex.
