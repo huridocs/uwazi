@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { register } from 'app/setupQueueWorker';
+import { jobLogWriter, register } from 'app/setupQueueWorker';
 import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import {
@@ -11,6 +11,9 @@ import {
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { QueueWorker } from '#api/core/libs/queue/infrastructure/QueueWorker.js';
+import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { tenants } from '#api/tenants/index.js';
@@ -74,6 +77,7 @@ class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }>
   capturedTenant: Tenant | undefined;
   capturedTenant2: Tenant | undefined;
   capturedActor: UserSchema | undefined;
+  capturedCorrelationId: string | undefined;
 
   protected async handle(
     _: HeartbeatCallback,
@@ -83,6 +87,7 @@ class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }>
     this.capturedTenant = tenants.current();
     this.capturedTenant2 = ExecutionContext.tenant;
     this.capturedActor = ExecutionContext.actor as UserSchema | undefined;
+    this.capturedCorrelationId = ExecutionContext.correlationId;
   }
 }
 
@@ -219,5 +224,65 @@ describe('Setup Queue Worker', () => {
     expect(testJob.capturedTenant).toMatchObject({ name: TENANT });
     expect(testJob.capturedTenant2).toMatchObject({ name: TENANT });
     expect(testJob.capturedActor).toMatchObject({ _id: actor._id?.toString() });
+  });
+
+  it('should set the correlationId from job params in the execution context', async () => {
+    const worker = TestUtils.mockClass<QueueWorker>({
+      register: jest.fn(),
+      getRegisteredJobs: jest.fn().mockReturnValue([]),
+      start: jest.fn(),
+      stop: jest.fn(),
+    });
+
+    const testJob = new TestUserJob();
+    register.call(worker, TestUserJob, async () => testJob);
+
+    const [[, wrappedFactory]] = (worker.register as jest.Mock).mock.calls;
+    const job = {
+      namespace: TENANT,
+      params: {
+        userId: actor._id?.toString(),
+        someParam: 'test-value',
+        correlationId: 'corr-123',
+      },
+    };
+
+    const instance = await wrappedFactory(TENANT, job);
+    const heartbeat: HeartbeatCallback = jest.fn();
+    const jobInfo: JobInfo = { retryCount: 0, maxRetries: 3, namespace: TENANT };
+    await instance.handleDispatch(heartbeat, job.params, jobInfo);
+
+    expect(testJob.capturedCorrelationId).toBe('corr-123');
+  });
+
+  it('should extract the job correlationId and strip params from job logs', () => {
+    const writer = jest.fn();
+    const tenant = testingTenants.createTenant({ name: TENANT }) as Tenant;
+    const logger = new StandardLogger(jobLogWriter(writer as LogWriter), tenant);
+
+    logger.info('Processing job', {
+      job: {
+        namespace: TENANT,
+        id: 'job-1',
+        params: { correlationId: 'corr-123', secret: 'x' },
+      },
+    });
+
+    const entry = writer.mock.calls[0][0] as LogEntry;
+    expect(entry.correlationId).toBe('corr-123');
+    expect(entry.metadata?.job).toEqual({ namespace: TENANT, id: 'job-1' });
+    expect(entry.metadata?.tenant).toBe(TENANT);
+  });
+
+  it('should leave logs without a job untouched', () => {
+    const writer = jest.fn();
+    const tenant = testingTenants.createTenant({ name: TENANT }) as Tenant;
+    const logger = new StandardLogger(jobLogWriter(writer as LogWriter), tenant);
+
+    logger.info('Starting worker');
+
+    const entry = writer.mock.calls[0][0] as LogEntry;
+    expect(entry.correlationId).toBeUndefined();
+    expect(entry.metadata?.job).toBeUndefined();
   });
 });
