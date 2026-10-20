@@ -329,6 +329,36 @@ it('should double the lockWindow time on every retry', async () => {
   expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
 });
 
+it('should make a failed job with a retry delay available again after that delay', async () => {
+  const retryDelay = 60000;
+  const { adapter, worker, signals } = await setUpWorker();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const updateLockWindowSpy = jest.spyOn(adapter, 'updateLockWindow');
+
+  await dispatcher.dispatch(
+    TestJob,
+    { aNumber: 1 },
+    { lockWindow: 1000, maxRetries: 2, retryDelay }
+  );
+  TestJob.shouldFail = true;
+
+  const before = Date.now();
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1');
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(updateLockWindowSpy).toHaveBeenCalledWith(
+    expect.objectContaining({ retryCount: 1 }),
+    2000,
+    expect.any(Number)
+  );
+  const [, , retryAt] = updateLockWindowSpy.mock.calls[0];
+  expect(retryAt).toBeGreaterThanOrEqual(before + retryDelay);
+  expect(retryAt).toBeLessThanOrEqual(Date.now() + retryDelay);
+});
+
 it('should not update lock window when job reaches max retries', async () => {
   const initialLockWindow = 1;
   const maxRetries = 2;

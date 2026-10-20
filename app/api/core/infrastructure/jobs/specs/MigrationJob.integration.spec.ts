@@ -360,8 +360,11 @@ describe('MigrationJob (real chain)', () => {
     expect(reindexCalls).toEqual([DEFAULT_TENANT]);
   });
 
-  it('is retried up to 3 times by the queue', () => {
-    expect(queueOptionsOf(MigrationJob).maxRetries).toBe(3);
+  it('is retried up to 3 times by the queue, 5 minutes after each failure', () => {
+    expect(queueOptionsOf(MigrationJob)).toMatchObject({
+      maxRetries: 3,
+      retryDelay: 1000 * 60 * 5,
+    });
   });
 
   it('hands the job heartbeat to postgres data migrations', async () => {
