@@ -128,8 +128,7 @@ export class QueueWorker {
     const dispatchable = await this.createDispatchable(job);
 
     try {
-      const { params, ...loggableJob } = job;
-      this.logger.info('Processing job', { job: loggableJob });
+      this.logger.info('Processing job', { job });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
         namespace: job.namespace,
@@ -137,7 +136,7 @@ export class QueueWorker {
         maxRetries: job.options.maxRetries,
       });
       this.logger.info('Job processed', {
-        job: loggableJob,
+        job,
         processingTime: performance.now() - startTime,
       });
       await this.completeJob(job);
