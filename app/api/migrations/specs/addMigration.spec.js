@@ -122,6 +122,26 @@ describe('add-migration generator', () => {
     ]);
   });
 
+  it('should scaffold a tenant scoped postgres data migration', () => {
+    const template = jest
+      .requireActual('fs')
+      .readFileSync(require.resolve('../templates/pg-data-migration.txt'), 'utf-8');
+
+    expect(template).toContain("scope: 'tenant'");
+    expect(template).toContain('ctx.transaction(');
+  });
+
+  it('should scaffold a spec that runs the migration twice and compares the tables', () => {
+    const template = jest
+      .requireActual('fs')
+      .readFileSync(require.resolve('../templates/pg-data-migration.spec.txt'), 'utf-8');
+
+    expect(template).toContain('testingEnvironment.pg.runDataMigration(migration');
+    expect(template).toMatch(
+      /should give the same result when run twice[\s\S]*const once = await snapshot\(\);[\s\S]*expect\(await snapshot\(\)\)\.toEqual\(once\)/
+    );
+  });
+
   it('should count postgres data migrations when calculating nextSchemaDelta', () => {
     readdirSyncSpy.mockImplementation(dirPath =>
       dirPath.includes('postgresql/schema_migrations') ? ['001-a.sql', '002-b.ts', 'specs'] : []
