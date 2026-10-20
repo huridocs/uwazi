@@ -14,6 +14,7 @@ import { PgDataMigrationRunner } from '#api/core/infrastructure/postgresql/PgDat
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { SyncJobsDispatcher } from '#api/core/libs/queue/infrastructure/SyncJobsDispatcher.js';
+import { queueOptionsOf } from '#api/core/libs/queue/application/QueueOptions.js';
 import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -138,6 +139,7 @@ describe('MigrationJob (real chain)', () => {
     if (pool) {
       try {
         await pool.query('DROP TABLE IF EXISTS pg_migrations');
+        await pool.query('DROP TABLE IF EXISTS migration_job_tenant_rows');
       } catch {
         // ignore cleanup errors
       }
@@ -316,6 +318,49 @@ describe('MigrationJob (real chain)', () => {
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
     expect(reindexCalls).toEqual(['default']);
+  });
+
+  it('runs a tenant scoped postgres data migration for every registered tenant', async () => {
+    tenants.add({ name: TENANT_B, dbName: `tenant_b_${testingDB.id().toHexString()}` });
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-create_rows.sql'),
+      `CREATE TABLE migration_job_tenant_rows (tenant_id TEXT NOT NULL, name TEXT);
+       ALTER TABLE migration_job_tenant_rows ENABLE ROW LEVEL SECURITY;
+       CREATE POLICY tenant_isolation ON migration_job_tenant_rows
+         USING (tenant_id = current_tenant()) WITH CHECK (tenant_id = current_tenant());
+       GRANT SELECT, INSERT, UPDATE, DELETE ON migration_job_tenant_rows TO ${config.postgres.app.user};
+       INSERT INTO migration_job_tenant_rows (tenant_id) VALUES ('${DEFAULT_TENANT}'), ('${TENANT_B}');`
+    );
+    writeFileSync(
+      path.join(pgMigrationsDir, '002-name_rows.ts'),
+      `export const migration = {
+        scope: 'tenant',
+        description: 'name rows',
+        reindex: true,
+        async up(ctx) {
+          await ctx.transaction(trx => trx('migration_job_tenant_rows').update({ name: ctx.tenantId }));
+          if (ctx.tenantId === '${DEFAULT_TENANT}') ctx.reindex();
+        },
+      };`
+    );
+    const { dispatcher } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const results = initialResults();
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+    expect(results.appliedSchemaDeltas).toEqual([1, 2]);
+    const { rows } = await testingEnvironment.pg.pool!.query(
+      'SELECT tenant_id, name FROM migration_job_tenant_rows ORDER BY tenant_id'
+    );
+    expect(rows).toEqual([
+      { tenant_id: DEFAULT_TENANT, name: DEFAULT_TENANT },
+      { tenant_id: TENANT_B, name: TENANT_B },
+    ]);
+    expect(reindexCalls).toEqual([DEFAULT_TENANT]);
+  });
+
+  it('is retried up to 3 times by the queue', () => {
+    expect(queueOptionsOf(MigrationJob).maxRetries).toBe(3);
   });
 
   it('hands the job heartbeat to postgres data migrations', async () => {

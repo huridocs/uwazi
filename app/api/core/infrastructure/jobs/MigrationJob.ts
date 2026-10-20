@@ -35,7 +35,7 @@ type MigrationJobDeps = {
   tenantsManager: Tenants;
 };
 
-@QueueOptions({ lockWindow: 1000 * 60 * 60 })
+@QueueOptions({ lockWindow: 1000 * 60 * 60, maxRetries: 3 })
 @PrivilegedJob()
 class MigrationJob implements Dispatchable {
   constructor(private deps: MigrationJobDeps) {}
