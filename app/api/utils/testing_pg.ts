@@ -9,7 +9,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
 import { LoggerFactory } from '../core/infrastructure/factories/LoggerFactory.js';
-import type { PgDataMigrationContext } from '../core/infrastructure/postgresql/PgDataMigration.js';
+import type { PgGlobalMigrationContext } from '../core/infrastructure/postgresql/PgDataMigration.js';
 import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
@@ -221,7 +221,7 @@ const testingPG = {
    * What PgMigrator hands a data migration, on this test database. `reindexed` collects the
    * tenants the migration reported.
    */
-  migrationContext(): PgDataMigrationContext & { reindexed: string[] } {
+  migrationContext(): PgGlobalMigrationContext & { reindexed: string[] } {
     if (!pool) throw new Error('testingPG not connected');
     migrationKnex = migrationKnex ?? knex({ client: 'pg', connection: this.config });
     const reindexed: string[] = [];

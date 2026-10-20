@@ -4,7 +4,7 @@ import path from 'path';
 import { Knex } from 'knex';
 import pg from 'pg';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { PgDataMigration, PgDataMigrationContext } from './PgDataMigration.js';
+import { PgDataMigration, PgGlobalMigrationContext } from './PgDataMigration.js';
 
 /** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
 const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
@@ -226,7 +226,13 @@ export class PgMigrator {
       migration.filePath
     );
 
-    const ctx: PgDataMigrationContext = {
+    if (dataMigration.scope === 'tenant') {
+      throw new Error(
+        `Migration ${migration.delta} (${migration.name}): tenant scoped migrations are not supported yet`
+      );
+    }
+
+    const ctx: PgGlobalMigrationContext = {
       knex: this.deps.knex,
       logger: this.deps.logger,
       heartbeat,
