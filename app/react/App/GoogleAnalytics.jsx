@@ -1,57 +1,107 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
+import { CONSENT_EVENT, canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { isClient } from '#app/utils/index.js';
 
+let trackingEnabled = false;
+let lastTrackedWith = null;
+let lastPageLocation = '';
+
+const setTrackingEnabled = enabled => {
+  trackingEnabled = enabled;
+};
+
+const gtagSrc = trackingId => `https://www.googletagmanager.com/gtag/js?id=${trackingId}`;
+
 function trackPage() {
-  if (isClient && window.gtag) {
-    window.gtag('send', 'pageview');
+  if (!isClient || !trackingEnabled || typeof window.gtag !== 'function') {
+    return;
   }
+  if (lastTrackedWith !== window.gtag) {
+    lastTrackedWith = window.gtag;
+    lastPageLocation = '';
+  }
+  const pageLocation = window.location.href;
+  if (pageLocation === lastPageLocation) {
+    return;
+  }
+  lastPageLocation = pageLocation;
+  window.gtag('event', 'page_view', {
+    page_title: document.title,
+    page_location: pageLocation,
+    page_path: `${window.location.pathname}${window.location.search}`,
+  });
 }
 
-class GoogleAnalytics extends Component {
-  constructor(props) {
-    super(props);
-    if (!props.analyticsTrackingId || !isClient || !canUseNonEssentialCookies()) {
-      return;
+function installGtag(trackingId) {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() {
+    // The dataLayer consumer expects the Arguments object, not a rest array.
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer.push(arguments);
+  };
+  window.gtag('js', new Date());
+  window.gtag('config', trackingId, { send_page_view: false });
+  trackPage();
+}
+
+function appendGtagScript(trackingId) {
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = gtagSrc(trackingId);
+  document.head.appendChild(script);
+}
+
+const tagAllowed = (trackingId, cookiepolicy) =>
+  Boolean(trackingId) && (!cookiepolicy || canUseNonEssentialCookies());
+
+function ensureTag(trackingId, cookiepolicy, installedId) {
+  const allowed = isClient && tagAllowed(trackingId, cookiepolicy);
+  setTrackingEnabled(allowed);
+  if (!allowed) {
+    return;
+  }
+  if (installedId.current !== trackingId) {
+    installGtag(trackingId);
+    appendGtagScript(trackingId);
+    installedId.current = trackingId;
+    return;
+  }
+  trackPage();
+}
+
+const GoogleAnalytics = ({ analyticsTrackingId = '', cookiepolicy = false }) => {
+  const installedId = useRef('');
+
+  useEffect(() => {
+    if (!isClient) {
+      return undefined;
     }
-    /*eslint-disable */
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      window.dataLayer.push(arguments);
+    const onConsentChange = () => {
+      ensureTag(analyticsTrackingId, cookiepolicy, installedId);
     };
-    window.gtag('js', new Date());
-    window.gtag('config', props.analyticsTrackingId);
-    trackPage();
-    /*eslint-enable */
-  }
+    window.addEventListener(CONSENT_EVENT, onConsentChange);
+    onConsentChange();
+    return () => {
+      window.removeEventListener(CONSENT_EVENT, onConsentChange);
+      setTrackingEnabled(false);
+    };
+  }, [analyticsTrackingId, cookiepolicy]);
 
-  render() {
-    if (!this.props.analyticsTrackingId || !canUseNonEssentialCookies()) {
-      return false;
-    }
-    return (
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`}
-      />
-    );
-  }
-}
-
-GoogleAnalytics.defaultProps = {
-  analyticsTrackingId: '',
+  return null;
 };
 
 GoogleAnalytics.propTypes = {
   analyticsTrackingId: PropTypes.string,
+  cookiepolicy: PropTypes.bool,
 };
 
 function mapStateToProps({ settings }) {
   return {
     analyticsTrackingId: settings.collection.get('analyticsTrackingId'),
+    cookiepolicy: Boolean(settings.collection.get('cookiepolicy')),
   };
 }
 
