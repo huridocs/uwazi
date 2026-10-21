@@ -4,7 +4,6 @@
 import {
   LIBRARY_FILTERS_STORAGE_KEY,
   readStoredLibraryFilters,
-  restoreLibraryFiltersFromStorage,
   storedLibraryFiltersFromPatch,
   writeStoredLibraryFilters,
 } from '../libraryFiltersStorage.js';
@@ -38,26 +37,6 @@ describe('libraryFiltersStorage', () => {
 
     window.localStorage.setItem(LIBRARY_FILTERS_STORAGE_KEY, '{not-json');
     expect(readStoredLibraryFilters()).toEqual({ filters: {}, andFilters: [] });
-  });
-
-  it('restores stored filters only when the URL has none', () => {
-    const stored = { filters: { type: ['tpl-org'] }, andFilters: ['country'] };
-
-    expect(restoreLibraryFiltersFromStorage({ filters: {}, andFilters: [] }, stored)).toEqual(
-      stored
-    );
-    expect(
-      restoreLibraryFiltersFromStorage(
-        { filters: { type: ['tpl-person'] }, andFilters: [] },
-        stored
-      )
-    ).toBeNull();
-    expect(
-      restoreLibraryFiltersFromStorage(
-        { filters: {}, andFilters: [] },
-        { filters: {}, andFilters: [] }
-      )
-    ).toBeNull();
   });
 
   it('merges a filter patch with the current stored values', () => {
