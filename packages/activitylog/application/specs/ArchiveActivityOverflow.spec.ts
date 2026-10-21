@@ -127,12 +127,14 @@ describe('ArchiveActivityOverflow', () => {
 
   it('should keep the entries when their file cannot be stored', async () => {
     await setUp(true, 7);
+    const notAFolder = path.join(folder(), 'not-a-folder');
+    await fs.writeFile(notAFolder, '');
     testingTenants.changeCurrentTenant({
-      activityLogs: path.join(folder(), 'missing-folder'),
+      activityLogs: notAFolder,
       featureFlags: { postgresCore: true },
     });
 
-    await expect(archive()).rejects.toThrow(/ENOENT/);
+    await expect(archive()).rejects.toThrow(/ENOTDIR/);
     expect(await keptUrls()).toHaveLength(7);
   });
 });

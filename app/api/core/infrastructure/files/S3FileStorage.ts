@@ -16,7 +16,7 @@ import { S3Error } from '#api/files/S3Storage.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage.js';
+import { FileStorage, FileLocation } from '../../application/contracts/FileStorage.js';
 import { FileAttachment } from '../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../domain/files/CustomUpload.js';
 import { FileContents } from '../../domain/files/FileContents.js';
@@ -50,16 +50,12 @@ export class S3FileStorage implements FileStorage {
     this.pathManager = new PathManager({ tenant });
   }
 
-  async storeContent(content: FileContents, subpath: string): Promise<void> {
+  async storeContent(content: FileContents, location: FileLocation): Promise<void> {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.bucket,
-          Key: this.pathManager.createPath({
-            filename: path.basename(subpath),
-            destination: path.dirname(subpath),
-            type: 'customPath',
-          }),
+          Key: this.pathManager.createPath(location),
           Body: (await this.fileIO.toBuffer(content)).getDataOrThrow(),
         })
       )
@@ -100,7 +96,7 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  getFile(input: GetFileInput): FileContents {
+  getFile(input: FileLocation): FileContents {
     const command = new GetObjectCommand({
       Bucket: this.bucket,
       Key: this.pathManager.createPath(input),
@@ -117,7 +113,7 @@ export class S3FileStorage implements FileStorage {
     return fileContents;
   }
 
-  async getFiles(inputs: GetFileInput[]) {
+  async getFiles(inputs: FileLocation[]) {
     const promises = inputs.map(async input => this.getFile(input));
 
     return Promise.all(promises);
