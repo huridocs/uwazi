@@ -47,7 +47,10 @@ type EntityCardProps = {
   showMetadata?: boolean;
 };
 
-const renderFieldValue = (field: EntityCardField, onFocusProperty?: (fieldKey: string) => void) => {
+const renderFieldValue = (
+  field: EntityCardField,
+  onFocusProperty: EntityCardProps['onFocusProperty']
+) => {
   if (field.links?.length) {
     return <LibraryLinks links={field.links} className="block w-full text-xs leading-snug" />;
   }
