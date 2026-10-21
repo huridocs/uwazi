@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
+import type { EntityIconData } from '#V2/Components/CustomIcons/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
 import type { LibraryClickModifiers } from '../librarySelection.js';
@@ -31,6 +33,7 @@ type EntityCardField = {
 
 type EntityCardProps = {
   title: string;
+  icon?: EntityIconData | null;
   templateId: string;
   fields?: EntityCardField[];
   thumbnailSrc?: string;
@@ -78,6 +81,7 @@ const renderFieldValue = (
 
 const EntityCard = ({
   title,
+  icon,
   templateId,
   fields = [],
   thumbnailSrc,
@@ -165,7 +169,11 @@ const EntityCard = ({
           className={`${slotShape} w-full shrink-0 overflow-hidden rounded border border-border/60`}
         />
       )}
-      <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{title}</span>
+      <EntityTitle icon={icon} className="text-sm font-semibold leading-snug text-ink">
+        <span className="line-clamp-2 min-w-0 wrap-break-word" title={title}>
+          {title}
+        </span>
+      </EntityTitle>
       {showMetadata && (
         <div className="flex-1 space-y-1.5">
           {fields.map(field => (

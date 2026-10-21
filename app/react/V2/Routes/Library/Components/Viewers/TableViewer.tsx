@@ -12,6 +12,8 @@ import {
 } from '#V2/Components/Metadata/display/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import { libraryFacetIcon } from '#V2/services/search/libraryFacetIcon.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { LibraryLinks } from '../LibraryLinks.js';
 import { LibraryTableCell } from '../LibraryTableCell.js';
 import { formatLibraryTableDate, libraryTableCellValue } from '../libraryTableCellValue.js';
@@ -47,9 +49,11 @@ const renderLibraryTableCell = ({
     return (
       <span className="flex min-w-0 items-center gap-2 overflow-visible">
         <EntityTypeChip templateId={row.template} />
-        <span className="truncate font-medium text-ink" title={row.title}>
-          {row.title}
-        </span>
+        <EntityTitle icon={libraryFacetIcon(row.icon)} className="min-w-0 flex-1">
+          <span className="truncate font-medium text-ink" title={row.title}>
+            {row.title}
+          </span>
+        </EntityTitle>
       </span>
     );
   }
