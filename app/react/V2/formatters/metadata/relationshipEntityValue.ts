@@ -70,5 +70,9 @@ const relationshipEntityValuesFromMetadata = (
     return value ? [value] : [];
   });
 
-export { relationshipEntityValueFromMetadata, relationshipEntityValuesFromMetadata };
+export {
+  readRelationshipIcon,
+  relationshipEntityValueFromMetadata,
+  relationshipEntityValuesFromMetadata,
+};
 export type { RelationshipEntityMappingOptions, RelationshipEntityValue };

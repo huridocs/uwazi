@@ -220,6 +220,7 @@ const metadataFieldsForCard = (
       label: property.label,
       value: text,
       interactive: CARD_MEDIA_TYPES.has(property.type),
+      ...(formatted.links?.length ? { links: formatted.links } : {}),
     });
   });
 
