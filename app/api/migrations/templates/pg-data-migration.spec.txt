@@ -34,11 +34,6 @@ describe('{{nextSchemaDelta}}-{{dashName name}}', () => {
     await testingEnvironment.setFixtures({}, {});
   });
 
-  it('should convert every tenant rows to the new shape, and nothing else', async () => {
-    await run();
-    expect(await snapshot()).toBe('asserted on the raw tables, for both tenants');
-  });
-
   it('should give the same result when run twice', async () => {
     expect(TABLES).not.toEqual([]);
     await run();

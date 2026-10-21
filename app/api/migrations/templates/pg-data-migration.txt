@@ -21,7 +21,7 @@ export const migration: PgDataMigration = {
 
   reindex: false,
 
-  async up(_ctx) {
+  async up(ctx) {
     // The spec fails on purpose until this is written.
   },
 };
