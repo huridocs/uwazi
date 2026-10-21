@@ -1224,6 +1224,7 @@ Save label,Сохранить подпись
 Save password,Сохранить пароль
 Save the visualization before refreshing.,Сохраните визуализацию перед обновлением.
 Save the visualization to get embed code.,"Сохраните визуализацию, чтобы получить код для вставки."
+Save theme,Сохранить тему
 Save your work to make change permanent,"Сохраните результаты своей работы, чтобы изменения вступили в силу"
 Saved image,Сохранённое изображение
 Saved successfully.,Сохранено успешно.
@@ -1366,7 +1367,6 @@ Snapshot (manual),Снимок (вручную)
 Snapshot (scheduled),Снимок (по расписанию)
 Some tasks may take a while. Bert will reply when it's done.,"Некоторые задачи могут занять некоторое время. Bert ответит, когда они будут выполнены."
 "Some translations are still pending, saving would stop the translation process.","Некоторые переводы ещё выполняются, сохранение остановит процесс перевода."
-Translations are still pending,Переводы ещё выполняются
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
 Sort ascending,Сортировать по возрастанию
@@ -1563,6 +1563,7 @@ Translating,Translating
 Translation,Перевод
 Translation service is unavailable,Translation service is unavailable
 Translations,Переводы
+Translations are still pending,Переводы ещё выполняются
 Translations imported.,Переводы импортированы.
 Translations reset successfully,Переводы успешно сброшены
 Translations saved,Переводы сохранены

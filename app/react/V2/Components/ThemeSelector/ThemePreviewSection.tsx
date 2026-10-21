@@ -82,7 +82,7 @@ const ThemePreviewSection = ({
           value={previewMode}
           onChange={setPreviewMode}
           ariaLabel={t('System', 'Preview mode', null, false)}
-          showLabels
+          showLabels="always"
           options={THEME_MODES.map(mode => ({
             id: mode,
             title: mode,
