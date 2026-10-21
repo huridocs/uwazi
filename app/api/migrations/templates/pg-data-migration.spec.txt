@@ -4,11 +4,21 @@ import { migration } from '../{{nextSchemaDelta}}-{{dashName name}}.js';
 const TENANT_A = 'tenant-a';
 const TENANT_B = 'tenant-b';
 
-const run = async () => {
-  const ctx = testingEnvironment.pg.migrationContext();
-  await migration.up(ctx);
-  return ctx;
-};
+/** The tables the migration touches: read raw, every tenant, to assert on. */
+const TABLES: string[] = [];
+
+const run = async () => testingEnvironment.pg.runDataMigration(migration, [TENANT_A, TENANT_B]);
+
+/** Every row of TABLES, order-insensitive: an UPDATE moves rows around on disk. */
+const snapshot = async () =>
+  Object.fromEntries(
+    await Promise.all(
+      TABLES.map(async table => [
+        table,
+        (await testingEnvironment.pg.getAllFrom(table)).map(row => JSON.stringify(row)).sort(),
+      ])
+    )
+  );
 
 describe('{{nextSchemaDelta}}-{{dashName name}}', () => {
   beforeAll(async () => {
@@ -24,20 +34,23 @@ describe('{{nextSchemaDelta}}-{{dashName name}}', () => {
     await testingEnvironment.setFixtures({}, {});
   });
 
-  it('should convert every tenant rows to the new shape, and nothing else', async () => {
-    await run();
-    expect([TENANT_A, TENANT_B]).toBe('asserted on the raw tables');
-  });
-
   it('should give the same result when run twice', async () => {
+    expect(TABLES).not.toEqual([]);
     await run();
+    const once = await snapshot();
+
     await run();
-    expect(true).toBe(false);
+
+    expect(await snapshot()).toEqual(once);
   });
 
-  it('should do nothing on an empty table', async () => {
+  it('should do nothing on empty tables', async () => {
+    expect(TABLES).not.toEqual([]);
+    await testingEnvironment.setFixtures({}, Object.fromEntries(TABLES.map(table => [table, []])));
+
     await run();
-    expect(true).toBe(false);
+
+    expect(await snapshot()).toEqual(Object.fromEntries(TABLES.map(table => [table, []])));
   });
 
   it('should check if a reindex is needed', async () => {

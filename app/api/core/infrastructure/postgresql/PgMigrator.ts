@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-restricted-imports
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, statSync } from 'fs';
 import path from 'path';
-import { Knex } from 'knex';
 import pg from 'pg';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { PgDataMigration, PgDataMigrationContext } from './PgDataMigration.js';
+import { LoadPgMigration, PgMigrationLoader } from './PgMigrationLoader.js';
+import { PgDataMigrationRunner } from './PgDataMigrationRunner.js';
 
 /** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
 const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
@@ -32,7 +32,12 @@ type MigrateOptions = {
 
 type MigrateResult = { applied: number[]; reindexTenants: string[] };
 
-type PgMigratorDeps = { knex: Knex; logger: Logger };
+type PgMigratorDeps = {
+  dataRunner: PgDataMigrationRunner;
+  logger: Logger;
+  /** Defaults to a plain path import; production reloads migrations edited on disk. */
+  loadMigration?: LoadPgMigration;
+};
 
 const noHeartbeat = async () => Promise.resolve();
 
@@ -200,6 +205,20 @@ export class PgMigrator {
   }
 
   private async applySql(migration: MigrationFile): Promise<void> {
+    const startedAt = Date.now();
+    await this.runSqlInTransaction(migration);
+    this.deps.logger.info(
+      `Postgres schema migration ${migration.delta} (${migration.name}) applied`,
+      {
+        event: 'pg_schema_migration.applied',
+        delta: migration.delta,
+        migrationName: migration.name,
+        durationMs: Date.now() - startedAt,
+      }
+    );
+  }
+
+  private async runSqlInTransaction(migration: MigrationFile): Promise<void> {
     const sql = readFileSync(migration.filePath, 'utf-8');
     const client = await this.pool.connect();
     try {
@@ -215,32 +234,24 @@ export class PgMigrator {
     }
   }
 
-  /** Runs with no transaction open; recorded only once `up` resolves. */
+  /** Recorded only once the runner resolves: for a tenant migration, once every tenant succeeded. */
   private async applyData(
     migration: MigrationFile,
     heartbeat: () => Promise<void>,
     reindexTenants: Set<string>
   ): Promise<void> {
-    // An absolute path, not a file URL: Jest's resolver cannot resolve file URLs.
-    const { migration: dataMigration }: { migration: PgDataMigration } = await import(
-      migration.filePath
+    const load = this.deps.loadMigration ?? PgMigrationLoader.byPath;
+    const { migration: dataMigration } = await load(
+      migration.filePath,
+      statSync(migration.filePath).mtimeMs
     );
 
-    const ctx: PgDataMigrationContext = {
-      knex: this.deps.knex,
-      logger: this.deps.logger,
+    const result = await this.deps.dataRunner.run(dataMigration, {
+      delta: migration.delta,
+      name: migration.name,
       heartbeat,
-      reindex: tenantIds => {
-        if (!dataMigration.reindex) {
-          throw new Error(
-            `Migration ${migration.delta} (${migration.name}) reported tenants to reindex but declares reindex: false`
-          );
-        }
-        tenantIds.forEach(tenantId => reindexTenants.add(tenantId));
-      },
-    };
-
-    await dataMigration.up(ctx);
+    });
+    result.reindexTenants.forEach(tenantId => reindexTenants.add(tenantId));
     await PgMigrator.record(migration, this.pool);
   }
 

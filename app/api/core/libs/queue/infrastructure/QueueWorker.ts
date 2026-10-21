@@ -152,9 +152,17 @@ export class QueueWorker {
     if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
       jobToReport = await this.adapter.markJobAsFailed(job);
     } else {
-      jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
+      jobToReport = await QueueWorker.scheduleRetry(this.adapter, job);
     }
     this.onError(e, { job: jobToReport });
+  }
+
+  private static async scheduleRetry(adapter: QueueAdapter, job: Job): Promise<Job> {
+    const newLockWindow = job.options.lockWindow * 2;
+    if (job.options.retryDelay === undefined) {
+      return adapter.updateLockWindow(job, newLockWindow);
+    }
+    return adapter.updateLockWindow(job, newLockWindow, Date.now() + job.options.retryDelay);
   }
 
   async start() {

@@ -6,6 +6,8 @@ export type DispatchOptions = {
   lockWindow?: number;
   /** Overrides the job class's @QueueOptions for this dispatch only. */
   maxRetries?: number;
+  /** Overrides the job class's @QueueOptions for this dispatch only. */
+  retryDelay?: number;
 };
 
 export interface DispatchableClass<T extends Dispatchable> {

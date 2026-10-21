@@ -12,6 +12,7 @@ export interface Job {
   options: {
     lockWindow: number;
     maxRetries: number;
+    retryDelay?: number;
   };
 }
 
@@ -25,7 +26,8 @@ export interface QueueAdapter {
   pickJob(queueName: string): Promise<Job | null>;
   renewJobLock(job: Job): Promise<void>;
   markJobAsFailed(job: Job): Promise<Job>;
-  updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
+  /** `lockedUntil`, when given, also sets when the job can be picked again. */
+  updateLockWindow(job: Job, newLockWindow: number, lockedUntil?: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
   deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
   cancelByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;

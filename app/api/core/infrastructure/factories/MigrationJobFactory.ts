@@ -1,18 +1,10 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { PgMigratorFactory } from '#api/core/infrastructure/factories/PgMigratorFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MigrationJob, MigrationJobDeps } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { tenants } from '#api/tenants/index.js';
 import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
 import { migrator } from '#api/migrations/migrator.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const PG_MIGRATIONS_DIR = path.join(__dirname, '../postgresql/schema_migrations');
 
 const createReindexTenant = () => async () => {
   const { reindexAll } = await import('#api/search/entitiesIndex.js');
@@ -31,12 +23,7 @@ class MigrationJobFactory {
 
     return new MigrationJob({
       runner,
-      pgMigrator:
-        deps.pgMigrator ||
-        new PgMigrator(PG_MIGRATIONS_DIR, PostgresDB.adminPool(), {
-          knex: PostgresDB.adminKnex(),
-          logger,
-        }),
+      pgMigrator: deps.pgMigrator || PgMigratorFactory.create(logger),
       logger,
       dispatcher: deps.dispatcher || ExecutionContext.jobsDispatcher,
       reindexTenant: deps.reindexTenant || createReindexTenant(),

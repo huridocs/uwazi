@@ -37,6 +37,14 @@ class JobWithOtherOptions implements Dispatchable {
   }
 }
 
+@QueueOptions({ retryDelay: 500 })
+class JobWithRetryDelay implements Dispatchable {
+  // eslint-disable-next-line class-methods-use-this
+  async handleDispatch(_heartbeat: HeartbeatCallback, _params: { aNumber: number }): Promise<void> {
+    throw new Error('not implemented');
+  }
+}
+
 let adapter: MongoQueueAdapter;
 
 beforeEach(async () => {
@@ -133,6 +141,15 @@ describe('queue options', () => {
     expect(job?.options).toEqual({ lockWindow: 3000, maxRetries: 5 });
   });
 
+  it('should store the retry delay a job class declares', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    await dispatcher.dispatch(JobWithRetryDelay, { aNumber: 1 });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.options).toEqual({ lockWindow: 1000 * 60 * 10, maxRetries: 5, retryDelay: 500 });
+  });
+
   it('should let per-dispatch options override the class ones, field by field', async () => {
     const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
 
@@ -158,7 +175,7 @@ describe('queue options', () => {
     );
   });
 
-  it('should keep the MigrationJob 1h lock window when it is dispatched by a plain dispatcher', async () => {
+  it('should keep the MigrationJob queue options when it is dispatched by a plain dispatcher', async () => {
     const dispatcher = new NamespacedDispatcher('system', 'queue name', adapter);
 
     await dispatcher.dispatch(MigrationJob, {
@@ -167,7 +184,11 @@ describe('queue options', () => {
     });
 
     const job = await adapter.pickJob('queue name');
-    expect(job?.options).toEqual({ lockWindow: 1000 * 60 * 60, maxRetries: 5 });
+    expect(job?.options).toEqual({
+      lockWindow: 1000 * 60 * 60,
+      maxRetries: 3,
+      retryDelay: 1000 * 60 * 5,
+    });
   });
 });
 

@@ -161,12 +161,17 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     return updatedJob;
   }
 
-  async updateLockWindow(job: Job, newLockWindow: number) {
+  async updateLockWindow(job: Job, newLockWindow: number, lockedUntil?: number) {
     const result = await this.getCollection().findOneAndUpdate(
       {
         _id: new ObjectId(job.id),
       },
-      { $set: { 'options.lockWindow': newLockWindow } },
+      {
+        $set: {
+          'options.lockWindow': newLockWindow,
+          ...(lockedUntil !== undefined ? { lockedUntil } : {}),
+        },
+      },
       { returnDocument: 'after' }
     );
 
