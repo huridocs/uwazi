@@ -43,8 +43,5 @@ export const getRefreshModeConstraints = (
   };
 };
 
-export const getRefreshModeBlockMessage = (reason: RefreshModeBlockReason): string =>
-  REASON_MESSAGES[reason];
-
 // re-export for tests that import hasTwoDimensions path
 export { hasTwoDimensions };
