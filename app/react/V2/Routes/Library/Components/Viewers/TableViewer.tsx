@@ -13,6 +13,7 @@ import {
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LoadMore } from '../LoadMore.js';
+import { LibraryLinks } from '../LibraryLinks.js';
 import { LibraryTableCell } from '../LibraryTableCell.js';
 import { formatLibraryTableDate, libraryTableCellValue } from '../libraryTableCellValue.js';
 import { nextLibrarySort } from '../librarySort.js';
@@ -68,6 +69,9 @@ const renderLibraryTableCell = ({
     );
   }
   const formatted = libraryTableCellValue(column.type, row.metadata?.[column.id], displayContext);
+  if (formatted.links?.length) {
+    return <LibraryLinks links={formatted.links} />;
+  }
   return (
     <LibraryTableCell
       text={formatted.text}

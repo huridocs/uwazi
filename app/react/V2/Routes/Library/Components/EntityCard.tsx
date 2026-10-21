@@ -18,12 +18,15 @@ import {
   type ThumbnailKind,
 } from './libraryCardDisplay.js';
 import { EntityThumbnail } from './EntityThumbnail.js';
+import { LibraryLinks } from './LibraryLinks.js';
+import type { LibraryLink } from './libraryTableCellValue.js';
 
 type EntityCardField = {
   id: string;
   label: string;
   value: string;
   interactive?: boolean;
+  links?: LibraryLink[];
 };
 
 type EntityCardProps = {
@@ -42,6 +45,35 @@ type EntityCardProps = {
   viewHref: string;
   showThumbnail?: boolean;
   showMetadata?: boolean;
+};
+
+const renderFieldValue = (
+  field: EntityCardField,
+  onFocusProperty?: (fieldKey: string) => void
+) => {
+  if (field.links?.length) {
+    return <LibraryLinks links={field.links} className="block w-full text-xs leading-snug" />;
+  }
+  if (field.interactive) {
+    return (
+      <button
+        type="button"
+        title={field.value}
+        className="block w-full truncate text-start text-xs leading-snug text-ink underline-offset-2 hover:underline"
+        onClick={event => {
+          event.stopPropagation();
+          onFocusProperty?.(field.id);
+        }}
+      >
+        {field.value}
+      </button>
+    );
+  }
+  return (
+    <span className="block truncate text-xs leading-snug text-ink" title={field.value}>
+      {field.value}
+    </span>
+  );
 };
 
 const EntityCard = ({
@@ -141,23 +173,7 @@ const EntityCard = ({
               <span className="block text-[10px] leading-tight text-ink-tertiary">
                 {field.label}
               </span>
-              {field.interactive ? (
-                <button
-                  type="button"
-                  title={field.value}
-                  className="block w-full truncate text-start text-xs leading-snug text-ink underline-offset-2 hover:underline"
-                  onClick={event => {
-                    event.stopPropagation();
-                    onFocusProperty?.(field.id);
-                  }}
-                >
-                  {field.value}
-                </button>
-              ) : (
-                <span className="block truncate text-xs leading-snug text-ink" title={field.value}>
-                  {field.value}
-                </span>
-              )}
+              {renderFieldValue(field, onFocusProperty)}
             </div>
           ))}
         </div>
