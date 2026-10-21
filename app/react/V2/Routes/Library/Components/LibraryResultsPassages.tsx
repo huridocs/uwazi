@@ -1,6 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { RenderIfVisible } from '#V2/Components/UI/index.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { parseSnippetToNodes } from '#V2/Routes/Entity/Components/search/searchUtils.js';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { fieldLabel } from './libraryResultFieldLabel.js';
@@ -16,6 +17,12 @@ type LibraryResultsPassagesProps = {
 
 const passageClass = (folded: boolean) =>
   `block text-sm leading-relaxed text-ink ${folded ? 'line-clamp-1' : ''}`;
+
+const passageTitle = (view: LibraryResultView) => (
+  <EntityTitle icon={view.icon} className="min-w-0">
+    <span className="truncate">{parseSnippetToNodes(view.titleHtml)}</span>
+  </EntityTitle>
+);
 
 const PASSAGE_EAGER_COUNT = 15;
 const PASSAGE_VISIBLE_OFFSET = 600;
@@ -59,7 +66,7 @@ const LibraryResultsPassages = ({
               >
                 <span className={passageClass(folded)}>{parseSnippetToNodes(text)}</span>
                 <span className="mt-1 flex min-w-0 items-center gap-1.5 text-meta text-ink-secondary">
-                  <span className="truncate">{parseSnippetToNodes(view.titleHtml)}</span>
+                  {passageTitle(view)}
                   <span className="text-ink-muted">·</span>
                   <span className="shrink-0 uppercase tracking-wide text-ink-tertiary">
                     <Translate context={template?._id}>
@@ -81,7 +88,7 @@ const LibraryResultsPassages = ({
             >
               <span className={passageClass(folded)}>{parseSnippetToNodes(snippet.text)}</span>
               <span className="mt-1 flex min-w-0 items-center gap-1.5 text-meta text-ink-secondary">
-                <span className="truncate">{parseSnippetToNodes(view.titleHtml)}</span>
+                {passageTitle(view)}
                 <span className="text-ink-muted">·</span>
                 <bdi dir="ltr" className="shrink-0 uppercase tracking-wide text-ink-tertiary">
                   <Translate>Document</Translate>

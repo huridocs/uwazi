@@ -6,9 +6,15 @@ import {
 } from '#V2/Components/Metadata/display/formatMetadataTimestamp.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
 
+type LibraryLink = {
+  label: string;
+  href: string;
+};
+
 type LibraryTableCellValue = {
   text: string;
   interactive: boolean;
+  links?: LibraryLink[];
 };
 
 type RawMetadataValue = {
@@ -133,8 +139,6 @@ const valueText = (type: string, item: RawMetadataValue, context: DisplayContext
     case 'relationship':
     case 'newRelationship':
       return item.title || item.label || (typeof item.value === 'string' ? item.value : '');
-    case 'link':
-      return item.label || (typeof item.value === 'string' ? item.value : '');
     default:
       if (item.label) {
         return item.label;
@@ -146,11 +150,34 @@ const valueText = (type: string, item: RawMetadataValue, context: DisplayContext
   }
 };
 
+const linkFromValue = (value: unknown): LibraryLink | undefined => {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || !('url' in value)) {
+    return undefined;
+  }
+  const { url } = value;
+  if (typeof url !== 'string' || !url) {
+    return undefined;
+  }
+  const label = 'label' in value && typeof value.label === 'string' ? value.label : '';
+  return { label: label || url, href: url };
+};
+
 const libraryTableCellValue = (
   propertyType: string,
   values: unknown,
   context: DisplayContext
 ): LibraryTableCellValue => {
+  if (propertyType === 'link') {
+    const links = asValues(values).flatMap(item => {
+      const link = linkFromValue(item.value);
+      return link ? [link] : [];
+    });
+    return {
+      text: links.map(link => link.label).join(', '),
+      interactive: false,
+      ...(links.length ? { links } : {}),
+    };
+  }
   const text = asValues(values)
     .map(item => valueText(propertyType, item, context))
     .filter(Boolean)
@@ -168,5 +195,5 @@ const formatLibraryTableDate = (timestamp: unknown, context: DisplayContext): st
   return secondsToDate(normalizeTimestamp(timestamp), context.locale);
 };
 
-export type { LibraryTableCellValue };
+export type { LibraryLink, LibraryTableCellValue };
 export { formatLibraryTableDate, libraryTableCellValue };

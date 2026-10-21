@@ -53,6 +53,48 @@ describe('libraryTableCellValue', () => {
       libraryTableCellValue('image', [{ value: 'https://cdn.example/docs/scan.jpg' }], context)
     ).toEqual({ text: 'scan.jpg', interactive: true });
   });
+
+  it('formats a link as its label and keeps the url', () => {
+    expect(
+      libraryTableCellValue(
+        'link',
+        [{ value: { label: 'google', url: 'https://google.com' } }],
+        context
+      )
+    ).toEqual({
+      text: 'google',
+      interactive: false,
+      links: [{ label: 'google', href: 'https://google.com' }],
+    });
+  });
+
+  it('uses the url as the link label when no label is stored', () => {
+    expect(libraryTableCellValue('link', [{ value: { url: 'google.com' } }], context)).toEqual({
+      text: 'google.com',
+      interactive: false,
+      links: [{ label: 'google.com', href: 'google.com' }],
+    });
+  });
+
+  it('keeps each link when a property has several', () => {
+    expect(
+      libraryTableCellValue(
+        'link',
+        [
+          { value: { label: 'first', url: 'https://first.example' } },
+          { value: { label: 'second', url: 'https://second.example' } },
+        ],
+        context
+      )
+    ).toEqual({
+      text: 'first, second',
+      interactive: false,
+      links: [
+        { label: 'first', href: 'https://first.example' },
+        { label: 'second', href: 'https://second.example' },
+      ],
+    });
+  });
 });
 
 describe('formatLibraryTableDate', () => {

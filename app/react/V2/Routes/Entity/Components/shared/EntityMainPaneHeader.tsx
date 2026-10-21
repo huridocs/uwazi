@@ -1,9 +1,9 @@
 import React from 'react';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { EntityIcon } from '#V2/Components/CustomIcons/EntityIcon.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { DocumentViewModeSelect } from '#V2/Routes/Entity/Components/document/index.js';
 import { useEntityLanguage } from '../context/EntityLanguageContext.js';
+import { EntityTitle } from './EntityTitle.js';
 
 type EntityMainPaneHeaderProps = {
   entity: Entity;
@@ -23,13 +23,14 @@ const EntityMainPaneHeaderComponent = ({
         <TemplateLabel templateId={entity.template} variant="tag" />
         <h1
           data-field-key="title"
-          className="m-0 mt-1 flex min-w-0 items-start gap-1.5 text-sm font-semibold leading-snug text-ink"
+          className="m-0 mt-1 text-sm font-semibold leading-snug text-ink"
           no-translate="true"
         >
-          <EntityIcon data={entity.icon} className="mt-px shrink-0" />
-          <span className="line-clamp-2 min-w-0 break-words" title={entity.title}>
-            {entity.title}
-          </span>
+          <EntityTitle icon={entity.icon}>
+            <span className="line-clamp-2 min-w-0 wrap-break-word" title={entity.title}>
+              {entity.title}
+            </span>
+          </EntityTitle>
         </h1>
       </div>
       {showDocumentViewMode ? (
