@@ -117,7 +117,7 @@ describe('MigrationService', () => {
     await service.run({ async: true, structuredLogs: false });
 
     const [first, second] = dispatchedCalls.map(params => params.correlationId);
-    expect(first).toMatch(/^[0-9a-f-]{36}$/);
+    await expect(first).toMatch(/^[0-9a-f-]{36}$/);
     expect(second).not.toBe(first);
     expect(createLogger).toHaveBeenNthCalledWith(
       1,
