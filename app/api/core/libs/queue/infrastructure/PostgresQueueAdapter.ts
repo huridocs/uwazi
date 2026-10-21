@@ -226,7 +226,7 @@ export class PostgresQueueAdapter implements QueueAdapter {
     return toJob(row);
   }
 
-  async updateLockWindow(job: Job, newLockWindow: number): Promise<Job> {
+  async updateLockWindow(job: Job, newLockWindow: number, lockedUntil?: number): Promise<Job> {
     const [row] = await this.deps
       .workerKnex('jobs')
       .where({ id: job.id })
@@ -235,6 +235,7 @@ export class PostgresQueueAdapter implements QueueAdapter {
           `jsonb_set("options", '{lockWindow}', to_jsonb(?::bigint))`,
           [newLockWindow]
         ),
+        ...(lockedUntil !== undefined ? { lockedUntil } : {}),
       })
       .returning<JobRow[]>('*');
 

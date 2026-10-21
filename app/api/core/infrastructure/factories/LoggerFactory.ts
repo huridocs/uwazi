@@ -37,22 +37,26 @@ export class LoggerFactory {
     return new StandardLogger(writer, getTenant(), ExecutionContext.correlationId);
   }
 
-  static systemLogger(_writer = StandardJSONWriter) {
+  static systemLogger(_writer = StandardJSONWriter, correlationId?: string) {
     let writer = _writer;
     if (config.ENVIRONMENT === 'development' && _writer === StandardJSONWriter) {
       writer = DevelopmentWritter;
     }
 
-    return new StandardLogger(writer, {
-      name: 'System Logger',
-      dbName: 'N/a',
-      activityLogs: 'N/a',
-      attachments: 'N/a',
-      customUploads: 'N/a',
-      indexName: 'N/a',
-      uploadedDocuments: 'N/a',
-      domain: 'N/a',
-    });
+    return new StandardLogger(
+      writer,
+      {
+        name: 'System Logger',
+        dbName: 'N/a',
+        activityLogs: 'N/a',
+        attachments: 'N/a',
+        customUploads: 'N/a',
+        indexName: 'N/a',
+        uploadedDocuments: 'N/a',
+        domain: 'N/a',
+      },
+      correlationId
+    );
   }
 
   static forTests() {
@@ -70,16 +74,20 @@ export class LoggerFactory {
     return new StandardLogger(() => {}, getTenant());
   }
 
-  static migrationLogger(writer: LogWriter): Logger {
-    return new StandardLogger(writer, {
-      name: 'Migration Logger',
-      dbName: 'N/a',
-      activityLogs: 'N/a',
-      attachments: 'N/a',
-      customUploads: 'N/a',
-      indexName: 'N/a',
-      uploadedDocuments: 'N/a',
-      domain: 'N/a',
-    });
+  static migrationLogger(writer: LogWriter, correlationId?: string): Logger {
+    return new StandardLogger(
+      writer,
+      {
+        name: 'Migration Logger',
+        dbName: 'N/a',
+        activityLogs: 'N/a',
+        attachments: 'N/a',
+        customUploads: 'N/a',
+        indexName: 'N/a',
+        uploadedDocuments: 'N/a',
+        domain: 'N/a',
+      },
+      correlationId
+    );
   }
 }

@@ -308,6 +308,19 @@ function describeQueueAdapterContract(name: string, setUp: () => Promise<QueueAd
         ]);
       });
 
+      it('should lock the job until the time given with the new lock window', async () => {
+        const job = storedJob({ lockedUntil: 999999 });
+        await harness.insert([job]);
+
+        const updated = await adapter.updateLockWindow(job, 4000, 1234);
+
+        expect(updated).toMatchObject({ id: job.id, lockedUntil: 1234 });
+        await expectStored([
+          otherQueueJob,
+          { ...job, lockedUntil: 1234, options: { lockWindow: 4000, maxRetries: 3 } },
+        ]);
+      });
+
       it('should throw when updating the lock window of a job that does not exist', async () => {
         await expect(adapter.updateLockWindow(storedJob(), 4000)).rejects.toThrow(
           'Failed to update lock window for job'

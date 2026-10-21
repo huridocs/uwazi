@@ -24,7 +24,12 @@ type MigrationJobParams = {
   /** Tenant names that applied at least one migration flagged with `reindex: true` in this run */
   reindexTenants?: string[];
   results?: MigrationJobResults;
+  /** The run this job belongs to: the worker puts it on the job's logs. */
+  correlationId?: string;
 };
+
+type NormalizedParams = Required<Omit<MigrationJobParams, 'correlationId'>> &
+  Pick<MigrationJobParams, 'correlationId'>;
 
 type MigrationJobDeps = {
   runner: TenantMigrationRunner;
@@ -35,7 +40,7 @@ type MigrationJobDeps = {
   tenantsManager: Tenants;
 };
 
-@QueueOptions({ lockWindow: 1000 * 60 * 60 })
+@QueueOptions({ lockWindow: 1000 * 60 * 60, maxRetries: 3, retryDelay: 1000 * 60 * 5 })
 @PrivilegedJob()
 class MigrationJob implements Dispatchable {
   constructor(private deps: MigrationJobDeps) {}
@@ -48,7 +53,7 @@ class MigrationJob implements Dispatchable {
     const jobParams = this.normalizeParams(params as MigrationJobParams);
 
     try {
-      await this.runJob(jobParams, heartbeat);
+      await this.runJob(jobParams, heartbeat, MigrationJob.appliedCount(jobParams));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.deps.logger.error(`Migration failed: ${message}`);
@@ -57,8 +62,9 @@ class MigrationJob implements Dispatchable {
   }
 
   private async runJob(
-    jobParams: Required<MigrationJobParams>,
-    heartbeat: HeartbeatCallback
+    jobParams: NormalizedParams,
+    heartbeat: HeartbeatCallback,
+    appliedAtStart: number
   ): Promise<void> {
     this.deps.logger.info('Starting migration job');
 
@@ -68,7 +74,7 @@ class MigrationJob implements Dispatchable {
     const nextDelta = await this.getNextGlobalDelta(schemaVersion);
 
     if (nextDelta === null) {
-      await this.finishMigrationProcess(jobParams, heartbeat);
+      await this.finishMigrationProcess(jobParams, heartbeat, appliedAtStart);
       return;
     }
 
@@ -128,7 +134,7 @@ class MigrationJob implements Dispatchable {
 
     const nextGlobalDelta = await this.getNextGlobalDelta(schemaVersion);
     if (nextGlobalDelta === null) {
-      await this.finishMigrationProcess(jobParams, heartbeat);
+      await this.finishMigrationProcess(jobParams, heartbeat, appliedAtStart);
       return;
     }
 
@@ -136,12 +142,13 @@ class MigrationJob implements Dispatchable {
     await this.deps.dispatcher.dispatch(MigrationJob, {
       reindexTenants: nextReindexTenants,
       results: jobParams.results,
+      correlationId: jobParams.correlationId,
     });
   }
 
   /** Runs Postgres migrations, recording what they applied and the tenants they ask to reindex. */
   private async migrateSchema(
-    jobParams: Required<MigrationJobParams>,
+    jobParams: NormalizedParams,
     heartbeat: HeartbeatCallback,
     until?: number
   ): Promise<number[]> {
@@ -165,10 +172,11 @@ class MigrationJob implements Dispatchable {
     return tenantNames.filter(name => this.deps.tenantsManager.tenants[name]);
   }
 
-  private normalizeParams(params: MigrationJobParams): Required<MigrationJobParams> {
+  private normalizeParams(params: MigrationJobParams): NormalizedParams {
     return {
       reindexTenants: params.reindexTenants ?? [],
       results: params.results ?? { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      correlationId: params.correlationId,
     };
   }
 
@@ -288,8 +296,9 @@ class MigrationJob implements Dispatchable {
   }
 
   private async finishMigrationProcess(
-    jobParams: Required<MigrationJobParams>,
-    heartbeat: HeartbeatCallback
+    jobParams: NormalizedParams,
+    heartbeat: HeartbeatCallback,
+    appliedAtStart: number
   ): Promise<void> {
     this.deps.logger.info(
       'No pending Mongo data migrations, running remaining Postgres migrations'
@@ -303,6 +312,8 @@ class MigrationJob implements Dispatchable {
         applied: appliedSchemas,
       }
     );
+
+    if (await this.handOffReindex(jobParams, appliedAtStart)) return;
 
     if (jobParams.reindexTenants.length > 0) {
       this.deps.logger.info(
@@ -320,6 +331,34 @@ class MigrationJob implements Dispatchable {
     ].join('\n');
 
     this.deps.logger.info(summary);
+  }
+
+  /**
+   * A job that applied migrations does not reindex: it dispatches a job that only reindexes. The
+   * migrations are recorded by now, so a retry of a failed reindex finds nothing pending; it knows
+   * which tenants to reindex only from the params it was dispatched with.
+   */
+  private async handOffReindex(
+    jobParams: NormalizedParams,
+    appliedAtStart: number
+  ): Promise<boolean> {
+    if (jobParams.reindexTenants.length === 0) return false;
+    if (MigrationJob.appliedCount(jobParams) === appliedAtStart) return false;
+
+    this.deps.logger.info(
+      `Dispatching a migration job to reindex tenants: [${jobParams.reindexTenants.join(', ')}]`,
+      { tenants: jobParams.reindexTenants }
+    );
+    await this.deps.dispatcher.dispatch(MigrationJob, {
+      reindexTenants: jobParams.reindexTenants,
+      results: jobParams.results,
+      correlationId: jobParams.correlationId,
+    });
+    return true;
+  }
+
+  private static appliedCount({ results }: NormalizedParams): number {
+    return results.appliedDataDeltas.length + results.appliedSchemaDeltas.length;
   }
 
   private async reindexTenants(tenantNames: string[], heartbeat: HeartbeatCallback): Promise<void> {

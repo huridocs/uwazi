@@ -35,6 +35,7 @@ import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
+import type { PgDataMigration } from '#api/core/infrastructure/postgresql/PgDataMigration.js';
 import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
@@ -615,9 +616,9 @@ const testingEnvironment = {
       return testingPG.config;
     },
 
-    /** The context PgMigrator hands a data migration, on the per-test database. */
-    migrationContext() {
-      return testingPG.migrationContext();
+    /** Runs a data migration on the per-test database the way PgMigrator does. */
+    async runDataMigration(migration: PgDataMigration, tenantIds: string[]) {
+      return testingPG.runDataMigration(migration, tenantIds);
     },
   },
 };
