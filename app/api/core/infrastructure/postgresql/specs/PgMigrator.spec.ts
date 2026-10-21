@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import knex, { Knex } from 'knex';
 import { PgMigrator } from '../PgMigrator.js';
+import { PgDataMigrationRunner } from '../PgDataMigrationRunner.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
@@ -54,7 +55,15 @@ describe('PgMigrator', () => {
   };
 
   const createMigrator = (logger = createMockLogger()) =>
-    new PgMigrator(migrationsDir, getPool(), { knex: adminKnex, logger });
+    new PgMigrator(migrationsDir, getPool(), {
+      logger,
+      dataRunner: new PgDataMigrationRunner({
+        adminKnex,
+        appKnex: adminKnex,
+        listTenants: () => [],
+        logger,
+      }),
+    });
 
   describe('migrate', () => {
     it('should create pg_migrations tracking table on first run', async () => {

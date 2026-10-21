@@ -1,6 +1,11 @@
 type JobQueueOptions = {
   lockWindow?: number;
   maxRetries?: number;
+  /**
+   * Milliseconds after a failure before the job can be picked again. Without it, a failed job
+   * waits until the lock of the attempt that failed expires.
+   */
+  retryDelay?: number;
 };
 
 const QUEUE_OPTIONS_MARKER = Symbol('queueOptions');

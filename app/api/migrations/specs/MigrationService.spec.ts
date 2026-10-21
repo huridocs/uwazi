@@ -95,6 +95,7 @@ describe('MigrationService', () => {
     expect(dispatchedCalls[0]).toEqual({
       reindexTenants: [],
       results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      correlationId: expect.any(String),
     });
     expect(fakePgMigrator.getCurrentVersion).toHaveBeenCalled();
   });
@@ -106,6 +107,22 @@ describe('MigrationService', () => {
 
     expect(result).toEqual({ dispatched: true });
     expect(dispatchedCalls).toHaveLength(1);
+  });
+
+  it('should give each run a correlation id, shared by the job and the logger', async () => {
+    const createLogger = jest.fn().mockReturnValue(createFakeLogger());
+    const { service, dispatchedCalls } = createService({ createLogger });
+
+    await service.run({ async: true, structuredLogs: false });
+    await service.run({ async: true, structuredLogs: false });
+
+    const [first, second] = dispatchedCalls.map(params => params.correlationId);
+    await expect(first).toMatch(/^[0-9a-f-]{36}$/);
+    expect(second).not.toBe(first);
+    expect(createLogger).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ correlationId: first })
+    );
   });
 
   it('should connect and disconnect from both databases', async () => {

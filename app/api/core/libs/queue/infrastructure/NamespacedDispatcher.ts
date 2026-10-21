@@ -7,7 +7,10 @@ import {
 import { JobQueueOptions, queueOptionsOf } from '../application/QueueOptions.js';
 import { PushJobInput, QueueAdapter } from './QueueAdapter.js';
 
-const optionsDefaults: Required<JobQueueOptions> = {
+type ResolvedOptions = Required<Omit<JobQueueOptions, 'retryDelay'>> &
+  Pick<JobQueueOptions, 'retryDelay'>;
+
+const optionsDefaults: ResolvedOptions = {
   lockWindow: 1000 * 60 * 10,
   maxRetries: 5,
 };
@@ -50,12 +53,12 @@ export class NamespacedDispatcher implements JobsDispatcher {
   private resolveOptions<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     options: DispatchOptions = {}
-  ): Required<JobQueueOptions> {
-    const { lockWindow, maxRetries } = options;
+  ): ResolvedOptions {
+    const { lockWindow, maxRetries, retryDelay } = options;
     return {
       ...optionsDefaults,
       ...definedOnly(queueOptionsOf(dispatchable)),
-      ...definedOnly({ lockWindow, maxRetries }),
+      ...definedOnly({ lockWindow, maxRetries, retryDelay }),
     };
   }
 
