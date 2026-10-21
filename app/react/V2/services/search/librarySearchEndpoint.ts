@@ -5,6 +5,8 @@ import type {
   LibrarySearchQuery,
   LibrarySearchResult,
 } from '#shared/types/librarySearch.js';
+import type { EntitySchema } from '#shared/types/entityType.js';
+import { libraryFacetIcon } from './libraryFacetIcon.js';
 
 const NUMERIC_VALUE = /^-?\d+(\.\d+)?$/;
 
@@ -49,6 +51,7 @@ type RawBucket = {
     total?: { filtered?: { doc_count?: number } };
   };
   values?: RawBucket[];
+  icon?: EntitySchema['icon'];
 };
 
 type RawAggregation = {
@@ -105,24 +108,22 @@ const isNestedFilterValue = (
 
 const setNestedFilter = (
   filters: Record<string, SearchEndpointFilterValue>,
-  parent: string,
-  child: string,
-  values: string[]
+  nested: { parent: string; child: string; values: string[] }
 ) => {
-  const current = filters[parent];
+  const current = filters[nested.parent];
   const properties = isNestedFilterValue(current)
     ? { ...current.properties }
     : ({} as Record<string, NestedFilterValue>);
-  if (values.length === 1 && values[0] === 'any') {
-    properties[child] = { any: true };
+  if (nested.values.length === 1 && nested.values[0] === 'any') {
+    properties[nested.child] = { any: true };
   } else {
-    const usable = usableFilterValues(values).filter(value => value !== 'any');
+    const usable = usableFilterValues(nested.values).filter(value => value !== 'any');
     if (!usable.length) {
       return;
     }
-    properties[child] = { values: usable };
+    properties[nested.child] = { values: usable };
   }
-  filters[parent] = { properties };
+  filters[nested.parent] = { properties };
 };
 
 const projectedFields = (query: LibrarySearchQuery) => {
@@ -145,7 +146,11 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     }
     const separator = key.indexOf('.');
     if (separator > 0) {
-      setNestedFilter(filters, key.slice(0, separator), key.slice(separator + 1), values);
+      setNestedFilter(filters, {
+        parent: key.slice(0, separator),
+        child: key.slice(separator + 1),
+        values,
+      });
       return;
     }
     const next = toEndpointFilterValue(values, andKeys.has(key));
@@ -183,10 +188,12 @@ const toFacetBuckets = (buckets: RawBucket[] | undefined): LibraryFacetBucket[] 
     .filter(bucket => bucket.key !== 'missing' && bucketDocCount(bucket) > 0)
     .map(bucket => {
       const values = bucket.values ? toFacetBuckets(bucket.values) : undefined;
+      const icon = libraryFacetIcon(bucket.icon);
       return {
         id: String(bucket.key),
         label: bucket.label,
         count: bucketDocCount(bucket),
+        ...(icon ? { icon } : {}),
         ...(values?.length ? { values } : {}),
       };
     });
