@@ -52,7 +52,12 @@ describe('CsvCleanupImportFilesJob (integration)', () => {
     fileStorage: FileStorage,
     subpath: string,
     sourceFilePath: string
-  ) => fileStorage.storeContent(new DiskFile(sourceFilePath).toContent(), subpath);
+  ) =>
+    fileStorage.storeContent(new DiskFile(sourceFilePath).toContent(), {
+      type: 'customPath',
+      destination: path.dirname(subpath),
+      filename: path.basename(subpath),
+    });
 
   describe.each(csvJobBackendConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {

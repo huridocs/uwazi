@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import type { Application, NextFunction, Request, Response } from 'express';
+import path from 'path';
 import request from 'supertest';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
@@ -45,7 +46,11 @@ describe('csv v2 routes', () => {
     const content = new FileContents(async function* streamCallback() {
       yield new TextEncoder().encode(csvContent);
     });
-    await fileStorage.storeContent(content, reportPath);
+    await fileStorage.storeContent(content, {
+      type: 'customPath',
+      destination: path.dirname(reportPath),
+      filename: path.basename(reportPath),
+    });
   };
 
   const insertCsvImportWithReport = async (importId: string, reportPath?: string) => {
