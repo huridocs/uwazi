@@ -201,3 +201,33 @@ describe('librarySearchEndpoint', () => {
     });
   });
 });
+
+describe('library facet icons', () => {
+  it('keeps an entity icon on a facet bucket', () => {
+    const result = fromSearchEndpointResult({
+      aggregations: {
+        all: {
+          related: {
+            buckets: [
+              {
+                key: 'e1',
+                label: 'Test1',
+                icon: { _id: 'star', type: 'Icons', label: 'Star' },
+                filtered: { doc_count: 1 },
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    expect(result.aggregations.properties.related).toEqual([
+      {
+        id: 'e1',
+        label: 'Test1',
+        count: 1,
+        icon: { _id: 'star', type: 'Icons', label: 'Star' },
+      },
+    ]);
+  });
+});

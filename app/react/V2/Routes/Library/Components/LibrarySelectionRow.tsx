@@ -8,6 +8,8 @@ import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js
 import type { Entity } from '#V2/api/entities/types.js';
 import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import { libraryFacetIcon } from '#V2/services/search/libraryFacetIcon.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { metadataFieldsForCard, thumbnailFromEntity } from './cardModel.js';
 import { EntityThumbnail } from './EntityThumbnail.js';
 import type { ThumbSize } from './libraryCardDisplay.js';
@@ -104,11 +106,16 @@ const LibrarySelectionRow = ({
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold leading-snug text-ink">{hit.title}</div>
+          <EntityTitle
+            icon={libraryFacetIcon(hit.icon)}
+            className="text-sm font-semibold leading-snug text-ink"
+          >
+            <span className="truncate">{hit.title}</span>
+          </EntityTitle>
           <div className="flex min-w-0 items-center gap-1.5 text-meta text-ink-tertiary">
             {!showThumbnail ? (
               <span
-                className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
+                className="h-1.5 w-1.5 shrink-0 rounded-xs"
                 style={{ backgroundColor: accentHex }}
               />
             ) : null}

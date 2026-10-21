@@ -60,6 +60,21 @@ describe('libraryResultViews', () => {
     expect(view.properties).toHaveLength(1);
   });
 
+  it('keeps the entity icon with the title', () => {
+    const [view] = libraryResultViews([
+      hit({
+        icon: { _id: 'star', type: 'Icons', label: 'Star' },
+        snippets: {
+          count: 1,
+          metadata: [{ field: 'title', texts: ['<b>test</b>'] }],
+          fullText: [],
+        },
+      }),
+    ]);
+
+    expect(view.icon).toEqual({ _id: 'star', type: 'Icons', label: 'Star' });
+  });
+
   it('drops rows that have no snippets', () => {
     expect(
       libraryResultViews([hit(), hit({ snippets: { count: 0, metadata: [], fullText: [] } })])

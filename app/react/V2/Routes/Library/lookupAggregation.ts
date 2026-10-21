@@ -1,9 +1,12 @@
+import type { EntitySchema } from '#shared/types/entityType.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { libraryFacetIcon } from '#V2/services/search/libraryFacetIcon.js';
 
 type LookupAggregationOption = {
   value: string;
   label: string;
   results?: number;
+  icon?: EntitySchema['icon'];
 };
 
 type LookupAggregationResponse = {
@@ -19,11 +22,15 @@ type FacetLookupResult = {
 type FacetLookup = (searchTerm: string) => Promise<FacetLookupResult>;
 
 const bucketsFromLookupOptions = (options: LookupAggregationOption[]): LibraryFacetBucket[] =>
-  options.map(option => ({
-    id: String(option.value),
-    label: option.label,
-    count: option.results ?? 0,
-  }));
+  options.map(option => {
+    const icon = libraryFacetIcon(option.icon);
+    return {
+      id: String(option.value),
+      label: option.label,
+      count: option.results ?? 0,
+      ...(icon ? { icon } : {}),
+    };
+  });
 
 const lookupAggregation = async (
   property: string,

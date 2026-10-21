@@ -5,6 +5,8 @@ import type {
   LibrarySnippetMetadata,
 } from '#shared/types/librarySearch.js';
 import { esFieldToFocusKey } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
+import type { EntityIconData } from '#V2/Components/CustomIcons/index.js';
+import { libraryFacetIcon } from '#V2/services/search/libraryFacetIcon.js';
 
 type MatchType = 'title' | 'properties' | 'document';
 
@@ -21,6 +23,7 @@ type LibraryResultView = {
   template: string;
   title: string;
   titleHtml: string;
+  icon?: EntityIconData;
   year?: string;
   properties: PropertySnippet[];
   fullText: LibrarySnippetFullText[];
@@ -81,11 +84,13 @@ const toResultView = (hit: LibrarySearchHit, snippets: LibraryHitSnippets): Libr
       texts: row.texts,
     }));
 
+  const icon = libraryFacetIcon(hit.icon);
   return {
     sharedId: hit.sharedId,
     template: hit.template,
     title: hit.title,
     titleHtml: titleHit?.texts[0] || hit.title,
+    ...(icon ? { icon } : {}),
     year: creationYear(hit.creationDate),
     properties,
     fullText: snippets.fullText,

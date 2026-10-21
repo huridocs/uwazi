@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronRightIcon, DocumentTextIcon, TagIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import { ColorDot, CountBadge } from '#V2/Components/UI/index.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { parseSnippetToNodes } from '#V2/Routes/Entity/Components/search/searchUtils.js';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { fieldLabel } from './libraryResultFieldLabel.js';
@@ -59,9 +60,12 @@ const LibraryResultsGroupedCard = ({
               <button
                 type="button"
                 onClick={() => onSelect(view.sharedId)}
-                className="min-w-0 flex-1 truncate text-start text-sm font-medium text-ink hover:underline"
+                aria-label={view.title}
+                className="min-w-0 flex-1 text-start text-sm font-medium text-ink hover:underline"
               >
-                {parseSnippetToNodes(view.titleHtml)}
+                <EntityTitle icon={view.icon}>
+                  <span className="min-w-0 truncate">{parseSnippetToNodes(view.titleHtml)}</span>
+                </EntityTitle>
               </button>
               <CountBadge count={view.count} />
             </div>
