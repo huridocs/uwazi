@@ -57,6 +57,7 @@ const renderTable = (
     sort?: string;
     order?: 'asc' | 'desc';
     tableDensity?: 'comfortable' | 'compact';
+    rows?: LibrarySearchHit[];
   } = {}
 ) =>
   render(
@@ -69,12 +70,11 @@ const renderTable = (
         ]}
       >
         <TableViewer
-          rows={rows}
-          totalRows={1}
+          rows={overrides.rows ?? rows}
+          totalRows={overrides.rows?.length ?? 1}
           onSelect={overrides.onSelect ?? (() => undefined)}
           onFocusProperty={overrides.onFocusProperty}
           entityBasePath="/entityv2"
-          onLoadMore={() => undefined}
           showThumbnail
           showMetadata
           sort={overrides.sort}
@@ -157,6 +157,29 @@ describe('TableViewer', () => {
     renderTable({ onSortChange, sort: 'creationDate', order: 'asc' });
     fireEvent.click(screen.getByRole('button', { name: 'Creation date' }));
     expect(onSortChange).toHaveBeenCalledWith('creationDate', 'desc');
+  });
+
+  it('leaves rows past the first screen as placeholders', () => {
+    const originalObserver = global.IntersectionObserver;
+    global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+      observe: () => undefined,
+      unobserve: () => undefined,
+      disconnect: () => undefined,
+      takeRecords: () => [],
+      root: null,
+      rootMargin: '',
+      thresholds: [],
+    }));
+    const manyRows = Array.from({ length: 41 }, (_, index) => ({
+      ...rows[0]!,
+      _id: String(index),
+      sharedId: `org-${index}`,
+      title: `Organization ${index}`,
+    }));
+    renderTable({ rows: manyRows });
+    expect(screen.getByText('Organization 0')).toBeInTheDocument();
+    expect(screen.queryByText('Organization 40')).not.toBeInTheDocument();
+    global.IntersectionObserver = originalObserver;
   });
 
   it('sorts filterable select columns and leaves others unsortable', () => {

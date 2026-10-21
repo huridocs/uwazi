@@ -1,0 +1,27 @@
+import type { PgDataMigration } from '#api/core/infrastructure/postgresql/PgDataMigration.js';
+
+/*
+ * Runs once per tenant, under row level security as the application user: every statement only
+ * sees ctx.tenantId's rows. Reach the database with ctx.transaction(async trx => ...). Read
+ * docs/backend/migrations.md before writing it:
+ *  - safe to run twice: a retry reruns every tenant, including the ones that succeeded, and keeps
+ *    the transactions a failed run committed. Select only rows still in the old shape;
+ *  - large tables: commit in batches with several ctx.transaction calls and call ctx.heartbeat();
+ *  - no production imports: declare the rows you touch here;
+ *  - tables without row level security (jobs, http_sessions, tenants, tenants_version) and work
+ *    that spans tenants need scope: 'global', which runs once as the table owner with ctx.knex.
+ *
+ * Every test database runs this migration on an empty schema: it must be a fast no-op there.
+ */
+
+export const migration: PgDataMigration = {
+  scope: 'tenant',
+
+  description: '{{ description }}',
+
+  reindex: false,
+
+  async up(ctx) {
+    // The spec fails on purpose until this is written.
+  },
+};

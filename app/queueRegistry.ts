@@ -333,7 +333,10 @@ export function registerJobs(register: Register) {
 
   register(MigrationJob, async () =>
     MigrationJobFactory.create({
-      logger: LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration')),
+      logger: LoggerFactory.systemLogger(
+        withFeature(StandardJSONWriter, 'migration'),
+        ExecutionContext.correlationId
+      ),
     })
   );
 

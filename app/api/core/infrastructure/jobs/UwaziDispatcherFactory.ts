@@ -12,13 +12,15 @@ export function UwaziDispatcherFactory(
   queueAdapter?: QueueAdapter
 ): JobsDispatcher {
   const defaultUserId = ExecutionContext.actor?._id;
+  const correlationId = ExecutionContext.correlationId;
   return new JobsRouter(
     queueName =>
-      new UwaziDispatcher(
-        tenant,
+      new UwaziDispatcher({
+        namespace: tenant,
         queueName,
-        queueAdapter || DefaultQueueAdapter(transactionManager),
-        defaultUserId
-      )
+        adapter: queueAdapter || DefaultQueueAdapter(transactionManager),
+        userId: defaultUserId,
+        correlationId,
+      })
   );
 }

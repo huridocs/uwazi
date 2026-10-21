@@ -6,7 +6,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingDB } from '#api/utils/testing_db.js';
-import { PgMigrator } from '../../postgresql/PgMigrator.js';
+import { MigrateResult, PgMigrator } from '../../postgresql/PgMigrator.js';
 
 class FakePgMigrator {
   private currentVersion: number;
@@ -29,7 +29,7 @@ class FakePgMigrator {
     return this.currentVersion;
   }
 
-  async migrate(until?: number): Promise<number[]> {
+  async migrate({ until }: { until?: number } = {}): Promise<MigrateResult> {
     const target = Math.min(until ?? this.maxDelta, this.maxDelta);
     const deltas: number[] = [];
     for (let delta = this.currentVersion + 1; delta <= target; delta += 1) {
@@ -37,7 +37,7 @@ class FakePgMigrator {
       deltas.push(delta);
       this.currentVersion = delta;
     }
-    return deltas;
+    return { applied: deltas, reindexTenants: [] };
   }
 }
 
@@ -239,12 +239,36 @@ describe('MigrationJob', () => {
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(4);
-    const lastCall = dispatchSpy.mock.calls[3][1] as {
+    // the last dispatch is the job that only reindexes, handed off by the one that applied delta 10
+    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    const lastCall = dispatchSpy.mock.calls[4][1] as {
       reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
     expect(lastCall.reindexTenants).toEqual(['default']);
+  });
+
+  it('should carry the correlation id of the run to every job it dispatches', async () => {
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({
+      logger: createMockLogger(),
+      reindexTenant: jest.fn(),
+      pgMigrator,
+      runner: createFakeRunner({ migrations: defaultCatalogue }),
+    });
+    const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindexTenants: [],
+      results: emptyResults(),
+      correlationId: 'run-1',
+    });
+
+    const correlationIds = dispatchSpy.mock.calls.map(
+      call => (call[1] as { correlationId?: string }).correlationId
+    );
+    expect(correlationIds.length).toBeGreaterThan(1);
+    expect(new Set(correlationIds)).toEqual(new Set(['run-1']));
   });
 
   it('should advance schema when data migration is blocked', async () => {
@@ -326,8 +350,9 @@ describe('MigrationJob', () => {
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(4);
-    const lastCall = dispatchSpy.mock.calls[3][1] as {
+    // the last dispatch is the job that only reindexes, handed off by the one that applied delta 10
+    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    const lastCall = dispatchSpy.mock.calls[4][1] as {
       reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
@@ -357,7 +382,7 @@ describe('MigrationJob', () => {
     });
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
-    expect(dispatchSpy).toHaveBeenCalledTimes(3);
+    expect(dispatchSpy).toHaveBeenCalledTimes(4);
   });
 
   it('should log migration lifecycle events', async () => {
@@ -385,7 +410,12 @@ describe('MigrationJob', () => {
       expect.arrayContaining([expect.stringContaining('Migration run complete')])
     );
     expect(infoMessages).toEqual(
-      expect.arrayContaining([expect.stringContaining('Data migrations applied:')])
+      expect.arrayContaining([
+        expect.stringContaining('Mongo data migrations applied: [1, 2, 3, 10]'),
+      ])
+    );
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Postgres migrations applied: [none]')])
     );
     expect(infoMessages).toEqual(
       expect.arrayContaining([expect.stringContaining('Reindexed tenants: [default]')])

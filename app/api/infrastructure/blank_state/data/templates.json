@@ -31,7 +31,6 @@
     "color": "#c03b22",
     "default": true,
     "entityViewPage": null,
-    "processing": null,
-    "tenant_id": "__TENANT_ID__"
+    "processing": null
   }
 ]

@@ -6,7 +6,7 @@ import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import {
   FileWithContent,
   FileStorage,
-  GetFileInput,
+  FileLocation,
 } from '../../application/contracts/FileStorage.js';
 import path from 'path';
 import { pipeline } from 'stream/promises';
@@ -22,12 +22,8 @@ export class FileSystemStorage implements FileStorage {
     this.pathManager = pathManager;
   }
 
-  async storeContent(content: FileContents, subpath: string): Promise<void> {
-    const filepath = this.pathManager.createPath({
-      filename: path.basename(subpath),
-      destination: path.dirname(subpath),
-      type: 'customPath',
-    });
+  async storeContent(content: FileContents, location: FileLocation): Promise<void> {
+    const filepath = this.pathManager.createPath(location);
 
     try {
       await mkdir(path.dirname(filepath), { recursive: true });
@@ -74,7 +70,7 @@ export class FileSystemStorage implements FileStorage {
     await pipeline(file.content.read(), createWriteStream(filepath));
   }
 
-  getFile(input: GetFileInput) {
+  getFile(input: FileLocation) {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 
@@ -90,7 +86,7 @@ export class FileSystemStorage implements FileStorage {
     return true;
   }
 
-  async getFiles(inputs: GetFileInput[]): Promise<FileContents[]> {
+  async getFiles(inputs: FileLocation[]): Promise<FileContents[]> {
     const promises = inputs.map(async input => this.getFile(input));
     return Promise.all(promises);
   }

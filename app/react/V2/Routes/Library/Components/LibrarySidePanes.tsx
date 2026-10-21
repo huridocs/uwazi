@@ -3,12 +3,15 @@ import { t } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import type { PaneProps } from '#V2/Components/Layouts/PaneLayout/types.js';
 import { LibraryFilters } from './LibraryFilters.js';
+import { LibraryResultsPanel } from './LibraryResultsPanel.js';
 import { LibraryRightPane, type LibraryRightPaneProps } from './LibraryRightPane.js';
 
 type LibrarySidePanesProps = LibraryRightPaneProps & {
   isMobile: boolean;
   filtersOpen: boolean;
+  resultsOpen: boolean;
   onFiltersDismiss: () => void;
+  onResultsDismiss: () => void;
   requestPane: (index: number) => void;
 };
 
@@ -53,13 +56,21 @@ const libraryRightPaneElement = (pane: LibraryRightPaneProps, onClosePreview: ()
     editingSelection={pane.editingSelection}
     onEditSelection={pane.onEditSelection}
     onCancelEditSelection={pane.onCancelEditSelection}
+    search={pane.search}
+    paneTab={pane.paneTab}
+    onPaneTabChange={pane.onPaneTabChange}
+    onFocusProperty={pane.onFocusProperty}
+    onSelectResult={pane.onSelectResult}
+    onClearSearch={pane.onClearSearch}
   />
 );
 
 const librarySidePanes = ({
   isMobile,
   filtersOpen,
+  resultsOpen,
   onFiltersDismiss,
+  onResultsDismiss,
   requestPane,
   ...pane
 }: LibrarySidePanesProps): React.ReactElement<PaneProps>[] => {
@@ -73,10 +84,28 @@ const librarySidePanes = ({
 
   const popPreview = () => {
     pane.onClosePreview();
-    requestPane(filtersOpen ? 1 : 0);
+    requestPane(filtersOpen || resultsOpen ? 1 : 0);
   };
   const panes: React.ReactElement<PaneProps>[] = [];
-  if (filtersOpen) {
+  if (resultsOpen) {
+    panes.push(
+      <PaneLayout.Pane
+        key="results"
+        background="transparent"
+        mobileSnap="half"
+        mobileTitle={t('System', 'Results', null, false)}
+        onMobileClose={onResultsDismiss}
+      >
+        <LibraryResultsPanel
+          search={pane.search}
+          rows={pane.rows}
+          onFocusProperty={pane.onFocusProperty}
+          onSelect={pane.onSelectResult}
+          onClearSearch={pane.onClearSearch}
+        />
+      </PaneLayout.Pane>
+    );
+  } else if (filtersOpen) {
     panes.push(
       <PaneLayout.Pane
         key="filters"

@@ -3,7 +3,6 @@ import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.j
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { fixtures } from '#api/stats/specs/fixtures.js';
 import { testingDB } from '#api/utils/testing_db.js';
-import { elastic } from '#api/search/elastic.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
@@ -23,7 +22,6 @@ const testConfigs: TestConfig[] = [
 ];
 
 describe('RetrieveStats', () => {
-  let elasticMock: jest.SpyInstance;
   let db: Db;
 
   beforeAll(async () => {
@@ -32,7 +30,6 @@ describe('RetrieveStats', () => {
   });
 
   afterAll(async () => {
-    jest.restoreAllMocks();
     await testingEnvironment.tearDown();
   });
 
@@ -43,15 +40,7 @@ describe('RetrieveStats', () => {
           postgresCore: usePostgres,
         },
       });
-      jest.spyOn(db, 'stats').mockResolvedValue({ storageSize: 15000 });
-      elasticMock = jest
-        .spyOn(elastic.cat, 'indices')
-        .mockResolvedValue({ body: [{ 'store.size': '5000' }] } as any);
       await testingEnvironment.setFixtures(fixtures);
-    });
-
-    afterEach(() => {
-      elasticMock.mockRestore();
     });
 
     const createSut = () =>
@@ -60,7 +49,6 @@ describe('RetrieveStats', () => {
           accessContext: AccessContext.forActor(new User('admin', 'admin', [])),
         });
         return new RetrieveStatsService(
-          db,
           FilesDAOFactory.default(),
           entitiesDAO,
           UsersQueryServiceFactory.default()
@@ -74,7 +62,7 @@ describe('RetrieveStats', () => {
         users: { total: 3, admin: 1, editor: 1, collaborator: 1 },
         entities: { total: 5 },
         files: { total: 2 },
-        storage: { total: 30000 },
+        storage: { total: 10000 },
       });
     });
 
@@ -87,17 +75,7 @@ describe('RetrieveStats', () => {
         users: { total: 3, admin: 1, editor: 1, collaborator: 1 },
         entities: { total: 5 },
         files: { total: 0 },
-        storage: { total: 20000 },
-      });
-    });
-
-    it('retrieves elastic stats with proper format', async () => {
-      await createSut().execute('en');
-
-      expect(elasticMock).toHaveBeenCalledWith({
-        pretty: true,
-        bytes: 'b',
-        h: 'store.size',
+        storage: { total: 0 },
       });
     });
   });

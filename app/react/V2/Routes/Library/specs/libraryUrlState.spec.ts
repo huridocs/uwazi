@@ -65,7 +65,7 @@ describe('libraryUrlState', () => {
         andFilters: [],
         search: 'batman',
         limit: 30,
-        from: 0,
+        page: 1,
         sort: '',
         order: 'desc' as const,
         view: 'cards' as const,
@@ -79,13 +79,14 @@ describe('libraryUrlState', () => {
         filters: {},
         search: '',
         limit: 10,
-        from: 30,
+        page: 4,
         sort: 'title',
         order: 'asc',
         view: 'table',
       });
       expect(params.get('limit')).toBe('10');
-      expect(params.get('from')).toBe('30');
+      expect(params.get('page')).toBe('4');
+      expect(params.get('from')).toBeNull();
       expect(params.get('sort')).toBe('title');
       expect(params.get('order')).toBe('asc');
       expect(params.get('view')).toBe('table');
@@ -110,6 +111,13 @@ describe('libraryUrlState', () => {
       expect(parseAndFilters('descriptores')).toBeNull();
       expect(serializeAndFilters(['descriptores', 'related'])).toBe('(descriptores,related)');
       expect(serializeAndFilters([])).toBe('');
+    });
+
+    it('reads a leftover from offset as a page and does not write it back', () => {
+      const parsed = parseLibrarySearchParams(new URLSearchParams('from=60&limit=30'));
+      expect(parsed.page).toBe(3);
+      expect(parsed.limit).toBe(30);
+      expect(serializeLibrarySearchString(parsed)).toBe('page=3');
     });
 
     it('keeps existing view params and falls back to cards when none is set', () => {

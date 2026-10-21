@@ -1,10 +1,11 @@
 import { Readable } from 'stream';
+import type { Argv } from 'yargs';
 import { z } from 'zod';
 import { ConflictError } from '#api/core/domain/error/ConflictError.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { CliApplication } from '../CliApplication.js';
 import { ExitCode } from '../errors/ExitCode.js';
-import { Route } from '../routing/Route.js';
+import { Route, type CliArgv } from '../routing/Route.js';
 import { MemoryStream } from '../testing/MemoryStream.js';
 
 class ThingExists extends ConflictError {
@@ -82,6 +83,25 @@ describe('CliApplication', () => {
 
     expect(exitCode).toBe(ExitCode.Ok);
     expect(handle).toHaveBeenCalledWith({ name: 'a' });
+  });
+
+  it('should merge a route flag into the request before running', async () => {
+    const handle = jest.fn().mockResolvedValue('ok');
+    const route: Route = {
+      ...listThings(handle),
+      request: z.object({ force: z.boolean().optional() }).strict(),
+      options: (y: Argv) =>
+        y.option('force', { type: 'boolean', default: false, describe: 'force it' }),
+      requestFromFlags: (argv: CliArgv, req: unknown) =>
+        argv.force ? { ...(req as Record<string, unknown>), force: true } : req,
+    };
+    const { app, connections } = setUp(route);
+
+    const exitCode = await app.run(['things', 'list', '--force']);
+
+    expect(exitCode).toBe(ExitCode.Ok);
+    expect(handle).toHaveBeenCalledWith({ force: true });
+    expect(connections.open).toHaveBeenCalled();
   });
 
   it('should treat a missing --request as an empty object', async () => {

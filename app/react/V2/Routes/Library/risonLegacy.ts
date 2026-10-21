@@ -157,12 +157,14 @@ const filtersFromLegacy = (
 
 const stateFromLegacyQuery = (query: LegacyRisonQuery): LibraryUrlState => {
   const { filters, andFilters } = filtersFromLegacy(query);
+  const limit = typeof query.limit === 'number' && query.limit > 0 ? query.limit : 30;
+  const from = typeof query.from === 'number' && query.from > 0 ? query.from : 0;
   return {
     filters,
     andFilters,
     search: decodeSearchTerm(query.searchTerm),
-    limit: typeof query.limit === 'number' && query.limit > 0 ? query.limit : 30,
-    from: typeof query.from === 'number' && query.from > 0 ? query.from : 0,
+    limit,
+    page: from > 0 ? Math.floor(from / limit) + 1 : 1,
     sort: typeof query.sort === 'string' ? query.sort : '',
     order: query.order === 'asc' ? 'asc' : 'desc',
     view: isLibraryViewMode(String(query.view ?? '')) ? (query.view as LibraryViewMode) : 'cards',

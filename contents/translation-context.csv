@@ -1572,3 +1572,13 @@ Translations are still pending,UI text,Entity view,"Dialog title when saving, ca
 "Some translations are still pending, saving would stop the translation process.",UI text,Entity view,"Dialog body under that title. Confirming stops the translations; cancelling waits.",false
 Library panes,Accessible label,Library,Accessible name for the Library mobile footer ellipsis that opens the Filters/Results pane menu.,false
 Results,Option label,Library,Menu item in the Library mobile footer pane menu that dismisses Filters/preview sheets and returns to the results list.,false
+Library side panel,Accessible label,Library,Accessible name of the Filters and Results tabs in the library side panel.,false
+Search to see where terms match,UI text,Library,Empty-state heading in the Results panel when the search box is empty.,false
+Results show the passages behind each hit.,UI text,Library,Empty-state caption under the search prompt in the Results panel.,false
+Show the matches in,Accessible label,Library,"Prefix of the expand control on a grouped result card. The entity title is appended after this phrase.",false
+Hide the matches in,Accessible label,Library,"Prefix of the collapse control on a grouped result card. The entity title is appended after this phrase.",false
+No results for the selected match types.,UI text,Library,Message when Title Properties and Document chips hide every loaded match.,false
+Results layout,Accessible label,Library,Accessible name of the Grouped and Passages switch in the Results panel.,false
+Grouped,Option label,Library,Results layout that lists one collapsible card per entity.,false
+Passages,Option label,Library,Results layout that lists every matching passage in one flat list.,false
+File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the storage size figure in the Storage card, explaining it measures uploaded file usage only.",false

@@ -1,12 +1,16 @@
 /* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
+import knex, { Knex } from 'knex';
 import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { PgDataMigrationRunner } from '../core/infrastructure/postgresql/PgDataMigrationRunner.js';
+import { LoggerFactory } from '../core/infrastructure/factories/LoggerFactory.js';
+import type { PgDataMigration } from '../core/infrastructure/postgresql/PgDataMigration.js';
 import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
@@ -29,6 +33,8 @@ const adminClient = () =>
   });
 
 let pool: pg.Pool | null = null;
+
+let migrationKnex: Knex | null = null;
 
 export type PGFixture = Record<string, Record<string, unknown>[]>;
 
@@ -126,8 +132,24 @@ const testingPG = {
 
     this.pool = pool;
 
-    const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
-    await migrator.migrate();
+    const migrationsKnex = knex({ client: 'pg', connection: this.config });
+    try {
+      const logger = LoggerFactory.migrationLogger(() => {});
+      const migrator = new PgMigrator(MIGRATIONS_DIR, pool, {
+        logger,
+        // A fresh database has no tenant rows, so tenant scoped migrations run for no tenant and
+        // the app knex is never used.
+        dataRunner: new PgDataMigrationRunner({
+          adminKnex: migrationsKnex,
+          appKnex: migrationsKnex,
+          listTenants: () => [],
+          logger,
+        }),
+      });
+      await migrator.migrate();
+    } finally {
+      await migrationsKnex.destroy();
+    }
 
     await this.grantAppUser();
 
@@ -204,6 +226,31 @@ const testingPG = {
     }
   },
 
+  /**
+   * Runs a data migration on this test database the way PgMigrator does: a tenant migration once
+   * per tenant in `tenants`, under RLS as the app user. `reindexed` holds the tenants it reported.
+   */
+  async runDataMigration(
+    migration: PgDataMigration,
+    tenantIds: string[]
+  ): Promise<{ reindexed: string[] }> {
+    if (!pool) throw new Error('testingPG not connected');
+    migrationKnex = migrationKnex ?? knex({ client: 'pg', connection: this.config });
+    const logger = LoggerFactory.migrationLogger(() => {});
+    const runner = new PgDataMigrationRunner({
+      adminKnex: migrationKnex,
+      appKnex: PostgresDB.appMigrationKnex(),
+      listTenants: () => tenantIds,
+      logger,
+    });
+    const { reindexTenants } = await runner.run(migration, {
+      delta: 0,
+      name: 'spec',
+      heartbeat: async () => Promise.resolve(),
+    });
+    return { reindexed: reindexTenants };
+  },
+
   async getAllFrom<T extends pg.QueryResultRow = Record<string, any>>(table: string): Promise<T[]> {
     if (!pool) throw new Error('testingPG not connected');
     const result = await pool.query<T>(`SELECT * FROM "${escapeIdentifier(table)}"`);
@@ -212,6 +259,11 @@ const testingPG = {
 
   async disconnect(): Promise<void> {
     await PostgresDB.disconnect();
+
+    if (migrationKnex) {
+      await migrationKnex.destroy();
+      migrationKnex = null;
+    }
 
     if (pool) {
       pool.on('error', () => {});

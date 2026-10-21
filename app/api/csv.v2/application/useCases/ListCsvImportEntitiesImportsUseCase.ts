@@ -50,6 +50,12 @@ type CsvImportEntitiesImportListRow = {
     at: number;
     stage: string;
     code?: string;
+    issues?: Array<{
+      reason: string;
+      message: string;
+      property?: string;
+      columns?: string[];
+    }>;
   };
 };
 
@@ -79,6 +85,7 @@ class ListCsvImportEntitiesImportsUseCase extends AbstractUseCase<void, Output, 
               at: model.failure.at,
               stage: model.failure.stage,
               code: model.failure.code,
+              ...(model.failure.issues ? { issues: model.failure.issues } : {}),
             }
           : undefined,
       };

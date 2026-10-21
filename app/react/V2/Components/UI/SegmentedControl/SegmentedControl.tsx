@@ -15,7 +15,7 @@ type SegmentedControlProps<T extends string> = {
   onChange: (id: T) => void;
   ariaLabel: string;
   disabled?: boolean;
-  showLabels?: boolean;
+  showLabels?: boolean | 'always';
   className?: string;
   size?: 'sm' | 'md';
 };
@@ -51,7 +51,11 @@ const SegmentedControl = <T extends string>({
           title={option.title}
         >
           {Icon && <Icon className="h-3 w-3" aria-hidden />}
-          {showLabels && option.label && <span className="hidden sm:inline">{option.label}</span>}
+          {showLabels && option.label ? (
+            <span className={showLabels === 'always' ? undefined : 'hidden sm:inline'}>
+              {option.label}
+            </span>
+          ) : null}
         </SegmentedControlItem>
       );
     })}

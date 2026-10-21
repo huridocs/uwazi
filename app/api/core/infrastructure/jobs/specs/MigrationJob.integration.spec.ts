@@ -10,8 +10,11 @@ import { MigrationJobFactory } from '#api/core/infrastructure/factories/Migratio
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { PgDataMigrationRunner } from '#api/core/infrastructure/postgresql/PgDataMigrationRunner.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { SyncJobsDispatcher } from '#api/core/libs/queue/infrastructure/SyncJobsDispatcher.js';
+import { queueOptionsOf } from '#api/core/libs/queue/application/QueueOptions.js';
 import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -47,6 +50,19 @@ let maintenanceCalls: Array<[string, boolean]> = [];
 let reindexCalls: string[] = [];
 let spiesToRestore: jest.SpyInstance[] = [];
 
+const createPgMigrator = () => {
+  const logger = createMockLogger();
+  return new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any, {
+    logger,
+    dataRunner: new PgDataMigrationRunner({
+      adminKnex: PostgresDB.adminKnex(),
+      appKnex: PostgresDB.appMigrationKnex(),
+      listTenants: () => Object.keys(tenants.tenants),
+      logger,
+    }),
+  });
+};
+
 /**
  * Wires the real chain: real TenantMigrationRunnerAdapter (real migrations
  * collection, real per-tenant context), real PgMigrator, real
@@ -69,7 +85,7 @@ const createRunChain = (migrationsDir: string, reindexFails = false) => {
   spiesToRestore.push(setMaintenanceSpy);
 
   const runner = new TenantMigrationRunnerAdapter(migrationsDir, loadMigration);
-  const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any);
+  const pgMigrator = createPgMigrator();
 
   let dispatcher: SyncJobsDispatcher | undefined;
   const createJob = async () =>
@@ -85,7 +101,7 @@ const createRunChain = (migrationsDir: string, reindexFails = false) => {
   const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
   spiesToRestore.push(dispatchSpy);
 
-  return { dispatcher, dispatchSpy, reindexTenant };
+  return { dispatcher, dispatchSpy, reindexTenant, createJob };
 };
 
 const initialResults = () => ({ appliedDataDeltas: [], appliedSchemaDeltas: [] });
@@ -107,6 +123,8 @@ describe('MigrationJob (real chain)', () => {
     maintenanceCalls = [];
     reindexCalls = [];
     pgMigrationsDir = mkdtempSync(path.join(os.tmpdir(), 'uwazi-pg-migrations-'));
+    // testing_pg applied the real schema migrations; start every test from an empty history
+    await testingEnvironment.pg.pool!.query('DROP TABLE IF EXISTS pg_migrations');
     // The real adapter only migrates tenants that have a settings collection.
     await testingDB.mongodb!.collection('settings').insertOne({});
   });
@@ -121,6 +139,7 @@ describe('MigrationJob (real chain)', () => {
     if (pool) {
       try {
         await pool.query('DROP TABLE IF EXISTS pg_migrations');
+        await pool.query('DROP TABLE IF EXISTS migration_job_tenant_rows');
       } catch {
         // ignore cleanup errors
       }
@@ -140,11 +159,11 @@ describe('MigrationJob (real chain)', () => {
     await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
 
     // calls[0] is the initial dispatch; calls[1] is the run 1 -> run 2 handoff,
-    // carrying only the tenant that applied delta 1
+    // carrying only the tenant that applied delta 1; calls[2] is the job that only reindexes
     const redispatchedTenants = dispatchSpy.mock.calls.map(
       call => (call[1] as { reindexTenants: string[] }).reindexTenants
     );
-    expect(redispatchedTenants).toEqual([[], ['default']]);
+    expect(redispatchedTenants).toEqual([[], ['default'], ['default', TENANT_B]]);
 
     // run 2 merged tenantB (delta 2) into the accumulated list -> both reindexed
     expect(reindexTenant).toHaveBeenCalledTimes(2);
@@ -246,8 +265,9 @@ describe('MigrationJob (real chain)', () => {
 
     // delta 1 requires schema 1: blocked -> real pg migration 001 applied -> unblocked ->
     // data migration applied -> finish applies the remaining pg migration 002
-    expect(dispatchSpy).toHaveBeenCalledTimes(1); // no re-dispatch: everything finished in one run
-    const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any);
+    // one run applies everything, then hands the reindex to a job of its own
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    const pgMigrator = createPgMigrator();
     expect(await pgMigrator.getCurrentVersion()).toBe(2);
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
@@ -261,6 +281,112 @@ describe('MigrationJob (real chain)', () => {
     expect(defaultMigrations.map(m => m.delta)).toEqual([1]);
   });
 
+  it('reindexes the tenants a postgres data migration reports', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export const migration = {
+        scope: 'global',
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}']); },
+      };`
+    );
+
+    const { dispatcher, reindexTenant } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const results = initialResults();
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+    expect(results.appliedSchemaDeltas).toEqual([1]);
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(reindexCalls).toEqual(['default']);
+  });
+
+  it('skips tenants a postgres data migration reports that are not registered', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export const migration = {
+        scope: 'global',
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}', 'deleted-tenant']); },
+      };`
+    );
+
+    const { dispatcher, reindexTenant } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() });
+
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(reindexCalls).toEqual(['default']);
+  });
+
+  it('runs a tenant scoped postgres data migration for every registered tenant', async () => {
+    tenants.add({ name: TENANT_B, dbName: `tenant_b_${testingDB.id().toHexString()}` });
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-create_rows.sql'),
+      `CREATE TABLE migration_job_tenant_rows (tenant_id TEXT NOT NULL, name TEXT);
+       ALTER TABLE migration_job_tenant_rows ENABLE ROW LEVEL SECURITY;
+       CREATE POLICY tenant_isolation ON migration_job_tenant_rows
+         USING (tenant_id = current_tenant()) WITH CHECK (tenant_id = current_tenant());
+       GRANT SELECT, INSERT, UPDATE, DELETE ON migration_job_tenant_rows TO ${config.postgres.app.user};
+       INSERT INTO migration_job_tenant_rows (tenant_id) VALUES ('${DEFAULT_TENANT}'), ('${TENANT_B}');`
+    );
+    writeFileSync(
+      path.join(pgMigrationsDir, '002-name_rows.ts'),
+      `export const migration = {
+        scope: 'tenant',
+        description: 'name rows',
+        reindex: true,
+        async up(ctx) {
+          await ctx.transaction(trx => trx('migration_job_tenant_rows').update({ name: ctx.tenantId }));
+          if (ctx.tenantId === '${DEFAULT_TENANT}') ctx.reindex();
+        },
+      };`
+    );
+    const { dispatcher } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const results = initialResults();
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+    expect(results.appliedSchemaDeltas).toEqual([1, 2]);
+    const { rows } = await testingEnvironment.pg.pool!.query(
+      'SELECT tenant_id, name FROM migration_job_tenant_rows ORDER BY tenant_id'
+    );
+    expect(rows).toEqual([
+      { tenant_id: DEFAULT_TENANT, name: DEFAULT_TENANT },
+      { tenant_id: TENANT_B, name: TENANT_B },
+    ]);
+    expect(reindexCalls).toEqual([DEFAULT_TENANT]);
+  });
+
+  it('is retried up to 3 times by the queue, 5 minutes after each failure', () => {
+    expect(queueOptionsOf(MigrationJob)).toMatchObject({
+      maxRetries: 3,
+      retryDelay: 1000 * 60 * 5,
+    });
+  });
+
+  it('hands the job heartbeat to postgres data migrations', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-long_backfill.ts'),
+      `export const migration = {
+        scope: 'global',
+        description: 'long backfill',
+        reindex: false,
+        async up(ctx) { await ctx.heartbeat(); await ctx.heartbeat(); },
+      };`
+    );
+    const { createJob } = createRunChain(NO_REINDEX_MIGRATIONS_DIR);
+    const heartbeat = jest.fn(async () => {});
+
+    await (
+      await createJob()
+    ).handleDispatch(heartbeat, { reindexTenants: [], results: initialResults() });
+
+    expect(heartbeat.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
   it('keeps maintenance mode when the reindex fails', async () => {
     const { dispatcher, reindexTenant } = createRunChain(REINDEX_MIGRATIONS_DIR, true);
 
@@ -272,6 +398,29 @@ describe('MigrationJob (real chain)', () => {
     // maintenance is kept on: a failed reindex must not leave the tenant serving a
     // half-reindexed index
     expect(maintenanceCalls).toEqual([['default', true]]);
+  });
+
+  it('reindexes in a job of its own, so a retry of a failed reindex still knows the tenants', async () => {
+    writeFileSync(
+      path.join(pgMigrationsDir, '001-backfill.ts'),
+      `export const migration = {
+        scope: 'global',
+        description: 'backfill',
+        reindex: true,
+        async up(ctx) { ctx.reindex(['${DEFAULT_TENANT}']); },
+      };`
+    );
+    const { dispatcher, dispatchSpy } = createRunChain(NO_REINDEX_MIGRATIONS_DIR, true);
+
+    await expect(
+      dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() })
+    ).rejects.toThrow('reindex failed');
+
+    // A queue retry reruns a job with the params it was dispatched with: the job that failed
+    // reindexing must carry the tenants, as the migrations it followed are already recorded.
+    const failedJobParams = dispatchSpy.mock.calls.at(-1)![1] as { reindexTenants: string[] };
+    expect(dispatchSpy.mock.calls.length).toBeGreaterThan(1);
+    expect(failedJobParams.reindexTenants).toEqual(['default']);
   });
 
   it('propagates errors thrown by a failing migration file', async () => {

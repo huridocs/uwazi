@@ -63,6 +63,10 @@ export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
 export { UwaziLoader } from './UwaziLoader.js';
 export { ActiveFilterChip } from './ActiveFilterChip.js';
+export { ToggleChip } from './ToggleChip.js';
+export type { ToggleChipProps } from './ToggleChip.js';
+export { CountBadge } from './CountBadge.js';
+export type { CountBadgeProps } from './CountBadge.js';
 export {
   SegmentedControl,
   SegmentedControlItem,
@@ -100,6 +104,8 @@ export { TemplatePill } from './TemplatePill.js';
 export { EntityTypeChip } from './EntityTypeChip.js';
 export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
 export { IconButton } from './IconButton.js';
+export { RenderIfVisible } from './RenderIfVisible.js';
+export type { RenderIfVisibleProps } from './RenderIfVisible.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

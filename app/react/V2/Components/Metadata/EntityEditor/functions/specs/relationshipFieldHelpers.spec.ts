@@ -1,4 +1,8 @@
+import { createElement } from 'react';
+import { Translate } from '#app/I18N/index.js';
+import { getStore } from '#shared/atomStore/index.js';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '../../../../Forms/index.js';
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
@@ -41,14 +45,51 @@ describe('thesaurusToOptions', () => {
     content: 'thes-1',
   };
 
-  it('should map thesaurus values to multiselect options', () => {
-    expect(thesaurusToOptions(thesauri, property)).toEqual([
-      { label: 'Open', searchLabel: 'Open', value: 'open', items: undefined },
+  beforeEach(() => {
+    const store = getStore();
+    store.set(localeAtom, 'es');
+    store.set(translationsAtom, [
       {
-        label: 'Group',
-        searchLabel: 'Group',
+        locale: 'es',
+        contexts: [
+          {
+            id: 'thes-1',
+            label: 'Status',
+            type: 'Thesaurus',
+            values: { Open: 'Abierto', Group: 'Grupo', Child: 'Hijo' },
+          },
+        ],
+      },
+    ]);
+  });
+
+  afterEach(() => {
+    const store = getStore();
+    store.set(localeAtom, '');
+    store.set(translationsAtom, []);
+  });
+
+  it('should translate option labels with the thesaurus context', () => {
+    const label = (text: string) => createElement(Translate, { context: 'thes-1' }, text);
+
+    expect(thesaurusToOptions(thesauri, property)).toEqual([
+      {
+        label: label('Open'),
+        searchLabel: 'Abierto',
+        value: 'open',
+        items: undefined,
+      },
+      {
+        label: label('Group'),
+        searchLabel: 'Grupo',
         value: 'group',
-        items: [{ label: 'Child', searchLabel: 'Child', value: 'child' }],
+        items: [
+          {
+            label: label('Child'),
+            searchLabel: 'Hijo',
+            value: 'child',
+          },
+        ],
       },
     ]);
   });

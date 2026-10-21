@@ -35,6 +35,7 @@ import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
+import type { PgDataMigration } from '#api/core/infrastructure/postgresql/PgDataMigration.js';
 import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
@@ -210,6 +211,7 @@ const MIRRORED_COLLECTIONS = [
   'files',
   'entities',
   'relationtypes',
+  'pages',
   'captchas',
   'users',
   'usergroups',
@@ -465,6 +467,7 @@ const testingEnvironment = {
     const context: ExecutionContextDeps = {
       tenant: overrides?.tenant ?? tenant,
       actor: overrides?.actor ?? defaultActor,
+      correlationId: overrides?.correlationId,
       factories: { ...defaultFactories, ...overrides?.factories },
     };
 
@@ -606,6 +609,16 @@ const testingEnvironment = {
 
     get pool() {
       return testingPG.pool;
+    },
+
+    /** Admin connection config for the per-test database. */
+    get config() {
+      return testingPG.config;
+    },
+
+    /** Runs a data migration on the per-test database the way PgMigrator does. */
+    async runDataMigration(migration: PgDataMigration, tenantIds: string[]) {
+      return testingPG.runDataMigration(migration, tenantIds);
     },
   },
 };

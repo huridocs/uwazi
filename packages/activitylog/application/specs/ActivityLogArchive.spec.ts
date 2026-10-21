@@ -18,7 +18,7 @@ const entry = (id: string, time: number, overrides: object = {}) =>
 
 const read = async (archive: ActivityLogArchive) => {
   const chunks: Buffer[] = [];
-  for await (const chunk of archive.content()) chunks.push(chunk as Buffer);
+  for await (const chunk of archive.content().read()) chunks.push(chunk as Buffer);
   return gunzipSync(Buffer.concat(chunks))
     .toString()
     .split('\n')

@@ -128,8 +128,7 @@ export class QueueWorker {
     const dispatchable = await this.createDispatchable(job);
 
     try {
-      const { params, ...loggableJob } = job;
-      this.logger.info('Processing job', { job: loggableJob });
+      this.logger.info('Processing job', { job });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
         namespace: job.namespace,
@@ -137,7 +136,7 @@ export class QueueWorker {
         maxRetries: job.options.maxRetries,
       });
       this.logger.info('Job processed', {
-        job: loggableJob,
+        job,
         processingTime: performance.now() - startTime,
       });
       await this.completeJob(job);
@@ -153,9 +152,17 @@ export class QueueWorker {
     if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
       jobToReport = await this.adapter.markJobAsFailed(job);
     } else {
-      jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
+      jobToReport = await QueueWorker.scheduleRetry(this.adapter, job);
     }
     this.onError(e, { job: jobToReport });
+  }
+
+  private static async scheduleRetry(adapter: QueueAdapter, job: Job): Promise<Job> {
+    const newLockWindow = job.options.lockWindow * 2;
+    if (job.options.retryDelay === undefined) {
+      return adapter.updateLockWindow(job, newLockWindow);
+    }
+    return adapter.updateLockWindow(job, newLockWindow, Date.now() + job.options.retryDelay);
   }
 
   async start() {

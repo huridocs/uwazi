@@ -5,7 +5,10 @@ import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
 import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryFilters } from './LibraryFilters.js';
+import { LibrarySideTabs } from './LibrarySideTabs.js';
+import { LibraryResultsPanel } from './LibraryResultsPanel.js';
 import { LibrarySelectionPanel } from './LibrarySelectionPanel.js';
+import { libraryResultViews } from './libraryResultSnippets.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 
 type LibraryRightPaneProps = {
@@ -30,6 +33,12 @@ type LibraryRightPaneProps = {
   editingSelection?: boolean;
   onEditSelection?: () => void;
   onCancelEditSelection?: () => void;
+  search: string;
+  paneTab: 'filters' | 'results';
+  onPaneTabChange: (tab: 'filters' | 'results') => void;
+  onFocusProperty: (sharedId: string, fieldKey: string) => void;
+  onSelectResult: (sharedId: string) => void;
+  onClearSearch: () => void;
 };
 
 const LibraryRightPane = ({
@@ -54,6 +63,12 @@ const LibraryRightPane = ({
   editingSelection = false,
   onEditSelection,
   onCancelEditSelection,
+  search,
+  paneTab,
+  onPaneTabChange,
+  onFocusProperty,
+  onSelectResult,
+  onClearSearch,
 }: LibraryRightPaneProps) => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
@@ -87,15 +102,36 @@ const LibraryRightPane = ({
       />
     );
   }
+  const hasResults = Boolean(search.trim()) && libraryResultViews(rows).length > 0;
   return (
-    <LibraryFilters
-      aggregations={aggregations}
-      filters={filters}
-      andFilters={andFilters}
-      onChange={onFiltersChange}
-      onAndFiltersChange={onAndFiltersChange}
-      chips={chips}
-    />
+    <div className="flex h-full min-h-0 flex-col bg-warm">
+      <LibrarySideTabs
+        activeId={paneTab}
+        onChange={onPaneTabChange}
+        filtersDot={chips.length > 0}
+        resultsDot={hasResults}
+      />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        {paneTab === 'results' ? (
+          <LibraryResultsPanel
+            search={search}
+            rows={rows}
+            onFocusProperty={onFocusProperty}
+            onSelect={onSelectResult}
+            onClearSearch={onClearSearch}
+          />
+        ) : (
+          <LibraryFilters
+            aggregations={aggregations}
+            filters={filters}
+            andFilters={andFilters}
+            onChange={onFiltersChange}
+            onAndFiltersChange={onAndFiltersChange}
+            chips={chips}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -11,6 +11,7 @@ import {
   NormalizeResult as FileNormalizeResult,
 } from '../services/CsvImportFileNormalizer.js';
 import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
+import { CsvReaderError } from '../services/CsvReaderError.js';
 import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
@@ -32,11 +33,46 @@ type Callbacks = BaseCallbacks & {
   onProgress: (info: ExtractionProgress) => void;
 };
 
+const readParseError = (error: Error) => {
+  if (error instanceof CsvReaderError) {
+    return error;
+  }
+  if (error instanceof NonRetryableJobError && error.cause instanceof CsvReaderError) {
+    return error.cause;
+  }
+  return undefined;
+};
+
+const toExtractFailure = (error: Error) => {
+  const parseError = readParseError(error);
+  return {
+    message: error.message,
+    retryable: !(error instanceof NonRetryableJobError),
+    at: Date.now(),
+    stage: 'extracting files',
+    ...(parseError
+      ? {
+          code: 'CSV_PARSE_FAILED',
+          issues: [{ reason: parseError.reason, message: error.message }],
+        }
+      : {}),
+  };
+};
+
 type Input = {
   importId: string;
   tenantName: string;
   userId: string;
   callbacks: Callbacks;
+};
+
+type ExtractionParams = {
+  importId: string;
+  destination: string;
+  filename: string;
+  callbacks: Callbacks;
+  tenantName: string;
+  userId: string;
 };
 
 class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
@@ -134,15 +170,21 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
     });
   }
 
+  private async failExtraction(
+    importId: string,
+    callbacks: Callbacks,
+    error: unknown
+  ): Promise<void> {
+    const failure =
+      error instanceof CsvReaderError ? new NonRetryableJobError(error) : (error as Error);
+    await this.handleError(importId, callbacks, failure);
+    throw failure;
+  }
+
   async handleError(importId: string, callbacks: Callbacks, error: Error) {
     CsvExtractUploadedZipJob.emitError(callbacks, importId, error);
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
-    const failure = {
-      message: error.message,
-      retryable: !(error instanceof NonRetryableJobError),
-      at: Date.now(),
-      stage: 'extracting files',
-    };
+    const failure = toExtractFailure(error);
     await this.transactionManager.run(async () => {
       const withFailure = CsvImportDomain.withFailure(csvImport, failure);
       const withStatus = CsvImportDomain.withStatus(
@@ -186,48 +228,44 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
     });
   }
 
-  private async processExtraction(params: {
-    importId: string;
-    destination: string;
-    filename: string;
-    callbacks: Callbacks;
-    tenantName: string;
-    userId: string;
-  }) {
+  private async runExtraction(params: ExtractionParams) {
+    if (await this.isCancelled(params.importId)) {
+      return;
+    }
+    const normalizeResult = await this.deps.fileNormalizer.normalize({
+      importId: params.importId,
+      destination: params.destination,
+      filename: params.filename,
+      onFileProgress: info =>
+        params.callbacks.onProgress({
+          type: 'files',
+          importId: info.importId,
+          processedFiles: info.processedFiles,
+        }),
+    });
+    if (await this.isCancelled(params.importId)) {
+      return;
+    }
+    await this.stageRows(params.importId, params.destination, params.callbacks);
+    await this.handleExtractionSuccess(
+      params.importId,
+      {
+        tenantName: params.tenantName,
+        userId: params.userId,
+      },
+      normalizeResult
+    );
+    if (await this.isCancelled(params.importId)) {
+      return;
+    }
+    CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
+  }
+
+  private async processExtraction(params: ExtractionParams) {
     try {
-      if (await this.isCancelled(params.importId)) {
-        return;
-      }
-      const normalizeResult = await this.deps.fileNormalizer.normalize({
-        importId: params.importId,
-        destination: params.destination,
-        filename: params.filename,
-        onFileProgress: info =>
-          params.callbacks.onProgress({
-            type: 'files',
-            importId: info.importId,
-            processedFiles: info.processedFiles,
-          }),
-      });
-      if (await this.isCancelled(params.importId)) {
-        return;
-      }
-      await this.stageRows(params.importId, params.destination, params.callbacks);
-      await this.handleExtractionSuccess(
-        params.importId,
-        {
-          tenantName: params.tenantName,
-          userId: params.userId,
-        },
-        normalizeResult
-      );
-      if (await this.isCancelled(params.importId)) {
-        return;
-      }
-      CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
+      await this.runExtraction(params);
     } catch (e) {
-      await this.handleError(params.importId, params.callbacks, e as Error);
-      throw e;
+      await this.failExtraction(params.importId, params.callbacks, e);
     }
   }
 

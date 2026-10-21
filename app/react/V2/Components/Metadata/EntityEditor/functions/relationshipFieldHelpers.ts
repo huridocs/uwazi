@@ -1,3 +1,5 @@
+import { createElement } from 'react';
+import { t, Translate } from '#app/I18N/index.js';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -29,15 +31,19 @@ const thesaurusToOptions = (
   }
 
   const labelFor = (label: string, id?: string) =>
-    id && freshIds?.has(id) ? thesaurusFreshLabel(label, thesaurus._id) : label;
+    id && freshIds?.has(id)
+      ? thesaurusFreshLabel(label, thesaurus._id)
+      : createElement(Translate, { context: thesaurus._id }, label);
+
+  const searchLabelFor = (label: string) => t(thesaurus._id, label, null, false);
 
   return thesaurus.values.map(value => ({
     label: labelFor(value.label, value.id),
-    searchLabel: value.label,
+    searchLabel: searchLabelFor(value.label),
     value: value.id || value.label,
     items: value.values?.map(child => ({
       label: labelFor(child.label, child.id),
-      searchLabel: child.label,
+      searchLabel: searchLabelFor(child.label),
       value: child.id || child.label,
     })),
   }));

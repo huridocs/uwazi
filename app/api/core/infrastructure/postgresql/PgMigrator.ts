@@ -1,30 +1,63 @@
 // eslint-disable-next-line no-restricted-imports
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, statSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LoadPgMigration, PgMigrationLoader } from './PgMigrationLoader.js';
+import { PgDataMigrationRunner } from './PgDataMigrationRunner.js';
+
+/** `.sql` schema migrations; `.ts` data migrations, built to `.js`. */
+const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.(sql|ts|js)$/;
+const TRACKING_TABLE = 'pg_migrations';
+/** Session advisory lock held for a whole run, so only one migrator applies migrations at a time. */
+const MIGRATION_LOCK_KEY = 7_586_011;
+
+type MigrationKind = 'sql' | 'data';
+
+type MigrationFile = { delta: number; name: string; kind: MigrationKind; filePath: string };
 
 type MigrationStatus = {
   delta: number;
   name: string;
+  kind: MigrationKind;
   applied: boolean;
+  /** Pending but numbered below the highest applied migration: migrate() refuses to run it. */
+  outOfOrder: boolean;
 };
 
-const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.sql$/;
-const TRACKING_TABLE = 'pg_migrations';
+type MigrateOptions = {
+  until?: number;
+  heartbeat?: () => Promise<void>;
+};
 
-function parseMigrationFile(fileName: string): { delta: number; name: string } | null {
+type MigrateResult = { applied: number[]; reindexTenants: string[] };
+
+type PgMigratorDeps = {
+  dataRunner: PgDataMigrationRunner;
+  logger: Logger;
+  /** Defaults to a plain path import; production reloads migrations edited on disk. */
+  loadMigration?: LoadPgMigration;
+};
+
+const noHeartbeat = async () => Promise.resolve();
+
+function parseMigrationFile(
+  fileName: string
+): { delta: number; name: string; kind: MigrationKind } | null {
   const match = fileName.match(MIGRATION_FILE_PATTERN);
   if (!match) return null;
   return {
     delta: parseInt(match[1], 10),
     name: match[2],
+    kind: match[3] === 'sql' ? 'sql' : 'data',
   };
 }
 
 export class PgMigrator {
   constructor(
     private migrationsDir: string,
-    private pool: pg.Pool
+    private pool: pg.Pool,
+    private deps: PgMigratorDeps
   ) {}
 
   private async ensureTrackingTable(): Promise<void> {
@@ -37,7 +70,7 @@ export class PgMigrator {
     `);
   }
 
-  private readMigrationFiles(): Array<{ delta: number; name: string; filePath: string }> {
+  private readMigrationFiles(): MigrationFile[] {
     const files = readdirSync(this.migrationsDir);
     const migrations = files
       .map(fileName => {
@@ -48,7 +81,7 @@ export class PgMigrator {
           filePath: path.join(this.migrationsDir, fileName),
         };
       })
-      .filter((m): m is { delta: number; name: string; filePath: string } => m !== null)
+      .filter((m): m is MigrationFile => m !== null)
       .sort((a, b) => a.delta - b.delta);
 
     const seen = new Set<number>();
@@ -95,10 +128,13 @@ export class PgMigrator {
     const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
 
+    const highestApplied = PgMigrator.highestApplied(appliedDeltas);
     const statuses = migrationFiles.map(m => ({
       delta: m.delta,
       name: m.name,
+      kind: m.kind,
       applied: appliedDeltas.has(m.delta),
+      outOfOrder: !appliedDeltas.has(m.delta) && m.delta < highestApplied,
     }));
 
     return {
@@ -107,48 +143,127 @@ export class PgMigrator {
     };
   }
 
-  /* eslint-disable max-statements */
-  async migrate(until?: number): Promise<number[]> {
+  private async withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('SELECT pg_advisory_lock($1)', [MIGRATION_LOCK_KEY]);
+      try {
+        return await fn();
+      } finally {
+        await client.query('SELECT pg_advisory_unlock($1)', [MIGRATION_LOCK_KEY]);
+      }
+    } finally {
+      client.release();
+    }
+  }
+
+  private static highestApplied(appliedDeltas: Set<number>): number {
+    return Math.max(0, ...appliedDeltas);
+  }
+
+  private static assertForwardOnly(pending: MigrationFile[], appliedDeltas: Set<number>): void {
+    const highestApplied = PgMigrator.highestApplied(appliedDeltas);
+    const behind = pending.filter(m => m.delta < highestApplied);
+    if (behind.length > 0) {
+      const names = behind.map(m => `${m.delta} (${m.name})`).join(', ');
+      throw new Error(
+        `Pending migration delta(s) ${names} are below the highest applied delta ${highestApplied}: renumber them above it`
+      );
+    }
+  }
+
+  async migrate(options: MigrateOptions = {}): Promise<MigrateResult> {
+    return this.withLock(async () => this.applyPending(options));
+  }
+
+  private async pendingMigrations(until?: number): Promise<MigrationFile[]> {
     await this.ensureTrackingTable();
 
-    const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
-    let pending = migrationFiles.filter(m => !appliedDeltas.has(m.delta));
+    const pending = this.readMigrationFiles().filter(m => !appliedDeltas.has(m.delta));
+    PgMigrator.assertForwardOnly(pending, appliedDeltas);
 
-    if (until !== undefined) {
-      pending = pending.filter(m => m.delta <= until);
-    }
+    return pending.filter(m => until === undefined || m.delta <= until);
+  }
 
+  private async applyPending({
+    until,
+    heartbeat = noHeartbeat,
+  }: MigrateOptions): Promise<MigrateResult> {
     const applied: number[] = [];
-    for (const migration of pending) {
-      const sql = readFileSync(migration.filePath, 'utf-8');
+    const reindexTenants = new Set<string>();
 
+    for (const migration of await this.pendingMigrations(until)) {
       // eslint-disable-next-line no-await-in-loop
-      const client = await this.pool.connect();
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('BEGIN');
-        // eslint-disable-next-line no-await-in-loop
-        await client.query(sql);
-        // eslint-disable-next-line no-await-in-loop
-        await client.query(`INSERT INTO ${TRACKING_TABLE} (delta, name) VALUES ($1, $2)`, [
-          migration.delta,
-          migration.name,
-        ]);
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('COMMIT');
-      } catch (error) {
-        // eslint-disable-next-line no-await-in-loop
-        await client.query('ROLLBACK');
-        throw error;
-      } finally {
-        client.release();
-      }
-
+      await (migration.kind === 'sql'
+        ? this.applySql(migration)
+        : this.applyData(migration, heartbeat, reindexTenants));
       applied.push(migration.delta);
     }
 
-    return applied;
+    return { applied, reindexTenants: [...reindexTenants] };
   }
-  /* eslint-enable max-statements */
+
+  private async applySql(migration: MigrationFile): Promise<void> {
+    const startedAt = Date.now();
+    await this.runSqlInTransaction(migration);
+    this.deps.logger.info(
+      `Postgres schema migration ${migration.delta} (${migration.name}) applied`,
+      {
+        event: 'pg_schema_migration.applied',
+        delta: migration.delta,
+        migrationName: migration.name,
+        durationMs: Date.now() - startedAt,
+      }
+    );
+  }
+
+  private async runSqlInTransaction(migration: MigrationFile): Promise<void> {
+    const sql = readFileSync(migration.filePath, 'utf-8');
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(sql);
+      await PgMigrator.record(migration, client);
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  /** Recorded only once the runner resolves: for a tenant migration, once every tenant succeeded. */
+  private async applyData(
+    migration: MigrationFile,
+    heartbeat: () => Promise<void>,
+    reindexTenants: Set<string>
+  ): Promise<void> {
+    const load = this.deps.loadMigration ?? PgMigrationLoader.byPath;
+    const { migration: dataMigration } = await load(
+      migration.filePath,
+      statSync(migration.filePath).mtimeMs
+    );
+
+    const result = await this.deps.dataRunner.run(dataMigration, {
+      delta: migration.delta,
+      name: migration.name,
+      heartbeat,
+    });
+    result.reindexTenants.forEach(tenantId => reindexTenants.add(tenantId));
+    await PgMigrator.record(migration, this.pool);
+  }
+
+  private static async record(
+    migration: MigrationFile,
+    queryable: Pick<pg.Pool | pg.PoolClient, 'query'>
+  ): Promise<void> {
+    await queryable.query(`INSERT INTO ${TRACKING_TABLE} (delta, name) VALUES ($1, $2)`, [
+      migration.delta,
+      migration.name,
+    ]);
+  }
 }
+
+export type { MigrateOptions, MigrateResult, MigrationKind, MigrationStatus, PgMigratorDeps };
