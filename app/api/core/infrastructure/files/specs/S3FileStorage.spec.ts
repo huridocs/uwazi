@@ -351,10 +351,11 @@ describe('S3FileStorage', () => {
 
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
-      await s3fileStorage.storeContent(
-        FileBuilder.content('content created\n'),
-        'custom_path/deep/documento.txt'
-      );
+      await s3fileStorage.storeContent(FileBuilder.content('content created\n'), {
+        type: 'customPath',
+        destination: 'custom_path/deep',
+        filename: 'documento.txt',
+      });
 
       const s3File = await s3Client.send(
         new GetObjectCommand({
@@ -363,6 +364,21 @@ describe('S3FileStorage', () => {
         })
       );
       expect(await toString(s3File)).toBe('content created\n');
+    });
+
+    it('should store it in the folder of its type', async () => {
+      await s3fileStorage.storeContent(FileBuilder.content('archived\n'), {
+        type: 'activitylog',
+        filename: 'archive.jsonl.gz',
+      });
+
+      const s3File = await s3Client.send(
+        new GetObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/log/archive.jsonl.gz',
+        })
+      );
+      expect(await toString(s3File)).toBe('archived\n');
     });
   });
 
@@ -429,7 +445,11 @@ describe('S3FileStorage', () => {
     it('should wrap error with S3Error (storeContent)', async () => {
       s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
       try {
-        await s3fileStorage.storeContent(FileBuilder.content('test content'), '/fake/path');
+        await s3fileStorage.storeContent(FileBuilder.content('test content'), {
+          type: 'customPath',
+          destination: '/fake',
+          filename: 'path',
+        });
       } catch (error) {
         expect(error).toBeInstanceOf(S3Error);
         expect(error.originalError.$metadata).toEqual(expectedMetadata);

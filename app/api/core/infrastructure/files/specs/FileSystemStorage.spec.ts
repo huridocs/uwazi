@@ -185,10 +185,11 @@ describe('FileSystemStorage', () => {
 
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
-      await fileSystemStorage.storeContent(
-        FileBuilder.content('content created\n'),
-        'custom_path/deep/documento.txt'
-      );
+      await fileSystemStorage.storeContent(FileBuilder.content('content created\n'), {
+        type: 'customPath',
+        destination: 'custom_path/deep',
+        filename: 'documento.txt',
+      });
 
       const contents = await toString(
         createReadStream(
@@ -196,6 +197,18 @@ describe('FileSystemStorage', () => {
         )
       );
       expect(contents).toBe('content created\n');
+    });
+
+    it('should store it in the folder of its type', async () => {
+      await fileSystemStorage.storeContent(FileBuilder.content('archived\n'), {
+        type: 'activitylog',
+        filename: 'archive.jsonl.gz',
+      });
+
+      const contents = await toString(
+        createReadStream(path.join(tenants.current().activityLogs, 'archive.jsonl.gz'))
+      );
+      expect(contents).toBe('archived\n');
     });
   });
 

@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { createGzip } from 'zlib';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { ActivityLogEntry } from '../domain/ActivityLogEntry.js';
 
 /**
@@ -27,8 +28,8 @@ class ActivityLogArchive {
     return this.entries.length;
   }
 
-  content(): Readable {
-    return Readable.from(this.lines()).pipe(createGzip());
+  content(): FileContents {
+    return new FileContents(() => Readable.from(this.lines()).pipe(createGzip()));
   }
 
   private *lines(): Generator<string> {

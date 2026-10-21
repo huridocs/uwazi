@@ -88,7 +88,9 @@ const updateImportReportStats = async (params: {
   });
 };
 
-const buildReportPath = (importId: string) => `csv-imports/${importId}/reports/failed_rows.csv`;
+const REPORT_FILENAME = 'failed_rows.csv';
+
+const buildReportDestination = (importId: string) => `csv-imports/${importId}/reports`;
 
 const persistNoFailureStats = async (params: {
   csvImportsDS: CsvImportsDataSource;
@@ -118,9 +120,13 @@ const storeFailedRowsReport = async (params: {
     return undefined;
   }
 
-  const reportPath = buildReportPath(importId);
-  await fileStorage.storeContent(buildFileContents(csvContent), reportPath);
-  return reportPath;
+  const destination = buildReportDestination(importId);
+  await fileStorage.storeContent(buildFileContents(csvContent), {
+    type: 'customPath',
+    destination,
+    filename: REPORT_FILENAME,
+  });
+  return `${destination}/${REPORT_FILENAME}`;
 };
 
 const persistRowErrorsReport = async (params: {

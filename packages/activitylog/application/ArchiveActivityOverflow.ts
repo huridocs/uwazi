@@ -1,15 +1,11 @@
-import type { Readable } from 'stream';
+import type { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { ActivityLogArchive } from './ActivityLogArchive.js';
 import { ActivityLogDataSource } from './contracts/ActivityLogDataSource.js';
 
-type ArchiveStorage = {
-  storeFile(filename: string, file: Readable, type: 'activitylog'): Promise<unknown>;
-};
-
 type Deps = {
   activityLogDS: ActivityLogDataSource;
-  storage: ArchiveStorage;
+  fileStorage: FileStorage;
   maxRows: number;
   chunkRows: number;
 };
@@ -38,7 +34,10 @@ class ArchiveActivityOverflow extends AbstractUseCase<void, Output, Deps> {
     if (entries.length < this.deps.chunkRows) return done;
 
     const file = ActivityLogArchive.of(entries);
-    await this.deps.storage.storeFile(file.filename, file.content(), 'activitylog');
+    await this.deps.fileStorage.storeContent(file.content(), {
+      type: 'activitylog',
+      filename: file.filename,
+    });
     await this.deps.activityLogDS.remove(entries);
 
     return this.archive(filesLeft - 1, {
@@ -49,4 +48,4 @@ class ArchiveActivityOverflow extends AbstractUseCase<void, Output, Deps> {
 }
 
 export { ArchiveActivityOverflow };
-export type { Output as ArchiveActivityOverflowOutput, ArchiveStorage };
+export type { Output as ArchiveActivityOverflowOutput };
