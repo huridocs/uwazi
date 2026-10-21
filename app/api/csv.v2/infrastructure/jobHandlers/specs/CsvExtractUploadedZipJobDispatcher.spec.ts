@@ -132,7 +132,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
         await fileStorage.storeContent(
           new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
-          `${destination}/${zipFilename}`
+          { type: 'customPath', destination, filename: zipFilename }
         );
         const importDoc = CsvImportDomain.withStorage(
           CsvImportDomain.create({
@@ -207,7 +207,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       await createTestingZip([path.join(emptyDir, 'test.csv')], zipFilename, tempZipDir);
       await fileStorage.storeContent(
         new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
-        `${destination}/${zipFilename}`
+        { type: 'customPath', destination, filename: zipFilename }
       );
       createdTempDirs.push(tempZipDir);
       const importDoc = CsvImportDomain.withStorage(
