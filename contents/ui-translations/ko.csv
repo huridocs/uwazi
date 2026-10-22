@@ -1220,6 +1220,7 @@ Save label,레이블 저장
 Save password,암호 저장
 Save the visualization before refreshing.,새로 고침하기 전에 시각화 내용을 저장하세요.
 Save the visualization to get embed code.,시각화 자료를 저장하여 삽입 코드를 얻으세요.
+Save theme,테마 저장
 Save your work to make change permanent,변경 사항을 영구적으로 적용하려면 작업을 저장하세요
 Saved image,저장된 이미지
 Saved successfully.,저장이 완료되었습니다.
@@ -1362,7 +1363,6 @@ Snapshot (manual),스냅샷(수동)
 Snapshot (scheduled),스냅샷(예약)
 Some tasks may take a while. Bert will reply when it's done.,일부 작업은 시간이 좀 걸릴 수 있습니다. 작업이 완료되면 Bert가 답장을 드릴 것입니다.
 "Some translations are still pending, saving would stop the translation process.","일부 번역이 아직 진행 중이며, 저장하면 번역 과정이 중단됩니다."
-Translations are still pending,번역이 아직 진행 중입니다
 Something went wrong,오류
 Sort,분류하기
 Sort ascending,오름차순으로 정렬
@@ -1560,6 +1560,7 @@ Translating,Translating
 Translation,번역
 Translation service is unavailable,Translation service is unavailable
 Translations,번역
+Translations are still pending,번역이 아직 진행 중입니다
 Translations imported.,번역본을 가져왔습니다.
 Translations reset successfully,번역이 성공적으로 초기화되었습니다.
 Translations saved,번역 저장 완료

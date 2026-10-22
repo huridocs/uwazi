@@ -1227,6 +1227,7 @@ Save label,حفظ التسمية
 Save password,حفظ كلمة المرور
 Save the visualization before refreshing.,احفظ التمثيل البياني قبل التحديث.
 Save the visualization to get embed code.,احفظ العرض المرئي للحصول على رمز التضمين.
+Save theme,احفظ السمة
 Save your work to make change permanent,احفظ عملك لتثبيت التغييرات بشكل دائم
 Saved image,الصورة المحفوظة
 Saved successfully.,تم الحفظ بنجاح.
@@ -1369,7 +1370,6 @@ Snapshot (manual),لقطة (يدوية)
 Snapshot (scheduled),لقطة (مجدولة)
 Some tasks may take a while. Bert will reply when it's done.,قد تستغرق بعض المهام بعض الوقت. سيقوم Bert بالرد عند الانتهاء منها.
 "Some translations are still pending, saving would stop the translation process.",بعض الترجمات لا تزال قيد الانتظار، والحفظ سيوقف عملية الترجمة.
-Translations are still pending,الترجمات لا تزال قيد الانتظار
 Something went wrong,حدث خطأ ما
 Sort,تصنيف
 Sort ascending,الترتيب تصاعديًّا
@@ -1567,6 +1567,7 @@ Translating,Translating
 Translation,الترجمة
 Translation service is unavailable,Translation service is unavailable
 Translations,الترجمات
+Translations are still pending,الترجمات لا تزال قيد الانتظار
 Translations imported.,تم استيراد الترجمات.
 Translations reset successfully,تم إعادة تعيين الترجمات بنجاح
 Translations saved,تم حفظ الترجمات

@@ -1228,6 +1228,7 @@ Save label,Save label
 Save password,Save password
 Save the visualization before refreshing.,Save the visualization before refreshing.
 Save the visualization to get embed code.,Save the visualization to get embed code.
+Save theme,Save theme
 Save your work to make change permanent,Save your work to make change permanent
 Saved image,Saved image
 Saved successfully.,Saved successfully.
@@ -1370,7 +1371,6 @@ Snapshot (manual),Snapshot (manual)
 Snapshot (scheduled),Snapshot (scheduled)
 Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 "Some translations are still pending, saving would stop the translation process.","Some translations are still pending, saving would stop the translation process."
-Translations are still pending,Translations are still pending
 Something went wrong,Something went wrong
 Sort,Sort
 Sort ascending,Sort ascending
@@ -1568,6 +1568,7 @@ Translating,Translating
 Translation,Translation
 Translation service is unavailable,Translation service is unavailable
 Translations,Translations
+Translations are still pending,Translations are still pending
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Translations saved

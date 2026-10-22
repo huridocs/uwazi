@@ -1227,6 +1227,7 @@ Save label,Etiketi kaydet
 Save password,Parolayı kaydet
 Save the visualization before refreshing.,Yenilemeden önce görselleştirmeyi kaydedin.
 Save the visualization to get embed code.,Gömme kodunu almak için görselleştirmeyi kaydedin.
+Save theme,Temayı kaydet
 Save your work to make change permanent,Değişikliği kalıcı hale getirmek için çalışmanızı kaydedin
 Saved image,Kaydedilen görsel
 Saved successfully.,Başarıyla kaydedildi.
@@ -1369,7 +1370,6 @@ Snapshot (manual),Anlık görüntü (manuel)
 Snapshot (scheduled),Anlık görüntü (zamanlanmış)
 Some tasks may take a while. Bert will reply when it's done.,Bazı işlemler biraz zaman alabilir. İşlem tamamlandığında Bert size yanıt verecektir.
 "Some translations are still pending, saving would stop the translation process.","Bazı çeviriler hâlâ sürüyor, kaydetmek çeviri işlemini durdurur."
-Translations are still pending,Çeviriler hâlâ sürüyor
 Something went wrong,Bir şey ters gitti
 Sort,Sırala
 Sort ascending,Artan sıraya göre sırala
@@ -1567,6 +1567,7 @@ Translating,Translating
 Translation,Çeviri
 Translation service is unavailable,Translation service is unavailable
 Translations,Çeviriler
+Translations are still pending,Çeviriler hâlâ sürüyor
 Translations imported.,Çeviriler içe aktarıldı.
 Translations reset successfully,Çeviriler başarıyla sıfırlandı
 Translations saved,Çeviriler kaydedildi
