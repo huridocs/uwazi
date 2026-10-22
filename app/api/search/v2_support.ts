@@ -5,10 +5,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
-  const transactionManager = TransactionManagerFactory.mongo();
-  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
-
-  return settingsDataSource.readNewRelationshipsAllowed();
+  return SettingsDataSourceFactory.cached().readNewRelationshipsAllowed();
 }
 
 function createRelationshipsV2ResponseProcessor(featureEnabled = false) {

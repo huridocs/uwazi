@@ -17,10 +17,8 @@ import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDif
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 
-const newRelationshipsEnabled = async () => {
-  const transactionManager = TransactionManagerFactory.mongo();
-  return SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed();
-};
+const newRelationshipsEnabled = async () =>
+  SettingsDataSourceFactory.cached().readNewRelationshipsAllowed();
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
   if (await newRelationshipsEnabled()) {
