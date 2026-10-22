@@ -12,6 +12,29 @@ const createManager = (tenantId = TENANT) =>
 const insertRow = (executor: any, _id: string, name = _id, tenantId = TENANT) =>
   executor('thesauri').insert({ _id, name, values: JSON.stringify([]), tenant_id: tenantId });
 
+const deferred = <T = void>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>(resolveFn => {
+    resolve = resolveFn;
+  });
+  return { promise, resolve };
+};
+
+const spyOnCommit = (manager: PostgresTransactionManager): string[] => {
+  const events: string[] = [];
+  const originalBegin = manager.beginTransaction.bind(manager);
+  jest.spyOn(manager, 'beginTransaction').mockImplementation(async permissionContext => {
+    const handle = await originalBegin(permissionContext);
+    const { commit } = handle;
+    handle.commit = async () => {
+      events.push('commit');
+      await commit();
+    };
+    return handle;
+  });
+  return events;
+};
+
 describe('PostgresTransactionManager', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -96,6 +119,28 @@ describe('PostgresTransactionManager', () => {
 
       const rows = await testingPG.getAllFrom('thesauri');
       expect(rows).toHaveLength(0);
+    });
+
+    it('should wait for a joined connection still in flight before committing', async () => {
+      const manager = createManager();
+      const events = spyOnCommit(manager);
+      const joinGate = deferred();
+
+      let slow!: Promise<unknown>;
+      const runPromise = manager.run(async () => {
+        slow = manager.withConnection(async executor => {
+          await joinGate.promise;
+          events.push('joined-write');
+          await insertRow(executor, 'joined-late');
+        });
+      });
+
+      joinGate.resolve();
+      await slow;
+      await runPromise;
+
+      expect(events).toEqual(['joined-write', 'commit']);
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['joined-late']);
     });
   });
 
@@ -264,6 +309,24 @@ describe('PostgresTransactionManager', () => {
         await handle.commit();
         expect(bypassResult.rows[0].v).toBe('false');
         expect(refIdsResult.rows[0].v).toBe('');
+      });
+
+      it('should roll back the transaction when setting the tenant fails', async () => {
+        const trx = {
+          raw: jest.fn().mockRejectedValue(new Error('set_config failed')),
+          rollback: jest.fn().mockResolvedValue(undefined),
+          commit: jest.fn().mockResolvedValue(undefined),
+        };
+        const knex = { transaction: jest.fn().mockResolvedValue(trx) };
+        const manager = new PostgresTransactionManager(
+          knex as any,
+          'tenant-leak',
+          LoggerFactory.forTests()
+        );
+
+        await expect(manager.beginTransaction()).rejects.toThrow('set_config failed');
+        expect(trx.rollback).toHaveBeenCalledTimes(1);
+        expect(trx.commit).not.toHaveBeenCalled();
       });
     });
 
