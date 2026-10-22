@@ -20,6 +20,17 @@ const deferred = <T = void>() => {
   return { promise, resolve };
 };
 
+/** Records every statement knex sends, transaction control included. */
+const recordStatements = () => {
+  const statements: string[] = [];
+  const listener = (query: { sql: string }) => statements.push(query.sql);
+  PostgresDB.knex.on('query', listener);
+  return {
+    statements,
+    stop: () => PostgresDB.knex.removeListener('query', listener),
+  };
+};
+
 const spyOnCommit = (manager: PostgresTransactionManager): string[] => {
   const events: string[] = [];
   const originalBegin = manager.beginTransaction.bind(manager);
@@ -227,6 +238,83 @@ describe('PostgresTransactionManager', () => {
           'Transaction already in progress.'
         );
       });
+    });
+  });
+
+  describe('statements sent to set the context', () => {
+    const contextStatements = (statements: string[]) =>
+      statements.filter(sql => sql.includes('set_config') || sql.includes('current_setting'));
+
+    it('should open a transaction with a single context statement', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+      recorder.stop();
+
+      expect(recorder.statements).toHaveLength(3);
+      expect(contextStatements(recorder.statements)).toHaveLength(1);
+    });
+
+    it('should set the context with a single statement when joining a run', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        const recorder = recordStatements();
+        await manager.withConnection(async () => undefined, { bypass: false, refIds: ['r1'] });
+        recorder.stop();
+
+        expect(contextStatements(recorder.statements)).toHaveLength(1);
+      });
+    });
+
+    it('should not read the context back from the database for a nested beginTransaction', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['admin'] });
+
+        const recorder = recordStatements();
+        const nested = await manager.beginTransaction({ bypass: false, refIds: ['user1'] });
+        await nested.commit();
+        recorder.stop();
+
+        expect(recorder.statements.filter(sql => sql.includes('current_setting'))).toHaveLength(0);
+        expect(contextStatements(recorder.statements)).toHaveLength(2);
+      });
+    });
+
+    it('should send no context statement when a joined connection keeps the same context', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+
+        const recorder = recordStatements();
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+        recorder.stop();
+
+        expect(contextStatements(recorder.statements)).toHaveLength(0);
+      });
+    });
+
+    it('should apply the new context when a joined connection changes it', async () => {
+      const manager = createManager();
+
+      const seen = await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+        return manager.withConnection(
+          async executor =>
+            (
+              await executor.raw(
+                "SELECT current_setting('app.current_tenant', true) AS tenant, current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
+              )
+            ).rows[0],
+          { bypass: false, refIds: ['r2', 'r3'] }
+        );
+      });
+
+      expect(seen).toEqual({ tenant: TENANT, bypass: 'false', ref_ids: 'r2,r3' });
     });
   });
 

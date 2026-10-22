@@ -2,10 +2,10 @@ import { ClientSession } from 'mongodb';
 import { Knex } from 'knex';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
+import { PermissionContext, PostgresSessionContext } from './PostgresSessionContext.js';
 
 type CommitHandler = (returnValue: unknown) => Promise<void>;
 type RetryHandler = () => Promise<void>;
-type PermissionContext = { bypass: boolean; refIds: string[] };
 
 const SERIALIZATION_FAILURE = '40001';
 const DEADLOCK_DETECTED = '40P01';
@@ -18,7 +18,6 @@ export interface TransactionHandle {
 
 export class PostgresTransactionManager implements TransactionManager {
   private knex: Knex;
-  private tenantId: string;
   private logger: Logger;
   private activeTransaction?: Knex.Transaction;
   private pendingJoins = 0;
@@ -27,11 +26,12 @@ export class PostgresTransactionManager implements TransactionManager {
   private persistentOnRetryHandlers: RetryHandler[] = [];
   private runOnCommitHandlers: CommitHandler[] = [];
   private runOnRetryHandlers: RetryHandler[] = [];
+  private sessionContext: PostgresSessionContext;
 
   constructor(knex: Knex, tenantId: string, logger: Logger) {
     this.knex = knex;
-    this.tenantId = tenantId;
     this.logger = logger;
+    this.sessionContext = new PostgresSessionContext(tenantId);
   }
 
   /** Opens a transaction, or reuses the active `run()` one (no-op commit/rollback). */
@@ -49,7 +49,7 @@ export class PostgresTransactionManager implements TransactionManager {
     const { saved, endJoin } = await this.prepareJoinedTransaction(trx, permissionContext);
     const restore = async () => {
       try {
-        if (!trx.isCompleted()) await this.setPermissionVars(trx, saved);
+        if (!trx.isCompleted()) await this.sessionContext.switch(trx, saved);
       } finally {
         endJoin();
       }
@@ -63,9 +63,8 @@ export class PostgresTransactionManager implements TransactionManager {
   ): Promise<{ saved: PermissionContext; endJoin: () => void }> {
     const endJoin = this.beginJoin();
     try {
-      await this.setTenant(trx);
-      const saved = await this.getPermissionVars(trx);
-      await this.setPermissionVars(trx, permissionContext);
+      const saved = this.sessionContext.current(trx);
+      await this.sessionContext.switch(trx, permissionContext);
       return { saved, endJoin };
     } catch (error) {
       endJoin();
@@ -76,8 +75,7 @@ export class PostgresTransactionManager implements TransactionManager {
   private async openTransaction(permissionContext?: PermissionContext): Promise<TransactionHandle> {
     const trx = await this.knex.transaction();
     try {
-      await this.setTenant(trx);
-      await this.setPermissionVars(trx, permissionContext);
+      await this.sessionContext.open(trx, permissionContext);
     } catch (error) {
       await trx.rollback().catch(() => undefined);
       throw error;
@@ -119,9 +117,8 @@ export class PostgresTransactionManager implements TransactionManager {
     if (!trx) throw new Error('PostgresTransactionManager has no active transaction');
     const endJoin = this.beginJoin();
     try {
-      await this.setTenant(trx);
       if (!options?.preservePermission) {
-        await this.setPermissionVars(trx, permissionContext);
+        await this.sessionContext.switch(trx, permissionContext);
       }
       return await fn(trx);
     } finally {
@@ -154,28 +151,6 @@ export class PostgresTransactionManager implements TransactionManager {
       };
     }
     await this.joinsDrain.promise;
-  }
-
-  private async setTenant(trx: Knex.Transaction): Promise<void> {
-    await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [this.tenantId]);
-  }
-
-  private async setPermissionVars(trx: Knex.Transaction, permissionContext?: PermissionContext) {
-    const { bypass = false, refIds = [] } = permissionContext ?? {};
-    await trx.raw("SELECT set_config('uwazi.bypass_rls', ?, true)", [String(bypass)]);
-    await trx.raw("SELECT set_config('uwazi.ref_ids', ?, true)", [refIds.join(',')]);
-  }
-
-  private async getPermissionVars(trx: Knex.Transaction): Promise<PermissionContext> {
-    const [row] = (
-      await trx.raw(
-        "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
-      )
-    ).rows;
-    return {
-      bypass: row.bypass === 'true',
-      refIds: row.ref_ids ? row.ref_ids.split(',').filter(Boolean) : [],
-    };
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
