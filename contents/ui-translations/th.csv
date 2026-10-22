@@ -1228,6 +1228,7 @@ Save label,บันทึกป้าย
 Save password,บันทึกรหัสผ่าน
 Save the visualization before refreshing.,บันทึกการแสดงผลก่อนที่จะรีเฟรช
 Save the visualization to get embed code.,บันทึกภาพแสดงข้อมูลเพื่อรับรหัสฝัง
+Save theme,บันทึกธีม
 Save your work to make change permanent,บันทึกงานของคุณเพื่อให้การเปลี่ยนแปลงมีผลถาวร
 Saved image,ภาพที่บันทึก
 Saved successfully.,บันทึกสำเร็จแล้ว
@@ -1370,7 +1371,6 @@ Snapshot (manual),สแนปชอต (ด้วยตนเอง)
 Snapshot (scheduled),สแนปชอต (ตามกำหนด)
 Some tasks may take a while. Bert will reply when it's done.,บางงานอาจใช้เวลาสักพัก Bert จะตอบกลับเมื่อเสร็จแล้ว
 "Some translations are still pending, saving would stop the translation process.","การแปลบางส่วนยังไม่เสร็จ, การบันทึกจะหยุดกระบวนการแปล"
-Translations are still pending,การแปลยังไม่เสร็จ
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
 Sort ascending,เรียงตามลำดับจากน้อยไปมาก
@@ -1568,6 +1568,7 @@ Translating,Translating
 Translation,การแปล
 Translation service is unavailable,Translation service is unavailable
 Translations,การแปล
+Translations are still pending,การแปลยังไม่เสร็จ
 Translations imported.,ได้นำเข้าการแปลแล้ว
 Translations reset successfully,การตั้งค่าการแปลได้คืนค่าสำเร็จแล้ว
 Translations saved,บันทึกการแปล

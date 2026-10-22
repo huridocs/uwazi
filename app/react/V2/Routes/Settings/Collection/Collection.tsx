@@ -3,7 +3,7 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormSetValue } from 'react-hook-form';
 import isUndefined from 'lodash/isUndefined.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { useSetAtom } from 'jotai';
@@ -28,7 +28,9 @@ import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
 import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { NotifyArgs } from '#V2/atoms/requestStatusTypes.js';
 import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
+import { applySavedTheme, buildThemeSavePayload } from './Theming/themeSavePayload.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -100,6 +102,39 @@ const dateOptions = () => {
       label: `${month}-${day}-${year} (${monthLabel}-${dayLabel}-${yearLabel})`,
     },
   ];
+};
+
+const saveCollectionTheme = async (
+  themeVars: ClientSettings['themeVars'],
+  themeAssets: ClientSettings['themeAssets'],
+  {
+    notify,
+    setSettings,
+    setValue,
+    revalidate,
+  }: {
+    notify: (...args: NotifyArgs) => void;
+    setSettings: (update: (prev: ClientSettings) => ClientSettings) => void;
+    setValue: UseFormSetValue<ClientSettings>;
+    revalidate: () => Promise<void>;
+  }
+) => {
+  const payload = buildThemeSavePayload(themeVars ?? {}, themeAssets ?? {});
+  const [response, error] = await SettingsAPI.save(payload);
+  if (error) {
+    notify(
+      'error',
+      t('System', 'An error occurred', null, false),
+      undefined,
+      error.message || undefined
+    );
+    return false;
+  }
+  setSettings(prev => mergeClientSettings(prev, response));
+  if (response) applySavedTheme(response, setValue);
+  notify('success', t('System', 'Settings updated', null, false));
+  await revalidate();
+  return true;
 };
 
 const Collection = () => {
@@ -235,6 +270,14 @@ const Collection = () => {
                     siteLogo={watchedSiteLogo}
                     favicon={watchedFavicon}
                     customUploadFiles={customUploadFiles}
+                    onSaveTheme={async () =>
+                      saveCollectionTheme(watch('themeVars'), watch('themeAssets'), {
+                        notify,
+                        setSettings,
+                        setValue,
+                        revalidate: async () => revalidator.revalidate(),
+                      })
+                    }
                   />
                 )}
                 <div className="sm:col-span-1">

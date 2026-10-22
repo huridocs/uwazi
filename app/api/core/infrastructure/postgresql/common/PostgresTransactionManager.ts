@@ -2,6 +2,7 @@ import { ClientSession } from 'mongodb';
 import { Knex } from 'knex';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
+import { PermissionContext, PostgresSessionContext } from './PostgresSessionContext.js';
 
 type CommitHandler = (returnValue: unknown) => Promise<void>;
 type RetryHandler = () => Promise<void>;
@@ -17,85 +18,79 @@ export interface TransactionHandle {
 
 export class PostgresTransactionManager implements TransactionManager {
   private knex: Knex;
-
-  private tenantId: string;
-
   private logger: Logger;
-
   private activeTransaction?: Knex.Transaction;
-
-  private persistentOnCommitHandlers: CommitHandler[];
-
-  private persistentOnRetryHandlers: RetryHandler[];
-
-  private runOnCommitHandlers: CommitHandler[];
-
-  private runOnRetryHandlers: RetryHandler[];
+  private pendingJoins = 0;
+  private joinsDrain?: { promise: Promise<void>; resolve: () => void };
+  private persistentOnCommitHandlers: CommitHandler[] = [];
+  private persistentOnRetryHandlers: RetryHandler[] = [];
+  private runOnCommitHandlers: CommitHandler[] = [];
+  private runOnRetryHandlers: RetryHandler[] = [];
+  private sessionContext: PostgresSessionContext;
 
   constructor(knex: Knex, tenantId: string, logger: Logger) {
     this.knex = knex;
-    this.tenantId = tenantId;
     this.logger = logger;
-    this.persistentOnCommitHandlers = [];
-    this.persistentOnRetryHandlers = [];
-    this.runOnCommitHandlers = [];
-    this.runOnRetryHandlers = [];
+    this.sessionContext = new PostgresSessionContext(tenantId);
   }
 
-  /**
-   * Opens or reuses a transaction and returns a handle the caller MUST
-   * explicitly commit or roll back.
-   *
-   * When a `run()` transaction is already active the handle reuses it and
-   * commit/rollback are no-ops — the outer `run()` owns the lifecycle.
-   *
-   * Otherwise a new knex transaction is opened and the caller is responsible
-   * for calling `commit()` or `rollback()` to release it.
-   */
-  async beginTransaction(permissionContext?: {
-    bypass: boolean;
-    refIds: string[];
-  }): Promise<TransactionHandle> {
-    if (this.activeTransaction) {
-      await this.setTenant(this.activeTransaction);
-      const saved = await this.getPermissionVars(this.activeTransaction);
-      await this.setPermissionVars(this.activeTransaction, permissionContext);
-      const restore = async () => {
-        await this.setPermissionVars(this.activeTransaction!, saved);
-      };
-      return {
-        trx: this.activeTransaction,
-        commit: restore,
-        rollback: restore,
-      };
-    }
+  /** Opens a transaction, or reuses the active `run()` one (no-op commit/rollback). */
+  async beginTransaction(permissionContext?: PermissionContext): Promise<TransactionHandle> {
+    const active = this.activeTransaction;
+    return active
+      ? this.reuseActiveTransaction(active, permissionContext)
+      : this.openTransaction(permissionContext);
+  }
 
+  private async reuseActiveTransaction(
+    trx: Knex.Transaction,
+    permissionContext?: PermissionContext
+  ): Promise<TransactionHandle> {
+    const { saved, endJoin } = await this.prepareJoinedTransaction(trx, permissionContext);
+    const restore = async () => {
+      try {
+        if (!trx.isCompleted()) await this.sessionContext.switch(trx, saved);
+      } finally {
+        endJoin();
+      }
+    };
+    return { trx, commit: restore, rollback: restore };
+  }
+
+  private async prepareJoinedTransaction(
+    trx: Knex.Transaction,
+    permissionContext?: PermissionContext
+  ): Promise<{ saved: PermissionContext; endJoin: () => void }> {
+    const endJoin = this.beginJoin();
+    try {
+      const saved = this.sessionContext.current(trx);
+      await this.sessionContext.switch(trx, permissionContext);
+      return { saved, endJoin };
+    } catch (error) {
+      endJoin();
+      throw error;
+    }
+  }
+
+  private async openTransaction(permissionContext?: PermissionContext): Promise<TransactionHandle> {
     const trx = await this.knex.transaction();
-    await this.setTenant(trx);
-    await this.setPermissionVars(trx, permissionContext);
+    try {
+      await this.sessionContext.open(trx, permissionContext);
+    } catch (error) {
+      await trx.rollback().catch(() => undefined);
+      throw error;
+    }
     return {
       trx,
-      commit: async () => {
-        await trx.commit();
-      },
-      rollback: async () => {
-        await trx.rollback();
-      },
+      commit: async () => trx.commit().then(() => undefined),
+      rollback: async () => trx.rollback().then(() => undefined),
     };
   }
 
-  /**
-   * Runs `fn` with a tenant-scoped Knex executor.
-   *
-   * Case #2 — a `run()` transaction is already active: reuse it so multiple
-   * operations share the same transactional scope and tenant GUC.
-   *
-   * Case #1 — no active transaction: open a short-lived, self-scoped transaction
-   * and set `app.current_tenant` for RLS.
-   */
+  /** Runs `fn` in a tenant-scoped transaction, joining the active `run()` one when open. */
   async withConnection<T>(
     fn: (executor: Knex.Transaction) => Promise<T>,
-    permissionContext?: { bypass: boolean; refIds: string[] },
+    permissionContext?: PermissionContext,
     options?: { preservePermission?: boolean }
   ): Promise<T> {
     if (this.activeTransaction) {
@@ -108,75 +103,67 @@ export class PostgresTransactionManager implements TransactionManager {
       await handle.commit();
       return result;
     } catch (error) {
-      try {
-        await handle.rollback();
-      } catch {
-        // propagate original error, not rollback error
-      }
+      await handle.rollback().catch(() => undefined);
       throw error;
     }
   }
 
   private async joinActiveTransaction<T>(
     fn: (executor: Knex.Transaction) => Promise<T>,
-    permissionContext: { bypass: boolean; refIds: string[] } | undefined,
+    permissionContext: PermissionContext | undefined,
     options: { preservePermission?: boolean } | undefined
   ): Promise<T> {
     const trx = this.activeTransaction;
-    if (!trx) {
-      throw new Error('PostgresTransactionManager has no active transaction');
+    if (!trx) throw new Error('PostgresTransactionManager has no active transaction');
+    const endJoin = this.beginJoin();
+    try {
+      if (!options?.preservePermission) {
+        await this.sessionContext.switch(trx, permissionContext);
+      }
+      return await fn(trx);
+    } finally {
+      endJoin();
     }
-    await this.setTenant(trx);
-    if (!options?.preservePermission) {
-      await this.setPermissionVars(trx, permissionContext);
-    }
-    return fn(trx);
   }
 
-  private async setTenant(trx: Knex.Transaction): Promise<void> {
-    await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [this.tenantId]);
-  }
-
-  private async setPermissionVars(
-    trx: Knex.Transaction,
-    permissionContext?: { bypass: boolean; refIds: string[] }
-  ): Promise<void> {
-    let bypass = 'false';
-    let refIds = '';
-    if (permissionContext) {
-      bypass = permissionContext.bypass ? 'true' : 'false';
-      refIds = permissionContext.refIds.join(',');
-    }
-    await trx.raw("SELECT set_config('uwazi.bypass_rls', ?, true)", [bypass]);
-    await trx.raw("SELECT set_config('uwazi.ref_ids', ?, true)", [refIds]);
-  }
-
-  private async getPermissionVars(
-    trx: Knex.Transaction
-  ): Promise<{ bypass: boolean; refIds: string[] }> {
-    const result = await trx.raw(
-      "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
-    );
-    const row = result.rows[0];
-    return {
-      bypass: row.bypass === 'true',
-      refIds: row.ref_ids ? row.ref_ids.split(',').filter(Boolean) : [],
+  /** Marks the start of a transaction borrow; call the returned function when the borrow ends. */
+  private beginJoin(): () => void {
+    this.pendingJoins += 1;
+    return () => {
+      this.pendingJoins -= 1;
+      if (this.pendingJoins === 0) {
+        this.joinsDrain?.resolve();
+        this.joinsDrain = undefined;
+      }
     };
+  }
+
+  /** Resolves when every transaction borrow has been released. */
+  private async drainJoins(): Promise<void> {
+    if (this.pendingJoins === 0) return;
+    if (!this.joinsDrain) {
+      let resolve!: () => void;
+      this.joinsDrain = {
+        promise: new Promise<void>(r => {
+          resolve = r;
+        }),
+        resolve,
+      };
+    }
+    await this.joinsDrain.promise;
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
     return Promise.all(
-      [...this.persistentOnCommitHandlers, ...this.runOnCommitHandlers].map(async handler =>
-        handler(returnValue)
+      [...this.persistentOnCommitHandlers, ...this.runOnCommitHandlers].map(async h =>
+        h(returnValue)
       )
     );
   }
 
   private async executeOnRetryHandlers() {
     return Promise.all(
-      [...this.persistentOnRetryHandlers, ...this.runOnRetryHandlers].map(async handler =>
-        handler()
-      )
+      [...this.persistentOnRetryHandlers, ...this.runOnRetryHandlers].map(async h => h())
     );
   }
 
@@ -186,9 +173,7 @@ export class PostgresTransactionManager implements TransactionManager {
   }
 
   private validateState() {
-    if (this.activeTransaction) {
-      throw new Error('Transaction already in progress.');
-    }
+    if (this.activeTransaction) throw new Error('Transaction already in progress.');
   }
 
   private static shouldRetry(error: unknown, retries: number): boolean {
@@ -202,18 +187,24 @@ export class PostgresTransactionManager implements TransactionManager {
     this.activeTransaction = handle.trx;
     try {
       const result = await callback();
-      await handle.commit();
+      await this.finishCommit(handle);
       return result;
     } catch (error) {
-      try {
-        await handle.rollback();
-      } catch {
-        // propagate original error, not rollback error
-      }
+      await this.finishRollback(handle);
       throw error;
-    } finally {
-      this.activeTransaction = undefined;
     }
+  }
+
+  private async finishCommit(handle: TransactionHandle): Promise<void> {
+    this.activeTransaction = undefined;
+    await this.drainJoins();
+    await handle.commit();
+  }
+
+  private async finishRollback(handle: TransactionHandle): Promise<void> {
+    this.activeTransaction = undefined;
+    await this.drainJoins();
+    await handle.rollback().catch(() => undefined);
   }
 
   private async runWithRetry<T>(callback: () => Promise<T>, retries = 3): Promise<T> {
@@ -225,7 +216,6 @@ export class PostgresTransactionManager implements TransactionManager {
         await this.executeOnRetryHandlers();
         return this.runWithRetry(callback, retries - 1);
       }
-
       throw error;
     }
   }
@@ -233,7 +223,6 @@ export class PostgresTransactionManager implements TransactionManager {
   async run<T>(callback: () => Promise<T>): Promise<T> {
     this.validateState();
     this.clearRunHandlers();
-
     try {
       const returnValue = await this.runWithRetry(callback);
       await this.executeOnCommitHandlers(returnValue);
@@ -277,13 +266,7 @@ export class PostgresTransactionManager implements TransactionManager {
     return this;
   }
 
-  /**
-   * TEMPORARY migration bridge (part of the TransactionManager contract):
-   * Mongo-backed data sources (settings, pages, ...) call getSession() on
-   * whatever transaction manager they receive. Postgres has no session, so
-   * this returns undefined and their writes run session-less (auto-commit).
-   * Remove from the contract once those data sources migrate to Postgres.
-   */
+  /** Migration bridge: Mongo-backed sources expect a session; Postgres has none. */
   // eslint-disable-next-line class-methods-use-this
   getSession(): ClientSession | undefined {
     return undefined;

@@ -10,6 +10,8 @@ import { faviconImageSizeRule, themeLogotypeImageSizeRule } from './brandImageUp
 type ThemeSettingsSidepanelProps = {
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
+  saving?: boolean;
   themeVars: Record<string, string | undefined>;
   onThemeChange: (value: Record<string, string | undefined>) => void;
   themeAssets?: ThemeAssets;
@@ -30,6 +32,8 @@ const assetPreviewWrapperClassName =
 const ThemeSettingsSidepanel = ({
   isOpen,
   onClose,
+  onSave,
+  saving = false,
   themeVars,
   onThemeChange,
   themeAssets,
@@ -132,8 +136,8 @@ const ThemeSettingsSidepanel = ({
 
       <Sidepanel.Footer className="border-t px-4 py-3 border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
         <div className="flex justify-end">
-          <Button type="button" variant="primary" onClick={onClose}>
-            <Translate>Done</Translate>
+          <Button type="button" variant="primary" disabled={saving} onClick={onSave}>
+            <Translate>Save theme</Translate>
           </Button>
         </div>
       </Sidepanel.Footer>

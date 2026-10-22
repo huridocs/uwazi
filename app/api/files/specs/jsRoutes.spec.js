@@ -167,7 +167,9 @@ describe('upload routes', () => {
     let remoteServer;
 
     afterEach(async () => {
-      await remoteServer.close();
+      if (remoteServer) {
+        await remoteServer.close();
+      }
     });
 
     it('should remove the tenant and cookie from headers', done => {
@@ -191,6 +193,17 @@ describe('upload routes', () => {
         expect(headersOnRemote.cookie).toBeUndefined();
         done();
       });
+    });
+
+    it('should return 400 when publicFormDestination is not configured', async () => {
+      const settingsObject = await testingEnvironment.db.getCollection('settings').findOne({});
+      settingsObject.publicFormDestination = '';
+      await testingEnvironment.db.getCollection('settings').replaceOne({}, settingsObject);
+
+      const response = await request(app).post('/api/remotepublic').send({ title: 'Title' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Remote public form destination not configured');
     });
   });
 

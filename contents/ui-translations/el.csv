@@ -1227,6 +1227,7 @@ Save label,Αποθήκευση ετικέτας
 Save password,Αποθήκευση κωδικού πρόσβασης
 Save the visualization before refreshing.,Αποθηκεύστε την απεικόνιση πριν κάνετε ανανέωση.
 Save the visualization to get embed code.,Αποθηκεύστε την απεικόνιση για να λάβετε τον κώδικα ενσωμάτωσης.
+Save theme,Αποθήκευση θέματος
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
 Saved image,Αποθηκευμένη εικόνα
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
@@ -1369,7 +1370,6 @@ Snapshot (manual),Στιγμιότυπο (χειροκίνητο)
 Snapshot (scheduled),Στιγμιότυπο (προγραμματισμένο)
 Some tasks may take a while. Bert will reply when it's done.,Ορισμένες εργασίες μπορεί να διαρκέσουν λίγο. Ο Bert θα απαντήσει όταν ολοκληρωθούν.
 "Some translations are still pending, saving would stop the translation process.","Ορισμένες μεταφράσεις εκκρεμούν ακόμη, η αποθήκευση θα σταματούσε τη διαδικασία μετάφρασης."
-Translations are still pending,Οι μεταφράσεις εκκρεμούν ακόμη
 Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
@@ -1567,6 +1567,7 @@ Translating,Translating
 Translation,Μετάφραση
 Translation service is unavailable,Translation service is unavailable
 Translations,Μεταφράσεις
+Translations are still pending,Οι μεταφράσεις εκκρεμούν ακόμη
 Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν

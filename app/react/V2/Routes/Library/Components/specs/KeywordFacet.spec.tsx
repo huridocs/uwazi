@@ -7,8 +7,14 @@ import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
-import { KeywordFacet } from '../KeywordFacet.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import type { FacetLookup } from '../../lookupAggregation.js';
+import type { FacetMode } from '../FacetCard.js';
+import { KeywordFacet } from '../KeywordFacet.js';
+
+jest.mock('#UI/Icon/Icon.js', () => ({
+  Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
+}));
 
 const manyBuckets: LibraryFacetBucket[] = Array.from({ length: 12 }, (_, index) => ({
   id: `opt-${index + 1}`,
@@ -16,12 +22,19 @@ const manyBuckets: LibraryFacetBucket[] = Array.from({ length: 12 }, (_, index) 
   count: 12 - index,
 }));
 
-const renderFacet = (
-  props: Partial<React.ComponentProps<typeof KeywordFacet>> & {
-    buckets?: LibraryFacetBucket[];
-    selected?: string[];
-  } = {}
-) => {
+const renderFacet = ({
+  buckets = manyBuckets,
+  selected = [],
+  mode,
+  lookup,
+  alwaysSearch,
+}: {
+  buckets?: LibraryFacetBucket[];
+  selected?: string[];
+  mode?: FacetMode;
+  lookup?: FacetLookup;
+  alwaysSearch?: boolean;
+} = {}) => {
   const onToggle = jest.fn();
   const onModeChange = jest.fn();
   render(
@@ -33,11 +46,13 @@ const renderFacet = (
     >
       <KeywordFacet
         title="Descriptores"
-        buckets={props.buckets ?? manyBuckets}
-        selected={props.selected ?? []}
+        buckets={buckets}
+        selected={selected}
         onToggle={onToggle}
         onModeChange={onModeChange}
-        {...props}
+        mode={mode}
+        lookup={lookup}
+        alwaysSearch={alwaysSearch}
       />
     </TestAtomStoreProvider>
   );
@@ -76,6 +91,20 @@ describe('KeywordFacet', () => {
 
     await user.click(screen.getByRole('button', { name: 'AND' }));
     expect(onModeChange).toHaveBeenCalledWith('and');
+  });
+
+  it('shows an entity icon beside the option', () => {
+    renderFacet({
+      buckets: [
+        {
+          id: 'e1',
+          label: 'Test1',
+          count: 1,
+          icon: { _id: 'star', type: 'Icons', label: 'Star' },
+        },
+      ],
+    });
+    expect(screen.getByTestId('fa-icon')).toHaveTextContent('star');
   });
 
   it('queries a lookup instead of filtering locally', async () => {

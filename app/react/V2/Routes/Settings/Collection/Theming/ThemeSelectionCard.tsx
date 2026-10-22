@@ -17,6 +17,7 @@ type ThemeSelectionCardProps = {
   siteLogo?: string;
   favicon?: string;
   customUploadFiles: FileType[];
+  onSaveTheme: () => Promise<boolean>;
 };
 
 const ThemeSelectionCard = ({
@@ -27,8 +28,19 @@ const ThemeSelectionCard = ({
   siteLogo,
   favicon,
   customUploadFiles,
+  onSaveTheme,
 }: ThemeSelectionCardProps) => {
   const [showThemeSidepanel, setShowThemeSidepanel] = React.useState(false);
+  const [savingTheme, setSavingTheme] = React.useState(false);
+  const saveTheme = () => {
+    setSavingTheme(true);
+    void onSaveTheme()
+      .then(saved => {
+        if (saved) setShowThemeSidepanel(false);
+      })
+      .catch(() => undefined)
+      .finally(() => setSavingTheme(false));
+  };
   const selectedTheme = NAMED_THEMES.find(theme => theme.id === getPresetId(themeVars, true));
   const hasThemeOverrides = Object.keys(themeVars).some(
     key => key !== '__preset' && key !== '__assetPreset'
@@ -106,6 +118,8 @@ const ThemeSelectionCard = ({
       <ThemeSettingsSidepanel
         isOpen={showThemeSidepanel}
         onClose={() => setShowThemeSidepanel(false)}
+        onSave={saveTheme}
+        saving={savingTheme}
         themeVars={themeVars}
         onThemeChange={onThemeChange}
         themeAssets={themeAssets}

@@ -17,6 +17,10 @@ import { normalizeTimestamp } from '#V2/Components/Metadata/display/formatMetada
 import { TableViewer } from '../TableViewer.js';
 import { libraryTableColumns } from '../../libraryTableColumns.js';
 
+jest.mock('#UI/Icon/Icon.js', () => ({
+  Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
+}));
+
 const templates = [
   {
     ...fixtureTemplates[0]!,
@@ -88,6 +92,13 @@ const renderTable = (
   );
 
 describe('TableViewer', () => {
+  it('shows the entity icon beside the title', () => {
+    renderTable({
+      rows: [{ ...rows[0], icon: { _id: 'star', type: 'Icons', label: 'Star' } }],
+    });
+    expect(screen.getByTestId('fa-icon')).toHaveTextContent('star');
+  });
+
   it('renders built-in columns and compact metadata', () => {
     renderTable();
     expect(screen.getByText('Amnesty International')).toBeInTheDocument();

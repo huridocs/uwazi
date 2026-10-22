@@ -87,6 +87,7 @@ const CardViewer = ({
           >
             <EntityCard
               title={entity.title}
+              icon={cardEntity.icon}
               templateId={entity.template}
               fields={metadataFieldsForCard(cardEntity, template, {
                 excludeProperty: showThumbnail ? thumbnail.propertyName : undefined,

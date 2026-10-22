@@ -1,3 +1,5 @@
+import type { EntitySchema } from '#shared/types/entityType.js';
+
 type LibraryPublishedStatus = 'published' | 'restricted' | 'all';
 type LibrarySortOrder = 'asc' | 'desc';
 
@@ -20,10 +22,17 @@ type LibrarySearchQuery = {
   geolocation?: boolean;
 };
 
+type LibraryFacetIcon = {
+  _id: string;
+  type?: string;
+  label?: string;
+};
+
 type LibraryFacetBucket = {
   id: string;
   label?: string;
   count: number;
+  icon?: LibraryFacetIcon;
   values?: LibraryFacetBucket[];
 };
 
@@ -64,7 +73,7 @@ type LibrarySearchHit = {
   published?: boolean;
   metadata?: Record<string, unknown>;
   documents?: unknown[];
-  icon?: unknown;
+  icon?: EntitySchema['icon'];
   snippets?: LibraryHitSnippets;
   [key: string]: unknown;
 };
@@ -78,6 +87,7 @@ type LibrarySearchResult = {
 export type {
   LibraryAggregations,
   LibraryFacetBucket,
+  LibraryFacetIcon,
   LibraryHitSnippets,
   LibraryPublishedStatus,
   LibrarySearchHit,

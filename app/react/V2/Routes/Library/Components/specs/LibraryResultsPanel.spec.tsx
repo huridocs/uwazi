@@ -10,6 +10,10 @@ import type { Template } from '#app/apiResponseTypes.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LibraryResultsPanel } from '../LibraryResultsPanel.js';
 
+jest.mock('#UI/Icon/Icon.js', () => ({
+  Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
+}));
+
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
@@ -58,6 +62,15 @@ const renderPanel = (search = 'test', rows: LibrarySearchHit[] = [row()]) => {
 };
 
 describe('LibraryResultsPanel', () => {
+  it('shows the entity icon beside the result title', async () => {
+    const user = userEvent.setup();
+    renderPanel('test', [row({ icon: { _id: 'star', type: 'Icons', label: 'Star' } })]);
+    expect(screen.getByTestId('fa-icon')).toHaveTextContent('star');
+
+    await user.click(screen.getByRole('radio', { name: 'Passages' }));
+    expect(screen.getAllByTestId('fa-icon').length).toBeGreaterThan(0);
+  });
+
   it('asks for a search when the box is empty', () => {
     renderPanel('', [row()]);
     expect(screen.getByText('Search to see where terms match')).toBeInTheDocument();
