@@ -1224,6 +1224,7 @@ Save label,Guardar etiqueta
 Save password,Guardar contraseña
 Save the visualization before refreshing.,Guarda la visualización antes de actualizarla.
 Save the visualization to get embed code.,Guarda la visualización para obtener el código de incrustación.
+Save theme,Guardar tema
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved image,Imagen guardada
 Saved successfully.,Guardado exitoso.
@@ -1366,7 +1367,6 @@ Snapshot (manual),Instantánea (manual)
 Snapshot (scheduled),Instantánea (programada)
 Some tasks may take a while. Bert will reply when it's done.,Algunas tareas pueden tardar un rato. Bert te responderá cuando haya terminado.
 "Some translations are still pending, saving would stop the translation process.","Algunas traducciones siguen pendientes, guardar detendría el proceso de traducción."
-Translations are still pending,Las traducciones siguen pendientes
 Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente
@@ -1562,6 +1562,7 @@ Translating,Traduciendo
 Translation,Traducción
 Translation service is unavailable,El servicio de traducción no está disponible
 Translations,Traducciones
+Translations are still pending,Las traducciones siguen pendientes
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
 Translations saved,Traducciones guardadas
