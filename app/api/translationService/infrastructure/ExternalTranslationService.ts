@@ -25,7 +25,7 @@ class ExternalTranslationService implements TranslationService {
   constructor(private dependencies: Dependencies) {}
 
   async translate(input: TranslateInput): Promise<TranslateOutput> {
-    const body = await this.requestTranslation(this.buildTranslateUrl(input));
+    const body = await this.requestTranslation(this.buildTranslateUrl(), input);
 
     if (typeof body?.translated_text !== 'string') {
       throw new InvalidTranslationResponseError();
@@ -34,22 +34,21 @@ class ExternalTranslationService implements TranslationService {
     return { translated_text: body.translated_text };
   }
 
-  private buildTranslateUrl(input: TranslateInput): string {
-    const translateUrl = new URL(
-      this.dependencies.translatePath ?? '/translate',
+  private buildTranslateUrl(): string {
+    return new URL(
+      this.dependencies.translatePath ?? '/translate/text',
       this.dependencies.url
-    );
-    translateUrl.searchParams.set('text', input.text);
-    translateUrl.searchParams.set('language_from', input.language_from);
-    translateUrl.searchParams.set('language_to', input.language_to);
-    return translateUrl.toString();
+    ).toString();
   }
 
-  private async requestTranslation(url: string): Promise<TranslateResponseDTO> {
+  private async requestTranslation(
+    url: string,
+    input: TranslateInput
+  ): Promise<TranslateResponseDTO> {
     try {
       return await this.dependencies.httpClient.postJson<TranslateResponseDTO>({
         url,
-        body: {},
+        body: input,
         timeoutMs: TRANSLATION_TIMEOUT_MS,
       });
     } catch (error) {
