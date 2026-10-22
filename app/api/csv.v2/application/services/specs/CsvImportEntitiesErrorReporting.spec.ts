@@ -133,10 +133,11 @@ describe('CsvImportEntitiesErrorReporting', () => {
     });
 
     expect(rowsDS.getByImportAndIndexes).toHaveBeenCalledWith(importId, [3]);
-    expect(fileStorage.storeContent).toHaveBeenCalledWith(
-      expect.anything(),
-      `csv-imports/${importId}/reports/failed_rows.csv`
-    );
+    expect(fileStorage.storeContent).toHaveBeenCalledWith(expect.anything(), {
+      type: 'customPath',
+      destination: `csv-imports/${importId}/reports`,
+      filename: 'failed_rows.csv',
+    });
     expect(report).toEqual({
       failedRows: 2,
       reportPath: `csv-imports/${importId}/reports/failed_rows.csv`,

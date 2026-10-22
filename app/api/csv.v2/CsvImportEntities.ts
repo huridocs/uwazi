@@ -44,7 +44,11 @@ export class CsvImportEntities extends AbstractUseCase<
 
     const destination = `csv-imports/${id}`;
     const { filename } = input.file;
-    await this.deps.fileStorage.storeContent(input.file.content, `${destination}/${filename}`);
+    await this.deps.fileStorage.storeContent(input.file.content, {
+      type: 'customPath',
+      destination,
+      filename,
+    });
     const csvImportWithStorage = CsvImportDomain.withStorage(
       csvImport,
       `${destination}/${filename}`

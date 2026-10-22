@@ -15,6 +15,10 @@ import {
 } from '../../libraryCardDisplay.js';
 import { CardViewer } from '../CardViewer.js';
 
+jest.mock('#UI/Icon/Icon.js', () => ({
+  Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
+}));
+
 const templates = [
   {
     _id: 'template1',
@@ -60,12 +64,14 @@ const renderCards = ({
   style = 'contain',
   thumbFrame,
   thumbSize,
+  hits = rows,
 }: {
   showThumbnail?: boolean;
   onFocusProperty?: (sharedId: string, fieldKey: string) => void;
   style?: 'contain' | 'cover';
   thumbFrame?: 'landscape' | 'portrait';
   thumbSize?: 's' | 'm' | 'l';
+  hits?: LibrarySearchHit[];
 } = {}) => {
   const baseTemplate = templates[0]!;
   const viewerTemplates = [
@@ -86,7 +92,7 @@ const renderCards = ({
         ]}
       >
         <CardViewer
-          rows={rows}
+          rows={hits}
           totalRows={1}
           onSelect={() => undefined}
           onFocusProperty={onFocusProperty}
@@ -102,6 +108,18 @@ const renderCards = ({
 };
 
 describe('CardViewer thumbnail fit', () => {
+  it('shows the entity icon beside the title', () => {
+    renderCards({
+      hits: [
+        {
+          ...rows[0],
+          icon: { _id: 'star', type: 'Icons', label: 'Star' },
+        },
+      ],
+    });
+    expect(screen.getByTestId('fa-icon')).toHaveTextContent('star');
+  });
+
   it('uses contain object-fit when the template image property is Fit', () => {
     renderCards({ style: 'contain' });
     expect(document.querySelector('img')).toHaveClass('object-contain');

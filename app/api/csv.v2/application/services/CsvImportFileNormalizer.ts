@@ -54,7 +54,11 @@ export class CsvImportFileNormalizer {
       destination,
       filename,
     });
-    await this.deps.fileStorage.storeContent(source, `${destination}/extracted/import.csv`);
+    await this.deps.fileStorage.storeContent(source, {
+      type: 'customPath',
+      destination: `${destination}/extracted`,
+      filename: 'import.csv',
+    });
   }
 
   private async extractZip(params: NormalizeParams): Promise<NormalizeResult> {
@@ -103,10 +107,11 @@ export class CsvImportFileNormalizer {
               }
             });
             try {
-              await this.deps.fileStorage.storeContent(
-                file,
-                `${extractedDestination}/${entry.fileName}`
-              );
+              await this.deps.fileStorage.storeContent(file, {
+                type: 'customPath',
+                destination: extractedDestination,
+                filename: entry.fileName,
+              });
               processedFiles += 1;
               this.emitProgress(onFileProgress, { importId, processedFiles });
               next();

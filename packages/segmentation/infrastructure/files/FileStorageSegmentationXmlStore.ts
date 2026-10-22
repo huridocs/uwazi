@@ -1,4 +1,3 @@
-import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
@@ -15,10 +14,10 @@ class FileStorageSegmentationXmlStore implements SegmentationXmlStore {
   constructor(private readonly deps: Deps) {}
 
   async store(xmlFilename: string, content: Readable): Promise<void> {
-    await this.deps.fileStorage.storeContent(
-      new FileContents(() => content),
-      path.join('segmentation', xmlFilename)
-    );
+    await this.deps.fileStorage.storeContent(new FileContents(() => content), {
+      type: 'segmentation',
+      filename: xmlFilename,
+    });
   }
 
   async remove(xmlFilename: string): Promise<void> {

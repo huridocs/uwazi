@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
+import type { EntityIconData } from '#V2/Components/CustomIcons/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
 import type { LibraryClickModifiers } from '../librarySelection.js';
@@ -18,16 +20,20 @@ import {
   type ThumbnailKind,
 } from './libraryCardDisplay.js';
 import { EntityThumbnail } from './EntityThumbnail.js';
+import { LibraryLinks } from './LibraryLinks.js';
+import type { LibraryLink } from './libraryTableCellValue.js';
 
 type EntityCardField = {
   id: string;
   label: string;
   value: string;
   interactive?: boolean;
+  links?: LibraryLink[];
 };
 
 type EntityCardProps = {
   title: string;
+  icon?: EntityIconData | null;
   templateId: string;
   fields?: EntityCardField[];
   thumbnailSrc?: string;
@@ -44,8 +50,38 @@ type EntityCardProps = {
   showMetadata?: boolean;
 };
 
+const renderFieldValue = (
+  field: EntityCardField,
+  onFocusProperty: EntityCardProps['onFocusProperty']
+) => {
+  if (field.links?.length) {
+    return <LibraryLinks links={field.links} className="block w-full text-xs leading-snug" />;
+  }
+  if (field.interactive) {
+    return (
+      <button
+        type="button"
+        title={field.value}
+        className="block w-full truncate text-start text-xs leading-snug text-ink underline-offset-2 hover:underline"
+        onClick={event => {
+          event.stopPropagation();
+          onFocusProperty?.(field.id);
+        }}
+      >
+        {field.value}
+      </button>
+    );
+  }
+  return (
+    <span className="block truncate text-xs leading-snug text-ink" title={field.value}>
+      {field.value}
+    </span>
+  );
+};
+
 const EntityCard = ({
   title,
+  icon,
   templateId,
   fields = [],
   thumbnailSrc,
@@ -133,7 +169,11 @@ const EntityCard = ({
           className={`${slotShape} w-full shrink-0 overflow-hidden rounded border border-border/60`}
         />
       )}
-      <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{title}</span>
+      <EntityTitle icon={icon} className="text-sm font-semibold leading-snug text-ink">
+        <span className="line-clamp-2 min-w-0 wrap-break-word" title={title}>
+          {title}
+        </span>
+      </EntityTitle>
       {showMetadata && (
         <div className="flex-1 space-y-1.5">
           {fields.map(field => (
@@ -141,23 +181,7 @@ const EntityCard = ({
               <span className="block text-[10px] leading-tight text-ink-tertiary">
                 {field.label}
               </span>
-              {field.interactive ? (
-                <button
-                  type="button"
-                  title={field.value}
-                  className="block w-full truncate text-start text-xs leading-snug text-ink underline-offset-2 hover:underline"
-                  onClick={event => {
-                    event.stopPropagation();
-                    onFocusProperty?.(field.id);
-                  }}
-                >
-                  {field.value}
-                </button>
-              ) : (
-                <span className="block truncate text-xs leading-snug text-ink" title={field.value}>
-                  {field.value}
-                </span>
-              )}
+              {renderFieldValue(field, onFocusProperty)}
             </div>
           ))}
         </div>

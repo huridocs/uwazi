@@ -106,10 +106,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         const destination = `csv-imports/${id}`;
         const originalFilename = 'original.csv';
         const simpleCsvFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-simple.csv');
-        await fileStorage.storeContent(
-          new DiskFile(simpleCsvFixture).toContent(),
-          `${destination}/${originalFilename}`
-        );
+        await fileStorage.storeContent(new DiskFile(simpleCsvFixture).toContent(), {
+          type: 'customPath',
+          destination,
+          filename: originalFilename,
+        });
 
         // insert import doc (queued) with storage path
         const importDoc = CsvImportDomain.withStorage(
@@ -164,10 +165,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       const destination = `csv-imports/${id}`;
       const originalFilename = 'original.csv';
       const emptyRowFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-empty-row.csv');
-      await fileStorage.storeContent(
-        new DiskFile(emptyRowFixture).toContent(),
-        `${destination}/${originalFilename}`
-      );
+      await fileStorage.storeContent(new DiskFile(emptyRowFixture).toContent(), {
+        type: 'customPath',
+        destination,
+        filename: originalFilename,
+      });
 
       const importDoc = CsvImportDomain.withStorage(
         CsvImportDomain.create({
@@ -199,10 +201,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       const destination = `csv-imports/${id}`;
       const originalFilename = 'original.csv';
       const batchFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-batch.csv');
-      await fileStorage.storeContent(
-        new DiskFile(batchFixture).toContent(),
-        `${destination}/${originalFilename}`
-      );
+      await fileStorage.storeContent(new DiskFile(batchFixture).toContent(), {
+        type: 'customPath',
+        destination,
+        filename: originalFilename,
+      });
 
       const importDoc = CsvImportDomain.withStorage(
         CsvImportDomain.create({
@@ -254,10 +257,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         createdTempDirs.push(tempZipDir);
 
         const zipPath = path.join(tempZipDir, 'zipData', zipFilename);
-        await fileStorage.storeContent(
-          new DiskFile(zipPath).toContent(),
-          `${destination}/${zipFilename}`
-        );
+        await fileStorage.storeContent(new DiskFile(zipPath).toContent(), {
+          type: 'customPath',
+          destination,
+          filename: zipFilename,
+        });
         const storedZipPath = pathManager.createPath({
           type: 'customPath',
           destination,
@@ -352,10 +356,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       createdTempDirs.push(tempDir);
       const csvPath = path.join(tempDir, originalFilename);
       await fs.writeFile(csvPath, 'title,description\nvalue1,"value2,value3,value4\n');
-      await fileStorage.storeContent(
-        new DiskFile(csvPath).toContent(),
-        `${destination}/${originalFilename}`
-      );
+      await fileStorage.storeContent(new DiskFile(csvPath).toContent(), {
+        type: 'customPath',
+        destination,
+        filename: originalFilename,
+      });
 
       const importDoc = CsvImportDomain.withStorage(
         CsvImportDomain.create({
@@ -416,10 +421,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       createdTempDirs.push(tempZipDir);
 
       const zipPath2 = path.join(tempZipDir, 'zipData', zipFilename);
-      await fileStorage.storeContent(
-        new DiskFile(zipPath2).toContent(),
-        `${destination}/${zipFilename}`
-      );
+      await fileStorage.storeContent(new DiskFile(zipPath2).toContent(), {
+        type: 'customPath',
+        destination,
+        filename: zipFilename,
+      });
 
       const importDoc = CsvImportDomain.withStorage(
         CsvImportDomain.create({
