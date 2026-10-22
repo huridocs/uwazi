@@ -1228,6 +1228,7 @@ Save label,Зберегти підпис
 Save password,Зберегти пароль
 Save the visualization before refreshing.,Збережіть візуалізацію перед оновленням.
 Save the visualization to get embed code.,"Збережіть візуалізацію, щоб отримати код для вбудовування."
+Save theme,Зберегти тему
 Save your work to make change permanent,"Збережіть свою роботу, щоб зробити зміни постійними"
 Saved image,Збережене зображення
 Saved successfully.,Врятовано успішно.
@@ -1370,7 +1371,6 @@ Snapshot (manual),Знімок (вручну)
 Snapshot (scheduled),Знімок (за розкладом)
 Some tasks may take a while. Bert will reply when it's done.,"Деякі завдання можуть зайняти деякий час. Bert відповість, коли все буде готово."
 "Some translations are still pending, saving would stop the translation process.","Деякі переклади ще виконуються, збереження зупинить процес перекладу."
-Translations are still pending,Переклади ще виконуються
 Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням
@@ -1568,6 +1568,7 @@ Translating,Translating
 Translation,Переклад
 Translation service is unavailable,Translation service is unavailable
 Translations,Переклади
+Translations are still pending,Переклади ще виконуються
 Translations imported.,Переклади імпортовані.
 Translations reset successfully,Переклади успішно скинуто
 Translations saved,Переклади збережено
