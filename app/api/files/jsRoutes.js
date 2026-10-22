@@ -89,6 +89,12 @@ const routes = app => {
   app.post('/api/remotepublic', async (req, res, next) => {
     const publicFormDestination =
       await SettingsDataSourceFactory.default().readPublicFormDestination();
+
+    if (!publicFormDestination) {
+      next(createError('Remote public form destination not configured', 400));
+      return;
+    }
+
     proxy(publicFormDestination, {
       limit: '500mb',
       proxyReqPathResolver() {
