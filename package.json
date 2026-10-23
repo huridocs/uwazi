@@ -147,7 +147,7 @@
     "@googlemaps/js-api-loader": "^1.16.8",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
-    "@huridocs/react-text-selection-handler": "^0.4.0",
+    "@huridocs/react-text-selection-handler": "^0.4.1",
     "@huridocs/rison": "^2.1.2",
     "@loadable/component": "^5.16.7",
     "@popperjs/core": "^2.11.8",

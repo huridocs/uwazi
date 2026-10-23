@@ -184,6 +184,12 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
+  /** Mongo reads cost one round trip each with or without a transaction: no scope needed. */
+  // eslint-disable-next-line class-methods-use-this
+  async runReadOnly<T>(callback: () => Promise<T>): Promise<T> {
+    return callback();
+  }
+
   runHandlingOnCommitted<T>(callback: () => Promise<T>) {
     return {
       onCommitted: async (handler: (returnValue: T) => Promise<void>) =>

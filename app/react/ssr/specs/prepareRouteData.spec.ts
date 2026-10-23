@@ -177,4 +177,15 @@ describe('prepareRouteData V1 library corpus', () => {
       expect.anything()
     );
   });
+
+  it('rejects with AbortError when the request signal is already aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    await expect(
+      prepareRouteData(
+        new Request('http://localhost:3000/library?search=arroz', { signal: controller.signal }),
+        libraryRoutes()
+      )
+    ).rejects.toMatchObject({ name: 'AbortError' });
+  });
 });
