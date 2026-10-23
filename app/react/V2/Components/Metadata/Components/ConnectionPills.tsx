@@ -52,12 +52,13 @@ const connectionPillsForField = (
   templateProperty: ClientProperty | undefined,
   options: ConnectionPillsForFieldOptions = {}
 ): ReactNode => {
-  if (!field.values.every(isEntityRelationshipValue) || field.values.length === 0) {
+  const values = field.values.filter(isEntityRelationshipValue);
+  if (!values.length) {
     return null;
   }
   return (
     <ConnectionPills
-      values={field.values}
+      values={values}
       targetTemplateId={field.relationShipTarget || templateProperty?.content}
       onOpenEntity={options.onOpenEntity}
     />

@@ -3178,13 +3178,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@huridocs/react-text-selection-handler@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@huridocs/react-text-selection-handler@npm:0.4.0"
+"@huridocs/react-text-selection-handler@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@huridocs/react-text-selection-handler@npm:0.4.1"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/2e9a1f60947b1989473f8b1b7f9a096160a4089ac002af7fab278e0c3b0a5b2fd6347d124da9e0f55c0d3cb43ad780b82adc43a102299f805b0469dc5e133760
+  checksum: 10c0/861e4d55cf88fe78978f5698c1233694f04248d5d6df559d4568a5bfc7ed4ebd5965434edcd410a00f7c4b55bbe88b9b134a537e6fc6fd091c3ef9ce7738bf44
   languageName: node
   linkType: hard
 
@@ -24132,7 +24132,7 @@ __metadata:
     "@googlemaps/js-api-loader": "npm:^1.16.8"
     "@headlessui/react": "npm:^2.2.10"
     "@heroicons/react": "npm:^2.2.0"
-    "@huridocs/react-text-selection-handler": "npm:^0.4.0"
+    "@huridocs/react-text-selection-handler": "npm:^0.4.1"
     "@huridocs/rison": "npm:^2.1.2"
     "@loadable/component": "npm:^5.16.7"
     "@playwright/test": "npm:^1.62.1"

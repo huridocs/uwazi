@@ -85,7 +85,10 @@ const EditEntityPropertyField = ({
   const inheritColumns = useMemo(
     () =>
       property.type === 'relationship'
-        ? buildInheritColumns(property, metadataProperties, templates, entityMetadata)
+        ? buildInheritColumns(property, metadataProperties, {
+            templates,
+            sourceMetadata: entityMetadata,
+          })
         : [],
     [property, metadataProperties, templates, entityMetadata]
   );

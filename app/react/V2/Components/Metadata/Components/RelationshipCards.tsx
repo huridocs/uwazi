@@ -9,7 +9,11 @@ import {
 } from '../metadataPropertyLayout.js';
 import { buildInheritColumns, type InheritColumnProperty } from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
-import type { OpenEntityTarget } from './ConnectionPills.js';
+import {
+  isEntityRelationshipValue,
+  type OpenEntityTarget,
+  type RelationshipEntityValue,
+} from './ConnectionPills.js';
 
 type RelationshipCardsProps = {
   fields: RelationshipMetadataProperty[];
@@ -42,9 +46,22 @@ type CardRenderContext = {
 };
 
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
-  Array.isArray(field.values) &&
-  field.values.length > 0 &&
-  field.values.every(value => typeof value === 'object' && value !== null && 'title' in value);
+  field.values.some(isEntityRelationshipValue);
+
+const entityValues = (fields: RelationshipMetadataProperty[]): RelationshipEntityValue[] => {
+  const seen = new Set<string>();
+  const rows: RelationshipEntityValue[] = [];
+  fields.forEach(field => {
+    field.values.forEach(value => {
+      if (!isEntityRelationshipValue(value) || seen.has(value._id)) {
+        return;
+      }
+      seen.add(value._id);
+      rows.push(value);
+    });
+  });
+  return rows;
+};
 
 const toInheritColumnProperty = (
   field: RelationshipMetadataProperty,
@@ -65,7 +82,7 @@ const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContex
   return (
     <Relationship
       key={field._id}
-      values={field.values}
+      values={entityValues([field])}
       label={field.label}
       translationContext={ctx.translationContext}
       hideLabel={field.hideLabel}
@@ -85,19 +102,21 @@ const inheritingGroupCard = (
   const [primary] = siblings;
   const primaryTpl = ctx.templatePropertyById.get(primary._id);
   const columns = buildInheritColumns(
-    { content: primaryTpl?.content, relationType: primaryTpl?.relationType },
+    { content: primaryTpl?.content, inherited: true },
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
     ),
-    ctx.templates,
-    ctx.entity?.metadata,
-    ctx.onOpenEntity
+    {
+      templates: ctx.templates,
+      sourceMetadata: ctx.entity?.metadata,
+      onOpenEntity: ctx.onOpenEntity,
+    }
   );
 
   return (
     <Relationship
       key={groupKey}
-      values={primary.values}
+      values={entityValues(siblings)}
       label={primary.label}
       translationContext={ctx.translationContext}
       hideLabel={primary.hideLabel}
