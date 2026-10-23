@@ -9,7 +9,7 @@ import {
 } from '../metadataPropertyLayout.js';
 import { buildInheritColumns, type InheritColumnProperty } from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
-import type { OpenEntityTarget } from './ConnectionPills.js';
+import { isEntityRelationshipValue, type OpenEntityTarget } from './ConnectionPills.js';
 
 type RelationshipCardsProps = {
   fields: RelationshipMetadataProperty[];
@@ -42,9 +42,7 @@ type CardRenderContext = {
 };
 
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
-  Array.isArray(field.values) &&
-  field.values.length > 0 &&
-  field.values.every(value => typeof value === 'object' && value !== null && 'title' in value);
+  field.values.some(isEntityRelationshipValue);
 
 const toInheritColumnProperty = (
   field: RelationshipMetadataProperty,
@@ -85,7 +83,7 @@ const inheritingGroupCard = (
   const [primary] = siblings;
   const primaryTpl = ctx.templatePropertyById.get(primary._id);
   const columns = buildInheritColumns(
-    { content: primaryTpl?.content, relationType: primaryTpl?.relationType },
+    { content: primaryTpl?.content, inherited: true },
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
     ),

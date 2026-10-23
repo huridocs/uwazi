@@ -169,7 +169,7 @@ const MetadataRecord = ({
   );
 
   const masonryRows = useMemo(
-    () => (panelWidth === undefined ? [] : packPropertyRows(masonryFields, panelWidth)),
+    () => packPropertyRows(masonryFields, panelWidth ?? 0),
     [masonryFields, panelWidth]
   );
 

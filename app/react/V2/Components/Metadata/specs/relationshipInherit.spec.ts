@@ -10,6 +10,23 @@ describe('relationshipGroupKey', () => {
     expect(relationshipGroupKey({ content: 'tpl', relationType: 'rel' })).toBe('tpl::rel');
     expect(relationshipGroupKey({})).toBe('::');
   });
+
+  it('should group inherited properties by target template, ignoring relation type', () => {
+    const markdown = {
+      content: 'tpl',
+      relationType: 'rel-a',
+      inherited: true,
+      inherit: { property: 'md', type: 'markdown' },
+    };
+    const geo = {
+      content: 'tpl',
+      relationType: 'rel-b',
+      inherited: true,
+      inherit: { property: 'geo', type: 'geolocation' },
+    };
+    expect(relationshipGroupKey(markdown)).toBe(relationshipGroupKey(geo));
+    expect(relationshipGroupKey(markdown)).toBe('inherit::tpl');
+  });
 });
 
 describe('buildInheritColumns', () => {
@@ -194,5 +211,42 @@ describe('buildInheritColumns', () => {
     expect(columns[0].sortKeyByEntityId?.e1).toBe('Kenya');
     expect(columns[1].cellsByEntityId?.e1).toBe('Witness');
     expect(columns[1].sortKeyByEntityId?.e1).toBe('Witness');
+  });
+
+  it('should include inherited siblings from the same template when relation types differ', () => {
+    const markdown: InheritColumnProperty = {
+      _id: 'md',
+      type: 'relationship',
+      name: 'rel_md',
+      label: 'RelationshipMark',
+      content: 'use-test',
+      relationType: 'rel-md',
+      inherited: true,
+      inherit: { property: 'md-id', type: 'markdown' },
+    };
+    const geo: InheritColumnProperty = {
+      _id: 'geo',
+      type: 'relationship',
+      name: 'rel_geo',
+      label: 'RelationshipGeo',
+      content: 'use-test',
+      relationType: 'rel-geo',
+      inherited: true,
+      inherit: { property: 'geo-id', type: 'geolocation' },
+    };
+    const columns = buildInheritColumns(
+      markdown,
+      [markdown, geo],
+      [
+        {
+          _id: 'use-test',
+          properties: [
+            { _id: 'md-id', label: 'Markdown' },
+            { _id: 'geo-id', label: 'Geolocation' },
+          ],
+        },
+      ]
+    );
+    expect(columns.map(column => column.label)).toEqual(['Markdown', 'Geolocation']);
   });
 });
