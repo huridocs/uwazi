@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { matchRoutes, RouteObject, StaticRouterProvider } from 'react-router';
 import { prepareRouteData } from './ssr/prepareRouteData.js';
 import { entityPageDocumentCss } from './ssr/entityPageDocumentCss.js';
+import { isAbortError } from './ssr/isAbortError.js';
 import { searchParamsWithChildQuery } from './ssr/routeSearchParams.js';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -374,8 +375,7 @@ const loadStaticRoute = async (req: ExpressRequest, routes: RouteObject[]) => {
   return { ...prepared, ssrError };
 };
 
-const EntryServer = async (req: ExpressRequest, res: Response) => {
-  const ssrStart = process.hrtime.bigint();
+const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) => {
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await withSpan('settings_and_assets', async () => {
     const query = SettingsQueryServiceFactory.default();
@@ -587,6 +587,19 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
+};
+
+const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const ssrStart = process.hrtime.bigint();
+  try {
+    await renderSSR(req, res, ssrStart);
+  } catch (error) {
+    if (isAbortError(error)) {
+      logSSRAborted(req, 'During SSR', ssrStart, req.ssrRoutePattern);
+      return;
+    }
+    throw error;
+  }
 };
 
 export { EntryServer };

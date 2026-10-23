@@ -615,3 +615,17 @@ describe('when the operation throws a OptimisticLockError', () => {
     }
   });
 });
+
+describe('runReadOnly', () => {
+  it('should run the callback without opening a transaction', async () => {
+    const tm = createTransactionManager();
+
+    const seen = await tm.runReadOnly(async () => ({
+      running: tm.isRunning(),
+      session: tm.getSession(),
+      result: 'value',
+    }));
+
+    expect(seen).toEqual({ running: false, session: undefined, result: 'value' });
+  });
+});
