@@ -19,7 +19,11 @@ import {
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
 import { useContainerWidth } from '#V2/Components/PDFViewer/hooks/useContainerWidth.js';
-import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
+import {
+  hasRenderableMetadata,
+  renderFieldContent,
+  renderScalarContent,
+} from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
 import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
@@ -168,11 +172,6 @@ const MetadataRecord = ({
     [partition.masonryFields, showDocumentPreview]
   );
 
-  const masonryRows = useMemo(
-    () => (panelWidth === undefined ? [] : packPropertyRows(masonryFields, panelWidth)),
-    [masonryFields, panelWidth]
-  );
-
   const inheritingCardsByGroupKey = useMemo(
     () =>
       buildInheritingCardsByGroupKey({
@@ -192,6 +191,24 @@ const MetadataRecord = ({
       entity,
       onOpenEntity,
     ]
+  );
+
+  const visibleFields = useMemo(
+    () =>
+      masonryFields.filter(field => {
+        if (showDocumentPreview && field.type === 'preview') {
+          return true;
+        }
+        if (isInheritingRelationship(field)) {
+          return inheritingCardsByGroupKey.has(inheritGroupKey(field, templatePropertyById));
+        }
+        return hasRenderableMetadata(field);
+      }),
+    [inheritingCardsByGroupKey, masonryFields, showDocumentPreview, templatePropertyById]
+  );
+  const masonryRows = useMemo(
+    () => packPropertyRows(visibleFields, panelWidth ?? 0),
+    [panelWidth, visibleFields]
   );
 
   const hasSystemDates = entityHasSystemDates(entity);
@@ -216,7 +233,7 @@ const MetadataRecord = ({
     return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
-  if (masonryFields.length === 0 && !hasSystemDates) {
+  if (visibleFields.length === 0 && !hasSystemDates) {
     return (
       <div className="flex items-center justify-center py-10 text-center">
         <p className="text-xs text-ink-muted">

@@ -387,7 +387,10 @@ describe('Entity edit', () => {
         .closest('div.space-y-1\\.5')
         .find('[data-testid="relationship-connections"]')
         .should('exist');
-      cy.contains('Owner').closest('div.space-y-1\\.5').find('table').should('have.class', 'w-max');
+      cy.contains('Owner')
+        .closest('div.space-y-1\\.5')
+        .find('table:not([aria-hidden])')
+        .should('have.class', 'w-full');
     });
 
     it('should render Witnesses as a separate relationship field', () => {

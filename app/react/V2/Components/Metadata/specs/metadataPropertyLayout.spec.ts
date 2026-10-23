@@ -15,6 +15,8 @@ import {
   FULL_ROW_METADATA_FIELD_LAYOUT,
   MEDIA_CARD_MIN_PX,
   MEDIA_METADATA_FIELD_LAYOUT,
+  MASONRY_THREE_COL_PX,
+  MASONRY_TWO_COL_PX,
   PROPERTY_ROW_GAP_PX,
   metadataGridClassForProperty,
   mediaMasonryRowClass,
@@ -169,6 +171,35 @@ describe('metadataPropertyLayout', () => {
       ]);
     });
 
+    it('splits read-mode inherit groups by relationship type', () => {
+      const first = inheritingSibling('inh-a', 'rel_a', 'Rel A');
+      const second = inheritingSibling('inh-b', 'rel_b', 'Rel B');
+      const templateMap = inheritSiblingTemplateMap();
+      const otherType = templateMap.get('inh-b');
+      if (otherType) {
+        otherType.relationType = 'rel-type-2';
+      }
+      const groups = groupInheritingRelationships([first, second], templateMap);
+      expect(groups.size).toBe(2);
+      expect(inheritGroupKey(first, templateMap)).not.toBe(inheritGroupKey(second, templateMap));
+      expect(
+        partitionMetadataRecord([], [second, first], templateMap).masonryFields.map(
+          field => field._id
+        )
+      ).toEqual(['inh-a', 'inh-b']);
+    });
+
+    it('anchors a relation-type group on its first sibling when that sibling is empty', () => {
+      const first = { ...inheritingSibling('inh-a', 'rel_a', 'Rel A'), values: [] };
+      const second = inheritingSibling('inh-b', 'rel_b', 'Rel B');
+      const templateMap = inheritSiblingTemplateMap();
+      expect(
+        partitionMetadataRecord([], [second, first], templateMap).masonryFields.map(
+          field => field._id
+        )
+      ).toEqual(['inh-a']);
+    });
+
     it('omits empty specialized fields from masonry while keeping filled preview', () => {
       const emptyPreview: PreviewMetadataProperty = {
         _id: 'prev-empty',
@@ -195,6 +226,29 @@ describe('metadataPropertyLayout', () => {
           new Map()
         ).masonryFields.map(f => f._id)
       ).toEqual(['prev1', 'm1']);
+    });
+  });
+
+  describe('short columns', () => {
+    it('keeps short fields in one column until the record is 44rem wide', () => {
+      const fields = [textField('1987', 't1'), textField('ABC', 't2')];
+      expect(rowIds(fields, MASONRY_TWO_COL_PX - 1)).toEqual([['t1'], ['t2']]);
+      expect(rowIds(fields, MASONRY_TWO_COL_PX)).toEqual([['t1', 't2']]);
+    });
+
+    it('opens a third short column at 66rem and never a fourth', () => {
+      const fields = [
+        textField('1987', 't1'),
+        textField('ABC', 't2'),
+        textField('CD', 't3'),
+        textField('EF', 't4'),
+      ];
+      expect(rowIds(fields, MASONRY_THREE_COL_PX - 1)).toEqual([
+        ['t1', 't2'],
+        ['t3', 't4'],
+      ]);
+      expect(rowIds(fields, MASONRY_THREE_COL_PX)).toEqual([['t1', 't2', 't3'], ['t4']]);
+      expect(rowIds(fields, 2560)).toEqual([['t1', 't2', 't3'], ['t4']]);
     });
   });
 

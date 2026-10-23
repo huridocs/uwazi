@@ -10,7 +10,7 @@ const assertInheritedTableLayout = (card: Cypress.Chainable<JQuery<HTMLElement>>
   card.within(() => {
     cy.get('[data-testid="relationship-connections"]').should('exist');
     cy.get('.overflow-x-auto').should('not.exist');
-    cy.get('table').should('have.class', 'w-max');
+    cy.get('table:not([aria-hidden])').should('have.class', 'w-full');
   });
 };
 

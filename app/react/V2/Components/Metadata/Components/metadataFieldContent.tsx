@@ -7,7 +7,7 @@ import { Markdown } from './Markdown.js';
 import { LinkProperty } from './LinkProperty.js';
 import { Image } from './Image.js';
 import { Media } from './Media.js';
-import { connectionPillsForField } from './ConnectionPills.js';
+import { connectionPillsForField, isEntityRelationshipValue } from './ConnectionPills.js';
 import type { OpenEntityTarget } from './ConnectionPills.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
 
@@ -95,5 +95,35 @@ const renderSpecializedContent = (
 const renderFieldContent = (data: MetadataProperty, options: FieldContentOptions = {}): ReactNode =>
   renderSpecializedContent(data, options) ?? renderScalarContent(data, options.long ?? false);
 
+const hasRenderableMetadata = (data: MetadataProperty): boolean => {
+  if (
+    data.type === 'text' ||
+    data.type === 'generatedid' ||
+    data.type === 'numeric' ||
+    data.type === 'link' ||
+    data.type === 'markdown' ||
+    data.type === 'media' ||
+    data.type === 'image' ||
+    data.type === 'preview'
+  ) {
+    return hasFilledText(data.values);
+  }
+  if (
+    data.type === 'date' ||
+    data.type === 'daterange' ||
+    data.type === 'multidate' ||
+    data.type === 'multidaterange' ||
+    data.type === 'select' ||
+    data.type === 'multiselect' ||
+    data.type === 'geolocation'
+  ) {
+    return data.values.length > 0;
+  }
+  if (data.type === 'relationship') {
+    return data.values.some(isEntityRelationshipValue);
+  }
+  return false;
+};
+
 export type { FieldContentOptions };
-export { renderScalarContent, renderSpecializedContent, renderFieldContent };
+export { hasRenderableMetadata, renderScalarContent, renderSpecializedContent, renderFieldContent };
