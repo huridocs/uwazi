@@ -3,6 +3,8 @@ import { Knex } from 'knex';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
 import { PermissionContext, PostgresSessionContext } from './PostgresSessionContext.js';
+import { TransactionJoinLock } from './TransactionJoinLock.js';
+import { TransactionBorrows } from './TransactionBorrows.js';
 
 type CommitHandler = (returnValue: unknown) => Promise<void>;
 type RetryHandler = () => Promise<void>;
@@ -20,8 +22,9 @@ export class PostgresTransactionManager implements TransactionManager {
   private knex: Knex;
   private logger: Logger;
   private activeTransaction?: Knex.Transaction;
-  private pendingJoins = 0;
-  private joinsDrain?: { promise: Promise<void>; resolve: () => void };
+  private activeIsReadOnly = false;
+  private joinLock = new TransactionJoinLock();
+  private borrows = new TransactionBorrows();
   private persistentOnCommitHandlers: CommitHandler[] = [];
   private persistentOnRetryHandlers: RetryHandler[] = [];
   private runOnCommitHandlers: CommitHandler[] = [];
@@ -61,7 +64,7 @@ export class PostgresTransactionManager implements TransactionManager {
     trx: Knex.Transaction,
     permissionContext?: PermissionContext
   ): Promise<{ saved: PermissionContext; endJoin: () => void }> {
-    const endJoin = this.beginJoin();
+    const endJoin = this.borrows.begin();
     try {
       const saved = this.sessionContext.current(trx);
       await this.sessionContext.switch(trx, permissionContext);
@@ -72,8 +75,11 @@ export class PostgresTransactionManager implements TransactionManager {
     }
   }
 
-  private async openTransaction(permissionContext?: PermissionContext): Promise<TransactionHandle> {
-    const trx = await this.knex.transaction();
+  private async openTransaction(
+    permissionContext?: PermissionContext,
+    config: Knex.TransactionConfig = {}
+  ): Promise<TransactionHandle> {
+    const trx = await this.knex.transaction(config);
     try {
       await this.sessionContext.open(trx, permissionContext);
     } catch (error) {
@@ -115,42 +121,20 @@ export class PostgresTransactionManager implements TransactionManager {
   ): Promise<T> {
     const trx = this.activeTransaction;
     if (!trx) throw new Error('PostgresTransactionManager has no active transaction');
-    const endJoin = this.beginJoin();
+    const endJoin = this.borrows.begin();
     try {
-      if (!options?.preservePermission) {
-        await this.sessionContext.switch(trx, permissionContext);
-      }
-      return await fn(trx);
+      return await this.joinLock.run(async nested => {
+        const outer = this.sessionContext.current(trx);
+        if (!options?.preservePermission) {
+          await this.sessionContext.switch(trx, permissionContext);
+        }
+        const result = await fn(trx);
+        if (nested) await this.sessionContext.switch(trx, outer);
+        return result;
+      });
     } finally {
       endJoin();
     }
-  }
-
-  /** Marks the start of a transaction borrow; call the returned function when the borrow ends. */
-  private beginJoin(): () => void {
-    this.pendingJoins += 1;
-    return () => {
-      this.pendingJoins -= 1;
-      if (this.pendingJoins === 0) {
-        this.joinsDrain?.resolve();
-        this.joinsDrain = undefined;
-      }
-    };
-  }
-
-  /** Resolves when every transaction borrow has been released. */
-  private async drainJoins(): Promise<void> {
-    if (this.pendingJoins === 0) return;
-    if (!this.joinsDrain) {
-      let resolve!: () => void;
-      this.joinsDrain = {
-        promise: new Promise<void>(r => {
-          resolve = r;
-        }),
-        resolve,
-      };
-    }
-    await this.joinsDrain.promise;
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
@@ -197,13 +181,15 @@ export class PostgresTransactionManager implements TransactionManager {
 
   private async finishCommit(handle: TransactionHandle): Promise<void> {
     this.activeTransaction = undefined;
-    await this.drainJoins();
+    this.activeIsReadOnly = false;
+    await this.borrows.drain();
     await handle.commit();
   }
 
   private async finishRollback(handle: TransactionHandle): Promise<void> {
     this.activeTransaction = undefined;
-    await this.drainJoins();
+    this.activeIsReadOnly = false;
+    await this.borrows.drain();
     await handle.rollback().catch(() => undefined);
   }
 
@@ -233,6 +219,26 @@ export class PostgresTransactionManager implements TransactionManager {
     }
   }
 
+  /**
+   * Runs `callback` in one read only transaction that every connection inside it joins, instead
+   * of each opening its own. Joins a running transaction when there is one. It is not a write
+   * transaction: `isRunning()` stays false, and there are no retries nor commit handlers.
+   */
+  async runReadOnly<T>(callback: () => Promise<T>): Promise<T> {
+    if (this.activeTransaction) return callback();
+    const handle = await this.openTransaction(undefined, { readOnly: true });
+    this.activeTransaction = handle.trx;
+    this.activeIsReadOnly = true;
+    try {
+      const result = await callback();
+      await this.finishCommit(handle);
+      return result;
+    } catch (error) {
+      await this.finishRollback(handle);
+      throw error;
+    }
+  }
+
   runHandlingOnCommitted<T>(callback: () => Promise<T>) {
     return {
       onCommitted: async (handler: (returnValue: T) => Promise<void>) =>
@@ -245,7 +251,7 @@ export class PostgresTransactionManager implements TransactionManager {
   }
 
   isRunning(): boolean {
-    return !!this.activeTransaction;
+    return !!this.activeTransaction && !this.activeIsReadOnly;
   }
 
   onCommitted(handler: () => Promise<void>) {
