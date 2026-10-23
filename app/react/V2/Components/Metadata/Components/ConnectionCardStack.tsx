@@ -95,7 +95,7 @@ const ConnectionCardStack = ({
             {renderActions?.(row)}
           </div>
           {columns.length > 0 ? (
-            <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-3 gap-y-1">
+            <div className="grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1">
               {columns.map(column => (
                 <div key={column.label} className="contents">
                   <span className="text-meta font-semibold uppercase tracking-wider text-ink-tertiary">

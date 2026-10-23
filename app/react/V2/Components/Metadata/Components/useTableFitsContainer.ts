@@ -1,14 +1,29 @@
-import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { type RefObject, useEffect, useLayoutEffect, useState } from 'react';
 
-const HYSTERESIS = 8;
+const TABLE_MIN_PX = 28.5 * 16;
+const COMPACT_CELL_PX = 72;
 const DEBOUNCE_MS = 150;
+
+type ConnectionLayout = 'table' | 'stack' | 'properties';
 
 const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
-const shouldShowCards = (containerWidth: number, tableWidth: number, showingCards: boolean) => {
-  if (tableWidth > containerWidth) return true;
-  return showingCards && tableWidth > containerWidth - HYSTERESIS;
+const connectionLayout = (
+  containerWidth: number,
+  tableWidth: number,
+  tallestCell: number
+): ConnectionLayout => {
+  if (containerWidth <= 0) return 'table';
+  if (containerWidth < TABLE_MIN_PX) return 'stack';
+  if (tallestCell > COMPACT_CELL_PX || tableWidth > containerWidth + 1) return 'properties';
+  return 'table';
 };
+
+const tallestCellHeight = (probe: HTMLElement) =>
+  [...probe.querySelectorAll('[data-measure-cell]')].reduce(
+    (tallest, cell) => Math.max(tallest, cell.getBoundingClientRect().height),
+    0
+  );
 
 const connectResizeObserver = (onResize: () => void, debounce: number) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -32,9 +47,7 @@ const useTableFitsContainer = (
   containerRef: RefObject<HTMLElement | null>,
   probeRef: RefObject<HTMLElement | null>
 ) => {
-  const [showCards, setShowCards] = useState(false);
-  const showCardsRef = useRef(showCards);
-  showCardsRef.current = showCards;
+  const [layout, setLayout] = useState<ConnectionLayout>('table');
 
   useIsomorphicLayoutEffect(() => {
     const container = containerRef.current;
@@ -42,8 +55,12 @@ const useTableFitsContainer = (
     if (!container || !probe) return undefined;
 
     const read = () => {
-      const next = shouldShowCards(container.clientWidth, probe.scrollWidth, showCardsRef.current);
-      setShowCards(current => (current === next ? current : next));
+      const next = connectionLayout(
+        container.clientWidth,
+        probe.scrollWidth,
+        tallestCellHeight(probe)
+      );
+      setLayout(current => (current === next ? current : next));
     };
 
     read();
@@ -54,7 +71,7 @@ const useTableFitsContainer = (
     return disconnect;
   }, [containerRef, probeRef]);
 
-  return showCards;
+  return layout;
 };
 
-export { shouldShowCards, useTableFitsContainer };
+export { connectionLayout, useTableFitsContainer };
