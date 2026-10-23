@@ -64,18 +64,21 @@ describe('buildInheritColumns', () => {
 
   it('should build columns for matching inherited relationship properties', () => {
     expect(
-      buildInheritColumns(metadataProperties[0], metadataProperties, templates, {
-        inherited_tags: [
-          {
-            value: 'entity-1',
-            inheritedValue: [
-              {
-                label: 'Nested',
-                value: null,
-              },
-            ],
-          },
-        ],
+      buildInheritColumns(metadataProperties[0], metadataProperties, {
+        templates,
+        sourceMetadata: {
+          inherited_tags: [
+            {
+              value: 'entity-1',
+              inheritedValue: [
+                {
+                  label: 'Nested',
+                  value: null,
+                },
+              ],
+            },
+          ],
+        },
       })
     ).toEqual([
       {
@@ -87,8 +90,11 @@ describe('buildInheritColumns', () => {
   });
 
   it('should map empty inheritedValue cells to undefined for dash fallback', () => {
-    const columns = buildInheritColumns(metadataProperties[0], metadataProperties, templates, {
-      inherited_tags: [{ value: 'entity-1' }, { value: 'entity-2', inheritedValue: [] }],
+    const columns = buildInheritColumns(metadataProperties[0], metadataProperties, {
+      templates,
+      sourceMetadata: {
+        inherited_tags: [{ value: 'entity-1' }, { value: 'entity-2', inheritedValue: [] }],
+      },
     });
     expect(columns).toHaveLength(1);
     expect(columns[0].label).toBe('Inherited label');
@@ -103,7 +109,7 @@ describe('buildInheritColumns', () => {
   });
 
   it('should keep an empty cellsByEntityId when source metadata is missing', () => {
-    expect(buildInheritColumns(metadataProperties[0], metadataProperties, templates)).toEqual([
+    expect(buildInheritColumns(metadataProperties[0], metadataProperties, { templates })).toEqual([
       {
         label: 'Inherited label',
         cellsByEntityId: {},
@@ -123,12 +129,12 @@ describe('buildInheritColumns', () => {
       inherited: true,
       inherit: { property: 'geo-id', type: 'geolocation' },
     };
-    const columns = buildInheritColumns(
-      geoProp,
-      [geoProp],
-      [{ _id: 'place-tmpl', properties: [{ _id: 'geo-id', label: 'Geolocation' }] }],
-      { related_place: [{ value: 'e1', inheritedValue: [{ value: { lat: 1, lon: 2 } }] }] }
-    );
+    const columns = buildInheritColumns(geoProp, [geoProp], {
+      templates: [{ _id: 'place-tmpl', properties: [{ _id: 'geo-id', label: 'Geolocation' }] }],
+      sourceMetadata: {
+        related_place: [{ value: 'e1', inheritedValue: [{ value: { lat: 1, lon: 2 } }] }],
+      },
+    });
     expect(columns[0]).toMatchObject({ label: 'Geolocation', inheritedType: 'geolocation' });
   });
 
@@ -143,16 +149,14 @@ describe('buildInheritColumns', () => {
       inherited: true,
       inherit: { property: 'cities-prop', type: 'relationship' },
     };
-    const columns = buildInheritColumns(
-      relProp,
-      [relProp],
-      [
+    const columns = buildInheritColumns(relProp, [relProp], {
+      templates: [
         {
           _id: 'person-tmpl',
           properties: [{ _id: 'cities-prop', label: 'Cities', content: 'city-tmpl' }],
         },
       ],
-      {
+      sourceMetadata: {
         related_cities: [
           {
             value: 'person-1',
@@ -163,8 +167,8 @@ describe('buildInheritColumns', () => {
             ],
           },
         ],
-      }
-    );
+      },
+    });
     expect(columns[0]).toMatchObject({ label: 'Cities', inheritedType: 'relationship' });
   });
 
@@ -201,9 +205,12 @@ describe('buildInheritColumns', () => {
       },
     ];
 
-    const columns = buildInheritColumns(siblings[0], siblings, siblingTemplates, {
-      people_country: [{ value: 'e1', inheritedValue: [{ value: 'Kenya', label: 'Kenya' }] }],
-      people_role: [{ value: 'e1', inheritedValue: [{ value: 'Witness', label: 'Witness' }] }],
+    const columns = buildInheritColumns(siblings[0], siblings, {
+      templates: siblingTemplates,
+      sourceMetadata: {
+        people_country: [{ value: 'e1', inheritedValue: [{ value: 'Kenya', label: 'Kenya' }] }],
+        people_role: [{ value: 'e1', inheritedValue: [{ value: 'Witness', label: 'Witness' }] }],
+      },
     });
 
     expect(columns.map(column => column.label)).toEqual(['Country', 'Role']);
@@ -234,10 +241,8 @@ describe('buildInheritColumns', () => {
       inherited: true,
       inherit: { property: 'geo-id', type: 'geolocation' },
     };
-    const columns = buildInheritColumns(
-      markdown,
-      [markdown, geo],
-      [
+    const columns = buildInheritColumns(markdown, [markdown, geo], {
+      templates: [
         {
           _id: 'use-test',
           properties: [
@@ -245,8 +250,8 @@ describe('buildInheritColumns', () => {
             { _id: 'geo-id', label: 'Geolocation' },
           ],
         },
-      ]
-    );
+      ],
+    });
     expect(columns.map(column => column.label)).toEqual(['Markdown', 'Geolocation']);
   });
 });

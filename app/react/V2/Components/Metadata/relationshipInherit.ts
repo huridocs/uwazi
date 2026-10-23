@@ -63,12 +63,16 @@ const inheritColumnLabel = (
   templates: InheritColumnTemplate[]
 ): string => inheritedPropertyOnTarget(property, templates)?.label ?? property.label;
 
+type InheritColumnContext = {
+  templates: InheritColumnTemplate[];
+  sourceMetadata?: Entity['metadata'];
+  onOpenEntity?: (target: OpenEntityTarget) => void;
+};
+
 const buildInheritColumns = (
   property: RelationshipGroupProperty,
   metadataProperties: InheritColumnProperty[],
-  templates: InheritColumnTemplate[],
-  sourceMetadata?: Entity['metadata'],
-  onOpenEntity?: (target: OpenEntityTarget) => void
+  { templates, sourceMetadata, onOpenEntity }: InheritColumnContext
 ): InheritColumn[] =>
   metadataProperties
     .filter(

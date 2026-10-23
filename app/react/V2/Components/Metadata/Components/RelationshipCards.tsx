@@ -87,9 +87,11 @@ const inheritingGroupCard = (
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
     ),
-    ctx.templates,
-    ctx.entity?.metadata,
-    ctx.onOpenEntity
+    {
+      templates: ctx.templates,
+      sourceMetadata: ctx.entity?.metadata,
+      onOpenEntity: ctx.onOpenEntity,
+    }
   );
 
   return (
