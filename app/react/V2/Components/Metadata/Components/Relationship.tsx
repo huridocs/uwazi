@@ -47,11 +47,12 @@ const Relationship = ({
     return typeName || label;
   }, [label, relationTypeId, relationshipTypes]);
 
-  if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
+  const entities = Array.isArray(values) ? values.filter(isEntityRelationshipValue) : [];
+  if (!entities.length) {
     return null;
   }
 
-  const rows = values.map(value => ({
+  const rows = entities.map(value => ({
     id: value._id,
     label: value.title,
     templateId: value.templateId,
@@ -96,7 +97,7 @@ const Relationship = ({
           />
         ) : (
           <ConnectionPills
-            values={values}
+            values={entities}
             targetTemplateId={targetTemplateId}
             onOpenEntity={onOpenEntity}
           />

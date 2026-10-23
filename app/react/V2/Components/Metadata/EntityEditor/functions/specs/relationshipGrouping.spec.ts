@@ -53,6 +53,34 @@ describe('groupRelationshipProperties', () => {
       groupedRelationshipNames: ['other_rel'],
     });
   });
+
+  it('should share one source list for inherited properties of the same template', () => {
+    const grouped = groupRelationshipProperties([
+      {
+        _id: 'md',
+        type: 'relationship',
+        name: 'relationshipmark',
+        label: 'RelationshipMark',
+        content: 'use-test',
+        relationType: 'rel-md',
+        inherited: true,
+        inherit: { property: 'md', type: 'markdown' },
+      },
+      {
+        _id: 'geo',
+        type: 'relationship',
+        name: 'relationshipgeo',
+        label: 'RelationshipGeo',
+        content: 'use-test',
+        relationType: 'rel-geo',
+        inherited: true,
+        inherit: { property: 'geo', type: 'geolocation' },
+      },
+    ]);
+
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark', 'relationshipgeo']);
+  });
 });
 
 describe('syncGroupedRelationshipMetadata', () => {
