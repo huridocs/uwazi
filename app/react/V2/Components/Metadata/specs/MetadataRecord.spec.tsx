@@ -233,6 +233,33 @@ const fieldEl = (name: string): HTMLElement => {
 };
 
 describe('MetadataRecord', () => {
+  it('omits blank rows when properties have no visible values', () => {
+    const blankTemplate = {
+      ...template,
+      properties: [{ _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' }],
+    };
+    const blank: Entity = {
+      ...entity,
+      metadata: { code: [{ value: '' }] },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [blankTemplate]],
+          [relationshipTypesAtom, []],
+        ]}
+      >
+        <MetadataRecord entity={blank} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(document.querySelector('[data-property-row]')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Code' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
+  });
+
   beforeEach(() => {
     mockClientWidth = 0;
     resizeObservers.length = 0;

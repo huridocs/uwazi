@@ -9,7 +9,11 @@ import {
 } from '../metadataPropertyLayout.js';
 import { buildInheritColumns, type InheritColumnProperty } from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
-import { isEntityRelationshipValue, type OpenEntityTarget } from './ConnectionPills.js';
+import {
+  isEntityRelationshipValue,
+  type OpenEntityTarget,
+  type RelationshipEntityValue,
+} from './ConnectionPills.js';
 
 type RelationshipCardsProps = {
   fields: RelationshipMetadataProperty[];
@@ -44,6 +48,21 @@ type CardRenderContext = {
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
   field.values.some(isEntityRelationshipValue);
 
+const entityValues = (fields: RelationshipMetadataProperty[]): RelationshipEntityValue[] => {
+  const seen = new Set<string>();
+  const rows: RelationshipEntityValue[] = [];
+  fields.forEach(field => {
+    field.values.forEach(value => {
+      if (!isEntityRelationshipValue(value) || seen.has(value._id)) {
+        return;
+      }
+      seen.add(value._id);
+      rows.push(value);
+    });
+  });
+  return rows;
+};
+
 const toInheritColumnProperty = (
   field: RelationshipMetadataProperty,
   templateProperty: ClientProperty | undefined
@@ -63,7 +82,7 @@ const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContex
   return (
     <Relationship
       key={field._id}
-      values={field.values}
+      values={entityValues([field])}
       label={field.label}
       translationContext={ctx.translationContext}
       hideLabel={field.hideLabel}
@@ -97,7 +116,7 @@ const inheritingGroupCard = (
   return (
     <Relationship
       key={groupKey}
-      values={primary.values}
+      values={entityValues(siblings)}
       label={primary.label}
       translationContext={ctx.translationContext}
       hideLabel={primary.hideLabel}

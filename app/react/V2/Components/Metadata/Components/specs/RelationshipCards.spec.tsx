@@ -107,11 +107,13 @@ const field = ({
   name,
   label,
   title = 'Ada',
+  values,
 }: {
   id: string;
   name: string;
   label: string;
   title?: string;
+  values?: { _id: string; title: string; templateId: string }[];
 }): RelationshipMetadataProperty => ({
   _id: id,
   name,
@@ -119,7 +121,7 @@ const field = ({
   type: 'relationship',
   mode: 'related',
   inherited: true,
-  values: [{ _id: 'entity-1', title, templateId: 'person-tmpl' }],
+  values: values ?? [{ _id: 'entity-1', title, templateId: 'person-tmpl' }],
 });
 
 const renderCards = (
@@ -172,6 +174,29 @@ describe('RelationshipCards multi-inherit grouping', () => {
     expect(within(screen.getByRole('table')).getByText('Kenya')).toBeInTheDocument();
     expect(within(screen.getByRole('table')).getByText('Witness')).toBeInTheDocument();
     expect(screen.getAllByRole('table')).toHaveLength(1);
+  });
+
+  it('includes an entity that only appears on a later sibling', () => {
+    const templatePropertyById = new Map([
+      ['p-country', peopleCountryProp],
+      ['p-role', peopleRoleProp],
+    ]);
+    renderCards(
+      [
+        field({ id: 'p-country', name: 'people_country', label: 'People involved' }),
+        field({
+          id: 'p-role',
+          name: 'people_role',
+          label: 'Role field',
+          values: [{ _id: 'entity-2', title: 'Bea', templateId: 'person-tmpl' }],
+        }),
+      ],
+      templatePropertyById
+    );
+
+    const table = screen.getByRole('table');
+    expect(within(table).getByText('Ada')).toBeInTheDocument();
+    expect(within(table).getByText('Bea')).toBeInTheDocument();
   });
 
   it('keeps separate cards for different group keys', () => {
