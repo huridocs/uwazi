@@ -8,6 +8,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -126,26 +127,30 @@ export default {
   },
 
   async getGroupsByConnection(id, language, options = {}) {
-    return Promise.all([
-      this.getByDocument(id, language, undefined, undefined, undefined, false),
-      templatesAPI.get(),
-      getRelationshipTypesDS().getAll(),
-    ]).then(([references, templates, relationTypes]) => {
-      const relevantReferences = filterRelevantRelationships(
-        references,
-        id,
-        language,
-        options.user
-      );
-      const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
+    return ExecutionContext.transactionManager
+      .runReadOnly(async () =>
+        Promise.all([
+          this.getByDocument(id, language, undefined, undefined, undefined, false),
+          templatesAPI.get(),
+          getRelationshipTypesDS().getAll(),
+        ])
+      )
+      .then(([references, templates, relationTypes]) => {
+        const relevantReferences = filterRelevantRelationships(
+          references,
+          id,
+          language,
+          options.user
+        );
+        const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
 
-      if (options.excludeRefs) {
-        groupedReferences.forEach(g => {
-          g.templates = g.templates.map(excludeRefs);
-        });
-      }
-      return groupedReferences;
-    });
+        if (options.excludeRefs) {
+          groupedReferences.forEach(g => {
+            g.templates = g.templates.map(excludeRefs);
+          });
+        }
+        return groupedReferences;
+      });
   },
 
   async getHub(hub) {
