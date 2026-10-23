@@ -35,16 +35,15 @@ const createHttpClient = (onPost?: (timeoutMs?: number) => void): HttpClient => 
 
 describe('ExternalTranslationService', () => {
   const app = express();
-  let server: Server;
-  let baseUrl: string;
-  let lastTimeoutMs: number | undefined;
+  let server: Server, baseUrl: string, lastTimeoutMs: number | undefined;
   const httpClient = createHttpClient(timeoutMs => {
     lastTimeoutMs = timeoutMs;
   });
 
   beforeAll(async () => {
-    app.post('/translate', (req, res) => {
-      const { text, language_from, language_to } = req.query;
+    app.use(express.json());
+    app.post('/translate/text', (req, res) => {
+      const { text, language_from, language_to } = req.body;
       if (text === 'error') {
         res.status(500).json({ detail: 'translation failed' });
         return;
@@ -77,16 +76,17 @@ describe('ExternalTranslationService', () => {
     lastTimeoutMs = undefined;
   });
 
-  it('should call /translate with query params and return translated_text', async () => {
+  it('should send medium-length text to /translate/text in the JSON body', async () => {
     const service = new ExternalTranslationService({ url: baseUrl, httpClient });
+    const text = 'medium-length text '.repeat(150);
 
     const result = await service.translate({
-      text: 'hola que tal',
+      text,
       language_from: 'es',
       language_to: 'ar',
     });
 
-    expect(result).toEqual({ translated_text: '[es->ar] hola que tal' });
+    expect(result).toEqual({ translated_text: `[es->ar] ${text}` });
     expect(lastTimeoutMs).toBe(60_000);
   });
 

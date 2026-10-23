@@ -12,6 +12,40 @@ const createManager = (tenantId = TENANT) =>
 const insertRow = (executor: any, _id: string, name = _id, tenantId = TENANT) =>
   executor('thesauri').insert({ _id, name, values: JSON.stringify([]), tenant_id: tenantId });
 
+const deferred = <T = void>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>(resolveFn => {
+    resolve = resolveFn;
+  });
+  return { promise, resolve };
+};
+
+/** Records every statement knex sends, transaction control included. */
+const recordStatements = () => {
+  const statements: string[] = [];
+  const listener = (query: { sql: string }) => statements.push(query.sql);
+  PostgresDB.knex.on('query', listener);
+  return {
+    statements,
+    stop: () => PostgresDB.knex.removeListener('query', listener),
+  };
+};
+
+const spyOnCommit = (manager: PostgresTransactionManager): string[] => {
+  const events: string[] = [];
+  const originalBegin = manager.beginTransaction.bind(manager);
+  jest.spyOn(manager, 'beginTransaction').mockImplementation(async permissionContext => {
+    const handle = await originalBegin(permissionContext);
+    const { commit } = handle;
+    handle.commit = async () => {
+      events.push('commit');
+      await commit();
+    };
+    return handle;
+  });
+  return events;
+};
+
 describe('PostgresTransactionManager', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -96,6 +130,28 @@ describe('PostgresTransactionManager', () => {
 
       const rows = await testingPG.getAllFrom('thesauri');
       expect(rows).toHaveLength(0);
+    });
+
+    it('should wait for a joined connection still in flight before committing', async () => {
+      const manager = createManager();
+      const events = spyOnCommit(manager);
+      const joinGate = deferred();
+
+      let slow!: Promise<unknown>;
+      const runPromise = manager.run(async () => {
+        slow = manager.withConnection(async executor => {
+          await joinGate.promise;
+          events.push('joined-write');
+          await insertRow(executor, 'joined-late');
+        });
+      });
+
+      joinGate.resolve();
+      await slow;
+      await runPromise;
+
+      expect(events).toEqual(['joined-write', 'commit']);
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['joined-late']);
     });
   });
 
@@ -185,6 +241,83 @@ describe('PostgresTransactionManager', () => {
     });
   });
 
+  describe('statements sent to set the context', () => {
+    const contextStatements = (statements: string[]) =>
+      statements.filter(sql => sql.includes('set_config') || sql.includes('current_setting'));
+
+    it('should open a transaction with a single context statement', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+      recorder.stop();
+
+      expect(recorder.statements).toHaveLength(3);
+      expect(contextStatements(recorder.statements)).toHaveLength(1);
+    });
+
+    it('should set the context with a single statement when joining a run', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        const recorder = recordStatements();
+        await manager.withConnection(async () => undefined, { bypass: false, refIds: ['r1'] });
+        recorder.stop();
+
+        expect(contextStatements(recorder.statements)).toHaveLength(1);
+      });
+    });
+
+    it('should not read the context back from the database for a nested beginTransaction', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['admin'] });
+
+        const recorder = recordStatements();
+        const nested = await manager.beginTransaction({ bypass: false, refIds: ['user1'] });
+        await nested.commit();
+        recorder.stop();
+
+        expect(recorder.statements.filter(sql => sql.includes('current_setting'))).toHaveLength(0);
+        expect(contextStatements(recorder.statements)).toHaveLength(2);
+      });
+    });
+
+    it('should send no context statement when a joined connection keeps the same context', async () => {
+      const manager = createManager();
+
+      await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+
+        const recorder = recordStatements();
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+        recorder.stop();
+
+        expect(contextStatements(recorder.statements)).toHaveLength(0);
+      });
+    });
+
+    it('should apply the new context when a joined connection changes it', async () => {
+      const manager = createManager();
+
+      const seen = await manager.run(async () => {
+        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
+        return manager.withConnection(
+          async executor =>
+            (
+              await executor.raw(
+                "SELECT current_setting('app.current_tenant', true) AS tenant, current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
+              )
+            ).rows[0],
+          { bypass: false, refIds: ['r2', 'r3'] }
+        );
+      });
+
+      expect(seen).toEqual({ tenant: TENANT, bypass: 'false', ref_ids: 'r2,r3' });
+    });
+  });
+
   describe('isRunning', () => {
     it('should be true inside run and false outside', async () => {
       const manager = createManager();
@@ -264,6 +397,24 @@ describe('PostgresTransactionManager', () => {
         await handle.commit();
         expect(bypassResult.rows[0].v).toBe('false');
         expect(refIdsResult.rows[0].v).toBe('');
+      });
+
+      it('should roll back the transaction when setting the tenant fails', async () => {
+        const trx = {
+          raw: jest.fn().mockRejectedValue(new Error('set_config failed')),
+          rollback: jest.fn().mockResolvedValue(undefined),
+          commit: jest.fn().mockResolvedValue(undefined),
+        };
+        const knex = { transaction: jest.fn().mockResolvedValue(trx) };
+        const manager = new PostgresTransactionManager(
+          knex as any,
+          'tenant-leak',
+          LoggerFactory.forTests()
+        );
+
+        await expect(manager.beginTransaction()).rejects.toThrow('set_config failed');
+        expect(trx.rollback).toHaveBeenCalledTimes(1);
+        expect(trx.commit).not.toHaveBeenCalled();
       });
     });
 

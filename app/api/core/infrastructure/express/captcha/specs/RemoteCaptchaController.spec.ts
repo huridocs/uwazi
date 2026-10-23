@@ -42,4 +42,21 @@ describe('RemoteCaptchaController integration', () => {
     expect(response.body).toEqual({ svg: '<svg></svg>', id: 'remote-id' });
     expect(JSONRequest.get).toHaveBeenCalledWith('https://remote.uwazi.io/api/captcha');
   });
+
+  it('should return 400 when publicFormDestination is not configured', async () => {
+    const collection = testingEnvironment.db.getCollection('settings')!;
+    const settings = (await collection.findOne({}))!;
+    settings.publicFormDestination = '';
+    await collection.replaceOne({}, settings);
+
+    jest
+      .spyOn(JSONRequest, 'get')
+      .mockRejectedValue(new TypeError('Only absolute URLs are supported'));
+
+    const response = await request(app).get('/api/remotecaptcha');
+
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toContain('Remote public form destination not configured');
+    expect(JSONRequest.get).not.toHaveBeenCalled();
+  });
 });
