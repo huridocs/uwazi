@@ -79,7 +79,7 @@ const RelationshipConnectionsTableComponent = ({
         <table
           ref={probeRef}
           data-connections-probe
-          className="w-max border-collapse text-sm"
+          className="w-full min-w-max border-collapse text-sm"
           aria-hidden={showCards || undefined}
         >
           <caption className="sr-only">
@@ -88,6 +88,9 @@ const RelationshipConnectionsTableComponent = ({
           </caption>
           <thead>
             <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
+              <th scope="col" className="px-1 py-1.5 text-start font-semibold">
+                <Translate>{entityHeader}</Translate>
+              </th>
               {columns.map((column, index) => {
                 const summary = summaries[index];
                 return (
@@ -108,9 +111,6 @@ const RelationshipConnectionsTableComponent = ({
                   </th>
                 );
               })}
-              <th scope="col" className="px-1 py-1.5 text-start font-semibold">
-                <Translate>{entityHeader}</Translate>
-              </th>
               {actionCol ? (
                 <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
               ) : null}
@@ -129,6 +129,16 @@ const RelationshipConnectionsTableComponent = ({
             ) : (
               mergedRows.map(({ row, cells }) => (
                 <tr key={row.id} className="transition-colors hover:bg-warm/30">
+                  <td className="max-w-40 border-t border-border/40 px-1 py-1.5 align-middle">
+                    <EntityOverlayPill
+                      sharedId={row.id}
+                      templateId={row.templateId || targetTemplateId || ''}
+                      label={row.label || row.id}
+                      icon={row.icon}
+                      authorized={row.authorized}
+                      onOpenEntity={onOpenEntity}
+                    />
+                  </td>
                   {cells.flatMap(cell => {
                     if (!cell.lead) return [];
                     const column = columns[cell.columnIndex];
@@ -143,16 +153,6 @@ const RelationshipConnectionsTableComponent = ({
                       </td>,
                     ];
                   })}
-                  <td className="max-w-40 border-t border-s border-border/40 px-1 py-1.5 align-middle">
-                    <EntityOverlayPill
-                      sharedId={row.id}
-                      templateId={row.templateId || targetTemplateId || ''}
-                      label={row.label || row.id}
-                      icon={row.icon}
-                      authorized={row.authorized}
-                      onOpenEntity={onOpenEntity}
-                    />
-                  </td>
                   {actionCol ? (
                     <td className="border-s border-t border-border/40 bg-paper px-2 py-1 align-middle">
                       {renderActions?.(row)}

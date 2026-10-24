@@ -33,7 +33,7 @@ const renderInheritedCell = (cell: ReactNode): ReactNode => {
     return <span className="text-xs text-ink-muted">—</span>;
   }
   if (typeof cell === 'string') {
-    return <span className="whitespace-nowrap text-sm font-medium text-ink">{cell}</span>;
+    return <span className="break-words text-sm font-medium text-ink">{cell}</span>;
   }
   return cell;
 };
@@ -68,22 +68,23 @@ const ConnectionCardStack = ({
   }
 
   return (
-    <div className="space-y-1.5">
-      {rollups.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-1.5">
-          {rollups.map(rollup => (
-            <span key={rollup.label} className="inline-flex items-center gap-1">
-              <span className="text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
-                <Translate context={translationContext}>{rollup.label}</Translate>
-              </span>
-              <InheritRollupChip text={rollup.text} title={rollup.title} />
-            </span>
-          ))}
-        </div>
-      ) : null}
+    <div className="grid w-full min-w-0 grid-cols-[fit-content(40%)_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1">
+      {rollups.map(rollup => (
+        <React.Fragment key={rollup.label}>
+          <span className="min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
+            <Translate context={translationContext}>{rollup.label}</Translate>
+          </span>
+          <span className="min-w-0">
+            <InheritRollupChip text={rollup.text} title={rollup.title} />
+          </span>
+        </React.Fragment>
+      ))}
       {rows.map(row => (
-        <div key={row.id} className="space-y-1.5 rounded-md border border-border/40 p-2.5">
-          <div className="flex items-center justify-between gap-2">
+        <div
+          key={row.id}
+          className="col-span-2 grid grid-cols-subgrid items-baseline gap-y-1 rounded-md border border-border/40 px-2.5 py-2.5"
+        >
+          <div className="col-span-2 flex items-center justify-between gap-2">
             <EntityOverlayPill
               sharedId={row.id}
               templateId={row.templateId || targetTemplateId || ''}
@@ -94,20 +95,14 @@ const ConnectionCardStack = ({
             />
             {renderActions?.(row)}
           </div>
-          {columns.length > 0 ? (
-            <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-3 gap-y-1">
-              {columns.map(column => (
-                <div key={column.label} className="contents">
-                  <span className="text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
-                    <Translate context={translationContext}>{column.label}</Translate>
-                  </span>
-                  <span className="min-w-0">
-                    {renderInheritedCell(cellContent(column, row.id))}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : null}
+          {columns.map(column => (
+            <React.Fragment key={column.label}>
+              <span className="min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
+                <Translate context={translationContext}>{column.label}</Translate>
+              </span>
+              <span className="min-w-0">{renderInheritedCell(cellContent(column, row.id))}</span>
+            </React.Fragment>
+          ))}
         </div>
       ))}
     </div>
