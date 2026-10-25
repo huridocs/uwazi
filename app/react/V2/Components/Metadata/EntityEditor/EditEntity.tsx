@@ -171,6 +171,7 @@ const EditEntity = ({
       currentValues: getValues(),
       metadataProperties,
       entityMetadata: entity?.metadata,
+      commonProperties: activeTemplate?.commonProperties,
       options: { force: templateChanged },
     });
     if (plan.type === 'noop') {
@@ -179,7 +180,14 @@ const EditEntity = ({
     }
     reset(plan.values, plan.options);
     setMetadataEpoch(value => value + 1);
-  }, [entity?.metadata, getValues, metadataProperties, reset, selectedTemplate]);
+  }, [
+    activeTemplate?.commonProperties,
+    entity?.metadata,
+    getValues,
+    metadataProperties,
+    reset,
+    selectedTemplate,
+  ]);
 
   useEffect(() => {
     const pairs = getGroupedRelationshipSyncPairs(displayProperties);
