@@ -17,7 +17,7 @@ import { distinctRollup, mergeConnectionRows } from './mergeConnectionRows.js';
 import { useTableFitsContainer } from './useTableFitsContainer.js';
 
 const inheritedCellClass = (inheritedType?: string) =>
-  `${inheritedTypeLayout(inheritedType).minWidthClass} border-t border-s border-border/40 px-3 py-1.5 align-middle first:border-s-0`;
+  `${inheritedTypeLayout(inheritedType).minWidthClass} border-t border-s border-border/40 px-3 py-1.5 align-middle`;
 
 const inheritColumnHeaderClass = (inheritedType?: string) =>
   `${inheritedTypeLayout(inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-semibold`;
@@ -137,7 +137,7 @@ const connectionsTable = ({
   <table
     ref={probe ? probeRef : undefined}
     data-connections-probe={probe ? '' : undefined}
-    className="w-full border-collapse text-sm"
+    className={`w-full border-collapse text-sm${probe ? '' : ' min-w-max'}`}
     aria-hidden={probe || undefined}
   >
     <caption className="sr-only">
@@ -146,6 +146,9 @@ const connectionsTable = ({
     </caption>
     <thead>
       <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
+        <th scope="col" className="px-1 py-1.5 text-start font-semibold">
+          <Translate>{entityHeader}</Translate>
+        </th>
         {columns.map((column, index) => {
           const summary = summaries[index];
           return (
@@ -164,9 +167,6 @@ const connectionsTable = ({
             </th>
           );
         })}
-        <th scope="col" className="px-1 py-1.5 text-start font-semibold">
-          <Translate>{entityHeader}</Translate>
-        </th>
         {actionCol ? (
           <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
         ) : null}
@@ -185,6 +185,9 @@ const connectionsTable = ({
       ) : (
         mergedRows.map(({ row, cells }) => (
           <tr key={row.id} className="transition-colors hover:bg-warm/30">
+            <td className="max-w-40 border-t border-border/40 px-1 py-1.5 align-middle">
+              <div data-measure-cell>{connectedEntity(row, targetTemplateId, onOpenEntity)}</div>
+            </td>
             {cells.flatMap(cell => {
               if (!cell.lead) return [];
               const column = columns[cell.columnIndex];
@@ -201,9 +204,6 @@ const connectionsTable = ({
                 </td>,
               ];
             })}
-            <td className="max-w-40 border-t border-s border-border/40 px-1 py-1.5 align-middle">
-              <div data-measure-cell>{connectedEntity(row, targetTemplateId, onOpenEntity)}</div>
-            </td>
             {actionCol ? (
               <td className="border-s border-t border-border/40 bg-paper px-2 py-1 align-middle">
                 {renderActions?.(row)}

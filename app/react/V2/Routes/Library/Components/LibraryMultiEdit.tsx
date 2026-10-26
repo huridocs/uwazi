@@ -3,8 +3,9 @@ import { FormProvider, type UseFormReturn } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
-import { thesauriAtom } from '#V2/atoms/index.js';
-import { Select } from '#V2/Components/Forms/index.js';
+import { localeAtom, thesauriAtom } from '#V2/atoms/index.js';
+import { TemplateField } from '#V2/Components/Metadata/EntityEditor/Components/index.js';
+import { sortAvailableTemplates } from '#V2/Components/Metadata/EntityEditor/functions/sortAvailableTemplates.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { LibraryMultiEditProperty } from './LibraryMultiEditProperty.js';
@@ -25,14 +26,17 @@ type LibraryMultiEditProps = {
 
 const LibraryMultiEdit = ({ hits, onCancel, onSaved }: LibraryMultiEditProps) => {
   const thesauri = useAtomValue(thesauriAtom);
+  const locale = useAtomValue(localeAtom) || 'en';
   const edit = useLibraryMultiEdit(hits, onSaved);
   const context = edit.fields.templateId || 'System';
-  const templateOptions = [
-    ...(edit.fields.templateId
-      ? []
-      : [{ value: '', label: t('System', 'Select...', null, false) }]),
-    ...edit.templates.map(template => ({ value: template._id, label: template.name })),
-  ];
+  const templateOptions = sortAvailableTemplates(
+    edit.templates.map(template => ({
+      value: template._id,
+      searchLabel: t(template._id, template.name, null, false),
+      color: template.color,
+    })),
+    locale
+  );
 
   return (
     <div
@@ -59,13 +63,14 @@ const LibraryMultiEdit = ({ hits, onCancel, onSaved }: LibraryMultiEditProps) =>
                 {edit.saveError}
               </p>
             ) : null}
-            <Select
-              id="library-multi-edit-template"
-              label={<Translate>Template</Translate>}
+            <TemplateField<MultiEditFormValues>
+              context="System"
+              label="Template"
+              field="template"
               options={templateOptions}
-              value={edit.fields.templateId}
               disabled={edit.saving}
-              onChange={event => edit.onTemplateChange(event.target.value)}
+              hideClear
+              placeholder={t('System', 'Select...', null, false)}
             />
             {edit.fields.properties.map(property => (
               <LibraryMultiEditProperty
