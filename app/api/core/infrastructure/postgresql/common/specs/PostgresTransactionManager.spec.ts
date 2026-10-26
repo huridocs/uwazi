@@ -3,6 +3,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
+import { Statements } from '../Statement.js';
 
 const TENANT = 'tenant-a';
 
@@ -512,6 +513,100 @@ describe('PostgresTransactionManager', () => {
         'missing_table'
       );
       await expect(manager.readWithoutBindings('SELECT 1 AS one;')).resolves.toEqual([{ one: 1 }]);
+    });
+  });
+
+  describe('statements', () => {
+    const CONTEXT_SQL = `SELECT current_setting('app.current_tenant', true) AS tenant,
+      current_setting('uwazi.bypass_rls', true) AS bypass,
+      current_setting('uwazi.ref_ids', true) AS "refIds"`;
+
+    const contextStatement = (permission: Parameters<typeof Statements.raw>[2]) =>
+      Statements.raw(CONTEXT_SQL, [], permission);
+
+    it('should run a statement under its own permission and return rows and rowCount', async () => {
+      const manager = createManager('tenant-x');
+
+      const result = await manager.query(contextStatement({ bypass: false, refIds: ['u1', 'g1'] }));
+
+      expect(result.rowCount).toBe(1);
+      expect(result.rows).toEqual([{ tenant: 'tenant-x', bypass: 'false', refIds: 'u1,g1' }]);
+    });
+
+    it('should run a statement built from a query builder, bindings included', async () => {
+      const manager = createManager();
+      await manager.withConnection(async executor => insertRow(executor, 'b1', 'wanted'));
+      await manager.withConnection(async executor => insertRow(executor, 'b2', 'other'));
+
+      const result = await manager.query(
+        Statements.fromBuilder(
+          Statements.builder('thesauri').select('_id').where({ name: 'wanted' }),
+          {
+            bypass: true,
+            refIds: [],
+          }
+        )
+      );
+
+      expect(result.rows).toEqual([{ _id: 'b1' }]);
+    });
+
+    it("should keep the running transaction's permission for an 'inherit' statement", async () => {
+      const manager = createManager();
+
+      const inherited = await manager.run(async () => {
+        await manager.query(contextStatement({ bypass: true, refIds: [] }));
+        return manager.query(contextStatement('inherit'));
+      });
+
+      expect(inherited.rows[0]).toMatchObject({ bypass: 'true', refIds: '' });
+    });
+
+    it('should run every statement of queryAll in one transaction, in order', async () => {
+      const manager = createManager();
+      const insert = (_id: string) =>
+        Statements.raw(
+          'INSERT INTO thesauri ("_id", "name", "values", "tenant_id") VALUES (?, ?, ?, ?)',
+          [_id, _id, '[]', TENANT],
+          { bypass: true, refIds: [] }
+        );
+
+      const results = await manager.queryAll([insert('q1'), insert('q2')]);
+
+      expect(results.map(r => r.rowCount)).toEqual([1, 1]);
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id).sort()).toEqual(['q1', 'q2']);
+    });
+
+    it('should roll back every statement of queryAll when one fails', async () => {
+      const manager = createManager();
+      const insert = Statements.raw(
+        'INSERT INTO thesauri ("_id", "name", "values", "tenant_id") VALUES (?, ?, ?, ?)',
+        ['r1', 'r1', '[]', TENANT],
+        { bypass: true, refIds: [] }
+      );
+      const failing = Statements.raw('SELECT 1/0', [], { bypass: true, refIds: [] });
+
+      await expect(manager.queryAll([insert, failing])).rejects.toThrow('division by zero');
+
+      expect(await testingPG.getAllFrom('thesauri')).toEqual([]);
+    });
+
+    it('should stream the rows of a statement under its permission', async () => {
+      const manager = createManager('tenant-s');
+
+      const rows: unknown[] = [];
+      for await (const row of manager.stream(
+        Statements.raw(`${CONTEXT_SQL}, n FROM generate_series(1, 3) AS n`, [], {
+          bypass: false,
+          refIds: ['u1'],
+        })
+      )) {
+        rows.push(row);
+      }
+
+      expect(rows).toEqual(
+        [1, 2, 3].map(n => ({ tenant: 'tenant-s', bypass: 'false', refIds: 'u1', n }))
+      );
     });
   });
 

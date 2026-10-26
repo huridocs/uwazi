@@ -1,11 +1,13 @@
 import { ClientSession } from 'mongodb';
 import { Knex } from 'knex';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
 import { PermissionContext, PostgresSessionContext } from './PostgresSessionContext.js';
 import { TransactionJoinLock } from './TransactionJoinLock.js';
 import { TransactionBorrows } from './TransactionBorrows.js';
 import type { ContextBeginConfig } from './TransactionWithContextBegin.js';
+import type { Statement, StatementPermission, StatementResult } from './Statement.js';
 
 type CommitHandler = (returnValue: unknown) => Promise<void>;
 type RetryHandler = () => Promise<void>;
@@ -105,6 +107,75 @@ export class PostgresTransactionManager implements TransactionManager {
     }
     const results = await this.knex.raw(`${this.sessionContext.beginSql()} ${sql}`);
     return results.at(-1).rows;
+  }
+
+  /** Runs one statement under its permission, joining the active `run()` transaction when open. */
+  async query<TRow = Record<string, unknown>>(
+    statement: Statement
+  ): Promise<StatementResult<TRow>> {
+    return this.withPermission(statement.permission, async trx =>
+      PostgresTransactionManager.send<TRow>(trx, statement)
+    );
+  }
+
+  /** Runs the statements in order, in one transaction: all of them take effect or none. */
+  async queryAll(statements: Statement[]): Promise<StatementResult[]> {
+    if (statements.length === 0) return [];
+    return this.withPermission(statements[0].permission, async trx =>
+      ArrayUtils.sequentialFor(statements, async statement => {
+        if (statement.permission !== 'inherit') {
+          await this.sessionContext.switch(trx, statement.permission);
+        }
+        return PostgresTransactionManager.send(trx, statement);
+      })
+    );
+  }
+
+  /**
+   * Streams a statement's rows through a server-side cursor. The connection is held while
+   * iterating; the transaction commits once the rows run out and rolls back on break or error.
+   */
+  async *stream<TRow = Record<string, unknown>>(
+    statement: Statement
+  ): AsyncGenerator<TRow, void, unknown> {
+    const handle = await this.beginTransaction(this.resolve(statement.permission));
+    let completed = false;
+    try {
+      const rows = handle.trx
+        .raw(statement.sql, statement.bindings as Knex.RawBinding[])
+        .stream() as AsyncIterable<TRow>;
+      for await (const row of rows) {
+        yield row;
+      }
+      await handle.commit();
+      completed = true;
+    } finally {
+      if (!completed) {
+        await handle.rollback().catch(() => undefined);
+      }
+    }
+  }
+
+  private async withPermission<T>(
+    permission: StatementPermission,
+    fn: (trx: Knex.Transaction) => Promise<T>
+  ): Promise<T> {
+    return permission === 'inherit'
+      ? this.withConnection(fn, undefined, { preservePermission: true })
+      : this.withConnection(fn, permission);
+  }
+
+  private resolve(permission: StatementPermission): PermissionContext | undefined {
+    if (permission !== 'inherit') return permission;
+    return this.activeTransaction ? this.sessionContext.current(this.activeTransaction) : undefined;
+  }
+
+  private static async send<TRow>(
+    trx: Knex.Transaction,
+    statement: Statement
+  ): Promise<StatementResult<TRow>> {
+    const result = await trx.raw(statement.sql, statement.bindings as Knex.RawBinding[]);
+    return { rows: result.rows, rowCount: result.rowCount ?? 0 };
   }
 
   /** Runs `fn` in a tenant-scoped transaction, joining the active `run()` one when open. */

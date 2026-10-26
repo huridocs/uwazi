@@ -1596,21 +1596,72 @@ describe('PostgresTable', () => {
     });
   });
 
-  describe('raw', () => {
-    it('executes raw SQL through a single withConnection call', async () => {
+  describe('statements', () => {
+    const SYSTEM_PERMISSION = { bypass: true, refIds: [] };
+
+    const tableWithSpies = () => {
       const manager = managerFor(DEFAULT_TENANT);
-      const withConnectionSpy = jest.spyOn(manager, 'withConnection');
       const table = PostgresTable.for<TestRow>({
         tableName: 'thesauri',
         tenantId: DEFAULT_TENANT,
         transactionManager: manager,
         accessContext: AccessContext.system(),
       });
+      return {
+        table,
+        query: jest.spyOn(manager, 'query'),
+        stream: jest.spyOn(manager, 'stream'),
+        withConnection: jest.spyOn(manager, 'withConnection'),
+      };
+    };
+
+    it.each([
+      ['first', async (t: PostgresTable<TestRow>) => t.where({ _id: 's1' }).first()],
+      ['all', async (t: PostgresTable<TestRow>) => t.all()],
+      ['count', async (t: PostgresTable<TestRow>) => t.count()],
+      ['sum', async (t: PostgresTable<TestRow>) => t.sum('name')],
+      [
+        'insert',
+        async (t: PostgresTable<TestRow>) => t.insert({ _id: 's2', name: 'b', values: '[]' }),
+      ],
+      [
+        'upsert',
+        async (t: PostgresTable<TestRow>) => t.upsert({ _id: 's1', name: 'c', values: '[]' }),
+      ],
+      ['update', async (t: PostgresTable<TestRow>) => t.where({ _id: 's1' }).update({ name: 'd' })],
+      ['bulkUpdate', async (t: PostgresTable<TestRow>) => t.bulkUpdate([{ _id: 's1', name: 'e' }])],
+      ['delete', async (t: PostgresTable<TestRow>) => t.where({ _id: 's1' }).delete()],
+      ['raw', async (t: PostgresTable<TestRow>) => t.raw('SELECT ?::int AS n', [42])],
+    ])('%s sends one statement under the actor permission', async (_name, terminal) => {
+      await createTable().insert({ _id: 's1', name: 'a', values: jsonVal([]) });
+      const { table, query, withConnection } = tableWithSpies();
+
+      await terminal(table).catch(() => undefined);
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query.mock.calls[0][0].permission).toEqual(SYSTEM_PERMISSION);
+      expect(withConnection).toHaveBeenCalledTimes(1);
+    });
+
+    it('stream sends its statement through the transaction manager stream', async () => {
+      const { table, stream, query } = tableWithSpies();
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for await (const _row of table.stream()) {
+        // drain
+      }
+
+      expect(stream).toHaveBeenCalledTimes(1);
+      expect(stream.mock.calls[0][0].permission).toEqual(SYSTEM_PERMISSION);
+      expect(query).not.toHaveBeenCalled();
+    });
+
+    it('raw returns the rows of the statement', async () => {
+      const { table } = tableWithSpies();
 
       const result = await table.raw<{ rows: { n: number }[] }>('SELECT ?::int AS n', [42]);
 
       expect(result.rows).toEqual([{ n: 42 }]);
-      expect(withConnectionSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
