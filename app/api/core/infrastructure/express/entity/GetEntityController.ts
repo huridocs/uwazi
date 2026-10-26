@@ -56,7 +56,7 @@ class GetEntityController extends AbstractController<any> {
         return;
       }
 
-      const { user } = this;
+      const user = this.user;
 
       const queryService = EntitiesQueryServiceFactory.default(user);
 
