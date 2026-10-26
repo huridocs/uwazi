@@ -80,12 +80,6 @@ export class PostgresTransactionManager implements TransactionManager {
     }
   }
 
-  /** Reads already cost one round trip each outside a transaction: no unit of work is needed. */
-  // eslint-disable-next-line class-methods-use-this
-  async runReadOnly<T>(callback: () => Promise<T>): Promise<T> {
-    return callback();
-  }
-
   runHandlingOnCommitted<T>(callback: () => Promise<T>) {
     return {
       onCommitted: async (handler: (returnValue: T) => Promise<void>) =>
