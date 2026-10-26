@@ -8,6 +8,15 @@ import {
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import { EMPTY_ICON } from '../../Components/IconField.js';
 
+const mockGenerateID = jest.fn(
+  (_characterLength: number, _numericLength: number, _extraLength: number) => 'GEN-ID'
+);
+
+jest.mock('#shared/IDGenerator', () => ({
+  generateID: (characterLength: number, numericLength: number, extraLength: number) =>
+    mockGenerateID(characterLength, numericLength, extraLength),
+}));
+
 const textProp = (name: string, id = name): FormMetadataProperty => ({
   _id: id,
   type: 'text',
@@ -31,14 +40,66 @@ const sync = (
   extra?: {
     entityMetadata?: Entity['metadata'];
     options?: { force?: boolean };
+    commonProperties?: { name: string; generatedId?: boolean }[];
   }
 ) =>
   planSharedMetadataSync({
     currentValues,
     metadataProperties,
     entityMetadata: extra?.entityMetadata,
+    commonProperties: extra?.commonProperties,
     options: extra?.options,
   });
+
+const generatedTitle = [{ name: 'title', generatedId: true }];
+
+const forcedTitle = (title: string, commonProperties: { name: string; generatedId?: boolean }[]) =>
+  sync({ ...baseValues({}), title }, [], { options: { force: true }, commonProperties });
+
+const whenReset = (plan: ReturnType<typeof sync>) => {
+  expect(plan.type).toBe('reset');
+  if (plan.type !== 'reset') throw new Error(plan.type);
+  return plan;
+};
+
+const resetTitle = (plan: ReturnType<typeof sync>) => whenReset(plan).values.title;
+
+const overlap = {
+  simple_text: [{ value: 'from-entity' }],
+  location: [{ value: 'loc' }],
+  report: [{ value: 'entity-report' }],
+};
+
+describe('generated id title', () => {
+  beforeEach(() => {
+    mockGenerateID.mockClear();
+  });
+
+  it('fills an empty title when switching onto a generated id template', () => {
+    expect(resetTitle(forcedTitle('', generatedTitle))).toBe('GEN-ID');
+    expect(mockGenerateID).toHaveBeenCalledWith(3, 4, 4);
+  });
+
+  it('keeps a title that is already set', () => {
+    expect(resetTitle(forcedTitle('User text', generatedTitle))).toBe('User text');
+    expect(resetTitle(forcedTitle('PREV-1', generatedTitle))).toBe('PREV-1');
+    expect(mockGenerateID).not.toHaveBeenCalled();
+  });
+
+  it('leaves an empty title empty on a non-generated template', () => {
+    expect(resetTitle(forcedTitle('', [{ name: 'title' }]))).toBe('');
+    expect(resetTitle(forcedTitle('', []))).toBe('');
+    expect(mockGenerateID).not.toHaveBeenCalled();
+  });
+
+  it('fills an empty title when the same template gains generatedId', () => {
+    const plan = sync({ ...baseValues({ a: [{ value: '1' }] }), title: '' }, [textProp('a')], {
+      commonProperties: generatedTitle,
+    });
+    expect(resetTitle(plan)).toBe('GEN-ID');
+    expect(mockGenerateID).toHaveBeenCalledWith(3, 4, 4);
+  });
+});
 
 describe('planSharedMetadataSync', () => {
   it('returns noop when shape matches exactly', () => {
@@ -51,20 +112,16 @@ describe('planSharedMetadataSync', () => {
       textProp('a'),
     ]);
 
-    expect(plan.type).toBe('reset');
-    if (plan.type !== 'reset') return;
-    expect(plan.values.metadata).toEqual({ a: [{ value: '1' }] });
+    expect(whenReset(plan).values.metadata).toEqual({ a: [{ value: '1' }] });
   });
 
   it('preserves dirty via keepDirty options on rebuild', () => {
     const plan = sync(baseValues({ a: [{ value: 'dirty' }] }), [textProp('a'), textProp('b')]);
 
-    expect(plan.type).toBe('reset');
-    if (plan.type !== 'reset') return;
-
-    expect(plan.options).toEqual({ keepDirty: true });
-    expect(plan.values.metadata.a).toEqual([{ value: 'dirty' }]);
-    expect(plan.values.metadata.b).toEqual([]);
+    const reset = whenReset(plan);
+    expect(reset.options).toEqual({ keepDirty: true });
+    expect(reset.values.metadata.a).toEqual([{ value: 'dirty' }]);
+    expect(reset.values.metadata.b).toEqual([]);
   });
 
   it('adds missing keys for template switch without wiping existing values', () => {
@@ -74,21 +131,18 @@ describe('planSharedMetadataSync', () => {
       { entityMetadata: { report: [{ value: 'from-entity' }] } }
     );
 
-    expect(plan.type).toBe('reset');
-    if (plan.type !== 'reset') return;
-    expect(plan.values.metadata.title_field).toEqual([{ value: 'in-progress' }]);
-    expect(plan.values.metadata.report).toEqual([{ value: 'from-entity' }]);
+    const reset = whenReset(plan);
+    expect(reset.values.metadata.title_field).toEqual([{ value: 'in-progress' }]);
+    expect(reset.values.metadata.report).toEqual([{ value: 'from-entity' }]);
   });
 
   it('reshapes again on a second template switch', () => {
-    const first = sync(baseValues({ simple_text: [{ value: 'doc' }] }), [textProp('report')]);
-    expect(first.type).toBe('reset');
-    if (first.type !== 'reset') return;
+    const first = whenReset(
+      sync(baseValues({ simple_text: [{ value: 'doc' }] }), [textProp('report')])
+    );
     expect(first.values.metadata).toEqual({ report: [] });
 
-    const second = sync(first.values, [textProp('simple_text'), textProp('location')]);
-    expect(second.type).toBe('reset');
-    if (second.type !== 'reset') return;
+    const second = whenReset(sync(first.values, [textProp('simple_text'), textProp('location')]));
     expect(second.values.metadata.simple_text).toEqual([]);
     expect(second.values.metadata.location).toEqual([]);
     expect(second.values.metadata).not.toHaveProperty('report');
@@ -99,43 +153,33 @@ describe('planSharedMetadataSync', () => {
     const properties = [textProp('a')];
     expect(sync(values, properties)).toEqual({ type: 'noop' });
 
-    const forced = sync(values, properties, { options: { force: true } });
-    expect(forced.type).toBe('reset');
-    if (forced.type !== 'reset') return;
+    const forced = whenReset(sync(values, properties, { options: { force: true } }));
     expect(forced.options).toEqual({ keepDirty: true });
     expect(forced.values.metadata).toEqual({ a: [{ value: 'kept' }] });
   });
 
   it('force T1 to T2 keeps entity report overlap', () => {
-    const t2 = [textProp('report')];
-    const entityMetadata = {
-      simple_text: [{ value: 'from-entity' }],
-      location: [{ value: 'loc' }],
-      report: [{ value: 'entity-report' }],
-    };
-    const toT2 = sync(baseValues({ simple_text: [{ value: 'dirty' }] }), t2, {
-      entityMetadata,
-      options: { force: true },
-    });
-    expect(toT2.type).toBe('reset');
-    if (toT2.type !== 'reset') return;
+    const toT2 = whenReset(
+      sync(baseValues({ simple_text: [{ value: 'dirty' }] }), [textProp('report')], {
+        entityMetadata: overlap,
+        options: { force: true },
+      })
+    );
     expect(toT2.values.metadata).toEqual({ report: [{ value: 'entity-report' }] });
     expect(toT2.values.title).toBe('Title');
   });
 
   it('force T2 to T1 restores entity overlap', () => {
-    const t1 = [textProp('simple_text'), textProp('location')];
-    const entityMetadata = {
-      simple_text: [{ value: 'from-entity' }],
-      location: [{ value: 'loc' }],
-      report: [{ value: 'entity-report' }],
-    };
-    const fromT2 = {
-      ...baseValues({ report: [{ value: 'entity-report' }] }),
-    };
-    const backT1 = sync(fromT2, t1, { entityMetadata, options: { force: true } });
-    expect(backT1.type).toBe('reset');
-    if (backT1.type !== 'reset') return;
+    const backT1 = whenReset(
+      sync(
+        baseValues({ report: [{ value: 'entity-report' }] }),
+        [textProp('simple_text'), textProp('location')],
+        {
+          entityMetadata: overlap,
+          options: { force: true },
+        }
+      )
+    );
     expect(backT1.values.metadata).toEqual({
       simple_text: [{ value: 'from-entity' }],
       location: [{ value: 'loc' }],
@@ -143,34 +187,28 @@ describe('planSharedMetadataSync', () => {
   });
 
   it('force T1 to T2 again keeps report key', () => {
-    const t2 = [textProp('report')];
-    const entityMetadata = {
-      simple_text: [{ value: 'from-entity' }],
-      location: [{ value: 'loc' }],
-      report: [{ value: 'entity-report' }],
-    };
-    const fromT1 = baseValues({
-      simple_text: [{ value: 'from-entity' }],
-      location: [{ value: 'loc' }],
-    });
-    const againT2 = sync(fromT1, t2, { entityMetadata, options: { force: true } });
-    expect(againT2.type).toBe('reset');
-    if (againT2.type !== 'reset') return;
+    const againT2 = whenReset(
+      sync(
+        baseValues({ simple_text: [{ value: 'from-entity' }], location: [{ value: 'loc' }] }),
+        [textProp('report')],
+        { entityMetadata: overlap, options: { force: true } }
+      )
+    );
     expect(Object.keys(againT2.values.metadata)).toEqual(['report']);
     expect(againT2.values.metadata.report).toEqual([{ value: 'entity-report' }]);
   });
 
   it('force T2 to T1 again keeps template keys', () => {
-    const t1 = [textProp('simple_text'), textProp('location')];
-    const entityMetadata = {
-      simple_text: [{ value: 'from-entity' }],
-      location: [{ value: 'loc' }],
-      report: [{ value: 'entity-report' }],
-    };
-    const fromT2 = baseValues({ report: [{ value: 'entity-report' }] });
-    const againT1 = sync(fromT2, t1, { entityMetadata, options: { force: true } });
-    expect(againT1.type).toBe('reset');
-    if (againT1.type !== 'reset') return;
+    const againT1 = whenReset(
+      sync(
+        baseValues({ report: [{ value: 'entity-report' }] }),
+        [textProp('simple_text'), textProp('location')],
+        {
+          entityMetadata: overlap,
+          options: { force: true },
+        }
+      )
+    );
     expect(Object.keys(againT1.values.metadata).sort()).toEqual(['location', 'simple_text']);
   });
 });
@@ -180,6 +218,56 @@ describe('isEntityEditorDirty', () => {
     expect(isEntityEditorDirty(false, 1)).toBe(true);
     expect(isEntityEditorDirty(true, 0)).toBe(true);
     expect(isEntityEditorDirty(false, 0)).toBe(false);
+  });
+});
+
+const generatedIdProp = (): FormMetadataProperty => ({
+  _id: 'generatedid',
+  type: 'generatedid',
+  name: 'generatedid',
+  label: 'Generatedid',
+});
+
+const forcedGeneratedId = (metadata: EditEntityFormValues['metadata']) =>
+  sync(baseValues(metadata), [generatedIdProp()], { options: { force: true } });
+
+describe('generated id property', () => {
+  beforeEach(() => {
+    mockGenerateID.mockClear();
+  });
+
+  it('fills an empty generated id on a forced template switch', () => {
+    expect(whenReset(forcedGeneratedId({})).values.metadata.generatedid).toEqual([
+      { value: 'GEN-ID' },
+    ]);
+    expect(mockGenerateID).toHaveBeenCalledTimes(1);
+    expect(mockGenerateID).toHaveBeenCalledWith(3, 4, 4);
+  });
+
+  it('keeps a stored generated id without calling generateID', () => {
+    const stored = whenReset(forcedGeneratedId({ generatedid: [{ value: 'YDZ2036-9005' }] }));
+    expect(stored.values.metadata.generatedid).toEqual([{ value: 'YDZ2036-9005' }]);
+    expect(mockGenerateID).not.toHaveBeenCalled();
+  });
+
+  it('fills an empty generated id when the metadata shape already matches', () => {
+    const plan = whenReset(sync(baseValues({ generatedid: [] }), [generatedIdProp()]));
+    expect(plan.values.metadata.generatedid).toEqual([{ value: 'GEN-ID' }]);
+    expect(mockGenerateID).toHaveBeenCalledWith(3, 4, 4);
+  });
+
+  it('stays noop when a matching generated id is already stored', () => {
+    const plan = sync(baseValues({ generatedid: [{ value: 'YDZ2036-9005' }] }), [
+      generatedIdProp(),
+    ]);
+    expect(plan.type).toBe('noop');
+    expect(mockGenerateID).not.toHaveBeenCalled();
+  });
+
+  it('keeps a cleared empty string on the next sync', () => {
+    const cleared = whenReset(forcedGeneratedId({ generatedid: [{ value: '' }] }));
+    expect(cleared.values.metadata.generatedid).toEqual([{ value: '' }]);
+    expect(mockGenerateID).not.toHaveBeenCalled();
   });
 });
 
