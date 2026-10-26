@@ -22,7 +22,7 @@ const privateInstanceMiddleware = async (req: Request, res: Response, next: Next
       return;
     }
 
-    const settings = await SettingsDataSourceFactory.default().get();
+    const settings = await SettingsDataSourceFactory.cached().get();
 
     if (settings.isPrivate && !req.url.match(allowedApiMatch)) {
       if (req.url.match(forbiddenRoutesMatch)) {

@@ -61,7 +61,7 @@ const otherInheritProp: ClientProperty = {
   name: 'other_rel',
   type: 'relationship',
   label: 'Other inherit',
-  content: 'person-tmpl',
+  content: 'org-tmpl',
   relationType: 'rel-other',
   inherit: { property: 'country-id', type: 'text' },
 };
@@ -107,11 +107,13 @@ const field = ({
   name,
   label,
   title = 'Ada',
+  values,
 }: {
   id: string;
   name: string;
   label: string;
   title?: string;
+  values?: { _id: string; title: string; templateId: string }[];
 }): RelationshipMetadataProperty => ({
   _id: id,
   name,
@@ -119,7 +121,7 @@ const field = ({
   type: 'relationship',
   mode: 'related',
   inherited: true,
-  values: [{ _id: 'entity-1', title, templateId: 'person-tmpl' }],
+  values: values ?? [{ _id: 'entity-1', title, templateId: 'person-tmpl' }],
 });
 
 const renderCards = (
@@ -169,9 +171,32 @@ describe('RelationshipCards multi-inherit grouping', () => {
     expect(screen.getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /Role/ })).toBeInTheDocument();
     expect(screen.getByText(/inherits/)).toHaveTextContent('Country, Role');
-    expect(screen.getByText('Kenya')).toBeInTheDocument();
-    expect(screen.getByText('Witness')).toBeInTheDocument();
+    expect(within(screen.getByRole('table')).getByText('Kenya')).toBeInTheDocument();
+    expect(within(screen.getByRole('table')).getByText('Witness')).toBeInTheDocument();
     expect(screen.getAllByRole('table')).toHaveLength(1);
+  });
+
+  it('includes an entity that only appears on a later sibling', () => {
+    const templatePropertyById = new Map([
+      ['p-country', peopleCountryProp],
+      ['p-role', peopleRoleProp],
+    ]);
+    renderCards(
+      [
+        field({ id: 'p-country', name: 'people_country', label: 'People involved' }),
+        field({
+          id: 'p-role',
+          name: 'people_role',
+          label: 'Role field',
+          values: [{ _id: 'entity-2', title: 'Bea', templateId: 'person-tmpl' }],
+        }),
+      ],
+      templatePropertyById
+    );
+
+    const table = screen.getByRole('table');
+    expect(within(table).getByText('Ada')).toBeInTheDocument();
+    expect(within(table).getByText('Bea')).toBeInTheDocument();
   });
 
   it('keeps separate cards for different group keys', () => {
@@ -189,7 +214,30 @@ describe('RelationshipCards multi-inherit grouping', () => {
     );
 
     expect(screen.getByText('People involved')).toBeInTheDocument();
-    expect(screen.getByText('Other inherit')).toBeInTheDocument();
+    expect(screen.getAllByText('Other inherit').filter(node => node.tagName === 'DT')).toHaveLength(
+      1
+    );
+    expect(screen.getAllByRole('table')).toHaveLength(2);
+  });
+
+  it('splits cards when sibling inherits use different relationship types', () => {
+    const templatePropertyById = new Map<string, ClientProperty>([
+      ['p-country', peopleCountryProp],
+      ['p-role', { ...peopleRoleProp, relationType: 'rel-other' }],
+    ]);
+
+    renderCards(
+      [
+        field({ id: 'p-country', name: 'people_country', label: 'People involved' }),
+        field({ id: 'p-role', name: 'people_role', label: 'Role field' }),
+      ],
+      templatePropertyById
+    );
+
+    expect(screen.getByText('People involved')).toBeInTheDocument();
+    expect(screen.getByText('Role field')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Role/ })).toBeInTheDocument();
     expect(screen.getAllByRole('table')).toHaveLength(2);
   });
 
@@ -204,6 +252,6 @@ describe('RelationshipCards multi-inherit grouping', () => {
     const card = screen.getByText('People involved').closest('div.overflow-hidden') as HTMLElement;
     expect(within(card).getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
     expect(within(card).getAllByRole('columnheader')).toHaveLength(2);
-    expect(within(card).getByText('Kenya')).toBeInTheDocument();
+    expect(within(screen.getByRole('table')).getByText('Kenya')).toBeInTheDocument();
   });
 });

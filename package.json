@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.270",
+  "version": "1.229.272",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -147,7 +147,7 @@
     "@googlemaps/js-api-loader": "^1.16.8",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
-    "@huridocs/react-text-selection-handler": "^0.4.0",
+    "@huridocs/react-text-selection-handler": "^0.4.1",
     "@huridocs/rison": "^2.1.2",
     "@loadable/component": "^5.16.7",
     "@popperjs/core": "^2.11.8",

@@ -70,6 +70,7 @@ describe('RelationshipConnectionsTable layout', () => {
     const { container } = renderTable();
     expect(screen.getByTestId('relationship-connections')).toBeInTheDocument();
     expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
+    expect(screen.getByRole('table').className).toContain('w-full');
     expect(container.querySelector('.overflow-x-auto')).toBeNull();
   });
 

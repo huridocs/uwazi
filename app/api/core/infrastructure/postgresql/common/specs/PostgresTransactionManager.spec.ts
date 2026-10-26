@@ -318,6 +318,141 @@ describe('PostgresTransactionManager', () => {
     });
   });
 
+  describe('concurrent joins on the active transaction', () => {
+    const readContext = async (executor: any) =>
+      (
+        await executor.raw(
+          "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
+        )
+      ).rows[0];
+
+    it('should run each joined connection with its own permission context', async () => {
+      const manager = createManager();
+      const firstStarted = deferred();
+      const releaseFirst = deferred();
+
+      const [first, second] = await manager.run(async () =>
+        Promise.all([
+          manager.withConnection(
+            async executor => {
+              firstStarted.resolve();
+              await releaseFirst.promise;
+              return readContext(executor);
+            },
+            { bypass: true, refIds: ['admin'] }
+          ),
+          (async () => {
+            await firstStarted.promise;
+            const pending = manager.withConnection(readContext, {
+              bypass: false,
+              refIds: ['user1'],
+            });
+            releaseFirst.resolve();
+            return pending;
+          })(),
+        ])
+      );
+
+      expect(first).toEqual({ bypass: 'true', ref_ids: 'admin' });
+      expect(second).toEqual({ bypass: 'false', ref_ids: 'user1' });
+    });
+
+    it('should not deadlock a connection joined from inside another, and restore the outer context', async () => {
+      const manager = createManager();
+
+      const seen = await manager.run(async () =>
+        manager.withConnection(
+          async executor => {
+            const inner = await manager.withConnection(readContext, {
+              bypass: false,
+              refIds: ['inner'],
+            });
+            return { inner, outer: await readContext(executor) };
+          },
+          { bypass: true, refIds: ['outer'] }
+        )
+      );
+
+      expect(seen).toEqual({
+        inner: { bypass: 'false', ref_ids: 'inner' },
+        outer: { bypass: 'true', ref_ids: 'outer' },
+      });
+    });
+  });
+
+  describe('runReadOnly', () => {
+    it('should run every connection inside it in a single read only transaction', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      await manager.runReadOnly(async () => {
+        await manager.withConnection(async executor => executor('thesauri').select());
+        await manager.withConnection(async executor => executor('thesauri').select());
+      });
+      recorder.stop();
+
+      expect(recorder.statements.filter(sql => sql.startsWith('BEGIN'))).toEqual([
+        'BEGIN TRANSACTION READ ONLY;',
+      ]);
+      expect(recorder.statements.filter(sql => sql.startsWith('COMMIT'))).toHaveLength(1);
+    });
+
+    it('should reject writes', async () => {
+      const manager = createManager();
+
+      await expect(
+        manager.runReadOnly(async () =>
+          manager.withConnection(async executor => insertRow(executor, 'ro'))
+        )
+      ).rejects.toMatchObject({ code: '25006' });
+
+      expect(await testingPG.getAllFrom('thesauri')).toHaveLength(0);
+    });
+
+    it('should return the callback result and leave the manager ready for the next transaction', async () => {
+      const manager = createManager();
+
+      const result = await manager.runReadOnly(async () => 'value');
+      await manager.run(async () => manager.withConnection(async ex => insertRow(ex, 'after')));
+
+      expect(result).toBe('value');
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['after']);
+    });
+
+    it('should roll back and rethrow when the callback fails', async () => {
+      const manager = createManager();
+
+      await expect(
+        manager.runReadOnly(async () => {
+          throw new Error('read failed');
+        })
+      ).rejects.toThrow('read failed');
+
+      await manager.run(async () => manager.withConnection(async ex => insertRow(ex, 'after')));
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['after']);
+    });
+
+    it('should join a running transaction instead of opening its own', async () => {
+      const manager = createManager();
+
+      await manager.run(async () =>
+        manager.runReadOnly(async () =>
+          manager.withConnection(async executor => insertRow(executor, 'inside-run'))
+        )
+      );
+
+      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['inside-run']);
+    });
+
+    it('should not report a running transaction, so write-only guards and commit hooks are unaffected', async () => {
+      const manager = createManager();
+
+      const running = await manager.runReadOnly(async () => manager.isRunning());
+
+      expect(running).toBe(false);
+    });
+  });
+
   describe('isRunning', () => {
     it('should be true inside run and false outside', async () => {
       const manager = createManager();
