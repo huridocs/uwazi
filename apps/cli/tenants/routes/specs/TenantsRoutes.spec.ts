@@ -20,7 +20,7 @@ const issuesOf = (fn: () => unknown) => {
 };
 
 describe('TenantsRoutes', () => {
-  it('should register every tenants command above tenant context', () => {
+  it('should register every tenants command with its tenancy', () => {
     expect(TenantsRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
       ['tenants list', 'none'],
       ['tenants get', 'none'],
@@ -31,11 +31,21 @@ describe('TenantsRoutes', () => {
       ['tenants maintenance', 'none'],
       ['tenants stats', 'none'],
       ['tenants health-check', 'none'],
+      ['tenants clean', 'single'],
+      ['tenants export', 'single'],
+      ['tenants import', 'single'],
     ]);
   });
 
-  it('should only need MongoDB and PostgreSQL, never Redis', () => {
-    TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
+  it('should never need Redis, and only the transfer commands need the admin pool', () => {
+    TenantsRoutes.all().forEach(r => expect(r.needs.redis).toBe(false));
+    TenantsRoutes.all().forEach(r => expect(r.needs.sessions).toBe(false));
+
+    const byName = Object.fromEntries(TenantsRoutes.all().map(r => [r.name, r.needs]));
+    expect(byName.clean).toEqual({ redis: false, sessions: false, postgresAdmin: true });
+    expect(byName.export).toEqual({ redis: false, sessions: false, postgresAdmin: true });
+    expect(byName.import).toEqual({ redis: false, sessions: false, postgresAdmin: true });
+    expect(byName.list).toEqual({ redis: false, sessions: false });
   });
 
   describe('list', () => {
