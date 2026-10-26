@@ -108,4 +108,25 @@ describe('TenantsRoutes', () => {
       expect(issuesOf(() => parse('maintenance', { name: 'acme' }))).toEqual(['maintenance']);
     });
   });
+
+  describe('import', () => {
+    it('should take clear, leaving it undefined when absent', () => {
+      expect(parse('import', {})).toEqual({});
+      expect(parse('import', { clear: true })).toEqual({ clear: true });
+    });
+
+    it('should reject a non-boolean clear', () => {
+      expect(issuesOf(() => parse('import', { clear: 'yes' }))).toEqual(['clear']);
+    });
+
+    it('should expose clear as a flag merged into the request', () => {
+      const importRoute = route('import');
+      const merge = importRoute.requestFromFlags;
+      if (!merge) throw new Error('import should merge flags into its request');
+
+      expect(importRoute.request.parse(merge({ clear: true }, {}))).toEqual({ clear: true });
+      expect(importRoute.request.parse(merge({ clear: false }, {}))).toEqual({});
+      expect(importRoute.options).toBeDefined();
+    });
+  });
 });

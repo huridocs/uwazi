@@ -30,10 +30,6 @@ class CaptureStream extends Writable {
   }
 }
 
-/** A stderr-like stream reporting isTTY, so progress uses the interactive two-line path. */
-const ttyCapture = (): CaptureStream & { isTTY: boolean } =>
-  Object.assign(new CaptureStream(), { isTTY: true });
-
 async function seed(pool: Pool, tenantId: string): Promise<void> {
   await pool.query(`INSERT INTO templates ("_id", "name", "tenant_id") VALUES ($1, $2, $3)`, [
     'tpl-1',
@@ -103,141 +99,97 @@ describe('tenant transfer controllers', () => {
     expect(capture.text).toContain('templates');
   });
 
-  it('import loads a stream into the current tenant and reindexes it', async () => {
-    await seed(pool, SOURCE_TENANT);
-    const capture = new CaptureStream();
-    await testingEnvironment.runWithContext(
-      () => ExportTenantController.handle({ pool, stdout: capture }),
-      { tenant: tenantFor(SOURCE_TENANT) }
-    );
-
-    const reindex = jest.fn(async () => undefined);
-    const output = await testingEnvironment.runWithContext(
-      () =>
-        ImportTenantController.handle({
-          pool,
-          stdin: Readable.from([capture.text]),
-          reindex,
-        }),
-      { tenant: tenantFor(TARGET_TENANT) }
-    );
-
-    expect(output.sourceTenant).toBe(SOURCE_TENANT);
-    expect(output.tables).toContain('templates');
-    expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
-
-    const settings = await pool.query('SELECT sync FROM settings WHERE "tenant_id" = $1', [
-      TARGET_TENANT,
-    ]);
-    expect(settings.rows).toEqual([{ sync: null }]);
-  });
-
-  describe('progress feedback', () => {
-    it('export writes progress to stderr when enabled, keeping stdout clean', async () => {
+  describe('import', () => {
+    it('loads a stream into the current tenant and reindexes it', async () => {
       await seed(pool, SOURCE_TENANT);
-      const stdout = new CaptureStream();
-      const stderr = ttyCapture();
-
+      const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout, stderr, progress: true }),
+        () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
-      expect(stderr.text).toContain('exporting templates… 1 row');
-      expect(stderr.text).toContain('tables exported 1 of');
-      expect(stderr.text).not.toContain('exported templates');
-      expect(stdout.text).not.toContain('exporting');
+      const reindex = jest.fn(async () => undefined);
+      const output = await testingEnvironment.runWithContext(
+        () =>
+          ImportTenantController.handle(
+            {},
+            {
+              pool,
+              stdin: Readable.from([capture.text]),
+              reindex,
+            }
+          ),
+        { tenant: tenantFor(TARGET_TENANT) }
+      );
+
+      expect(output.sourceTenant).toBe(SOURCE_TENANT);
+      expect(output.tables).toContain('templates');
+      expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
+
+      const settings = await pool.query('SELECT sync FROM settings WHERE "tenant_id" = $1', [
+        TARGET_TENANT,
+      ]);
+      expect(settings.rows).toEqual([{ sync: null }]);
     });
 
-    it('import writes progress to stderr when enabled, including reindex', async () => {
+    it('cleans the target first when clear is set', async () => {
       await seed(pool, SOURCE_TENANT);
-      const exportStream = new CaptureStream();
+      const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout: exportStream }),
+        () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
-      const stderr = ttyCapture();
+      await pool.query(`INSERT INTO templates ("_id", "name", "tenant_id") VALUES ($1, $2, $3)`, [
+        'tpl-stale',
+        'Stale',
+        TARGET_TENANT,
+      ]);
+
       const reindex = jest.fn(async () => undefined);
       await testingEnvironment.runWithContext(
         () =>
-          ImportTenantController.handle({
-            pool,
-            stdin: Readable.from([exportStream.text]),
-            stderr,
-            progress: true,
-            reindex,
-          }),
+          ImportTenantController.handle(
+            { clear: true },
+            { pool, stdin: Readable.from([capture.text]), reindex }
+          ),
         { tenant: tenantFor(TARGET_TENANT) }
       );
 
-      expect(stderr.text).toContain('importing templates… 1 row');
-      expect(stderr.text).toContain('tables imported 1 of');
-      expect(stderr.text).toContain('reindexing target-tenant…');
-      expect(stderr.text).not.toContain('imported templates');
+      const templates = await pool.query('SELECT name FROM templates WHERE "tenant_id" = $1', [
+        TARGET_TENANT,
+      ]);
+      expect(templates.rows).toEqual([{ name: 'Document' }]);
+      expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
     });
 
-    it('writes no progress when disabled', async () => {
+    it('surfaces a reindex failure after importing', async () => {
       await seed(pool, SOURCE_TENANT);
-      const stdout = new CaptureStream();
-      const stderr = new CaptureStream();
-
+      const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout, stderr, progress: false }),
+        () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
-      expect(stderr.text).toBe('');
+      const reindex = jest.fn(async () => {
+        throw new Error('reindex boom');
+      });
+
+      await expect(
+        testingEnvironment.runWithContext(
+          () =>
+            ImportTenantController.handle(
+              {},
+              {
+                pool,
+                stdin: Readable.from([capture.text]),
+                reindex,
+              }
+            ),
+          { tenant: tenantFor(TARGET_TENANT) }
+        )
+      ).rejects.toThrow('reindex boom');
+      expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
     });
-
-    it('export stays silent when stdout is a pipe, even on a terminal stderr', async () => {
-      await seed(pool, SOURCE_TENANT);
-      const stdout = Object.assign(new CaptureStream(), { isPipe: true });
-      const stderr = ttyCapture();
-
-      await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout, stderr }),
-        { tenant: tenantFor(SOURCE_TENANT) }
-      );
-
-      expect(stderr.text).toBe('');
-      expect(stdout.text.length).toBeGreaterThan(0);
-    });
-
-    it('export writes progress when stdout is redirected to a file', async () => {
-      await seed(pool, SOURCE_TENANT);
-      const stdout = new CaptureStream();
-      const stderr = ttyCapture();
-
-      await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout, stderr }),
-        { tenant: tenantFor(SOURCE_TENANT) }
-      );
-
-      expect(stderr.text).toContain('tables exported 1 of');
-      expect(stdout.text.length).toBeGreaterThan(0);
-    });
-  });
-
-  it('surfaces a reindex failure after importing', async () => {
-    await seed(pool, SOURCE_TENANT);
-    const capture = new CaptureStream();
-    await testingEnvironment.runWithContext(
-      () => ExportTenantController.handle({ pool, stdout: capture }),
-      { tenant: tenantFor(SOURCE_TENANT) }
-    );
-
-    const reindex = jest.fn(async () => {
-      throw new Error('reindex boom');
-    });
-
-    await expect(
-      testingEnvironment.runWithContext(
-        () =>
-          ImportTenantController.handle({ pool, stdin: Readable.from([capture.text]), reindex }),
-        { tenant: tenantFor(TARGET_TENANT) }
-      )
-    ).rejects.toThrow('reindex boom');
-    expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
   });
 });

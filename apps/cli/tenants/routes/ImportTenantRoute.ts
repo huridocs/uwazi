@@ -1,12 +1,24 @@
+import type { Argv } from 'yargs';
 import { z } from 'zod';
 import { LazyModule } from '../../routing/LazyModule.js';
-import type { Route } from '../../routing/Route.js';
+import type { CliArgv, Route } from '../../routing/Route.js';
 import type { ImportTenantOutput } from '../contracts.js';
 
-const NoInput = z.object({}).strict();
-type NoInput = z.infer<typeof NoInput>;
+const ImportInputSchema = z.object({ clear: z.boolean().optional() }).strict();
+type ImportInput = z.infer<typeof ImportInputSchema>;
 
-class ImportTenantRoute implements Route<NoInput, ImportTenantOutput> {
+const clearOption = (y: Argv): Argv =>
+  y.option('clear', {
+    type: 'boolean',
+    default: false,
+    describe: "Clean the tenant's data before importing (retry a failed import)",
+  });
+
+const mergeClearFlag = (argv: CliArgv, request: unknown): unknown =>
+  argv.clear ? { ...(request as Record<string, unknown>), clear: true } : request;
+
+/** Loads a COPY stream from stdin; `--clear` wipes the tenant first so a failed import can retry. */
+class ImportTenantRoute implements Route<ImportInput, ImportTenantOutput> {
   readonly group = 'tenants';
 
   readonly name = 'import';
@@ -17,7 +29,11 @@ class ImportTenantRoute implements Route<NoInput, ImportTenantOutput> {
 
   readonly needs = { redis: false, sessions: false, postgresAdmin: true };
 
-  readonly request = NoInput;
+  readonly request = ImportInputSchema;
+
+  readonly options = clearOption;
+
+  readonly requestFromFlags = mergeClearFlag;
 
   readonly fieldMap = {};
 
@@ -25,9 +41,9 @@ class ImportTenantRoute implements Route<NoInput, ImportTenantOutput> {
     async () => import('../controllers/ImportTenantController.js')
   );
 
-  async handle(): Promise<ImportTenantOutput> {
+  async handle(input: ImportInput): Promise<ImportTenantOutput> {
     const { ImportTenantController } = await this.controller.get();
-    return ImportTenantController.handle();
+    return ImportTenantController.handle(input);
   }
 }
 

@@ -7,12 +7,15 @@ type TransferVerb = 'exporting' | 'importing';
 type ProgressWriter = {
   table: (event: TenantTableProgress) => void;
   line: (text: string) => void;
+  /** A one-shot step like cleaning: `…` while running, green `✓` once done. */
+  task: (label: string, done: boolean) => void;
 };
 
 const GREEN = '\x1b[32m';
 const RESET = '\x1b[0m';
 const CURSOR_UP = '\x1b[1A';
 const CLEAR_LINE = '\x1b[2K';
+const CHECK = '✓';
 
 /** process.stderr is a WriteStream (with isTTY); test streams are plain Writables. */
 function isTty(stream: Writable): boolean {
@@ -45,7 +48,8 @@ function currentLine(verb: TransferVerb, event: TenantTableProgress): string {
 }
 
 function summaryLine(past: string, completed: number, total: number): string {
-  return `tables ${past} ${completed} of ${total}`;
+  const check = completed === total ? ` ${CHECK}` : '';
+  return `tables ${past} ${completed} of ${total}${check}`;
 }
 
 /**
@@ -89,7 +93,18 @@ function createProgressWriter(
     if (enabled) stderr.write(`${text}\n`);
   };
 
-  return { table, line };
+  const task = (label: string, done: boolean): void => {
+    if (!enabled) return;
+    if (done) {
+      stderr.write(
+        tty ? `\r${CLEAR_LINE}${GREEN}${label} ${CHECK}${RESET}\n` : `${label} ${CHECK}\n`
+      );
+    } else {
+      stderr.write(tty ? `${label}…` : `${label}…\n`);
+    }
+  };
+
+  return { table, line, task };
 }
 
 export { createProgressWriter, isPipe, isTty };
