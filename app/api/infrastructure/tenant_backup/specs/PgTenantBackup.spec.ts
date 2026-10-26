@@ -4,8 +4,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PrematureEndOfStreamError } from '../PrematureEndOfStreamError.js';
 import { UnknownTableInManifestError } from '../UnknownTableInManifestError.js';
 import { SchemaVersionMismatchError } from '../SchemaVersionMismatchError.js';
-import { PgTenantTransfer } from '../PgTenantTransfer.js';
-import type { TenantTableProgress } from '../PgTenantTransfer.js';
+import { PgTenantBackup } from '../PgTenantBackup.js';
+import type { TenantTableProgress } from '../PgTenantBackup.js';
 import { discoverDataTablesWithColumns } from '../tenantTableDiscovery.js';
 import {
   CaptureStream,
@@ -16,10 +16,10 @@ import {
   seedSource,
   SOURCE_TENANT,
   TARGET_TENANT,
-  transferAtVersion,
+  backupAtVersion,
 } from './helpers.js';
 
-describe('PgTenantTransfer', () => {
+describe('PgTenantBackup', () => {
   let pool: Pool;
 
   beforeAll(async () => {
@@ -45,8 +45,8 @@ describe('PgTenantTransfer', () => {
     it('deletes every tenant-scoped row, in-flight tables included, and is idempotent', async () => {
       await seedSource(pool, SOURCE_TENANT);
 
-      const transfer = new PgTenantTransfer(pool);
-      const first = await transfer.clean(SOURCE_TENANT);
+      const backup = new PgTenantBackup(pool);
+      const first = await backup.clean(SOURCE_TENANT);
 
       expect(first.deletedRows).toBe(6);
       expect(first.tables).toContain('templates');
@@ -57,14 +57,14 @@ describe('PgTenantTransfer', () => {
       ]);
       expect(leftovers.rowCount).toBe(0);
 
-      const second = await transfer.clean(SOURCE_TENANT);
+      const second = await backup.clean(SOURCE_TENANT);
       expect(second.deletedRows).toBe(0);
     });
 
     it('leaves another tenant untouched', async () => {
       await seedSource(pool, SOURCE_TENANT);
 
-      await new PgTenantTransfer(pool).clean(TARGET_TENANT);
+      await new PgTenantBackup(pool).clean(TARGET_TENANT);
 
       const source = await pool.query(`SELECT 1 FROM templates WHERE "tenant_id" = $1`, [
         SOURCE_TENANT,
@@ -90,7 +90,7 @@ describe('PgTenantTransfer', () => {
       await seedSource(pool, SOURCE_TENANT);
       const capture = new CaptureStream();
 
-      await new PgTenantTransfer(pool, async () => 12).export(SOURCE_TENANT, capture);
+      await new PgTenantBackup(pool, async () => 12).export(SOURCE_TENANT, capture);
 
       expect(manifestOf(capture.text).schemaVersion).toBe(12);
     });
@@ -100,7 +100,7 @@ describe('PgTenantTransfer', () => {
       const events: TenantTableProgress[] = [];
       const capture = new CaptureStream();
 
-      await new PgTenantTransfer(pool).export(SOURCE_TENANT, capture, event => events.push(event));
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, event => events.push(event));
 
       const templates = events.filter(e => e.table === 'templates');
       expect(templates).toMatchObject([
@@ -120,7 +120,7 @@ describe('PgTenantTransfer', () => {
       const events: TenantTableProgress[] = [];
       const capture = new CaptureStream();
 
-      await new PgTenantTransfer(pool).export(SOURCE_TENANT, capture, event => events.push(event));
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, event => events.push(event));
 
       const templates = events.filter(e => e.table === 'templates');
       expect(templates).toMatchObject([
@@ -214,7 +214,7 @@ describe('PgTenantTransfer', () => {
       const { text } = await exportTenant(pool, SOURCE_TENANT);
       const events: TenantTableProgress[] = [];
 
-      await new PgTenantTransfer(pool).import(TARGET_TENANT, Readable.from([text]), event =>
+      await new PgTenantBackup(pool).import(TARGET_TENANT, Readable.from([text]), event =>
         events.push(event)
       );
 
@@ -230,7 +230,7 @@ describe('PgTenantTransfer', () => {
       const { text } = await exportTenant(pool, SOURCE_TENANT);
 
       await expect(
-        new PgTenantTransfer(pool, async () => 9999).import(TARGET_TENANT, Readable.from([text]))
+        new PgTenantBackup(pool, async () => 9999).import(TARGET_TENANT, Readable.from([text]))
       ).rejects.toBeInstanceOf(SchemaVersionMismatchError);
     });
 
@@ -243,7 +243,7 @@ describe('PgTenantTransfer', () => {
       })}\n`;
 
       await expect(
-        transferAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+        backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
       ).rejects.toBeInstanceOf(UnknownTableInManifestError);
     });
 
@@ -256,7 +256,7 @@ describe('PgTenantTransfer', () => {
       })}\n`;
 
       await expect(
-        transferAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+        backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
       ).rejects.toBeInstanceOf(PrematureEndOfStreamError);
     });
   });

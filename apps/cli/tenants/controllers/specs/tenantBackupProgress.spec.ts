@@ -50,7 +50,7 @@ async function clear(pool: Pool): Promise<void> {
   await pool.query('DELETE FROM settings');
 }
 
-describe('tenant transfer progress', () => {
+describe('tenant backup progress', () => {
   let pool: Pool;
 
   beforeAll(async () => {

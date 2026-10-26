@@ -6,7 +6,7 @@ export class SchemaVersionMismatchError extends DomainError {
     super(
       `Schema version mismatch: the export stream is from schema version ${exported}, ` +
         `but this database is at ${current}. Run migrations to match the export before importing.`,
-      'tenant_transfer.schema_version_mismatch'
+      'tenant_backup.schema_version_mismatch'
     );
   }
 }

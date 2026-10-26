@@ -192,10 +192,10 @@ async function sanitizeSettings(
 }
 
 /**
- * Tenant data transfer over the admin/migrator pool (RLS-bypassing): export one tenant to a
+ * Tenant backup/restore over the admin/migrator pool (RLS-bypassing): export one tenant to a
  * portable COPY stream, import such a stream into another tenant, or clean a tenant's rows.
  */
-export class PgTenantTransfer {
+export class PgTenantBackup {
   constructor(
     private readonly pool: pg.Pool,
     /** Overrides the pg_migrations read; lets specs pin a schema version without touching it. */

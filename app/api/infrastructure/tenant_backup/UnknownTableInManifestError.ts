@@ -5,7 +5,7 @@ export class UnknownTableInManifestError extends DomainError {
   constructor(table: string) {
     super(
       `Manifest references '${table}', which is not a tenant data table.`,
-      'tenant_transfer.unknown_table'
+      'tenant_backup.unknown_table'
     );
   }
 }

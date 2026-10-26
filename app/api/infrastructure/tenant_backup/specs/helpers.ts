@@ -1,6 +1,6 @@
 import { Readable, Writable } from 'stream';
 import type { Pool } from 'pg';
-import { PgTenantTransfer } from '../PgTenantTransfer.js';
+import { PgTenantBackup } from '../PgTenantBackup.js';
 
 export const SOURCE_TENANT = 'source-tenant';
 export const TARGET_TENANT = 'target-tenant';
@@ -64,15 +64,15 @@ export async function exportTenant(
   tenantId: string
 ): Promise<{ text: string; tables: string[] }> {
   const capture = new CaptureStream();
-  const tables = await new PgTenantTransfer(pool).export(tenantId, capture);
+  const tables = await new PgTenantBackup(pool).export(tenantId, capture);
   return { text: capture.text, tables };
 }
 
 export async function importInto(pool: Pool, tenantId: string, text: string) {
-  return new PgTenantTransfer(pool).import(tenantId, Readable.from([text]));
+  return new PgTenantBackup(pool).import(tenantId, Readable.from([text]));
 }
 
-/** A transfer that reports a pinned schema version, for specs that hand-craft manifest lines. */
-export function transferAtVersion(pool: Pool, version: number): PgTenantTransfer {
-  return new PgTenantTransfer(pool, async () => version);
+/** A backup that reports a pinned schema version, for specs that hand-craft manifest lines. */
+export function backupAtVersion(pool: Pool, version: number): PgTenantBackup {
+  return new PgTenantBackup(pool, async () => version);
 }

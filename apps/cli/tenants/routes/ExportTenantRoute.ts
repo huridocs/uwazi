@@ -11,7 +11,8 @@ class ExportTenantRoute implements Route<NoInput, void> {
 
   readonly name = 'export';
 
-  readonly describe = "Stream a tenant's PostgreSQL data to stdout as a portable COPY stream";
+  readonly describe =
+    "Export a tenant's PostgreSQL data to stdout as a portable backup (COPY stream)";
 
   readonly tenancy = 'single';
 

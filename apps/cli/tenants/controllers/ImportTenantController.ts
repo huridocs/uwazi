@@ -1,15 +1,15 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgTenantTransfer } from '#api/infrastructure/tenant_transfer/PgTenantTransfer.js';
+import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
 import type { ImportTenantOutput } from '../contracts.js';
 import { reindexTenant } from './reindexTenant.js';
-import { createProgressWriter } from './transferProgress.js';
-import type { ProgressWriter } from './transferProgress.js';
-import type { TenantTransferDeps } from './TenantTransferDeps.js';
+import { createProgressWriter } from './backupProgress.js';
+import type { ProgressWriter } from './backupProgress.js';
+import type { TenantBackupDeps } from './TenantBackupDeps.js';
 
 type ImportTenantInput = { clear?: boolean };
 
-function resolveDeps(deps: TenantTransferDeps) {
+function resolveDeps(deps: TenantBackupDeps) {
   return {
     pool: deps.pool ?? PostgresDB.adminPool(),
     stdin: deps.stdin ?? process.stdin,
@@ -19,13 +19,13 @@ function resolveDeps(deps: TenantTransferDeps) {
 }
 
 async function cleanBeforeImport(
-  transfer: PgTenantTransfer,
+  backup: PgTenantBackup,
   target: { tenantId: string; clear: boolean | undefined; progress: ProgressWriter }
 ): Promise<void> {
   if (!target.clear) return;
   const label = `cleaning ${target.tenantId}`;
   target.progress.task(label, false);
-  await transfer.clean(target.tenantId);
+  await backup.clean(target.tenantId);
   target.progress.task(label, true);
 }
 
@@ -37,16 +37,16 @@ async function cleanBeforeImport(
 class ImportTenantController {
   static async handle(
     input: ImportTenantInput = {},
-    deps: TenantTransferDeps = {}
+    deps: TenantBackupDeps = {}
   ): Promise<ImportTenantOutput> {
     const { pool, stdin, stderr, reindex } = resolveDeps(deps);
     const tenantId = ExecutionContext.currentTenant.name;
     const progress = createProgressWriter(stderr, deps.progress, 'importing');
-    const transfer = new PgTenantTransfer(pool);
+    const backup = new PgTenantBackup(pool);
 
-    await cleanBeforeImport(transfer, { tenantId, clear: input.clear, progress });
+    await cleanBeforeImport(backup, { tenantId, clear: input.clear, progress });
 
-    const result = await transfer.import(tenantId, stdin, progress.table);
+    const result = await backup.import(tenantId, stdin, progress.table);
     progress.line(`reindexing ${tenantId}…`);
     await reindex(tenantId);
 

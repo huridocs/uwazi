@@ -1,8 +1,8 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgTenantTransfer } from '#api/infrastructure/tenant_transfer/PgTenantTransfer.js';
-import { createProgressWriter, isPipe, isTty } from './transferProgress.js';
-import type { TenantTransferDeps } from './TenantTransferDeps.js';
+import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
+import { createProgressWriter, isPipe, isTty } from './backupProgress.js';
+import type { TenantBackupDeps } from './TenantBackupDeps.js';
 
 /**
  * Streams the current tenant's PostgreSQL data to stdout as a portable COPY stream. Returns
@@ -13,7 +13,7 @@ import type { TenantTransferDeps } from './TenantTransferDeps.js';
  * of the pipeline don't fight over the terminal with competing cursor-control output.
  */
 class ExportTenantController {
-  static async handle(deps: TenantTransferDeps = {}): Promise<void> {
+  static async handle(deps: TenantBackupDeps = {}): Promise<void> {
     const pool = deps.pool ?? PostgresDB.adminPool();
     const stdout = deps.stdout ?? process.stdout;
     const stderr = deps.stderr ?? process.stderr;
@@ -24,7 +24,7 @@ class ExportTenantController {
       'exporting'
     );
 
-    await new PgTenantTransfer(pool).export(tenantId, stdout, progress.table);
+    await new PgTenantBackup(pool).export(tenantId, stdout, progress.table);
   }
 }
 

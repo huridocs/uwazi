@@ -37,7 +37,7 @@ describe('TenantsRoutes', () => {
     ]);
   });
 
-  it('should never need Redis, and only the transfer commands need the admin pool', () => {
+  it('should never need Redis, and only the backup commands need the admin pool', () => {
     TenantsRoutes.all().forEach(r => expect(r.needs.redis).toBe(false));
     TenantsRoutes.all().forEach(r => expect(r.needs.sessions).toBe(false));
 

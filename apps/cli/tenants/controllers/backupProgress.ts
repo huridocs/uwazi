@@ -1,8 +1,8 @@
 import { fstatSync } from 'fs';
 import type { Writable } from 'stream';
-import type { TenantTableProgress } from '#api/infrastructure/tenant_transfer/PgTenantTransfer.js';
+import type { TenantTableProgress } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
 
-type TransferVerb = 'exporting' | 'importing';
+type BackupVerb = 'exporting' | 'importing';
 
 type ProgressWriter = {
   table: (event: TenantTableProgress) => void;
@@ -43,7 +43,7 @@ function pluralize(rows: number): string {
   return rows === 1 ? 'row' : 'rows';
 }
 
-function currentLine(verb: TransferVerb, event: TenantTableProgress): string {
+function currentLine(verb: BackupVerb, event: TenantTableProgress): string {
   return `${verb} ${event.table}… ${event.rows} ${pluralize(event.rows)}`;
 }
 
@@ -53,7 +53,7 @@ function summaryLine(past: string, completed: number, total: number): string {
 }
 
 /**
- * Renders transfer progress as two stderr lines: a persistent green summary ("tables exported
+ * Renders backup progress as two stderr lines: a persistent green summary ("tables exported
  * 5 of 15") and, below it, only the table currently streaming. A finished table collapses into
  * the summary and its line is erased. Uses ANSI cursor control on a terminal; when progress is
  * forced on a non-terminal, it falls back to one plain summary line per completed table.
@@ -61,7 +61,7 @@ function summaryLine(past: string, completed: number, total: number): string {
 function createProgressWriter(
   stderr: Writable,
   progress: boolean | undefined,
-  verb: TransferVerb
+  verb: BackupVerb
 ): ProgressWriter {
   const enabled = progress ?? isTty(stderr);
   const tty = isTty(stderr);

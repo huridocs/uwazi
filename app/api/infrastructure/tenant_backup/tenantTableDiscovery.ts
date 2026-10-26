@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 /**
  * Tenant-scoped tables that are not tenant *data*: they hold in-flight or transient operation
  * state, not content. Export/import skip them; clean still wipes them (its job is an empty
- * tenant, not a data transfer). `jobs` needs no entry here — it has no tenant_id column, so the
+ * tenant, not a backup). `jobs` needs no entry here — it has no tenant_id column, so the
  * discovery query never returns it.
  */
 export const EXCLUDED_TABLES = new Set([

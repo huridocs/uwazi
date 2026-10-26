@@ -23,7 +23,7 @@ class ImportTenantRoute implements Route<ImportInput, ImportTenantOutput> {
 
   readonly name = 'import';
 
-  readonly describe = 'Load a COPY stream from stdin into a tenant, rewriting tenant_id';
+  readonly describe = 'Restore a tenant from a backup stream on stdin, rewriting tenant_id';
 
   readonly tenancy = 'single';
 

@@ -47,7 +47,7 @@ async function clear(pool: Pool): Promise<void> {
   await pool.query('DELETE FROM settings');
 }
 
-describe('tenant transfer controllers', () => {
+describe('tenant backup controllers', () => {
   let pool: Pool;
 
   beforeAll(async () => {

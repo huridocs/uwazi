@@ -1,4 +1,4 @@
-/** Live per-table progress: rows transferred so far; `done` marks the table's final count. */
+/** Live per-table progress: rows exported/imported so far; `done` marks the table's final count. */
 type TenantTableProgress = {
   table: string;
   rows: number;

@@ -12,7 +12,7 @@ import { CleanTenantRoute } from './routes/CleanTenantRoute.js';
 import { ExportTenantRoute } from './routes/ExportTenantRoute.js';
 import { ImportTenantRoute } from './routes/ImportTenantRoute.js';
 
-/** `uwazi tenants …` — the registry (above tenant context) plus tenant data transfer. */
+/** `uwazi tenants …` — the registry (above tenant context) plus tenant backup/restore. */
 class TenantsRoutes {
   static all(): Route[] {
     return [
