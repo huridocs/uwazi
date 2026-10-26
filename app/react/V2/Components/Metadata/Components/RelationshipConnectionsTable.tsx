@@ -17,7 +17,7 @@ import { distinctRollup, mergeConnectionRows } from './mergeConnectionRows.js';
 import { useTableFitsContainer } from './useTableFitsContainer.js';
 
 const inheritedCellClass = (inheritedType?: string) =>
-  `${inheritedTypeLayout(inheritedType).minWidthClass} border-t border-s border-border/40 px-3 py-1.5 align-middle first:border-s-0`;
+  `${inheritedTypeLayout(inheritedType).minWidthClass} border-t border-s border-border/40 px-3 py-1.5 align-middle`;
 
 const inheritColumnHeaderClass = (inheritedType?: string) =>
   `${inheritedTypeLayout(inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-semibold`;
@@ -137,7 +137,7 @@ const connectionsTable = ({
   <table
     ref={probe ? probeRef : undefined}
     data-connections-probe={probe ? '' : undefined}
-    className={`border-collapse text-sm ${probe ? 'w-full' : 'w-full min-w-max'}`}
+    className={`w-full border-collapse text-sm${probe ? '' : ' min-w-max'}`}
     aria-hidden={probe || undefined}
   >
     <caption className="sr-only">

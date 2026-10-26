@@ -25,6 +25,9 @@ type InheritRollup = {
   title: string;
 };
 
+const stackLabelClass =
+  'min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
+
 const cellContent = (column: RelationshipTableColumn, entityId: string): ReactNode =>
   column.cellsByEntityId?.[entityId];
 
@@ -71,7 +74,7 @@ const ConnectionCardStack = ({
     <div className="grid w-full min-w-0 grid-cols-[fit-content(40%)_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1">
       {rollups.map(rollup => (
         <React.Fragment key={rollup.label}>
-          <span className="min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
+          <span className={stackLabelClass}>
             <Translate context={translationContext}>{rollup.label}</Translate>
           </span>
           <span className="min-w-0">
@@ -97,7 +100,7 @@ const ConnectionCardStack = ({
           </div>
           {columns.map(column => (
             <React.Fragment key={column.label}>
-              <span className="min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
+              <span className={stackLabelClass}>
                 <Translate context={translationContext}>{column.label}</Translate>
               </span>
               <span className="min-w-0">{renderInheritedCell(cellContent(column, row.id))}</span>
