@@ -1,7 +1,8 @@
 import knex, { Knex } from 'knex';
-import pg from 'pg';
+import pg, { Pool, types } from 'pg';
 import { config } from '#api/config.js';
 import { PgClientWithContextBegin } from '#api/core/infrastructure/postgresql/common/PgClientWithContextBegin.js';
+import type { StatementListener } from '#api/core/infrastructure/postgresql/common/Executor.js';
 
 /**
  * Defaults for every connection handed to a migration: one that collides with live traffic fails
@@ -28,6 +29,10 @@ export class PostgresDB {
 
   private static _pool: pg.Pool | null = null;
 
+  private static _pipelinedPool: pg.Pool | null = null;
+
+  private static statementListeners = new Set<StatementListener>();
+
   private static _adminPool: pg.Pool | null = null;
 
   private static _activeConfig: PostgresConnectionConfig | null = null;
@@ -37,7 +42,7 @@ export class PostgresDB {
 
     const connection = this.appConnectionConfig();
 
-    pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
+    PostgresDB.parseBigIntsAsNumbers();
 
     this._knex = knex({
       client: PgClientWithContextBegin,
@@ -48,16 +53,22 @@ export class PostgresDB {
     return this._knex;
   }
 
+  private static parseBigIntsAsNumbers(): void {
+    types.setTypeParser(types.builtins.INT8, parseInt);
+  }
+
   static async disconnect(): Promise<void> {
     await Promise.all([
       this._knex?.destroy(),
       this._pool?.end(),
+      this._pipelinedPool?.end(),
       this._adminPool?.end(),
       this._adminKnex?.destroy(),
       this._appMigrationKnex?.destroy(),
     ]);
     this._knex = null;
     this._pool = null;
+    this._pipelinedPool = null;
     this._adminPool = null;
     this._adminKnex = null;
     this._appMigrationKnex = null;
@@ -76,6 +87,29 @@ export class PostgresDB {
     }
     return this._pool;
   }
+
+  /**
+   * App credentials, for tenant traffic: every client sends its messages without waiting for the
+   * answers to the previous ones (`pipeline`), so a transaction's statements can share one round trip.
+   */
+  static pipelinedPool(): pg.Pool {
+    if (!this._pipelinedPool) {
+      PostgresDB.parseBigIntsAsNumbers();
+      this._pipelinedPool = new Pool({ ...this.appConnectionConfig(), pipeline: true, max: 10 });
+    }
+    return this._pipelinedPool;
+  }
+
+  /** Subscribes to the SQL of every message the executors send; returns the unsubscribe. Specs only. */
+  static onStatement(listener: StatementListener): () => void {
+    this.statementListeners.add(listener);
+    return () => this.statementListeners.delete(listener);
+  }
+
+  /** What the executors report each message to. */
+  static readonly announceStatement: StatementListener = sql => {
+    PostgresDB.statementListeners.forEach(listener => listener(sql));
+  };
 
   private static appConnectionConfig(): PostgresConnectionConfig {
     return (
@@ -153,6 +187,7 @@ export class PostgresDB {
     this._activeConfig = cfg;
     this._knex = null;
     this._pool = null;
+    this._pipelinedPool = null;
     this._adminPool = null;
     this._adminKnex = null;
     this._appMigrationKnex = null;
@@ -162,6 +197,7 @@ export class PostgresDB {
     this._activeConfig = null;
     this._knex = null;
     this._pool = null;
+    this._pipelinedPool = null;
     this._adminPool = null;
     this._adminKnex = null;
     this._appMigrationKnex = null;

@@ -38,6 +38,15 @@ class Statements {
   ): Statement {
     return { sql, bindings, permission };
   }
+
+  /** The statement as `pg` sends it: `?` placeholders become `$n`, `??` become identifiers. */
+  static toNative({ sql, bindings }: Statement): { text: string; values: unknown[] } {
+    const native = compiler
+      .raw(sql, bindings as Knex.RawBinding[])
+      .toSQL()
+      .toNative();
+    return { text: native.sql, values: [...native.bindings] };
+  }
 }
 
 export { Statements };
