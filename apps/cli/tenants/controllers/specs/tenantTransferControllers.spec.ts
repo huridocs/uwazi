@@ -189,6 +189,34 @@ describe('tenant transfer controllers', () => {
 
       expect(stderr.text).toBe('');
     });
+
+    it('export stays silent when stdout is a pipe, even on a terminal stderr', async () => {
+      await seed(pool, SOURCE_TENANT);
+      const stdout = Object.assign(new CaptureStream(), { isPipe: true });
+      const stderr = ttyCapture();
+
+      await testingEnvironment.runWithContext(
+        () => ExportTenantController.handle({ pool, stdout, stderr }),
+        { tenant: tenantFor(SOURCE_TENANT) }
+      );
+
+      expect(stderr.text).toBe('');
+      expect(stdout.text.length).toBeGreaterThan(0);
+    });
+
+    it('export writes progress when stdout is redirected to a file', async () => {
+      await seed(pool, SOURCE_TENANT);
+      const stdout = new CaptureStream();
+      const stderr = ttyCapture();
+
+      await testingEnvironment.runWithContext(
+        () => ExportTenantController.handle({ pool, stdout, stderr }),
+        { tenant: tenantFor(SOURCE_TENANT) }
+      );
+
+      expect(stderr.text).toContain('tables exported 1 of');
+      expect(stdout.text.length).toBeGreaterThan(0);
+    });
   });
 
   it('surfaces a reindex failure after importing', async () => {

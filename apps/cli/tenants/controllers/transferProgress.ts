@@ -1,3 +1,4 @@
+import { fstatSync } from 'fs';
 import type { Writable } from 'stream';
 import type { TenantTableProgress } from '#api/infrastructure/tenant_transfer/PgTenantTransfer.js';
 
@@ -16,6 +17,23 @@ const CLEAR_LINE = '\x1b[2K';
 /** process.stderr is a WriteStream (with isTTY); test streams are plain Writables. */
 function isTty(stream: Writable): boolean {
   return Boolean((stream as { isTTY?: boolean }).isTTY);
+}
+
+/**
+ * A pipe means the consumer is another process that may also animate on stderr, so the producer
+ * must stay silent. A file redirect (or a terminal) is safe to report on. Test streams carry an
+ * explicit `isPipe` marker; real streams are detected from their file descriptor.
+ */
+function isPipe(stream: Writable): boolean {
+  const { isPipe: marker } = stream as { isPipe?: boolean };
+  if (marker !== undefined) return marker;
+  const { fd } = stream as { fd?: number };
+  if (typeof fd !== 'number') return false;
+  try {
+    return fstatSync(fd).isFIFO();
+  } catch {
+    return false;
+  }
 }
 
 function pluralize(rows: number): string {
@@ -74,5 +92,5 @@ function createProgressWriter(
   return { table, line };
 }
 
-export { createProgressWriter };
+export { createProgressWriter, isPipe, isTty };
 export type { ProgressWriter };
