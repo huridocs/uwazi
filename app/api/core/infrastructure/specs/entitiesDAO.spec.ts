@@ -956,12 +956,11 @@ describe('EntitiesDAO', () => {
 
     const selectsSentBy = async (read: () => Promise<unknown>) => {
       const statements: string[] = [];
-      const listener = (query: { sql: string }) => statements.push(query.sql);
-      PostgresDB.knex.on('query', listener);
+      const stop = PostgresDB.onStatement(sql => statements.push(sql));
       try {
         await read();
       } finally {
-        PostgresDB.knex.removeListener('query', listener);
+        stop();
       }
       return statements.filter(sql => /^select\b/i.test(sql) && !sql.includes('set_config'));
     };

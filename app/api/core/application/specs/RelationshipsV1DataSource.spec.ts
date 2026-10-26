@@ -144,12 +144,11 @@ describe('RelationshipsV1DataSource', () => {
     (postgresCore ? it : it.skip)('reads an entity hub connections in one statement', async () => {
       const sut = createSut();
       const statements: string[] = [];
-      const listener = (query: { sql: string }) => statements.push(query.sql);
-      PostgresDB.knex.on('query', listener);
+      const stop = PostgresDB.onStatement(sql => statements.push(sql));
       try {
         await sut.getHubConnections(['A']);
       } finally {
-        PostgresDB.knex.removeListener('query', listener);
+        stop();
       }
 
       expect(

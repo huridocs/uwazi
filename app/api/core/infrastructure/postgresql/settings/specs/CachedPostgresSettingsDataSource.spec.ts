@@ -21,15 +21,14 @@ const deps = (pgTransactionManager: PostgresTransactionManager) => ({
 });
 
 const newManager = () =>
-  new PostgresTransactionManager(PostgresDB.knex, TENANT_ID, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), TENANT_ID, LoggerFactory.forTests());
 
 const recordSettingsReads = () => {
   const reads: string[] = [];
-  const listener = (query: { sql: string }) => {
-    if (/select [^;]* from "settings"/i.test(query.sql)) reads.push(query.sql);
-  };
-  PostgresDB.knex.on('query', listener);
-  return { reads, stop: () => PostgresDB.knex.removeListener('query', listener) };
+  const stop = PostgresDB.onStatement(sql => {
+    if (/select [^;]* from "settings"/i.test(sql)) reads.push(sql);
+  });
+  return { reads, stop };
 };
 
 const seed = async () =>
@@ -111,7 +110,9 @@ describe('CachedPostgresSettingsDataSource', () => {
 
     const leftovers = await Promise.all(
       Array.from({ length: 10 }, async () =>
-        PostgresDB.knex.raw("SELECT current_setting('app.current_tenant', true) AS tenant")
+        PostgresDB.pipelinedPool().query(
+          "SELECT current_setting('app.current_tenant', true) AS tenant"
+        )
       )
     );
 

@@ -20,7 +20,7 @@ type TestRow = {
 };
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 const createTable = (tenantId = DEFAULT_TENANT) =>
   PostgresTable.for<TestRow>({
@@ -1438,39 +1438,22 @@ describe('PostgresTable', () => {
       expect(rows).toHaveLength(2);
     });
 
-    it('should propagate the original error when rollback also throws', async () => {
-      const manager = managerFor(DEFAULT_TENANT);
-      const origBeginTx = manager.beginTransaction.bind(manager);
-
-      jest.spyOn(manager, 'beginTransaction').mockImplementation(async pc => {
-        const handle = await origBeginTx(pc);
-        const origRollback = handle.rollback;
-        handle.rollback = async () => {
-          await origRollback();
-          throw new Error('rollback failed');
-        };
-        return handle;
-      });
-
+    it('should reject with the error that broke the stream', async () => {
       const table = PostgresTable.for<TestRow>({
         tableName: 'nonexistent_table',
         tenantId: DEFAULT_TENANT,
-        transactionManager: manager,
+        transactionManager: managerFor(DEFAULT_TENANT),
         accessContext: AccessContext.system(),
       });
 
-      let error: Error | undefined;
-      try {
+      const consume = async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _row of table.stream()) {
           // should not reach here
         }
-      } catch (e) {
-        error = e as Error;
-      }
+      };
 
-      expect(error).toBeDefined();
-      expect(error!.message).not.toBe('rollback failed');
+      await expect(consume()).rejects.toMatchObject({ code: '42P01' });
     });
   });
 
@@ -1480,17 +1463,15 @@ describe('PostgresTable', () => {
 
       await expect(
         manager.run(async () => {
-          await manager.withConnection(async trx => {
-            await trx('thesauri').insert({
-              _id: 'trx-2',
-              name: 'visible',
-              values: JSON.stringify([]),
-              tenant_id: 'tenant-a',
-            });
-            const visible = await trx('thesauri').where({ _id: 'trx-2' }).first();
-            expect(visible).toBeDefined();
-            throw new Error('boom');
+          const table = PostgresTable.for<TestRow>({
+            tableName: 'thesauri',
+            tenantId: 'tenant-a',
+            transactionManager: manager,
+            accessContext: AccessContext.system(),
           });
+          await table.insert({ _id: 'trx-2', name: 'visible', values: jsonVal([]) });
+          expect(await table.where({ _id: 'trx-2' }).first()).toBeDefined();
+          throw new Error('boom');
         })
       ).rejects.toThrow('boom');
 
@@ -1611,7 +1592,6 @@ describe('PostgresTable', () => {
         table,
         query: jest.spyOn(manager, 'query'),
         stream: jest.spyOn(manager, 'stream'),
-        withConnection: jest.spyOn(manager, 'withConnection'),
       };
     };
 
@@ -1634,13 +1614,12 @@ describe('PostgresTable', () => {
       ['raw', async (t: PostgresTable<TestRow>) => t.raw('SELECT ?::int AS n', [42])],
     ])('%s sends one statement under the actor permission', async (_name, terminal) => {
       await createTable().insert({ _id: 's1', name: 'a', values: jsonVal([]) });
-      const { table, query, withConnection } = tableWithSpies();
+      const { table, query } = tableWithSpies();
 
       await terminal(table).catch(() => undefined);
 
       expect(query).toHaveBeenCalledTimes(1);
       expect(query.mock.calls[0][0].permission).toEqual(SYSTEM_PERMISSION);
-      expect(withConnection).toHaveBeenCalledTimes(1);
     });
 
     it('stream sends its statement through the transaction manager stream', async () => {

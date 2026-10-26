@@ -9,7 +9,7 @@ export class PostgresTransactionManagerFactory {
   static default(): PostgresTransactionManager {
     const tenant = ExecutionContext.currentTenant;
     const logger = LoggerFactory.default();
-    return new PostgresTransactionManager(PostgresDB.knex, tenant.name, logger);
+    return new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenant.name, logger);
   }
 
   static forTesting() {

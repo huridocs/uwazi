@@ -1,7 +1,6 @@
 import knex, { Knex } from 'knex';
 import pg, { Pool, types } from 'pg';
 import { config } from '#api/config.js';
-import { PgClientWithContextBegin } from '#api/core/infrastructure/postgresql/common/PgClientWithContextBegin.js';
 import type { StatementListener } from '#api/core/infrastructure/postgresql/common/Executor.js';
 
 /**
@@ -45,7 +44,7 @@ export class PostgresDB {
     PostgresDB.parseBigIntsAsNumbers();
 
     this._knex = knex({
-      client: PgClientWithContextBegin,
+      client: 'pg',
       connection,
       useNullAsDefault: true,
     });

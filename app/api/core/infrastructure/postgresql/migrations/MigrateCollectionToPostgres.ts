@@ -152,7 +152,7 @@ class MigrateCollectionToPostgres {
 
   private tableFor(pgTable: string) {
     const pgTransactionManager = new PostgresTransactionManager(
-      PostgresDB.knex,
+      PostgresDB.pipelinedPool(),
       this.tenantId,
       LoggerFactory.systemLogger()
     );

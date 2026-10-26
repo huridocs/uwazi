@@ -51,7 +51,7 @@ const collapseToLatest = (rows: UpdateLogRow[]): UpdateLogRow[] => {
 
 const tableFor = (tenantId: string): PostgresTable => {
   const transactionManager = new PostgresTransactionManager(
-    PostgresDB.knex,
+    PostgresDB.pipelinedPool(),
     tenantId,
     LoggerFactory.systemLogger()
   );

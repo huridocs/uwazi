@@ -32,7 +32,7 @@ const thesaurusContext: TranslationContext = {
 };
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresTranslationsDataSource({

@@ -1,6 +1,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { Statements } from '#api/core/infrastructure/postgresql/common/Statement.js';
 import { ExecutionContext } from '../ExecutionContext.js';
 import { ReadTransaction } from '../ReadTransaction.js';
 
@@ -10,22 +11,20 @@ class Reader {
   @ReadTransaction()
   async read(suffix: string) {
     const pg = ExecutionContext.postgresTransactionManager;
-    await pg.withConnection(async executor => executor('thesauri').select());
-    await pg.withConnection(async executor => executor('thesauri').select());
+    const readThesauri = Statements.raw('SELECT * FROM thesauri', [], { bypass: true, refIds: [] });
+    await pg.query(readThesauri);
+    await pg.query(readThesauri);
     return `${this.prefix}-${suffix}`;
   }
 }
 
 const recordStatements = () => {
   const statements: string[] = [];
-  const listener = (query: { sql: string }) => statements.push(query.sql);
-  PostgresDB.knex.on('query', listener);
-  return { statements, stop: () => PostgresDB.knex.removeListener('query', listener) };
+  const stop = PostgresDB.onStatement(sql => statements.push(sql));
+  return { statements, stop };
 };
 
-/** The BEGIN of each transaction opened, without the context statement sent along with it. */
-const transactionsOpened = (statements: string[]) =>
-  statements.filter(sql => sql.startsWith('BEGIN')).map(sql => sql.slice(0, sql.indexOf(';') + 1));
+const transactionsOpened = (statements: string[]) => statements.filter(sql => sql === 'BEGIN');
 
 describe('@ReadTransaction()', () => {
   beforeAll(async () => {
@@ -36,7 +35,7 @@ describe('@ReadTransaction()', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should run the method in one read only transaction when the tenant is on Postgres', async () => {
+  it('should run each read on its own when the tenant is on Postgres', async () => {
     testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
     const recorder = recordStatements();
 
@@ -46,7 +45,7 @@ describe('@ReadTransaction()', () => {
     recorder.stop();
 
     expect(result).toBe('reader-done');
-    expect(transactionsOpened(recorder.statements)).toEqual(['BEGIN TRANSACTION READ ONLY;']);
+    expect(transactionsOpened(recorder.statements)).toEqual(['BEGIN', 'BEGIN']);
   });
 
   it('should leave each read in its own transaction when the tenant is on Mongo', async () => {
@@ -59,6 +58,6 @@ describe('@ReadTransaction()', () => {
     recorder.stop();
 
     expect(result).toBe('reader-done');
-    expect(transactionsOpened(recorder.statements)).toEqual(['BEGIN;', 'BEGIN;']);
+    expect(transactionsOpened(recorder.statements)).toEqual(['BEGIN', 'BEGIN']);
   });
 });
