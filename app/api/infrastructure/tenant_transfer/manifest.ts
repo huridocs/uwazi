@@ -16,6 +16,7 @@ const ManifestSchema = z
   .object({
     version: z.literal(MANIFEST_VERSION),
     sourceTenant: z.string().min(1),
+    schemaVersion: z.number().int().nonnegative(),
     tables: z.array(ManifestTableSchema),
   })
   .strict()
@@ -33,8 +34,12 @@ const ManifestSchema = z
 
 export type ExportManifest = z.infer<typeof ManifestSchema>;
 
-export function serializeManifest(sourceTenant: string, tables: TableWithColumns[]): string {
-  return JSON.stringify({ version: MANIFEST_VERSION, sourceTenant, tables });
+export function serializeManifest(
+  sourceTenant: string,
+  schemaVersion: number,
+  tables: TableWithColumns[]
+): string {
+  return JSON.stringify({ version: MANIFEST_VERSION, sourceTenant, schemaVersion, tables });
 }
 
 export function parseManifest(line: string): ExportManifest {

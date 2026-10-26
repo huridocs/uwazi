@@ -1,79 +1,23 @@
-import { Writable, Readable } from 'stream';
+import { Readable } from 'stream';
 import type { Pool } from 'pg';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PrematureEndOfStreamError } from '../PrematureEndOfStreamError.js';
 import { UnknownTableInManifestError } from '../UnknownTableInManifestError.js';
+import { SchemaVersionMismatchError } from '../SchemaVersionMismatchError.js';
 import { PgTenantTransfer } from '../PgTenantTransfer.js';
 import type { TenantTableProgress } from '../PgTenantTransfer.js';
 import { discoverDataTablesWithColumns } from '../tenantTableDiscovery.js';
-
-const SOURCE_TENANT = 'source-tenant';
-const TARGET_TENANT = 'target-tenant';
-
-/** A Writable that collects what was written, to feed straight back as the import stream. */
-class CaptureStream extends Writable {
-  text = '';
-
-  _write(chunk: Buffer, _encoding: string, callback: () => void) {
-    this.text += chunk.toString();
-    callback();
-  }
-}
-
-const manifestOf = (stream: string): { tables: { name: string }[] } =>
-  JSON.parse(stream.slice(0, stream.indexOf('\n')));
-
-async function seedSource(pool: Pool, tenantId: string): Promise<void> {
-  await pool.query(`INSERT INTO templates ("_id", "name", "tenant_id") VALUES ($1, $2, $3)`, [
-    'tpl-1',
-    'Document',
-    tenantId,
-  ]);
-  await pool.query(
-    `INSERT INTO settings ("tenant_id", "_id", "site_name", "sync") VALUES ($1, $2, $3, $4)`,
-    [tenantId, 'settings-1', 'Uwazi', JSON.stringify({ url: 'https://example.com' })]
-  );
-  await pool.query(
-    `INSERT INTO ix_extractors ("_id", "tenant_id", "name", "property", "source")
-     VALUES ($1, $2, $3, $4, $5)`,
-    ['ext-1', tenantId, 'Extractor', 'title', '{}']
-  );
-  await pool.query(
-    `INSERT INTO ix_models ("_id", "tenant_id", "extractorId") VALUES ($1, $2, $3)`,
-    ['model-1', tenantId, 'ext-1']
-  );
-  // In-flight / transient tables: skipped by export/import, wiped by clean.
-  await pool.query(
-    `INSERT INTO captchas ("_id", "tenant_id", "text", "expiresAt") VALUES ($1, $2, $3, $4)`,
-    ['cap-1', tenantId, 'ABC', '2030-01-01T00:00:00Z']
-  );
-  await pool.query(
-    `INSERT INTO px_entities_status ("_id", "tenant_id", "entitySharedId", "extractorId", "status")
-     VALUES ($1, $2, $3, $4, $5)`,
-    ['px-1', tenantId, 'ent-1', 'ext-1', 'processing']
-  );
-}
-
-async function clearTables(pool: Pool): Promise<void> {
-  await pool.query('DELETE FROM templates');
-  await pool.query('DELETE FROM settings');
-  await pool.query('DELETE FROM ix_extractors');
-  await pool.query('DELETE FROM captchas');
-  await pool.query('DELETE FROM px_entities_status');
-}
-
-async function exportTenant(
-  pool: Pool,
-  tenantId: string
-): Promise<{ text: string; tables: string[] }> {
-  const capture = new CaptureStream();
-  const tables = await new PgTenantTransfer(pool).export(tenantId, capture);
-  return { text: capture.text, tables };
-}
-
-async function importInto(pool: Pool, tenantId: string, text: string) {
-  return new PgTenantTransfer(pool).import(tenantId, Readable.from([text]));
-}
+import {
+  CaptureStream,
+  clearTables,
+  exportTenant,
+  importInto,
+  manifestOf,
+  seedSource,
+  SOURCE_TENANT,
+  TARGET_TENANT,
+  transferAtVersion,
+} from './helpers.js';
 
 describe('PgTenantTransfer', () => {
   let pool: Pool;
@@ -140,6 +84,15 @@ describe('PgTenantTransfer', () => {
       expect(tables).toContain('templates');
       expect(tables).not.toContain('captchas');
       expect(tables).not.toContain('px_entities_status');
+    });
+
+    it('records the current schema version in the manifest', async () => {
+      await seedSource(pool, SOURCE_TENANT);
+      const capture = new CaptureStream();
+
+      await new PgTenantTransfer(pool, async () => 12).export(SOURCE_TENANT, capture);
+
+      expect(manifestOf(capture.text).schemaVersion).toBe(12);
     });
 
     it('reports per-table progress with row counts and table total', async () => {
@@ -272,28 +225,39 @@ describe('PgTenantTransfer', () => {
       ]);
     });
 
+    it('rejects a stream whose schema version differs from the database', async () => {
+      await seedSource(pool, SOURCE_TENANT);
+      const { text } = await exportTenant(pool, SOURCE_TENANT);
+
+      await expect(
+        new PgTenantTransfer(pool, async () => 9999).import(TARGET_TENANT, Readable.from([text]))
+      ).rejects.toBeInstanceOf(SchemaVersionMismatchError);
+    });
+
     it('rejects a manifest that names a non-tenant table', async () => {
       const stream = `${JSON.stringify({
         version: 1,
         sourceTenant: SOURCE_TENANT,
+        schemaVersion: 5,
         tables: [{ name: 'tenants', columns: ['tenant_id'] }],
       })}\n`;
 
-      await expect(importInto(pool, TARGET_TENANT, stream)).rejects.toBeInstanceOf(
-        UnknownTableInManifestError
-      );
+      await expect(
+        transferAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+      ).rejects.toBeInstanceOf(UnknownTableInManifestError);
     });
 
     it('rejects a stream that ends before the first table finishes', async () => {
       const stream = `${JSON.stringify({
         version: 1,
         sourceTenant: SOURCE_TENANT,
+        schemaVersion: 5,
         tables: [{ name: 'templates', columns: ['tenant_id', '_id', 'name'] }],
       })}\n`;
 
-      await expect(importInto(pool, TARGET_TENANT, stream)).rejects.toBeInstanceOf(
-        PrematureEndOfStreamError
-      );
+      await expect(
+        transferAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+      ).rejects.toBeInstanceOf(PrematureEndOfStreamError);
     });
   });
 });

@@ -4,9 +4,10 @@ import type { Readable, Writable } from 'stream';
 import type pg from 'pg';
 import { from as copyFrom, to as copyTo } from 'pg-copy-streams';
 import { PrematureEndOfStreamError } from './PrematureEndOfStreamError.js';
-import { UnknownTableInManifestError } from './UnknownTableInManifestError.js';
 import { parseManifest, rewriteTenantId, serializeManifest } from './manifest.js';
 import type { ExportManifest } from './manifest.js';
+import { validateManifest } from './manifestValidation.js';
+import { readSchemaVersion } from './schemaVersion.js';
 import {
   discoverDataTablesWithColumns,
   discoverTenantTables,
@@ -96,11 +97,6 @@ async function copyTableOut(
   target.output.write(`${COPY_END_MARKER}\n`);
   report(stream.rowCount, true);
   return stream.rowCount;
-}
-
-function assertKnownTables(manifest: ExportManifest, knownTables: Set<string>): void {
-  const unknown = manifest.tables.find(table => !knownTables.has(table.name));
-  if (unknown) throw new UnknownTableInManifestError(unknown.name);
 }
 
 async function readManifest(lines: AsyncIterableIterator<string>): Promise<ExportManifest> {
@@ -200,7 +196,15 @@ async function sanitizeSettings(
  * portable COPY stream, import such a stream into another tenant, or clean a tenant's rows.
  */
 export class PgTenantTransfer {
-  constructor(private readonly pool: pg.Pool) {}
+  constructor(
+    private readonly pool: pg.Pool,
+    /** Overrides the pg_migrations read; lets specs pin a schema version without touching it. */
+    private readonly getSchemaVersion?: () => Promise<number>
+  ) {}
+
+  private async currentSchemaVersion(): Promise<number> {
+    return this.getSchemaVersion ? this.getSchemaVersion() : readSchemaVersion(this.pool);
+  }
 
   /**
    * Deletes every row of a tenant across all tenant-scoped tables (in-flight tables included),
@@ -229,7 +233,8 @@ export class PgTenantTransfer {
    */
   async export(tenantId: string, output: Writable, onProgress?: TenantProgress): Promise<string[]> {
     const tables = await discoverDataTablesWithColumns(this.pool);
-    output.write(`${serializeManifest(tenantId, tables)}\n`);
+    const schemaVersion = await this.currentSchemaVersion();
+    output.write(`${serializeManifest(tenantId, schemaVersion, tables)}\n`);
     await withTransaction(this.pool, 'BEGIN ISOLATION LEVEL REPEATABLE READ', async client => {
       /* eslint-disable no-await-in-loop */
       for (const table of tables) {
@@ -255,7 +260,7 @@ export class PgTenantTransfer {
     try {
       const lines = readLines(input);
       const manifest = await readManifest(lines);
-      assertKnownTables(manifest, knownTables);
+      await validateManifest(manifest, knownTables, () => this.currentSchemaVersion());
       const rows = await withTransaction(this.pool, 'BEGIN', async client => {
         let total = 0;
         /* eslint-disable no-await-in-loop */

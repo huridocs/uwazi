@@ -12,12 +12,13 @@ describe('manifest', () => {
     { name: 'settings', columns: ['tenant_id', '_id', 'sync'] },
   ];
 
-  it('serializes and parses back the same manifest', () => {
-    const line = serializeManifest('source-tenant', tables);
+  it('serializes and parses back the same manifest, including its schema version', () => {
+    const line = serializeManifest('source-tenant', 12, tables);
 
     expect(parseManifest(line)).toEqual({
       version: MANIFEST_VERSION,
       sourceTenant: 'source-tenant',
+      schemaVersion: 12,
       tables,
     });
   });
@@ -27,7 +28,29 @@ describe('manifest', () => {
   });
 
   it('rejects a manifest with the wrong version', () => {
-    const line = JSON.stringify({ version: MANIFEST_VERSION + 1, sourceTenant: 's', tables: [] });
+    const line = JSON.stringify({
+      version: MANIFEST_VERSION + 1,
+      sourceTenant: 's',
+      schemaVersion: 0,
+      tables: [],
+    });
+
+    expect(() => parseManifest(line)).toThrow(MalformedManifestError);
+  });
+
+  it('rejects a manifest without a schema version', () => {
+    const line = JSON.stringify({ version: MANIFEST_VERSION, sourceTenant: 's', tables: [] });
+
+    expect(() => parseManifest(line)).toThrow(MalformedManifestError);
+  });
+
+  it('rejects a negative schema version', () => {
+    const line = JSON.stringify({
+      version: MANIFEST_VERSION,
+      sourceTenant: 's',
+      schemaVersion: -1,
+      tables: [],
+    });
 
     expect(() => parseManifest(line)).toThrow(MalformedManifestError);
   });
@@ -36,6 +59,7 @@ describe('manifest', () => {
     const line = JSON.stringify({
       version: MANIFEST_VERSION,
       sourceTenant: 's',
+      schemaVersion: 0,
       tables: [{ name: 'templates', columns: ['_id', 'tenant_id'] }],
     });
 
@@ -46,6 +70,7 @@ describe('manifest', () => {
     const line = JSON.stringify({
       version: MANIFEST_VERSION,
       sourceTenant: 's',
+      schemaVersion: 0,
       tables: [],
       unexpected: true,
     });
