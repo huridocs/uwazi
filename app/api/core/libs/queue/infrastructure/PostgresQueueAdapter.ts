@@ -1,6 +1,11 @@
 import { Knex } from 'knex';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import {
+  Statements,
+  type Statement,
+  type StatementResult,
+} from '#api/core/infrastructure/postgresql/common/Statement.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { Params } from '../application/contracts/Dispatchable.js';
 import { Job, PushJobInput, QueueAdapter } from './QueueAdapter.js';
@@ -68,11 +73,28 @@ export class PostgresQueueAdapter implements QueueAdapter {
     this.deps = deps;
   }
 
-  private async onDispatchConnection<T>(fn: (db: Knex) => Promise<T>): Promise<T> {
+  /**
+   * Runs dispatch side queries, all of them or none: on the transaction running on the manager,
+   * or in one opened for them on the worker connection when there is no manager.
+   */
+  private async dispatch(queries: Knex.QueryBuilder[]): Promise<StatementResult[]> {
+    const statements = queries.map(qb => Statements.fromBuilder(qb, 'inherit'));
     if (this.deps.transactionManager) {
-      return this.deps.transactionManager.withConnection(fn);
+      return this.deps.transactionManager.queryAll(statements);
     }
-    return fn(this.deps.workerKnex);
+    if (statements.length === 1) {
+      return [await PostgresQueueAdapter.send(this.deps.workerKnex, statements[0])];
+    }
+    return this.deps.workerKnex.transaction(async trx =>
+      ArrayUtils.sequentialFor(statements, async statement =>
+        PostgresQueueAdapter.send(trx, statement)
+      )
+    );
+  }
+
+  private static async send(db: Knex, { sql, bindings }: Statement): Promise<StatementResult> {
+    const { rows, rowCount } = await db.raw(sql, bindings as Knex.RawBinding[]);
+    return { rows, rowCount: rowCount ?? 0 };
   }
 
   /** Each param must equal the job's, compared as JSON so arrays and objects match whole. */
@@ -93,14 +115,10 @@ export class PostgresQueueAdapter implements QueueAdapter {
 
     const now = Date.now();
     const rows = jobs.map(job => toRow(job, now));
-    const insertInChunks = async (db: Knex) =>
-      ArrayUtils.sequentialFor(ArrayUtils.splitInChunks(rows, INSERT_CHUNK_ROWS), async chunk =>
-        db('jobs').insert(chunk)
-      );
-
-    // All chunks or none: on a transaction already, or in one opened for them.
-    await this.onDispatchConnection(async db =>
-      db.isTransaction ? insertInChunks(db) : db.transaction(insertInChunks)
+    await this.dispatch(
+      ArrayUtils.splitInChunks(rows, INSERT_CHUNK_ROWS).map(chunk =>
+        Statements.builder('jobs').insert(chunk)
+      )
     );
     return rows.map(row => row.id);
   }
@@ -112,12 +130,12 @@ export class PostgresQueueAdapter implements QueueAdapter {
   ): Promise<void> {
     if (!Object.keys(params).length) return;
 
-    await this.onDispatchConnection(async db =>
-      PostgresQueueAdapter.whereParams(db('jobs'), params)
+    await this.dispatch([
+      PostgresQueueAdapter.whereParams(Statements.builder('jobs'), params)
         .where({ name: jobName, namespace: tenantName })
         .where('lockedUntil', '<', Date.now())
-        .delete()
-    );
+        .delete(),
+    ]);
   }
 
   async cancelByParams(
@@ -127,18 +145,20 @@ export class PostgresQueueAdapter implements QueueAdapter {
   ): Promise<void> {
     if (!Object.keys(params).length) return;
 
-    await this.onDispatchConnection(async db =>
-      PostgresQueueAdapter.whereParams(db('jobs'), params)
+    await this.dispatch([
+      PostgresQueueAdapter.whereParams(Statements.builder('jobs'), params)
         .where({ name: jobName, namespace: tenantName })
-        .delete()
-    );
+        .delete(),
+    ]);
   }
 
   async countByName(jobName: string, tenantName: string): Promise<number> {
-    const [{ count }] = await this.onDispatchConnection(async db =>
-      db('jobs').where({ name: jobName, namespace: tenantName }).count({ count: '*' })
-    );
-    return Number(count);
+    const [{ rows }] = await this.dispatch([
+      Statements.builder('jobs')
+        .where({ name: jobName, namespace: tenantName })
+        .count({ count: '*' }),
+    ]);
+    return Number(rows[0].count);
   }
 
   async pickJob(queueName: string): Promise<Job | null> {

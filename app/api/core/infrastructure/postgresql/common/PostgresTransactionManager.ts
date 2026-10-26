@@ -97,18 +97,6 @@ export class PostgresTransactionManager implements TransactionManager {
     };
   }
 
-  /**
-   * Reads with one statement that has no bindings and no `?`, in one round trip: outside a
-   * transaction the context and the statement go out as one message, one implicit transaction.
-   */
-  async readWithoutBindings<TRow>(sql: string): Promise<TRow[]> {
-    if (this.activeTransaction) {
-      return this.joinActiveTransaction(async trx => (await trx.raw(sql)).rows, undefined, {});
-    }
-    const results = await this.knex.raw(`${this.sessionContext.beginSql()} ${sql}`);
-    return results.at(-1).rows;
-  }
-
   /** Runs one statement under its permission, joining the active `run()` transaction when open. */
   async query<TRow = Record<string, unknown>>(
     statement: Statement

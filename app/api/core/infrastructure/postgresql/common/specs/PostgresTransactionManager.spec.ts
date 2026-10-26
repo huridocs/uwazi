@@ -476,46 +476,6 @@ describe('PostgresTransactionManager', () => {
     });
   });
 
-  describe('readWithoutBindings', () => {
-    it('should read under the manager tenant in a single statement outside a transaction', async () => {
-      await createManager('tenant-a').withConnection(async executor =>
-        insertRow(executor, 'a1', 'a1', 'tenant-a')
-      );
-      await createManager('tenant-b').withConnection(async executor =>
-        insertRow(executor, 'b1', 'b1', 'tenant-b')
-      );
-      const recorder = recordStatements();
-
-      const rows = await createManager('tenant-a').readWithoutBindings<{ _id: string }>(
-        'SELECT "_id" FROM thesauri;'
-      );
-      recorder.stop();
-
-      expect(rows).toEqual([{ _id: 'a1' }]);
-      expect(recorder.statements).toHaveLength(1);
-    });
-
-    it('should join a running transaction and see its uncommitted writes', async () => {
-      const manager = createManager();
-
-      const rows = await manager.run(async () => {
-        await manager.withConnection(async executor => insertRow(executor, 'pending'));
-        return manager.readWithoutBindings<{ _id: string }>('SELECT "_id" FROM thesauri;');
-      });
-
-      expect(rows).toEqual([{ _id: 'pending' }]);
-    });
-
-    it('should reject a failing read and leave the connection usable', async () => {
-      const manager = createManager();
-
-      await expect(manager.readWithoutBindings('SELECT * FROM missing_table;')).rejects.toThrow(
-        'missing_table'
-      );
-      await expect(manager.readWithoutBindings('SELECT 1 AS one;')).resolves.toEqual([{ one: 1 }]);
-    });
-  });
-
   describe('statements', () => {
     const CONTEXT_SQL = `SELECT current_setting('app.current_tenant', true) AS tenant,
       current_setting('uwazi.bypass_rls', true) AS bypass,

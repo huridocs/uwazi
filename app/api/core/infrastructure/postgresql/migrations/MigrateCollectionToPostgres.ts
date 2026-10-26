@@ -4,6 +4,7 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
+import { Statements } from '../common/Statement.js';
 
 const BATCH_SIZE = 50;
 
@@ -80,13 +81,13 @@ const insertBatch = async (
   }
   const rows = batch.map(row => serializeRow({ ...row, tenant_id: table.tenantId }));
   try {
-    await table.transactionManager.withConnection(async trx => {
-      if (force) {
-        await trx(table.tableName).insert(rows).onConflict(conflictColumns).ignore();
-      } else {
-        await trx(table.tableName).insert(rows);
-      }
-    }, SYSTEM_PERMISSION_CONTEXT);
+    const insert = Statements.builder(table.tableName).insert(rows);
+    await table.transactionManager.query(
+      Statements.fromBuilder(
+        force ? insert.onConflict(conflictColumns).ignore() : insert,
+        SYSTEM_PERMISSION_CONTEXT
+      )
+    );
   } catch (err: unknown) {
     // eslint-disable-next-line no-console
     console.error(
@@ -230,12 +231,14 @@ class MigrateCollectionToPostgres {
     const table = this.tableFor(config.pgTable);
 
     if (!options.force) {
-      const existingRow = await table.transactionManager.withConnection(
-        trx => trx(config.pgTable).first(),
-        SYSTEM_PERMISSION_CONTEXT
+      const { rows } = await table.transactionManager.query(
+        Statements.fromBuilder(
+          Statements.builder(config.pgTable).first(),
+          SYSTEM_PERMISSION_CONTEXT
+        )
       );
 
-      if (existingRow !== undefined) {
+      if (rows.length > 0) {
         return { migrated: 0, orphansSkipped: 0, skipped: true };
       }
     }

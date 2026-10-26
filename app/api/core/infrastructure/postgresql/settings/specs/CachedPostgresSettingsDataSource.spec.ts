@@ -106,19 +106,7 @@ describe('CachedPostgresSettingsDataSource', () => {
     expect((await ds.get()).toState().site_name).toBe('Renamed');
   });
 
-  it('should read the settings row in one round trip outside a transaction', async () => {
-    const ds = new CachedPostgresSettingsDataSource(deps(newManager()));
-    const statements: string[] = [];
-    const listener = (query: { sql: string }) => statements.push(query.sql);
-    PostgresDB.knex.on('query', listener);
-
-    await ds.readLanguages();
-    PostgresDB.knex.removeListener('query', listener);
-
-    expect(statements).toEqual([expect.stringMatching(/set_config[\s\S]*from "settings"/i)]);
-  });
-
-  it('should leave no tenant on the connection after a one round trip read', async () => {
+  it('should leave no tenant on the connection after a read', async () => {
     await new CachedPostgresSettingsDataSource(deps(newManager())).readLanguages();
 
     const leftovers = await Promise.all(
