@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { BaseSelectField } from './BaseSelectField.js';
+import { TemplateOptionLabel } from './TemplateOptionLabel.js';
 
 type TemplateSelectOption = {
   value: string;
@@ -18,6 +18,8 @@ type TemplateFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   hideFilters?: boolean;
+  hideClear?: boolean;
+  placeholder?: string;
 };
 
 const getTemplateSelectedValues = (value: unknown): string[] => {
@@ -32,17 +34,7 @@ const toSelectOptions = (options: TemplateSelectOption[]): MultiselectListOption
   options.map(option => ({
     value: option.value,
     searchLabel: option.searchLabel,
-    label: (
-      <span className="inline-flex min-w-0 items-center gap-1.5">
-        {option.color ? <ColorDot color={option.color} size="md" /> : null}
-        <span
-          className="truncate normal-case"
-          style={option.color ? { color: option.color } : undefined}
-        >
-          {option.searchLabel}
-        </span>
-      </span>
-    ),
+    label: <TemplateOptionLabel name={option.searchLabel} color={option.color} />,
   }));
 
 const TemplateField = <TFormValues extends FieldValues = FieldValues>({
@@ -53,6 +45,8 @@ const TemplateField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   hideFilters,
+  hideClear,
+  placeholder,
 }: TemplateFieldProps<TFormValues>) => {
   const selectOptions = useMemo(() => toSelectOptions(options), [options]);
 
@@ -65,6 +59,8 @@ const TemplateField = <TFormValues extends FieldValues = FieldValues>({
       registerOptions={registerOptions}
       disabled={disabled}
       hideFilters={hideFilters}
+      hideClear={hideClear}
+      placeholder={placeholder}
       singleSelect
       getSelectedValues={getTemplateSelectedValues}
       onSelectedValuesChange={(selectedValues, _options) => selectedValues[0] || undefined}

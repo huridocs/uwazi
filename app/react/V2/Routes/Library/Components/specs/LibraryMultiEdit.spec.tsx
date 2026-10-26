@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { useState } from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
@@ -17,6 +17,8 @@ import {
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import { appliedThemeAsInProvider } from '#V2/theme/themes.js';
+import { getResolvedTemplatePillColors } from '#V2/theme/templatePillTheme.js';
 import { LibraryMultiEdit } from '../LibraryMultiEdit.js';
 import { LibrarySelectionPanel } from '../LibrarySelectionPanel.js';
 
@@ -62,9 +64,23 @@ const languages = [
   { key: 'es', label: 'Spanish' },
 ];
 
+const unresolvedDot = getResolvedTemplatePillColors(
+  appliedThemeAsInProvider(undefined, 'light', { customizationOn: false }),
+  'light'
+).accentHex;
+
+const optionDot = (name: string): HTMLElement => {
+  const dot = screen.getByRole('option', { name }).querySelector('span[aria-hidden]');
+  if (!(dot instanceof HTMLElement)) {
+    throw new Error(`missing dot for ${name}`);
+  }
+  return dot;
+};
+
 const renderEdit = async (
   hits: LibrarySearchHit[],
-  multipleUpdate = jest.fn().mockResolvedValue([[]])
+  multipleUpdate = jest.fn().mockResolvedValue([[]]),
+  catalog: Template[] = templates
 ) => {
   const onSaved = jest.fn();
   const onCancel = jest.fn();
@@ -74,7 +90,7 @@ const renderEdit = async (
         <TestAtomStoreProvider
           initialValues={[
             [localeAtom, 'en'],
-            [templatesAtom, templates],
+            [templatesAtom, catalog],
             [thesauriAtom, []],
             [translationsAtom, translations],
             [settingsAtom, { languages }],
@@ -96,7 +112,7 @@ describe('LibraryMultiEdit', () => {
     expect(screen.getByLabelText('Summary (English)')).toBeInTheDocument();
     expect(screen.getByLabelText('Summary (Spanish)')).toBeInTheDocument();
     expect(screen.getByLabelText('Amount')).toBeInTheDocument();
-    expect(screen.getByLabelText('Template')).toHaveValue('case');
+    expect(screen.getByLabelText('Template')).toHaveTextContent('Case');
   });
 
   it('shows only the template selector when no property matches', async () => {
@@ -104,13 +120,35 @@ describe('LibraryMultiEdit', () => {
 
     expect(screen.queryByLabelText('Summary (English)')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Region (English)')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Template')).toHaveValue('');
+    expect(screen.getByLabelText('Template')).toHaveTextContent('Select...');
+  });
+
+  it('shows a color dot on every template option', async () => {
+    const colored = [{ ...templates[0], color: '#7e22ce' }, templates[1]];
+    await renderEdit(
+      [hit('a', 'case', 'Alpha'), hit('b', 'country', 'Beta')],
+      jest.fn().mockResolvedValue([[]]),
+      colored
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Template' }));
+
+    const caseName = within(screen.getByRole('option', { name: 'Case' })).getByText('Case');
+    expect(optionDot('Case')).toHaveStyle({ backgroundColor: 'rgb(126, 34, 206)' });
+    expect(caseName).toHaveClass('text-ink');
+    expect(caseName).not.toHaveAttribute('style');
+    expect(optionDot('Country')).toHaveStyle({ backgroundColor: unresolvedDot });
+
+    fireEvent.click(screen.getByRole('option', { name: 'Country' }));
+
+    expect(screen.getByLabelText('Region (English)')).toBeInTheDocument();
   });
 
   it('loads the chosen template fields', async () => {
     await renderEdit([hit('a', 'case', 'Alpha'), hit('b', 'country', 'Beta')]);
 
-    fireEvent.change(screen.getByLabelText('Template'), { target: { value: 'country' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Template' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Country' }));
 
     expect(screen.getByLabelText('Region (English)')).toBeInTheDocument();
     expect(screen.getByLabelText('Region (Spanish)')).toBeInTheDocument();

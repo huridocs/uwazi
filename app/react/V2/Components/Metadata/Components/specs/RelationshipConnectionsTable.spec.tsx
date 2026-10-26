@@ -77,9 +77,11 @@ describe('RelationshipConnectionsTable layout', () => {
   it('clips the measurement table so it cannot widen the editor', () => {
     renderTable();
     expect(screen.getByTestId('relationship-connections').className).toContain('overflow-hidden');
+    expect(tableEl().className).toContain('w-full');
+    expect(tableEl().className).toContain('min-w-max');
   });
 
-  it('puts inherit columns first and the entity last', () => {
+  it('puts the entity first and inherit columns after it', () => {
     render(
       <RelationshipConnectionsTable
         rows={[{ id: 'e1', label: 'Ana', templateId: 't1' }]}
@@ -87,11 +89,11 @@ describe('RelationshipConnectionsTable layout', () => {
       />
     );
     const headers = within(tableEl()).getAllByRole('columnheader');
-    expect(headers[0]).toHaveTextContent('Country');
-    expect(headers[headers.length - 1]).toHaveTextContent('Entity');
+    expect(headers[0]).toHaveTextContent('Entity');
+    expect(headers[1]).toHaveTextContent('Country');
     const cells = within(rowEl('Ana')).getAllByRole('cell');
-    expect(cells[0]).toHaveTextContent('Kenya');
-    expect(cells[1]).toHaveTextContent('Ana');
+    expect(cells[0]).toHaveTextContent('Ana');
+    expect(cells[1]).toHaveTextContent('Kenya');
   });
 
   it('names the entity column from the target template', () => {
@@ -140,7 +142,12 @@ describe('RelationshipConnectionsTable cells', () => {
       />
     );
     expect(within(tableEl()).getByText('1 distinct')).toBeInTheDocument();
-    expect(within(tableEl()).getByText('2 distinct')).toBeInTheDocument();
+    expect(within(tableEl()).queryByText('2 distinct')).not.toBeInTheDocument();
+  });
+
+  it('omits the rollup when every inherited value is unique', () => {
+    renderTable([{ label: 'Image', cellsByEntityId: { e1: 'photo.png' } }]);
+    expect(within(tableEl()).queryByText('1 distinct')).not.toBeInTheDocument();
   });
 
   it('keeps edit actions on the table', () => {
@@ -154,12 +161,12 @@ describe('RelationshipConnectionsTable cells', () => {
     expect(within(tableEl()).getByRole('button', { name: 'Remove Alpha' })).toBeInTheDocument();
   });
 
-  it('sizes entity last and scalar inherited cells first', () => {
+  it('sizes the entity first and scalar inherited cells after it', () => {
     renderTable();
     const cells = within(rowEl('Alpha')).getAllByRole('cell');
-    expect(cells[0].className).toContain('min-w-0');
-    expect(cells[1].className).toContain('max-w-40');
-    expect(cells[1].className).not.toContain('min-w-0');
+    expect(cells[0].className).toContain('max-w-40');
+    expect(cells[0].className).not.toContain('min-w-0');
+    expect(cells[1].className).toContain('min-w-0');
   });
 
   it('applies type min-widths for geo media and image columns', () => {
@@ -171,12 +178,12 @@ describe('RelationshipConnectionsTable cells', () => {
     const row = rowEl('Alpha');
     const cells = within(row).getAllByRole('cell');
     const headers = within(tableEl()).getAllByRole('columnheader');
-    expect(cells[0].className).toContain('min-w-72');
-    expect(cells[1].className).toContain('min-w-64');
-    expect(cells[2].className).toContain('min-w-48');
-    expect(headers[0].className).toContain('min-w-72');
-    expect(headers[1].className).toContain('min-w-64');
-    expect(headers[2].className).toContain('min-w-48');
+    expect(cells[1].className).toContain('min-w-72');
+    expect(cells[2].className).toContain('min-w-64');
+    expect(cells[3].className).toContain('min-w-48');
+    expect(headers[1].className).toContain('min-w-72');
+    expect(headers[2].className).toContain('min-w-64');
+    expect(headers[3].className).toContain('min-w-48');
   });
 
   it('renders an em dash when inherited cells are empty', () => {
@@ -264,6 +271,10 @@ describe('RelationshipConnectionsTable cards', () => {
       />
     );
     const stack = cardStack();
+    const grid = stack.firstElementChild;
+    expect(grid?.className).toContain('grid-cols-[fit-content(40%)_minmax(0,1fr)]');
+    expect(stack.querySelector('.grid-cols-subgrid')).toBeTruthy();
+    expect(within(stack).getAllByText('Kenya')[0].className).not.toContain('whitespace-nowrap');
     expect(within(stack).getAllByText('Country')).toHaveLength(3);
     expect(within(stack).getByText('Judge')).toBeInTheDocument();
     expect(within(stack).getByText('Clerk')).toBeInTheDocument();

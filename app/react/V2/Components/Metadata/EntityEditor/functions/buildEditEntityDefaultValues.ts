@@ -1,3 +1,4 @@
+import { generateID } from '#shared/IDGenerator.js';
 import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -30,9 +31,40 @@ type TemplatePropertyInput = {
   inherit?: { property?: string; type?: FormMetadataProperty['inheritedType'] };
 };
 
+type GeneratedIdCommonProperty = {
+  name: string;
+  generatedId?: boolean;
+};
+
 type EditEntityTemplate = {
   _id: string;
   properties?: TemplatePropertyInput[];
+  commonProperties?: GeneratedIdCommonProperty[];
+};
+
+const titleForGeneratedIdTemplate = (
+  title: string,
+  commonProperties: readonly GeneratedIdCommonProperty[] | undefined
+) =>
+  title ||
+  (commonProperties?.some(property => property.name === 'title' && property.generatedId)
+    ? generateID(3, 4, 4)
+    : '');
+
+const hasStoredGeneratedId = (entries: MetadataValue[] | undefined) =>
+  entries?.some(entry => typeof entry.value === 'string') ?? false;
+
+const fillEmptyGeneratedIds = (
+  metadata: Record<string, MetadataValue[]>,
+  properties: readonly FormMetadataProperty[]
+) => {
+  properties.forEach(property => {
+    if (property.type !== 'generatedid') return;
+    const key = metadataFormKey(property.name);
+    if (hasStoredGeneratedId(metadata[key])) return;
+    metadata[key] = [{ value: generateID(3, 4, 4) }];
+  });
+  return metadata;
 };
 
 const mapTemplateProperty = (property: TemplatePropertyInput): FormMetadataProperty => ({
@@ -71,19 +103,26 @@ const buildEditEntityDefaultValues = (
   templates: EditEntityTemplate[]
 ): EditEntityFormValues => {
   const templateId = entity?.template || templates[0]?._id || '';
-  const properties =
-    templates.find(template => template._id === templateId)?.properties?.map(mapTemplateProperty) ??
-    [];
+  const selected = templates.find(template => template._id === templateId);
+  const properties = selected?.properties?.map(mapTemplateProperty) ?? [];
   return {
-    title: entity?.title || '',
+    title: titleForGeneratedIdTemplate(entity?.title || '', selected?.commonProperties),
     template: templateId,
     showIcon: hasEntityIcon(entity?.icon),
     icon: entity?.icon ?? EMPTY_ICON,
-    metadata: formatMetadataForForm(properties, entity?.metadata),
+    metadata: fillEmptyGeneratedIds(
+      formatMetadataForForm(properties, entity?.metadata),
+      properties
+    ),
     translations: encodeFormTranslations(entity?.translations, properties),
     touchedTranslations: {},
   };
 };
 
-export { buildEditEntityDefaultValues, mapTemplateProperty };
-export type { EditEntityFormValues, EditEntityTemplate };
+export {
+  buildEditEntityDefaultValues,
+  fillEmptyGeneratedIds,
+  mapTemplateProperty,
+  titleForGeneratedIdTemplate,
+};
+export type { EditEntityFormValues, EditEntityTemplate, GeneratedIdCommonProperty };

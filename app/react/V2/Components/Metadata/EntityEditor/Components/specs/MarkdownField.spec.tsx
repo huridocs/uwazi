@@ -74,6 +74,12 @@ describe('MarkdownField', () => {
     expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
   });
 
+  it('can be resized vertically', () => {
+    render(<Harness value="**hello**" />);
+
+    expect(screen.getByRole('textbox')).toHaveStyle({ resize: 'vertical' });
+  });
+
   it('renders a help icon linking to the markdown guide', () => {
     render(<Harness value="**hello**" />);
 

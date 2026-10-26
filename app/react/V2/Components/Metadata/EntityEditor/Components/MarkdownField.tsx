@@ -139,6 +139,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
                   disabled={disabled}
                   hasErrors={showError}
                   rows={6}
+                  resize="vertical"
                   overlay={slot?.overlay}
                   latched={slot?.latched}
                   onClick={slot?.onClick}
