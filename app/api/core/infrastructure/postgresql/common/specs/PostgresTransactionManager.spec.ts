@@ -245,15 +245,37 @@ describe('PostgresTransactionManager', () => {
     const contextStatements = (statements: string[]) =>
       statements.filter(sql => sql.includes('set_config') || sql.includes('current_setting'));
 
-    it('should open a transaction with a single context statement', async () => {
+    it('should send BEGIN and the context in one message when opening a transaction', async () => {
       const manager = createManager();
       const recorder = recordStatements();
 
       await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
       recorder.stop();
 
-      expect(recorder.statements).toHaveLength(3);
-      expect(contextStatements(recorder.statements)).toHaveLength(1);
+      expect(recorder.statements).toEqual([
+        expect.stringMatching(/^BEGIN;\s*SELECT set_config\('app.current_tenant'/),
+        'COMMIT;',
+      ]);
+    });
+
+    it('should keep tenant and ref ids with quotes, backslashes, semicolons and question marks as plain values', async () => {
+      const tenant = "o'brien?\\'; DROP TABLE thesauri; --";
+      const manager = createManager(tenant);
+
+      const seen = await manager.withConnection(
+        async executor =>
+          (
+            await executor.raw(
+              "SELECT current_setting('app.current_tenant', true) AS tenant, current_setting('uwazi.ref_ids', true) AS ref_ids"
+            )
+          ).rows[0],
+        { bypass: false, refIds: ["r'1?", 'r\\2;'] }
+      );
+
+      expect(seen).toEqual({ tenant, ref_ids: "r'1?,r\\2;" });
+      await expect(
+        createManager().withConnection(async executor => executor('thesauri').select())
+      ).resolves.toEqual([]);
     });
 
     it('should set the context with a single statement when joining a run', async () => {
@@ -392,7 +414,7 @@ describe('PostgresTransactionManager', () => {
       recorder.stop();
 
       expect(recorder.statements.filter(sql => sql.startsWith('BEGIN'))).toEqual([
-        'BEGIN TRANSACTION READ ONLY;',
+        expect.stringMatching(/^BEGIN TRANSACTION READ ONLY;\s*SELECT set_config\(/),
       ]);
       expect(recorder.statements.filter(sql => sql.startsWith('COMMIT'))).toHaveLength(1);
     });
@@ -450,6 +472,46 @@ describe('PostgresTransactionManager', () => {
       const running = await manager.runReadOnly(async () => manager.isRunning());
 
       expect(running).toBe(false);
+    });
+  });
+
+  describe('readWithoutBindings', () => {
+    it('should read under the manager tenant in a single statement outside a transaction', async () => {
+      await createManager('tenant-a').withConnection(async executor =>
+        insertRow(executor, 'a1', 'a1', 'tenant-a')
+      );
+      await createManager('tenant-b').withConnection(async executor =>
+        insertRow(executor, 'b1', 'b1', 'tenant-b')
+      );
+      const recorder = recordStatements();
+
+      const rows = await createManager('tenant-a').readWithoutBindings<{ _id: string }>(
+        'SELECT "_id" FROM thesauri;'
+      );
+      recorder.stop();
+
+      expect(rows).toEqual([{ _id: 'a1' }]);
+      expect(recorder.statements).toHaveLength(1);
+    });
+
+    it('should join a running transaction and see its uncommitted writes', async () => {
+      const manager = createManager();
+
+      const rows = await manager.run(async () => {
+        await manager.withConnection(async executor => insertRow(executor, 'pending'));
+        return manager.readWithoutBindings<{ _id: string }>('SELECT "_id" FROM thesauri;');
+      });
+
+      expect(rows).toEqual([{ _id: 'pending' }]);
+    });
+
+    it('should reject a failing read and leave the connection usable', async () => {
+      const manager = createManager();
+
+      await expect(manager.readWithoutBindings('SELECT * FROM missing_table;')).rejects.toThrow(
+        'missing_table'
+      );
+      await expect(manager.readWithoutBindings('SELECT 1 AS one;')).resolves.toEqual([{ one: 1 }]);
     });
   });
 
@@ -534,13 +596,10 @@ describe('PostgresTransactionManager', () => {
         expect(refIdsResult.rows[0].v).toBe('');
       });
 
-      it('should roll back the transaction when setting the tenant fails', async () => {
-        const trx = {
-          raw: jest.fn().mockRejectedValue(new Error('set_config failed')),
-          rollback: jest.fn().mockResolvedValue(undefined),
-          commit: jest.fn().mockResolvedValue(undefined),
+      it('should reject when the transaction cannot be opened with its context', async () => {
+        const knex = {
+          transaction: jest.fn().mockRejectedValue(new Error('set_config failed')),
         };
-        const knex = { transaction: jest.fn().mockResolvedValue(trx) };
         const manager = new PostgresTransactionManager(
           knex as any,
           'tenant-leak',
@@ -548,8 +607,6 @@ describe('PostgresTransactionManager', () => {
         );
 
         await expect(manager.beginTransaction()).rejects.toThrow('set_config failed');
-        expect(trx.rollback).toHaveBeenCalledTimes(1);
-        expect(trx.commit).not.toHaveBeenCalled();
       });
     });
 

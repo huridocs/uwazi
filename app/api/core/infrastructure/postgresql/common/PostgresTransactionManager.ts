@@ -5,6 +5,7 @@ import { TransactionManager } from '../../../application/contracts/TransactionMa
 import { PermissionContext, PostgresSessionContext } from './PostgresSessionContext.js';
 import { TransactionJoinLock } from './TransactionJoinLock.js';
 import { TransactionBorrows } from './TransactionBorrows.js';
+import type { ContextBeginConfig } from './TransactionWithContextBegin.js';
 
 type CommitHandler = (returnValue: unknown) => Promise<void>;
 type RetryHandler = () => Promise<void>;
@@ -75,22 +76,35 @@ export class PostgresTransactionManager implements TransactionManager {
     }
   }
 
+  /**
+   * Opens a transaction with its tenant and permission context sent with BEGIN, in one round trip.
+   * Needs a knex built on `PgClientWithContextBegin` (as `PostgresDB.knex` is): any other leaves the
+   * context unset, and row level security then refuses every query.
+   */
   private async openTransaction(
     permissionContext?: PermissionContext,
     config: Knex.TransactionConfig = {}
   ): Promise<TransactionHandle> {
-    const trx = await this.knex.transaction(config);
-    try {
-      await this.sessionContext.open(trx, permissionContext);
-    } catch (error) {
-      await trx.rollback().catch(() => undefined);
-      throw error;
-    }
+    const sessionContextSql = this.sessionContext.beginSql(permissionContext);
+    const trx = await this.knex.transaction({ ...config, sessionContextSql } as ContextBeginConfig);
+    this.sessionContext.markApplied(trx, permissionContext);
     return {
       trx,
       commit: async () => trx.commit().then(() => undefined),
       rollback: async () => trx.rollback().then(() => undefined),
     };
+  }
+
+  /**
+   * Reads with one statement that has no bindings and no `?`, in one round trip: outside a
+   * transaction the context and the statement go out as one message, one implicit transaction.
+   */
+  async readWithoutBindings<TRow>(sql: string): Promise<TRow[]> {
+    if (this.activeTransaction) {
+      return this.joinActiveTransaction(async trx => (await trx.raw(sql)).rows, undefined, {});
+    }
+    const results = await this.knex.raw(`${this.sessionContext.beginSql()} ${sql}`);
+    return results.at(-1).rows;
   }
 
   /** Runs `fn` in a tenant-scoped transaction, joining the active `run()` one when open. */

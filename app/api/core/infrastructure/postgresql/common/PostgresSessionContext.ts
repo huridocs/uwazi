@@ -1,4 +1,12 @@
 import { Knex } from 'knex';
+import { escapeLiteral } from 'pg';
+
+/**
+ * A value as a SQL literal that survives knex: knex turns every `?` it finds into a `$n` binding,
+ * even with no bindings, unless an odd number of backslashes precedes it. `escapeLiteral` doubles
+ * every backslash, so one more before each `?` is enough.
+ */
+const literal = (value: string): string => escapeLiteral(value).replace(/\?/g, '\\?');
 
 export type PermissionContext = { bypass: boolean; refIds: string[] };
 
@@ -24,6 +32,22 @@ export class PostgresSessionContext {
 
   current(trx: Knex.Transaction): PermissionContext {
     return this.applied.get(trx) ?? PostgresSessionContext.normalize();
+  }
+
+  /**
+   * The statement that sets the tenant and a permission context, for sending with BEGIN. It carries
+   * no bindings (it travels as a simple query), so every value is escaped as a literal.
+   */
+  beginSql(permissionContext?: PermissionContext): string {
+    const context = PostgresSessionContext.normalize(permissionContext);
+    return `SELECT set_config('app.current_tenant', ${literal(this.tenantId)}, true),
+              set_config('uwazi.bypass_rls', ${literal(String(context.bypass))}, true),
+              set_config('uwazi.ref_ids', ${literal(context.refIds.join(','))}, true);`;
+  }
+
+  /** Records a context as sent, when it went out with BEGIN. */
+  markApplied(trx: Knex.Transaction, permissionContext?: PermissionContext): void {
+    this.applied.set(trx, PostgresSessionContext.normalize(permissionContext));
   }
 
   /** Sets the tenant and the permission context in a single statement. */

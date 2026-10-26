@@ -24,7 +24,7 @@ export class CachedPostgresSettingsDataSource extends PostgresSettingsDataSource
   protected override async readRow(columns?: string[]): Promise<SettingsRow | undefined> {
     if (this.transactionManager.isRunning()) return super.readRow(columns);
 
-    this.row ??= super.readRow().catch(error => {
+    this.row ??= this.readWholeRow().catch(error => {
       this.row = undefined;
       throw error;
     });
@@ -35,6 +35,20 @@ export class CachedPostgresSettingsDataSource extends PostgresSettingsDataSource
       columns
         .filter(column => column in row)
         .map(column => [column, row[column as keyof SettingsRow]])
+    ) as SettingsRow;
+  }
+
+  /**
+   * The whole row in one round trip: every request reads it, so it skips the BEGIN and COMMIT a
+   * table read sends. Like a table read, it leaves out `tenant_id` and empty columns.
+   */
+  private async readWholeRow(): Promise<SettingsRow | undefined> {
+    const [row] = await this.transactionManager.readWithoutBindings<Record<string, unknown>>(
+      'SELECT * FROM "settings" LIMIT 1;'
+    );
+    if (!row) return undefined;
+    return Object.fromEntries(
+      Object.entries(row).filter(([column, value]) => column !== 'tenant_id' && value !== null)
     ) as SettingsRow;
   }
 

@@ -26,7 +26,7 @@ const newManager = () =>
 const recordSettingsReads = () => {
   const reads: string[] = [];
   const listener = (query: { sql: string }) => {
-    if (/^select .* from "settings"/i.test(query.sql)) reads.push(query.sql);
+    if (/select [^;]* from "settings"/i.test(query.sql)) reads.push(query.sql);
   };
   PostgresDB.knex.on('query', listener);
   return { reads, stop: () => PostgresDB.knex.removeListener('query', listener) };
@@ -104,6 +104,30 @@ describe('CachedPostgresSettingsDataSource', () => {
     await renameSite(ds, 'Renamed');
 
     expect((await ds.get()).toState().site_name).toBe('Renamed');
+  });
+
+  it('should read the settings row in one round trip outside a transaction', async () => {
+    const ds = new CachedPostgresSettingsDataSource(deps(newManager()));
+    const statements: string[] = [];
+    const listener = (query: { sql: string }) => statements.push(query.sql);
+    PostgresDB.knex.on('query', listener);
+
+    await ds.readLanguages();
+    PostgresDB.knex.removeListener('query', listener);
+
+    expect(statements).toEqual([expect.stringMatching(/set_config[\s\S]*from "settings"/i)]);
+  });
+
+  it('should leave no tenant on the connection after a one round trip read', async () => {
+    await new CachedPostgresSettingsDataSource(deps(newManager())).readLanguages();
+
+    const leftovers = await Promise.all(
+      Array.from({ length: 10 }, async () =>
+        PostgresDB.knex.raw("SELECT current_setting('app.current_tenant', true) AS tenant")
+      )
+    );
+
+    expect(leftovers.map(result => result.rows[0].tenant ?? '')).not.toContain(TENANT_ID);
   });
 
   it('should read through to the database inside a write transaction', async () => {

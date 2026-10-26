@@ -7,6 +7,7 @@ import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesD
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { User } from '#api/users.v2/model/User.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const factory = getFixturesFactory();
 
@@ -943,6 +944,54 @@ describe('EntitiesDAO', () => {
         expect(onBatch).toHaveBeenCalled();
         const sharedIds = onBatch.mock.calls.flatMap(call => call[0] as string[]);
         expect(sharedIds).toEqual(expect.arrayContaining(['entity1', 'entity4', 'entity6']));
+      });
+    });
+  });
+
+  describe('Postgres round trips', () => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
+      await testingEnvironment.setFixtures(createFixtures());
+    });
+
+    const selectsSentBy = async (read: () => Promise<unknown>) => {
+      const statements: string[] = [];
+      const listener = (query: { sql: string }) => statements.push(query.sql);
+      PostgresDB.knex.on('query', listener);
+      try {
+        await read();
+      } finally {
+        PostgresDB.knex.removeListener('query', listener);
+      }
+      return statements.filter(sql => /^select\b/i.test(sql) && !sql.includes('set_config'));
+    };
+
+    it('should load entities and their files in one statement', async () => {
+      const dao = testingEnvironment.runWithContext(() =>
+        EntitiesDAOFactory.default({ user: editorUser })
+      );
+
+      const selects = await selectsSentBy(async () =>
+        dao.find({ sharedId: 'entity1' }, { withFiles: true })
+      );
+
+      expect(selects).toHaveLength(1);
+    });
+
+    it('should return file rows without empty columns, as the files query did', async () => {
+      const dao = testingEnvironment.runWithContext(() =>
+        EntitiesDAOFactory.default({ user: editorUser })
+      );
+
+      const [entity] = await dao.find({ sharedId: 'entity1', language: 'en' }, { withFiles: true });
+
+      expect(Object.values(entity.documents[0])).not.toContain(null);
+      expect(entity.documents[0]).toMatchObject({
+        filename: 'doc1',
+        type: 'document',
+        entity: 'entity1',
+        status: 'ready',
+        mimetype: 'application/pdf',
       });
     });
   });

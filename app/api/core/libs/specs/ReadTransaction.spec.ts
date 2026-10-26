@@ -23,8 +23,9 @@ const recordStatements = () => {
   return { statements, stop: () => PostgresDB.knex.removeListener('query', listener) };
 };
 
+/** The BEGIN of each transaction opened, without the context statement sent along with it. */
 const transactionsOpened = (statements: string[]) =>
-  statements.filter(sql => sql.startsWith('BEGIN'));
+  statements.filter(sql => sql.startsWith('BEGIN')).map(sql => sql.slice(0, sql.indexOf(';') + 1));
 
 describe('@ReadTransaction()', () => {
   beforeAll(async () => {

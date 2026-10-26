@@ -1,6 +1,7 @@
 import knex, { Knex } from 'knex';
 import pg from 'pg';
 import { config } from '#api/config.js';
+import { PgClientWithContextBegin } from '#api/core/infrastructure/postgresql/common/PgClientWithContextBegin.js';
 
 /**
  * Defaults for every connection handed to a migration: one that collides with live traffic fails
@@ -39,7 +40,7 @@ export class PostgresDB {
     pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 
     this._knex = knex({
-      client: 'pg',
+      client: PgClientWithContextBegin,
       connection,
       useNullAsDefault: true,
     });
