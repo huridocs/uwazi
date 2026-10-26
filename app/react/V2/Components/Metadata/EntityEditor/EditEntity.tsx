@@ -8,7 +8,7 @@ import {
 } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { settingsAtom } from '#V2/atoms/index.js';
+import { localeAtom, settingsAtom, translationsAtom } from '#V2/atoms/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, TemplateField } from './Components/index.js';
 import { useInstalledEntityLanguages } from './Components/useInstalledEntityLanguages.js';
@@ -37,6 +37,7 @@ import {
   groupRelationshipProperties,
 } from './functions/relationshipGrouping.js';
 import { sortByTemplatePropertyOrder } from '../sortByTemplatePropertyOrder.js';
+import { sortAvailableTemplates } from './functions/sortAvailableTemplates.js';
 import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
@@ -66,6 +67,8 @@ const EditEntity = ({
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
   const settings = useAtomValue(settingsAtom);
+  const uiLocale = useAtomValue(localeAtom) || 'en';
+  const translations = useAtomValue(translationsAtom);
   const { current: language } = useInstalledEntityLanguages();
   const { handleSubmit, control, getValues, setValue, reset, setError, watch } = formContext;
   const { isDirty } = useFormState({ control });
@@ -87,14 +90,17 @@ const EditEntity = ({
     onDirtyChange?.(isEntityEditorDirty(isDirty, draftPropertySelections.length));
   }, [draftPropertySelections.length, isDirty, onDirtyChange]);
 
-  const availableTemplates = useMemo(
-    () =>
-      templates.map(template => {
-        const name = t(template._id, template.name, null, false);
-        return { searchLabel: name, value: template._id, color: template.color };
-      }),
-    [templates]
-  );
+  const availableTemplates = useMemo(() => {
+    const options = templates.map(template => ({
+      searchLabel: t(template._id, template.name, null, false),
+      value: template._id,
+      color: template.color,
+    }));
+    return sortAvailableTemplates(
+      options,
+      translations.reduce(locale => locale, uiLocale)
+    );
+  }, [templates, translations, uiLocale]);
 
   const activeTemplate = useMemo(
     () =>

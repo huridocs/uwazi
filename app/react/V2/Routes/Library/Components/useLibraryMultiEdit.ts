@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm, type UseFormReturn } from 'react-hook-form';
+import { useForm, useWatch, type UseFormReturn } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Template } from '#app/apiResponseTypes.js';
@@ -12,6 +12,7 @@ import { selectionEditFields, type SelectionEditFields } from './selectionEditFi
 import { useEditLanguages } from './useEditLanguages.js';
 
 type MultiEditFormValues = {
+  template: string;
   metadata: Record<string, unknown>;
   translations: Record<string, Record<string, unknown>>;
 };
@@ -21,27 +22,18 @@ type MultiEditFormState = {
   initial: SelectionEditFields;
   fields: SelectionEditFields;
   form: UseFormReturn<MultiEditFormValues>;
-  onTemplateChange: (templateId: string) => void;
 };
 
 const useMultiEditForm = (templateIds: string[]): MultiEditFormState => {
   const templates = useAtomValue(templatesAtom);
   const initial = selectionEditFields(templates, templateIds);
-  const [chosenTemplateId, setChosenTemplateId] = useState<string>();
-  const fields = chosenTemplateId
-    ? selectionEditFields(templates, templateIds, chosenTemplateId)
-    : initial;
   const form = useForm<MultiEditFormValues>({
-    defaultValues: { metadata: {}, translations: {} },
+    defaultValues: { template: initial.templateId, metadata: {}, translations: {} },
   });
+  const template = useWatch({ control: form.control, name: 'template' });
+  const fields = template ? selectionEditFields(templates, templateIds, template) : initial;
 
-  return {
-    templates,
-    initial,
-    fields,
-    form,
-    onTemplateChange: (templateId: string) => setChosenTemplateId(templateId || undefined),
-  };
+  return { templates, initial, fields, form };
 };
 
 type RunMultiEditSaveInput = {
