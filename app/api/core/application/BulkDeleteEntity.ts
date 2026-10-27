@@ -6,7 +6,7 @@ const InputSchema = z.object({
   sharedIds: z
     .array(z.string().trim())
     .min(1, 'You must provide at least one sharedId for bulk deletion')
-    .max(1000, 'You must provide at most 1000 sharedIds for bulk deletion'),
+    .max(10000, 'You must provide at most 10000 sharedIds for bulk deletion'),
 });
 
 type Input = z.infer<typeof InputSchema>;
