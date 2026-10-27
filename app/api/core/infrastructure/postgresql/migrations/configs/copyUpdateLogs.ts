@@ -5,6 +5,7 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
 import { LoggerFactory } from '../../../factories/LoggerFactory.js';
 import { PostgresTable } from '../../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
+import { Statements } from '../../common/Statement.js';
 
 const UPDATE_LOGS_BATCH_SIZE = 50;
 const CONFLICT_COLUMNS = ['tenant_id', 'namespace', 'id'];
@@ -50,7 +51,7 @@ const collapseToLatest = (rows: UpdateLogRow[]): UpdateLogRow[] => {
 
 const tableFor = (tenantId: string): PostgresTable => {
   const transactionManager = new PostgresTransactionManager(
-    PostgresDB.knex,
+    PostgresDB.pipelinedPool(),
     tenantId,
     LoggerFactory.systemLogger()
   );
@@ -62,13 +63,13 @@ const tableFor = (tenantId: string): PostgresTable => {
   });
 };
 
-const insertKeepingLatest = async (trx: Knex.Transaction, rows: UpdateLogRow[]): Promise<void> => {
-  await trx('updatelogs')
+/** Inserts the rows, keeping on each conflict whichever log is the most recent. */
+const insertKeepingLatest = (rows: UpdateLogRow[]): Knex.QueryBuilder =>
+  Statements.builder('updatelogs')
     .insert(rows)
     .onConflict(CONFLICT_COLUMNS)
     .merge(['timestamp', 'deleted'])
-    .where(trx.raw('??.?? < excluded.??', ['updatelogs', 'timestamp', 'timestamp']));
-};
+    .where(Statements.fragment('??.?? < excluded.??', ['updatelogs', 'timestamp', 'timestamp']));
 
 const insertBatch = async (
   table: PostgresTable,
@@ -80,13 +81,10 @@ const insertBatch = async (
   }
   const rows = collapseToLatest(batch.map(row => ({ ...row, tenant_id: table.tenantId })));
   try {
-    await table.transactionManager.withConnection(async trx => {
-      if (force) {
-        await trx('updatelogs').insert(rows).onConflict(CONFLICT_COLUMNS).ignore();
-        return;
-      }
-      await insertKeepingLatest(trx, rows);
-    }, SYSTEM_PERMISSION_CONTEXT);
+    const insert = force
+      ? Statements.builder('updatelogs').insert(rows).onConflict(CONFLICT_COLUMNS).ignore()
+      : insertKeepingLatest(rows);
+    await table.transactionManager.query(Statements.fromBuilder(insert, SYSTEM_PERMISSION_CONTEXT));
   } catch (err: unknown) {
     // eslint-disable-next-line no-console
     console.error('[copyUpdateLogs] Insert failed for batch:', JSON.stringify(batch, null, 2));
@@ -114,11 +112,10 @@ const takeDocument = async ({ table, state, doc, force }: TakeDocumentArgs): Pro
 };
 
 const storedRow = async (table: PostgresTable): Promise<boolean> => {
-  const existingRow = await table.transactionManager.withConnection(
-    trx => trx('updatelogs').first(),
-    SYSTEM_PERMISSION_CONTEXT
+  const { rows } = await table.transactionManager.query(
+    Statements.fromBuilder(Statements.builder('updatelogs').first(), SYSTEM_PERMISSION_CONTEXT)
   );
-  return existingRow !== undefined;
+  return rows.length > 0;
 };
 
 const streamLogs = async (mongoDb: Db, table: PostgresTable, force: boolean): Promise<number> => {

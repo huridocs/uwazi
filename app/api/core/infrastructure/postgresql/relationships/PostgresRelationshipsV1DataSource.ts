@@ -95,30 +95,10 @@ export class PostgresRelationshipsV1DataSource
       return [];
     }
 
-    const bindings: unknown[] = [];
-    let ownSql = `SELECT "hub" FROM connections WHERE "entity" IN (${PostgresRelationshipsV1DataSource.placeholders(
-      entitiesSharedIds.length
-    )})`;
-    bindings.push(...entitiesSharedIds);
-
-    if (onlyTextReferences) {
-      ownSql += ` AND "file" IS NOT NULL AND "file" = ?`;
-      bindings.push(file);
-      ownSql += ` LIMIT 300`;
-    } else if (file) {
-      ownSql += ` AND ("file" IS NULL OR "file" = ?)`;
-      bindings.push(file);
-    }
-
-    const ownRows = await this.rawRows<{ hub: string | null }>(ownSql, bindings);
-    const hubIds = [...new Set(ownRows.map(row => row.hub).filter((id): id is string => !!id))];
-    if (hubIds.length === 0) {
-      return [];
-    }
-
+    const ownHubs = PostgresRelationshipsV1DataSource.ownHubsQuery(entitiesSharedIds, options);
     const rows = await this.rawRows<PostgresRelationshipRow>(
-      `SELECT * FROM connections WHERE "hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})`,
-      hubIds
+      `SELECT * FROM connections WHERE "hub" IN (${ownHubs.sql})`,
+      ownHubs.bindings
     );
     return rows.map(PostgresRelationshipMapper.toV1Relationship);
   }
@@ -616,6 +596,30 @@ export class PostgresRelationshipsV1DataSource
       }
     });
     return { sql: clauses.length ? `WHERE ${clauses.join(' AND ')}` : '', bindings };
+  }
+
+  /** The hubs the given entities belong to, narrowed by file as `getHubConnections` asks. */
+  private static ownHubsQuery(
+    entitiesSharedIds: string[],
+    { file, onlyTextReferences }: HubConnectionsOptions
+  ): { sql: string; bindings: unknown[] } {
+    const sql = `SELECT "hub" FROM connections WHERE "entity" IN (${PostgresRelationshipsV1DataSource.placeholders(
+      entitiesSharedIds.length
+    )})`;
+
+    if (onlyTextReferences) {
+      return {
+        sql: `${sql} AND "file" IS NOT NULL AND "file" = ? LIMIT 300`,
+        bindings: [...entitiesSharedIds, file],
+      };
+    }
+    if (file) {
+      return {
+        sql: `${sql} AND ("file" IS NULL OR "file" = ?)`,
+        bindings: [...entitiesSharedIds, file],
+      };
+    }
+    return { sql, bindings: entitiesSharedIds };
   }
 
   private static placeholders(count: number): string {

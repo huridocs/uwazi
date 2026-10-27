@@ -528,7 +528,7 @@ export class PostgresEntitiesDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  private async updateAndRecord(sql: string, bindings?: unknown): Promise<void> {
+  private async updateAndRecord(sql: string, bindings?: readonly unknown[]): Promise<void> {
     const result = await this.table.raw<{ rows: { _id: string }[] }>(sql, bindings);
     await this.table.recordSync(result.rows.map(row => row._id));
   }
