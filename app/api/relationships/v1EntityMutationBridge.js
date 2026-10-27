@@ -62,6 +62,7 @@ const runWithV2Context = async (actor, callback) => {
 const reentrantTransactionManager = base => {
   const manager = {
     run: async callback => (base.isRunning() ? callback() : base.run(callback)),
+    runReadOnly: async callback => base.runReadOnly(callback),
     onCommitted: handler => {
       base.onCommitted(handler);
       return manager;

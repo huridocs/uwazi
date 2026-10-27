@@ -50,7 +50,7 @@ describe('privateInstanceMiddleware', () => {
 
   it('should call next with the error when the settings cannot be read', async () => {
     await setSettings({ private: true });
-    jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
+    jest.spyOn(SettingsDataSourceFactory, 'cached').mockReturnValue({
       get: async () => {
         throw new Error('error');
       },

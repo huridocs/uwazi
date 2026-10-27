@@ -50,6 +50,7 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   hideFilters?: boolean;
   hideLabel?: boolean;
   hideClear?: boolean;
+  placeholder?: string;
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   adornment?: (api: {
     apply: (ids: string[], options?: MultiselectListOption[]) => void;
@@ -70,6 +71,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
   hideFilters,
   hideLabel,
   hideClear,
+  placeholder,
   lookupSearch,
   adornment,
   getSelectedValues,
@@ -141,6 +143,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                   label={adornment ? undefined : labelContent}
                   hideLabel={hideLabel}
                   hideClear={hideClear}
+                  placeholder={placeholder}
                   options={searchSelectOptions.options}
                   groups={searchSelectOptions.groups}
                   value={selectedIds[0] ?? ''}

@@ -15,6 +15,9 @@ export class PostgresTransactionManagerFactory {
   static forTesting() {
     return TestUtils.mockClass<TransactionManager>({
       run: jest.fn().mockImplementation(async (callback: () => Promise<unknown>) => callback()),
+      runReadOnly: jest
+        .fn()
+        .mockImplementation(async (callback: () => Promise<unknown>) => callback()),
       onCommitted: jest.fn().mockReturnThis(),
       onRetry: jest.fn().mockReturnThis(),
       runHandlingOnCommitted: jest.fn().mockReturnValue({

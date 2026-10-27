@@ -1,10 +1,13 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
+import { themeControlledModeAtom } from '#V2/atoms/effectiveThemeModeAtom.js';
+import { getResolvedTemplatePillColors } from '#V2/theme/templatePillTheme.js';
+import { PRESET_DEFINITIONS } from '#V2/theme/tokens.js';
 import { TemplateField } from '../TemplateField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -13,34 +16,56 @@ jest.mock('#app/I18N/index.js', () => ({
 
 type FormValues = { template: string };
 
+const missingColorDot = getResolvedTemplatePillColors(
+  PRESET_DEFINITIONS.default.modes.light,
+  'light'
+).accentHex;
+
 const Harness = () => {
   const form = useForm<FormValues>({ defaultValues: { template: 'person' } });
 
   return (
-    <FormProvider {...form}>
-      <TemplateField<FormValues>
-        context="System"
-        label="Template"
-        field="template"
-        options={[
-          { value: 'person', searchLabel: 'Person', color: '#7e22ce' },
-          { value: 'case', searchLabel: 'Court Case', color: '#0e9f6e' },
-        ]}
-      />
-    </FormProvider>
+    <TestAtomStoreProvider
+      initialValues={[
+        [settingsAtom, { themeCustomization: true }],
+        [themeControlledModeAtom, 'light'],
+      ]}
+    >
+      <FormProvider {...form}>
+        <TemplateField<FormValues>
+          context="System"
+          label="Template"
+          field="template"
+          options={[
+            { value: 'person', searchLabel: 'Person', color: '#7e22ce' },
+            { value: 'case', searchLabel: 'Court Case' },
+          ]}
+        />
+      </FormProvider>
+    </TestAtomStoreProvider>
   );
 };
 
-describe('TemplateField', () => {
-  it('shows the selected template color on the closed value and options', () => {
-    render(<Harness />);
+const optionDot = (name: string): HTMLElement => {
+  const dot = screen.getByRole('option', { name }).querySelector('span[aria-hidden]');
+  if (!(dot instanceof HTMLElement)) {
+    throw new Error(`missing dot for ${name}`);
+  }
+  return dot;
+};
 
-    expect(screen.getByText('Person')).toHaveStyle({ color: 'rgb(126, 34, 206)' });
-    expect(screen.getByText('Person')).toHaveClass('normal-case');
+describe('TemplateField', () => {
+  it('shows a color dot on every option and keeps the name ink', () => {
+    render(<Harness />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Template' }));
 
-    expect(screen.getByRole('option', { name: 'Court Case' })).toHaveTextContent('Court Case');
-    expect(screen.getByText('Court Case')).toHaveStyle({ color: 'rgb(14, 159, 110)' });
+    const person = screen.getByRole('option', { name: 'Person' });
+    const personName = within(person).getByText('Person');
+    expect(optionDot('Person')).toHaveStyle({ backgroundColor: 'rgb(126, 34, 206)' });
+    expect(personName).toHaveClass('text-ink');
+    expect(personName).not.toHaveAttribute('style');
+
+    expect(optionDot('Court Case')).toHaveStyle({ backgroundColor: missingColorDot });
   });
 });

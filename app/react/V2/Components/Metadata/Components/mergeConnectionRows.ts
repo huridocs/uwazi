@@ -30,6 +30,7 @@ const distinctRollup = (
     .filter(value => value.length > 0);
   if (!present.length) return undefined;
   const n = new Set(present).size;
+  if (n >= present.length) return undefined;
   return { text: `${n} distinct`, title: `${n} distinct values across ${present.length}` };
 };
 

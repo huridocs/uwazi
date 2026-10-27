@@ -8,7 +8,12 @@ import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
-import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
+import {
+  fillEmptyGeneratedIds,
+  titleForGeneratedIdTemplate,
+  type EditEntityFormValues,
+  type GeneratedIdCommonProperty,
+} from './buildEditEntityDefaultValues.js';
 import { buildTranslationsForSave } from './entityTranslations.js';
 import {
   formatMetadataForForm,
@@ -129,11 +134,14 @@ const mergeSharedFormMetadata = (
   entityMetadata?: Entity['metadata']
 ): Record<string, MetadataValue[]> => {
   const defaults = formatMetadataForForm(metadataProperties, entityMetadata);
-  return metadataProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
-    const key = metadataFormKey(property.name);
-    acc[key] = current[key] ?? defaults[key] ?? [];
-    return acc;
-  }, {});
+  return fillEmptyGeneratedIds(
+    metadataProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
+      const key = metadataFormKey(property.name);
+      acc[key] = current[key] ?? defaults[key] ?? [];
+      return acc;
+    }, {}),
+    metadataProperties
+  );
 };
 
 const isSameMetadataShape = (
@@ -159,24 +167,34 @@ const planSharedMetadataSync = ({
   currentValues,
   metadataProperties,
   entityMetadata,
+  commonProperties,
   options,
 }: {
   currentValues: EditEntityFormValues;
   metadataProperties: FormMetadataProperty[];
   entityMetadata?: Entity['metadata'];
+  commonProperties?: readonly GeneratedIdCommonProperty[];
   options?: PlanSharedMetadataSyncOptions;
 }): SharedMetadataSync => {
   const currentMetadata = currentValues.metadata ?? {};
-  if (!options?.force && isSameMetadataShape(currentMetadata, metadataProperties)) {
+  const title = titleForGeneratedIdTemplate(currentValues.title, commonProperties);
+  const metadata = mergeSharedFormMetadata(currentMetadata, metadataProperties, entityMetadata);
+  const generatedIdsUnchanged = metadataProperties.every(property => {
+    const key = metadataFormKey(property.name);
+    return metadata[key] === currentMetadata[key];
+  });
+  if (
+    !options?.force &&
+    isSameMetadataShape(currentMetadata, metadataProperties) &&
+    title === currentValues.title &&
+    generatedIdsUnchanged
+  ) {
     return { type: 'noop' };
   }
 
   return {
     type: 'reset',
-    values: {
-      ...currentValues,
-      metadata: mergeSharedFormMetadata(currentMetadata, metadataProperties, entityMetadata),
-    },
+    values: { ...currentValues, title, metadata },
     options: { keepDirty: true },
   };
 };

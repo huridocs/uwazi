@@ -13,6 +13,8 @@ import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 type Overrides = { transactionManager?: TransactionManager };
 
+const cachedPerContext = new WeakMap<object, SettingsDataSource>();
+
 const mongoTransactionManager = (overrides?: Overrides) =>
   (overrides?.transactionManager ??
     (ExecutionContext.getStore()
@@ -50,7 +52,20 @@ export class SettingsDataSourceFactory {
     return mongoSettings(MongoSettingsDataSource, overrides);
   }
 
+  /**
+   * A data source that keeps what it reads. Within an execution context (a request, a job) it is
+   * the same instance every time, so the whole context shares one cache.
+   */
   static cached(overrides?: Overrides): SettingsDataSource {
+    const store = ExecutionContext.getStore();
+    if (!store || overrides) return SettingsDataSourceFactory.buildCached(overrides);
+
+    const shared = cachedPerContext.get(store) ?? SettingsDataSourceFactory.buildCached();
+    cachedPerContext.set(store, shared);
+    return shared;
+  }
+
+  private static buildCached(overrides?: Overrides): SettingsDataSource {
     if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
       return buildPostgresSettingsDataSource(true);
     }

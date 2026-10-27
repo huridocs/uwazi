@@ -36,8 +36,13 @@ export class PostgresSettingsDataSource
     this.idGenerator = deps.idGenerator;
   }
 
+  /** The settings row, limited to `columns` when given. Every read goes through here. */
+  protected async readRow(columns?: string[]): Promise<SettingsRow | undefined> {
+    return columns ? this.table.select(columns).first() : this.table.first();
+  }
+
   async find(): Promise<Settings | null> {
-    const row = await this.table.first();
+    const row = await this.readRow();
     return row ? new Settings(PostgresSettingsMapper.toSettings(withExtras(row))) : null;
   }
 
@@ -66,7 +71,7 @@ export class PostgresSettingsDataSource
   }
 
   async readPresentation(): Promise<Settings | null> {
-    const row = await this.table.select(PostgresSettingsMapper.presentationColumnNames()).first();
+    const row = await this.readRow(PostgresSettingsMapper.presentationColumnNames());
     return row ? new Settings(PostgresSettingsMapper.toSettings(withExtras(row))) : null;
   }
 
@@ -78,7 +83,7 @@ export class PostgresSettingsDataSource
       ...fields.map(field => PostgresSettingsMapper.columnForField(field) ?? 'extras'),
     ];
     const uniqueColumns = [...new Set(columns)];
-    const row = await this.table.select(uniqueColumns).first();
+    const row = await this.readRow(uniqueColumns);
     if (!row) {
       return null;
     }
