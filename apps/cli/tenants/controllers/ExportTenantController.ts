@@ -2,6 +2,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
 import { createProgressWriter, isPipe, isTty } from './backupProgress.js';
+import { assertPostgresCoreTenant } from './assertPostgresCoreTenant.js';
 import type { TenantBackupDeps } from './TenantBackupDeps.js';
 
 /**
@@ -14,6 +15,7 @@ import type { TenantBackupDeps } from './TenantBackupDeps.js';
  */
 class ExportTenantController {
   static async handle(deps: TenantBackupDeps = {}): Promise<void> {
+    assertPostgresCoreTenant();
     const pool = deps.pool ?? PostgresDB.adminPool();
     const stdout = deps.stdout ?? process.stdout;
     const stderr = deps.stderr ?? process.stderr;

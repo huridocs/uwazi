@@ -67,10 +67,15 @@ export function parseManifest(line: string): ExportManifest {
  * newline inside a value as `\t`/`\n`, so a literal tab always separates fields.
  */
 export function rewriteField(line: string, index: number, value: string): string {
+  if (index < 0) {
+    throw new RangeError(`rewriteField: index ${index} is out of range`);
+  }
   let start = 0;
   for (let i = 0; i < index; i += 1) {
     const tab = line.indexOf('\t', start);
-    if (tab === -1) return line;
+    if (tab === -1) {
+      throw new RangeError(`rewriteField: index ${index} is out of range`);
+    }
     start = tab + 1;
   }
   const end = line.indexOf('\t', start);

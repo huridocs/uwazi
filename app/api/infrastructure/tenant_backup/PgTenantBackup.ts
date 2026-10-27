@@ -255,11 +255,12 @@ export class PgTenantBackup {
     options: ImportOptions = {}
   ): Promise<{ sourceTenant: string; tables: string[]; rows: number }> {
     const { onProgress, nullSync = false } = options;
-    const knownTables = new Set(await discoverTenantTables(this.pool));
+    const dataTables = await discoverDataTablesWithColumns(this.pool);
+    const columnsByTable = new Map(dataTables.map(table => [table.name, table.columns]));
     try {
       const lines = readLines(input);
       const manifest = await readManifest(lines);
-      await validateManifest(manifest, knownTables, async () => this.currentSchemaVersion());
+      await validateManifest(manifest, columnsByTable, async () => this.currentSchemaVersion());
       const rows = await withTransaction(this.pool, 'BEGIN', async client => {
         let total = 0;
         /* eslint-disable no-await-in-loop */

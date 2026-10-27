@@ -4,6 +4,7 @@ import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup
 import type { ImportTenantOutput } from '../contracts.js';
 import { reindexTenant } from './reindexTenant.js';
 import { createProgressWriter } from './backupProgress.js';
+import { assertPostgresCoreTenant } from './assertPostgresCoreTenant.js';
 import type { ProgressWriter } from './backupProgress.js';
 import type { TenantBackupDeps } from './TenantBackupDeps.js';
 
@@ -39,6 +40,7 @@ class ImportTenantController {
     input: ImportTenantInput = {},
     deps: TenantBackupDeps = {}
   ): Promise<ImportTenantOutput> {
+    assertPostgresCoreTenant();
     const { pool, stdin, stderr, reindex } = resolveDeps(deps);
     const tenantId = ExecutionContext.currentTenant.name;
     const progress = createProgressWriter(stderr, deps.progress, 'importing');

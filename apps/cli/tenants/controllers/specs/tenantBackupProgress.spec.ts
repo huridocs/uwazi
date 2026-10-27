@@ -17,6 +17,7 @@ const tenantFor = (name: string): Tenant => ({
   customUploads: '',
   activityLogs: '',
   domain: '',
+  featureFlags: { postgresCore: true },
 });
 
 /** A Writable that collects what was written, to feed back as the import stream. */

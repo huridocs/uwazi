@@ -1,20 +1,34 @@
+import { MalformedManifestError } from './MalformedManifestError.js';
 import { UnknownTableInManifestError } from './UnknownTableInManifestError.js';
 import { SchemaVersionMismatchError } from './SchemaVersionMismatchError.js';
 import type { ExportManifest } from './manifest.js';
 
 /**
  * Pre-flight gate for an import stream: the export's schema version must match this database's,
- * and every named table must be a known tenant data table. Both run before any COPY is started.
+ * and every named table must be a known tenant data table whose columns match the schema. Both
+ * run before any COPY is started.
  */
 export async function validateManifest(
   manifest: ExportManifest,
-  knownTables: Set<string>,
+  columnsByTable: Map<string, string[]>,
   getSchemaVersion: () => Promise<number>
 ): Promise<void> {
   const actual = await getSchemaVersion();
   if (actual !== manifest.schemaVersion) {
     throw new SchemaVersionMismatchError(manifest.schemaVersion, actual);
   }
-  const unknown = manifest.tables.find(table => !knownTables.has(table.name));
+  const unknown = manifest.tables.find(table => !columnsByTable.has(table.name));
   if (unknown) throw new UnknownTableInManifestError(unknown.name);
+  const malformed = manifest.tables.find(table => {
+    const expected = columnsByTable.get(table.name)!;
+    return (
+      table.columns.length !== expected.length ||
+      table.columns.some((column, index) => column !== expected[index])
+    );
+  });
+  if (malformed) {
+    throw new MalformedManifestError(
+      `Manifest columns for '${malformed.name}' do not match the schema.`
+    );
+  }
 }

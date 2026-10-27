@@ -86,8 +86,12 @@ describe('manifest', () => {
       expect(rewriteField('a\tb', 1, 'X')).toBe('a\tX');
     });
 
-    it('leaves the line unchanged when the index is beyond the fields', () => {
-      expect(rewriteField('a\tb', 5, 'X')).toBe('a\tb');
+    it('throws when the index is beyond the fields', () => {
+      expect(() => rewriteField('a\tb', 5, 'X')).toThrow(RangeError);
+    });
+
+    it('throws when the index is negative instead of corrupting the first field', () => {
+      expect(() => rewriteField('a\tb\tc', -1, 'X')).toThrow(RangeError);
     });
   });
 });

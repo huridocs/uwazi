@@ -231,39 +231,57 @@ describe('PgTenantBackup', () => {
       ]);
     });
 
-    it('rejects a stream whose schema version differs from the database', async () => {
-      await seedSource(pool, SOURCE_TENANT);
-      const { text } = await exportTenant(pool, SOURCE_TENANT);
+    describe('rejects', () => {
+      it('a stream whose schema version differs from the database', async () => {
+        await seedSource(pool, SOURCE_TENANT);
+        const { text } = await exportTenant(pool, SOURCE_TENANT);
 
-      await expect(
-        new PgTenantBackup(pool, async () => 9999).import(TARGET_TENANT, Readable.from([text]))
-      ).rejects.toBeInstanceOf(SchemaVersionMismatchError);
-    });
+        await expect(
+          new PgTenantBackup(pool, async () => 9999).import(TARGET_TENANT, Readable.from([text]))
+        ).rejects.toBeInstanceOf(SchemaVersionMismatchError);
+      });
 
-    it('rejects a manifest that names a non-tenant table', async () => {
-      const stream = `${JSON.stringify({
-        version: 1,
-        sourceTenant: SOURCE_TENANT,
-        schemaVersion: 5,
-        tables: [{ name: 'tenants', columns: ['tenant_id'] }],
-      })}\n`;
+      it('a manifest that names a non-tenant table', async () => {
+        const stream = `${JSON.stringify({
+          version: 1,
+          sourceTenant: SOURCE_TENANT,
+          schemaVersion: 5,
+          tables: [{ name: 'tenants', columns: ['tenant_id'] }],
+        })}\n`;
 
-      await expect(
-        backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
-      ).rejects.toBeInstanceOf(UnknownTableInManifestError);
-    });
+        await expect(
+          backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+        ).rejects.toBeInstanceOf(UnknownTableInManifestError);
+      });
 
-    it('rejects a stream that ends before the first table finishes', async () => {
-      const stream = `${JSON.stringify({
-        version: 1,
-        sourceTenant: SOURCE_TENANT,
-        schemaVersion: 5,
-        tables: [{ name: 'templates', columns: ['tenant_id', '_id', 'name'] }],
-      })}\n`;
+      it('a manifest that names an ephemeral table', async () => {
+        const stream = `${JSON.stringify({
+          version: 1,
+          sourceTenant: SOURCE_TENANT,
+          schemaVersion: 5,
+          tables: [{ name: 'captchas', columns: ['tenant_id', 'x'] }],
+        })}\n`;
 
-      await expect(
-        backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
-      ).rejects.toBeInstanceOf(PrematureEndOfStreamError);
+        await expect(
+          backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+        ).rejects.toBeInstanceOf(UnknownTableInManifestError);
+      });
+
+      it('a stream that ends before the first table finishes', async () => {
+        const templates = (await discoverDataTablesWithColumns(pool)).find(
+          t => t.name === 'templates'
+        )!;
+        const stream = `${JSON.stringify({
+          version: 1,
+          sourceTenant: SOURCE_TENANT,
+          schemaVersion: 5,
+          tables: [templates],
+        })}\n`;
+
+        await expect(
+          backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
+        ).rejects.toBeInstanceOf(PrematureEndOfStreamError);
+      });
     });
   });
 

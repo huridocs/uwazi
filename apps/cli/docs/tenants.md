@@ -220,7 +220,8 @@ of one. Uwazi stores it and never reads it.
 `tenants clean`, `tenants export` and `tenants import` operate on one tenant's PostgreSQL data.
 They run in a tenant (take `--tenant`), write through the admin/migrator pool (which bypasses
 row-level security), and therefore need `POSTGRES_USER` and `POSTGRES_PASSWORD` in addition to
-the usual environment. They never touch the registry row, and they only move PostgreSQL rows —
+the usual environment. They fail with `tenant_backup.not_postgres` (exit 4) when the tenant is
+not running on Postgres. They never touch the registry row, and they only move PostgreSQL rows —
 files stored on disk or S3 and the Elasticsearch index are not part of the backup.
 
 ### tenants clean
@@ -241,9 +242,8 @@ Prints:
 
 `tables` is every tenant-scoped table touched, sorted; `deletedRows` is the total rows deleted.
 
-`clean` deletes PostgreSQL rows only. It does not reindex Elasticsearch, so the search index
-still serves the deleted entities afterwards; use `tenants import --clear` when the index must
-be rebuilt along with the wipe.
+`clean` deletes PostgreSQL rows, then reindexes the now-empty tenant so Elasticsearch drops
+the deleted documents (the reindex deletes and recreates the tenant's index from PostgreSQL).
 
 ### tenants export
 
@@ -282,8 +282,8 @@ The import is all-or-nothing: a failing table rolls back the whole import.
 - `--null-sync` clears `settings.sync`; by default it is preserved, which is what a same-tenant
   restore wants.
 
-The stream is checked before any data is loaded: its schema version must match the database's
-and every table it names must be a known tenant table.
+The stream is checked before any data is loaded: its schema version must match the database's,
+and every table it names must be a known tenant data table whose columns match the schema.
 
 Prints:
 
@@ -294,9 +294,9 @@ Prints:
 `sourceTenant` is the tenant the stream was exported from; `tables` the tables loaded; `rows`
 the total COPY row count.
 
-| Code                                    | Exit | When                                                        |
-| --------------------------------------- | ---- | ----------------------------------------------------------- |
-| `tenant_backup.malformed_manifest`      | 5    | The stream is empty or its manifest line cannot be parsed   |
-| `tenant_backup.schema_version_mismatch` | 5    | The stream's schema version differs from this database's    |
-| `tenant_backup.unknown_table`           | 5    | The manifest names a table that is not a known tenant table |
-| `tenant_backup.premature_end`           | 5    | The stream ended before a table's COPY section was complete |
+| Code                                    | Exit | When                                                                                            |
+| --------------------------------------- | ---- | ----------------------------------------------------------------------------------------------- |
+| `tenant_backup.malformed_manifest`      | 2    | The stream is empty, its manifest cannot be parsed, or a table's columns don't match the schema |
+| `tenant_backup.schema_version_mismatch` | 2    | The stream's schema version differs from this database's                                        |
+| `tenant_backup.unknown_table`           | 2    | The manifest names a table that is not a known tenant data table                                |
+| `tenant_backup.premature_end`           | 2    | The stream ended before a table's COPY section was complete                                     |
