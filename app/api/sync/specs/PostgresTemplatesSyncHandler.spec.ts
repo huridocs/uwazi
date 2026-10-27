@@ -24,7 +24,7 @@ describe('PostgresTemplatesSyncHandler', () => {
     return new PostgresTemplatesSyncHandler({
       tenantId: tenantName,
       pgTransactionManager: new PostgresTransactionManager(
-        PostgresDB.knex,
+        PostgresDB.pipelinedPool(),
         tenantName,
         LoggerFactory.forTests()
       ),

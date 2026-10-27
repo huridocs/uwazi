@@ -4,6 +4,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
+import { Statements } from '../Statement.js';
 import { PostgresPermissionEnforcedTable } from '../PostgresPermissionEnforcedTable.js';
 import { PostgresTable } from '../PostgresTable.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -13,7 +14,7 @@ const TEST_TABLE = 'permission_test';
 const DEFAULT_TENANT = 'tenant-a';
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 type TestRow = {
   _id: string;
@@ -87,10 +88,13 @@ const fixtures: Array<{
 
 const insertFixtures = async () => {
   const raw = managerFor(DEFAULT_TENANT);
-  await raw.withConnection(async trx => {
-    const rows = fixtures.map(row => ({ ...row, tenant_id: DEFAULT_TENANT }));
-    await trx(TEST_TABLE).insert(rows);
-  });
+  const rows = fixtures.map(row => ({ ...row, tenant_id: DEFAULT_TENANT }));
+  await raw.query(
+    Statements.fromBuilder(Statements.builder(TEST_TABLE).insert(rows), {
+      bypass: true,
+      refIds: [],
+    })
+  );
 };
 
 beforeAll(async () => {

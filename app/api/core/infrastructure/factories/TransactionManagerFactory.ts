@@ -43,9 +43,6 @@ export class TransactionManagerFactory {
   static forTesting() {
     return TestUtils.mockClass<TransactionManager>({
       run: jest.fn().mockResolvedValue(undefined),
-      runReadOnly: jest
-        .fn()
-        .mockImplementation(async (callback: () => Promise<unknown>) => callback()),
       onCommitted: jest.fn().mockReturnThis(),
       onRetry: jest.fn().mockReturnThis(),
       runHandlingOnCommitted: jest.fn().mockReturnValue({

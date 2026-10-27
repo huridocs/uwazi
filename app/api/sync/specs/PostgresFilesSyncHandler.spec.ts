@@ -16,7 +16,7 @@ const createHandler = () => {
   return new PostgresFilesSyncHandler({
     tenantId: tenantName,
     pgTransactionManager: new PostgresTransactionManager(
-      PostgresDB.knex,
+      PostgresDB.pipelinedPool(),
       tenantName,
       LoggerFactory.forTests()
     ),

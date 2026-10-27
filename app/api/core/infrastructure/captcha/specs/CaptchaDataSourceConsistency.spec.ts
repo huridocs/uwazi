@@ -39,7 +39,7 @@ describe('CaptchaDataSource consistency', () => {
         ? new PostgresCaptchaDataSource({
             tenantId: TENANT_ID,
             pgTransactionManager: new PostgresTransactionManager(
-              PostgresDB.knex,
+              PostgresDB.pipelinedPool(),
               TENANT_ID,
               LoggerFactory.forTests()
             ),

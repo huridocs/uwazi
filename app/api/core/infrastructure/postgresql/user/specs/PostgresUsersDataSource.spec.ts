@@ -16,7 +16,7 @@ const TENANT_ID = 'test-tenant';
 const OTHER_TENANT_ID = 'other-tenant';
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresUsersDataSource({
