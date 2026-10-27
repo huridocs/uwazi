@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
+import { Statements } from './Statement.js';
 
 type UpdateLogRecord = {
   mongoId: ObjectId;
@@ -39,15 +40,14 @@ class SyncLogWriter {
       deleted,
     }));
 
-    await this.transactionManager.withConnection(
-      async trx => {
-        await trx('updatelogs')
+    await this.transactionManager.query(
+      Statements.fromBuilder(
+        Statements.builder('updatelogs')
           .insert(rows)
           .onConflict(['tenant_id', 'namespace', 'id'])
-          .merge(['timestamp', 'deleted']);
-      },
-      undefined,
-      { preservePermission: true }
+          .merge(['timestamp', 'deleted']),
+        'inherit'
+      )
     );
   }
 }
@@ -56,25 +56,19 @@ const readUpdateLogs = async (
   transactionManager: PostgresTransactionManager,
   filter: { namespace: string; since: number; until?: number; limit?: number }
 ): Promise<UpdateLogRecord[]> => {
-  const rows = await transactionManager.withConnection(
-    async trx => {
-      const query = trx('updatelogs')
-        .select(['id', 'namespace', 'timestamp', 'deleted'])
-        .where({ namespace: filter.namespace })
-        .andWhere('timestamp', '>', filter.since)
-        .orderBy('timestamp', 'asc');
+  const query = Statements.builder('updatelogs')
+    .select(['id', 'namespace', 'timestamp', 'deleted'])
+    .where({ namespace: filter.namespace })
+    .andWhere('timestamp', '>', filter.since)
+    .orderBy('timestamp', 'asc');
 
-      if (filter.until !== undefined) {
-        query.andWhere('timestamp', '<=', filter.until);
-      }
-      if (filter.limit !== undefined) {
-        query.limit(filter.limit);
-      }
-      return query;
-    },
-    undefined,
-    { preservePermission: true }
-  );
+  if (filter.until !== undefined) {
+    query.andWhere('timestamp', '<=', filter.until);
+  }
+  if (filter.limit !== undefined) {
+    query.limit(filter.limit);
+  }
+  const { rows } = await transactionManager.query(Statements.fromBuilder(query, 'inherit'));
 
   return rows.map(row => ({
     mongoId: new ObjectId(String(row.id)),

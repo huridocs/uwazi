@@ -1,16 +1,15 @@
 /* eslint-disable max-lines */
 import { Knex } from 'knex';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
+import { Statements, type StatementResult } from './Statement.js';
 
 type AfterSyncLog = (ids: string[], deleted: boolean) => Promise<void>;
 
 type PermissionContext = { bypass: boolean; refIds: string[] };
 
 type TableConfig = {
-  knex: Knex;
   tableName: string;
   tenantId: string;
   transactionManager: PostgresTransactionManager;
@@ -25,7 +24,6 @@ type ForParams = {
   tenantId: string;
   transactionManager: PostgresTransactionManager;
   accessContext: AccessContext;
-  knex?: Knex;
   syncWriter?: SyncLogWriter;
   afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
@@ -81,9 +79,9 @@ export const buildPermissionContext = (accessContext: AccessContext): Permission
 /**
  * Immutable, tenant-scoped query builder over a single Postgres table.
  *
- * Tenant isolation is enforced by Row-Level Security (see migration 004): every
- * terminal runs through `transactionManager.withConnection`, which sets
- * `app.current_tenant` on the connection.
+ * It only builds SQL: every terminal compiles its query into one Statement and hands it to the
+ * transaction manager, which runs it with the tenant and the actor's permission set, so Row-Level
+ * Security (see migration 004) applies to it.
  *
  * `tenant_id` is never returned to callers — it is stripped by `cleanRow` on
  * every read (PostgreSQL does not support `SELECT * EXCEPT col` natively).
@@ -102,18 +100,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   static for<T = Record<string, unknown>>(params: ForParams): PostgresTable<T> {
-    const knexInstance = params.knex ?? PostgresDB.knex;
-    const cfg: TableConfig = {
-      knex: knexInstance,
-      tableName: params.tableName,
-      tenantId: params.tenantId,
-      transactionManager: params.transactionManager,
-      accessContext: params.accessContext,
-      syncWriter: params.syncWriter,
-      afterSyncLog: params.afterSyncLog,
-      identityColumn: params.identityColumn,
-    };
-    return new PostgresTable<T>(cfg, knexInstance(params.tableName));
+    return new PostgresTable<T>({ ...params }, Statements.builder(params.tableName));
   }
 
   get tableName(): string {
@@ -129,7 +116,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   query<T = TRow>(): PostgresTable<T> {
-    return this.chain(this.cfg.knex(this.cfg.tableName), {}) as any;
+    return this.chain(Statements.builder(this.cfg.tableName), {}) as any;
   }
 
   protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
@@ -233,7 +220,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   /** Escape hatch for projections `select` can't express, e.g. `count(*) FILTER (WHERE …)`. */
   selectRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().select(this.cfg.knex.raw(sql, bindings)));
+    return this.chain(this.qb.clone().select(Statements.fragment(sql, bindings)));
   }
 
   limit(n: number): PostgresTable<TRow> {
@@ -282,14 +269,17 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    */
   protected applyInsertPolicy(): void {}
 
-  protected async run<T>(
-    fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder,
-    permissionContext: PermissionContext = buildPermissionContext(this.cfg.accessContext)
-  ): Promise<T> {
-    return this.cfg.transactionManager.withConnection(
-      async trx => fn(this.qb.clone().transacting(trx)),
-      permissionContext
-    );
+  /** The permission context of this table's actor, which every statement it sends runs under. */
+  protected get permission(): PermissionContext {
+    return buildPermissionContext(this.cfg.accessContext);
+  }
+
+  /** Sends a built query as one statement under `permission`. */
+  protected async send<T = Record<string, unknown>>(
+    qb: Knex.QueryBuilder,
+    permission: PermissionContext = this.permission
+  ): Promise<StatementResult<T>> {
+    return this.cfg.transactionManager.query<T>(Statements.fromBuilder(qb, permission));
   }
 
   /**
@@ -298,29 +288,17 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * of iteration and released when the iterable is exhausted or the loop
    * exits (including break / error).
    *
-   * Writes issued from within the loop go through `withConnection` again,
+   * Writes issued from within the loop go through the transaction manager again,
    * opening a separate short transaction when no outer `run()` is active.
    */
   async *stream(
-    permissionContext: PermissionContext = buildPermissionContext(this.cfg.accessContext)
+    permissionContext: PermissionContext = this.permission
   ): AsyncGenerator<TRow, void, unknown> {
-    const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
-    let completed = false;
-    try {
-      const readable = this.withIdentity(this.qb.clone()).transacting(handle.trx).stream();
-      for await (const row of readable) {
-        yield this.cleanRow(row) as TRow;
-      }
-      await handle.commit();
-      completed = true;
-    } finally {
-      if (!completed) {
-        try {
-          await handle.rollback();
-        } catch {
-          // propagate original error, not rollback error
-        }
-      }
+    const statement = Statements.fromBuilder(this.withIdentity(this.qb.clone()), permissionContext);
+    for await (const row of this.cfg.transactionManager.stream<Record<string, unknown>>(
+      statement
+    )) {
+      yield this.cleanRow(row) as TRow;
     }
   }
 
@@ -345,32 +323,34 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   async first(): Promise<TRow | undefined> {
-    const row = await this.run(qb => this.withIdentity(qb).first());
-    return row ? (this.cleanRow(row) as TRow) : undefined;
+    const { rows } = await this.send(this.withIdentity(this.qb.clone()).first());
+    return rows[0] ? (this.cleanRow(rows[0]) as TRow) : undefined;
   }
 
   async all(): Promise<TRow[]> {
-    const rows = (await this.run(qb => this.withIdentity(qb))) as Record<string, unknown>[];
+    const { rows } = await this.send(this.withIdentity(this.qb.clone()));
     return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
   async count(): Promise<number> {
-    const result = await this.run(qb => qb.count<{ count: string }[]>('* as count').first());
-    return parseInt(result?.count ?? '0', 10);
+    const { rows } = await this.send<{ count: string | number }>(
+      this.qb.clone().count('* as count').first()
+    );
+    return parseInt(String(rows[0]?.count ?? '0'), 10);
   }
 
   async sum(column: string): Promise<number> {
-    const result = await this.run(qb => qb.sum({ total: column }).first());
-    return Number((result as { total?: unknown })?.total ?? 0);
+    const { rows } = await this.send<{ total?: unknown }>(
+      this.qb.clone().sum({ total: column }).first()
+    );
+    return Number(rows[0]?.total ?? 0);
   }
 
   async insert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
-    await this.cfg.transactionManager.withConnection(
-      async trx => trx(this.cfg.tableName).insert(rows),
-      buildPermissionContext(this.cfg.accessContext)
-    );
+    if (rows.length === 0) return;
+    await this.send(Statements.builder(this.cfg.tableName).insert(rows));
     await this.notifySync(rows, false);
   }
 
@@ -389,26 +369,27 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       return;
     }
 
-    const result = await this.cfg.transactionManager.withConnection(async trx => {
-      const inserted = trx(this.cfg.tableName).insert(rows);
-      const qb = conflict.targetRaw
-        ? inserted.onConflict(this.cfg.knex.raw(conflict.targetRaw))
-        : inserted.onConflict(conflict.columns ?? ['_id', 'tenant_id']);
-      const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
-      return conflicting.returning(['_id']);
-    }, buildPermissionContext(this.cfg.accessContext));
+    const inserted = Statements.builder(this.cfg.tableName).insert(rows);
+    const qb = conflict.targetRaw
+      ? inserted.onConflict(Statements.fragment(conflict.targetRaw))
+      : inserted.onConflict(conflict.columns ?? ['_id', 'tenant_id']);
+    const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
+    const result = await this.send<{ _id: string }>(conflicting.returning(['_id']));
 
     await this.notifySync(
-      PostgresTable.idsOf(result).map(_id => ({ _id })),
+      PostgresTable.idsOf(result.rows).map(_id => ({ _id })),
       false
     );
   }
 
   async update(changes: Record<string, unknown>): Promise<string[]> {
     const serialized = PostgresTable.serialize(changes);
-    const result = await this.run(qb => qb.returning(['_id']).update(serialized));
-    await this.emitSyncLogs(PostgresTable.idsOf(result), false);
-    return PostgresTable.idsOf(result);
+    const result = await this.send<{ _id: string }>(
+      this.qb.clone().returning(['_id']).update(serialized)
+    );
+    const ids = PostgresTable.idsOf(result.rows);
+    await this.emitSyncLogs(ids, false);
+    return ids;
   }
 
   async bulkUpdate(rows: Record<string, unknown>[]): Promise<string[]> {
@@ -471,23 +452,25 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   async delete(): Promise<string[]> {
-    const result = await this.run(qb => qb.returning(['_id']).del());
-    await this.emitSyncLogs(PostgresTable.idsOf(result), true);
-    return PostgresTable.idsOf(result);
+    const result = await this.send<{ _id: string }>(this.qb.clone().returning(['_id']).del());
+    const ids = PostgresTable.idsOf(result.rows);
+    await this.emitSyncLogs(ids, true);
+    return ids;
   }
 
   /**
    * Escape hatch for SQL the builder cannot express (e.g. atomic JSONB mutations).
-   * Runs inside a tenant-scoped connection; RLS enforces isolation.
+   * Runs as one statement under the actor's permission; RLS enforces isolation.
    *
-   * Uses `withConnection` directly (not `this.run`) — raw SQL must not inherit the
-   * builder's accumulated WHERE/filter state from the chain.
+   * Built from the SQL alone — raw SQL must not inherit the builder's accumulated
+   * WHERE/filter state from the chain.
    */
-  async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
-    return this.cfg.transactionManager.withConnection(
-      async trx => trx.raw(sql, bindings as any),
-      buildPermissionContext(this.cfg.accessContext)
-    ) as Promise<Knex.Raw<TResult>>;
+  async raw<TResult = StatementResult>(
+    sql: string,
+    bindings: readonly unknown[] = []
+  ): Promise<TResult> {
+    const statement = Statements.raw(sql, bindings, this.permission);
+    return this.cfg.transactionManager.query(statement) as Promise<TResult>;
   }
 
   private static serialize(row: Record<string, unknown>): Record<string, unknown> {
