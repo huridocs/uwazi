@@ -97,7 +97,7 @@ const TableViewer = ({
 }: TableViewerProps) => {
   const locale = useAtomValue(localeAtom) || 'en';
   const displayContext = useMemo(
-    () => ({ ...metadataDisplayPresets.compact, locale, omitImageText: true }),
+    () => ({ ...metadataDisplayPresets.compact, locale, omitFileText: true }),
     [locale]
   );
 

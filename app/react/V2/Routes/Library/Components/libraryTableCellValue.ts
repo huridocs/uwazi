@@ -1,4 +1,4 @@
-import { t } from '#app/I18N/index.js';
+import formatcoords from 'formatcoords';
 import type { DisplayContext } from '#V2/Components/Metadata/display/displayContext.js';
 import {
   formatMetadataTimestamp,
@@ -29,6 +29,10 @@ type RawMetadataValue = {
 };
 
 const INTERACTIVE_TYPES = new Set(['geolocation', 'media', 'image', 'preview']);
+const OMITTED_FILE_TYPES = new Set(['image', 'media']);
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const asValues = (values: unknown): RawMetadataValue[] => {
   if (!Array.isArray(values)) {
@@ -64,20 +68,26 @@ const coordinateNumber = (value: Record<string, unknown>, keys: string[]): numbe
   return typeof found === 'number' ? found : undefined;
 };
 
+const pointName = (item: RawMetadataValue, point: Record<string, unknown>): string => {
+  const name = typeof point.label === 'string' && point.label ? point.label : item.label;
+  return name && !name.includes('°') ? name : '';
+};
+
 const geoText = (item: RawMetadataValue): string => {
-  if (item.label) {
-    return item.label;
-  }
-  if (!item.value || typeof item.value !== 'object') {
+  if (!isRecord(item.value)) {
     return '';
   }
-  const point = item.value as Record<string, unknown>;
-  const latitude = coordinateNumber(point, ['lat', 'latitude']);
-  const longitude = coordinateNumber(point, ['lon', 'longitude']);
-  if (typeof latitude === 'number' && typeof longitude === 'number') {
-    return `${t('System', 'Latitude', null, false)}: ${latitude}, ${t('System', 'Longitude', null, false)}: ${longitude}`;
+  const latitude = coordinateNumber(item.value, ['lat', 'latitude']);
+  const longitude = coordinateNumber(item.value, ['lon', 'longitude']);
+  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    return '';
   }
-  return '';
+  const coords = formatcoords(latitude, longitude).format('DD MM ss X', {
+    latLonSeparator: ', ',
+    decimalPlaces: 0,
+  });
+  const name = pointName(item, item.value);
+  return name ? `${name}: ${coords}` : coords;
 };
 
 const nestedText = (item: RawMetadataValue): string => {
@@ -168,13 +178,13 @@ const linkFromValue = (value: unknown): LibraryLink | undefined => {
 const libraryTableCellValue = (
   propertyType: string,
   values: unknown,
-  context: DisplayContext & { omitImageText?: boolean }
+  context: DisplayContext & { omitFileText?: boolean }
 ): LibraryTableCellValue => {
   const resolved = resolveInheritedValues(asValues(values), propertyType);
   const type = resolved.inheritedType || propertyType;
   const rows = resolved.values;
 
-  if (context.omitImageText && type === 'image') {
+  if (context.omitFileText && OMITTED_FILE_TYPES.has(type)) {
     return { text: '', interactive: false };
   }
 

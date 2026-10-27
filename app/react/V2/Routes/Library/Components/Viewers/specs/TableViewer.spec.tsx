@@ -111,8 +111,8 @@ describe('TableViewer', () => {
       screen.getByText(secondsToDate(normalizeTimestamp(1735689600000), 'en'))
     ).toBeInTheDocument();
     expect(screen.getByText('NGO')).toBeInTheDocument();
-    expect(screen.getByText('Latitude: -35.9, Longitude: -65')).toBeInTheDocument();
-    expect(screen.getByText('hearing.mp4')).toBeInTheDocument();
+    expect(screen.getByText('35° 53′ 60″ S, 65° 0′ 0″ W')).toBeInTheDocument();
+    expect(screen.queryByText('hearing.mp4')).not.toBeInTheDocument();
   });
 
   it('leaves an inherited image cell blank', () => {
@@ -159,10 +159,8 @@ describe('TableViewer', () => {
       metaKey: false,
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Latitude: -35.9, Longitude: -65' }));
+    fireEvent.click(screen.getByRole('button', { name: '35° 53′ 60″ S, 65° 0′ 0″ W' }));
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'location');
-    fireEvent.click(screen.getByRole('button', { name: 'hearing.mp4' }));
-    expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'video');
   });
 
   it('does not select row text on shift-click and still selects the row', () => {
