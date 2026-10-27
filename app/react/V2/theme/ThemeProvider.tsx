@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
@@ -29,10 +29,23 @@ type ThemeProviderProps = React.PropsWithChildren<{
   legacyChrome?: boolean;
 }>;
 
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+
+const paintedThemeMode = (): ThemeMode | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const painted = document.querySelector('[data-theme-mode]')?.getAttribute('data-theme-mode');
+  return painted === 'light' || painted === 'dark' ? painted : undefined;
+};
+
+const useRenderedThemeMode = (selected: ThemeMode, followPainted: boolean) => {
+  const track = useRef({ initial: selected, changed: false });
+  if (!followPainted || selected !== track.current.initial) track.current.changed = true;
+  return track.current.changed ? selected : (paintedThemeMode() ?? selected);
+};
+
 const useSyncThemeAtoms = (controlledMode?: ThemeMode) => {
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const setThemeControlledMode = useSetAtom(themeControlledModeAtom);
-  const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
   useIsomorphicLayoutEffect(() => {
     setThemeControlledMode(controlledMode);
   }, [controlledMode, setThemeControlledMode]);
@@ -99,7 +112,12 @@ const ThemeProvider = ({
   const themeMode = useSyncThemeAtoms(controlledMode);
   const customizationOn = Boolean(settings.themeCustomization);
   const useCustomizationPipeline = customizationOn && !legacyChrome;
-  const mode = scopedMode ?? getEffectiveThemeMode(customizationOn, themeMode, controlledMode);
+  const selectedMode =
+    scopedMode ?? getEffectiveThemeMode(customizationOn, themeMode, controlledMode);
+  const mode = useRenderedThemeMode(
+    selectedMode,
+    customizationOn && scopedMode === undefined && controlledMode === undefined
+  );
   const surface = useThemeSurface({
     themeVars: settings.themeVars ?? undefined,
     mode,
