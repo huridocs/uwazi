@@ -96,7 +96,10 @@ const TableViewer = ({
   tableDensity = 'compact',
 }: TableViewerProps) => {
   const locale = useAtomValue(localeAtom) || 'en';
-  const displayContext = useMemo(() => ({ ...metadataDisplayPresets.compact, locale }), [locale]);
+  const displayContext = useMemo(
+    () => ({ ...metadataDisplayPresets.compact, locale, omitImageText: true }),
+    [locale]
+  );
 
   const data = useMemo<LibraryTableRow[]>(
     () => rows.map(row => ({ ...row, rowId: row.sharedId })),

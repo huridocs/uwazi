@@ -97,6 +97,57 @@ describe('libraryTableCellValue', () => {
   });
 });
 
+describe('libraryTableCellValue inherited values', () => {
+  it('formats the inherited leaf instead of the related entity name', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            value: 'entity-1',
+            label: 'Parent entity',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'final text' }],
+          },
+        ],
+        context
+      )
+    ).toEqual({ text: 'final text', interactive: false });
+  });
+
+  it('leaves an inherited image blank in the table', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'image',
+            inheritedValue: [{ value: '/api/files/1792633213296onctb95tx1s.png' }],
+          },
+        ],
+        { ...context, omitImageText: true }
+      )
+    ).toEqual({ text: '', interactive: false });
+  });
+
+  it('formats an inherited date with the leaf type', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'date',
+            inheritedValue: [{ value: 1704067200 }],
+          },
+        ],
+        context
+      )
+    ).toEqual({ text: 'Jan 1, 2024', interactive: false });
+  });
+});
+
 describe('formatLibraryTableDate', () => {
   it('formats timestamps with the navigation locale', () => {
     expect(formatLibraryTableDate(1704067200000, context)).toBe('January 1, 2024');

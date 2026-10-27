@@ -5,6 +5,7 @@ import {
   normalizeTimestamp,
 } from '#V2/Components/Metadata/display/formatMetadataTimestamp.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
+import { resolveInheritedValues } from '#V2/shared/resolveInheritedValues.js';
 
 type LibraryLink = {
   label: string;
@@ -23,6 +24,8 @@ type RawMetadataValue = {
   alt?: string;
   title?: string;
   parent?: { label?: string };
+  inheritedType?: string;
+  inheritedValue?: RawMetadataValue[];
 };
 
 const INTERACTIVE_TYPES = new Set(['geolocation', 'media', 'image', 'preview']);
@@ -165,10 +168,18 @@ const linkFromValue = (value: unknown): LibraryLink | undefined => {
 const libraryTableCellValue = (
   propertyType: string,
   values: unknown,
-  context: DisplayContext
+  context: DisplayContext & { omitImageText?: boolean }
 ): LibraryTableCellValue => {
-  if (propertyType === 'link') {
-    const links = asValues(values).flatMap(item => {
+  const resolved = resolveInheritedValues(asValues(values), propertyType);
+  const type = resolved.inheritedType || propertyType;
+  const rows = resolved.values;
+
+  if (context.omitImageText && type === 'image') {
+    return { text: '', interactive: false };
+  }
+
+  if (type === 'link') {
+    const links = rows.flatMap(item => {
       const link = linkFromValue(item.value);
       return link ? [link] : [];
     });
@@ -178,13 +189,13 @@ const libraryTableCellValue = (
       ...(links.length ? { links } : {}),
     };
   }
-  const text = asValues(values)
-    .map(item => valueText(propertyType, item, context))
+  const text = rows
+    .map(item => valueText(type, item, context))
     .filter(Boolean)
     .join(', ');
   return {
     text,
-    interactive: Boolean(text) && INTERACTIVE_TYPES.has(propertyType),
+    interactive: Boolean(text) && INTERACTIVE_TYPES.has(type),
   };
 };
 
