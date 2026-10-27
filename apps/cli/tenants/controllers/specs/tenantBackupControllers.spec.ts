@@ -73,7 +73,7 @@ describe('tenant backup controllers', () => {
     await seed(pool, SOURCE_TENANT);
 
     const output = await testingEnvironment.runWithContext(
-      () => CleanTenantController.handle({ pool }),
+      async () => CleanTenantController.handle({ pool }),
       { tenant: tenantFor(SOURCE_TENANT) }
     );
 
@@ -91,7 +91,7 @@ describe('tenant backup controllers', () => {
 
     const capture = new CaptureStream();
     await testingEnvironment.runWithContext(
-      () => ExportTenantController.handle({ pool, stdout: capture }),
+      async () => ExportTenantController.handle({ pool, stdout: capture }),
       { tenant: tenantFor(SOURCE_TENANT) }
     );
 
@@ -104,13 +104,13 @@ describe('tenant backup controllers', () => {
       await seed(pool, SOURCE_TENANT);
       const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout: capture }),
+        async () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
       const reindex = jest.fn(async () => undefined);
       const output = await testingEnvironment.runWithContext(
-        () =>
+        async () =>
           ImportTenantController.handle(
             {},
             {
@@ -129,6 +129,30 @@ describe('tenant backup controllers', () => {
       const settings = await pool.query('SELECT sync FROM settings WHERE "tenant_id" = $1', [
         TARGET_TENANT,
       ]);
+      expect(settings.rows).toEqual([{ sync: { url: 'https://example.com' } }]);
+    });
+
+    it('nulls sync config when nullSync is set', async () => {
+      await seed(pool, SOURCE_TENANT);
+      const capture = new CaptureStream();
+      await testingEnvironment.runWithContext(
+        async () => ExportTenantController.handle({ pool, stdout: capture }),
+        { tenant: tenantFor(SOURCE_TENANT) }
+      );
+
+      const reindex = jest.fn(async () => undefined);
+      await testingEnvironment.runWithContext(
+        async () =>
+          ImportTenantController.handle(
+            { nullSync: true },
+            { pool, stdin: Readable.from([capture.text]), reindex }
+          ),
+        { tenant: tenantFor(TARGET_TENANT) }
+      );
+
+      const settings = await pool.query('SELECT sync FROM settings WHERE "tenant_id" = $1', [
+        TARGET_TENANT,
+      ]);
       expect(settings.rows).toEqual([{ sync: null }]);
     });
 
@@ -136,7 +160,7 @@ describe('tenant backup controllers', () => {
       await seed(pool, SOURCE_TENANT);
       const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout: capture }),
+        async () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
@@ -148,7 +172,7 @@ describe('tenant backup controllers', () => {
 
       const reindex = jest.fn(async () => undefined);
       await testingEnvironment.runWithContext(
-        () =>
+        async () =>
           ImportTenantController.handle(
             { clear: true },
             { pool, stdin: Readable.from([capture.text]), reindex }
@@ -167,7 +191,7 @@ describe('tenant backup controllers', () => {
       await seed(pool, SOURCE_TENANT);
       const capture = new CaptureStream();
       await testingEnvironment.runWithContext(
-        () => ExportTenantController.handle({ pool, stdout: capture }),
+        async () => ExportTenantController.handle({ pool, stdout: capture }),
         { tenant: tenantFor(SOURCE_TENANT) }
       );
 
@@ -177,7 +201,7 @@ describe('tenant backup controllers', () => {
 
       await expect(
         testingEnvironment.runWithContext(
-          () =>
+          async () =>
             ImportTenantController.handle(
               {},
               {

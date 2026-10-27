@@ -1,10 +1,5 @@
 import { MalformedManifestError } from '../MalformedManifestError.js';
-import {
-  MANIFEST_VERSION,
-  parseManifest,
-  rewriteTenantId,
-  serializeManifest,
-} from '../manifest.js';
+import { MANIFEST_VERSION, parseManifest, rewriteField, serializeManifest } from '../manifest.js';
 
 describe('manifest', () => {
   const tables = [
@@ -78,17 +73,21 @@ describe('manifest', () => {
     expect(() => parseManifest(line)).toThrow(MalformedManifestError);
   });
 
-  describe('rewriteTenantId', () => {
-    it('rewrites the first tab-delimited field and keeps the rest', () => {
-      expect(rewriteTenantId('source\tid\tname', 'target')).toBe('target\tid\tname');
+  describe('rewriteField', () => {
+    it('rewrites any field by zero-based index', () => {
+      expect(rewriteField('a\tb\tc', 1, 'X')).toBe('a\tX\tc');
     });
 
-    it('handles a line with no tab (tenant_id only)', () => {
-      expect(rewriteTenantId('source', 'target')).toBe('target');
+    it('rewrites the first field', () => {
+      expect(rewriteField('a\tb\tc', 0, 'X')).toBe('X\tb\tc');
     });
 
-    it('preserves empty trailing fields', () => {
-      expect(rewriteTenantId('source\ta\t', 'target')).toBe('target\ta\t');
+    it('rewrites the last field when there is no trailing tab', () => {
+      expect(rewriteField('a\tb', 1, 'X')).toBe('a\tX');
+    });
+
+    it('leaves the line unchanged when the index is beyond the fields', () => {
+      expect(rewriteField('a\tb', 5, 'X')).toBe('a\tb');
     });
   });
 });

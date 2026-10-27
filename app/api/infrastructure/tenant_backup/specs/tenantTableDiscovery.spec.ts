@@ -8,9 +8,9 @@ import {
 
 /**
  * The complete, known-good set of tenant-scoped tables in the Postgres schema, and the split
- * between tenant *data* and in-flight/transient operation state. This spec is a regression
- * guard: when a migration adds, renames or drops a tenant-scoped table, it fails here and forces
- * a decision about whether that table is data (export/import/clean) or transient (clean only).
+ * between tenant *data* and ephemeral security artifacts. This spec is a regression guard: when
+ * a migration adds, renames or drops a tenant-scoped table, it fails here and forces a decision
+ * about whether that table is data (export/import/clean) or ephemeral (clean only).
  */
 const ALL_TENANT_TABLES = [
   'activitylogs',
@@ -29,6 +29,7 @@ const ALL_TENANT_TABLES = [
   'ix_extractors',
   'ix_models',
   'ix_suggestions',
+  'jobs',
   'ocr_records',
   'page_locales',
   'page_releases',
@@ -49,18 +50,9 @@ const ALL_TENANT_TABLES = [
   'users',
 ].sort();
 
-const IN_FLIGHT_TABLES = [
-  'captchas',
-  'csv_imports',
-  'csv_import_rows',
-  'csv_import_row_errors',
-  'csv_import_thesauri_values',
-  'csv_import_relationships_pending_values',
-  'csv_import_relationships_values',
-  'px_entities_status',
-].sort();
+const EPHEMERAL_TABLES = ['captchas', 'password_recoveries'].sort();
 
-const DATA_TABLES = ALL_TENANT_TABLES.filter(table => !IN_FLIGHT_TABLES.includes(table));
+const DATA_TABLES = ALL_TENANT_TABLES.filter(table => !EPHEMERAL_TABLES.includes(table));
 
 describe('tenantTableDiscovery', () => {
   let pool: Pool;
@@ -83,12 +75,14 @@ describe('tenantTableDiscovery', () => {
     expect([...(await discoverTenantTables(pool))].sort()).toEqual(ALL_TENANT_TABLES);
   });
 
-  it('splits tenant tables into exactly the data tables and the in-flight tables', async () => {
+  it('splits tenant tables into exactly the data tables and the ephemeral tables', async () => {
     const tables = await discoverDataTablesWithColumns(pool);
 
     expect(tables.map(table => table.name).sort()).toEqual(DATA_TABLES);
-    expect([...EXCLUDED_TABLES].sort()).toEqual(IN_FLIGHT_TABLES);
-    expect(DATA_TABLES).not.toContain('jobs');
+    expect([...EXCLUDED_TABLES].sort()).toEqual(EPHEMERAL_TABLES);
+    expect(DATA_TABLES).toContain('jobs');
+    expect(DATA_TABLES).toContain('csv_imports');
+    expect(DATA_TABLES).toContain('px_entities_status');
   });
 
   it('lists tenant_id first and only once in every data table', async () => {

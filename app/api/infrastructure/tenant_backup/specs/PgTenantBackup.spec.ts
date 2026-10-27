@@ -11,8 +11,11 @@ import {
   CaptureStream,
   clearTables,
   exportTenant,
+  expectClonedJobs,
+  expectRestoredContent,
   importInto,
   manifestOf,
+  seedJobs,
   seedSource,
   SOURCE_TENANT,
   TARGET_TENANT,
@@ -44,13 +47,15 @@ describe('PgTenantBackup', () => {
   describe('clean', () => {
     it('deletes every tenant-scoped row, in-flight tables included, and is idempotent', async () => {
       await seedSource(pool, SOURCE_TENANT);
+      await seedJobs(pool, SOURCE_TENANT);
 
       const backup = new PgTenantBackup(pool);
       const first = await backup.clean(SOURCE_TENANT);
 
-      expect(first.deletedRows).toBe(6);
-      expect(first.tables).toContain('templates');
-      expect(first.tables).toContain('captchas');
+      expect(first.deletedRows).toBe(9);
+      expect(first.tables).toEqual(
+        expect.arrayContaining(['templates', 'captchas', 'jobs', 'password_recoveries'])
+      );
 
       const leftovers = await pool.query(`SELECT 1 FROM ix_extractors WHERE "tenant_id" = $1`, [
         SOURCE_TENANT,
@@ -74,16 +79,18 @@ describe('PgTenantBackup', () => {
   });
 
   describe('export', () => {
-    it('streams a manifest of data tables, skipping in-flight tables', async () => {
+    it('streams a manifest of data tables, skipping only ephemeral tables', async () => {
       await seedSource(pool, SOURCE_TENANT);
+      await seedJobs(pool, SOURCE_TENANT);
 
       const { text, tables } = await exportTenant(pool, SOURCE_TENANT);
       const manifest = manifestOf(text);
 
       expect(tables).toEqual(manifest.tables.map(t => t.name));
-      expect(tables).toContain('templates');
-      expect(tables).not.toContain('captchas');
-      expect(tables).not.toContain('px_entities_status');
+      expect(tables).toEqual(
+        expect.arrayContaining(['templates', 'px_entities_status', 'csv_imports', 'jobs'])
+      );
+      expect(tables).not.toEqual(expect.arrayContaining(['captchas', 'password_recoveries']));
     });
 
     it('records the current schema version in the manifest', async () => {
@@ -132,24 +139,21 @@ describe('PgTenantBackup', () => {
   });
 
   describe('import', () => {
-    it('rewrites tenant_id to the target and clears settings.sync', async () => {
+    it('rewrites tenant_id to the target and preserves settings.sync', async () => {
       await seedSource(pool, SOURCE_TENANT);
       const { text } = await exportTenant(pool, SOURCE_TENANT);
-
       const result = await importInto(pool, TARGET_TENANT, text);
+      expect(result).toMatchObject({ sourceTenant: SOURCE_TENANT, rows: 6 });
+      await expectRestoredContent(pool, TARGET_TENANT, { url: 'https://example.com' });
+    });
 
-      expect(result.sourceTenant).toBe(SOURCE_TENANT);
-      expect(result.rows).toBe(4);
-
-      const templates = await pool.query(`SELECT name FROM templates WHERE "tenant_id" = $1`, [
-        TARGET_TENANT,
-      ]);
-      expect(templates.rows).toEqual([{ name: 'Document' }]);
-
-      const settings = await pool.query(`SELECT sync FROM settings WHERE "tenant_id" = $1`, [
-        TARGET_TENANT,
-      ]);
-      expect(settings.rows).toEqual([{ sync: null }]);
+    it('nulls settings.sync when nullSync is set', async () => {
+      await seedSource(pool, SOURCE_TENANT);
+      const { text } = await exportTenant(pool, SOURCE_TENANT);
+      await new PgTenantBackup(pool).import(TARGET_TENANT, Readable.from([text]), {
+        nullSync: true,
+      });
+      await expectRestoredContent(pool, TARGET_TENANT, null);
     });
 
     it('keeps ix foreign keys intact and leaves the source untouched', async () => {
@@ -198,15 +202,17 @@ describe('PgTenantBackup', () => {
       expect(rows.rows).toEqual([{ name: tricky }]);
     });
 
-    it('does not import in-flight tables', async () => {
+    it('does not import ephemeral tables (captchas, password_recoveries)', async () => {
       await seedSource(pool, SOURCE_TENANT);
       const { text } = await exportTenant(pool, SOURCE_TENANT);
       await importInto(pool, TARGET_TENANT, text);
 
-      const captchas = await pool.query(`SELECT 1 FROM captchas WHERE "tenant_id" = $1`, [
-        TARGET_TENANT,
+      const [captchas, recoveries] = await Promise.all([
+        pool.query(`SELECT 1 FROM captchas WHERE "tenant_id" = $1`, [TARGET_TENANT]),
+        pool.query(`SELECT 1 FROM password_recoveries WHERE "tenant_id" = $1`, [TARGET_TENANT]),
       ]);
       expect(captchas.rowCount).toBe(0);
+      expect(recoveries.rowCount).toBe(0);
     });
 
     it('reports per-table progress with row counts', async () => {
@@ -214,9 +220,9 @@ describe('PgTenantBackup', () => {
       const { text } = await exportTenant(pool, SOURCE_TENANT);
       const events: TenantTableProgress[] = [];
 
-      await new PgTenantBackup(pool).import(TARGET_TENANT, Readable.from([text]), event =>
-        events.push(event)
-      );
+      await new PgTenantBackup(pool).import(TARGET_TENANT, Readable.from([text]), {
+        onProgress: event => events.push(event),
+      });
 
       const templates = events.filter(e => e.table === 'templates');
       expect(templates).toMatchObject([
@@ -258,6 +264,15 @@ describe('PgTenantBackup', () => {
       await expect(
         backupAtVersion(pool, 5).import(TARGET_TENANT, Readable.from([stream]))
       ).rejects.toBeInstanceOf(PrematureEndOfStreamError);
+    });
+  });
+
+  describe('import: jobs', () => {
+    it('regenerates ids, retargets tenant scope, and skips system jobs', async () => {
+      await seedJobs(pool, SOURCE_TENANT);
+      const { text } = await exportTenant(pool, SOURCE_TENANT);
+      await importInto(pool, TARGET_TENANT, text);
+      await expectClonedJobs(pool, SOURCE_TENANT, TARGET_TENANT);
     });
   });
 });

@@ -63,13 +63,20 @@ export function parseManifest(line: string): ExportManifest {
 }
 
 /**
- * Rewrites the tenant_id field of one COPY text row. Export always emits tenant_id as the first
- * column, and tenant names cannot contain tabs, so everything up to the first tab (or the whole
- * line) is the tenant_id.
+ * Replaces the value of one tab-delimited field of a COPY text row. COPY escapes any tab or
+ * newline inside a value as `\t`/`\n`, so a literal tab always separates fields.
  */
-export function rewriteTenantId(line: string, tenantId: string): string {
-  const tab = line.indexOf('\t');
-  return tab === -1 ? tenantId : `${tenantId}${line.slice(tab)}`;
+export function rewriteField(line: string, index: number, value: string): string {
+  let start = 0;
+  for (let i = 0; i < index; i += 1) {
+    const tab = line.indexOf('\t', start);
+    if (tab === -1) return line;
+    start = tab + 1;
+  }
+  const end = line.indexOf('\t', start);
+  return end === -1
+    ? `${line.slice(0, start)}${value}`
+    : `${line.slice(0, start)}${value}${line.slice(end)}`;
 }
 
 export { MANIFEST_VERSION };

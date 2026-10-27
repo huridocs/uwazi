@@ -1,21 +1,13 @@
 import type { Pool } from 'pg';
 
 /**
- * Tenant-scoped tables that are not tenant *data*: they hold in-flight or transient operation
- * state, not content. Export/import skip them; clean still wipes them (its job is an empty
- * tenant, not a backup). `jobs` needs no entry here — it has no tenant_id column, so the
- * discovery query never returns it.
+ * Tenant-scoped tables that are not tenant *data*: ephemeral security artifacts. Export/import
+ * skip them; clean still wipes them (its job is an empty tenant, not a backup). Everything else
+ * with a tenant_id column is exported, in-flight operation state (`csv_imports` staging tables,
+ * `px_entities_status`) and the `jobs` queue included, so a mid-process tenant can be restored
+ * and resume where it stopped.
  */
-export const EXCLUDED_TABLES = new Set([
-  'captchas',
-  'csv_imports',
-  'csv_import_rows',
-  'csv_import_row_errors',
-  'csv_import_thesauri_values',
-  'csv_import_relationships_pending_values',
-  'csv_import_relationships_values',
-  'px_entities_status',
-]);
+export const EXCLUDED_TABLES = new Set(['captchas', 'password_recoveries']);
 
 export type TableWithColumns = { name: string; columns: string[] };
 

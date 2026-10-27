@@ -110,22 +110,29 @@ describe('TenantsRoutes', () => {
   });
 
   describe('import', () => {
-    it('should take clear, leaving it undefined when absent', () => {
+    it('should take clear and nullSync, leaving them undefined when absent', () => {
       expect(parse('import', {})).toEqual({});
       expect(parse('import', { clear: true })).toEqual({ clear: true });
+      expect(parse('import', { nullSync: true })).toEqual({ nullSync: true });
     });
 
-    it('should reject a non-boolean clear', () => {
+    it('should reject non-boolean clear and nullSync', () => {
       expect(issuesOf(() => parse('import', { clear: 'yes' }))).toEqual(['clear']);
+      expect(issuesOf(() => parse('import', { nullSync: 'yes' }))).toEqual(['nullSync']);
     });
 
-    it('should expose clear as a flag merged into the request', () => {
+    it('should expose clear and null-sync as flags merged into the request', () => {
       const importRoute = route('import');
       const merge = importRoute.requestFromFlags;
       if (!merge) throw new Error('import should merge flags into its request');
 
       expect(importRoute.request.parse(merge({ clear: true }, {}))).toEqual({ clear: true });
-      expect(importRoute.request.parse(merge({ clear: false }, {}))).toEqual({});
+      expect(importRoute.request.parse(merge({ 'null-sync': true }, {}))).toEqual({
+        nullSync: true,
+      });
+      expect(importRoute.request.parse(merge({ clear: false, 'null-sync': false }, {}))).toEqual(
+        {}
+      );
       expect(importRoute.options).toBeDefined();
     });
   });

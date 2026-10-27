@@ -16,17 +16,23 @@ import { NamespacedDispatcher } from '../infrastructure/NamespacedDispatcher.js'
 import { PostgresQueueAdapter } from '../infrastructure/PostgresQueueAdapter.js';
 import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
 import { RoundRobinPostgresQueueAdapter } from '../infrastructure/RoundRobinPostgresQueueAdapter.js';
-import { QueueAdapter } from '../infrastructure/QueueAdapter.js';
+import { QueueAdapter, PushJobInput } from '../infrastructure/QueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(getSharedConnection(), transactionManager);
 }
 
-export function DefaultPostgresQueueAdapter(transactionManager: PostgresTransactionManager) {
+export function DefaultPostgresQueueAdapter(
+  transactionManager: PostgresTransactionManager,
+  decorateJobRow?: (job: PushJobInput) => Record<string, unknown>,
+  decoratedColumns?: string[]
+) {
   return new PostgresQueueAdapter({
     workerKnex: PostgresDB.knex,
     transactionManager,
     logger: LoggerFactory.systemLogger(),
+    decorateJobRow,
+    decoratedColumns,
   });
 }
 

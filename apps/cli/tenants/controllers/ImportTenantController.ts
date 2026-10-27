@@ -7,7 +7,7 @@ import { createProgressWriter } from './backupProgress.js';
 import type { ProgressWriter } from './backupProgress.js';
 import type { TenantBackupDeps } from './TenantBackupDeps.js';
 
-type ImportTenantInput = { clear?: boolean };
+type ImportTenantInput = { clear?: boolean; nullSync?: boolean };
 
 function resolveDeps(deps: TenantBackupDeps) {
   return {
@@ -30,9 +30,9 @@ async function cleanBeforeImport(
 }
 
 /**
- * Loads a COPY stream from stdin into the current tenant, rewriting every tenant_id to it and
- * clearing sync config, then reindexes it. `clear` wipes the tenant first, so a failed import
- * can be retried in place without running clean separately.
+ * Loads a COPY stream from stdin into the current tenant, rewriting every tenant_id to it, then
+ * reindexes it. `clear` wipes the tenant first, so a failed import can be retried in place
+ * without running clean separately. `nullSync` clears settings.sync (default: preserved).
  */
 class ImportTenantController {
   static async handle(
@@ -46,7 +46,10 @@ class ImportTenantController {
 
     await cleanBeforeImport(backup, { tenantId, clear: input.clear, progress });
 
-    const result = await backup.import(tenantId, stdin, progress.table);
+    const result = await backup.import(tenantId, stdin, {
+      onProgress: progress.table,
+      nullSync: input.nullSync,
+    });
     progress.line(`reindexing ${tenantId}…`);
     await reindex(tenantId);
 

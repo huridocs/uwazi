@@ -4,9 +4,10 @@ import type { Readable, Writable } from 'stream';
 import type pg from 'pg';
 import { from as copyFrom, to as copyTo } from 'pg-copy-streams';
 import { PrematureEndOfStreamError } from './PrematureEndOfStreamError.js';
-import { parseManifest, rewriteTenantId, serializeManifest } from './manifest.js';
+import { parseManifest, serializeManifest } from './manifest.js';
 import type { ExportManifest } from './manifest.js';
 import { validateManifest } from './manifestValidation.js';
+import { nullSyncConfig, reconcileJobs, rowRewriter } from './importSteps.js';
 import { readSchemaVersion } from './schemaVersion.js';
 import {
   discoverDataTablesWithColumns,
@@ -140,7 +141,7 @@ async function accumulate(stream: Writable, batch: string, row: string): Promise
 async function writeRows(
   lines: AsyncIterableIterator<string>,
   stream: Writable,
-  target: { table: string; tenantId: string; onRow?: (rows: number) => void }
+  target: { table: string; rewrite: (line: string) => string; onRow?: (rows: number) => void }
 ): Promise<void> {
   let batch = '';
   let rows = 0;
@@ -149,7 +150,7 @@ async function writeRows(
     const { value, done } = await lines.next();
     if (done) throw abortCopy(stream, target.table);
     if (value === COPY_END_MARKER) break;
-    batch = await accumulate(stream, batch, rewriteTenantId(value, target.tenantId));
+    batch = await accumulate(stream, batch, target.rewrite(value));
     rows += 1;
     target.onRow?.(rows);
   }
@@ -172,7 +173,7 @@ async function loadTable(
   stream.on('error', () => {});
   await writeRows(lines, stream, {
     table: target.table.name,
-    tenantId: target.tenantId,
+    rewrite: rowRewriter(target.table, target.tenantId),
     onRow: rows => target.report(rows, false),
   });
   stream.end();
@@ -181,20 +182,16 @@ async function loadTable(
   return stream.rowCount;
 }
 
-async function sanitizeSettings(
-  client: pg.PoolClient,
-  manifest: ExportManifest,
-  tenantId: string
-): Promise<void> {
-  if (manifest.tables.some(table => table.name === 'settings')) {
-    await client.query(`UPDATE "settings" SET "sync" = NULL WHERE "tenant_id" = $1`, [tenantId]);
-  }
-}
-
 /**
  * Tenant backup/restore over the admin/migrator pool (RLS-bypassing): export one tenant to a
  * portable COPY stream, import such a stream into another tenant, or clean a tenant's rows.
  */
+type ImportOptions = {
+  onProgress?: TenantProgress;
+  /** When true, clears settings.sync: a cross-tenant restore must not inherit the source's sync config. */
+  nullSync?: boolean;
+};
+
 export class PgTenantBackup {
   constructor(
     private readonly pool: pg.Pool,
@@ -248,19 +245,21 @@ export class PgTenantBackup {
 
   /**
    * Reads an export stream from `input` and loads it into `tenantId`, rewriting every row's
-   * tenant_id to the destination and clearing `settings.sync`. All-or-nothing: a failing table
-   * rolls back the whole import.
+   * tenant_id to the destination and reconciling jobs' namespace to it. `settings.sync` is
+   * preserved unless `nullSync` is set. All-or-nothing: a failing table rolls back the whole
+   * import.
    */
   async import(
     tenantId: string,
     input: Readable,
-    onProgress?: TenantProgress
+    options: ImportOptions = {}
   ): Promise<{ sourceTenant: string; tables: string[]; rows: number }> {
+    const { onProgress, nullSync = false } = options;
     const knownTables = new Set(await discoverTenantTables(this.pool));
     try {
       const lines = readLines(input);
       const manifest = await readManifest(lines);
-      await validateManifest(manifest, knownTables, () => this.currentSchemaVersion());
+      await validateManifest(manifest, knownTables, async () => this.currentSchemaVersion());
       const rows = await withTransaction(this.pool, 'BEGIN', async client => {
         let total = 0;
         /* eslint-disable no-await-in-loop */
@@ -272,7 +271,10 @@ export class PgTenantBackup {
           total += await loadTable(client, lines, { table, tenantId, report });
         }
         /* eslint-enable no-await-in-loop */
-        await sanitizeSettings(client, manifest, tenantId);
+        await reconcileJobs(client, manifest, tenantId);
+        if (nullSync) {
+          await nullSyncConfig(client, manifest, tenantId);
+        }
         return total;
       });
       return {

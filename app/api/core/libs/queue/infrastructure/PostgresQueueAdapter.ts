@@ -25,6 +25,17 @@ type Dependencies = {
   /** Dispatch side: pushes and deletes join the transaction running on it, if any. */
   transactionManager?: PostgresTransactionManager;
   logger: Logger;
+  /**
+   * Extra columns to add to every inserted job row. Generic on purpose: the queue library knows
+   * nothing of tenants; a Uwazi adapter supplies the tenant-scoped columns through this hook.
+   */
+  decorateJobRow?: (job: PushJobInput) => Record<string, unknown>;
+  /**
+   * Column names the decorateJobRow hook may add to `jobs`. When any of them does not exist yet
+   * (its schema migration has not run), the adapter skips decoration and inserts the base row.
+   * TEMPORARY: remove once the `tenant_id` schema migration is guaranteed deployed everywhere.
+   */
+  decoratedColumns?: string[];
 };
 
 const UNDEFINED_TABLE = '42P01';
@@ -92,7 +103,11 @@ export class PostgresQueueAdapter implements QueueAdapter {
     if (!jobs.length) return [];
 
     const now = Date.now();
-    const rows = jobs.map(job => toRow(job, now));
+    const decorate = await this.shouldDecorate();
+    const rows = jobs.map(job => ({
+      ...toRow(job, now),
+      ...(decorate ? (this.deps.decorateJobRow?.(job) ?? {}) : {}),
+    }));
     const insertInChunks = async (db: Knex) =>
       ArrayUtils.sequentialFor(ArrayUtils.splitInChunks(rows, INSERT_CHUNK_ROWS), async chunk =>
         db('jobs').insert(chunk)
@@ -103,6 +118,28 @@ export class PostgresQueueAdapter implements QueueAdapter {
       db.isTransaction ? insertInChunks(db) : db.transaction(insertInChunks)
     );
     return rows.map(row => row.id);
+  }
+
+  /** Whether to apply decorateJobRow now: only if every column it declares already exists. */
+  private async shouldDecorate(): Promise<boolean> {
+    if (!this.deps.decorateJobRow) return false;
+    const columns = this.deps.decoratedColumns;
+    if (!columns || columns.length === 0) return true;
+    return this.decoratedColumnsExist(columns);
+  }
+
+  private async decoratedColumnsExist(columns: string[]): Promise<boolean> {
+    const placeholders = columns.map(() => '?').join(', ');
+    const { rows } = await this.deps.workerKnex.raw<{ rows: { present: number }[] }>(
+      `SELECT COUNT(*)::int AS present
+       FROM pg_attribute
+       WHERE attrelid = 'jobs'::regclass
+         AND attnum > 0
+         AND NOT attisdropped
+         AND attname IN (${placeholders})`,
+      columns
+    );
+    return Number(rows[0].present) === columns.length;
   }
 
   async deleteByParams(
