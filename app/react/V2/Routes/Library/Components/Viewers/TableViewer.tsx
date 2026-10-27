@@ -71,7 +71,10 @@ const renderLibraryTableCell = ({
       />
     );
   }
-  const formatted = libraryTableCellValue(column.type, row.metadata?.[column.id], displayContext);
+  const formatted = libraryTableCellValue(column.type, row.metadata?.[column.id], {
+    ...displayContext,
+    inheritedType: column.inheritedType,
+  });
   if (formatted.links?.length) {
     return <LibraryLinks links={formatted.links} />;
   }

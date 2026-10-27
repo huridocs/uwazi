@@ -19,4 +19,14 @@ const inheritedTypeLayout = (inheritedType?: string): InheritedTypeLayout => {
   }
 };
 
-export { inheritedTypeLayout };
+const propertyRowTracks = (columns: { inheritedType?: string }[]) => {
+  const tracks = columns.map(column =>
+    column.inheritedType === 'markdown' ? 'minmax(0, 3fr)' : 'minmax(0, 1fr)'
+  );
+  if (!tracks.includes('minmax(0, 3fr)')) {
+    return `repeat(${columns.length + 1}, minmax(0, 1fr))`;
+  }
+  return ['minmax(0, max-content)', ...tracks].join(' ');
+};
+
+export { inheritedTypeLayout, propertyRowTracks };

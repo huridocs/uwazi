@@ -163,6 +163,21 @@ describe('libraryTableCellValue inherited values', () => {
     ).toEqual({ text: '', interactive: false });
   });
 
+  it('formats an inherited date from the template type when the row has none', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedValue: [{ value: 1704067200 }],
+          },
+        ],
+        { ...context, inheritedType: 'date' }
+      )
+    ).toEqual({ text: 'Jan 1, 2024', interactive: false });
+  });
+
   it('formats an inherited date with the leaf type', () => {
     expect(
       libraryTableCellValue(

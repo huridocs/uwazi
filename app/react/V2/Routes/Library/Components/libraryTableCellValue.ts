@@ -5,7 +5,7 @@ import {
   normalizeTimestamp,
 } from '#V2/Components/Metadata/display/formatMetadataTimestamp.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
-import { resolveInheritedValues } from '#V2/shared/resolveInheritedValues.js';
+import { hasInheritedValues, resolveInheritedValues } from '#V2/shared/resolveInheritedValues.js';
 
 type LibraryLink = {
   label: string;
@@ -175,14 +175,21 @@ const linkFromValue = (value: unknown): LibraryLink | undefined => {
   return { label: label || url, href: url };
 };
 
+const resolvedRows = (propertyType: string, values: unknown, inheritedType?: string) => {
+  const source = asValues(values);
+  if (!hasInheritedValues(source)) {
+    return { type: propertyType, rows: source };
+  }
+  const resolved = resolveInheritedValues(source, inheritedType);
+  return { type: resolved.inheritedType || propertyType, rows: resolved.values };
+};
+
 const libraryTableCellValue = (
   propertyType: string,
   values: unknown,
-  context: DisplayContext & { omitFileText?: boolean }
+  context: DisplayContext & { omitFileText?: boolean; inheritedType?: string }
 ): LibraryTableCellValue => {
-  const resolved = resolveInheritedValues(asValues(values), propertyType);
-  const type = resolved.inheritedType || propertyType;
-  const rows = resolved.values;
+  const { type, rows } = resolvedRows(propertyType, values, context.inheritedType);
 
   if (context.omitFileText && OMITTED_FILE_TYPES.has(type)) {
     return { text: '', interactive: false };

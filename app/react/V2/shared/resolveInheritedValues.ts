@@ -9,11 +9,13 @@ const inheritedChildren = <T extends InheritedChain<T>>(values: T[]) =>
 const hasInheritedValues = <T extends InheritedChain<T>>(values: T[]) =>
   inheritedChildren(values).length > 0;
 
-const resolveInheritedValues = <T extends InheritedChain<T>>(
+const walkInheritedValues = <T extends InheritedChain<T>>(
   values: T[],
-  inheritedType?: T['inheritedType']
+  inheritedType: T['inheritedType'] | undefined,
+  seen: WeakSet<object>
 ): { inheritedType?: T['inheritedType']; values: T[] } => {
-  const nextValues = inheritedChildren(values);
+  values.forEach(item => seen.add(item));
+  const nextValues = inheritedChildren(values).filter(item => !seen.has(item));
   if (!nextValues.length) {
     return { inheritedType, values };
   }
@@ -21,10 +23,17 @@ const resolveInheritedValues = <T extends InheritedChain<T>>(
   const currentInheritedType = values.find(item => item.inheritedType)?.inheritedType;
   const nextInheritedType = nextValues.find(item => item.inheritedType)?.inheritedType;
 
-  return resolveInheritedValues(
+  return walkInheritedValues(
     nextValues,
-    nextInheritedType || currentInheritedType || inheritedType
+    nextInheritedType || currentInheritedType || inheritedType,
+    seen
   );
 };
+
+const resolveInheritedValues = <T extends InheritedChain<T>>(
+  values: T[],
+  inheritedType?: T['inheritedType']
+): { inheritedType?: T['inheritedType']; values: T[] } =>
+  walkInheritedValues(values, inheritedType, new WeakSet());
 
 export { hasInheritedValues, resolveInheritedValues };
