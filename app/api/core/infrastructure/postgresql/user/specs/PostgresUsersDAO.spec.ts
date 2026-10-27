@@ -5,6 +5,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
+import { Statements } from '../../common/Statement.js';
 import { PostgresUsersDAO } from '../PostgresUsersDAO.js';
 import type { UserScope } from '../UserReadOptions.js';
 
@@ -34,7 +35,7 @@ const OTHER_TENANT_ID = 'other-tenant';
 const PUBLIC_ID = PUBLIC_USER_ID.toHexString();
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 const makeDAO = (tenantId = TENANT_ID) =>
   new PostgresUsersDAO({
@@ -221,13 +222,15 @@ describe('PostgresUsersDAO', () => {
         ],
       });
 
-      const seen = await managerFor(TENANT_ID).withConnection(async trx => ({
-        users: await trx.raw('SELECT "_id" FROM users'),
-        groups: await trx.raw('SELECT "_id" FROM usergroups'),
-      }));
+      const permission = { bypass: false, refIds: [] };
+      const [users, groups] = await managerFor(TENANT_ID).queryAll([
+        Statements.raw('SELECT "_id" FROM users', [], permission),
+        Statements.raw('SELECT "_id" FROM usergroups', [], permission),
+      ]);
+      const seen = { users, groups };
 
-      expect(seen.users.rows.map((row: { _id: string }) => row._id)).not.toContain('intruder');
-      expect(seen.groups.rows.map((row: { _id: string }) => row._id)).not.toContain('otherGroup');
+      expect(seen.users.rows.map(row => row._id)).not.toContain('intruder');
+      expect(seen.groups.rows.map(row => row._id)).not.toContain('otherGroup');
       expect(seen.groups.rows).toHaveLength(2);
     });
   });

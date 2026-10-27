@@ -25,7 +25,7 @@ describe('PostgresTemplatesDAO', () => {
     return new PostgresTemplatesDAO({
       tenantId: tenantName,
       pgTransactionManager: new PostgresTransactionManager(
-        PostgresDB.knex,
+        PostgresDB.pipelinedPool(),
         tenantName,
         LoggerFactory.forTests()
       ),

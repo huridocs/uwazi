@@ -14,7 +14,7 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
 const TENANT_ID = 'test-tenant';
 
 const managerFor = (tenantId: string) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
 const factory = getFixturesFactory({ convertIdToString: true, tenantId: TENANT_ID });
 

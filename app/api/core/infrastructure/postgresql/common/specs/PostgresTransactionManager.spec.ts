@@ -3,47 +3,52 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
+import { Statements, type StatementPermission } from '../Statement.js';
 
 const TENANT = 'tenant-a';
+const SYSTEM = { bypass: true, refIds: [] };
+const COLLABORATOR = { bypass: false, refIds: ['u1'] };
+
+const CONTEXT_SQL = `SELECT current_setting('app.current_tenant', true) AS tenant,
+  current_setting('uwazi.bypass_rls', true) AS bypass,
+  current_setting('uwazi.ref_ids', true) AS "refIds"`;
 
 const createManager = (tenantId = TENANT) =>
-  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenantId, LoggerFactory.forTests());
 
-const insertRow = (executor: any, _id: string, name = _id, tenantId = TENANT) =>
-  executor('thesauri').insert({ _id, name, values: JSON.stringify([]), tenant_id: tenantId });
+const contextUnder = (permission: StatementPermission) =>
+  Statements.raw(CONTEXT_SQL, [], permission);
 
-const deferred = <T = void>() => {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>(resolveFn => {
-    resolve = resolveFn;
-  });
-  return { promise, resolve };
-};
+const insert = (_id: string, permission: StatementPermission = SYSTEM) =>
+  Statements.raw(
+    'INSERT INTO thesauri ("_id", "name", "values", "tenant_id") VALUES (?, ?, ?, ?)',
+    [_id, _id, '[]', TENANT],
+    permission
+  );
 
-/** Records every statement knex sends, transaction control included. */
+const select = (sql: string) => Statements.raw(sql, [], SYSTEM);
+
+const thesaurusIds = async () =>
+  (await testingPG.getAllFrom('thesauri')).map(row => row._id).sort();
+
+/** The messages the executors send, with the context statement shown as 'context'. */
 const recordStatements = () => {
   const statements: string[] = [];
-  const listener = (query: { sql: string }) => statements.push(query.sql);
-  PostgresDB.knex.on('query', listener);
-  return {
-    statements,
-    stop: () => PostgresDB.knex.removeListener('query', listener),
-  };
+  const stop = PostgresDB.onStatement(sql =>
+    statements.push(sql.includes('set_config') ? 'context' : sql)
+  );
+  return { statements, stop };
 };
 
-const spyOnCommit = (manager: PostgresTransactionManager): string[] => {
-  const events: string[] = [];
-  const originalBegin = manager.beginTransaction.bind(manager);
-  jest.spyOn(manager, 'beginTransaction').mockImplementation(async permissionContext => {
-    const handle = await originalBegin(permissionContext);
-    const { commit } = handle;
-    handle.commit = async () => {
-      events.push('commit');
-      await commit();
-    };
-    return handle;
-  });
-  return events;
+/** A statement that fails with a serialization failure the first `times` times it is built. */
+const failingWithSerialization = (times: number) => {
+  let failures = 0;
+  return () => {
+    failures += 1;
+    return failures <= times
+      ? select("DO $$ BEGIN RAISE EXCEPTION 'conflict' USING ERRCODE = '40001'; END $$")
+      : select('SELECT 1');
+  };
 };
 
 describe('PostgresTransactionManager', () => {
@@ -52,404 +57,286 @@ describe('PostgresTransactionManager', () => {
   });
 
   beforeEach(async () => {
-    await testingPG.clear();
+    await testingPG.clear(['thesauri']);
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('withConnection (case #1 — no active transaction)', () => {
-    it('should open a transaction and set app.current_tenant for the manager tenant', async () => {
-      const manager = createManager('tenant-x');
+  describe('outside a transaction', () => {
+    it('should send BEGIN, the context, the statement and COMMIT for a read', async () => {
+      const recorder = recordStatements();
 
-      const setting = await manager.withConnection(async executor => {
-        const result = await executor.raw(
-          "SELECT current_setting('app.current_tenant', true) AS t"
-        );
-        return result.rows[0].t;
-      });
+      const result = await createManager().query(select('SELECT 1 AS one'));
+      recorder.stop();
 
-      expect(setting).toBe('tenant-x');
+      expect(result.rows).toEqual([{ one: 1 }]);
+      expect(recorder.statements).toEqual(['BEGIN', 'context', 'SELECT 1 AS one', 'COMMIT']);
     });
 
-    it('should commit the work performed inside the connection', async () => {
-      const manager = createManager();
+    it('should commit a write on its own, with the same four messages', async () => {
+      const recorder = recordStatements();
 
-      await manager.withConnection(async executor => insertRow(executor, 'c1'));
+      await createManager().query(insert('w1'));
+      recorder.stop();
 
-      const rows = await testingPG.getAllFrom('thesauri');
-      expect(rows.map(r => r._id)).toEqual(['c1']);
+      expect(await thesaurusIds()).toEqual(['w1']);
+      expect(recorder.statements).toEqual([
+        'BEGIN',
+        'context',
+        expect.stringMatching(/^INSERT/),
+        'COMMIT',
+      ]);
     });
-    it('should propagate the original error when rollback also throws', async () => {
-      const manager = createManager();
-      const origBeginTx = manager.beginTransaction.bind(manager);
 
-      jest.spyOn(manager, 'beginTransaction').mockImplementation(async pc => {
-        const handle = await origBeginTx(pc);
-        const origRollback = handle.rollback;
-        handle.rollback = async () => {
-          await origRollback();
-          throw new Error('rollback failed');
-        };
-        return handle;
-      });
+    it('should run a statement under the manager tenant and its own permission', async () => {
+      const { rows } = await createManager('tenant-x').query(contextUnder(COLLABORATOR));
 
-      const originalError = new Error('original business error');
+      expect(rows).toEqual([{ tenant: 'tenant-x', bypass: 'false', refIds: 'u1' }]);
+    });
+
+    it('should run queryAll in one transaction', async () => {
       await expect(
-        manager.withConnection(async () => {
-          throw originalError;
-        })
-      ).rejects.toThrow('original business error');
-    });
-  });
+        createManager().queryAll([insert('q1'), select('SELECT 1/0')])
+      ).rejects.toMatchObject({ code: '22012' });
 
-  describe('withConnection (case #2 — active transaction from run)', () => {
-    it('should reuse the running transaction so uncommitted writes are visible to later reads', async () => {
-      const manager = createManager();
-
-      const seenInsideRun = await manager.run(async () => {
-        await manager.withConnection(async executor => insertRow(executor, 'shared'));
-        return manager.withConnection(async executor =>
-          executor('thesauri').where({ _id: 'shared' }).first()
-        );
-      });
-
-      expect(seenInsideRun).toMatchObject({ _id: 'shared' });
+      expect(await thesaurusIds()).toEqual([]);
     });
 
-    it('should roll back the shared transaction when the run throws', async () => {
-      const manager = createManager();
+    it('should stream a statement', async () => {
+      const rows: unknown[] = [];
+      for await (const row of createManager().stream(
+        select('SELECT n FROM generate_series(1, 3) AS n')
+      )) {
+        rows.push(row);
+      }
 
-      await expect(
-        manager.run(async () => {
-          await manager.withConnection(async executor => insertRow(executor, 'rollback-me'));
-          throw new Error('boom');
-        })
-      ).rejects.toThrow('boom');
-
-      const rows = await testingPG.getAllFrom('thesauri');
-      expect(rows).toHaveLength(0);
-    });
-
-    it('should wait for a joined connection still in flight before committing', async () => {
-      const manager = createManager();
-      const events = spyOnCommit(manager);
-      const joinGate = deferred();
-
-      let slow!: Promise<unknown>;
-      const runPromise = manager.run(async () => {
-        slow = manager.withConnection(async executor => {
-          await joinGate.promise;
-          events.push('joined-write');
-          await insertRow(executor, 'joined-late');
-        });
-      });
-
-      joinGate.resolve();
-      await slow;
-      await runPromise;
-
-      expect(events).toEqual(['joined-write', 'commit']);
-      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['joined-late']);
+      expect(rows).toEqual([{ n: 1 }, { n: 2 }, { n: 3 }]);
     });
   });
 
   describe('run', () => {
-    it('should commit all writes on success', async () => {
+    it('should send BEGIN and the context with the first statement, and COMMIT at the end', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      await manager.run(async () => {
+        await manager.query(insert('r1'));
+        await manager.query(insert('r2'));
+      });
+      recorder.stop();
+
+      expect(recorder.statements).toEqual([
+        'BEGIN',
+        'context',
+        expect.stringMatching(/^INSERT/),
+        expect.stringMatching(/^INSERT/),
+        'COMMIT',
+      ]);
+    });
+
+    it('should send the context again only when the permission changes', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      const seen = await manager.run(async () => [
+        (await manager.query(contextUnder(SYSTEM))).rows[0],
+        (await manager.query(contextUnder(SYSTEM))).rows[0],
+        (await manager.query(contextUnder(COLLABORATOR))).rows[0],
+        (await manager.query(contextUnder('inherit'))).rows[0],
+      ]);
+      recorder.stop();
+
+      expect(seen.map(row => `${row.bypass}/${row.refIds}`)).toEqual([
+        'true/',
+        'true/',
+        'false/u1',
+        'false/u1',
+      ]);
+      expect(recorder.statements.filter(sql => sql === 'context')).toHaveLength(2);
+    });
+
+    it('should commit every write on success, and only then make them visible', async () => {
       const manager = createManager();
 
       await manager.run(async () => {
-        await manager.withConnection(async executor => insertRow(executor, 'r1'));
-        await manager.withConnection(async executor => insertRow(executor, 'r2'));
+        await manager.query(insert('c1'));
+        expect(await thesaurusIds()).toEqual([]);
+        await manager.query(insert('c2'));
       });
 
-      const rows = await testingPG.getAllFrom('thesauri');
-      expect(rows.map(r => r._id).sort()).toEqual(['r1', 'r2']);
+      expect(await thesaurusIds()).toEqual(['c1', 'c2']);
     });
 
-    it('should roll back all writes on error', async () => {
+    it('should see its own uncommitted writes', async () => {
       const manager = createManager();
 
-      await expect(
-        manager.run(async () => {
-          await manager.withConnection(async executor => insertRow(executor, 'r1'));
-          throw new Error('fail');
-        })
-      ).rejects.toThrow('fail');
-
-      const rows = await testingPG.getAllFrom('thesauri');
-      expect(rows).toHaveLength(0);
-    });
-
-    it('should propagate the original error when rollback also throws', async () => {
-      const manager = createManager();
-      const origBeginTx = manager.beginTransaction.bind(manager);
-
-      jest.spyOn(manager, 'beginTransaction').mockImplementation(async pc => {
-        const handle = await origBeginTx(pc);
-        const origRollback = handle.rollback;
-        handle.rollback = async () => {
-          await origRollback();
-          throw new Error('rollback failed');
-        };
-        return handle;
+      const inside = await manager.run(async () => {
+        await manager.query(insert('own'));
+        return (await manager.query(select('SELECT "_id" FROM thesauri'))).rows;
       });
 
-      const originalError = new Error('original run error');
-      await expect(
-        manager.run(async () => {
-          throw originalError;
-        })
-      ).rejects.toThrow('original run error');
+      expect(inside).toEqual([{ _id: 'own' }]);
     });
 
-    it('should fire onCommitted only after a successful commit', async () => {
+    it('should roll back every write when the callback throws', async () => {
       const manager = createManager();
-      const handler = jest.fn().mockResolvedValue(undefined);
-      manager.onCommitted(handler);
-
-      await manager.run(async () =>
-        manager.withConnection(async executor => insertRow(executor, 'oc-1'))
-      );
-
-      expect(handler).toHaveBeenCalledTimes(1);
-    });
-
-    it('should NOT fire onCommitted when the run rolls back', async () => {
-      const manager = createManager();
-      const handler = jest.fn().mockResolvedValue(undefined);
-      manager.onCommitted(handler);
 
       await expect(
         manager.run(async () => {
-          throw new Error('nope');
+          await manager.query(insert('gone'));
+          throw new Error('boom');
         })
-      ).rejects.toThrow('nope');
+      ).rejects.toThrow('boom');
 
-      expect(handler).not.toHaveBeenCalled();
+      expect(await thesaurusIds()).toEqual([]);
+    });
+
+    it('should return the callback result', async () => {
+      await expect(createManager().run(async () => 'result')).resolves.toBe('result');
+    });
+
+    it('should send nothing for a run without statements', async () => {
+      const manager = createManager();
+      const recorder = recordStatements();
+
+      await manager.run(async () => undefined);
+      recorder.stop();
+
+      expect(recorder.statements).toEqual([]);
     });
 
     it('should reject when a transaction is already in progress', async () => {
       const manager = createManager();
 
-      await manager.run(async () => {
-        await expect(manager.run(async () => undefined)).rejects.toThrow(
-          'Transaction already in progress.'
-        );
-      });
-    });
-  });
-
-  describe('statements sent to set the context', () => {
-    const contextStatements = (statements: string[]) =>
-      statements.filter(sql => sql.includes('set_config') || sql.includes('current_setting'));
-
-    it('should open a transaction with a single context statement', async () => {
-      const manager = createManager();
-      const recorder = recordStatements();
-
-      await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
-      recorder.stop();
-
-      expect(recorder.statements).toHaveLength(3);
-      expect(contextStatements(recorder.statements)).toHaveLength(1);
-    });
-
-    it('should set the context with a single statement when joining a run', async () => {
-      const manager = createManager();
-
-      await manager.run(async () => {
-        const recorder = recordStatements();
-        await manager.withConnection(async () => undefined, { bypass: false, refIds: ['r1'] });
-        recorder.stop();
-
-        expect(contextStatements(recorder.statements)).toHaveLength(1);
-      });
-    });
-
-    it('should not read the context back from the database for a nested beginTransaction', async () => {
-      const manager = createManager();
-
-      await manager.run(async () => {
-        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['admin'] });
-
-        const recorder = recordStatements();
-        const nested = await manager.beginTransaction({ bypass: false, refIds: ['user1'] });
-        await nested.commit();
-        recorder.stop();
-
-        expect(recorder.statements.filter(sql => sql.includes('current_setting'))).toHaveLength(0);
-        expect(contextStatements(recorder.statements)).toHaveLength(2);
-      });
-    });
-
-    it('should send no context statement when a joined connection keeps the same context', async () => {
-      const manager = createManager();
-
-      await manager.run(async () => {
-        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
-
-        const recorder = recordStatements();
-        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
-        recorder.stop();
-
-        expect(contextStatements(recorder.statements)).toHaveLength(0);
-      });
-    });
-
-    it('should apply the new context when a joined connection changes it', async () => {
-      const manager = createManager();
-
-      const seen = await manager.run(async () => {
-        await manager.withConnection(async () => undefined, { bypass: true, refIds: ['r1'] });
-        return manager.withConnection(
-          async executor =>
-            (
-              await executor.raw(
-                "SELECT current_setting('app.current_tenant', true) AS tenant, current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
-              )
-            ).rows[0],
-          { bypass: false, refIds: ['r2', 'r3'] }
-        );
-      });
-
-      expect(seen).toEqual({ tenant: TENANT, bypass: 'false', ref_ids: 'r2,r3' });
-    });
-  });
-
-  describe('concurrent joins on the active transaction', () => {
-    const readContext = async (executor: any) =>
-      (
-        await executor.raw(
-          "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
-        )
-      ).rows[0];
-
-    it('should run each joined connection with its own permission context', async () => {
-      const manager = createManager();
-      const firstStarted = deferred();
-      const releaseFirst = deferred();
-
-      const [first, second] = await manager.run(async () =>
-        Promise.all([
-          manager.withConnection(
-            async executor => {
-              firstStarted.resolve();
-              await releaseFirst.promise;
-              return readContext(executor);
-            },
-            { bypass: true, refIds: ['admin'] }
-          ),
-          (async () => {
-            await firstStarted.promise;
-            const pending = manager.withConnection(readContext, {
-              bypass: false,
-              refIds: ['user1'],
-            });
-            releaseFirst.resolve();
-            return pending;
-          })(),
-        ])
+      await expect(manager.run(async () => manager.run(async () => undefined))).rejects.toThrow(
+        'Transaction already in progress.'
       );
-
-      expect(first).toEqual({ bypass: 'true', ref_ids: 'admin' });
-      expect(second).toEqual({ bypass: 'false', ref_ids: 'user1' });
     });
 
-    it('should not deadlock a connection joined from inside another, and restore the outer context', async () => {
+    it('should reject a statement sent while the run commits', async () => {
       const manager = createManager();
+      let late: Promise<string> = Promise.resolve('');
 
-      const seen = await manager.run(async () =>
-        manager.withConnection(
-          async executor => {
-            const inner = await manager.withConnection(readContext, {
-              bypass: false,
-              refIds: ['inner'],
-            });
-            return { inner, outer: await readContext(executor) };
-          },
-          { bypass: true, refIds: ['outer'] }
-        )
-      );
-
-      expect(seen).toEqual({
-        inner: { bypass: 'false', ref_ids: 'inner' },
-        outer: { bypass: 'true', ref_ids: 'outer' },
+      await manager.run(async () => {
+        await manager.query(insert('kept'));
+        late = new Promise(resolve => {
+          setImmediate(resolve);
+        })
+          .then(async () => {
+            await manager.query(insert('late'));
+            return 'sent';
+          })
+          .catch((error: Error) => error.message);
       });
+
+      expect(await late).toContain('transaction is closed');
+      expect(await thesaurusIds()).toEqual(['kept']);
+    });
+
+    it('should leave the manager ready for the next run after a failed one', async () => {
+      const manager = createManager();
+      await expect(
+        manager.run(async () => {
+          await manager.query(select('SELECT 1/0'));
+        })
+      ).rejects.toMatchObject({ code: '22012' });
+
+      await manager.run(async () => {
+        await manager.query(insert('next'));
+      });
+
+      expect(await thesaurusIds()).toEqual(['next']);
     });
   });
 
-  describe('runReadOnly', () => {
-    it('should run every connection inside it in a single read only transaction', async () => {
+  describe('retries', () => {
+    it('should rerun the callback on a serialization failure, with a fresh transaction', async () => {
       const manager = createManager();
-      const recorder = recordStatements();
+      const nextStatement = failingWithSerialization(2);
+      let attempts = 0;
 
-      await manager.runReadOnly(async () => {
-        await manager.withConnection(async executor => executor('thesauri').select());
-        await manager.withConnection(async executor => executor('thesauri').select());
+      await manager.run(async () => {
+        attempts += 1;
+        await manager.query(insert(`attempt-${attempts}`));
+        await manager.query(nextStatement());
       });
-      recorder.stop();
 
-      expect(recorder.statements.filter(sql => sql.startsWith('BEGIN'))).toEqual([
-        'BEGIN TRANSACTION READ ONLY;',
-      ]);
-      expect(recorder.statements.filter(sql => sql.startsWith('COMMIT'))).toHaveLength(1);
+      expect(attempts).toBe(3);
+      expect(await thesaurusIds()).toEqual(['attempt-3']);
     });
 
-    it('should reject writes', async () => {
+    it('should run the onRetry handlers before each retry', async () => {
       const manager = createManager();
+      const nextStatement = failingWithSerialization(1);
+      const events: string[] = [];
+
+      await manager.run(async () => {
+        manager.onRetry(async () => {
+          events.push('retry');
+        });
+        events.push('attempt');
+        await manager.query(nextStatement());
+      });
+
+      expect(events).toEqual(['attempt', 'retry', 'attempt']);
+    });
+
+    it('should give up after three retries', async () => {
+      const manager = createManager();
+      const nextStatement = failingWithSerialization(10);
+      let attempts = 0;
 
       await expect(
-        manager.runReadOnly(async () =>
-          manager.withConnection(async executor => insertRow(executor, 'ro'))
-        )
-      ).rejects.toMatchObject({ code: '25006' });
+        manager.run(async () => {
+          attempts += 1;
+          await manager.query(nextStatement());
+        })
+      ).rejects.toMatchObject({ code: '40001' });
 
-      expect(await testingPG.getAllFrom('thesauri')).toHaveLength(0);
+      expect(attempts).toBe(4);
+    });
+  });
+
+  describe('commit handlers', () => {
+    it('should fire onCommitted only after a successful commit', async () => {
+      const manager = createManager();
+      const seen: string[][] = [];
+
+      await manager.run(async () => {
+        manager.onCommitted(async () => {
+          seen.push(await thesaurusIds());
+        });
+        await manager.query(insert('h1'));
+      });
+
+      expect(seen).toEqual([['h1']]);
     });
 
-    it('should return the callback result and leave the manager ready for the next transaction', async () => {
+    it('should not fire onCommitted when the run rolls back', async () => {
       const manager = createManager();
+      const handler = jest.fn().mockResolvedValue(undefined);
 
-      const result = await manager.runReadOnly(async () => 'value');
-      await manager.run(async () => manager.withConnection(async ex => insertRow(ex, 'after')));
+      await expect(
+        manager.run(async () => {
+          manager.onCommitted(handler);
+          throw new Error('rolled back');
+        })
+      ).rejects.toThrow('rolled back');
+
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('should pass the run result to runHandlingOnCommitted handlers', async () => {
+      const handler = jest.fn().mockResolvedValue(undefined);
+
+      const result = await createManager()
+        .runHandlingOnCommitted(async () => 'value')
+        .onCommitted(handler);
 
       expect(result).toBe('value');
-      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['after']);
-    });
-
-    it('should roll back and rethrow when the callback fails', async () => {
-      const manager = createManager();
-
-      await expect(
-        manager.runReadOnly(async () => {
-          throw new Error('read failed');
-        })
-      ).rejects.toThrow('read failed');
-
-      await manager.run(async () => manager.withConnection(async ex => insertRow(ex, 'after')));
-      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['after']);
-    });
-
-    it('should join a running transaction instead of opening its own', async () => {
-      const manager = createManager();
-
-      await manager.run(async () =>
-        manager.runReadOnly(async () =>
-          manager.withConnection(async executor => insertRow(executor, 'inside-run'))
-        )
-      );
-
-      expect((await testingPG.getAllFrom('thesauri')).map(r => r._id)).toEqual(['inside-run']);
-    });
-
-    it('should not report a running transaction, so write-only guards and commit hooks are unaffected', async () => {
-      const manager = createManager();
-
-      const running = await manager.runReadOnly(async () => manager.isRunning());
-
-      expect(running).toBe(false);
+      expect(handler).toHaveBeenCalledWith('value');
     });
   });
 
@@ -457,198 +344,16 @@ describe('PostgresTransactionManager', () => {
     it('should be true inside run and false outside', async () => {
       const manager = createManager();
 
-      expect(manager.isRunning()).toBe(false);
+      const inside = await manager.run(async () => manager.isRunning());
 
-      await manager.run(async () => {
-        expect(manager.isRunning()).toBe(true);
-      });
-
+      expect(inside).toBe(true);
       expect(manager.isRunning()).toBe(false);
     });
   });
 
-  describe('beginTransaction', () => {
-    describe('top-level (no active transaction)', () => {
-      it('should commit work when commit() is called', async () => {
-        const manager = createManager();
-        const handle = await manager.beginTransaction();
-        await insertRow(handle.trx, 'bt1');
-        await handle.commit();
-
-        const rows = await testingPG.getAllFrom('thesauri');
-        expect(rows.map(r => r._id)).toEqual(['bt1']);
-      });
-
-      it('should roll back work when rollback() is called', async () => {
-        const manager = createManager();
-        const handle = await manager.beginTransaction();
-        await insertRow(handle.trx, 'bt-rollback');
-        await handle.rollback();
-
-        const rows = await testingPG.getAllFrom('thesauri');
-        expect(rows).toHaveLength(0);
-      });
-
-      it('should set app.current_tenant for the manager tenant', async () => {
-        const manager = createManager('tenant-bt');
-        const handle = await manager.beginTransaction();
-        const result = await handle.trx.raw(
-          "SELECT current_setting('app.current_tenant', true) AS t"
-        );
-        await handle.commit();
-        expect(result.rows[0].t).toBe('tenant-bt');
-      });
-
-      it('should set permission vars when provided', async () => {
-        const manager = createManager();
-        const handle = await manager.beginTransaction({
-          bypass: true,
-          refIds: ['ref1', 'ref2'],
-        });
-
-        const bypassResult = await handle.trx.raw(
-          "SELECT current_setting('uwazi.bypass_rls', true) AS v"
-        );
-        const refIdsResult = await handle.trx.raw(
-          "SELECT current_setting('uwazi.ref_ids', true) AS v"
-        );
-
-        await handle.commit();
-        expect(bypassResult.rows[0].v).toBe('true');
-        expect(refIdsResult.rows[0].v).toBe('ref1,ref2');
-      });
-
-      it('should set default permission vars when not provided', async () => {
-        const manager = createManager();
-        const handle = await manager.beginTransaction();
-
-        const bypassResult = await handle.trx.raw(
-          "SELECT current_setting('uwazi.bypass_rls', true) AS v"
-        );
-        const refIdsResult = await handle.trx.raw(
-          "SELECT current_setting('uwazi.ref_ids', true) AS v"
-        );
-
-        await handle.commit();
-        expect(bypassResult.rows[0].v).toBe('false');
-        expect(refIdsResult.rows[0].v).toBe('');
-      });
-
-      it('should roll back the transaction when setting the tenant fails', async () => {
-        const trx = {
-          raw: jest.fn().mockRejectedValue(new Error('set_config failed')),
-          rollback: jest.fn().mockResolvedValue(undefined),
-          commit: jest.fn().mockResolvedValue(undefined),
-        };
-        const knex = { transaction: jest.fn().mockResolvedValue(trx) };
-        const manager = new PostgresTransactionManager(
-          knex as any,
-          'tenant-leak',
-          LoggerFactory.forTests()
-        );
-
-        await expect(manager.beginTransaction()).rejects.toThrow('set_config failed');
-        expect(trx.rollback).toHaveBeenCalledTimes(1);
-        expect(trx.commit).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('nested inside run()', () => {
-      it('should reuse the active transaction', async () => {
-        const manager = createManager();
-
-        await manager.run(async () => {
-          const handle = await manager.beginTransaction();
-          await insertRow(handle.trx, 'nested1');
-          await handle.commit();
-        });
-
-        const rows = await testingPG.getAllFrom('thesauri');
-        expect(rows.map(r => r._id)).toEqual(['nested1']);
-      });
-
-      it('should see uncommitted writes from the outer transaction', async () => {
-        const manager = createManager();
-
-        await manager.run(async () => {
-          await manager.withConnection(async executor => insertRow(executor, 'outer-write'));
-
-          const handle = await manager.beginTransaction();
-          const row = await handle.trx('thesauri').where({ _id: 'outer-write' }).first();
-          await handle.commit();
-
-          expect(row).toMatchObject({ _id: 'outer-write' });
-        });
-      });
-
-      it('commit() should be a no-op (outer transaction owns the lifecycle)', async () => {
-        const manager = createManager();
-
-        await manager.run(async () => {
-          const handle = await manager.beginTransaction();
-          await insertRow(handle.trx, 'nested-commit');
-          await handle.commit();
-
-          // Row still visible inside the run (uncommitted in the outer tx)
-          const row = await manager.withConnection(async executor =>
-            executor('thesauri').where({ _id: 'nested-commit' }).first()
-          );
-          expect(row).toMatchObject({ _id: 'nested-commit' });
-        });
-
-        const rows = await testingPG.getAllFrom('thesauri');
-        expect(rows.map(r => r._id)).toEqual(['nested-commit']);
-      });
-
-      it('rollback() should be a no-op (outer transaction owns the lifecycle)', async () => {
-        const manager = createManager();
-
-        await manager.run(async () => {
-          await manager.withConnection(async executor => insertRow(executor, 'keep-me'));
-
-          const handle = await manager.beginTransaction();
-          await insertRow(handle.trx, 'nested-rollback');
-          await handle.rollback();
-
-          // 'keep-me' still visible — rollback was a no-op
-          const row = await manager.withConnection(async executor =>
-            executor('thesauri').where({ _id: 'keep-me' }).first()
-          );
-          expect(row).toMatchObject({ _id: 'keep-me' });
-        });
-
-        // Outer run commits everything — nested rollback didn't roll back
-        const rows = await testingPG.getAllFrom('thesauri');
-        expect(rows.map(r => r._id).sort()).toEqual(['keep-me', 'nested-rollback']);
-      });
-
-      it('should restore permission vars after nested beginTransaction completes', async () => {
-        const manager = createManager();
-
-        await manager.run(async () => {
-          // Set initial permission context on the shared transaction
-          const outerHandle = await manager.beginTransaction({
-            bypass: true,
-            refIds: ['admin'],
-          });
-
-          // Nested beginTransaction overwrites vars with different context
-          const nestedHandle = await manager.beginTransaction({
-            bypass: false,
-            refIds: ['user1'],
-          });
-          await nestedHandle.commit(); // no-op on shared tx
-
-          const result = await outerHandle.trx.raw(
-            "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
-          );
-
-          expect(result.rows[0].bypass).toBe('true');
-          expect(result.rows[0].ref_ids).toBe('admin');
-
-          await outerHandle.commit(); // no-op
-        });
-      });
+  describe('getSession', () => {
+    it('should have no Mongo session to give', () => {
+      expect(createManager().getSession()).toBeUndefined();
     });
   });
 });

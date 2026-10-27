@@ -22,8 +22,7 @@ import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnf
 import { PostgresTable } from '../common/PostgresTable.js';
 import { entitySyncLogging } from '../common/entitySyncLogging.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import type { PostgresFilesDAO } from '../files/PostgresFilesDAO.js';
-import { entitiesWithFiles } from './entityFilesJoin.js';
+import { filesSubquery, toEntityWithFiles, type EntityRowWithFiles } from './entityFilesJoin.js';
 import { cloneEntitiesForLanguage, deleteEntitiesForLanguage } from './entityLanguageBatches.js';
 import {
   applyEntityFilters,
@@ -35,15 +34,12 @@ import { toEntityDBO } from './entityRow.js';
 import type { EntityRow } from './PostgresEntityRow.js';
 
 type Deps = PostgresDataSourceDeps & {
-  filesDAO: PostgresFilesDAO;
   accessContext: AccessContext;
 };
 
 type FileLoadOptions = { select?: string[]; limit?: number; fullText?: boolean };
 
 class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements EntitiesDAO {
-  private filesDAO: PostgresFilesDAO;
-
   private tenantId: string;
 
   private pgTransactionManager: PostgresTransactionManager;
@@ -54,7 +50,6 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
 
   constructor(deps: Deps) {
     super('entities', deps);
-    this.filesDAO = deps.filesDAO;
     this.tenantId = deps.tenantId;
     this.pgTransactionManager = deps.pgTransactionManager;
 
@@ -82,7 +77,6 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       this.unrestrictedInstance = new PostgresEntitiesDAO({
         tenantId: this.tenantId,
         pgTransactionManager: this.pgTransactionManager,
-        filesDAO: this.filesDAO,
         accessContext: AccessContext.system(),
       });
     }
@@ -253,29 +247,18 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     await deleteEntitiesForLanguage({ table: this.table, language, onBatch });
   }
 
-  private async entitiesForFiles(filters: EntityFilters, options: FileLoadOptions) {
-    const filtered = applyEntityFilters(this.table, filters);
-    const selected = options.select?.length
-      ? filtered.select([...new Set([...options.select, '_id', 'sharedId'])])
-      : filtered;
-    return (options.limit ? selected.limit(options.limit) : selected).all();
-  }
-
   private async getWithFiles(
     filters: EntityFilters,
     options: FileLoadOptions = {}
   ): Promise<EntityWithFiles[]> {
-    const entities = await this.entitiesForFiles(filters, options);
-    if (entities.length === 0) {
-      return [];
-    }
-
-    const sharedIds = [...new Set(entities.map(entity => entity.sharedId))];
-    const files = await this.filesDAO.getByEntitySharedIds(
-      sharedIds,
-      options.fullText ? { withFullText: true } : undefined
+    const filtered = applyEntityFilters(this.table, filters);
+    const selected = filtered.select(
+      options.select?.length ? [...new Set([...options.select, '_id', 'sharedId'])] : ['entities.*']
     );
-    return entitiesWithFiles(entities, files);
+    const files = filesSubquery(Boolean(options.fullText));
+    const withFiles = selected.selectRaw(files.sql, files.bindings);
+    const rows = await (options.limit ? withFiles.limit(options.limit) : withFiles).all();
+    return (rows as EntityRowWithFiles[]).map(toEntityWithFiles);
   }
 }
 

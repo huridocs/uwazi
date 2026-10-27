@@ -31,7 +31,7 @@ class ScheduleActivityLogArchivesJobFactory {
 
   private static postgresQueueOf(this: void, tenantName: string): JobsDispatcher {
     const transactionManager = new PostgresTransactionManager(
-      PostgresDB.knex,
+      PostgresDB.pipelinedPool(),
       tenantName,
       LoggerFactory.systemLogger()
     );

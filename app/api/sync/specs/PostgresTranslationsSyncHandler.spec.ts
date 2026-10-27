@@ -27,7 +27,7 @@ describe('PostgresTranslationsSyncHandler', () => {
     return new PostgresTranslationsSyncHandler({
       tenantId: tenantName,
       pgTransactionManager: new PostgresTransactionManager(
-        PostgresDB.knex,
+        PostgresDB.pipelinedPool(),
         tenantName,
         LoggerFactory.forTests()
       ),
