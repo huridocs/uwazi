@@ -26,7 +26,7 @@ describe('PostgresTemplatesDataSource', () => {
     const transactionManager = TransactionManagerFactory.default();
     const tenantId = tenants.current().name;
     const pgTransactionManager = new PostgresTransactionManager(
-      PostgresDB.knex,
+      PostgresDB.pipelinedPool(),
       tenantId,
       LoggerFactory.forTests()
     );

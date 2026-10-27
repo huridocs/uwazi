@@ -25,7 +25,7 @@ describe('PostgresRelationshipTypesSyncHandler', () => {
     return new PostgresRelationshipTypesSyncHandler({
       tenantId: tenantName,
       pgTransactionManager: new PostgresTransactionManager(
-        PostgresDB.knex,
+        PostgresDB.pipelinedPool(),
         tenantName,
         LoggerFactory.forTests()
       ),

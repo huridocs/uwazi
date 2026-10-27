@@ -6,12 +6,6 @@ interface OnCommitEmitter<T> {
 
 export interface TransactionManager {
   run<T>(callback: () => Promise<T>): Promise<T>;
-  /**
-   * Groups the reads inside `callback` in one read only unit of work where the backend benefits
-   * from it, saving a transaction per read. Writes inside it fail. Not a write transaction:
-   * `isRunning()` stays false.
-   */
-  runReadOnly<T>(callback: () => Promise<T>): Promise<T>;
   onCommitted(handler: () => Promise<void>): this;
   onRetry(handler: () => Promise<void>): this;
   runHandlingOnCommitted<T>(callback: () => Promise<T>): OnCommitEmitter<T>;

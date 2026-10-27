@@ -1,4 +1,5 @@
 import type { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { Statements } from '#api/core/infrastructure/postgresql/common/Statement.js';
 import type { ContentUsageReader } from '../../application/contracts/ContentUsageReader.js';
 import { FileUsage, type FileGroup } from '../../application/FileUsage.js';
 import type { ContentUsage } from '../../application/TenantUsage.js';
@@ -14,25 +15,28 @@ class PostgresContentUsageReader implements ContentUsageReader {
   ) {}
 
   async read(): Promise<ContentUsage> {
-    return this.deps.pgTransactionManager.withConnection(async trx => {
-      const entities = await trx.raw<{ rows: { total: number }[] }>(
+    const [entities, files] = await this.deps.pgTransactionManager.queryAll([
+      Statements.raw(
         'SELECT count(DISTINCT "sharedId")::int AS total FROM entities WHERE "tenant_id" = ?',
-        [this.deps.tenantId]
-      );
-
-      const files = await trx.raw<{ rows: FileGroupRow[] }>(
+        [this.deps.tenantId],
+        SYSTEM_READ
+      ),
+      Statements.raw(
         `SELECT "type", "mimetype", count(*)::int AS count, coalesce(sum("size"), 0) AS size
            FROM files
           WHERE "tenant_id" = ?
           GROUP BY "type", "mimetype"`,
-        [this.deps.tenantId]
-      );
+        [this.deps.tenantId],
+        SYSTEM_READ
+      ),
+    ]);
 
-      return {
-        entitiesCount: entities.rows[0]?.total ?? 0,
-        ...FileUsage.summarize(files.rows.map(PostgresContentUsageReader.toFileGroup)),
-      };
-    }, SYSTEM_READ);
+    return {
+      entitiesCount: (entities.rows[0]?.total as number | undefined) ?? 0,
+      ...FileUsage.summarize(
+        (files.rows as FileGroupRow[]).map(PostgresContentUsageReader.toFileGroup)
+      ),
+    };
   }
 
   private static toFileGroup({ type, mimetype, count, size }: FileGroupRow): FileGroup {
