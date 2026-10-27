@@ -23,6 +23,7 @@ import {
   type EditEntityFormValues,
 } from '#V2/Components/Metadata/EntityEditor/functions/buildEditEntityDefaultValues.js';
 import { useEntityMediaUpload } from '#V2/Components/Metadata/EntityEditor/hooks/useEntityMediaUpload.js';
+import type { RelationshipLookupPage } from '#V2/Components/Metadata/EntityEditor/functions/relationshipFieldHelpers.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
@@ -62,7 +63,7 @@ const EditEntityComponent = ({
     search: string;
     template?: string;
     limit?: number;
-  }) => Promise<{ value: string; label: string }[]>;
+  }) => Promise<RelationshipLookupPage>;
 }) => {
   const [savedEntity, setSavedEntity] = useState<Entity | EntitySaveInput>(entity);
   const form = useForm<EditEntityFormValues>({
@@ -155,18 +156,14 @@ const EditEntityComponent = ({
       { value: 'entity31', label: 'Gustavo Silva - Resident' },
     ];
 
-    if (template !== 'template2') {
-      return [];
-    }
+    const matched =
+      template === 'template2'
+        ? peopleTemplateOptions.filter(option =>
+            option.label.toLowerCase().includes(search.trim().toLowerCase())
+          )
+        : [];
 
-    const normalizedSearch = search.trim().toLowerCase();
-    if (!normalizedSearch) {
-      return peopleTemplateOptions;
-    }
-
-    return peopleTemplateOptions.filter(option =>
-      option.label.toLowerCase().includes(normalizedSearch)
-    );
+    return { options: matched, total: matched.length };
   };
 
   const handleSave = (updatedEntity: EntitySaveInput) => {
