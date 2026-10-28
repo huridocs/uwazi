@@ -1,5 +1,4 @@
 type AIAssistantPollJobParams = {
-  sessionId: string;
   jobId: string;
 };
 

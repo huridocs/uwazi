@@ -34,7 +34,10 @@ async function filesAreIdentical(file1: string, file2: string) {
   return hash1 === hash2;
 }
 
-const setUpJob = (pdfService = new PDFService()) => {
+const setUpJob = (
+  pdfService = new PDFService(),
+  { sessionId }: { sessionId?: string } = { sessionId: 'test-session-id' }
+) => {
   const transactionManager = TransactionManagerFactory.default();
 
   const wSockets = TestUtils.mockClass<WebSockets>({
@@ -59,6 +62,7 @@ const setUpJob = (pdfService = new PDFService()) => {
         settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       }),
       wSockets,
+      sessionId,
     }),
     wSockets,
     eventBus,
@@ -113,7 +117,6 @@ describe('PDFPostProcessJob', () => {
         documentId,
         tenantName: tenants.current().name,
         userId: permissionsContext.getUserInContext()?._id?.toString() || '',
-        sessionId: 'test-session-id',
       },
       { namespace: tenants.current().name, ...jobInfo }
     );
@@ -143,6 +146,24 @@ describe('PDFPostProcessJob', () => {
         thumbnailPath
       )
     ).toBe(true);
+  });
+
+  it('should emit a "documentProcessed" event to the uploader session', async () => {
+    const { job, wSockets } = setUpJob();
+    await executeJob(job, f.idString('processing_doc'));
+
+    expect(wSockets.emitToSession).toHaveBeenCalledWith(
+      'test-session-id',
+      'documentProcessed',
+      'fileEntity'
+    );
+  });
+
+  it('should not emit to any session when the job has none', async () => {
+    const { job, wSockets } = setUpJob(new PDFService(), {});
+    await executeJob(job, f.idString('processing_doc'));
+
+    expect(wSockets.emitToSession).not.toHaveBeenCalled();
   });
 
   it('should emit FileUpdatedEvent', async () => {

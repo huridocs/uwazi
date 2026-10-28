@@ -15,7 +15,6 @@ type CleanupEntityParams = {
 type PDFPostProcessParams = {
   tenantName: string;
   documentId: string;
-  sessionId?: string;
 };
 
 type TemplatePostProcessParams = {

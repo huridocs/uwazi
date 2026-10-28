@@ -10,13 +10,14 @@ import type { AIAssistantService } from '../../application/contracts/AIAssistant
 import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
 type Params = {
-  sessionId: string;
   jobId: string;
 };
 
 type Dependencies = {
   aiAssistantService: AIAssistantService;
   pollScheduler: AIAssistantPollScheduler;
+  /** The requesting tab's session, restored by the queue worker from the job that was dispatched. */
+  sessionId?: string;
 };
 
 const isLastRetry = (jobInfo?: JobInfo) =>
@@ -27,13 +28,19 @@ const isLastRetry = (jobInfo?: JobInfo) =>
 class AIAssistantPollRequestJob implements Dispatchable {
   constructor(private deps: Dependencies) {}
 
+  private emit(event: string, payload: object) {
+    if (this.deps.sessionId) {
+      emitToSession(this.deps.sessionId, event, payload);
+    }
+  }
+
   async handleDispatch(_heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo) {
     let result;
     try {
       result = await this.deps.aiAssistantService.getJobStatus(params.jobId);
     } catch (error) {
       if (isLastRetry(jobInfo)) {
-        emitToSession(params.sessionId, 'aiAssistant:error', {
+        this.emit('aiAssistant:error', {
           jobId: params.jobId,
           error:
             error instanceof Error
@@ -45,7 +52,7 @@ class AIAssistantPollRequestJob implements Dispatchable {
     }
 
     if (result.status === 'completed') {
-      emitToSession(params.sessionId, 'aiAssistant:reply', {
+      this.emit('aiAssistant:reply', {
         jobId: params.jobId,
         message: result.message,
       });
@@ -53,7 +60,7 @@ class AIAssistantPollRequestJob implements Dispatchable {
     }
 
     if (result.status === 'error') {
-      emitToSession(params.sessionId, 'aiAssistant:error', {
+      this.emit('aiAssistant:error', {
         jobId: params.jobId,
         error: result.error,
       });
@@ -61,7 +68,7 @@ class AIAssistantPollRequestJob implements Dispatchable {
     }
 
     if (result.status === 'running') {
-      emitToSession(params.sessionId, 'aiAssistant:progress', {
+      this.emit('aiAssistant:progress', {
         jobId: params.jobId,
         progress: result.progress,
       });
