@@ -3,7 +3,12 @@ import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { inheritedTypeLayout } from '../inheritedTypeLayout.js';
+import { inheritedTypeLayout, propertyRowTracks } from '../inheritedTypeLayout.js';
+import {
+  ConnectionCols,
+  connectionsTableClass,
+  entityColumnClass,
+} from './connectionTableLayout.js';
 import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
 import {
   ConnectionCardStack,
@@ -13,7 +18,7 @@ import {
   type RelationshipTableRow,
 } from './ConnectionCardStack.js';
 import { InheritRollupChip } from './InheritRollupChip.js';
-import { distinctRollup, mergeConnectionRows } from './mergeConnectionRows.js';
+import { inheritView } from './mergeConnectionRows.js';
 import { useTableFitsContainer } from './useTableFitsContainer.js';
 
 const inheritedCellClass = (inheritedType?: string) =>
@@ -46,18 +51,6 @@ const connectedEntity = (
   />
 );
 
-const inheritView = (rows: RelationshipTableRow[], columns: RelationshipTableColumn[]) => {
-  const summaries = columns.map(column => distinctRollup(rows, column));
-  return {
-    mergedRows: mergeConnectionRows(rows, columns),
-    summaries,
-    rollups: summaries.flatMap((summary, index) => {
-      const column = columns[index];
-      return summary && column ? [{ label: column.label, ...summary }] : [];
-    }),
-  };
-};
-
 type ConnectionsTableBody = {
   probe?: boolean;
   probeRef?: RefObject<HTMLTableElement | null>;
@@ -88,7 +81,7 @@ const connectionPropertyRow = ({
   <div
     data-testid="connection-property-row"
     className="grid items-start gap-3"
-    style={{ gridTemplateColumns: `repeat(${columns.length + 1}, minmax(0, 1fr))` }}
+    style={{ gridTemplateColumns: propertyRowTracks(columns) }}
   >
     {propertyCard(
       'entity',
@@ -137,9 +130,10 @@ const connectionsTable = ({
   <table
     ref={probe ? probeRef : undefined}
     data-connections-probe={probe ? '' : undefined}
-    className={`w-full border-collapse text-sm${probe ? '' : ' min-w-max'}`}
+    className={connectionsTableClass(probe, columns)}
     aria-hidden={probe || undefined}
   >
+    <ConnectionCols columns={columns} actionCol={actionCol} />
     <caption className="sr-only">
       <Translate>Connected entities</Translate>
       {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
@@ -185,7 +179,7 @@ const connectionsTable = ({
       ) : (
         mergedRows.map(({ row, cells }) => (
           <tr key={row.id} className="transition-colors hover:bg-warm/30">
-            <td className="max-w-40 border-t border-border/40 px-1 py-1.5 align-middle">
+            <td className={entityColumnClass(columns)}>
               <div data-measure-cell>{connectedEntity(row, targetTemplateId, onOpenEntity)}</div>
             </td>
             {cells.flatMap(cell => {

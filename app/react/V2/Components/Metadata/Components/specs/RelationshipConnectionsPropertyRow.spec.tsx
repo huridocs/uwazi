@@ -66,7 +66,9 @@ describe('RelationshipConnectionsTable property row', () => {
         />
       );
       const row = screen.getByTestId('connection-property-row');
-      expect(row).toHaveStyle({ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' });
+      expect(row).toHaveStyle({
+        gridTemplateColumns: 'minmax(0, max-content) minmax(0, 3fr) minmax(0, 1fr)',
+      });
       expect(row.firstElementChild).toHaveTextContent('Alpha');
       expect(row.children[1]).toHaveTextContent('A long note');
       expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
