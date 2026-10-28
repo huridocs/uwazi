@@ -337,6 +337,53 @@ describe('when registering onCommitted handlers outside a transaction', () => {
 
     expect(persistentHandler).toHaveBeenCalledTimes(2);
   });
+
+  it('should register the same persistent handler only once', async () => {
+    const transactionManager = createTransactionManager();
+    const persistentHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onCommitted(persistentHandler);
+    transactionManager.onCommitted(persistentHandler);
+
+    await transactionManager.run(async () => {});
+
+    expect(persistentHandler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('when registering the same onCommitted handler more than once within a run', () => {
+  it('should trigger it only once after committing', async () => {
+    const transactionManager = createTransactionManager();
+    const handler = jest.fn().mockResolvedValue(undefined);
+
+    await transactionManager.run(async () => {
+      transactionManager.onCommitted(handler);
+      transactionManager.onCommitted(handler);
+    });
+
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('when a run registering onCommitted handlers is retried', () => {
+  it('should trigger the handlers registered by the failed attempt only once', async () => {
+    const transactionManager = createTransactionManager();
+    const handler = jest.fn().mockResolvedValue(undefined);
+
+    let throwed = false;
+    await transactionManager.run(async () => {
+      transactionManager.onCommitted(async () => handler());
+      if (!throwed) {
+        throwed = true;
+        throw new OptimisticLockError({
+          resourceName: 'Test',
+          expectedVersion: 1,
+          resourceId: 'id',
+        });
+      }
+    });
+
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {
