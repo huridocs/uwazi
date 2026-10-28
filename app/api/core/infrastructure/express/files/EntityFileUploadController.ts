@@ -1,5 +1,4 @@
 import type { Request, Response } from 'express';
-import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
@@ -53,7 +52,7 @@ class EntityFileUploadController extends AbstractController {
         entityId: this.request.body.entity,
       });
 
-      this.response.json(await this.useCase().execute(input));
+      this.response.json(await EntityFileUploadController.buildUseCase().execute(input));
 
       logger.info(`${fileTypeLabel} upload executed successfully`, {
         namespace,
@@ -78,7 +77,7 @@ class EntityFileUploadController extends AbstractController {
     }
   }
 
-  private useCase() {
+  private static buildUseCase() {
     let { transactionManager } = ExecutionContext;
     let jobsDispatcher: Dispatcher = DispatcherFactory.default();
     if (process.env.NODE_ENV === 'test') {
@@ -89,13 +88,11 @@ class EntityFileUploadController extends AbstractController {
             new PDFPostProcessJobHandler({
               useCase: PDFPostProcessJobFactory.default(),
               wSockets: new V1WebSocketsWrapper(),
+              sessionId: ExecutionContext.sessionId,
             }),
         })
       );
     }
-
-    const cookies = cookie.parse(this.request.get('cookie') || '');
-    const sessionId = cookies['connect.sid'];
 
     return FileUploadForEntityFactory.default({
       transactionManager,
@@ -104,7 +101,6 @@ class EntityFileUploadController extends AbstractController {
         {
           userId: ExecutionContext.actor?._id?.toString(),
           tenantName: ExecutionContext.tenant.name,
-          ...(sessionId ? { sessionId } : {}),
         }
       ),
     });

@@ -11,10 +11,7 @@ import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class UpdateEntityUseCaseFactory {
-  static default(
-    overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>,
-    sessionId?: string
-  ) {
+  static default(overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>) {
     const { tenant } = ExecutionContext;
 
     const { transactionManager } = ExecutionContext;
@@ -41,7 +38,6 @@ class UpdateEntityUseCaseFactory {
       {
         userId: ExecutionContext.actor?._id?.toString(),
         tenantName: tenant.name,
-        sessionId,
       }
     );
 

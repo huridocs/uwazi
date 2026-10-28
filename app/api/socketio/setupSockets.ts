@@ -12,6 +12,7 @@ import { handleError } from '#api/utils/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 declare global {
   namespace Express {
@@ -200,9 +201,12 @@ const setupApiSockets = (server: Server, app: Application) => {
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => {
-      const cookies = cookie.parse(req.get('cookie') || '');
+      const { sessionId } = ExecutionContext;
+      if (!sessionId) {
+        return;
+      }
       // @ts-ignore
-      io.to(cookies['connect.sid']).emit(event, ...args);
+      io.to(sessionId).emit(event, ...args);
     };
 
     next();

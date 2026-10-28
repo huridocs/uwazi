@@ -12,7 +12,7 @@ export function UwaziDispatcherFactory(
   queueAdapter?: QueueAdapter
 ): JobsDispatcher {
   const defaultUserId = ExecutionContext.actor?._id;
-  const correlationId = ExecutionContext.correlationId;
+  const { correlationId, sessionId } = ExecutionContext;
   return new JobsRouter(
     queueName =>
       new UwaziDispatcher({
@@ -21,6 +21,7 @@ export function UwaziDispatcherFactory(
         adapter: queueAdapter || DefaultQueueAdapter(transactionManager),
         userId: defaultUserId,
         correlationId,
+        sessionId,
       })
   );
 }

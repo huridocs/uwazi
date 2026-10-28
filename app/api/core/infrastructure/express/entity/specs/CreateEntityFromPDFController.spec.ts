@@ -37,7 +37,6 @@ const createSut = (props?: CreateSutProps) => {
     inputFile: props?.body?.file,
     body: props?.body,
     language: props?.language ?? 'en',
-    get: jest.fn().mockReturnValue('connect.sid=create-from-pdf-session'),
   });
 
   const sut = new CreateEntityFromPDFController({ request, response });
@@ -77,7 +76,6 @@ describe('CreateEntityFromPDFController', () => {
 
     expect(CreateEntityFromPDFUseCaseFactory.default).toHaveBeenCalledWith({
       targetLanguage: 'en',
-      sessionId: 'create-from-pdf-session',
     });
     expect(useCaseExecuteSpy).toHaveBeenCalledWith({
       templateId: 'template-123',
