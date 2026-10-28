@@ -32,7 +32,6 @@ type Deps = PostgresDataSourceDeps & {
   templatesDAO: TemplatesDAO;
   settingsDataSource: SettingsDataSource;
   accessContext: AccessContext;
-  skipOnCommits?: boolean;
 };
 
 export class PostgresEntitiesDataSource
@@ -80,12 +79,18 @@ export class PostgresEntitiesDataSource
         accessContext: deps.accessContext,
       }),
     });
+  }
 
-    if (!deps.skipOnCommits) {
-      this.transactionManager.onCommitted(async () => {
-        await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
-      });
-    }
+  private readonly reindexModified = async () => {
+    if (!this.modifiedSharedIds.size) return;
+    const sharedIds = Array.from(this.modifiedSharedIds);
+    this.modifiedSharedIds.clear();
+    await search.indexEntities({ sharedId: { $in: sharedIds } });
+  };
+
+  private markModified(sharedIds: string[]) {
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.transactionManager.onCommitted(this.reindexModified);
   }
 
   protected override get table(): PostgresTable<EntityRow> {
@@ -101,7 +106,6 @@ export class PostgresEntitiesDataSource
         templatesDAO: this.templatesDAO,
         settingsDataSource: this.settingsDataSource,
         accessContext: AccessContext.system(),
-        skipOnCommits: true,
       });
     }
     return this.unrestrictedInstance;
@@ -152,7 +156,7 @@ export class PostgresEntitiesDataSource
       )
     );
 
-    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    this.markModified(entities.map(entity => entity.sharedId));
   }
 
   /**
@@ -326,7 +330,7 @@ export class PostgresEntitiesDataSource
     const affectedSharedIds = rows.map(r => r.sharedId);
     if (affectedSharedIds.length === 0) return;
 
-    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(affectedSharedIds);
 
     await this.updateAndRecord(
       `UPDATE ?? SET metadata = COALESCE(
@@ -358,7 +362,7 @@ export class PostgresEntitiesDataSource
 
   async touchEntitiesBySharedIds(sharedIds: string[]): Promise<void> {
     await this.table.whereIn('sharedId', sharedIds).update({ editDate: Date.now() });
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
@@ -368,7 +372,7 @@ export class PostgresEntitiesDataSource
       'UPDATE ?? SET metadata = metadata - ?::text[] WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"',
       [this.table.tableName, propertyNames, sharedIds]
     );
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async renameMetadataProperties(
@@ -390,7 +394,7 @@ export class PostgresEntitiesDataSource
       `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
       bindings
     );
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
@@ -430,7 +434,7 @@ export class PostgresEntitiesDataSource
     );
 
     const sharedIds = entitiesToSave.map(e => e.sharedId);
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async countByTemplateId(templateId: string): Promise<number> {
@@ -513,7 +517,7 @@ export class PostgresEntitiesDataSource
 
     await this.table.insert(rows);
 
-    this.modifiedSharedIds.add(entity.sharedId);
+    this.markModified([entity.sharedId]);
   }
 
   async bulkInsert(entities: Entity[]): Promise<void> {
@@ -525,7 +529,7 @@ export class PostgresEntitiesDataSource
 
     await this.table.insert(allRows);
 
-    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    this.markModified(entities.map(entity => entity.sharedId));
   }
 
   private async updateAndRecord(sql: string, bindings?: readonly unknown[]): Promise<void> {

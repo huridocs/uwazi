@@ -27,13 +27,13 @@ export class PostgresTransactionManager implements TransactionManager {
 
   private readonly sessionContext: PostgresSessionContext;
 
-  private persistentOnCommitHandlers: CommitHandler[] = [];
+  private persistentOnCommitHandlers = new Set<CommitHandler>();
 
-  private persistentOnRetryHandlers: RetryHandler[] = [];
+  private persistentOnRetryHandlers = new Set<RetryHandler>();
 
-  private runOnCommitHandlers: CommitHandler[] = [];
+  private runOnCommitHandlers = new Set<CommitHandler>();
 
-  private runOnRetryHandlers: RetryHandler[] = [];
+  private runOnRetryHandlers = new Set<RetryHandler>();
 
   constructor(
     private readonly pool: pg.Pool,
@@ -85,7 +85,7 @@ export class PostgresTransactionManager implements TransactionManager {
       onCommitted: async (handler: (returnValue: T) => Promise<void>) =>
         this.run(async () => {
           const returnValue = await callback();
-          this.runOnCommitHandlers.push(async () => handler(returnValue));
+          this.runOnCommitHandlers.add(async () => handler(returnValue));
           return returnValue;
         }),
     };
@@ -97,18 +97,18 @@ export class PostgresTransactionManager implements TransactionManager {
 
   onCommitted(handler: () => Promise<void>) {
     if (this.isRunning()) {
-      this.runOnCommitHandlers.push(handler);
+      this.runOnCommitHandlers.add(handler);
     } else {
-      this.persistentOnCommitHandlers.push(handler);
+      this.persistentOnCommitHandlers.add(handler);
     }
     return this;
   }
 
   onRetry(handler: () => Promise<void>) {
     if (this.isRunning()) {
-      this.runOnRetryHandlers.push(handler);
+      this.runOnRetryHandlers.add(handler);
     } else {
-      this.persistentOnRetryHandlers.push(handler);
+      this.persistentOnRetryHandlers.add(handler);
     }
     return this;
   }
@@ -126,6 +126,7 @@ export class PostgresTransactionManager implements TransactionManager {
       if (PostgresTransactionManager.shouldRetry(error, retries)) {
         this.logger.debug(String(error));
         await this.executeOnRetryHandlers();
+        this.clearRunHandlers();
         return this.runWithRetry(callback, retries - 1);
       }
       throw error;
@@ -169,7 +170,7 @@ export class PostgresTransactionManager implements TransactionManager {
   }
 
   private clearRunHandlers() {
-    this.runOnCommitHandlers = [];
-    this.runOnRetryHandlers = [];
+    this.runOnCommitHandlers.clear();
+    this.runOnRetryHandlers.clear();
   }
 }
