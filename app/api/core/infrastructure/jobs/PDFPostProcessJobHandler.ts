@@ -12,12 +12,13 @@ import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type Params = UwaziJobParams & {
   documentId: string;
-  sessionId?: string;
 };
 
 type JobDependencies = {
   useCase: PDFPostProcessJob;
   wSockets: WebSockets;
+  /** The uploader's session, restored by the queue worker from the job that was dispatched. */
+  sessionId?: string;
 };
 
 @PrivilegedJob()
@@ -32,19 +33,19 @@ export class PDFPostProcessJobHandler extends UwaziJobHandler<Params> {
         params,
         jobInfo.retryCount !== jobInfo.maxRetries
       );
-      if (params.sessionId) {
+      if (this.deps.sessionId) {
         this.deps.wSockets.emitToSession(
-          params.sessionId,
+          this.deps.sessionId,
           'documentProcessed',
           processedDoc.entity
         );
       }
     } catch (e) {
-      this.handleError(e, jobInfo, params);
+      this.handleError(e, jobInfo);
     }
   }
 
-  private handleError(e: any, jobInfo: JobInfo, params: Params) {
+  private handleError(e: any, jobInfo: JobInfo) {
     if (e instanceof ProcessingFileNotFound) {
       throw new NonRetryableJobError(e);
     }
@@ -52,8 +53,8 @@ export class PDFPostProcessJobHandler extends UwaziJobHandler<Params> {
     if (e instanceof ProcessingFileFailed) {
       const shouldNotifyFailure =
         jobInfo.maxRetries === jobInfo.retryCount || e.cause instanceof FileIsNotAPDF;
-      if (shouldNotifyFailure && params.sessionId) {
-        this.deps.wSockets.emitToSession(params.sessionId, 'conversionFailed', e.file.entity);
+      if (shouldNotifyFailure && this.deps.sessionId) {
+        this.deps.wSockets.emitToSession(this.deps.sessionId, 'conversionFailed', e.file.entity);
       }
       if (e.cause instanceof FileIsNotAPDF) {
         throw new NonRetryableJobError(e);
