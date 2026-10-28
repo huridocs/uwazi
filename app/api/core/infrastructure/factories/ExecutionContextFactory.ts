@@ -19,6 +19,7 @@ type ExecutionContextOptions = {
   actor?: User;
   /** Not generated when omitted: only callers that already had one keep one. */
   correlationId?: string;
+  sessionId?: string;
   telemetry: { kind: TelemetryKind; startPerfMs?: number };
   overrides?: Partial<DependencyFactories>;
 };
@@ -50,6 +51,7 @@ class ExecutionContextFactory {
     tenant,
     actor,
     correlationId,
+    sessionId,
     telemetry,
     overrides,
   }: ExecutionContextOptions): ExecutionContextDeps {
@@ -57,6 +59,7 @@ class ExecutionContextFactory {
       tenant,
       actor,
       correlationId,
+      sessionId,
       factories: { ...ExecutionContextFactory.defaultFactories(telemetry), ...overrides },
     };
   }

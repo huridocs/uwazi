@@ -114,7 +114,6 @@ describe('AIAssistantRoutes', () => {
       expect.objectContaining({
         tenantName: expect.any(String),
         userId: adminUser._id,
-        sessionId: 'test-session',
         message: 'Summarise this case',
         credentials: expect.objectContaining({
           username: adminUser.username,
@@ -123,5 +122,18 @@ describe('AIAssistantRoutes', () => {
         }),
       })
     );
+    expect(execute.mock.calls[0][0]).not.toHaveProperty('sessionId');
+  });
+
+  it('should return 400 when the request has no session cookie', async () => {
+    const execute = jest.fn();
+    jest.spyOn(AIAssistantFactory, 'createSendMessage').mockReturnValue({ execute } as any);
+
+    const response = await request(app)
+      .post('/api/aiAssistant/messages')
+      .send({ message: 'Hello Bert', password: 'secret', context: { mode: 'auto', chips: [] } });
+
+    expect(response.status).toBe(400);
+    expect(execute).not.toHaveBeenCalled();
   });
 });

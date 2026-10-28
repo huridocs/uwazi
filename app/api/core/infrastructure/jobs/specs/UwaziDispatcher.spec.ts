@@ -13,7 +13,7 @@ class TestJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
-    _params: { someParam: string; userId?: string; correlationId?: string }
+    _params: { someParam: string; userId?: string; correlationId?: string; sessionId?: string }
   ): Promise<void> {
     throw new Error('not implemented');
   }
@@ -98,6 +98,56 @@ describe('UwaziDispatcher', () => {
 
     expect(first?.params).toEqual({ someParam: 'x', userId: 'user-1', correlationId: 'corr-1' });
     expect(second?.params).toEqual({ someParam: 'y', userId: 'user-1', correlationId: 'corr-1' });
+  });
+
+  it('should inject the sessionId into dispatch and dispatchMany job params', async () => {
+    const dispatcher = new UwaziDispatcher({
+      namespace: 'namespace',
+      queueName: 'session-queue',
+      adapter,
+      userId: 'user-1',
+      sessionId: 'session-1',
+    });
+
+    await dispatcher.dispatch(TestJob, { someParam: 'x' });
+    await dispatcher.dispatchMany(async dispatch => {
+      dispatch(TestJob, { someParam: 'y' });
+    });
+
+    const first = await adapter.pickJob('session-queue');
+    const second = await adapter.pickJob('session-queue');
+
+    expect(first?.params).toEqual({ someParam: 'x', userId: 'user-1', sessionId: 'session-1' });
+    expect(second?.params).toEqual({ someParam: 'y', userId: 'user-1', sessionId: 'session-1' });
+  });
+
+  it('should keep an explicit sessionId', async () => {
+    const dispatcher = new UwaziDispatcher({
+      namespace: 'namespace',
+      queueName: 'queue name',
+      adapter,
+      userId: 'user-1',
+      sessionId: 'session-1',
+    });
+
+    await dispatcher.dispatch(TestJob, { someParam: 'x', sessionId: 'explicit-session' });
+
+    const job = await adapter.pickJob('queue name');
+    expect(job?.params).toEqual({
+      someParam: 'x',
+      userId: 'user-1',
+      sessionId: 'explicit-session',
+    });
+  });
+
+  it('should carry the execution context sessionId into dispatched job params', async () => {
+    await testingEnvironment.runWithContext(
+      async () => ExecutionContext.jobsDispatcher.dispatch(TestJob, { someParam: 'x' }),
+      { sessionId: 'session-1' }
+    );
+
+    const job = await adapter.pickJob(config.queueName);
+    expect(job?.params).toMatchObject({ someParam: 'x', sessionId: 'session-1' });
   });
 
   it('should carry the execution context correlationId into dispatched job params', async () => {
