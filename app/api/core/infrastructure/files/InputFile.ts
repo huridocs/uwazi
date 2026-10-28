@@ -111,7 +111,7 @@ export class InputFile {
         return new URLAttachment({ ...urlProps, url: fileProps.url });
       }
       case 'raw':
-        throw new Error('raw is not a valid inputFile type to to map to an entityFile');
+        throw new Error('raw is not a valid inputFile type to map to an entityFile');
       default:
         throw new Error(`${this.type} is not a valid inputFile type`);
     }
