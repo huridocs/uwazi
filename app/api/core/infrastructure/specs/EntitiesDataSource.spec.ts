@@ -394,6 +394,45 @@ describe('EntitiesDataSource', () => {
       afterEach(() => {
         searchIndexSpy.mockRestore();
       });
+
+      it('does not index anything when the instance wrote nothing', async () => {
+        const { transactionManager } = createSut();
+
+        await transactionManager.run(async () => {});
+
+        expect(searchIndexSpy).not.toHaveBeenCalled();
+      });
+
+      it('indexes every entity written within a run once, after commit', async () => {
+        const template = createSampleTemplate();
+        const entity1 = createEntity(['en'], template);
+        const entity2 = createEntity(['en'], template);
+        const { sut, transactionManager } = createSut();
+
+        await transactionManager.run(async () => {
+          await sut.create(entity1);
+          await sut.create(entity2);
+        });
+
+        expect(searchIndexSpy).toHaveBeenCalledTimes(1);
+        expect(searchIndexSpy.mock.calls[0][0].sharedId.$in.sort()).toEqual(
+          [entity1.sharedId, entity2.sharedId].sort()
+        );
+      });
+
+      it('indexes only the entities written within each run', async () => {
+        const template = createSampleTemplate();
+        const entity1 = createEntity(['en'], template);
+        const entity2 = createEntity(['en'], template);
+        const { sut, transactionManager } = createSut();
+
+        await transactionManager.run(async () => sut.create(entity1));
+        await transactionManager.run(async () => sut.create(entity2));
+
+        expect(searchIndexSpy).toHaveBeenCalledTimes(2);
+        expect(searchIndexSpy).toHaveBeenLastCalledWith({ sharedId: { $in: [entity2.sharedId] } });
+      });
+
       it('calls search.bulkDeleteBySharedId during bulkDelete (legacy ES infra)', async () => {
         const bulkDeleteBySharedIdSpy = jest
           .spyOn(search, 'bulkDeleteBySharedId')
