@@ -10,6 +10,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import {
   CreateInput,
@@ -119,8 +120,10 @@ export class MongoPXEntitiesStatusDataSource
     );
 
     if (!result.modifiedCount) {
-      throw new OperationalError(
-        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+      throw new NonRetryableJobError(
+        new Error(
+          `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+        )
       );
     }
   }

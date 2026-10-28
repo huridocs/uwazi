@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ObjectId } from 'mongodb';
 
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -398,8 +399,9 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
+      await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
       await expect(promise).rejects.toMatchObject({
-        code: PXErrorCode.EXTRACTOR_NOT_FOUND,
+        cause: { code: PXErrorCode.EXTRACTOR_NOT_FOUND },
       });
     });
 
@@ -413,8 +415,9 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
+      await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
       await expect(promise).rejects.toMatchObject({
-        code: PXErrorCode.ENTITY_NOT_FOUND,
+        cause: { code: PXErrorCode.ENTITY_NOT_FOUND },
       });
     });
 
@@ -428,8 +431,9 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
+      await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
       await expect(promise).rejects.toMatchObject({
-        code: PXErrorCode.ENTITY_INVALID, // rename to entity does not belong to the source template
+        cause: { code: PXErrorCode.ENTITY_INVALID },
       });
     });
 
@@ -448,6 +452,7 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
+      await expect(promise).rejects.not.toBeInstanceOf(NonRetryableJobError);
       await expect(promise).rejects.toMatchObject({
         code: PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
       });
@@ -470,6 +475,7 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
+      await expect(promise).rejects.not.toBeInstanceOf(NonRetryableJobError);
       await expect(promise).rejects.toMatchObject({
         code: PXErrorCode.DOCUMENTS_NOT_FOUND,
       });

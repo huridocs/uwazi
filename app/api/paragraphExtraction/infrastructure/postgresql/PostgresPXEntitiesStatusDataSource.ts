@@ -4,6 +4,7 @@ import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/P
 import { PostgresResultSet } from '#api/core/infrastructure/postgresql/common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
@@ -84,8 +85,10 @@ export class PostgresPXEntitiesStatusDataSource
       .update({ status: EntityStatus.Error });
 
     if (updatedIds.length === 0) {
-      throw new OperationalError(
-        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${entityStatusId}`
+      throw new NonRetryableJobError(
+        new Error(
+          `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${entityStatusId}`
+        )
       );
     }
   }
