@@ -40,24 +40,29 @@ export class MongoTemplatesDataSource
     super(deps.db, deps.transactionManager, deps.options);
 
     this.dao = deps.dao;
+  }
 
-    this.transactionManager.onCommitted(async () => {
-      const templates = [...this.templatesMutated.values()];
-      this.templatesMutated.clear();
-      if (templates.length > 0) {
-        // Lazy-load on purpose: '#api/search/entitiesIndex.js' imports TemplatesDataSourceFactory,
-        // which imports CachedMongoTemplatesDataSource, which extends this class. A static import
-        // here would create an import cycle that breaks at module evaluation time ("Class extends
-        // value undefined"). After the first load the dynamic import is just a module-cache lookup.
-        // TEMPORARY: this indirection (and the ES index update itself) goes away with Elasticsearch.
-        const { updateMapping } = await import('#api/search/entitiesIndex.js');
-        await updateMapping(templates);
-      }
-    });
+  private readonly updateMutatedMappings = async () => {
+    const templates = [...this.templatesMutated.values()];
+    this.templatesMutated.clear();
+    if (templates.length > 0) {
+      // Lazy-load on purpose: '#api/search/entitiesIndex.js' imports TemplatesDataSourceFactory,
+      // which imports CachedMongoTemplatesDataSource, which extends this class. A static import
+      // here would create an import cycle that breaks at module evaluation time ("Class extends
+      // value undefined"). After the first load the dynamic import is just a module-cache lookup.
+      // TEMPORARY: this indirection (and the ES index update itself) goes away with Elasticsearch.
+      const { updateMapping } = await import('#api/search/entitiesIndex.js');
+      await updateMapping(templates);
+    }
+  };
+
+  private markMutated(schemas: TemplateDBO[]) {
+    schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
+    this.transactionManager.onCommitted(this.updateMutatedMappings);
   }
 
   async updateMapping(template: Template, reset = false) {
-    // see the lazy-import note in the constructor
+    // see the lazy-import note in updateMutatedMappings
     const { resetIndex, updateMapping } = await import('#api/search/entitiesIndex.js');
     if (reset) {
       await resetIndex();
@@ -275,13 +280,13 @@ export class MongoTemplatesDataSource
   async update(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
-    this.templatesMutated.set(schema._id, schema);
+    this.markMutated([schema]);
   }
 
   async create(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().insertOne(schema);
-    this.templatesMutated.set(schema._id, schema);
+    this.markMutated([schema]);
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
@@ -347,7 +352,7 @@ export class MongoTemplatesDataSource
       }))
     );
 
-    schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
+    this.markMutated(schemas);
   }
 }
 
