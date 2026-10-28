@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import type { Tenant } from '#api/tenants/tenantContext.js';
 import { ExportTenantController } from '../ExportTenantController.js';
 import { ImportTenantController } from '../ImportTenantController.js';
+import { createProgressWriter } from '../backupProgress.js';
 
 const SOURCE_TENANT = 'source-tenant';
 const TARGET_TENANT = 'target-tenant';
@@ -130,6 +131,31 @@ describe('tenant backup progress', () => {
 
       expect(stderr.text).toContain('tables exported 1 of');
       expect(stdout.text.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('close', () => {
+    it('terminates a dangling progress line', () => {
+      const stderr = ttyCapture();
+      const progress = createProgressWriter(stderr, true, 'importing');
+
+      progress.table({ table: 'templates', rows: 1, done: false, total: 2 });
+
+      expect(stderr.text.endsWith('\n')).toBe(false);
+      progress.close();
+      expect(stderr.text.endsWith('\n')).toBe(true);
+    });
+
+    it('is a no-op when the last write already ended with a newline', () => {
+      const stderr = ttyCapture();
+      const progress = createProgressWriter(stderr, true, 'importing');
+
+      progress.line('reindexing target-tenant…');
+
+      expect(stderr.text.endsWith('\n')).toBe(true);
+      const before = stderr.text;
+      progress.close();
+      expect(stderr.text).toBe(before);
     });
   });
 

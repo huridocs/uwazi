@@ -19,6 +19,13 @@ function resolveDeps(deps: TenantBackupDeps) {
   };
 }
 
+/** Asserts the tenant is on Postgres and resolves the request dependencies. */
+function prepare(deps: TenantBackupDeps) {
+  assertPostgresCoreTenant();
+  const { pool, stdin, stderr, reindex } = resolveDeps(deps);
+  return { pool, stdin, stderr, reindex, tenantId: ExecutionContext.currentTenant.name };
+}
+
 async function cleanBeforeImport(
   backup: PgTenantBackup,
   target: { tenantId: string; clear: boolean | undefined; progress: ProgressWriter }
@@ -40,22 +47,24 @@ class ImportTenantController {
     input: ImportTenantInput = {},
     deps: TenantBackupDeps = {}
   ): Promise<ImportTenantOutput> {
-    assertPostgresCoreTenant();
-    const { pool, stdin, stderr, reindex } = resolveDeps(deps);
-    const tenantId = ExecutionContext.currentTenant.name;
+    const { pool, stdin, stderr, reindex, tenantId } = prepare(deps);
     const progress = createProgressWriter(stderr, deps.progress, 'importing');
     const backup = new PgTenantBackup(pool);
 
-    await cleanBeforeImport(backup, { tenantId, clear: input.clear, progress });
+    try {
+      await cleanBeforeImport(backup, { tenantId, clear: input.clear, progress });
 
-    const result = await backup.import(tenantId, stdin, {
-      onProgress: progress.table,
-      nullSync: input.nullSync,
-    });
-    progress.line(`reindexing ${tenantId}…`);
-    await reindex(tenantId);
+      const result = await backup.import(tenantId, stdin, {
+        onProgress: progress.table,
+        nullSync: input.nullSync,
+      });
+      progress.line(`reindexing ${tenantId}…`);
+      await reindex(tenantId);
 
-    return result;
+      return result;
+    } finally {
+      progress.close();
+    }
   }
 }
 

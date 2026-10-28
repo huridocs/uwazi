@@ -1,13 +1,14 @@
-import { once } from 'events';
 import { finished } from 'stream/promises';
 import type { Readable, Writable } from 'stream';
 import type pg from 'pg';
-import { from as copyFrom, to as copyTo } from 'pg-copy-streams';
+import { to as copyTo } from 'pg-copy-streams';
 import { PrematureEndOfStreamError } from './PrematureEndOfStreamError.js';
+import { TenantAlreadyHasDataError } from './TenantAlreadyHasDataError.js';
+import { COPY_END_MARKER, escapeIdentifier, loadTable } from './copyIn.js';
 import { parseManifest, serializeManifest } from './manifest.js';
 import type { ExportManifest } from './manifest.js';
 import { validateManifest } from './manifestValidation.js';
-import { nullSyncConfig, reconcileJobs, rowRewriter } from './importSteps.js';
+import { nullSyncConfig, reconcileJobs } from './importSteps.js';
 import { readSchemaVersion } from './schemaVersion.js';
 import {
   discoverDataTablesWithColumns,
@@ -16,24 +17,6 @@ import {
 } from './tenantTableDiscovery.js';
 import { countRows, progressReporter } from './progress.js';
 import type { TenantProgress } from './progress.js';
-
-/**
- * Framing marker between COPY sections. COPY TO STDOUT sends raw row data over the protocol with
- * no end marker, so export writes `\.` after each table's stream; import stops a section there.
- * A data row always carries a tab (tenant_id + at least one column), so a bare `\.` is unambiguous.
- */
-const COPY_END_MARKER = '\\.';
-
-/**
- * Rows are buffered up to this size before one write to the COPY stream. pg-copy-streams turns
- * each `write()` into one CopyData protocol message plus one socket write, so writing row-by-row
- * costs a message per row; batching amortises that to a handful of large messages per table.
- */
-const WRITE_BATCH_BYTES = 1024 * 1024;
-
-function escapeIdentifier(identifier: string): string {
-  return identifier.replace(/"/g, '""');
-}
 
 function escapeLiteral(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
@@ -45,11 +28,6 @@ function copyOutSql(table: TableWithColumns, tenantId: string): string {
     `COPY (SELECT ${columns} FROM "${escapeIdentifier(table.name)}" ` +
     `WHERE "tenant_id" = ${escapeLiteral(tenantId)}) TO STDOUT`
   );
-}
-
-function copyInSql(table: TableWithColumns): string {
-  const columns = table.columns.map(column => `"${escapeIdentifier(column)}"`).join(', ');
-  return `COPY "${escapeIdentifier(table.name)}" (${columns}) FROM STDIN`;
 }
 
 async function withTransaction<T>(
@@ -122,64 +100,13 @@ async function* readLines(input: AsyncIterable<string | Buffer>): AsyncGenerator
   if (pending) yield pending;
 }
 
-function abortCopy(stream: Writable, table: string): PrematureEndOfStreamError {
-  stream.destroy();
-  return new PrematureEndOfStreamError(table);
-}
-
-async function flushBatch(stream: Writable, batch: string): Promise<void> {
-  if (batch && !stream.write(batch)) await once(stream, 'drain');
-}
-
-async function accumulate(stream: Writable, batch: string, row: string): Promise<string> {
-  const next = `${batch}${row}\n`;
-  if (next.length < WRITE_BATCH_BYTES) return next;
-  await flushBatch(stream, next);
-  return '';
-}
-
-async function writeRows(
-  lines: AsyncIterableIterator<string>,
-  stream: Writable,
-  target: { table: string; rewrite: (line: string) => string; onRow?: (rows: number) => void }
-): Promise<void> {
-  let batch = '';
-  let rows = 0;
-  /* eslint-disable no-await-in-loop */
-  for (;;) {
-    const { value, done } = await lines.next();
-    if (done) throw abortCopy(stream, target.table);
-    if (value === COPY_END_MARKER) break;
-    batch = await accumulate(stream, batch, target.rewrite(value));
-    rows += 1;
-    target.onRow?.(rows);
+/** Runs `fn` and destroys `input` on the way out, success or failure. */
+async function withDestroyedInput<T>(input: Readable, fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } finally {
+    input.destroy();
   }
-  /* eslint-enable no-await-in-loop */
-  await flushBatch(stream, batch);
-}
-
-async function loadTable(
-  client: pg.PoolClient,
-  lines: AsyncIterableIterator<string>,
-  target: {
-    table: TableWithColumns;
-    tenantId: string;
-    report: (rows: number, done: boolean) => void;
-  }
-): Promise<number> {
-  const stream = client.query(copyFrom(copyInSql(target.table)));
-  // Aborting a COPY mid-stream makes the server reply with an ErrorResponse; this no-op listener
-  // stops that from becoming an unhandled 'error' when the stream is destroyed on the way out.
-  stream.on('error', () => {});
-  await writeRows(lines, stream, {
-    table: target.table.name,
-    rewrite: rowRewriter(target.table, target.tenantId),
-    onRow: rows => target.report(rows, false),
-  });
-  stream.end();
-  await finished(stream);
-  target.report(stream.rowCount, true);
-  return stream.rowCount;
 }
 
 /**
@@ -244,6 +171,23 @@ export class PgTenantBackup {
   }
 
   /**
+   * A restore targets an empty tenant; refuse a destination that already holds rows so a
+   * duplicate-key COPY failure never masquerades as an internal error mid-import.
+   */
+  private async assertEmpty(tenantId: string): Promise<void> {
+    const tables = await discoverTenantTables(this.pool);
+    /* eslint-disable no-await-in-loop */
+    for (const table of tables) {
+      const result = await this.pool.query(
+        `SELECT 1 FROM "${escapeIdentifier(table)}" WHERE "tenant_id" = $1 LIMIT 1`,
+        [tenantId]
+      );
+      if (result.rows.length > 0) throw new TenantAlreadyHasDataError(tenantId);
+    }
+    /* eslint-enable no-await-in-loop */
+  }
+
+  /**
    * Reads an export stream from `input` and loads it into `tenantId`, rewriting every row's
    * tenant_id to the destination and reconciling jobs' namespace to it. `settings.sync` is
    * preserved unless `nullSync` is set. All-or-nothing: a failing table rolls back the whole
@@ -257,10 +201,11 @@ export class PgTenantBackup {
     const { onProgress, nullSync = false } = options;
     const dataTables = await discoverDataTablesWithColumns(this.pool);
     const columnsByTable = new Map(dataTables.map(table => [table.name, table.columns]));
-    try {
+    return withDestroyedInput(input, async () => {
       const lines = readLines(input);
       const manifest = await readManifest(lines);
       await validateManifest(manifest, columnsByTable, async () => this.currentSchemaVersion());
+      await this.assertEmpty(tenantId);
       const rows = await withTransaction(this.pool, 'BEGIN', async client => {
         let total = 0;
         /* eslint-disable no-await-in-loop */
@@ -283,9 +228,7 @@ export class PgTenantBackup {
         tables: manifest.tables.map(t => t.name),
         rows,
       };
-    } finally {
-      input.destroy();
-    }
+    });
   }
 }
 

@@ -9,6 +9,8 @@ type ProgressWriter = {
   line: (text: string) => void;
   /** A one-shot step like cleaning: `…` while running, green `✓` once done. */
   task: (label: string, done: boolean) => void;
+  /** Terminates a dangling progress line so the next stderr write starts on a fresh line. */
+  close: () => void;
 };
 
 const GREEN = '\x1b[32m';
@@ -63,18 +65,24 @@ function createProgressWriter(
   progress: boolean | undefined,
   verb: BackupVerb
 ): ProgressWriter {
-  const enabled = progress ?? isTty(stderr);
-  const tty = isTty(stderr);
-  const past = verb === 'exporting' ? 'exported' : 'imported';
-  let completed = 0;
-  let drawn = false;
+  const tty = isTty(stderr),
+    enabled = progress ?? tty,
+    past = verb === 'exporting' ? 'exported' : 'imported';
+  let completed = 0,
+    drawn = false,
+    midLine = false;
+
+  const write = (text: string): void => {
+    stderr.write(text);
+    midLine = !text.endsWith('\n');
+  };
 
   const drawTty = (doneCount: number, total: number, current: string): void => {
     const summary = `${GREEN}${summaryLine(past, doneCount, total)}${RESET}`;
     if (drawn) {
-      stderr.write(`\r${CURSOR_UP}\r${CLEAR_LINE}${summary}\n\r${CLEAR_LINE}${current}`);
+      write(`\r${CURSOR_UP}\r${CLEAR_LINE}${summary}\n\r${CLEAR_LINE}${current}`);
     } else {
-      stderr.write(`${summary}\n${current}`);
+      write(`${summary}\n${current}`);
       drawn = true;
     }
   };
@@ -85,26 +93,28 @@ function createProgressWriter(
     if (tty) {
       drawTty(completed, event.total, event.done ? '' : currentLine(verb, event));
     } else if (event.done) {
-      stderr.write(`${summaryLine(past, completed, event.total)}\n`);
+      write(`${summaryLine(past, completed, event.total)}\n`);
     }
   };
 
   const line = (text: string): void => {
-    if (enabled) stderr.write(`${text}\n`);
+    if (enabled) write(`${text}\n`);
   };
 
   const task = (label: string, done: boolean): void => {
     if (!enabled) return;
     if (done) {
-      stderr.write(
-        tty ? `\r${CLEAR_LINE}${GREEN}${label} ${CHECK}${RESET}\n` : `${label} ${CHECK}\n`
-      );
+      write(tty ? `\r${CLEAR_LINE}${GREEN}${label} ${CHECK}${RESET}\n` : `${label} ${CHECK}\n`);
     } else {
-      stderr.write(tty ? `${label}…` : `${label}…\n`);
+      write(tty ? `${label}…` : `${label}…\n`);
     }
   };
 
-  return { table, line, task };
+  const close = (): void => {
+    if (midLine) write('\n');
+  };
+
+  return { table, line, task, close };
 }
 
 export { createProgressWriter, isPipe, isTty };
