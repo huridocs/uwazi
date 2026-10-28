@@ -97,5 +97,17 @@ const mergeConnectionRows = (
   return merged;
 };
 
-export { mergeConnectionRows, connectionSortKey, distinctRollup };
+const inheritView = (rows: RelationshipTableRow[], columns: RelationshipTableColumn[]) => {
+  const summaries = columns.map(column => distinctRollup(rows, column));
+  return {
+    mergedRows: mergeConnectionRows(rows, columns),
+    summaries,
+    rollups: summaries.flatMap((summary, index) => {
+      const column = columns[index];
+      return summary && column ? [{ label: column.label, ...summary }] : [];
+    }),
+  };
+};
+
+export { distinctRollup, inheritView, mergeConnectionRows, connectionSortKey };
 export type { MergedConnectionRow, MergedInheritCell };
