@@ -28,10 +28,7 @@ describe('AIAssistantPollRequestJob', () => {
     await testingEnvironment.tearDown();
   });
 
-  const params = {
-    sessionId: 'session-1',
-    jobId: 'job-42',
-  };
+  const params = { jobId: 'job-42' };
 
   const jobInfo = { retryCount: 2, maxRetries: 3, namespace: 'default' };
 
@@ -39,6 +36,7 @@ describe('AIAssistantPollRequestJob', () => {
     overrides: {
       aiAssistantService?: AIAssistantService;
       pollScheduler?: AIAssistantPollScheduler;
+      sessionId?: string;
     } = {}
   ) => {
     const pollScheduler: AIAssistantPollScheduler = overrides.pollScheduler ?? {
@@ -52,7 +50,9 @@ describe('AIAssistantPollRequestJob', () => {
         getJobStatus: jest.fn().mockResolvedValue({ status: 'pending' }),
       } as AIAssistantService);
 
-    return new AIAssistantPollRequestJob({ aiAssistantService, pollScheduler });
+    const sessionId = 'sessionId' in overrides ? overrides.sessionId : 'session-1';
+
+    return new AIAssistantPollRequestJob({ aiAssistantService, pollScheduler, sessionId });
   };
 
   beforeEach(() => {
@@ -119,6 +119,20 @@ describe('AIAssistantPollRequestJob', () => {
       jobId: 'job-42',
       error: 'Service unavailable',
     });
+  });
+
+  it('should keep polling without emitting when the job has no session', async () => {
+    const pollScheduler: AIAssistantPollScheduler = { schedulePoll: jest.fn() };
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus: jest.fn().mockResolvedValue({ status: 'running', progress: 'Working...' }),
+    } as AIAssistantService;
+
+    const job = createJob({ aiAssistantService, pollScheduler, sessionId: undefined });
+    await job.handleDispatch(jest.fn(), params, jobInfo);
+
+    expect(emitToSession).not.toHaveBeenCalled();
+    expect(pollScheduler.schedulePoll).toHaveBeenCalledWith(params);
   });
 
   it('should not emit an error to the client before the last retry', async () => {

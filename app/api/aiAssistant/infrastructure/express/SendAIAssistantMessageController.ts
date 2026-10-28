@@ -1,9 +1,9 @@
-import * as cookie from 'cookie';
 import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AIAssistantFactory } from '../AIAssistantFactory.js';
 import { buildUwaziCredentials } from './buildUwaziCredentials.js';
 
@@ -38,10 +38,7 @@ class SendAIAssistantMessageController extends AbstractController<SendMessageReq
 
     this.ensureUser();
 
-    const cookies = cookie.parse(this.request.get('cookie') || '');
-    const sessionId = cookies['connect.sid'];
-
-    if (!sessionId) {
+    if (!ExecutionContext.sessionId) {
       this.clientError('Session not found');
       return;
     }
@@ -56,7 +53,6 @@ class SendAIAssistantMessageController extends AbstractController<SendMessageReq
     const result = await useCase.execute({
       tenantName: this.tenantName,
       userId: this.user._id,
-      sessionId,
       message: dto.message,
       conversationJobId: dto.jobId,
       credentials,
