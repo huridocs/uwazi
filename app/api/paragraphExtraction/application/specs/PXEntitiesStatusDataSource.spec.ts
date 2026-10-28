@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -170,7 +171,9 @@ describe('PXEntitiesStatusDataSource', () => {
       it('should throw when marking a missing EntityStatus as error', async () => {
         const { sut } = createSut();
 
-        await expect(sut.markAsError(new ObjectId().toString())).rejects.toThrow();
+        await expect(sut.markAsError(new ObjectId().toString())).rejects.toBeInstanceOf(
+          NonRetryableJobError
+        );
       });
 
       it('should mark an EntityStatus as processing', async () => {
