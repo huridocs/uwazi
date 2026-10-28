@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ObjectId } from 'mongodb';
 
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
@@ -713,6 +714,19 @@ describe('PXCreateParagraphs', () => {
     ]);
   });
 
+  it('should throw a non retryable error if the Entity Status does not exist', async () => {
+    const { createParagraphs } = setUpUseCase();
+    await testingEnvironment.setFixtures(createFixtures());
+
+    const promise = createParagraphs.execute({
+      entityStatusId: new ObjectId().toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [],
+    });
+
+    await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
+  });
+
   it('should throw if the source Entity does not exist', async () => {
     const { createParagraphs } = setUpUseCase();
 
@@ -729,8 +743,9 @@ describe('PXCreateParagraphs', () => {
 
     const promise = createParagraphs.execute(input);
 
+    await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
     await expect(promise).rejects.toMatchObject({
-      code: PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE,
+      cause: { code: PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE },
     });
   });
 
@@ -750,8 +765,9 @@ describe('PXCreateParagraphs', () => {
 
     const promise = createParagraphs.execute(input);
 
+    await expect(promise).rejects.toBeInstanceOf(NonRetryableJobError);
     await expect(promise).rejects.toMatchObject({
-      code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
+      cause: { code: PXValidationError.codes.EXTRACTOR_NOT_FOUND },
     });
   });
 
