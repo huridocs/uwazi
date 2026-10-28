@@ -25,17 +25,17 @@ describe('libraryTableCellValue', () => {
         [{ value: { lat: -35.9, lon: -65 }, label: '' }],
         context
       )
-    ).toEqual({ text: 'Latitude: -35.9, Longitude: -65', interactive: true });
+    ).toEqual({ text: '35° 53′ 60″ S, 65° 0′ 0″ W', interactive: true });
   });
 
-  it('prefers a geolocation label when present', () => {
+  it('shows geolocation coordinates with the point label', () => {
     expect(
       libraryTableCellValue(
         'geolocation',
         [{ value: { latitude: 1, longitude: 2 }, label: 'HQ' }],
         context
       )
-    ).toEqual({ text: 'HQ', interactive: true });
+    ).toEqual({ text: 'HQ: 1° 0′ 0″ N, 2° 0′ 0″ E', interactive: true });
   });
 
   it('formats media as a filename and marks it interactive', () => {
@@ -94,6 +94,104 @@ describe('libraryTableCellValue', () => {
         { label: 'second', href: 'https://second.example' },
       ],
     });
+  });
+});
+
+describe('libraryTableCellValue inherited values', () => {
+  it('formats the inherited leaf instead of the related entity name', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            value: 'entity-1',
+            label: 'Parent entity',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'final text' }],
+          },
+        ],
+        context
+      )
+    ).toEqual({ text: 'final text', interactive: false });
+  });
+
+  it('leaves an inherited media file blank in the table', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'media',
+            inheritedValue: [{ value: '/api/files/hearing.mp4', alt: 'hearing.mp4' }],
+          },
+        ],
+        { ...context, omitFileText: true }
+      )
+    ).toEqual({ text: '', interactive: false });
+  });
+
+  it('shows inherited geolocation coordinates', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2, label: 'HQ' } }],
+          },
+        ],
+        context
+      )
+    ).toEqual({ text: 'HQ: 1° 0′ 0″ N, 2° 0′ 0″ E', interactive: true });
+  });
+
+  it('leaves an inherited image blank in the table', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'image',
+            inheritedValue: [{ value: '/api/files/1792633213296onctb95tx1s.png' }],
+          },
+        ],
+        { ...context, omitFileText: true }
+      )
+    ).toEqual({ text: '', interactive: false });
+  });
+
+  it('formats an inherited date from the template type when the row has none', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedValue: [{ value: 1704067200 }],
+          },
+        ],
+        { ...context, inheritedType: 'date' }
+      )
+    ).toEqual({ text: 'Jan 1, 2024', interactive: false });
+  });
+
+  it('formats an inherited date with the leaf type', () => {
+    expect(
+      libraryTableCellValue(
+        'relationship',
+        [
+          {
+            label: 'Parent entity',
+            inheritedType: 'date',
+            inheritedValue: [{ value: 1704067200 }],
+          },
+        ],
+        context
+      )
+    ).toEqual({ text: 'Jan 1, 2024', interactive: false });
   });
 });
 

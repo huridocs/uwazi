@@ -71,7 +71,10 @@ const renderLibraryTableCell = ({
       />
     );
   }
-  const formatted = libraryTableCellValue(column.type, row.metadata?.[column.id], displayContext);
+  const formatted = libraryTableCellValue(column.type, row.metadata?.[column.id], {
+    ...displayContext,
+    inheritedType: column.inheritedType,
+  });
   if (formatted.links?.length) {
     return <LibraryLinks links={formatted.links} />;
   }
@@ -96,7 +99,10 @@ const TableViewer = ({
   tableDensity = 'compact',
 }: TableViewerProps) => {
   const locale = useAtomValue(localeAtom) || 'en';
-  const displayContext = useMemo(() => ({ ...metadataDisplayPresets.compact, locale }), [locale]);
+  const displayContext = useMemo(
+    () => ({ ...metadataDisplayPresets.compact, locale, omitFileText: true }),
+    [locale]
+  );
 
   const data = useMemo<LibraryTableRow[]>(
     () => rows.map(row => ({ ...row, rowId: row.sharedId })),

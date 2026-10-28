@@ -256,6 +256,14 @@ describe('libraryTableColumns', () => {
       libraryTableColumns(sortableTemplates, ['tpl-org']).map(column => [column.id, column.sortKey])
     );
 
+    expect(
+      libraryTableColumns(sortableTemplates, ['tpl-org']).find(
+        column => column.id === 'linked_date'
+      )
+    ).toMatchObject({
+      inheritedType: 'date',
+    });
+
     expect(sortKeys).toEqual({
       title: 'title',
       template: undefined,

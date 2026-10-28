@@ -15,6 +15,7 @@ type LibraryTableColumnDef = {
   label: string;
   translationContext?: string;
   type: 'builtin' | PropertyTypeSchema;
+  inheritedType?: PropertyTypeSchema;
   sortKey?: string;
   align?: 'left' | 'right';
   width?: string;
@@ -121,6 +122,7 @@ const propertyToColumn = (property: PropertySchema, templateId: string): Library
   label: property.label,
   translationContext: templateId,
   type: property.type,
+  ...(property.inherit?.type ? { inheritedType: property.inherit.type } : {}),
   ...(isSortableProperty(property) ? { sortKey: propertySortKey(property) } : {}),
   width: propertyColumnWidth(property.type),
 });
