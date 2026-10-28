@@ -28,13 +28,18 @@ class MongoEntityAccessPolicyDataSource
   constructor({ db, transactionManager, searchV1 }: Deps) {
     super(db, transactionManager);
     this.searchV1 = searchV1;
+  }
 
-    transactionManager.onCommitted(async () => {
-      if (this.updatedSharedIds.size === 0) return;
-      const sharedIds = Array.from(this.updatedSharedIds);
-      this.updatedSharedIds.clear();
-      await this.searchV1.indexEntities({ sharedId: { $in: sharedIds } });
-    });
+  private readonly reindexUpdated = async () => {
+    if (this.updatedSharedIds.size === 0) return;
+    const sharedIds = Array.from(this.updatedSharedIds);
+    this.updatedSharedIds.clear();
+    await this.searchV1.indexEntities({ sharedId: { $in: sharedIds } });
+  };
+
+  private markUpdated(sharedIds: string[]) {
+    sharedIds.forEach(id => this.updatedSharedIds.add(id));
+    this.transactionManager.onCommitted(this.reindexUpdated);
   }
 
   async bulkCreate(policies: EntityAccessPolicy[]): Promise<void> {
@@ -94,7 +99,7 @@ class MongoEntityAccessPolicyDataSource
     );
 
     if (shouldIndex) {
-      this.updatedSharedIds.add(policy.sharedId);
+      this.markUpdated([policy.sharedId]);
     }
   }
 
@@ -114,7 +119,7 @@ class MongoEntityAccessPolicyDataSource
     await this.getCollection<EntityAccessPolicyDBO>().bulkWrite(ops);
 
     if (shouldIndex) {
-      policies.forEach(policy => this.updatedSharedIds.add(policy.sharedId));
+      this.markUpdated(policies.map(policy => policy.sharedId));
     }
   }
 }

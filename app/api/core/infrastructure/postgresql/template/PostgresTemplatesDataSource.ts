@@ -49,15 +49,20 @@ export class PostgresTemplatesDataSource
     this.dao = deps.dao;
 
     this.transactionManager = deps.transactionManager;
+  }
 
-    this.transactionManager.onCommitted(async () => {
-      const ids = [...this.templatesMutated];
-      this.templatesMutated.clear();
-      if (ids.length > 0) {
-        const templates = await this.getByIds(ids);
-        await updateMapping(templates.map(t => MongoTemplateMapper.toSchema(t)));
-      }
-    });
+  private readonly updateMutatedMappings = async () => {
+    const ids = [...this.templatesMutated];
+    this.templatesMutated.clear();
+    if (ids.length > 0) {
+      const templates = await this.getByIds(ids);
+      await updateMapping(templates.map(t => MongoTemplateMapper.toSchema(t)));
+    }
+  };
+
+  private markMutated(id: string) {
+    this.templatesMutated.add(id);
+    this.transactionManager.onCommitted(this.updateMutatedMappings);
   }
 
   async updateMapping(template: Template, reset = false): Promise<void> {
@@ -260,7 +265,7 @@ export class PostgresTemplatesDataSource
       entityViewPage: dbo.entityViewPage ?? null,
       processing: dbo.processing ? JSON.stringify(dbo.processing) : null,
     });
-    this.templatesMutated.add(template.id);
+    this.markMutated(template.id);
   }
 
   async create(template: Template): Promise<void> {
@@ -275,7 +280,7 @@ export class PostgresTemplatesDataSource
       entityViewPage: dbo.entityViewPage ?? null,
       processing: dbo.processing ? JSON.stringify(dbo.processing) : null,
     });
-    this.templatesMutated.add(template.id);
+    this.markMutated(template.id);
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {

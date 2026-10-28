@@ -55,13 +55,18 @@ class PostgresEntityAccessPolicyDataSource
       syncWriter: logging.syncWriter,
       afterSyncLog: logging.afterSyncLog,
     });
+  }
 
-    this.transactionManager.onCommitted(async () => {
-      if (this.updatedSharedIds.size === 0) return;
-      const sharedIds = Array.from(this.updatedSharedIds);
-      this.updatedSharedIds.clear();
-      await search.indexEntities({ sharedId: { $in: sharedIds } });
-    });
+  private readonly reindexUpdated = async () => {
+    if (this.updatedSharedIds.size === 0) return;
+    const sharedIds = Array.from(this.updatedSharedIds);
+    this.updatedSharedIds.clear();
+    await search.indexEntities({ sharedId: { $in: sharedIds } });
+  };
+
+  private markUpdated(sharedIds: string[]) {
+    sharedIds.forEach(id => this.updatedSharedIds.add(id));
+    this.transactionManager.onCommitted(this.reindexUpdated);
   }
 
   protected override get table(): PostgresTable<EntityAccessPolicyRow> {
@@ -150,7 +155,7 @@ class PostgresEntityAccessPolicyDataSource
     await this.permissionTable.recordSync(result.rows.map(row => row._id));
 
     if (shouldIndex) {
-      policies.forEach(policy => this.updatedSharedIds.add(policy.sharedId));
+      this.markUpdated(policies.map(policy => policy.sharedId));
     }
   }
 }
