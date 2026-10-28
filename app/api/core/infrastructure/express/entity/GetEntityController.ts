@@ -5,7 +5,6 @@ import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
-import { ReadTransaction } from '../../../libs/ReadTransaction.js';
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -24,7 +23,6 @@ const GetEntityQuerySchema = z.object({
 type GetEntityQuery = z.infer<typeof GetEntityQuerySchema>;
 
 class GetEntityController extends AbstractController<any> {
-  @ReadTransaction()
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     const logger = LoggerFactory.default();

@@ -1,4 +1,4 @@
--- Migration 037: add-jobs-tenant-id
+-- Migration 038: add-jobs-tenant-id
 -- Tenant jobs are scoped by "namespace" (the tenant name); system jobs use 'system'. Add a
 -- nullable "tenant_id" column so the backup tool can select, rewrite and delete one tenant's
 -- jobs with the same predicate it uses on every tenant table. Nullable: system jobs belong to

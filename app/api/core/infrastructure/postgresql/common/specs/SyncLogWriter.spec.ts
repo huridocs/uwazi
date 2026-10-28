@@ -10,7 +10,7 @@ const TENANT = 'sync-log-writer-tenant';
 
 const writerFor = (namespace: string) =>
   new SyncLogWriter(
-    new PostgresTransactionManager(PostgresDB.knex, TENANT, LoggerFactory.forTests()),
+    new PostgresTransactionManager(PostgresDB.pipelinedPool(), TENANT, LoggerFactory.forTests()),
     TENANT,
     namespace
   );

@@ -32,7 +32,7 @@ describe('PostgresEntitiesSyncHandler', () => {
     return new PostgresEntitiesSyncHandler({
       tenantId: tenantName,
       pgTransactionManager: new PostgresTransactionManager(
-        PostgresDB.knex,
+        PostgresDB.pipelinedPool(),
         tenantName,
         LoggerFactory.forTests()
       ),

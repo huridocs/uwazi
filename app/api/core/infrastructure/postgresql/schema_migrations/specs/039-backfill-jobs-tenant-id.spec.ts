@@ -1,6 +1,6 @@
 import type { Pool } from 'pg';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { migration } from '../038-backfill-jobs-tenant-id.js';
+import { migration } from '../039-backfill-jobs-tenant-id.js';
 
 const TENANT_A = 'tenant-a';
 const TENANT_B = 'tenant-b';
@@ -58,7 +58,7 @@ const scopeByNamespace = async (pool: Pool): Promise<Record<string, string | nul
   return Object.fromEntries(rows.map(row => [row.namespace, row.tenant_id]));
 };
 
-describe('038-backfill-jobs-tenant-id', () => {
+describe('039-backfill-jobs-tenant-id', () => {
   let pool: Pool;
 
   beforeAll(async () => {

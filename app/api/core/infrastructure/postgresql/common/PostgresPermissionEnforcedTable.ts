@@ -1,14 +1,13 @@
 import type { Knex } from 'knex';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import {
   PostgresTable,
-  buildPermissionContext,
   type AfterSyncLog,
   type QueryState,
   type TableConfig,
 } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
+import { Statements } from './Statement.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { filterPermissionsForActor } from '#api/core/infrastructure/common/PermissionDataFilter.js';
 import type { PermissionedDocument } from '#api/core/infrastructure/common/PermissionDataFilter.js';
@@ -18,7 +17,6 @@ type ForParams = {
   tenantId: string;
   transactionManager: PostgresTransactionManager;
   accessContext: AccessContext;
-  knex?: Knex;
   syncWriter?: SyncLogWriter;
   afterSyncLog?: AfterSyncLog;
   identityColumn?: string | null;
@@ -52,18 +50,8 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   static for<TRow = Record<string, unknown>>(
     params: ForParams
   ): PostgresPermissionEnforcedTable<TRow> {
-    const knexInstance = params.knex ?? PostgresDB.knex;
-    const cfg: TableConfig = {
-      knex: knexInstance,
-      tableName: params.tableName,
-      tenantId: params.tenantId,
-      transactionManager: params.transactionManager,
-      accessContext: params.accessContext,
-      syncWriter: params.syncWriter,
-      afterSyncLog: params.afterSyncLog,
-      identityColumn: params.identityColumn,
-    };
-    return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName));
+    const cfg: TableConfig = { ...params };
+    return new PostgresPermissionEnforcedTable<TRow>(cfg, Statements.builder(params.tableName));
   }
 
   protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
@@ -98,28 +86,28 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
 
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
-    const result = await this.cfg.transactionManager.withConnection(
-      async trx => {
-        const query = trx(this.cfg.tableName)
-          .insert(rows)
-          .onConflict(['_id', 'tenant_id'])
-          .merge()
-          .returning(['_id']);
-        const writeCondition = this.upsertWriteCondition();
-        if (writeCondition) {
-          query.whereRaw(writeCondition.sql, writeCondition.bindings);
-        }
-        return query;
-      },
-      { bypass: true, refIds: [] }
-    );
-    const affectedIds = PostgresTable.idsOf(result);
+    const result = await this.send<{ _id: string }>(this.upsertQuery(rows), {
+      bypass: true,
+      refIds: [],
+    });
+    const affectedIds = PostgresTable.idsOf(result.rows);
     if (affectedIds.length > 0) {
       await this.notifySync(
         rows.filter(r => affectedIds.includes(r._id as string)),
         false
       );
     }
+  }
+
+  /** The upsert, with the write-permission condition on its ON CONFLICT DO UPDATE. */
+  private upsertQuery(rows: Record<string, unknown>[]): Knex.QueryBuilder {
+    const query = Statements.builder(this.cfg.tableName)
+      .insert(rows)
+      .onConflict(['_id', 'tenant_id'])
+      .merge()
+      .returning(['_id']);
+    const writeCondition = this.upsertWriteCondition();
+    return writeCondition ? query.whereRaw(writeCondition.sql, writeCondition.bindings) : query;
   }
 
   private async insertIgnoringConflicts(
@@ -130,17 +118,15 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     const rows = this.rowsWithTenant(doc);
     if (rows.length === 0) return;
 
-    const result = await this.cfg.transactionManager.withConnection(
-      async trx =>
-        trx(this.cfg.tableName)
-          .insert(rows)
-          .onConflict(conflictColumns)
-          .ignore()
-          .returning(['_id']),
-      buildPermissionContext(this.cfg.accessContext)
+    const result = await this.send<{ _id: string }>(
+      Statements.builder(this.cfg.tableName)
+        .insert(rows)
+        .onConflict(conflictColumns)
+        .ignore()
+        .returning(['_id'])
     );
     await this.notifySync(
-      PostgresTable.idsOf(result).map(_id => ({ _id })),
+      PostgresTable.idsOf(result.rows).map(_id => ({ _id })),
       false
     );
   }

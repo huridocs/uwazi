@@ -6,6 +6,7 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import type { SegmentationDirectory, SegmentationReadModel } from '#segmentation';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
 
@@ -127,23 +128,29 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
     if (!extractor) {
-      throw new PXValidationError(
-        PXErrorCode.EXTRACTOR_NOT_FOUND,
-        `Extractor with id "${input.extractorId}" was not found`
+      throw new NonRetryableJobError(
+        new PXValidationError(
+          PXErrorCode.EXTRACTOR_NOT_FOUND,
+          `Extractor with id "${input.extractorId}" was not found`
+        )
       );
     }
 
     if (!entity) {
-      throw new PXValidationError(
-        PXErrorCode.ENTITY_NOT_FOUND,
-        `Entity with id "${input.extractorId}" was not found`
+      throw new NonRetryableJobError(
+        new PXValidationError(
+          PXErrorCode.ENTITY_NOT_FOUND,
+          `Entity with id "${input.extractorId}" was not found`
+        )
       );
     }
 
     if (!extractor.canExtract(entity)) {
-      throw new PXValidationError(
-        PXErrorCode.ENTITY_INVALID,
-        `The Entity "${entity.getTitle(defaultLanguage)}" does not have valid template configured by this Extractor`
+      throw new NonRetryableJobError(
+        new PXValidationError(
+          PXErrorCode.ENTITY_INVALID,
+          `The Entity "${entity.getTitle(defaultLanguage)}" does not have valid template configured by this Extractor`
+        )
       );
     }
 

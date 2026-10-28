@@ -9,15 +9,12 @@ export class PostgresTransactionManagerFactory {
   static default(): PostgresTransactionManager {
     const tenant = ExecutionContext.currentTenant;
     const logger = LoggerFactory.default();
-    return new PostgresTransactionManager(PostgresDB.knex, tenant.name, logger);
+    return new PostgresTransactionManager(PostgresDB.pipelinedPool(), tenant.name, logger);
   }
 
   static forTesting() {
     return TestUtils.mockClass<TransactionManager>({
       run: jest.fn().mockImplementation(async (callback: () => Promise<unknown>) => callback()),
-      runReadOnly: jest
-        .fn()
-        .mockImplementation(async (callback: () => Promise<unknown>) => callback()),
       onCommitted: jest.fn().mockReturnThis(),
       onRetry: jest.fn().mockReturnThis(),
       runHandlingOnCommitted: jest.fn().mockReturnValue({

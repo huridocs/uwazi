@@ -202,11 +202,10 @@ const metadataFieldsForCard = (
     if (fields.length >= 3 || !property.showInCard || property.name === options?.excludeProperty) {
       return;
     }
-    const formatted = libraryTableCellValue(
-      property.type,
-      entity.metadata?.[property.name],
-      context
-    );
+    const formatted = libraryTableCellValue(property.type, entity.metadata?.[property.name], {
+      ...context,
+      inheritedType: property.inherit?.type,
+    });
     const text =
       formatted.text ||
       (property.type === 'preview' && entity.preview

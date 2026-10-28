@@ -60,7 +60,7 @@ const stored = async (): Promise<StoredJob[]> => {
 };
 
 const transactionManager = () =>
-  new PostgresTransactionManager(PostgresDB.knex, 'tenant', LoggerFactory.default());
+  new PostgresTransactionManager(PostgresDB.pipelinedPool(), 'tenant', LoggerFactory.default());
 
 const postgresHarness = async (): Promise<QueueAdapterHarness> => {
   await testingEnvironment.setUp({}, { postgres: true });

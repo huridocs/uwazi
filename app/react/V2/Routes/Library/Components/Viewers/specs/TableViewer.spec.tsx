@@ -15,7 +15,7 @@ import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
 import { normalizeTimestamp } from '#V2/Components/Metadata/display/formatMetadataTimestamp.js';
 import { TableViewer } from '../TableViewer.js';
-import { libraryTableColumns } from '../../libraryTableColumns.js';
+import { libraryTableColumns, type LibraryTableColumnDef } from '../../libraryTableColumns.js';
 
 jest.mock('#UI/Icon/Icon.js', () => ({
   Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
@@ -62,6 +62,7 @@ const renderTable = (
     order?: 'asc' | 'desc';
     tableDensity?: 'comfortable' | 'compact';
     rows?: LibrarySearchHit[];
+    tableColumns?: LibraryTableColumnDef[];
   } = {}
 ) =>
   render(
@@ -84,7 +85,7 @@ const renderTable = (
           sort={overrides.sort}
           order={overrides.order}
           onSortChange={overrides.onSortChange}
-          tableColumns={visibleColumns}
+          tableColumns={overrides.tableColumns ?? visibleColumns}
           tableDensity={overrides.tableDensity ?? 'compact'}
         />
       </TestAtomStoreProvider>
@@ -110,8 +111,40 @@ describe('TableViewer', () => {
       screen.getByText(secondsToDate(normalizeTimestamp(1735689600000), 'en'))
     ).toBeInTheDocument();
     expect(screen.getByText('NGO')).toBeInTheDocument();
-    expect(screen.getByText('Latitude: -35.9, Longitude: -65')).toBeInTheDocument();
-    expect(screen.getByText('hearing.mp4')).toBeInTheDocument();
+    expect(screen.getByText('35° 53′ 60″ S, 65° 0′ 0″ W')).toBeInTheDocument();
+    expect(screen.queryByText('hearing.mp4')).not.toBeInTheDocument();
+  });
+
+  it('leaves an inherited image cell blank', () => {
+    renderTable({
+      rows: [
+        {
+          ...rows[0],
+          metadata: {
+            ...rows[0].metadata,
+            relationshipimage: [
+              {
+                label: 'Parent',
+                inheritedType: 'image',
+                inheritedValue: [{ value: '/api/files/1792633213296onctb95tx1s.png' }],
+              },
+            ],
+          },
+        },
+      ],
+      tableColumns: [
+        ...visibleColumns,
+        {
+          id: 'relationshipimage',
+          label: 'Relationship image',
+          type: 'relationship',
+        },
+      ],
+    });
+
+    expect(
+      screen.queryByRole('button', { name: '1792633213296onctb95tx1s.png' })
+    ).not.toBeInTheDocument();
   });
 
   it('opens preview from a row click and focuses a geolocation property from its link', () => {
@@ -126,10 +159,8 @@ describe('TableViewer', () => {
       metaKey: false,
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Latitude: -35.9, Longitude: -65' }));
+    fireEvent.click(screen.getByRole('button', { name: '35° 53′ 60″ S, 65° 0′ 0″ W' }));
     expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'location');
-    fireEvent.click(screen.getByRole('button', { name: 'hearing.mp4' }));
-    expect(onFocusProperty).toHaveBeenCalledWith('org-1', 'video');
   });
 
   it('does not select row text on shift-click and still selects the row', () => {

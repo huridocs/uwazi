@@ -48,17 +48,18 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
   ) {
     super(db, transactionManager, options);
     this.fileStorage = fileStorage;
-    transactionManager.onCommitted(async () => {
-      const files = Array.from(this.filesToReindex);
-      if (!files.length) return;
-
-      await search.indexEntities(
-        { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
-        files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
-      );
-      this.filesToReindex = new Set<BaseFile>();
-    });
   }
+
+  private readonly reindexFiles = async () => {
+    const files = Array.from(this.filesToReindex);
+    if (!files.length) return;
+
+    await search.indexEntities(
+      { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
+      files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
+    );
+    this.filesToReindex = new Set<BaseFile>();
+  };
 
   async bulkUpdate(files: BaseFile[]): Promise<void> {
     if (!files.length) return;
@@ -88,6 +89,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
         this.filesToReindex.add(file);
       }
     });
+    this.transactionManager.onCommitted(this.reindexFiles);
   }
 
   async getByEntitiesIds(entitySharedIds: string[]): Promise<BaseFile[]> {

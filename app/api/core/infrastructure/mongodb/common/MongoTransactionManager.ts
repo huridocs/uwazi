@@ -13,21 +13,21 @@ export class MongoTransactionManager implements TransactionManager {
 
   private session?: ClientSession;
 
-  private persistentOnCommitHandlers: CommitHandler[];
+  private persistentOnCommitHandlers: Set<CommitHandler>;
 
-  private persistentOnRetryHandlers: RetryHandler[];
+  private persistentOnRetryHandlers: Set<RetryHandler>;
 
-  private runOnCommitHandlers: CommitHandler[];
+  private runOnCommitHandlers: Set<CommitHandler>;
 
-  private runOnRetryHandlers: RetryHandler[];
+  private runOnRetryHandlers: Set<RetryHandler>;
 
   private finished = false;
 
   constructor(mongoClient: MongoClient, logger: Logger) {
-    this.persistentOnCommitHandlers = [];
-    this.persistentOnRetryHandlers = [];
-    this.runOnCommitHandlers = [];
-    this.runOnRetryHandlers = [];
+    this.persistentOnCommitHandlers = new Set();
+    this.persistentOnRetryHandlers = new Set();
+    this.runOnCommitHandlers = new Set();
+    this.runOnRetryHandlers = new Set();
     this.mongoClient = mongoClient;
     this.logger = logger;
   }
@@ -49,8 +49,8 @@ export class MongoTransactionManager implements TransactionManager {
   }
 
   private clearRunHandlers() {
-    this.runOnCommitHandlers = [];
-    this.runOnRetryHandlers = [];
+    this.runOnCommitHandlers.clear();
+    this.runOnRetryHandlers.clear();
   }
 
   private validateState() {
@@ -128,6 +128,7 @@ export class MongoTransactionManager implements TransactionManager {
   ): Promise<T> {
     this.logger.debug(error as any);
     await this.executeOnRetryHandlers();
+    this.clearRunHandlers();
     return this.runWithRetry(callback, retries - 1);
   }
 
@@ -184,18 +185,12 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
-  /** Mongo reads cost one round trip each with or without a transaction: no scope needed. */
-  // eslint-disable-next-line class-methods-use-this
-  async runReadOnly<T>(callback: () => Promise<T>): Promise<T> {
-    return callback();
-  }
-
   runHandlingOnCommitted<T>(callback: () => Promise<T>) {
     return {
       onCommitted: async (handler: (returnValue: T) => Promise<void>) =>
         this.run(async () => {
           const returnValue = await callback();
-          this.runOnCommitHandlers.push(async () => handler(returnValue));
+          this.runOnCommitHandlers.add(async () => handler(returnValue));
           return returnValue;
         }),
     };
@@ -207,18 +202,18 @@ export class MongoTransactionManager implements TransactionManager {
 
   onCommitted(handler: () => Promise<void>) {
     if (this.isRunning()) {
-      this.runOnCommitHandlers.push(handler);
+      this.runOnCommitHandlers.add(handler);
     } else {
-      this.persistentOnCommitHandlers.push(handler);
+      this.persistentOnCommitHandlers.add(handler);
     }
     return this;
   }
 
   onRetry(handler: () => Promise<void>) {
     if (this.isRunning()) {
-      this.runOnRetryHandlers.push(handler);
+      this.runOnRetryHandlers.add(handler);
     } else {
-      this.persistentOnRetryHandlers.push(handler);
+      this.persistentOnRetryHandlers.add(handler);
     }
     return this;
   }
