@@ -80,11 +80,12 @@ function register<T extends Dispatchable>(
     const isSystem = isPrivilegedJob(dispatchable);
 
     await tenants.run(async () => {
-      const { userId, correlationId } = job.params as any;
+      const { userId, correlationId, sessionId } = job.params as any;
 
       deps = ExecutionContextFactory.build({
         tenant: tenants.current(),
         correlationId,
+        sessionId,
         telemetry: { kind: 'queue_job' },
         overrides: { jobsDispatcher: () => JobsDispatcherFactory.forNamespace(namespace) },
       });
