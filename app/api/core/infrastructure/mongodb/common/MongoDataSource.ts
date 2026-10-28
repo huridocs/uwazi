@@ -10,14 +10,6 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
   accessContext?: AccessContext;
-  /**
-   * When true, the data source does not register its `onCommitted` handler on
-   * the shared transaction manager. Use for read-only views that share a
-   * transaction manager with another instance of the same data source, which
-   * already owns the on-commit concern — registering twice would duplicate
-   * the handler on every commit.
-   */
-  skipOnCommits?: boolean;
 }
 
 export abstract class MongoDataSource<TSchema extends Document = Document> {

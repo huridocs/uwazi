@@ -7,7 +7,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { UseCase } from '#api/core/libs/UseCase.js';
 import relationshipsDS from '#api/relationships/relationships.js';
 
-import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
@@ -73,16 +73,20 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     ]);
 
     if (!extractor) {
-      throw new PXValidationError(
-        PXValidationError.codes.EXTRACTOR_NOT_FOUND,
-        `The Extractor with id ${entityStatus.extractorId} does not exist anymore`
+      throw new NonRetryableJobError(
+        new PXValidationError(
+          PXValidationError.codes.EXTRACTOR_NOT_FOUND,
+          `The Extractor with id ${entityStatus.extractorId} does not exist anymore`
+        )
       );
     }
 
     if (!sourceEntity) {
-      throw new PXValidationError(
-        PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE,
-        `The source Entity for the Extractor ${extractor?.id} does not exist anymore`
+      throw new NonRetryableJobError(
+        new PXValidationError(
+          PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE,
+          `The source Entity for the Extractor ${extractor?.id} does not exist anymore`
+        )
       );
     }
 
@@ -105,7 +109,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   private async getEntityStatus(entityStatusId: string) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getById(entityStatusId);
     if (!entityStatus) {
-      throw new OperationalError('Entity Status not found');
+      throw new NonRetryableJobError(new Error('Entity Status not found'));
     }
     return entityStatus;
   }

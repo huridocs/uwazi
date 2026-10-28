@@ -41,18 +41,18 @@ export class PostgresFilesDataSource
 
     this.transactionManager = deps.transactionManager;
     this.fileStorage = deps.fileStorage;
-
-    this.transactionManager.onCommitted(async () => {
-      const files = Array.from(this.filesToReindex);
-      if (!files.length) return;
-
-      await search.indexEntities(
-        { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
-        files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
-      );
-      this.filesToReindex = new Set<BaseFile>();
-    });
   }
+
+  private readonly reindexFiles = async () => {
+    const files = Array.from(this.filesToReindex);
+    if (!files.length) return;
+
+    await search.indexEntities(
+      { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
+      files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
+    );
+    this.filesToReindex = new Set<BaseFile>();
+  };
 
   private contentLoader: FileContentLoader = opts => this.fileStorage.getFile(opts);
 
@@ -64,6 +64,7 @@ export class PostgresFilesDataSource
     files.forEach(file => {
       if (file.isEntityFile()) this.filesToReindex.add(file);
     });
+    this.transactionManager.onCommitted(this.reindexFiles);
   }
 
   async create(file: BaseFile): Promise<void> {
