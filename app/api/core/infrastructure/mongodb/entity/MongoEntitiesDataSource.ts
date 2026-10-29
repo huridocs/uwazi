@@ -48,18 +48,23 @@ export class MongoEntitiesDataSource
     super(deps.db, deps.transactionManager, deps.options);
 
     this.templatesDAO = deps.templatesDAO;
+  }
 
-    if (!deps.options?.skipOnCommits) {
-      this.transactionManager.onCommitted(async () => {
-        await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
-      });
-    }
+  private readonly reindexModified = async () => {
+    if (!this.modifiedSharedIds.size) return;
+    const sharedIds = Array.from(this.modifiedSharedIds);
+    this.modifiedSharedIds.clear();
+    await search.indexEntities({ sharedId: { $in: sharedIds } });
+  };
+
+  private markModified(sharedIds: string[]) {
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.transactionManager.onCommitted(this.reindexModified);
   }
 
   /**
    * Returns a cached instance with a system access context, so permission
-   * enforcement is a no-op. Cached (not per-call) to avoid accumulating
-   * `onCommitted` search-index handlers on the shared transaction manager.
+   * enforcement is a no-op.
    */
   unrestricted(): EntitiesDataSource {
     if (!this.unrestrictedInstance) {
@@ -67,7 +72,7 @@ export class MongoEntitiesDataSource
         db: this.db,
         transactionManager: this.transactionManager,
         templatesDAO: this.templatesDAO,
-        options: { accessContext: AccessContext.system(), skipOnCommits: true },
+        options: { accessContext: AccessContext.system() },
       });
     }
     return this.unrestrictedInstance;
@@ -132,7 +137,7 @@ export class MongoEntitiesDataSource
       await this.getCollection().bulkWrite(updates as any, { ignoreUndefined: true });
     }
 
-    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    this.markModified(entities.map(entity => entity.sharedId));
   }
 
   private async getAccessOfEntitiesWithNewLanguages(entities: Entity[]) {
@@ -368,7 +373,7 @@ export class MongoEntitiesDataSource
     const affectedSharedIds = await this.findAffectedSharedIds(deletedSharedIds, propertyNames);
     if (affectedSharedIds.length === 0) return;
 
-    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(affectedSharedIds);
 
     await this.updateMetadataReferences(affectedSharedIds, deletedSharedIds);
   }
@@ -393,7 +398,7 @@ export class MongoEntitiesDataSource
       { sharedId: { $in: sharedIds } },
       { $set: { editDate: Date.now() } }
     );
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
@@ -403,7 +408,7 @@ export class MongoEntitiesDataSource
         $unset: Object.fromEntries(propertyNames.map(name => [`metadata.${name}`, ''])),
       }
     );
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async renameMetadataProperties(
@@ -421,7 +426,7 @@ export class MongoEntitiesDataSource
         ),
       }
     );
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
@@ -448,7 +453,7 @@ export class MongoEntitiesDataSource
       { ordered: false }
     );
     const sharedIds = entitiesToSave.map(e => e.sharedId);
-    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    this.markModified(sharedIds);
   }
 
   async countByTemplateId(templateId: string): Promise<number> {
@@ -529,7 +534,7 @@ export class MongoEntitiesDataSource
 
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
 
-    this.modifiedSharedIds.add(entity.sharedId);
+    this.markModified([entity.sharedId]);
   }
 
   async bulkInsert(entities: Entity[]): Promise<void> {
@@ -541,6 +546,6 @@ export class MongoEntitiesDataSource
 
     await this.getCollection().insertMany(allDbos, { ignoreUndefined: true, ordered: false });
 
-    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    this.markModified(entities.map(entity => entity.sharedId));
   }
 }

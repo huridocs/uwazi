@@ -7332,6 +7332,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pg-copy-streams@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "@types/pg-copy-streams@npm:1.2.5"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/pg": "npm:*"
+  checksum: 10c0/fccb3c4e3df5dd579d1c30538036450be34d586e3f8531be0f8876d72751193ce8fc779a26f4b7a314539e3dbb0d8fb9a0d61c85da96b8fced43e127fa87d1c8
+  languageName: node
+  linkType: hard
+
 "@types/pg-pool@npm:2.0.7":
   version: 2.0.7
   resolution: "@types/pg-pool@npm:2.0.7"
@@ -19290,6 +19300,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-copy-streams@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pg-copy-streams@npm:7.0.0"
+  checksum: 10c0/451d4919774c2a318529ed734e7f1cd33ee08f277379bfdd19cf625dd5cd5031b09bea41a07af8f42091a8642b2a5a541cee2aa234069e7e70e6a8765d1da3e6
+  languageName: node
+  linkType: hard
+
 "pg-cursor@npm:^2.22.0":
   version: 2.22.0
   resolution: "pg-cursor@npm:2.22.0"
@@ -24210,6 +24227,7 @@ __metadata:
     "@types/node-uuid": "npm:^0.0.28"
     "@types/nodemailer": "npm:^8.0.0"
     "@types/pg": "npm:^8.21.0"
+    "@types/pg-copy-streams": "npm:^1.2.5"
     "@types/prop-types": "npm:^15.7.15"
     "@types/qs": "npm:^6.15.1"
     "@types/react": "npm:^19.2.0"
@@ -24338,6 +24356,7 @@ __metadata:
     passport-local: "npm:^1.0.0"
     pdfjs-dist: "npm:5.4.624"
     pg: "npm:^8.23.0"
+    pg-copy-streams: "npm:^7.0.0"
     pg-query-stream: "npm:^4.17.0"
     plop: "npm:^4.0.5"
     postcss: "npm:8.5.26"

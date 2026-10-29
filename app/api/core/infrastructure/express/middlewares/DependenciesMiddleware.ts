@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import * as cookie from 'cookie';
 import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -14,6 +15,7 @@ const dependenciesContextMiddleware = (
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
   const correlationId = randomUUID();
+  const sessionId = cookie.parse(request.get('cookie') || '')['connect.sid'];
 
   response.on('finish', () => {
     if (!ExecutionContext.isTelemetryEnabled) return;
@@ -39,6 +41,7 @@ const dependenciesContextMiddleware = (
       tenant,
       actor,
       correlationId,
+      sessionId,
       telemetry: { kind: 'http_request', startPerfMs: request.startPerfMs },
     }),
     next

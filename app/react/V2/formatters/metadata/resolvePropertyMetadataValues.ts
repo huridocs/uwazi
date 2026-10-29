@@ -1,32 +1,11 @@
 import type { Entity } from '#V2/api/entities/types.js';
+import { hasInheritedValues, resolveInheritedValues } from '#V2/shared/resolveInheritedValues.js';
 import type { BaseMetadataProperty, MetadataValue } from '../types.js';
-
-const getInheritedChildren = (values: MetadataValue[]) =>
-  values.flatMap(item => (Array.isArray(item?.inheritedValue) ? item.inheritedValue : []));
-
-const hasInheritedChildren = (values: MetadataValue[]) =>
-  values.some(item => Array.isArray(item?.inheritedValue) && item.inheritedValue.length > 0);
 
 const resolveInheritedRelationship = (
   metadataValues: MetadataValue[],
   inheritedType?: BaseMetadataProperty['inheritedType']
-) => {
-  if (!hasInheritedChildren(metadataValues)) {
-    return {
-      inheritedType,
-      values: metadataValues,
-    };
-  }
-
-  const nextValues = getInheritedChildren(metadataValues);
-  const currentInheritedType = metadataValues.find(item => item?.inheritedType)?.inheritedType;
-  const nextInheritedType = nextValues.find(item => item?.inheritedType)?.inheritedType;
-
-  return resolveInheritedRelationship(
-    nextValues,
-    nextInheritedType || currentInheritedType || inheritedType
-  );
-};
+) => resolveInheritedValues(metadataValues, inheritedType);
 
 const resolvePropertyMetadataValues = (
   property: BaseMetadataProperty,
@@ -35,12 +14,7 @@ const resolvePropertyMetadataValues = (
   const metadataValues = (metadata?.[property.name] ?? []) as MetadataValue[];
 
   if (property.type === 'relationship' && property.inherited) {
-    const inheritedRelationship = resolveInheritedRelationship(
-      metadataValues,
-      property.inheritedType
-    );
-
-    return inheritedRelationship.values;
+    return resolveInheritedRelationship(metadataValues, property.inheritedType).values;
   }
 
   return metadataValues;
@@ -56,7 +30,7 @@ const resolvePropertyType = (
 
   const metadataValues = (metadata?.[property.name] ?? []) as MetadataValue[];
 
-  if (metadataValues.length > 0 && !hasInheritedChildren(metadataValues)) {
+  if (metadataValues.length > 0 && !hasInheritedValues(metadataValues)) {
     return 'relationship';
   }
 
