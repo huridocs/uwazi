@@ -47,7 +47,11 @@ const insert = async (jobs: StoredJob[]) => {
 };
 
 const stored = async (): Promise<StoredJob[]> => {
-  const { rows } = await pool().query('SELECT * FROM jobs');
+  const { rows } = await pool().query(
+    `SELECT "id", "queue", "name", "namespace", "params", "lockedUntil", "createdAt",
+            "retryCount", "failed", "options"
+     FROM jobs`
+  );
   return rows.map(row => ({
     ...row,
     lockedUntil: Number(row.lockedUntil),
@@ -171,6 +175,18 @@ describe('PostgresQueueAdapter', () => {
     const ids = [await adapter.pushJob(pushInput()), ...(await adapter.pushJobs([pushInput()]))];
 
     expect(ids).toEqual([uuidv7, uuidv7]);
+  });
+
+  describe('decorateJobRow columns', () => {
+    it('should store the extra columns a decorateJobRow hook adds', async () => {
+      const manager = transactionManager();
+      const adapter = DefaultPostgresQueueAdapter(manager, () => ({ tenant_id: 'acme' }));
+
+      const id = await adapter.pushJob(pushInput());
+
+      const { rows } = await pool().query('SELECT "tenant_id" FROM jobs WHERE "id" = $1', [id]);
+      expect(rows).toEqual([{ tenant_id: 'acme' }]);
+    });
   });
 
   it('should keep polling, with a warning, while the jobs table does not exist', async () => {

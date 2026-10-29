@@ -1,10 +1,11 @@
-import { t } from '#app/I18N/index.js';
+import formatcoords from 'formatcoords';
 import type { DisplayContext } from '#V2/Components/Metadata/display/displayContext.js';
 import {
   formatMetadataTimestamp,
   normalizeTimestamp,
 } from '#V2/Components/Metadata/display/formatMetadataTimestamp.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
+import { hasInheritedValues, resolveInheritedValues } from '#V2/shared/resolveInheritedValues.js';
 
 type LibraryLink = {
   label: string;
@@ -23,9 +24,15 @@ type RawMetadataValue = {
   alt?: string;
   title?: string;
   parent?: { label?: string };
+  inheritedType?: string;
+  inheritedValue?: RawMetadataValue[];
 };
 
 const INTERACTIVE_TYPES = new Set(['geolocation', 'media', 'image', 'preview']);
+const OMITTED_FILE_TYPES = new Set(['image', 'media']);
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const asValues = (values: unknown): RawMetadataValue[] => {
   if (!Array.isArray(values)) {
@@ -61,20 +68,26 @@ const coordinateNumber = (value: Record<string, unknown>, keys: string[]): numbe
   return typeof found === 'number' ? found : undefined;
 };
 
+const pointName = (item: RawMetadataValue, point: Record<string, unknown>): string => {
+  const name = typeof point.label === 'string' && point.label ? point.label : item.label;
+  return name && !name.includes('°') ? name : '';
+};
+
 const geoText = (item: RawMetadataValue): string => {
-  if (item.label) {
-    return item.label;
-  }
-  if (!item.value || typeof item.value !== 'object') {
+  if (!isRecord(item.value)) {
     return '';
   }
-  const point = item.value as Record<string, unknown>;
-  const latitude = coordinateNumber(point, ['lat', 'latitude']);
-  const longitude = coordinateNumber(point, ['lon', 'longitude']);
-  if (typeof latitude === 'number' && typeof longitude === 'number') {
-    return `${t('System', 'Latitude', null, false)}: ${latitude}, ${t('System', 'Longitude', null, false)}: ${longitude}`;
+  const latitude = coordinateNumber(item.value, ['lat', 'latitude']);
+  const longitude = coordinateNumber(item.value, ['lon', 'longitude']);
+  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    return '';
   }
-  return '';
+  const coords = formatcoords(latitude, longitude).format('DD MM ss X', {
+    latLonSeparator: ', ',
+    decimalPlaces: 0,
+  });
+  const name = pointName(item, item.value);
+  return name ? `${name}: ${coords}` : coords;
 };
 
 const nestedText = (item: RawMetadataValue): string => {
@@ -162,13 +175,28 @@ const linkFromValue = (value: unknown): LibraryLink | undefined => {
   return { label: label || url, href: url };
 };
 
+const resolvedRows = (propertyType: string, values: unknown, inheritedType?: string) => {
+  const source = asValues(values);
+  if (!hasInheritedValues(source)) {
+    return { type: propertyType, rows: source };
+  }
+  const resolved = resolveInheritedValues(source, inheritedType);
+  return { type: resolved.inheritedType || propertyType, rows: resolved.values };
+};
+
 const libraryTableCellValue = (
   propertyType: string,
   values: unknown,
-  context: DisplayContext
+  context: DisplayContext & { omitFileText?: boolean; inheritedType?: string }
 ): LibraryTableCellValue => {
-  if (propertyType === 'link') {
-    const links = asValues(values).flatMap(item => {
+  const { type, rows } = resolvedRows(propertyType, values, context.inheritedType);
+
+  if (context.omitFileText && OMITTED_FILE_TYPES.has(type)) {
+    return { text: '', interactive: false };
+  }
+
+  if (type === 'link') {
+    const links = rows.flatMap(item => {
       const link = linkFromValue(item.value);
       return link ? [link] : [];
     });
@@ -178,13 +206,13 @@ const libraryTableCellValue = (
       ...(links.length ? { links } : {}),
     };
   }
-  const text = asValues(values)
-    .map(item => valueText(propertyType, item, context))
+  const text = rows
+    .map(item => valueText(type, item, context))
     .filter(Boolean)
     .join(', ');
   return {
     text,
-    interactive: Boolean(text) && INTERACTIVE_TYPES.has(propertyType),
+    interactive: Boolean(text) && INTERACTIVE_TYPES.has(type),
   };
 };
 

@@ -18,7 +18,6 @@ describe('SendAIAssistantMessage', () => {
     const result = await useCase.execute({
       tenantName: 'default',
       userId: 'user-1',
-      sessionId: 'session-1',
       message: 'Hello',
       credentials: {
         url: 'http://localhost',
@@ -37,13 +36,7 @@ describe('SendAIAssistantMessage', () => {
       },
       jobId: undefined,
     });
-    expect(pollScheduler.schedulePoll).toHaveBeenCalledWith(
-      {
-        sessionId: 'session-1',
-        jobId: 'job-42',
-      },
-      0
-    );
+    expect(pollScheduler.schedulePoll).toHaveBeenCalledWith({ jobId: 'job-42' }, 0);
   });
 
   it('should continue an existing conversation when conversationJobId is provided', async () => {
@@ -61,7 +54,6 @@ describe('SendAIAssistantMessage', () => {
     await useCase.execute({
       tenantName: 'default',
       userId: 'user-1',
-      sessionId: 'session-1',
       message: 'Follow up',
       conversationJobId: 'job-42',
       credentials: {

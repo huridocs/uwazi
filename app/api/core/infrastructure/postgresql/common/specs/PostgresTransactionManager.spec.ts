@@ -338,6 +338,42 @@ describe('PostgresTransactionManager', () => {
       expect(result).toBe('value');
       expect(handler).toHaveBeenCalledWith('value');
     });
+
+    it('should fire a handler registered twice within a run only once', async () => {
+      const manager = createManager();
+      const handler = jest.fn().mockResolvedValue(undefined);
+
+      await manager.run(async () => {
+        manager.onCommitted(handler);
+        manager.onCommitted(handler);
+      });
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fire a persistent handler registered twice only once per run', async () => {
+      const manager = createManager();
+      const handler = jest.fn().mockResolvedValue(undefined);
+      manager.onCommitted(handler);
+      manager.onCommitted(handler);
+
+      await manager.run(async () => {});
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should discard the handlers registered by an attempt that is retried', async () => {
+      const manager = createManager();
+      const nextStatement = failingWithSerialization(1);
+      const handler = jest.fn().mockResolvedValue(undefined);
+
+      await manager.run(async () => {
+        manager.onCommitted(async () => handler());
+        await manager.query(nextStatement());
+      });
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('isRunning', () => {

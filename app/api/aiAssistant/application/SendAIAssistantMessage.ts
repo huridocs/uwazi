@@ -6,7 +6,6 @@ import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 type Input = {
   tenantName: string;
   userId: string;
-  sessionId: string;
   message: string;
   credentials: UwaziCredentials;
   conversationJobId?: string;
@@ -29,13 +28,7 @@ class SendAIAssistantMessage extends AbstractUseCase<Input, Output, Dependencies
       jobId: input.conversationJobId,
     });
 
-    await this.deps.pollScheduler.schedulePoll(
-      {
-        sessionId: input.sessionId,
-        jobId,
-      },
-      0
-    );
+    await this.deps.pollScheduler.schedulePoll({ jobId }, 0);
 
     return { jobId };
   }

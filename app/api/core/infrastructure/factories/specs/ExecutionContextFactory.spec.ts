@@ -37,17 +37,23 @@ describe('ExecutionContextFactory', () => {
       );
     });
 
-    it('should carry tenant, actor and correlationId into the context', () => {
+    it('should carry tenant, actor, correlationId and sessionId into the context', () => {
       const actor = User.system();
 
       const context = ExecutionContextFactory.build({
         tenant,
         actor,
         correlationId: 'correlation-1',
+        sessionId: 'session-1',
         telemetry: { kind: 'cli' },
       });
 
-      expect(context).toMatchObject({ tenant, actor, correlationId: 'correlation-1' });
+      expect(context).toMatchObject({
+        tenant,
+        actor,
+        correlationId: 'correlation-1',
+        sessionId: 'session-1',
+      });
     });
 
     it('should not generate a correlationId when none is given', () => {

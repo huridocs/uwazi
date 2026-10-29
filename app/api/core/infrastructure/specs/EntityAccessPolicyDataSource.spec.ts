@@ -275,6 +275,16 @@ describe('EntityAccessPolicyDataSource', () => {
     });
 
     describe('on-commit indexing', () => {
+      it('does not register a commit handler when constructed', () => {
+        const onCommittedSpy = testingEnvironment.runWithContext(() => {
+          const spy = jest.spyOn(ExecutionContext.transactionManager, 'onCommitted');
+          EntityAccessPolicyDataSourceFactory.default();
+          return spy;
+        });
+
+        expect(onCommittedSpy).not.toHaveBeenCalled();
+      });
+
       it('reindexes entities updated via update/bulkUpdate on commit', async () => {
         const { sut, transactionManager } = createSut();
 

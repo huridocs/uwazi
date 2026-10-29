@@ -46,15 +46,15 @@ describe('BulkDeleteEntityController', () => {
     );
   });
 
-  it('should throw when given more than 1000 sharedIds', async () => {
+  it('should throw when given more than 10000 sharedIds', async () => {
     const { sut } = createSut({
       requestDto: {
-        sharedIds: Array.from({ length: 1001 }, (_, i) => `ID_${i + 1}`),
+        sharedIds: Array.from({ length: 10001 }, (_, i) => `ID_${i + 1}`),
       },
     });
 
     await expect(sut.handleAsync()).rejects.toThrow(
-      'You must provide at most 1000 sharedIds for bulk deletion'
+      'You must provide at most 10000 sharedIds for bulk deletion'
     );
   });
 

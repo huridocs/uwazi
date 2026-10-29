@@ -468,6 +468,7 @@ const testingEnvironment = {
       tenant: overrides?.tenant ?? tenant,
       actor: overrides?.actor ?? defaultActor,
       correlationId: overrides?.correlationId,
+      sessionId: overrides?.sessionId,
       factories: { ...defaultFactories, ...overrides?.factories },
     };
 
