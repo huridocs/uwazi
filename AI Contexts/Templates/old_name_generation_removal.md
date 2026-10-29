@@ -112,11 +112,11 @@ Settings library filters, if a filter id is a property name rather than a templa
 
 ## To do
 
-- [ ] Ship the code and all four migrations in one release.
-- [ ] Scaffold the four migrations with `yarn add-migration`. Copy `generateNewSafeName` into 1 and 2. Do not import it. Both end by setting the flag true.
-- [ ] Specs, old shape in, raw collection or table out: flag already true; flag missing and names already equal leaves the flag true; one rename then the flag is true; a retry; two tenants on Postgres; empty database is a no-op; collision fails the tenant.
-- [ ] Spec the text replace on a page query and on `property="..."`, including a name that is a prefix of another name.
-- [ ] Spec an extractor `property`, a `source.property`, and a suggestion `propertyName` rewritten from the same map. Two templates on one extractor that disagree fail the tenant. `title` is left as stored.
-- [ ] Set `reindex: true` only for a tenant that renamed.
+- [x] Scaffold the four migrations with `yarn add-migration`. Copy `generateNewSafeName` into 1 and 2. Do not import it. Both end by setting the flag true.
+- [x] Specs, old shape in, raw collection or table out: flag already true; flag missing and names already equal leaves the flag true; one rename then the flag is true; a retry; two tenants on Postgres; empty database is a no-op; collision fails the tenant.
+- [x] Spec the text replace on a page query and on `property="..."`, including a name that is a prefix of another name.
+- [x] Spec an extractor `property`, a `source.property`, and a suggestion `propertyName` rewritten from the same map. Two templates on one extractor that disagree fail the tenant. `title` is left as stored.
+- [x] Set `reindex: true` only for a tenant that renamed.
 - [ ] Remove the flag from application code and the UI in this release.
+- [ ] Ship the code and all four migrations in one release.
 - [ ] Close #9695 as withdrawn once this is the plan of record.
