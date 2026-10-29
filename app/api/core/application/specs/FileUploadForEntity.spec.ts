@@ -94,7 +94,6 @@ describe('FileUploadForEntity', () => {
             {
               userId: ExecutionContext.actor?._id?.toString(),
               tenantName: tenants.current().name,
-              sessionId: 'test-upload-session',
             }
           );
           const pm = new PathManager({ tenant: tenants.current() });
@@ -143,7 +142,6 @@ describe('FileUploadForEntity', () => {
         {
           documentId: result._id,
           tenantName,
-          sessionId: 'test-upload-session',
         },
       ]);
     });

@@ -20,6 +20,7 @@ class AIAssistantFactory {
       pollScheduler: new AIAssistantJobScheduler({
         dispatcher: ExecutionContext.jobsDispatcher,
       }),
+      sessionId: ExecutionContext.sessionId,
     });
   }
 }
