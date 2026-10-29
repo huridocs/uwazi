@@ -128,7 +128,7 @@ const renderField = (
             pendingAttachments={[]}
             registerPendingAttachment={() => undefined}
             removePendingAttachmentIfUnused={() => undefined}
-            relationshipLookup={async () => []}
+            relationshipLookup={async () => ({ options: [], total: 0 })}
             relationshipLookupSearch={async () => []}
           />
         </EditForm>
