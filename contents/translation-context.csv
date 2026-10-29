@@ -1583,3 +1583,4 @@ Grouped,Option label,Library,Results layout that lists one collapsible card per 
 Passages,Option label,Library,Results layout that lists every matching passage in one flat list.,false
 File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the storage size figure in the Storage card, explaining it measures uploaded file usage only.",false
 Save theme,Button label,Settings > Collection,Saves theme and branding from the side panel without saving other unsaved collection settings.,false
+Show all,Button label,Shared (used across 2 views),"Expands the folded file list on the entity metadata tab and the library entity preview when more than six files are present. The count and the word files sit beside this label.",false

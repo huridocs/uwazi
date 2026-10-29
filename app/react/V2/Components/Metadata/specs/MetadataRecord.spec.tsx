@@ -1,19 +1,47 @@
 /** @jest-environment jsdom */
 /* eslint-disable react/no-multi-comp, max-statements, max-lines */
 import React from 'react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { EntityProvider } from '#V2/Routes/Entity/Components/context/EntityContext.js';
+import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
+import { EntityFilesProvider } from '#V2/Routes/Entity/Components/Files/index.js';
 import { focusMetadataFieldAtom } from '../focusMetadataFieldAtom.js';
 import {
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   MEDIA_METADATA_FIELD_LAYOUT,
 } from '../metadataPropertyLayout.js';
-import { MetadataRecord } from '../MetadataRecord';
+import { MetadataRecord as MetadataRecordView } from '../MetadataRecord';
+
+const MetadataRecord = ({
+  entity: recordEntity,
+  showDocumentPreview,
+}: {
+  entity: Entity;
+  showDocumentPreview?: boolean;
+}) => {
+  const router = createMemoryRouter([
+    {
+      path: '*',
+      element: (
+        <EntityProvider entity={recordEntity}>
+          <MetadataEditingProvider>
+            <EntityFilesProvider entity={recordEntity}>
+              <MetadataRecordView entity={recordEntity} showDocumentPreview={showDocumentPreview} />
+            </EntityFilesProvider>
+          </MetadataEditingProvider>
+        </EntityProvider>
+      ),
+    },
+  ]);
+  return <RouterProvider router={router} />;
+};
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -257,7 +285,41 @@ describe('MetadataRecord', () => {
 
     expect(document.querySelector('[data-property-row]')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Code' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('entity-files')).not.toBeInTheDocument();
     expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
+  });
+
+  it('shows the empty copy and the files region when metadata has no values', () => {
+    const emptyTemplate = { ...template, properties: [] };
+    const undated: Entity = {
+      ...entity,
+      metadata: {},
+      documents: [
+        {
+          _id: 'd-empty',
+          filename: 'empty.pdf',
+          originalname: 'Empty.pdf',
+          mimetype: 'application/pdf',
+        },
+      ],
+      creationDate: 0,
+    };
+    Reflect.deleteProperty(undated, 'creationDate');
+    Reflect.deleteProperty(undated, 'editDate');
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [emptyTemplate]],
+          [relationshipTypesAtom, []],
+        ]}
+      >
+        <MetadataRecord entity={undated} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByText('No metadata for this entity yet.')).toBeInTheDocument();
+    expect(screen.getByTestId('entity-files')).toHaveTextContent('Empty');
   });
 
   beforeEach(() => {
@@ -274,7 +336,11 @@ describe('MetadataRecord', () => {
     renderRecord(withoutRels);
 
     expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
-    expect(screen.queryByText('Report.pdf')).not.toBeInTheDocument();
+    const files = screen.getByTestId('entity-files');
+    expect(files).toHaveTextContent('Report');
+    expect(files.compareDocumentPosition(screen.getByTestId('entity-system-dates'))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
     expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Code' })).toBeInTheDocument();

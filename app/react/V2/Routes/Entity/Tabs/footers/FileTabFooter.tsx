@@ -10,20 +10,12 @@ import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { isFileRowSelectable } from '../../Components/Files/fileHelpers.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 import { resolveFileTabFooterMode } from './fileTabFooterMode.js';
-import { FileDownloadButton, iconClass, triggerDownload } from './FileDownloadButton.js';
-
-const fileDownloadUrl = (row: EntityFileRow) => {
-  const base = row.raw.url || (row.raw.filename ? `/api/files/${row.raw.filename}` : '');
-  if (!base || row.kind === 'link') return '';
-  return row.raw.filename ? `${base}?download=true` : base;
-};
-
-const downloadRows = (rows: EntityFileRow[]) => {
-  rows.forEach(row => {
-    const url = fileDownloadUrl(row);
-    if (url) triggerDownload(url);
-  });
-};
+import {
+  FileDownloadButton,
+  downloadRows,
+  fileDownloadUrl,
+  iconClass,
+} from './FileDownloadButton.js';
 
 const multiFileFooter = (
   selectedRows: EntityFileRow[],

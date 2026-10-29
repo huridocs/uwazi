@@ -23,6 +23,7 @@ interface ButtonProps {
   onClick?: MouseEventHandler;
   className?: string;
   'data-testid'?: string;
+  'data-part'?: string;
 }
 
 const Button = ({
@@ -35,6 +36,7 @@ const Button = ({
   onClick,
   className = '',
   'data-testid': dataTestid,
+  'data-part': dataPart,
 }: ButtonProps) => {
   const sizeClasses: Record<
     ButtonVariant,
@@ -141,6 +143,7 @@ const Button = ({
         .join(' ')}
       form={form}
       data-testid={dataTestid}
+      data-part={dataPart}
     >
       {children}
     </button>
