@@ -5,15 +5,44 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { EntityResponse, EntitySearchResponse, SnippetsSearchResponse } from '../types.js';
 
+const finitePageNumber = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))) {
+    return Number(value);
+  }
+  return undefined;
+};
+
+const searchResultTotal = (
+  links: { last?: string | null } | undefined,
+  rowCount: number
+): number => {
+  const { page } = qs.parse(links?.last?.split('?')[1] ?? '');
+  if (!page || typeof page !== 'object' || Array.isArray(page)) {
+    return rowCount;
+  }
+  const { offset, limit } = page;
+  const offsetNumber = finitePageNumber(offset);
+  const limitNumber = finitePageNumber(limit);
+  if (offsetNumber === undefined || limitNumber === undefined) {
+    return rowCount;
+  }
+  return Math.max(rowCount, offsetNumber + limitNumber);
+};
+
 const lookup = async (
   {
     entityTitle,
     template,
     limit = 10,
+    offset,
   }: {
     entityTitle: string;
     template?: string;
     limit?: number;
+    offset?: number;
   },
   headers?: IncomingHttpHeaders
 ): Promise<EntityResponse> => {
@@ -24,7 +53,7 @@ const lookup = async (
         ...(entityTitle && { searchString: `title:${entityTitle}~2` }),
         ...(template && { template }),
       },
-      page: { limit },
+      page: { limit, ...(offset ? { offset } : {}) },
     };
 
     const requestParams = new RequestParams(qs.stringify(searchQuery), headers);
@@ -34,7 +63,10 @@ const lookup = async (
     }
 
     const response: { json: EntitySearchResponse } = await api.get('v2/search', requestParams);
-    return { rows: response.json.data, count: response.json.data.length };
+    return {
+      rows: response.json.data,
+      count: searchResultTotal(response.json.links, response.json.data.length),
+    };
   } catch (e) {
     return e;
   }
@@ -98,4 +130,4 @@ const snippets = async (
   }
 };
 
-export { lookup, search, snippets };
+export { lookup, search, searchResultTotal, snippets };

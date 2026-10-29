@@ -29,6 +29,7 @@ import { connectionPillsForField, type OpenEntityTarget } from './Components/Con
 import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
 import { SystemDatesLine, entityHasSystemDates } from './Components/SystemDatesLine.js';
+import { EntityFilesBlock } from '#V2/Routes/Entity/Components/Files/EntityFilesBlock.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 
@@ -235,11 +236,14 @@ const MetadataRecord = ({
 
   if (visibleFields.length === 0 && !hasSystemDates) {
     return (
-      <div className="flex items-center justify-center py-10 text-center">
-        <p className="text-xs text-ink-muted">
-          <Translate>No metadata for this entity yet.</Translate>
-        </p>
-      </div>
+      <>
+        <div className="flex items-center justify-center py-10 text-center">
+          <p className="text-xs text-ink-muted">
+            <Translate>No metadata for this entity yet.</Translate>
+          </p>
+        </div>
+        <EntityFilesBlock />
+      </>
     );
   }
 
@@ -255,6 +259,7 @@ const MetadataRecord = ({
         </div>
       ))}
 
+      <EntityFilesBlock />
       {hasSystemDates ? <SystemDatesLine entity={entity} /> : null}
     </div>
   );

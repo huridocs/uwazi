@@ -2,8 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { Provider } from 'jotai';
+import { cleanup, render, screen } from '@testing-library/react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
+import { getStore } from '#shared/atomStore/index.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { themeModeAtom, type ThemeMode } from '#V2/atoms/themeModeAtom.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
+import { getPresetVars } from '#V2/theme/themes.js';
 import { DocumentSelectionFloatingMenu } from '../DocumentSelectionFloatingMenu.js';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -39,7 +45,50 @@ const themedRoot = () => {
   return themed;
 };
 
+const lightShell = () => {
+  const foreign = document.createElement('div');
+  foreign.className = 'tw-content';
+  foreign.dataset.themeMode = 'light';
+  foreign.style.setProperty('--color-theme-bg-primary', '#ffffff');
+  document.body.appendChild(foreign);
+  return foreign;
+};
+
+const expectMenuMatchesShell = (shell: HTMLElement, scheme: ThemeMode) => {
+  const menu = screen.getByTestId('document-selection-floating-menu');
+  expect(menu.style.colorScheme).toBe(scheme);
+  expect(menu.style.getPropertyValue('--color-theme-bg-primary')).toBe(
+    shell.style.getPropertyValue('--color-theme-bg-primary')
+  );
+  return menu;
+};
+
+const renderDocumentShell = (mode: ThemeMode) => {
+  const store = getStore();
+  store.set(settingsAtom, { themeCustomization: true, themeVars: getPresetVars('default') });
+  store.set(themeModeAtom, mode);
+  const view = render(
+    <Provider store={store}>
+      <ThemeProvider controlledMode={mode}>
+        <div id="page-1-container" />
+      </ThemeProvider>
+    </Provider>
+  );
+  render(
+    <DocumentSelectionFloatingMenu
+      selection={selection}
+      onCreateRelationship={jest.fn()}
+      onAddToToC={jest.fn()}
+    />
+  );
+  const shell = view.container.querySelector('[data-theme-mode]');
+  if (!(shell instanceof HTMLElement)) throw new Error('missing theme shell');
+  return shell;
+};
+
 describe('DocumentSelectionFloatingMenu portal theme', () => {
+  afterEach(cleanup);
+
   it('copies ThemeProvider vars onto the page chrome host', () => {
     const themed = themedRoot();
     const { unmount } = mountMenu(themed);
@@ -64,5 +113,20 @@ describe('DocumentSelectionFloatingMenu portal theme', () => {
     expect(toc.className).not.toContain('text-parchment/80');
     unmount();
     themed.remove();
+  });
+
+  it('copies a light document shell onto the selection menu', () => {
+    const shell = renderDocumentShell('light');
+    expect(shell).not.toHaveClass('dark');
+    expectMenuMatchesShell(shell, 'light');
+  });
+
+  it('copies the document shell theme when another shell is light', () => {
+    const foreign = lightShell();
+    const shell = renderDocumentShell('dark');
+    expect(shell).toHaveClass('dark');
+    const menu = expectMenuMatchesShell(shell, 'dark');
+    expect(menu.style.getPropertyValue('--color-theme-bg-primary')).not.toBe('#ffffff');
+    foreign.remove();
   });
 });
