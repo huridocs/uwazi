@@ -1,16 +1,15 @@
-// eslint-disable-next-line no-restricted-imports
-import { mkdirSync, rmSync, writeFileSync } from 'fs';
+import { createWriteStream, rmSync } from 'fs';
+import { finished } from 'stream/promises';
 import path from 'path';
 import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
 import { BlankStateEmptyError } from '#api/infrastructure/blank_state/BlankStateEmptyError.js';
-import { BlankStateTablesMissingError } from '#api/infrastructure/blank_state/BlankStateTablesMissingError.js';
-import { PgBlankState } from '#api/infrastructure/blank_state/PgBlankState.js';
-import { TenantDataExistsError } from '#api/infrastructure/blank_state/TenantDataExistsError.js';
 import {
   clearBlankState,
   seedBlankState,
 } from '#api/infrastructure/blank_state/specs/blankStateFixtures.js';
+import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
+import { TenantAlreadyHasDataError } from '#api/infrastructure/tenant_backup/TenantAlreadyHasDataError.js';
 import type { Tenant } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RestoreBlankStateController } from '../RestoreBlankStateController.js';
@@ -21,7 +20,7 @@ const __dirname = path.dirname(__filename);
 const SOURCE_TENANT = 'source-tenant';
 const TARGET_TENANT = 'target-tenant';
 
-const tenantFor = (name: string): Tenant => ({
+const tenantFor = (name: string, postgresCore = true): Tenant => ({
   name,
   dbName: '',
   indexName: '',
@@ -30,10 +29,11 @@ const tenantFor = (name: string): Tenant => ({
   customUploads: '',
   activityLogs: '',
   domain: '',
+  featureFlags: { postgresCore },
 });
 
 describe('RestoreBlankStateController', () => {
-  let dataDir: string;
+  let dumpFile: string;
   let pool: Pool;
 
   beforeAll(async () => {
@@ -48,26 +48,35 @@ describe('RestoreBlankStateController', () => {
     const testPool = testingEnvironment.pg.pool;
     if (!testPool) throw new Error('PG pool not available');
     pool = testPool;
-    dataDir = path.join(__dirname, `restore-ctrl-test-${Date.now()}`);
-    mkdirSync(dataDir, { recursive: true });
+    dumpFile = path.join(__dirname, `restore-ctrl-test-${Date.now()}.uwazidump`);
     await seedBlankState(pool, SOURCE_TENANT);
-    await new PgBlankState(pool, SOURCE_TENANT, dataDir).dump();
+
+    const output = createWriteStream(dumpFile);
+    await new PgTenantBackup(pool).export(SOURCE_TENANT, output);
+    output.end();
+    await finished(output);
   });
 
   afterEach(async () => {
-    rmSync(dataDir, { recursive: true, force: true });
+    rmSync(dumpFile, { force: true });
     await clearBlankState(pool);
   });
 
-  const restoreInto = async (tenantId: string, input: { force?: boolean } = {}) =>
+  const restoreInto = async (
+    tenantId: string,
+    input: { force?: boolean } = {},
+    reindex = jest.fn(async () => undefined)
+  ) =>
     testingEnvironment.runWithContext(
-      async () => RestoreBlankStateController.handle(input, { pool, dataDir }),
+      async () => RestoreBlankStateController.handle(input, { pool, dumpFile, reindex }),
       { tenant: tenantFor(tenantId) }
     );
 
   describe('handle', () => {
-    it('should restore fixtures into an empty tenant', async () => {
-      expect(await restoreInto(TARGET_TENANT)).toEqual({ restored: true });
+    it('should restore the dump into an empty tenant and reindex it', async () => {
+      const reindex = jest.fn(async () => undefined);
+
+      expect(await restoreInto(TARGET_TENANT, {}, reindex)).toEqual({ restored: true });
 
       const templates = await pool.query('SELECT name FROM templates WHERE tenant_id = $1', [
         TARGET_TENANT,
@@ -78,12 +87,14 @@ describe('RestoreBlankStateController', () => {
         TARGET_TENANT,
       ]);
       expect(users.rows).toEqual([{ username: 'admin' }]);
+
+      expect(reindex).toHaveBeenCalledWith(TARGET_TENANT);
     });
 
     it('should refuse a tenant that already has data', async () => {
       await seedBlankState(pool, TARGET_TENANT);
 
-      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(TenantDataExistsError);
+      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(TenantAlreadyHasDataError);
     });
 
     it('should replace the tenant data when forced', async () => {
@@ -99,17 +110,10 @@ describe('RestoreBlankStateController', () => {
       expect(settings.rows).toEqual([{ site_name: 'Uwazi' }]);
     });
 
-    it('should reject when there are no fixtures to restore', async () => {
-      rmSync(dataDir, { recursive: true, force: true });
-      mkdirSync(dataDir, { recursive: true });
+    it('should reject when there is no dump file to restore', async () => {
+      rmSync(dumpFile, { force: true });
 
       await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(BlankStateEmptyError);
-    });
-
-    it('should reject when a fixture targets a missing table', async () => {
-      writeFileSync(path.join(dataDir, 'no_such_table.json'), JSON.stringify([{ _id: 'x' }]));
-
-      await expect(restoreInto(TARGET_TENANT)).rejects.toBeInstanceOf(BlankStateTablesMissingError);
     });
   });
 });
