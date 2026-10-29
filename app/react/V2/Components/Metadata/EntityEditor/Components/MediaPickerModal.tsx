@@ -1,55 +1,19 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { LinkIcon, MusicalNoteIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
-import type { ClientFile } from '#app/istore.js';
-import { FileType } from '#shared/types/fileType.js';
-import { validateAndSanitizeUrl } from '#shared/urlValidationUtils.js';
-import { Button, DashedUploadDropzone, FileIcon, Modal, Tooltip } from '#V2/Components/UI/index.js';
+import { Button, DashedUploadDropzone, Modal, Tooltip } from '#V2/Components/UI/index.js';
 import { formatBytes } from '#V2/shared/formatHelpers.js';
+import { MediaPickerAttachmentPreview } from './MediaPickerAttachmentPreview.js';
 import {
   attachmentKey,
-  extractMediaUrl,
-  filterAttachments,
   getAttachmentSelectionValue,
   getFileInputAccept,
   type MediaPickerMode,
 } from './mediaPickerAttachments.js';
-
-type MediaPickerModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelect: (value: string, localFile?: File) => void | Promise<void>;
-  mode: MediaPickerMode;
-  attachments: Array<FileType | ClientFile>;
-  currentValue?: string;
-};
+import { useMediaPicker, type MediaPickerModalProps } from './useMediaPicker.js';
 
 const urlInputClass =
   'min-w-0 flex-1 rounded border border-border bg-paper px-2 py-1.5 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-ink/20';
-
-const AttachmentPreview = ({
-  mode,
-  filename,
-  mimetype,
-  url,
-}: {
-  mode: MediaPickerMode;
-  filename: string;
-  mimetype: string;
-  url?: string;
-}) => {
-  if (mode === 'image') {
-    return (
-      <FileIcon filename={filename} mimetype={mimetype} altText="" className="h-full w-full" />
-    );
-  }
-
-  const iconClass = 'h-8 w-8 text-ink-muted';
-  if (url) return <LinkIcon className={iconClass} aria-hidden />;
-  if (mimetype.includes('audio')) return <MusicalNoteIcon className={iconClass} aria-hidden />;
-  return <VideoCameraIcon className={iconClass} aria-hidden />;
-};
 
 const MediaPickerModal = ({
   isOpen,
@@ -59,68 +23,26 @@ const MediaPickerModal = ({
   attachments,
   currentValue,
 }: MediaPickerModalProps) => {
-  const [urlInput, setUrlInput] = useState('');
-  const [urlError, setUrlError] = useState(false);
-  const [selectError, setSelectError] = useState(false);
-  const [selecting, setSelecting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const filteredAttachments = useMemo(
-    () => filterAttachments(attachments, mode),
-    [attachments, mode]
-  );
-
-  const selectedUrl = extractMediaUrl(currentValue);
-  const isImage = mode === 'image';
-  const title = isImage ? 'Select image' : 'Select media';
-  const urlAriaLabel = isImage ? 'Image URL' : 'Media URL';
-  const fileAriaLabel = isImage ? 'Image file' : 'Media file';
-
-  const resetState = () => {
-    setUrlInput('');
-    setUrlError(false);
-    setSelectError(false);
-    setSelecting(false);
-  };
-
-  const handleClose = () => {
-    resetState();
-    onClose();
-  };
-
-  const handleSelect = async (value: string, localFile?: File) => {
-    setSelectError(false);
-    setSelecting(true);
-    try {
-      await onSelect(value, localFile);
-      handleClose();
-    } catch {
-      setSelectError(true);
-    } finally {
-      setSelecting(false);
-    }
-  };
-
-  const pickLocalFile = (file: File | undefined) => {
-    if (!file) return;
-    handleSelect('', file).catch(() => undefined);
-  };
-
-  const handleLocalFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    pickLocalFile(event.target.files?.[0]);
-    event.target.value = '';
-  };
-
-  const handleUrlSubmit = () => {
-    const { url, isValid } = validateAndSanitizeUrl(urlInput.trim());
-
-    if (!isValid) {
-      setUrlError(true);
-      return;
-    }
-
-    handleSelect(url).catch(() => undefined);
-  };
+  const {
+    urlInput,
+    setUrlInput,
+    setUrlError,
+    urlError,
+    selectError,
+    selecting,
+    fileInputRef,
+    filteredAttachments,
+    selectedUrl,
+    isImage,
+    title,
+    urlAriaLabel,
+    fileAriaLabel,
+    handleClose,
+    handleSelect,
+    pickLocalFile,
+    handleLocalFileChange,
+    handleUrlSubmit,
+  } = useMediaPicker({ onClose, onSelect, mode, attachments, currentValue });
 
   if (!isOpen) {
     return null;
@@ -271,7 +193,7 @@ const MediaPickerModal = ({
                         ) : null}
                       </div>
                       <div className="flex h-24 items-center justify-center p-2">
-                        <AttachmentPreview
+                        <MediaPickerAttachmentPreview
                           mode={mode}
                           filename={attachment.filename || attachment.originalname || ''}
                           mimetype={attachment.mimetype || ''}
