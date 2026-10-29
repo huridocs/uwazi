@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.283",
+  "version": "1.229.284",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -174,7 +174,7 @@
     "any-date-parser": "^1.5.4",
     "bcryptjs": "^3.0.3",
     "big.js": "^7.0.1",
-    "body-parser": "1.20.6",
+    "body-parser": "1.20.9",
     "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
     "clean-insights-sdk": "^2.6.2",

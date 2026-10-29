@@ -4,21 +4,28 @@ import { DashedUploadDropzone } from '#V2/Components/UI/DashedUploadDropzone.js'
 
 const AddFileDropzone = ({
   onPick,
-  onDropFile,
+  onDropFiles,
+  queued = false,
+  disabled = false,
 }: {
   onPick: () => void;
-  onDropFile: (file: File | undefined) => void;
+  onDropFiles: (files: File[]) => void;
+  queued?: boolean;
+  disabled?: boolean;
 }) => (
   <div className="flex flex-col gap-4">
     <DashedUploadDropzone
       onPick={onPick}
-      onDropFile={onDropFile}
+      onDropFiles={onDropFiles}
+      disabled={disabled}
       title={<Translate>Click to select files</Translate>}
       subtitle={<Translate>or drag and drop here</Translate>}
     />
-    <p className="text-center text-xs text-ink-tertiary">
-      <Translate>No files queued yet.</Translate>
-    </p>
+    {!queued && (
+      <p className="text-center text-xs text-ink-tertiary">
+        <Translate>No files queued yet.</Translate>
+      </p>
+    )}
   </div>
 );
 
