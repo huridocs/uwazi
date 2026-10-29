@@ -47,19 +47,18 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
 
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
 
-    const { newNameGeneration } = await this.deps.settingsDS.get();
-
     const commonProperties = input.commonProperties.map(p =>
-      CommonPropertyFactory.create(
-        { ...p, id: p.id || this.idGenerator.generate(), template: currentTemplate.id },
-        { newNameGeneration }
-      )
+      CommonPropertyFactory.create({
+        ...p,
+        id: p.id || this.idGenerator.generate(),
+        template: currentTemplate.id,
+      })
     );
 
-    const properties = await propertyCreatorServiceStrategy.bulkCreate(input.properties, {
-      newNameGeneration,
-      template: currentTemplate.id,
-    });
+    const properties = await propertyCreatorServiceStrategy.bulkCreate(
+      input.properties,
+      currentTemplate.id
+    );
 
     const updatedTemplate = currentTemplate.update({ ...input, properties, commonProperties });
 

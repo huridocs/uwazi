@@ -67,7 +67,6 @@ describe('Collection', () => {
     cy.get('#sending-email').type('email@mailer.com', { delay: 0 });
     cy.get('#receiving-email').type('reciever@mailer.com', { delay: 0 });
     cy.get('#public-form-destination').type('/public/form/url', { delay: 0 });
-    clickToggleButton('Non-latin characters support');
   });
 
   it('should save Whitelisted templates successfully', () => {
@@ -96,7 +95,6 @@ describe('Collection', () => {
     clickToggleButton('Public instance');
     clickToggleButton('Show cookie policy');
     clickToggleButton('Global JS');
-    clickToggleButton('Non-latin characters support');
     clickToggleButton('Allow captcha bypass');
   });
 

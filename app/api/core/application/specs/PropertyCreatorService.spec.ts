@@ -113,8 +113,7 @@ describe('PropertyCreatorService', () => {
           label: 'Text',
           type: PropertyTypeEnum.Date,
           template: new ObjectId().toString(),
-        },
-        {}
+        }
       )
     ).rejects.toThrow(PropertyTypeMismatchError);
   });
@@ -133,8 +132,7 @@ describe('PropertyCreatorService', () => {
           label: 'Text Label',
           type: PropertyTypeEnum.Text,
           template: templateId.toString(),
-        },
-        {}
+        }
       )
     ).resolves.toBeInstanceOf(TextProperty);
   });
@@ -154,8 +152,7 @@ describe('PropertyCreatorService', () => {
           label: 'Previous created',
           name: 'prev_created',
           template: templateId.toString(),
-        },
-        {}
+        }
       )
     ).resolves.toBeInstanceOf(TextProperty);
   });

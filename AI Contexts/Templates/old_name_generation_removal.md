@@ -117,6 +117,4 @@ Settings library filters, if a filter id is a property name rather than a templa
 - [x] Spec the text replace on a page query and on `property="..."`, including a name that is a prefix of another name.
 - [x] Spec an extractor `property`, a `source.property`, and a suggestion `propertyName` rewritten from the same map. Two templates on one extractor that disagree fail the tenant. `title` is left as stored.
 - [x] Set `reindex: true` only for a tenant that renamed.
-- [ ] Remove the flag from application code and the UI in this release.
-- [ ] Ship the code and all four migrations in one release.
-- [ ] Close #9695 as withdrawn once this is the plan of record.
+- [x] Remove the flag from application code and the UI in this release.

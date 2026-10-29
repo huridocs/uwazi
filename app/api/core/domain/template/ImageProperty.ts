@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
@@ -26,8 +26,8 @@ const createSchema = (isRequired: boolean, isFromURL: boolean) =>
 class ImageProperty extends AbstractImageProperty {
   private FILE_PATH = '/api/files/';
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Image }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Image });
     this.fullWidth = props.fullWidth || false;
 
     this.validate();

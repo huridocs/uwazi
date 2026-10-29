@@ -15,7 +15,7 @@ afterAll(async () => {
 
 describe('migration fix_property_name_mismatches', () => {
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext(fixtures);
+    await testingDB.setupFixturesAndContext<typeof fixtures>(fixtures);
     db = testingDB.mongodb;
   });
 

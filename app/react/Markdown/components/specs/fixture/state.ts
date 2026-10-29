@@ -40,7 +40,7 @@ const state = {
     },
   ]),
   thesauris: Immutable.fromJS([{}]),
-  settings: { collection: Immutable.fromJS({ newNameGeneration: true }) },
+  settings: { collection: Immutable.fromJS({}) },
 };
 
 const translations = [

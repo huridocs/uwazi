@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
@@ -23,8 +23,8 @@ const createSchema = (isRequired: boolean) =>
 class TextProperty extends FilterableProperty {
   generatedId: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Text }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Text });
     this.generatedId = props.generatedId || false;
     this.compatibleTypes = ['markdown'];
 

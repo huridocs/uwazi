@@ -31,20 +31,20 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
       idGenerator: this.idGenerator,
     });
 
-    const { newNameGeneration } = await this.deps.settingsDS.get();
     const templateId = this.idGenerator.generate();
 
     const commonProperties = input.commonProperties.map(p =>
-      CommonPropertyFactory.create(
-        { ...p, id: this.idGenerator.generate(), template: templateId },
-        { newNameGeneration }
-      )
+      CommonPropertyFactory.create({
+        ...p,
+        id: this.idGenerator.generate(),
+        template: templateId,
+      })
     );
 
-    const properties = await propertyCreatorServiceStrategy.bulkCreate(input.properties, {
-      newNameGeneration,
-      template: templateId,
-    });
+    const properties = await propertyCreatorServiceStrategy.bulkCreate(
+      input.properties,
+      templateId
+    );
 
     const template = new Template(
       templateId,

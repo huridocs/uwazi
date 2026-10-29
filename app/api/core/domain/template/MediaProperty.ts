@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
@@ -22,8 +22,8 @@ const createSchema = (isRequired: boolean) =>
 class MediaProperty extends AbstractImageProperty {
   private FILE_PATH = '/api/files/';
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Media }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Media });
 
     this.validate();
   }

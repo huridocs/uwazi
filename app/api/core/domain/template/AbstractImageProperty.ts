@@ -1,4 +1,4 @@
-import { Context, Property, PropertyProps } from './Property.js';
+import { Property, PropertyProps } from './Property.js';
 import { InvalidStyleTypeError } from './errors.js';
 
 enum ImageStyle {
@@ -16,8 +16,8 @@ abstract class AbstractImageProperty extends Property {
 
   fullWidth?: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super(props, context);
+  constructor(props: Props) {
+    super(props);
     this.style = props.style || ImageStyle.Cover;
     this.fullWidth = props.fullWidth || false;
 

@@ -49,8 +49,7 @@ describe('RelationshipPropertyCreatorService', () => {
           type: PropertyTypeEnum.Relationship,
           template: '',
           relationType: new ObjectId().toHexString(),
-        },
-        {}
+        }
       )
     ).rejects.toThrow(RelationshipTypeDoesNotExistError);
   });
@@ -81,8 +80,7 @@ describe('RelationshipPropertyCreatorService', () => {
             property: new ObjectId().toHexString(),
             type: PropertyTypeEnum.Date,
           },
-        },
-        {}
+        }
       )
     ).rejects.toThrow(TemplateDoesNotExistError);
   });
@@ -115,8 +113,7 @@ describe('RelationshipPropertyCreatorService', () => {
             property: new ObjectId().toHexString(),
             type: PropertyTypeEnum.Date,
           },
-        },
-        {}
+        }
       )
     ).rejects.toThrow(RelationshipTargetPropertyNotFoundError);
   });
@@ -155,8 +152,7 @@ describe('RelationshipPropertyCreatorService', () => {
             property: propertyId.toHexString(),
             type: PropertyTypeEnum.DateRange,
           },
-        },
-        {}
+        }
       )
     ).rejects.toThrow(RelationshipTargetTypeMismatchError);
   });
@@ -195,8 +191,7 @@ describe('RelationshipPropertyCreatorService', () => {
             property: propertyId.toHexString(),
             type: PropertyTypeEnum.Date,
           },
-        },
-        {}
+        }
       )
     ).resolves.toBeInstanceOf(V1RelationshipProperty);
   });

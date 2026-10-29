@@ -2,7 +2,7 @@ import { RelationshipTypesDataSource } from '#api/core/application/contracts/Rel
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
-import { Context, Property } from '../../domain/template/Property.js';
+import { Property } from '../../domain/template/Property.js';
 import { IdGenerator } from '../contracts/IdGenerator.js';
 import { PropertyType } from '../../domain/template/PropertyType.js';
 import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory.js';
@@ -53,19 +53,13 @@ class PropertyCreatorServiceStrategy {
     }
   }
 
-  async bulkCreate(
-    input: BulkCreateInput,
-    { newNameGeneration, template }: Context & { template: string }
-  ): Promise<Property[]> {
+  async bulkCreate(input: BulkCreateInput, template: string): Promise<Property[]> {
     const properties = await ArrayUtils.parallelFor(input, async property =>
-      this.getStrategy(property.type!).create(
-        {
-          ...(property as PropertyFactoryCreateInput),
-          id: property.id || this.props.idGenerator.generate(),
-          template,
-        },
-        { newNameGeneration }
-      )
+      this.getStrategy(property.type!).create({
+        ...(property as PropertyFactoryCreateInput),
+        id: property.id || this.props.idGenerator.generate(),
+        template,
+      })
     );
 
     return properties;

@@ -24,6 +24,10 @@ mongoose.Promise = Promise;
 let connected = false;
 let mongodb: Db;
 
+type CollectionMap = {
+  [collection: string]: any;
+};
+
 type DBFixture = {
   files?: FileType[];
   entities?: EntitySchema[];
@@ -50,7 +54,7 @@ const fixturer = {
     );
   },
 
-  async clearAllAndLoad(db: Db, fixtures: DBFixture) {
+  async clearAllAndLoad(db: Db, fixtures: CollectionMap) {
     fixtures.updatelogs = fixtures.updatelogs || [];
     const existingCollections = new Set((await db.listCollections().toArray()).map(c => c.name));
     const expectedCollectons = Object.keys(models).concat(Object.keys(fixtures));
@@ -90,14 +94,19 @@ const testingDB: {
   /**
    * @deprecated
    */
-  clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
+  clearAllAndLoad: <T extends CollectionMap = DBFixture>(
+    fixtures: NoInfer<T>,
+    elasticIndex?: string
+  ) => Promise<void>;
   createIndices: () => Promise<void>;
-  setupFixturesAndContext: (
-    fixtures: DBFixture,
+  setupFixturesAndContext: <T extends CollectionMap = DBFixture>(
+    fixtures: NoInfer<T>,
     elasticIndex?: string,
     dbName?: string
   ) => Promise<Db | null>;
-  clearAllAndLoadFixtures: (fixtures: DBFixture, dbName?: string) => Promise<void>;
+  clearAllAndLoadFixtures: <T extends CollectionMap = DBFixture>(
+    fixtures: NoInfer<T>
+  ) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
@@ -153,7 +162,11 @@ const testingDB: {
   /**
    * @deprecated
    */
-  async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string, dbName?: string) {
+  async setupFixturesAndContext<T extends CollectionMap = DBFixture>(
+    fixtures: NoInfer<T>,
+    elasticIndex?: string,
+    dbName?: string
+  ) {
     await this.connect();
     let optionalMongo: Db | null = null;
     if (dbName) {
@@ -185,14 +198,17 @@ const testingDB: {
   /**
    * @deprecated
    */
-  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
+  async clearAllAndLoad<T extends CollectionMap = DBFixture>(
+    fixtures: NoInfer<T>,
+    elasticIndex?: string
+  ) {
     await this.setupFixturesAndContext(fixtures, elasticIndex);
   },
 
   /**
    * @deprecated
    */
-  async clearAllAndLoadFixtures(fixtures: DBFixture) {
+  async clearAllAndLoadFixtures<T extends CollectionMap = DBFixture>(fixtures: NoInfer<T>) {
     await fixturer.clearAllAndLoad(mongodb, fixtures);
   },
 };

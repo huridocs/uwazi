@@ -102,7 +102,12 @@ const rewriteStoredText = async (trx: Knex.Transaction, pairs: Prepared['pairs']
   );
   await sequentially(releases, async release => {
     await trx.raw('UPDATE page_releases SET locales = ?::jsonb WHERE _id = ?', [
-      JSON.stringify(rewriteReleaseLocales(json(release.locales), pairs)),
+      JSON.stringify(
+        rewriteReleaseLocales(
+          json(release.locales) as Parameters<typeof rewriteReleaseLocales>[0],
+          pairs
+        )
+      ),
       release._id,
     ]);
   });

@@ -25,7 +25,6 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'mapLayers',
   'mapStartingPoint',
   'tilesProvider',
-  'newNameGeneration',
   'ocrServiceEnabled',
   'allowedPublicTemplates',
   'custom',

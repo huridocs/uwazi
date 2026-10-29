@@ -79,34 +79,6 @@ export const emails = [
   </Translate>,
 ];
 
-export const characterSupport = (
-  <>
-    <Translate translationKey="Character support description">
-      This option enhances support for non-Latin languages as the default languages of your
-      collection. Selecting this option will update all template properties automatically. The
-      process could take several minutes. Selecting this option will likely change the URLs of
-      library filters. As a consequence, if you have menus or links using such URLs, they will
-      probably stop working. You will need to update them manually. After selecting this option, you
-      will not be able to revert back to using legacy property naming. If you are not facing issues
-      with your template property names, we recommend leaving this unchecked.
-    </Translate>
-    <br />
-    <b>
-      <Translate translationKey="Character support process warning">
-        This process could take several minutes and will likely change URLs to library filters. If
-        you have menus or links using such URLs, they will probably stop working after the update.
-        You will need to update them manually.
-      </Translate>
-    </b>
-    <br />
-    <Translate translationKey="Character support revert warning">
-      After selecting this option, you will not be able to revert back to using legacy property
-      naming. If you are not facing issues with your template property names, we recommend leaving
-      this unchecked.
-    </Translate>
-  </>
-);
-
 export const analytics = (
   <Translate translationKey="Analytics description">
     If you want to track analytics related to your collection visits, Uwazi supports both Google

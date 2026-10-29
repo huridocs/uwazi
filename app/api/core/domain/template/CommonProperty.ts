@@ -1,5 +1,5 @@
 import { CommonPropertyInvalidError } from './errors.js';
-import { Context, Property, PropertyProps } from './Property.js';
+import { Property, PropertyProps } from './Property.js';
 
 type Props = {
   isCommonProperty?: boolean;
@@ -8,8 +8,8 @@ type Props = {
 class CommonProperty extends Property {
   isCommonProperty: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super(props, context);
+  constructor(props: Props) {
+    super(props);
     this.isCommonProperty = props.isCommonProperty ?? true;
 
     this.validate();

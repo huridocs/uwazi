@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { Db } from 'mongodb';
 
-import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import {
   alreadyEqualFixture,
@@ -11,12 +11,13 @@ import {
   otherTemplateId,
   renameFixture,
   templateId,
+  type LoadedFixture,
 } from './fixtures.js';
 
 let db: Db;
 
-const run = async (fixture: DBFixture) => {
-  await testingDB.setupFixturesAndContext(fixture);
+const run = async (fixture: LoadedFixture) => {
+  await testingDB.setupFixturesAndContext<LoadedFixture>(fixture);
   db = testingDB.mongodb!;
   await migration.up(db);
 };
@@ -43,7 +44,7 @@ describe('migration apply-new-property-names', () => {
     it('should leave stored names and not request a reindex', async () => {
       const template = await db.collection('templates').findOne({ _id: templateId });
       const country = template?.properties?.find(
-        (property: { name: string }) => property.label === 'País'
+        (property: { name: string; label: string }) => property.label === 'País'
       );
 
       expect(country?.name).toBe('pa_s');
@@ -141,7 +142,7 @@ describe('migration apply-new-property-names', () => {
 
   describe('when two properties would share a name', () => {
     it('should fail the tenant and leave the flag unset', async () => {
-      await testingDB.setupFixturesAndContext(collisionFixture());
+      await testingDB.setupFixturesAndContext<LoadedFixture>(collisionFixture());
       db = testingDB.mongodb!;
 
       await expect(migration.up(db)).rejects.toThrow(/collid/i);
@@ -152,7 +153,7 @@ describe('migration apply-new-property-names', () => {
 
   describe('when an extractor spans templates that rename differently', () => {
     it('should fail the tenant', async () => {
-      await testingDB.setupFixturesAndContext(disagreeFixture());
+      await testingDB.setupFixturesAndContext<LoadedFixture>(disagreeFixture());
       db = testingDB.mongodb!;
 
       await expect(migration.up(db)).rejects.toThrow(/extractor/i);

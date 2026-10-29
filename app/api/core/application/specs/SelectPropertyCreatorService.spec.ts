@@ -33,8 +33,7 @@ describe('SelectPropertyCreatorService', () => {
           type: PropertyTypeEnum.Select,
           template: '',
           content: new ObjectId().toHexString(),
-        },
-        {}
+        }
       )
     ).rejects.toThrow(SelectPropertyWithInvalidThesaurusError);
 
@@ -46,8 +45,7 @@ describe('SelectPropertyCreatorService', () => {
           type: PropertyTypeEnum.MultiSelect,
           template: '',
           content: new ObjectId().toHexString(),
-        },
-        {}
+        }
       )
     ).rejects.toThrow(SelectPropertyWithInvalidThesaurusError);
   });

@@ -1,6 +1,5 @@
 import uuid from 'node-uuid';
 
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { safeName as sharedSafeName } from '#shared/propertyNames.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -8,20 +7,18 @@ import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusTy
 
 const safeName = sharedSafeName;
 
-const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
-  const name = property.label ? safeName(property.label, newNameGeneration) : property.name;
+const generateName = (property: PropertySchema) => {
+  const name = property.label ? safeName(property.label) : property.name;
   return property.type === 'geolocation' || property.type === 'nested'
     ? `${name}_${property.type}`
     : name;
 };
 
-const generateNames = async (properties: PropertySchema[]) => {
-  const newNameGeneration = await SettingsDataSourceFactory.default().readNewNameGeneration();
-  return properties.map(property => ({
+const generateNames = (properties: PropertySchema[]) =>
+  properties.map(property => ({
     ...property,
-    name: generateName(property, newNameGeneration),
+    name: generateName(property),
   }));
-};
 
 const newThesauriId = () => uuid.v4();
 

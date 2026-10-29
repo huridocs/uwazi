@@ -5,15 +5,11 @@ import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
-import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { Result } from '#api/core/libs/Result.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { settingsRoutes } from '../routes.js';
 import fixtures from '../../../../application/settings/specs/fixtures.js';
@@ -157,62 +153,6 @@ describe('Settings routes', () => {
           .expect(200);
 
         await expectSettingsChangedJob({ postgresCore, db: getSharedConnection() });
-      });
-
-      describe('newNameGeneration', () => {
-        beforeEach(() => {
-          jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
-            _id: 'user1',
-            username: 'User 1',
-            email: 'user@test.test',
-            role: 'admin',
-          });
-          const contextUser = {
-            _id: 'user1',
-            username: 'User 1',
-            email: 'user@test.test',
-            role: 'admin',
-          };
-          jest.spyOn(UsersDirectoryFactory, 'default').mockReturnValue({
-            getById: async () => Result.ok(contextUser as any),
-            getActor: async () => Result.ok(contextUser as any),
-            getProfile: async () => Result.ok(contextUser as any),
-            getManyByIds: async () => [contextUser as any],
-          } as any);
-        });
-
-        it('should migrate all entity names when newNameGeneration is saved as true', async () => {
-          await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
-
-          expect(await testingEnvironment.runWithContext(async () => templates.get())).toEqual([
-            expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
-            expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),
-          ]);
-        });
-
-        it('should only migrate in the newNameGeneration false to true scenario', async () => {
-          jest.spyOn(templates, 'save');
-          await mutatePersistedSettings(settings =>
-            settings.apply({ newNameGeneration: true }, () => '')
-          );
-
-          await request(app).post('/api/settings').send({}).expect(200);
-
-          await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
-
-          expect(templates.save).not.toHaveBeenCalled();
-        });
-
-        it('should not allow newNameGeneration === false', async () => {
-          const response = await request(app)
-            .post('/api/settings')
-            .send({ newNameGeneration: false })
-            .expect(422);
-
-          expect(response.body.validations).toEqual([
-            expect.objectContaining({ message: expect.stringMatching(/true/) }),
-          ]);
-        });
       });
     });
   });

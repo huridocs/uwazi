@@ -38,10 +38,6 @@ class Settings {
     return this.state.dateFormat;
   }
 
-  get newNameGeneration() {
-    return this.state.newNameGeneration;
-  }
-
   get sync() {
     return this.state.sync;
   }
@@ -140,10 +136,6 @@ class Settings {
     if (fields.links) {
       this.state.links = assignMenuIds(fields.links, generateId);
     }
-  }
-
-  didEnableNewNameGeneration(previous: Settings): boolean {
-    return !previous.newNameGeneration && Boolean(this.state.newNameGeneration);
   }
 
   deactivateSyncConfig(name: string): number {

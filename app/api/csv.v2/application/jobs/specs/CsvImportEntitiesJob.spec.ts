@@ -49,7 +49,6 @@ const fixtures = {
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
       dateFormat: 'YYYY/MM/DD',
-      features: { newNameGeneration: false },
     },
   ],
   templates: [

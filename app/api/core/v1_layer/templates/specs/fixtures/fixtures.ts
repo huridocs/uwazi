@@ -646,7 +646,6 @@ const fixtures: DBFixture = {
       _id: db.id(),
       site_name: 'Uwazi',
       languages,
-      newNameGeneration: true,
     },
   ],
   dictionaries: [

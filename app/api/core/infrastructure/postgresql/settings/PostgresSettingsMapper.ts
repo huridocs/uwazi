@@ -14,7 +14,6 @@ const COLUMN_FIELDS = {
   customJS: 'custom_js',
   sync: 'sync',
   private: 'private',
-  newNameGeneration: 'new_name_generation',
   openPublicEndpoint: 'open_public_endpoint',
   allowedPublicTemplates: 'allowed_public_templates',
   publicFormDestination: 'public_form_destination',
@@ -58,7 +57,6 @@ type SettingsRow = {
   custom_js?: string | null;
   sync?: SettingsType['sync'] | null;
   private?: boolean | null;
-  new_name_generation?: boolean | null;
   open_public_endpoint?: boolean | null;
   allowed_public_templates?: SettingsType['allowedPublicTemplates'] | null;
   public_form_destination?: string | null;

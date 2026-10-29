@@ -1,5 +1,4 @@
 import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
-import { Context } from '#api/core/domain/template/Property.js';
 import date from '#api/utils/date.js';
 import {
   CreationDatePropertyInvalidNameError,
@@ -15,8 +14,8 @@ class CreationDateProperty extends CommonProperty {
 
   private readonly defaultCreationDate: number;
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'date', name: props.name || 'creationDate' }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || 'date', name: props.name || 'creationDate' });
     this.prioritySorting = props.prioritySorting || false;
 
     this.defaultCreationDate = date.currentUTC();

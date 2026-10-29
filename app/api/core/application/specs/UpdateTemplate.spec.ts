@@ -48,7 +48,6 @@ const defaultCommonProperties = (suffix = '') => [
 const fixtures: DBFixture = {
   settings: [
     {
-      newNameGeneration: true,
       project: 'cejil',
       languages: [{ key: 'en', label: 'English', default: true }],
     },

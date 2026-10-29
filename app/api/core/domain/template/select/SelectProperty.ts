@@ -1,4 +1,3 @@
-import { Context } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from '../errors.js';
 import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty.js';
 import { PropertyTypeEnum } from '../PropertyType.js';
@@ -8,8 +7,8 @@ type Props = {
 } & Omit<AbstractSelectPropertyProps, 'type'>;
 
 class SelectProperty extends AbstractSelectProperty {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Select }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Select });
     this.compatibleTypes = [PropertyTypeEnum.MultiSelect];
 
     this.validateSelectProperty();

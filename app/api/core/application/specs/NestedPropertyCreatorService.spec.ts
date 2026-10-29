@@ -43,8 +43,7 @@ describe('NestedPropertyCreatorService', () => {
           label: 'Nested Property',
           type: PropertyTypeEnum.Nested,
           template: new ObjectId().toHexString(),
-        },
-        {}
+        }
       )
     ).resolves.toBeInstanceOf(NestedProperty);
   });
@@ -61,8 +60,7 @@ describe('NestedPropertyCreatorService', () => {
           label: 'Nested Property',
           type: PropertyTypeEnum.Nested,
           template: new ObjectId().toHexString(),
-        },
-        {}
+        }
       )
     ).rejects.toThrow(NestedPropertyNotAvailableError);
   });
