@@ -203,6 +203,7 @@ export function registerJobs(register: Register) {
       new PDFPostProcessJobHandler({
         useCase: PDFPostProcessJobFactory.default(),
         wSockets: new V1WebSocketsWrapper(),
+        sessionId: ExecutionContext.sessionId,
       })
   );
 

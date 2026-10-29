@@ -32,6 +32,7 @@ type Context = {
   tenant?: Tenant;
   actor?: User;
   correlationId?: string;
+  sessionId?: string;
   telemetrySampled?: boolean;
 };
 
@@ -146,6 +147,14 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get correlationId() {
     return this.getStore()?.correlationId;
+  }
+
+  /**
+   * The originating request's raw `connect.sid` cookie: the socket.io room of that browser tab.
+   * Not express-session's `req.sessionID`.
+   */
+  get sessionId() {
+    return this.getStore()?.sessionId;
   }
 
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {

@@ -1,25 +1,55 @@
+import { createReadStream, existsSync } from 'fs';
+import type { Pool } from 'pg';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { BLANK_STATE_DATA_DIR } from '#api/infrastructure/blank_state/paths.js';
-import { PgBlankState } from '#api/infrastructure/blank_state/PgBlankState.js';
+import { BlankStateEmptyError } from '#api/infrastructure/blank_state/BlankStateEmptyError.js';
+import { BLANK_STATE_DUMP_FILE } from '#api/infrastructure/blank_state/paths.js';
+import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
+import { assertPostgresCoreTenant } from '../../tenants/controllers/assertPostgresCoreTenant.js';
+import { reindexTenant } from '../../tenants/controllers/reindexTenant.js';
 import type { BlankStateRestoreOutput } from '../contracts.js';
 import type { BlankStateDeps } from './BlankStateDeps.js';
 
 type RestoreBlankStateInput = { force?: boolean };
 
-/** Restores blank-state fixtures into the current tenant, replacing data when forced. */
+function resolveDeps(deps: BlankStateDeps) {
+  return {
+    pool: deps.pool ?? PostgresDB.adminPool(),
+    dumpFile: deps.dumpFile ?? BLANK_STATE_DUMP_FILE,
+    reindex: deps.reindex ?? reindexTenant,
+  };
+}
+
+/** Restores the committed blank-state dump into the current tenant, replacing data when forced. */
 class RestoreBlankStateController {
   static async handle(
-    input: RestoreBlankStateInput,
+    input: RestoreBlankStateInput = {},
     deps: BlankStateDeps = {}
   ): Promise<BlankStateRestoreOutput> {
-    const pool = deps.pool ?? PostgresDB.adminPool();
-    const dataDir = deps.dataDir ?? BLANK_STATE_DATA_DIR;
+    assertPostgresCoreTenant();
+    const { pool, dumpFile, reindex } = resolveDeps(deps);
     const tenantId = ExecutionContext.currentTenant.name;
-
-    await new PgBlankState(pool, tenantId, dataDir).run({ force: input.force });
-
+    await RestoreBlankStateController.load(pool, {
+      dumpFile,
+      tenantId,
+      force: input.force,
+    });
+    await reindex(tenantId);
     return { restored: true };
+  }
+
+  private static async load(
+    pool: Pool,
+    target: { dumpFile: string; tenantId: string; force?: boolean }
+  ): Promise<void> {
+    if (!existsSync(target.dumpFile)) {
+      throw new BlankStateEmptyError();
+    }
+    const backup = new PgTenantBackup(pool);
+    if (target.force) {
+      await backup.clean(target.tenantId);
+    }
+    await backup.import(target.tenantId, createReadStream(target.dumpFile));
   }
 }
 

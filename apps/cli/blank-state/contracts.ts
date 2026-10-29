@@ -5,7 +5,7 @@ import { z } from 'zod';
  * the manager depends on these shapes, so fields are only ever added.
  */
 
-/** Names of the tenant tables whose fixtures were (re)written. Sorted. */
+/** Names of the tenant tables that were (re)written to the dump. Sorted. */
 const BlankStateDumpOutputSchema = z.object({ tables: z.array(z.string()) });
 
 const BlankStateRestoreOutputSchema = z.object({ restored: z.literal(true) });

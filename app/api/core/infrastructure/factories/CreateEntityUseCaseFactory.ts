@@ -16,10 +16,9 @@ class CreateEntityUseCaseFactory {
   static default(
     overrides: Partial<ConstructorParameters<typeof CreateEntityUseCase>[0]> & {
       targetLanguage?: LanguageISO6391;
-      sessionId?: string;
     } = {}
   ) {
-    const { targetLanguage = 'en', sessionId, ...depsOverrides } = overrides;
+    const { targetLanguage = 'en', ...depsOverrides } = overrides;
 
     const { tenant } = ExecutionContext;
 
@@ -54,7 +53,6 @@ class CreateEntityUseCaseFactory {
       {
         userId: actor?._id?.toString(),
         tenantName: tenant.name,
-        sessionId,
       }
     );
 

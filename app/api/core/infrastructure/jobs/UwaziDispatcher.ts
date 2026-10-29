@@ -6,14 +6,19 @@ import {
 import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
 import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
-function enrichParams(params: any, defaultUserId?: string, defaultCorrelationId?: string): any {
+type ParamDefaults = {
+  userId?: string;
+  correlationId?: string;
+  sessionId?: string;
+};
+
+function enrichParams(params: any, defaults: ParamDefaults): any {
   const enriched = { ...(params || {}) };
-  if (!enriched.userId && defaultUserId) {
-    enriched.userId = defaultUserId;
-  }
-  if (!enriched.correlationId && defaultCorrelationId) {
-    enriched.correlationId = defaultCorrelationId;
-  }
+  (Object.keys(defaults) as (keyof ParamDefaults)[]).forEach(key => {
+    if (!enriched[key] && defaults[key]) {
+      enriched[key] = defaults[key];
+    }
+  });
   return enriched;
 }
 
@@ -23,17 +28,19 @@ export type UwaziDispatcherDeps = {
   adapter: QueueAdapter;
   userId?: string;
   correlationId?: string;
+  sessionId?: string;
 };
 
 export class UwaziDispatcher extends NamespacedDispatcher {
-  private defaultUserId?: string;
-
-  private defaultCorrelationId?: string;
+  private defaults: ParamDefaults;
 
   constructor(deps: UwaziDispatcherDeps) {
     super(deps.namespace, deps.queueName, deps.adapter);
-    this.defaultUserId = deps.userId;
-    this.defaultCorrelationId = deps.correlationId;
+    this.defaults = {
+      userId: deps.userId,
+      correlationId: deps.correlationId,
+      sessionId: deps.sessionId,
+    };
   }
 
   async dispatch<T extends Dispatchable>(
@@ -41,11 +48,7 @@ export class UwaziDispatcher extends NamespacedDispatcher {
     params: Parameters<T['handleDispatch']>[1],
     options?: DispatchOptions
   ): Promise<void> {
-    return super.dispatch(
-      dispatchable,
-      enrichParams(params, this.defaultUserId, this.defaultCorrelationId),
-      options
-    );
+    return super.dispatch(dispatchable, enrichParams(params, this.defaults), options);
   }
 
   async dispatchMany(
@@ -63,11 +66,7 @@ export class UwaziDispatcher extends NamespacedDispatcher {
         params: Parameters<T['handleDispatch']>[1],
         options?: DispatchOptions
       ): void => {
-        dispatch(
-          dispatchable,
-          enrichParams(params, this.defaultUserId, this.defaultCorrelationId),
-          options
-        );
+        dispatch(dispatchable, enrichParams(params, this.defaults), options);
       };
       return callback(enrichedDispatch);
     });

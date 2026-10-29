@@ -1,4 +1,3 @@
-import * as cookie from 'cookie';
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
@@ -83,10 +82,6 @@ class MutateEntityController extends AbstractController<Request> {
     return { payload, isMultipart };
   }
 
-  private get sessionId() {
-    return cookie.parse(this.request.get('cookie') || '')['connect.sid'];
-  }
-
   // Body language takes precedence over the content-language header.
   private resolveTargetLanguage(parsed: { language?: string }) {
     return (parsed.language as LanguageISO6391 | undefined) ?? this.language;
@@ -95,10 +90,7 @@ class MutateEntityController extends AbstractController<Request> {
   private async create({ payload, isMultipart }: ParsedBody) {
     const parsed = CreateEntitySchema.parse(payload);
     const targetLanguage = this.resolveTargetLanguage(parsed);
-    const useCase = CreateEntityUseCaseFactory.default({
-      targetLanguage,
-      sessionId: this.sessionId,
-    });
+    const useCase = CreateEntityUseCaseFactory.default({ targetLanguage });
 
     const entity = await MutateEntityController.withValidationPaths(async () =>
       useCase.execute(
@@ -113,7 +105,7 @@ class MutateEntityController extends AbstractController<Request> {
   }
 
   private async update({ isMultipart, payload }: ParsedBody) {
-    const useCase = UpdateEntityUseCaseFactory.default(undefined, this.sessionId);
+    const useCase = UpdateEntityUseCaseFactory.default();
     const { target: parsed } = await this.resolveAutomaticTranslationConflicts(
       UpdateEntitySchema.parse(payload),
       isMultipart
@@ -133,10 +125,7 @@ class MutateEntityController extends AbstractController<Request> {
   private async createWithTranslations({ payload, isMultipart }: ParsedBody) {
     const parsed = CreateEntityWithTranslationsSchema.parse(payload);
     const targetLanguage = this.resolveTargetLanguage(parsed);
-    const useCase = CreateEntityUseCaseFactory.default({
-      targetLanguage,
-      sessionId: this.sessionId,
-    });
+    const useCase = CreateEntityUseCaseFactory.default({ targetLanguage });
 
     const entity = await MutateEntityController.withValidationPaths(async () =>
       useCase.execute({
@@ -152,7 +141,7 @@ class MutateEntityController extends AbstractController<Request> {
   }
 
   private async updateWithTranslations({ payload, isMultipart }: ParsedBody) {
-    const useCase = UpdateEntityUseCaseFactory.default(undefined, this.sessionId);
+    const useCase = UpdateEntityUseCaseFactory.default();
     const { translations: sentTranslations, ...sentTarget } =
       UpdateEntityWithTranslationsSchema.parse(payload);
     const { target: parsed, translations } = await this.resolveAutomaticTranslationConflicts(

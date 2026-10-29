@@ -36,6 +36,10 @@ class Presenter {
   }
 
   result(value: unknown): void {
+    if (value === undefined) {
+      return;
+    }
+
     if (this.json) {
       this.stdout.write(`${JSON.stringify(value)}\n`);
       return;

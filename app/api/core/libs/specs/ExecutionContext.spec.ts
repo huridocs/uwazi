@@ -90,4 +90,22 @@ describe('ExecutionContext', () => {
       });
     });
   });
+
+  describe('sessionId', () => {
+    it('should be undefined outside a run()', () => {
+      expect(ExecutionContext.sessionId).toBeUndefined();
+    });
+
+    it('should return the value passed into run()', () => {
+      ExecutionContext.run({ ...buildContext(), sessionId: 's:session-a.signature' }, () => {
+        expect(ExecutionContext.sessionId).toBe('s:session-a.signature');
+      });
+    });
+
+    it('should be undefined when not passed into run()', () => {
+      ExecutionContext.run(buildContext(), () => {
+        expect(ExecutionContext.sessionId).toBeUndefined();
+      });
+    });
+  });
 });
