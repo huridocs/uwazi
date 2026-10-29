@@ -86,13 +86,14 @@ const EntityFilesProvider = ({
   });
 
   const {
-    pendingAddFile,
+    pendingAddFiles,
     addFileMode,
     uploadProgress,
     fileInputRef,
     requestAddFile,
     openAddFilePicker,
-    acceptSelectedFile,
+    acceptSelectedFiles,
+    removePendingAddFile,
     closeAddFileModal,
     confirmAddFile,
     handleFileInputChange,
@@ -133,7 +134,7 @@ const EntityFilesProvider = ({
       editFocus,
       filePanelMode,
       pendingDeleteRows,
-      pendingAddFile,
+      pendingAddFiles,
       addFileMode,
       uploadProgress,
       defaultLanguageKey: defaultLanguage,
@@ -152,7 +153,8 @@ const EntityFilesProvider = ({
       saveRow,
       requestAddFile,
       openAddFilePicker,
-      acceptSelectedFile,
+      acceptSelectedFiles,
+      removePendingAddFile,
       closeAddFileModal,
       confirmAddFile,
     }),
@@ -167,7 +169,7 @@ const EntityFilesProvider = ({
       editFocus,
       filePanelMode,
       pendingDeleteRows,
-      pendingAddFile,
+      pendingAddFiles,
       addFileMode,
       uploadProgress,
       defaultLanguage,
@@ -185,7 +187,8 @@ const EntityFilesProvider = ({
       saveRow,
       requestAddFile,
       openAddFilePicker,
-      acceptSelectedFile,
+      acceptSelectedFiles,
+      removePendingAddFile,
       closeAddFileModal,
       confirmAddFile,
     ]
@@ -196,6 +199,7 @@ const EntityFilesProvider = ({
       <input
         ref={fileInputRef}
         type="file"
+        multiple
         className="hidden"
         onChange={handleFileInputChange}
         aria-hidden

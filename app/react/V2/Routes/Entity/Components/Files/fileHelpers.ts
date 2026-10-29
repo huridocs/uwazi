@@ -7,6 +7,8 @@ type FileLike = Pick<File, 'type' | 'name'>;
 
 const isFileRowSelectable = (row: Pick<EntityFileRow, 'status'>) => row.status !== 'processing';
 
+const fileQueueKey = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
+
 const isPdfFile = (file: FileLike) =>
   file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
@@ -60,6 +62,7 @@ const resolveFileLanguage = (rawLanguage?: string) => {
 };
 
 export {
+  fileQueueKey,
   isFileRowSelectable,
   isPdfFile,
   fileSupportsLanguage,

@@ -17,7 +17,7 @@ type EntityFilesContextValue = {
   editFocus: FileEditFocus;
   filePanelMode: FilePanelMode;
   pendingDeleteRows: EntityFileRow[];
-  pendingAddFile: File | null;
+  pendingAddFiles: File[];
   addFileMode: AddFileMode | null;
   uploadProgress: number | null;
   defaultLanguageKey?: string;
@@ -36,9 +36,10 @@ type EntityFilesContextValue = {
   saveRow: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
   requestAddFile: (mode: AddFileMode) => void;
   openAddFilePicker: () => void;
-  acceptSelectedFile: (file: File | undefined) => void;
+  acceptSelectedFiles: (files: File[]) => void;
+  removePendingAddFile: (file: File) => void;
   closeAddFileModal: () => void;
-  confirmAddFile: (payload: ConfirmAddFilePayload) => Promise<void>;
+  confirmAddFile: (payloads: ConfirmAddFilePayload[]) => Promise<number>;
 };
 
 export type { EntityFilesContextValue, FilesSideTabId };

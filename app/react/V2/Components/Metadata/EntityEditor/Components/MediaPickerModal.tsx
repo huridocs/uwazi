@@ -139,7 +139,7 @@ const MediaPickerModal = ({
       <Modal.Body className="space-y-4">
         <DashedUploadDropzone
           onPick={() => fileInputRef.current?.click()}
-          onDropFile={pickLocalFile}
+          onDropFiles={files => pickLocalFile(files[0])}
           disabled={selecting}
           title={
             isImage ? (
