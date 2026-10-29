@@ -42,15 +42,13 @@ describe('RelationshipPropertyCreatorService', () => {
     const { sut } = createSut();
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Target Any',
-          type: PropertyTypeEnum.Relationship,
-          template: '',
-          relationType: new ObjectId().toHexString(),
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Target Any',
+        type: PropertyTypeEnum.Relationship,
+        template: '',
+        relationType: new ObjectId().toHexString(),
+      })
     ).rejects.toThrow(RelationshipTypeDoesNotExistError);
   });
 
@@ -68,20 +66,18 @@ describe('RelationshipPropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Target Any',
-          type: PropertyTypeEnum.Relationship,
-          template: '',
-          relationType: relationTypeId.toHexString(),
-          content: new ObjectId().toHexString(),
-          inherit: {
-            property: new ObjectId().toHexString(),
-            type: PropertyTypeEnum.Date,
-          },
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Target Any',
+        type: PropertyTypeEnum.Relationship,
+        template: '',
+        relationType: relationTypeId.toHexString(),
+        content: new ObjectId().toHexString(),
+        inherit: {
+          property: new ObjectId().toHexString(),
+          type: PropertyTypeEnum.Date,
+        },
+      })
     ).rejects.toThrow(TemplateDoesNotExistError);
   });
 
@@ -101,20 +97,18 @@ describe('RelationshipPropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Target Any',
-          type: PropertyTypeEnum.Relationship,
-          template: '',
-          relationType: relationTypeId.toHexString(),
-          content: templateId.toHexString(),
-          inherit: {
-            property: new ObjectId().toHexString(),
-            type: PropertyTypeEnum.Date,
-          },
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Target Any',
+        type: PropertyTypeEnum.Relationship,
+        template: '',
+        relationType: relationTypeId.toHexString(),
+        content: templateId.toHexString(),
+        inherit: {
+          property: new ObjectId().toHexString(),
+          type: PropertyTypeEnum.Date,
+        },
+      })
     ).rejects.toThrow(RelationshipTargetPropertyNotFoundError);
   });
 
@@ -140,20 +134,18 @@ describe('RelationshipPropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Target Any',
-          type: PropertyTypeEnum.Relationship,
-          template: '',
-          relationType: relationTypeId.toHexString(),
-          content: templateId.toHexString(),
-          inherit: {
-            property: propertyId.toHexString(),
-            type: PropertyTypeEnum.DateRange,
-          },
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Target Any',
+        type: PropertyTypeEnum.Relationship,
+        template: '',
+        relationType: relationTypeId.toHexString(),
+        content: templateId.toHexString(),
+        inherit: {
+          property: propertyId.toHexString(),
+          type: PropertyTypeEnum.DateRange,
+        },
+      })
     ).rejects.toThrow(RelationshipTargetTypeMismatchError);
   });
 
@@ -179,20 +171,18 @@ describe('RelationshipPropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Target Any',
-          type: PropertyTypeEnum.Relationship,
-          template: templateId.toString(),
-          relationType: relationTypeId.toHexString(),
-          content: templateId.toHexString(),
-          inherit: {
-            property: propertyId.toHexString(),
-            type: PropertyTypeEnum.Date,
-          },
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Target Any',
+        type: PropertyTypeEnum.Relationship,
+        template: templateId.toString(),
+        relationType: relationTypeId.toHexString(),
+        content: templateId.toHexString(),
+        inherit: {
+          property: propertyId.toHexString(),
+          type: PropertyTypeEnum.Date,
+        },
+      })
     ).resolves.toBeInstanceOf(V1RelationshipProperty);
   });
 });

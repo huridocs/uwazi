@@ -64,15 +64,13 @@ const selectionPipeline = (pairs: Pair[]) => [
 const renameFileSelections = async (db: Db, templateId: ObjectId, pairs: Pair[]) => {
   const sharedIds = await db.collection('entities').distinct('sharedId', { template: templateId });
   if (sharedIds.length === 0 || pairs.length === 0) return;
-  await db
-    .collection('files')
-    .updateMany(
-      {
-        entity: { $in: sharedIds },
-        'propertySelections.name': { $in: pairs.map(pair => pair.from) },
-      },
-      selectionPipeline(pairs)
-    );
+  await db.collection('files').updateMany(
+    {
+      entity: { $in: sharedIds },
+      'propertySelections.name': { $in: pairs.map(pair => pair.from) },
+    },
+    selectionPipeline(pairs)
+  );
 };
 
 const renameSuggestions = async (db: Db, templateId: ObjectId, pairs: Pair[]) => {

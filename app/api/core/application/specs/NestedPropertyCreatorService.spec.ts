@@ -37,14 +37,12 @@ describe('NestedPropertyCreatorService', () => {
     const { sut } = createSut();
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Nested Property',
-          type: PropertyTypeEnum.Nested,
-          template: new ObjectId().toHexString(),
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Nested Property',
+        type: PropertyTypeEnum.Nested,
+        template: new ObjectId().toHexString(),
+      })
     ).resolves.toBeInstanceOf(NestedProperty);
   });
 
@@ -54,14 +52,12 @@ describe('NestedPropertyCreatorService', () => {
     await testingEnvironment.setFixtures({ settings: [{ project: 'any' }] });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Nested Property',
-          type: PropertyTypeEnum.Nested,
-          template: new ObjectId().toHexString(),
-        }
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Nested Property',
+        type: PropertyTypeEnum.Nested,
+        template: new ObjectId().toHexString(),
+      })
     ).rejects.toThrow(NestedPropertyNotAvailableError);
   });
 });
