@@ -1,10 +1,10 @@
-// eslint-disable-next-line no-restricted-imports
-import { existsSync, mkdirSync, readFileSync, rmSync } from 'fs';
+import { createReadStream, existsSync, readFileSync, rmSync } from 'fs';
 import path from 'path';
 import type { Pool } from 'pg';
 import { fileURLToPath } from 'url';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
 import {
   clearBlankState,
   seedBlankState,
@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe('DumpBlankStateController', () => {
-  let dataDir: string;
+  let dumpFile: string;
   let pool: Pool;
 
   beforeAll(async () => {
@@ -32,38 +32,51 @@ describe('DumpBlankStateController', () => {
     const testPool = testingEnvironment.pg.pool;
     if (!testPool) throw new Error('PG pool not available');
     pool = testPool;
-    dataDir = path.join(__dirname, `dump-ctrl-test-${Date.now()}`);
-    mkdirSync(dataDir, { recursive: true });
+    dumpFile = path.join(__dirname, `dump-ctrl-test-${Date.now()}.uwazidump`);
     await seedBlankState(pool, testingTenants.current().name, {
       ids: { settings: 'settings-doc', user: 'user-admin', translations: ['tr-1'] },
     });
   });
 
   afterEach(async () => {
-    rmSync(dataDir, { recursive: true, force: true });
+    rmSync(dumpFile, { force: true });
     await clearBlankState(pool);
   });
 
-  it('should dump the current tenant into the given directory', async () => {
-    const format = jest.fn(async () => {});
+  it('dumps every tenant data table to the dump file', async () => {
+    ControllerSpecs.useBackend(true);
 
     const output = await ControllerSpecs.asCli(async () =>
-      DumpBlankStateController.handle({ pool, dataDir, format })
+      DumpBlankStateController.handle({ pool, dumpFile })
     );
 
-    expect(BlankStateDumpOutputSchema.parse(output).tables.sort()).toEqual(
-      ['settings', 'templates', 'translations', 'users'].sort()
-    );
-    expect(format).toHaveBeenCalledWith(dataDir, [
-      'settings',
-      'templates',
-      'translations',
-      'users',
+    const { tables } = BlankStateDumpOutputSchema.parse(output);
+    expect(tables).toContain('templates');
+    expect(tables).toContain('settings');
+    expect(tables).toContain('users');
+    expect(tables).toContain('translations');
+    // History tables are tenant data too: the dump is the full export stream.
+    expect(tables).toContain('updatelogs');
+
+    expect(existsSync(dumpFile)).toBe(true);
+    expect(readFileSync(dumpFile, 'utf-8')).toContain('"sourceTenant"');
+  });
+
+  it('produces a dump that restores into a fresh tenant', async () => {
+    ControllerSpecs.useBackend(true);
+
+    await ControllerSpecs.asCli(async () => DumpBlankStateController.handle({ pool, dumpFile }));
+
+    await new PgTenantBackup(pool).import('fresh-tenant', createReadStream(dumpFile));
+
+    const templates = await pool.query('SELECT name FROM templates WHERE "tenant_id" = $1', [
+      'fresh-tenant',
     ]);
+    expect(templates.rows).toEqual([{ name: 'Document' }]);
 
-    const templates = JSON.parse(readFileSync(path.join(dataDir, 'templates.json'), 'utf-8'));
-    expect(templates[0]).toMatchObject({ _id: 'tpl-doc', name: 'Document' });
-
-    expect(existsSync(path.join(dataDir, 'updatelogs.json'))).toBe(false);
+    const users = await pool.query('SELECT username FROM users WHERE "tenant_id" = $1', [
+      'fresh-tenant',
+    ]);
+    expect(users.rows).toEqual([{ username: 'admin' }]);
   });
 });

@@ -30,6 +30,11 @@ type Dependencies = {
   /** Dispatch side: pushes and deletes join the transaction running on it, if any. */
   transactionManager?: PostgresTransactionManager;
   logger: Logger;
+  /**
+   * Extra columns to add to every inserted job row. Generic on purpose: the queue library knows
+   * nothing of tenants; a Uwazi adapter supplies the tenant-scoped columns through this hook.
+   */
+  decorateJobRow?: (job: PushJobInput) => Record<string, unknown>;
 };
 
 const UNDEFINED_TABLE = '42P01';
@@ -114,7 +119,10 @@ export class PostgresQueueAdapter implements QueueAdapter {
     if (!jobs.length) return [];
 
     const now = Date.now();
-    const rows = jobs.map(job => toRow(job, now));
+    const rows = jobs.map(job => ({
+      ...toRow(job, now),
+      ...(this.deps.decorateJobRow?.(job) ?? {}),
+    }));
     await this.dispatch(
       ArrayUtils.splitInChunks(rows, INSERT_CHUNK_ROWS).map(chunk =>
         Statements.builder('jobs').insert(chunk)
