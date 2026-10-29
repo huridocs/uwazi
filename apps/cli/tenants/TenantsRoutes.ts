@@ -8,8 +8,11 @@ import { SetFeatureFlagsRoute } from './routes/SetFeatureFlagsRoute.js';
 import { SetMaintenanceRoute } from './routes/SetMaintenanceRoute.js';
 import { UpdateStatsRoute } from './routes/UpdateStatsRoute.js';
 import { RecordHealthCheckRoute } from './routes/RecordHealthCheckRoute.js';
+import { CleanTenantRoute } from './routes/CleanTenantRoute.js';
+import { ExportTenantRoute } from './routes/ExportTenantRoute.js';
+import { ImportTenantRoute } from './routes/ImportTenantRoute.js';
 
-/** `uwazi tenants …` — the registry, which sits above every tenant context. */
+/** `uwazi tenants …` — the registry (above tenant context) plus tenant backup/restore. */
 class TenantsRoutes {
   static all(): Route[] {
     return [
@@ -22,6 +25,9 @@ class TenantsRoutes {
       new SetMaintenanceRoute(),
       new UpdateStatsRoute(),
       new RecordHealthCheckRoute(),
+      new CleanTenantRoute(),
+      new ExportTenantRoute(),
+      new ImportTenantRoute(),
     ];
   }
 }

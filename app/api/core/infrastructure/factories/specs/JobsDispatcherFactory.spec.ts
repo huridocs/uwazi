@@ -7,7 +7,7 @@ import {
 import { DB } from '#api/odm/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { JobsDispatcherFactory } from '../JobsDispatcherFactory.js';
+import { JobsDispatcherFactory, tenantIdForJob } from '../JobsDispatcherFactory.js';
 
 class JobsDispatcherFactorySpecJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
@@ -55,6 +55,7 @@ describe('JobsDispatcherFactory', () => {
       expect(await postgresJobs()).toEqual([
         expect.objectContaining({
           namespace: testingTenants.current().name,
+          tenant_id: testingTenants.current().name,
           params: expect.objectContaining({ aParam: 'value' }),
         }),
       ]);
@@ -110,6 +111,16 @@ describe('JobsDispatcherFactory', () => {
 
       expect(await mongoJobs()).toEqual([expect.objectContaining({ namespace: 'system' })]);
       expect(await postgresJobs()).toEqual([]);
+    });
+  });
+
+  describe('tenantIdForJob', () => {
+    it('should scope a tenant job by its namespace', () => {
+      expect(tenantIdForJob({ namespace: 'acme' } as any)).toEqual({ tenant_id: 'acme' });
+    });
+
+    it('should leave a system job without a tenant', () => {
+      expect(tenantIdForJob({ namespace: 'system' } as any)).toEqual({ tenant_id: null });
     });
   });
 });
