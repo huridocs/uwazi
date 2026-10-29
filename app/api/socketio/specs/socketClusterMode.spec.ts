@@ -12,6 +12,8 @@ import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { config } from '#api/config.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { Result } from '#api/core/libs/Result.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 
 import {
   endSocketServer,
@@ -59,6 +61,7 @@ const createServer = async (app: Application, port: number) => {
   });
   app.use(appContextMiddleware);
   app.use(multitenantMiddleware);
+  app.use(dependenciesContextMiddleware);
   config.redis.activated = true;
   setupApiSockets(server, app);
 };
@@ -186,6 +189,27 @@ describe('socket middlewares setup', () => {
       app.get('/api/onlySender', (req, res) => {
         req.emitToSessionSocket('onlySenderEvent', 'senderData');
         res.json({});
+      });
+    });
+
+    it('should emit to the execution context session', async () => {
+      app.get('/api/contextSession', (req, res, next) => {
+        ExecutionContextFactory.run(
+          { sessionId: 'session:session2', telemetry: { kind: 'test' } },
+          async () => req.emitToSessionSocket('onlySenderEvent', 'senderData')
+        )
+          .then(() => res.json({}))
+          .catch(next);
+      });
+
+      const socketEvents = captureEvents('onlySenderEvent');
+      await requestTestRoute('tenant1', '/api/contextSession', 'session1');
+
+      expect(socketEvents).toEqual({
+        socket1Tenant1: '',
+        socket2Tenant1: 'senderData',
+        socket3Tenant2: '',
+        socket4TenantDefault: '',
       });
     });
 

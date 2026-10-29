@@ -78,6 +78,7 @@ class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }>
   capturedTenant2: Tenant | undefined;
   capturedActor: UserSchema | undefined;
   capturedCorrelationId: string | undefined;
+  capturedSessionId: string | undefined;
 
   protected async handle(
     _: HeartbeatCallback,
@@ -88,6 +89,7 @@ class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }>
     this.capturedTenant2 = ExecutionContext.tenant;
     this.capturedActor = ExecutionContext.actor as UserSchema | undefined;
     this.capturedCorrelationId = ExecutionContext.correlationId;
+    this.capturedSessionId = ExecutionContext.sessionId;
   }
 }
 
@@ -226,7 +228,7 @@ describe('Setup Queue Worker', () => {
     expect(testJob.capturedActor).toMatchObject({ _id: actor._id?.toString() });
   });
 
-  it('should set the correlationId from job params in the execution context', async () => {
+  it('should set the correlationId and sessionId from job params in the execution context', async () => {
     const worker = TestUtils.mockClass<QueueWorker>({
       register: jest.fn(),
       getRegisteredJobs: jest.fn().mockReturnValue([]),
@@ -244,6 +246,7 @@ describe('Setup Queue Worker', () => {
         userId: actor._id?.toString(),
         someParam: 'test-value',
         correlationId: 'corr-123',
+        sessionId: 'session-123',
       },
     };
 
@@ -253,6 +256,7 @@ describe('Setup Queue Worker', () => {
     await instance.handleDispatch(heartbeat, job.params, jobInfo);
 
     expect(testJob.capturedCorrelationId).toBe('corr-123');
+    expect(testJob.capturedSessionId).toBe('session-123');
   });
 
   it('should extract the job correlationId and strip params from job logs', () => {
