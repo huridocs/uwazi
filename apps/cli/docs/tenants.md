@@ -1,8 +1,8 @@
 # tenants
 
-Administer the tenant registry: the list of tenants an installation serves, and for each one
-where its data lives and which feature flags it runs with. Shared options, output and exit codes
-are in the [README](../README.md).
+Administer tenants: the registry that says which tenants an installation serves and where each
+one's data lives, and the backup commands that export, import and clean one tenant's PostgreSQL
+data. Shared options, output and exit codes are in the [README](../README.md).
 
 | Command                 | Does                                                      |
 | ----------------------- | --------------------------------------------------------- |
@@ -15,6 +15,15 @@ are in the [README](../README.md).
 | `tenants maintenance`   | Puts a tenant under maintenance, or takes it out          |
 | `tenants stats`         | Stores the usage figures another tool computed            |
 | `tenants health-check`  | Stores the latest health check another tool ran           |
+| `tenants clean`         | Deletes every row of a tenant's PostgreSQL data           |
+| `tenants export`        | Streams a tenant's PostgreSQL data to stdout              |
+| `tenants import`        | Loads a backup stream from stdin into a tenant            |
+
+The commands above administer the registry and take no `--tenant` or `--all-tenants` — the
+tenant they act on is the request's `name`. `tenants clean`, `tenants export` and
+`tenants import` are different: they run in one tenant (so they take `--tenant`), touch
+PostgreSQL data only, and need the admin/migrator credentials. They are covered in
+[Backup and restore](#backup-and-restore) at the end of this page.
 
 ## The registry
 
@@ -205,3 +214,89 @@ yarn uwazi tenants health-check --request - < health.json
 `name` and `healthCheck`: `name`, `lastUpdated`, `warnings` and `problems` (string lists), and a
 free-form `summary`. Only the latest is kept: it replaces the stored `healthChecks` with a list
 of one. Uwazi stores it and never reads it.
+
+## Backup and restore
+
+`tenants clean`, `tenants export` and `tenants import` operate on one tenant's PostgreSQL data.
+They run in a tenant (take `--tenant`), write through the admin/migrator pool (which bypasses
+row-level security), and therefore need `POSTGRES_USER` and `POSTGRES_PASSWORD` in addition to
+the usual environment. They fail with `tenant_backup.not_postgres` (exit 4) when the tenant is
+not running on Postgres. They never touch the registry row, and they only move PostgreSQL rows —
+files stored on disk or S3 and the Elasticsearch index are not part of the backup.
+
+### tenants clean
+
+```sh
+yarn uwazi tenants clean --tenant acme
+```
+
+Deletes every PostgreSQL row of the tenant, across every tenant-scoped table (in-flight
+operation state and the jobs queue included), leaving the registry row untouched. Idempotent:
+a second run deletes 0 rows.
+
+Prints:
+
+```json
+{ "tables": ["activitylogs", "entities", "files"], "deletedRows": 123 }
+```
+
+`tables` is every tenant-scoped table touched, sorted; `deletedRows` is the total rows deleted.
+
+`clean` deletes PostgreSQL rows, then reindexes the now-empty tenant so Elasticsearch drops
+the deleted documents (the reindex deletes and recreates the tenant's index from PostgreSQL).
+
+### tenants export
+
+```sh
+yarn uwazi tenants export --tenant acme > acme.uwazidump
+```
+
+Streams the tenant's PostgreSQL data to stdout as one portable backup: a manifest line (source
+tenant, schema version and tables) followed by one `COPY` text section per table, snapshot-
+consistent within a repeatable-read transaction. Nothing else is written to stdout, so
+redirecting captures the stream exactly. Progress goes to stderr, and only when it is a
+terminal: piping the output silences it, so `export | import` stays clean.
+
+Every tenant-scoped table is exported — in-flight operation state (`csv_imports*`,
+`px_entities_status`) and the jobs queue included — except the ephemeral `captchas` and
+`password_recoveries`. Files stored on disk or S3 are not part of the stream.
+
+Prints nothing: stdout carries the stream only, so there is no result JSON.
+
+### tenants import
+
+```sh
+yarn uwazi tenants import --tenant acme < acme.uwazidump
+# wipe the tenant first, to retry a failed import in place:
+yarn uwazi tenants import --tenant acme --clear < acme.uwazidump
+# clear the sync configuration (a cross-tenant restore must not inherit the source's):
+yarn uwazi tenants import --tenant acme --null-sync < acme.uwazidump
+```
+
+Reads an export stream from stdin and loads it into the tenant, rewriting every row's
+`tenant_id` to the destination, retargeting imported jobs to it, and reindexing it afterwards.
+The import is all-or-nothing: a failing table rolls back the whole import.
+
+- `--clear` deletes the tenant's rows before loading, so a failed import can be retried in
+  place without a separate `clean`.
+- `--null-sync` clears `settings.sync`; by default it is preserved, which is what a same-tenant
+  restore wants.
+
+The stream is checked before any data is loaded: its schema version must match the database's,
+and every table it names must be a known tenant data table whose columns match the schema.
+
+Prints:
+
+```json
+{ "sourceTenant": "acme", "tables": ["activitylogs"], "rows": 123 }
+```
+
+`sourceTenant` is the tenant the stream was exported from; `tables` the tables loaded; `rows`
+the total COPY row count.
+
+| Code                                    | Exit | When                                                                                            |
+| --------------------------------------- | ---- | ----------------------------------------------------------------------------------------------- |
+| `tenant_backup.malformed_manifest`      | 2    | The stream is empty, its manifest cannot be parsed, or a table's columns don't match the schema |
+| `tenant_backup.schema_version_mismatch` | 2    | The stream's schema version differs from this database's                                        |
+| `tenant_backup.unknown_table`           | 2    | The manifest names a table that is not a known tenant data table                                |
+| `tenant_backup.premature_end`           | 2    | The stream ended before a table's COPY section was complete                                     |

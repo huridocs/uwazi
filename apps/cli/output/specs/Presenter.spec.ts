@@ -63,6 +63,17 @@ describe('Presenter', () => {
 
       expect(out.stdout.text).toBe('');
     });
+
+    it('should print nothing for an undefined result in either mode', () => {
+      const json = streams();
+      const human = streams();
+
+      new Presenter({ json: true, verbose: false, ...json }).result(undefined);
+      new Presenter({ json: false, verbose: false, ...human }).result(undefined);
+
+      expect(json.stdout.text).toBe('');
+      expect(human.stdout.text).toBe('');
+    });
   });
 
   describe('error()', () => {
