@@ -1,0 +1,939 @@
+{"version":1,"sourceTenant":"golden","schemaVersion":39,"tables":[{"name":"activitylogs","columns":["tenant_id","_id","method","url","params","query","body","user_id","username","time"]},{"name":"connections","columns":["tenant_id","_id","entity","hub","template","file","metadata","reference","sharedId","filename","range"]},{"name":"csv_import_relationships_pending_values","columns":["tenant_id","_id","import_id","template_id","titles","created_at"]},{"name":"csv_import_relationships_values","columns":["tenant_id","_id","import_id","template_id","values","created_at"]},{"name":"csv_import_row_errors","columns":["tenant_id","_id","import_id","row_index","message","code","property","raw_value","details","created_at"]},{"name":"csv_import_rows","columns":["tenant_id","_id","import_id","row_index","headers","values"]},{"name":"csv_import_thesauri_values","columns":["tenant_id","_id","import_id","thesaurus_id","entries","created_at","applied_at","applied_values","stats"]},{"name":"csv_imports","columns":["tenant_id","_id","template_id","status","created_by","created_at","updated_at","files_cleanup","file","storage","stats","progress","extraction","failure","row_errors"]},{"name":"dataviz","columns":["tenant_id","_id","name","description","dataSource","query","manualData","chart","appearance","refresh","processing","embedPublic","createdAt","updatedAt"]},{"name":"dataviz_snapshots","columns":["tenant_id","_id","datavizId","queryHash","payload","generatedAt"]},{"name":"entities","columns":["tenant_id","_id","sharedId","language","title","template","published","generatedToc","icon","creationDate","editDate","metadata","user","permissions","preview","_perm_read_refs","_perm_write_refs"]},{"name":"files","columns":["tenant_id","_id","originalname","filename","mimetype","size","creationDate","type","entity","status","totalPages","language","generatedToc","url","toc","propertySelections","fullText"]},{"name":"ix_extractors","columns":["tenant_id","_id","name","property","source","templates"]},{"name":"ix_models","columns":["tenant_id","_id","extractorId","creationDate","status","findingSuggestions","maxSuggestionsToFind","totalSuggestionsToFind","processRun"]},{"name":"ix_suggestions","columns":["tenant_id","_id","extractorId","entityId","entityLanguageId","entityTemplate","entityTitle","fileId","propertyName","language","suggestedValue","suggestedText","currentValue","segment","selectionRectangles","status","error","date","state","modelData","useForTraining","trainingSample"]},{"name":"jobs","columns":["tenant_id","id","queue","name","namespace","params","lockedUntil","createdAt","retryCount","failed","options"]},{"name":"ocr_records","columns":["tenant_id","_id","source_file_id","result_file_id","filename","language","status","attempt","requested_at","last_updated","failure_reason"]},{"name":"page_locales","columns":["tenant_id","page_id","language","title","draft_content","draft_script","draft_css"]},{"name":"page_releases","columns":["tenant_id","_id","page_id","version","release_message","user_id","date","locales"]},{"name":"pages","columns":["tenant_id","_id","shared_id","creation_date","entity_view","markdown_support"]},{"name":"preserve_sync","columns":["tenant_id","token","last_import"]},{"name":"px_entities_status","columns":["tenant_id","_id","entitySharedId","extractorId","status"]},{"name":"px_extractors","columns":["tenant_id","_id","sourceTemplateId","targetTemplateId","paragraphNumberPropertyId","paragraphPropertyId","sourceRelationshipTypeId","targetRelationshipTypeId"]},{"name":"relationship_types","columns":["tenant_id","_id","name"]},{"name":"segmentations","columns":["tenant_id","_id","file_id","filename","status","attempt","requested_at","xml_filename","failure_reason","layout"]},{"name":"settings","columns":["tenant_id","_id","languages","links","filters","features","theme_vars","theme_assets","site_name","custom_css","custom_js","sync","private","new_name_generation","open_public_endpoint","allowed_public_templates","public_form_destination","ocr_service_enabled","filter_unauthorized_related","project","custom","mail","analytics","map","branding","site_preferences","extras","seo"]},{"name":"syncs","columns":["tenant_id","name","last_syncs","consecutive_failures"]},{"name":"templates","columns":["tenant_id","_id","name","properties","commonProperties","color","default","entityViewPage","processing"]},{"name":"thesauri","columns":["tenant_id","_id","name","values"]},{"name":"translations","columns":["tenant_id","_id","language","key","value","context_id","context_type","context_label"]},{"name":"updatelogs","columns":["tenant_id","id","namespace","timestamp","deleted"]},{"name":"usergroups","columns":["tenant_id","_id","name","members"]},{"name":"users","columns":["tenant_id","_id","username","password","email","role","failedLogins","accountLocked","accountUnlockCode","using2fa","secret","deletedAt"]}]}
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+\.
+golden	58ad7d240d44252fee4e6213	[{"key": "en", "label": "English", "default": true}]	[]	[]	\N	\N	\N	Uwazi	\N	\N	\N	t	t	\N	\N	\N	\N	\N	\N	\N	\N	\N	{"mapLayers": ["Streets", "Hybrid", "Satellite"]}	\N	\N	{}	\N
+\.
+\.
+golden	5bfbb1a0471dd0fc16ada146	Document	[]	[{"_id": "5bfbb1a0471dd0fc16ada148", "name": "title", "type": "text", "label": "Title", "prioritySorting": false, "isCommonProperty": true}, {"_id": "5bfbb1a0471dd0fc16ada147", "name": "creationDate", "type": "date", "label": "Date added", "prioritySorting": false, "isCommonProperty": true}, {"_id": "69bd70632cc060344ac6e2fb", "name": "editDate", "type": "date", "label": "Date modified", "isCommonProperty": true}]	#c03b22	t	\N	\N
+\.
+\.
+golden	6747017d337142d8a6a85d8c	en	Search	Search	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d8d	en	of	of	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d8e	en	Library	Library	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d8f	en	Uploads	Uploads	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d90	en	Settings	Settings	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d91	en	documents	documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d92	en	Account	Account	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d93	en	Documents	Documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d94	en	Entities	Entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d95	en	Collection	Collection	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d96	en	Menu	Menu	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d97	en	Pages	Pages	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d98	en	Translations	Translations	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d99	en	Metadata	Metadata	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9a	en	Translate	Translate	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9b	en	Edit	Edit	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9c	en	Delete	Delete	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9d	en	Update	Update	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9e	en	Email	Email	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85d9f	en	Confirm new password	Confirm new password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da0	en	Logout	Logout	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da1	en	Change password	Change password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da2	en	Add relationship	Add relationship	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da3	en	Reset	Reset	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da4	en	Info	Info	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da5	en	Cancel	Cancel	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da6	en	Save	Save	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da7	en	Filters	Filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da8	en	Email address	Email address	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85da9	en	New password	New password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85daa	en	Create group	Create group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dab	en	Add page	Add page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dac	en	Add link	Add link	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dad	en	References	References	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dae	en	Attachments	Attachments	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85daf	en	Title	Title	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db0	en	Type	Type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db1	en	Icon	Icon	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db2	en	Flag	Flag	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db3	en	Size	Size	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db4	en	Name	Name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db5	en	View	View	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db6	en	Publish	Publish	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db7	en	Search item	Search item	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db8	en	No common filters	No common filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85db9	en	Label date "From"	From: 	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dba	en	Label date "to"	To: 	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dbb	en	Connection type	Connection type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dbc	en	Add	Add	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dbd	en	RelationType saved	RelationType saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dbe	en	Login button	Login	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dbf	en	Login failed	Login failed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc0	en	Password	Password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc1	en	User	User	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc2	en	Login	Login	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc3	en	Translations saved	Translations saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc4	en	Date added	Date added	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc5	en	Email updated	Email updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc6	en	Password updated	Password updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc7	en	x less	 less	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc8	en	x more	 more	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dc9	en	Landing page	Landing page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dca	en	No	No	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dcb	en	Settings updated	Settings updated.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dcc	en	Uploading	Uploading	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dcd	en	View in library	View in library	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dce	en	Confirm	Confirm	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dcf	en	Discard changes	Discard changes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd0	en	Minimum	Minimum	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd1	en	selected	selected	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd2	en	Confirm delete multiple items	Are you sure you want to delete all the selected items?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd3	en	relationships	relationships	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd4	en	in	in	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd5	en	New entity	New entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd6	en	No type	No type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd7	en	Add user	Add user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd8	en	Admin	Admin	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dd9	en	Editor	Editor	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dda	en	Role	Role	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ddb	en	Username	Username	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ddc	en	Users	Users	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ddd	en	Date format	Date format	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dde	en	Order	Order	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ddf	en	Sort by	Sort by	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de0	en	Create relationships and references	Create relationships and references	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de1	en	Manage site settings and configuration	Manage site settings and configuration	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de2	en	Add/delete users and assign roles	Add/delete users and assign roles	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de3	en	Configure filters	Configure filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de4	en	Add/edit translations	Add/edit translations	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de5	en	Create dictionaries	Create dictionaries	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de6	en	Forgot Password?	Forgot Password?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de7	en	Send recovery email	Send recovery email	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de8	en	Search text	Search text	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85de9	en	Add file	Add file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dea	en	Duplicated name	Duplicated name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85deb	en	Document and entity types	Document and entity types	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dec	en	Google Analytics ID	Google Analytics ID	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ded	en	Other	Other	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dee	en	sorted by	sorted by	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85def	en	Add to all languages	Add to all languages	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df0	en	Filters AND operator	AND	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df1	en	Filters OR operator	OR	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df2	en	Add thesaurus	Add thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df3	en	Language	Language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df4	en	No property	Item does not have this property	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df5	en	No value	No value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df6	en	Show more	Show more	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df7	en	Thesauri	Thesauri	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df8	en	Thesaurus saved	Thesaurus saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85df9	en	No Connections	No Connections	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dfa	en	No Connections description	Connections are the direct relationships between this document and other documents and entities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dfb	en	No References	No References	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dfc	en	No References description	References are parts of this document related with other documents and entities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dfd	en	No text match	No text match	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dfe	en	No text match description	You can type something different in the search box to get some results.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85dff	en	Filters configuration	Filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e00	en	hubs	hubs	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e01	en	No Label	No Label	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e02	en	No Relationships	No Relationships	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e03	en	No Relationships description	Relationships are bonds between entities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e04	en	Relationship	Relationship	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e05	en	Relationships	Relationships	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e06	en	Relationship types	Relationship types	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e07	en	Search related entities or documents	Search related entities or documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e08	en	Text	Text	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e09	en	Private instance	Private instance	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0a	en	Sign in	Sign in	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0b	en	Map view	Map view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0c	en	Custom CSS	Custom CSS	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0d	en	Activity log	Activity log	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0e	en	Add template	Add template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e0f	en	Add language	Add language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e10	en	Back	Back	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e11	en	Delete language	Delete language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e12	en	Templates	Templates	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e13	en	Invalid form	An entry is required or has an invalid value. Please correct and try again.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e14	en	No options found	No options found	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e15	en	Password Error	Password Error!  Both fields are required and should match	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e16	en	Search relevance	Search relevance	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e17	en	Search text description	Type something in the search box to get some results.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e18	en	Tools	Tools	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e19	en	Search Tips: wildcard	Use an * for wildcard search. Ie: "juris*" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1a	en	Search Tips: one char wildcard	? for one character wildcard. Ie: "198?" will match 1980 to 1989 and also 198a, 198b, etc.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1b	en	Search Tips: exact term	Exact term match by enclosing your search string with quotes. Ie. "Costa Rica" will toss different results compared to Costa Rica without quotes.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1c	en	Search Tips: proximity	~ for proximity searches. Ie: "the status"~5 will find anything having "the" and"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1d	en	Search Tips: boolean	AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything containing both the words status and women, and necessarily not containing the word Nicaragua.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1e	en	Accept	Accept	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e1f	en	Action	Action	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e20	en	add icon	add icon	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e21	en	Add people or groups	Add people or groups	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e22	en	Administrators and Editors	Administrators and Editors	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e23	en	Back to search	Back to search	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e24	en	Can edit	Can edit	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e25	en	Can see	Can see	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e26	en	Clear Filters	Clear Filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e27	en	Collaborator	Collaborator	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e28	en	Copy From	Copy From	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e29	en	Copy Highlighted	Copy Highlighted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2a	en	Copy properties to this entity from	Copy properties to this entity from	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2b	en	Date modified	Date modified	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2c	en	Day	Day	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2d	en	Default template	Default template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2e	en	Description	Description	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e2f	en	Documentation	Documentation	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e30	en	editor	editor	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e31	en	Enable this page to be used as an entity view page:	Enable this page to be used as an entity view page:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e32	en	Entity	Entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e33	en	Export CSV	Export CSV	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e34	en	Find	Find	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e35	en	Global CSS	Global CSS	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e36	en	Groups	Groups	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e37	en	Import	Import	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e38	en	Languages	Languages	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e39	en	Legend	Legend	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e3a	en	Members	Members	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e3b	en	Month	Month	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e3c	en	Narrow down your searches	Narrow down your searches	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e3d	en	Page	Page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e3f	en	Preview	Preview	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e40	en	ProTip!	ProTip!	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e41	en	Remove	Remove	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e42	en	Reset Password	Reset Password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e43	en	Select...	Select...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e44	en	Select all	Select all	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e45	en	Set as default	Set as default	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e46	en	Share	Share	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e47	en	Share with people and groups	Share with people and groups	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e48	en	Show cookie policy	Show cookie policy	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e49	en	shown of	shown of	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4a	en	Supporting files	Supporting files	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4b	en	Table view	Table view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4c	en	There are no pages enabled for entity view	There are no pages enabled for entity view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4d	en	This option will show a notification about the use of cookies in your instance.	This option will show a notification about the use of cookies in your instance.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4e	en	Time	Time	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e4f	en	Two-step verification	Two-step verification	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e50	en	Upload PDF	Upload PDF	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e51	en	Upload a ZIP or CSV file.	Upload a ZIP or CSV file.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e52	en	Import instructions	Import instructions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e53	en	Uwazi UI	Uwazi UI	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e54	en	Year	Year	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e55	en	You should activate this feature for enhanced account security	You should activate this feature for enhanced account security	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e56	en	Zoom in	Zoom in	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e57	en	Zoom out	Zoom out	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e58	en	Route	Route	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e59	en	Query	Query	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5a	en	Body	Body	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5b	en	Error	Error	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5c	en	If you want to continue, please type	If you want to continue, please type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5d	en	To bring you a better experience, this site uses cookies.	To bring you a better experience, this site uses cookies.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5e	en	Well, this is awkward...	Well, this is awkward...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e5f	en	Something went wrong	Something went wrong	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e60	en	Please contact an admin for details.	Please contact an admin for details.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e61	en	Request id #	Request id #	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e62	en	Uwazi is developed by	Uwazi is developed by	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e63	en	Semantic search	Semantic search	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e64	en	Copy link	Copy link	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e65	en	Download	Download	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e66	en	Rename	Rename	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e67	en	Close	Close	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e68	en	Upload from computer	Upload from computer	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e69	en	Add from web	Add from web	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6a	en	Upload and select file	Upload and select file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6b	en	Drag and drop file in this window to upload	Drag and drop file in this window to upload	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6c	en	Conversion failed	Conversion failed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6d	en	ML TOC	ML TOC	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6e	en	Document Title	Document Title	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e6f	en	other	other	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e70	en	Primary Documents	Primary Documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7a	en	Create	Create	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7b	en	Select relationship type	Select relationship type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7c	en	Semantic search results	Semantic search results	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7d	en	Table of Contents	Table of Contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7e	en	Mark as Reviewed	Mark as Reviewed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e7f	en	Table of contents	Table of contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e80	en	auto-created	auto-created	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e81	en	No Table of Contents	No Table of Contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e82	en	No Table of Contents description	No Table of Contents description	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e83	en	Document contents	Document contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e84	en	Add / remove favorite	Add / remove favorite	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e85	en	Latitude	Latitude	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e86	en	Longitude	Longitude	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e87	en	Clear coordinates	Clear coordinates	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e88	en	No icon / flag	No icon / flag	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e89	en	Label	Label	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8a	en	URL	URL	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8b	en	help	help	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8c	en	Add date	Add date	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8d	en	more options.	more options.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8e	en	Narrow your search	Narrow your search	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e8f	en	Suggestions	Suggestions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e90	en	Reject	Reject	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec7	en	linked	linked	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e91	en	incorrect suggestion check	Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e92	en	New language added	New language added	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e93	en	Language deleted	Language deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e94	en	Default language change success	Default language change success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e95	en	Submit	Submit	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e96	en	selected of	selected of	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e97	en	entities	entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e98	en	Use	Use	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e99	en	or	or	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9a	en	+ click to select multiple cards.	+ click to select multiple cards.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9b	en	Drag items here	Drag items here	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9c	en	This entity is restricted from public view.	This entity is restricted from public view.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9d	en	Welcome to Uwazi	Welcome to Uwazi	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9e	en	Learn more	Learn more	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85e9f	en	Invalid captcha	Invalid captcha	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea0	en	An error has occurred during data export	An error has occurred during data export	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea1	en	Exporting entities to CSV	Exporting entities to CSV	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea2	en	Please type in letters and numbers from the image to start the export.	Please type in letters and numbers from the image to start the export.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea3	en	no filters for templates	The combination of entity types doesn't have any filters in common.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea4	en	Zoom out library view	Zoom out library view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea5	en	Zoom in library view	Zoom in library view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea6	en	library list view	library list view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea7	en	Cards view	Cards view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea8	en	library table view	library table view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ea9	en	library map view	library map view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eaa	en	Show filters	Show filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eab	en	Create entity	Create entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eac	en	Import CSV	Import CSV	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ead	en	Strict mode	Strict mode	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eae	en	Upload PDF(s) to create	Upload PDF(s) to create	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eaf	en	Can view	Can view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb0	en	Published	Published	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb1	en	Restricted	Restricted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb2	en	Ooops... please go	Ooops... please go	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb3	en	Back to thesauri	Back to thesauri	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb4	en	Back to thesaurus	Back to thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb5	en	Quick labeling for	Quick labeling for	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb6	en	Confirm publish multiple items	Confirm publish multiple items	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb7	en	Auto-save	Auto-save	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb8	en	Save document(s)	Save document(s)	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eb9	en	Label your collection note	Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term "education" to find documents for the topic "Education".	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eba	en	Return to the thesaurus page when you finished labeling to start learning.	Return to the thesaurus page when you finished labeling to start learning.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ebb	en	Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.	Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ebc	en	Nothing to see here! The selected documents are not using the selected thesaurus	Nothing to see here! The selected documents are not using the selected thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ebd	en	Try selecting other documents.	Try selecting other documents.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ebe	en	Semantic Search	Semantic Search	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ebf	en	No Value	No Value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec0	en	Custom component error	Custom component markup error: unsupported values! Please check your configuration	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec1	en	Message	Message	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec2	en	Send	Send	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec3	en	Submitting	Submitting	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec4	en	Drop your files here to upload or	Drop your files here to upload or	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec5	en	Select files on your device	Select files on your device	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec6	en	Captcha	Captcha	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec8	en	remove icon	remove icon	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ec9	en	No attachments	No attachments	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eca	en	Changing the type will erase all relationships to this entity.	Changing the type will erase all relationships to this entity.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ecb	en	You can create metadata templates in	You can create metadata templates in	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ecc	en	settings	settings	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ecd	en	This content is automatically generated	This content is automatically generated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ece	en	Multiple inherited properties warning ([property 1] affects [property 2])	affects	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ecf	en	Multiple relationships edit description	Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed0	en	Warning: you are editing multiple entities. Fields marked with a	Warning: you are editing multiple entities. Fields marked with a	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed1	en	will be updated with the same value.	will be updated with the same value.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed2	en	Processing	Processing	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed3	en	Metadata extraction dashboard	Metadata extraction dashboard	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed4	en	Template	Template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed6	en	Markdown	Markdown	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed7	en	syntax to create page content	syntax to create page content	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed8	en	You can also embed advanced components like maps, charts and entity lists in your page.	You can also embed advanced components like maps, charts and entity lists in your page.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ed9	en	Click here	Click here	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eda	en	to learn more about the components.	to learn more about the components.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85edb	en	With great power comes great responsibility!	With great power comes great responsibility!	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85edc	en	This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.	This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85edd	en	It could also very easily break the app. Only write code here if you know exactly what you are doing.	It could also very easily break the app. Only write code here if you know exactly what you are doing.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ede	en	custom page error warning	There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85edf	en	Mixed access	Mixed access	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee0	en	Private entities description	Caution: the selected entities will be **private**. Only allowed users will be able to see them.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee1	en	Public entities description	Caution: the selected entities will be **public**. Anyone will be able to see them.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee2	en	Save changes	Save changes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee3	en	Press enter to add	Press enter to add	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee5	en	Add entities / documents	Add entities / documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee6	en	Create Entity	Create Entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee7	en	New relationships group	New relationships group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee8	en	Save and go to next	Save and go to next	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ee9	en	Save document	Save document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eea	en	Full edit mode	Full edit mode	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eeb	en	This entity is not public.	This entity is not public.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eec	en	Back to	Back to	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eed	en	Documents including suggestion:	Documents including suggestion:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eee	en	Documents for custom filter	Documents for custom filter	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eef	en	Document	Document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef0	en	No Documents found	No Documents found	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef1	en	Threshold	Threshold	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef2	en	Exploration	Exploration	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef3	en	Precision	Precision	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef4	en	Number of sentences above threshold	Number of sentences above threshold	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef5	en	% of sentences above threshold	% of sentences above threshold	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef6	en	Fine tune	Fine tune	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef7	en	Semantic search overview	Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. .	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef8	en	Semantic search threshold help	The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ef9	en	Semantic search minimum sentences help	Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85efa	en	Sentences above threshold	Sentences above threshold	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85efb	en	out of	out of	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85efc	en	Search not found	Search not found	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85efd	en	Edit all documents matching this criteria	Edit all documents matching this criteria	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85efe	en	General	General	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85eff	en	https://yourdomain	https://yourdomain	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f00	en	Cards	Cards	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f01	en	Table	Table	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f02	en	Map	Map	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f04	en	Forms and email configuration	Forms and email configuration	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f05	en	Maps	Maps	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f06	en	Custom Uploads	Custom Uploads	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f07	en	Browse files to upload	Browse files to upload	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f08	en	or drop your files here.	or drop your files here.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f09	en	Uploading ...	Uploading ...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0a	en	This template will be used as default for new entities.	This template will be used as default for new entities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0b	en	Filters configuration description	By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0c	en	Filters configuration example	select "Create group" below to group filters under a label e.g ("Documents "or "People")	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0d	en	Entity types	Entity types	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0e	en	If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.	If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f0f	en	Navigation menu tool tip part 1	If it is an internal URL within this website, be sure to delete the first part	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f10	en	Navigation menu tool tip part 2	leaving only a relative URL starting with a slash character. Ie. /some_url.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f11	en	Add group	Add group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f12	en	Metadata Extraction	Metadata Extraction	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f15	en	Landing page description	The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:\n      \nA page: */page/dicxg0oagy3xgr7ixef80k9*\nA filtered view in Uwazi: */library/?searchTerm=test*\nAn entity: */entity/9htbkgpkyy7j5rk9*\nA document: */document/4y9i99fadjp833di*\n      \nImportant: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f16	en	Favicon description	A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:\n\n1. Upload your icon in Custom Uploads.\n2. Copy its URL.\n3. Choose "Custom Icon" and paste the URL in the indicated field.\n4. Reload the page to see your favicon in action.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f18	en	Contact email description	Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f19	en	Receiving email description	If you have a contact form, this is the email address that will receive the form's submissions.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1a	en	Sending email description	This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1b	en	Character support description	This option enhances support for non-Latin languages as the default languages of your collection.\nSelecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.\nYou will need to update them manually. After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1c	en	Character support process warning	This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1d	en	Character support revert warning	After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1e	en	Analytics description	If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f1f	en	Set the default starting point for your geolocation properties.	Set the default starting point for your geolocation properties.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f20	en	Public form settings description	Here you can configure the public form destination and the whitelisted templates	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f21	en	Public form URL description	If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f22	en	Public form whitelist description	If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f23	en	Properties from other templates in the collection using the same label	Properties from other templates in the collection using the same label	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f24	en	A generated ID will be the default title.	A generated ID will be the default title.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f25	en	Adjacent geolocation properties will render on the same map	Adjacent geolocation properties will render on the same map	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f26	en	Style	Style	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f27	en	Fit	Fit	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f28	en	Multimedia fit description	will show the entire media inside the container.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f29	en	Fill	Fill	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2a	en	Multimedia fill description	will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2b	en	This property will be shown without the label.	This property will be shown without the label.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2c	en	This property will be shown using all the width available.	This property will be shown using all the width available.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2d	en	empty property tip	You won't be able to save an entity if this property is empty.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2e	en	This property will appear in the library cards as part of the basic info.	This property will appear in the library cards as part of the basic info.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f2f	en	Required property	Required property	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f30	en	Inherit property	Inherit property	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f31	en	This property will be inherited from the related entities and shown as metadata of this type of entities.	This property will be inherited from the related entities and shown as metadata of this type of entities.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f32	en	Impact of property change warning	By making this change, any values  from the previous thesaurus already assigned to entities will be lost.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f33	en	Duplicated label	Duplicated label	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f34	en	relationship consistency warning	Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f35	en	The template contains errors	The template contains errors	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f36	en	Drag properties here	Drag properties here	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f37	en	Priority sorting	Priority sorting	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f38	en	Priority sorting description	Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f39	en	Property as filter description	This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3a	en	Property as default filter description	Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3b	en	Confirm deletion	Confirm deletion	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3c	en	Property delete warning	Deleting a template property will delete this metadata information on all entities using this template.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3d	en	Change will take effect after saving the template	Change will take effect after saving the template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3e	en	Delete Property	Delete Property	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f3f	en	Display entity view from page	Display entity view from page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f40	en	Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.	Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f41	en	Metadata creator	Metadata creator	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f42	en	Properties	Properties	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f43	en	No relationship types warning	Relationship fields can not be added until you have at least one relationship type to select.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f44	en	low	low	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f4c	en	with	with	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f4d	en	documents.	documents.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f57	en	Sample	Sample	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f59	en	Data imported	Data imported	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f5a	en	Items:	Items:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f5b	en	Sort	Sort	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f5d	en	Automatically generated	Automatically generated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f5e	en	Reviewed	Reviewed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f98	en	OCR error	OCR error	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f5f	en	Automatic Table of Contents	Automatic Table of Contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f60	en	File	File	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f61	en	Uploading file	Uploading file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f62	en	Import completed	Import completed. Number of entities created:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f63	en	Indexing entities may take a few minutes	Indexing entities may take a few minutes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f64	en	The import process threw an error:	The import process threw an error:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f65	en	Importing data in progress	Importing data in progress	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f66	en	Verify	Verify	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f67	en	Authentication code	Authentication code	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f68	en	Two-factor verification failed	Two-factor verification failed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f69	en	Open the two-factor Authenticator app on your device	Open the two-factor Authenticator app on your device	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6a	en	to view your authentication code and verify your identity.	to view your authentication code and verify your identity.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6b	en	Return to login	Return to login	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6c	en	To complete the account creation process, please create a password for your account	To complete the account creation process, please create a password for your account	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6d	en	Repeat Password	Repeat Password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6e	en	mismatched passwords	Passwords don’t match	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f6f	en	Save password	Save password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f70	en	Verifying...	Verifying...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f71	en	Permission	Permission	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f72	en	Permission on entities explicitly shared with the user	Permission on entities explicitly shared with the user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f73	en	Protection	Protection	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f74	en	Email is required	Email is required	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f75	en	Duplicated email	Duplicated email	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f76	en	Username is required	Username is required	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f77	en	Duplicated username	Duplicated username	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f78	en	Username is too long	Username is too long	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f79	en	Username is too short	Username is too short	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7a	en	Password is too long	Password is too long	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7b	en	Reset 2FA	Reset 2FA	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7c	en	Name is required	Name is required	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7d	en	Name is too long	Name is too long	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7e	en	Name is too short	Name is too short	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f7f	en	All changes will be lost, are you sure you want to proceed?	All changes will be lost, are you sure you want to proceed?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f80	en	Ok	Ok	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f81	en	Text references limit warning	Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f82	en	Previous	Previous	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f83	en	Next	Next	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f84	en	Select target paragraph	Select target paragraph	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f85	en	This entity has no document, you probably want to see the metadata	This entity has no document, you probably want to see the metadata	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f86	en	view	view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f87	en	Normal view	Normal view	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f88	en	Plain text	Plain text	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f89	en	Connect to a paragraph	Connect to a paragraph	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8a	en	Connect to a document	Connect to a document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8b	en	Add to table of contents	Add to table of contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8c	en	Click to fill	Click to fill	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8d	en	Shared as viewer	Shared as viewer	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8e	en	Shared as editor	Shared as editor	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f8f	en	Permissions	Permissions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f90	en	Satellite	Satellite	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f91	en	FEATURED	FEATURED	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f92	en	ALL	ALL	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f93	en	Services	Services	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f94	en	Loading	Loading	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f95	en	OCR PDF	OCR PDF	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f96	en	In OCR queue	In OCR queue	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f97	en	Unsupported OCR language	Unsupported OCR language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f99	en	Could not be processed	Could not be processed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9a	en	OCR	OCR	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9b	en	OCR completed	OCR completed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9c	en	Last updated	Last updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9d	en	OCR button tip	This will process the document to recognize its text. The original file will be added as a supporting file.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9e	en	OCR error tip	The OCR engine couldn't read the document due to a malformed format. Last updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85f9f	en	OCR description tip 1	This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa0	en	OCR description tip 2	When activated, this will enable administrator and editor users to send PDF documents to the OCR service.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa1	en	Suggestion	Suggestion	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa2	en	All	All	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa3	en	Empty	Empty	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa4	en	State	State	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa6	en	Find suggestions	Find suggestions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa7	en	per page	per page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fa8	en	Review	Review	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fab	en	Matching	Matching	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fad	en	Google Maps	Google Maps	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85faf	en	Map api key tooltip	An API key is required to use Mapbox or Google Maps.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb0	en	Streets	Streets	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb1	en	Hybrid	Hybrid	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb3	en	PDF	PDF	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb4	en	Captcha bypass	By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. \nThe form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a \nheader "Bypass-Captcha: true" is sent along. This option is insecure and can be leveraged to flood your instance with spam or \nmalicious content.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb5	en	Synced template	Synced template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb6	en	syncedTemplateEditorMessage	This template is synced from another instance. Only entity view page can be enabled.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb7	en	syncedTemplateListMessage	The source of this template is a sync. All editing options will be disabled.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb8	en	Select from computer	Select from computer	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fb9	en	Add from URL	Add from URL	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fba	en	Unlink	Unlink	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fbb	en	Delete file	Delete file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fc0	en	Obsolete	Obsolete	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fc4	en	Search Tips	Search Tips	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fcd	en	Are you sure you want to delete this attachment?	Are you sure you want to delete this attachment?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fcf	en	Are you sure you want to delete this connection?	Are you sure you want to delete this connection?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd0	en	Are you sure you want to delete this entity?	Are you sure you want to delete this entity?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd1	en	Are you sure you want to delete this file?	Are you sure you want to delete this file?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd2	en	Are you sure you want to delete this item?	Are you sure you want to delete this item?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd5	en	Cannot delete template:	Cannot delete template:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd8	en	Changes can't be undone after saving. Changing text fields may invalidate the suggestions.	Changes can't be undone after saving. Changing text fields may invalidate the suggestions.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fd9	en	Confirm deletion of	Confirm deletion of	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fda	en	Confirm delete connection	Confirm delete connection	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fdc	en	Confirm deletion of entity	Confirm deletion of entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fdd	en	Confirm deletion of file	Confirm deletion of file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fde	en	Confirm deletion of template:	Confirm deletion of template:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe0	en	confirm delete template	Are you sure you want to delete this entity type?\n        This will delete the template and all relationship properties from other templates pointing to this one.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe2	en	Confirm discard changes	Confirm discard changes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe4	en	Keep this in mind if you want to edit:	Keep this in mind if you want to edit:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe5	en	Lengthy reindex process	Lengthy reindex process	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe6	en	Template with a long number of entities	The template has changed and the associated entities will be re-indexed,\n       this process may take several minutes, do you want to continue?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8602c	en	Current value	Current value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe7	en	Mapping conflict error	A reindex of your collection is necessary. The reason may vary \n        -- from certain changes made to a template's property to new fields\n        that need to be populated across entities. \n        This process will not negatively affect the data in your collection. \n        It can last a few minutes and some parts of your collection might take\n        some time to reappear in the Library, but this is temporary. Do you want to continue?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe8	en	Template conflict	Template conflict	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fe9	en	There are unsaved changes. Are you sure you want to discard them and switch to a different document?	There are unsaved changes. Are you sure you want to discard them and switch to a different document?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85feb	en	This template has associated entities	This template has associated entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fed	en	This will delete the template and all relationship properties from other templates pointing to this one.	This will delete the template and all relationship properties from other templates pointing to this one.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fef	en	Live translate	Live translate	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff0	en	Turn off inline translation	Turn off inline translation	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff1	en	Show in cards	Show in cards	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff2	en	Use as filter	Use as filter	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff3	en	Hide label	Hide label	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff7	en	Google Analytics	Google Analytics	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ff9	en	Contact Form	Contact Form	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ffa	en	Receiving email	Receiving email	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ffb	en	Sending email	Sending email	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85ffe	en	property text	Text	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a85fff	en	property numeric	Numeric	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86000	en	property select	Select	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86001	en	property multiselect	Multiselect	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86002	en	property relationship	Relationship	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86003	en	property date	Date	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86004	en	property daterange	Date Range	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86005	en	property multidate	Multi Date	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86006	en	property multidaterange	Multi Date Range	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86007	en	property markdown	Rich Text	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86008	en	property link	Link	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86009	en	property image	Image	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600a	en	property preview	Preview	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600b	en	property media	Media	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600c	en	property geolocation	Geolocation	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600d	en	property generatedid	Generated ID	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600e	en	Preserve Extension	Preserve Extension	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8600f	en	You have not connected an Uwazi instance, yet	You have not connected an Uwazi instance, yet	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86010	en	INSTALL the browser extension	INSTALL the browser extension	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86011	en	Preserve Setup Description	If you know your Uwazi URL and TOKEN click the link below, and fill the required information.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86012	en	Install browser extension (dynamic link)	Install browser extension (dynamic link)	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86013	en	Chrome extension store link	Chrome extension store link	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86014	en	Firefox extension store link	Firefox extension store link	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86015	en	Configuration	Configuration	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86016	en	Extension Token	Extension Token	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86017	en	Copy token	Copy token	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86018	en	Request token	Request token	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86019	en	Add PDF	Add PDF	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601a	en	Add relationship type	Add relationship type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601b	en	This field is required	This field is required	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601c	en	Add thesaurus modal description	After creation you can go into Settings -> Thesauri to add items	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601d	en	Thesaurus	Thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601e	en	Could not detect the area for the selected text	Could not detect the area for the selected text, please try selecting again.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8601f	en	Clear PDF selection	Clear PDF selection	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86023	en	Training	Training	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86026	en	Context	Context	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86028	en	Accuracy	Accuracy	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86029	en	Open PDF	Open PDF	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8602b	en	Only text, number and date properties are currently supported	Only text, number and date properties are currently supported	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8602d	en	Create new entities and upload documents	Create new entities and upload documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8602e	en	Create table of contents	Create table of contents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8602f	en	View entities	View entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86030	en	Edit metadata of entities	Edit metadata of entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86031	en	Delete entities and documents	Delete entities and documents	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86032	en	Share edit access with other users	Share edit access with other users	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86033	en	Share entities with the public	Share entities with the public	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86034	en	Configure templates	Configure templates	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86035	en	Create and edit thesauri	Create and edit thesauri	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86036	en	Create relationship types	Create relationship types	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86037	en	This cannot be changed after saving	This cannot be changed after saving	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86038	en	Single date	Single date	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86039	en	Multiple date	Multiple date	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603a	en	Single date range	Single date range	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603b	en	Multiple date range	Multiple date range	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603c	en	Single select	Single select	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603d	en	Multiple select	Multiple select	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603e	en	Available default translation	Available default translation	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8603f	en	Reset default translation	Reset default translation	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86040	en	Translations reset successfully	Translations reset successfully	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86041	en	System translations	System translations	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86042	en	Content translations	Content translations	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86043	en	added to hub.	added to hub.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86044	en	added to hub with the following errors:	added to hub with the following errors:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86045	en	Save your work to make change permanent	Save your work to make change permanent	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86046	en	Confirm action	Confirm action	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86047	en	Are you sure you want to continue?	Are you sure you want to continue?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86048	en	Attachment uploaded	Attachment uploaded	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86049	en	Attachment renamed	Attachment renamed	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604a	en	Attachment deleted	Attachment deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604b	en	File updated	File updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604c	en	File deleted	File deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604d	en	Copied to clipboard	Copied to clipboard	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604e	en	Deleted successfully.	Deleted successfully.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8604f	en	Saved successfully.	Saved successfully.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86050	en	Entity saved	Entity saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86051	en	Entity deleted	Entity deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86052	en	Entity updated	Entity updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86053	en	Deletion success	Deletion success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86054	en	Group updated	Group updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86055	en	Lost connection to the server. Your changes may be lost	Lost connection to the server. Your changes may be lost	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86056	en	Connected to server	Connected to server	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86057	en	Message sent	Message sent	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86058	en	Instructions to reset password	Instructions to reset user password have been sent. Please check your email.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86059	en	Password changed success	Password changed success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605a	en	Account unlocked successfully	Account unlocked successfully	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605b	en	Relationships saved	Relationships saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605c	en	Success	Success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605d	en	An error occurred	An error occurred	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605e	en	Success, Upload another?	Success, Upload another?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8605f	en	The token does not validate against the secret key!	The token does not validate against the secret key!	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86060	en	Could not reach server. Please try again later.	Could not reach server. Please try again later.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86061	en	Sending labeled data...	Sending labeled data...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86062	en	Training model...	Training model...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86063	en	Finding suggestions	Finding suggestions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86064	en	Canceling...	Canceling...	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86065	en	Translations imported.	Translations imported.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86066	en	Update success	Update success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86067	en	Invalid csv: nested value need to be under a non-nested value	Invalid csv: nested value need to be under a non-nested value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86068	en	Invalid csv: all the values for a row must be either nested or non-nested	Invalid csv: all the values for a row must be either nested or non-nested	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86069	en	Two-factor authentication failed.	Two-factor authentication failed.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606a	en	Single relationships must have a hub	Single relationships must have a hub	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606b	en	In a group, either all relationships must have a hub or none of them.	In a group, either all relationships must have a hub or none of them.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606c	en	Account locked. Check your email to unlock.	Account locked. Check your email to unlock.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606d	en	Two-step verification token required	Two-step verification token required	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606e	en	Accepted suggestion on entity	Accepted suggestion on entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8606f	en	Added language	Added language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86070	en	Added new user	Added new user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86071	en	by ids, methods, keywords, etc.	by ids, methods, keywords, etc.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86072	en	CREATE	CREATE	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86073	en	Created entity	Created entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86074	en	Created entity coming from a public form	Created entity coming from a public form	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86075	en	Created page	Created page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86076	en	Created relation type	Created relation type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86077	en	Created relationship	Created relationship	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86078	en	Created template	Created template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86079	en	Created thesaurus	Created thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607a	en	Created user group	Created user group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607b	en	DELETE	DELETE	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607c	en	Deleted attachment	Deleted attachment	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607d	en	Deleted custom file	Deleted custom file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607e	en	Deleted entity	Deleted entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8607f	en	Deleted file	Deleted file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86080	en	Deleted multiple entities	Deleted multiple entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86081	en	Deleted page	Deleted page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86082	en	Deleted relation type	Deleted relation type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86083	en	Deleted relationship	Deleted relationship	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86084	en	Deleted template	Deleted template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86085	en	Deleted thesaurus	Deleted thesaurus	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86086	en	Deleted user	Deleted user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86087	en	Deleted user group	Deleted user group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86088	en	Imported entities from file	Imported entities from file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86089	en	Imported translations from file	Imported translations from file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608a	en	Information extraction training	Information extraction training	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608b	en	key	key	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608c	en	MIGRATE	MIGRATE	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608d	en	RAW	RAW	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608e	en	Re-uploaded document	Re-uploaded document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8608f	en	Removed language	Removed language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86090	en	Renamed attachment	Renamed attachment	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86091	en	Set default language	Set default language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86092	en	Set default template	Set default template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86093	en	Submitted entity to a remote instance	Submitted entity to a remote instance	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86094	en	Two-factor authentication enabled	Two-factor authentication enabled	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86095	en	Two-factor authentication secret	Two-factor authentication secret	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86096	en	UPDATE	UPDATE	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86097	en	Updated file	Updated file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86098	en	Updated multiple entities	Updated multiple entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86099	en	Updated permissions on entity	Updated permissions on entity	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609a	en	Updated relationships	Updated relationships	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609b	en	Updated settings	Updated settings	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609c	en	Updated translations	Updated translations	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609d	en	Updated user	Updated user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609e	en	Uploaded attachment	Uploaded attachment	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8609f	en	Uploaded custom file	Uploaded custom file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a0	en	Uploaded document	Uploaded document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a1	en	Uploaded file	Uploaded file	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a2	en	WARNING	WARNING	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a3	en	Collapse all	Collapse all	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a4	en	Expand all	Expand all	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a5	en	Preserve	Preserve	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a6	en	Relationship Type	Relationship Type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a7	en	Untranslated Terms	Untranslated Terms	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a8	en	There are no untranslated terms	There are no untranslated terms	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860a9	en	Group	Group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860aa	en	Add thesaurus value	Add thesaurus value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ab	en	Value	Value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ac	en	add value	add value	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ad	en	Duplicate values not allowed.	Duplicate values not allowed.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ae	en	Click	Click	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860af	en	here	here	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b0	en	to learn how to add and configure a contact form on a webpage.	to learn how to add and configure a contact form on a webpage.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b1	en	Dashboard	Dashboard	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b2	en	Total users	Total users	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b3	en	Storage	Storage	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b4	en	Files and database usage	Files and database usage	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b5	en	Total entities	Total entities	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b6	en	Entities across all languages	Entities across all languages	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b7	en	Files	Files	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b8	en	Total files	Total files	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860b9	en	Total files from main documents, supporting files and custom uploads	Total files from main documents, supporting files and custom uploads	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ba	en	Show toolbar	Show toolbar	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860bb	en	Hide toolbar	Hide toolbar	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860bc	en	Show actions	Show actions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860bd	en	Hide actions	Hide actions	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860be	en	Global CSS & JS	Global CSS & JS	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860bf	en	Custom JS	Custom JS	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c0	en	Sort ascending	Sort ascending	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c1	en	Sort descending	Sort descending	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c3	en	Public Form submit URL	Public Form submit URL	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c5	en	Allow captcha bypass	Allow captcha bypass	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c6	en	Map api key	Map api key	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860c8	en	Item	Item	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860cb	en	CONFIRM	CONFIRM	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860cc	en	New group	New group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860cd	en	Template name	Template name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d0	en	New relationship type	New relationship type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d1	en	Paste URL here	Paste URL here	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d2	en	Bad Request	Bad Request	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d3	en	The request could not be processed.	The request could not be processed.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d4	en	Not Found	Not Found	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d5	en	We can't find the page you're looking for.	We can't find the page you're looking for.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d6	en	Unexpected error	Unexpected error	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d7	en	Default filter	Default filter	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d8	en	this template	this template	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860d9	en	Any entity or document	Any entity or document	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860da	en	Full width	Full width	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860db	en	Reference	Reference	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860dc	en	OK	OK	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860dd	en	2FA	2FA	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860de	en	Document OCR trigger	Document OCR trigger	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860df	en	Inherit	Inherit	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e0	en	Create Connection	Create Connection	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e1	en	Create Reference	Create Reference	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e2	en	Thesauri name	Thesauri name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e3	en	Add timelink	Add timelink	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e4	en	Timelinks	Timelinks	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e5	en	Value cannot be transformed to the correct type	Value cannot be transformed to the correct type	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e6	en	for	for	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e8	en	Status	Status	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860e9	en	Edit Extractor	Edit Extractor	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ea	en	Create Extractor	Create Extractor	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860eb	en	From all templates	From all templates	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ec	en	Extractor Name	Extractor Name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ed	en	Property	Property	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ee	en	Template(s)	Template(s)	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ef	en	Remote Server Unreachable	Remote Server Unreachable	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f0	en	This file type is not supported on image fields	This file type is not supported on image fields	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f1	en	This file type is not supported on media fields	This file type is not supported on media fields	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f2	en	Discard changes?	Discard changes?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f3	en	You have unsaved changes. Do you want to continue?	You have unsaved changes. Do you want to continue?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f4	en	Language Code	Language Code	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f5	en	Clear	Clear	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f6	en	Navigate back	Navigate back	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f7	en	Dismiss	Dismiss	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f8	en	View less	View less	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860f9	en	View more	View more	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860fa	en	Select	Select	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860fb	en	Selected	Selected	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860fc	en	Active languages	Active languages	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860fd	en	Install	Install	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860fe	en	Please type in	Please type in	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a860ff	en	Uninstall	Uninstall	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86100	en	Default	Default	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86101	en	Default language	Default language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86102	en	Uninstall language	Uninstall language	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86103	en	No options	No options	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86104	en	Install Language(s)	Install Language(s)	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86105	en	This action may take some time while we add the extra language to the entire collection.	This action may take some time while we add the extra language to the entire collection.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86106	en	Language reset success	Language reset success	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86107	en	Languages installed successfully	Languages installed successfully	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86108	en	Copy to clipboard	Copy to clipboard	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86109	en	Account updated	Account updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8610a	en	General Information	General Information	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8610b	en	User Role	User Role	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8610c	en	Change Password	Change Password	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8610e	en	Passwords do not match	Passwords do not match	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86110	en	Two-Factor Authentication	Two-Factor Authentication	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86111	en	Activated	Activated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86112	en	Your account's security is enhanced with two-factor authentication.	Your account's security is enhanced with two-factor authentication.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86113	en	Enable	Enable	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86114	en	You should activate this feature for enhanced account security.	You should activate this feature for enhanced account security.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86115	en	2FA Enabled	2FA Enabled	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86116	en	Using Authenticator	Using Authenticator	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86117	en	Download a third-party authenticator app from your mobile store.	Download a third-party authenticator app from your mobile store.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86118	en	Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.	Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86119	en	Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.	Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611a	en	QR Code	QR Code	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611b	en	Secret keys	Secret keys	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611c	en	You can also enter this secret key into your Authenticator app.	You can also enter this secret key into your Authenticator app.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611d	en	*please keep this key secret and don't share it.	*please keep this key secret and don't share it.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611e	en	Enter the 6-digit verification code generated by your Authenticator app	Enter the 6-digit verification code generated by your Authenticator app	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8611f	en	The token does not validate against the secret key	The token does not validate against the secret key	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86120	en	Users & Groups	Users & Groups	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86121	en	Nothing selected	Nothing selected	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86122	en	Edit group	Edit group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86123	en	Group Options	Group Options	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86124	en	Password + 2fa	Password + 2fa	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86125	en	Edit user	Edit user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86126	en	Security	Security	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86127	en	Unlock account	Unlock account	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86128	en	Instructions to reset the password were sent to the user	Instructions to reset the password were sent to the user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86129	en	Group saved	Group saved	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612a	en	User Action	User Action	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612b	en	New user	New user	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612c	en	Usernames cannot have spaces	Usernames cannot have spaces	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612d	en	Account locked	Account locked	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612e	en	Extractor/s deleted	Extractor/s deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8612f	en	Extractors	Extractors	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86130	en	Language Install Start Message	Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86131	en	Language Uninstall Start Message	Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86132	en	An error has occured while installing languages:	An error has occured while installing languages:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86133	en	An error has occured while deleting a language:	An error has occured while deleting a language:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86134	en	Language uninstalled successfully	Language uninstalled successfully	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86135	en	Document	Document	5bfbb1a0471dd0fc16ada146	Entity	Document
+golden	6747017d337142d8a6a864f0	en	Suggestion accepted.	Suggestion accepted.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f1	en	Showing	Showing	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f2	en	Accept suggestion	Accept suggestion	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f3	en	Stats & Filters	Stats & Filters	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f4	en	Labeled	Labeled	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f5	en	Non-labeled	Non-labeled	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f6	en	Pending	Pending	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f7	en	Clear all	Clear all	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864f8	en	Apply	Apply	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864fa	en	Suggestion:	Suggestion:	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864fb	en	Current Value/Suggestion	Current Value/Suggestion	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a864fc	en	No context	No context	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8650d	en	Updated	Updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8650e	en	No Group	No Group	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8650f	en	Using URLs	Using URLs	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8651c	en	Collection Name	Collection Name	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8651d	en	Custom Favicon	Custom Favicon	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8651e	en	Default View	Default View	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8651f	en	Default date format	Default date format	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86520	en	Analytics	Analytics	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86521	en	Google	Google	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86522	en	Matomo	Matomo	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86523	en	Map Provider	Map Provider	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86524	en	User updated	User updated	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86525	en	Map layers description	Map layers description	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8652e	en	Check to make this instance public (non-logged in users can see public documents and entities)	Check to make this instance public (non-logged in users can see public documents and entities)	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86533	en	Activate	Activate	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86534	en	Disable	Disable	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8653d	en	New page	New page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8653e	en	Basic	Basic	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8653f	en	View page	View page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86540	en	Javascript	Javascript	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86541	en	Save & Preview	Save & Preview	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86542	en	Entity Page	Entity Page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86543	en	Yes	Yes	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86544	en	Are you sure?	Are you sure?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86545	en	No, cancel	No, cancel	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86546	en	Other users will be affected by this action!	Other users will be affected by this action!	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86547	en	You are about to delete a page	You are about to delete a page	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8654c	en	Do you want to delete the following items?	Do you want to delete the following items?	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8654d	en	Already exists	Already exists	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655a	en	Thesauri updated.	Thesauri updated.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655b	en	Error updating thesauri.	Error updating thesauri.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655c	en	Add item	Add item	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655d	en	Edit item	Edit item	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655e	en	Thesauri added.	Thesauri added.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a8655f	en	Error adding thesauri.	Error adding thesauri.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86560	en	Thesauri deleted	Thesauri deleted	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86561	en	Adding a group and its items.	Adding a group and its items.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86562	en	You can add one or many items in this form.	You can add one or many items in this form.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86563	en	Adding items to the thesauri	Adding items to the thesauri	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86564	en	thesauri new group desc	Each item created will live inside this group. Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.	System	Uwazi UI	User Interface
+golden	6747017d337142d8a6a86565	en	thesauri new item desc	Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.	System	Uwazi UI	User Interface
+\.
+\.
+\.
+golden	58ad7d240d44252fee4e6212	admin	$2b$10$0d1beh7SC9YIRENPPZStjujNduFeRTp7Brecy8ExiveujuD9LNMkS	admin@uwazi.local	admin	\N	\N	\N	f	\N	\N
+golden	698c35e7cf8880419d91fe4d	PublicUser	$2b$10$ewE.24lNAdxuCfo3bSQdQ..LslGkLKVD75xnV6QBtobSAdMwPhieG	public@uwazi.local	collaborator	\N	\N	\N	f	\N	\N
+\.
