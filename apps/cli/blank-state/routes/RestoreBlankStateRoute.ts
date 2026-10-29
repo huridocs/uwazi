@@ -20,7 +20,7 @@ class RestoreBlankStateRoute implements Route<RestoreBlankStateInput, BlankState
 
   readonly name = 'restore';
 
-  readonly describe = 'Restore blank-state fixtures into a tenant (destructive with force)';
+  readonly describe = 'Restore the blank-state dump into a tenant (destructive with force)';
 
   readonly tenancy = 'single';
 

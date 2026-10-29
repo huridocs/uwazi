@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import { createReadStream, existsSync, readFileSync, rmSync } from 'fs';
 import path from 'path';
 import type { Pool } from 'pg';

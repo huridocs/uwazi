@@ -11,7 +11,7 @@ class DumpBlankStateRoute implements Route<NoInput, BlankStateDumpOutput> {
 
   readonly name = 'dump';
 
-  readonly describe = "Dump a tenant's blank-state tables to fixture files";
+  readonly describe = "Dump a tenant's PostgreSQL data to the blank-state dump file";
 
   readonly tenancy = 'single';
 

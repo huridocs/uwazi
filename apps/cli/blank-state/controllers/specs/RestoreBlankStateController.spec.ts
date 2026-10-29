@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import { createWriteStream, rmSync } from 'fs';
 import { finished } from 'stream/promises';
 import path from 'path';

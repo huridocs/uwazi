@@ -55,8 +55,10 @@ state is handled separately by `database/blank_state_base.sh`, which is Mongo-on
   reported as `restored`.
 - **A dump table missing from the schema** fails with `tenant_backup.unknown_table` (exit 2),
   telling you to run the schema migrations.
-- **With `--force`** the tenant's PostgreSQL data is deleted first and the dump is restored,
-  atomically. This is destructive: use it only on a tenant you mean to reset.
+- **With `--force`** the tenant's PostgreSQL data is deleted first, then the dump is restored.
+  The delete and the restore are separate transactions, so a failed restore leaves the tenant
+  empty rather than half-restored — it can be retried. This is destructive: use it only on a
+  tenant you mean to reset.
 
 `restore` does not create tables: it assumes the schema already exists. On a fresh database, run
 the schema migrations first (e.g. `yarn migrate --new`), which creates the tenant tables before
