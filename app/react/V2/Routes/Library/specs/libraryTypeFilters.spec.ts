@@ -42,6 +42,14 @@ describe('libraryTypeFilters', () => {
     ]);
   });
 
+  it('lists every template when the scope is all, even if filters are configured', () => {
+    expect(typeFilterItems(settingsFilters, templates, 'all').map(item => item.id)).toEqual([
+      'template3',
+      'template1',
+      'template2',
+    ]);
+  });
+
   it('selects or clears every child id of a type group', () => {
     expect(toggleTypeGroup(['template1'], ['template2', 'template3'])).toEqual([
       'template1',

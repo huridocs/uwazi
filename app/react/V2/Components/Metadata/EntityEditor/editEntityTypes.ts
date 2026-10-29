@@ -4,6 +4,7 @@ import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js'
 import type { EditEntityFormValues } from './functions/buildEditEntityDefaultValues.js';
 import type { EditEntityErrors } from './functions/editEntityErrors.js';
 import type { EntityMediaUpload } from './hooks/useEntityMediaUpload.js';
+import type { RelationshipLookup } from './functions/relationshipFieldHelpers.js';
 
 type EditEntityProps = {
   formId: string;
@@ -18,11 +19,7 @@ type EditEntityProps = {
   onRegisterCancelTranslations?: (cancel: () => void) => () => void;
   onTranslationSaveAttempt?: () => void;
   onEditSource?: (entityId: string, label: string, templateId?: string) => void;
-  relationshipLookup?: (params: {
-    search: string;
-    template?: string;
-    limit?: number;
-  }) => Promise<{ value: string; label: string }[]>;
+  relationshipLookup?: RelationshipLookup;
   mainDocumentId?: string;
 };
 

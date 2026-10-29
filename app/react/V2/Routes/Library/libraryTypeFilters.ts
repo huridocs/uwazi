@@ -32,12 +32,21 @@ const allTypeItems = (templates: Template[]): LibraryTypeFilterItem[] =>
     .map(template => ({ id: template._id, name: template.name }))
     .sort((left, right) => left.name.localeCompare(right.name));
 
+type TypeFilterScope = 'featured' | 'all';
+
+const configuredTypeIds = (filters: ClientSettingsFilterSchema[] | undefined): string[] =>
+  featuredTypeItems(filters).flatMap(item => [
+    item.id,
+    ...(item.items?.map(child => child.id) ?? []),
+  ]);
+
 const typeFilterItems = (
   settingsFilters: ClientSettingsFilterSchema[] | undefined,
-  templates: Template[]
+  templates: Template[],
+  scope: TypeFilterScope = 'featured'
 ): LibraryTypeFilterItem[] => {
   const featured = featuredTypeItems(settingsFilters);
-  if (featured.length) {
+  if (scope === 'featured' && featured.length) {
     return featured;
   }
   return allTypeItems(templates);
@@ -51,5 +60,5 @@ const toggleTypeGroup = (selected: string[], childIds: string[]): string[] => {
   return [...new Set([...selected, ...childIds])];
 };
 
-export { toggleTypeGroup, typeFilterItems };
-export type { LibraryTypeFilterChild, LibraryTypeFilterItem };
+export { configuredTypeIds, toggleTypeGroup, typeFilterItems };
+export type { LibraryTypeFilterChild, LibraryTypeFilterItem, TypeFilterScope };

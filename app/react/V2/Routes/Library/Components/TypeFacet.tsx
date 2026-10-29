@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
+import type { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import { toggleValue } from './NestedFacet.js';
+import { TypeScopeToggle } from './TypeScopeToggle.js';
 import { FacetCard, FacetRow, TreeChildren } from './FacetCard.js';
 import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 import {
+  configuredTypeIds,
   toggleTypeGroup,
   typeFilterItems,
   type LibraryTypeFilterItem,
+  type TypeFilterScope,
 } from '../libraryTypeFilters.js';
 
 type TypeFacetProps = {
@@ -30,10 +35,34 @@ const useTypeGroupExpansion = (items: LibraryTypeFilterItem[], typeIds: string[]
   return { expanded, reserveGutter, toggleExpanded };
 };
 
+const useTypeFilterScope = (
+  filters: ClientSettingsFilterSchema[] | undefined,
+  typeIds: string[],
+  setFilter: (key: string, values: string[]) => void
+) => {
+  const configuredIds = configuredTypeIds(filters);
+  const [scope, setScope] = useState<TypeFilterScope>(() =>
+    typeIds.some(id => !configuredIds.includes(id)) ? 'all' : 'featured'
+  );
+  const selectScope = (next: TypeFilterScope) => {
+    setScope(next);
+    const kept = typeIds.filter(id => configuredIds.includes(id));
+    if (next === 'featured' && kept.length !== typeIds.length) {
+      setFilter('type', kept);
+    }
+  };
+  return { scope, selectScope, showSwitch: configuredIds.length > 0 };
+};
+
 const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetProps) => {
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
-  const items = typeFilterItems(settings.filters, templates);
+  const { scope, selectScope, showSwitch } = useTypeFilterScope(
+    settings.filters,
+    typeIds,
+    setFilter
+  );
+  const items = typeFilterItems(settings.filters, templates, scope);
   const { expanded, reserveGutter, toggleExpanded } = useTypeGroupExpansion(items, typeIds);
 
   const countById = new Map(aggregations.templates.map(bucket => [bucket.id, bucket.count]));
@@ -47,7 +76,17 @@ const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetP
   }
 
   return (
-    <FacetCard title={<Translate>Type</Translate>} open={open}>
+    <FacetCard
+      title={<Translate>Type</Translate>}
+      open={open}
+      headerAction={
+        showSwitch && (
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+            <TypeScopeToggle value={scope} onChange={selectScope} />
+          </NeedAuthorization>
+        )
+      }
+    >
       {items.map(item => {
         const children = item.items;
         if (children?.length) {
