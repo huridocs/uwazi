@@ -23,26 +23,15 @@ const isAddAs = (value: string): value is AddAs => value === 'supporting' || val
 const controlClass =
   'w-full appearance-none rounded border border-border bg-paper py-1 pl-2 pr-7 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-ink/20 disabled:opacity-70';
 
-const AddFileModal = () => {
-  const {
-    pendingAddFiles,
-    addFileMode,
-    closeAddFileModal,
-    confirmAddFile,
-    openAddFilePicker,
-    acceptSelectedFiles,
-    removePendingAddFile,
-    defaultLanguageKey,
-    uploadProgress,
-  } = useEntityFiles();
+const useAddFileDraft = (
+  pendingAddFiles: File[],
+  addFileMode: 'main' | 'translation',
+  defaultLanguageKey: string | undefined
+) => {
   const [queue, setQueue] = useState<QueuedAddFile[]>([]);
   const [addAs, setAddAs] = useState<AddAs>('supporting');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const allPdf = queue.length > 0 && queue.every(item => isPdfFile(item.file));
-  const showAddAs = addFileMode === 'main';
-  const resolvedAddAs: AddAs = addFileMode === 'translation' ? 'primary' : addAs;
-
   const addAsOptions = useMemo(
     () => [
       { value: 'supporting', label: t('System', 'Supporting file', null, false) },
@@ -54,7 +43,6 @@ const AddFileModal = () => {
     ],
     [allPdf]
   );
-
   const defaultLanguageIso = useMemo(() => {
     const fromKey = defaultLanguageKey
       ? LanguageUtils.fromISO639_1(defaultLanguageKey)?.ISO639_3
@@ -75,6 +63,46 @@ const AddFileModal = () => {
       setIsSubmitting(false);
     }
   }, [pendingAddFiles]);
+
+  const resolvedAddAs: AddAs = addFileMode === 'translation' ? 'primary' : addAs;
+  return {
+    queue,
+    setQueue,
+    addAs,
+    setAddAs,
+    isSubmitting,
+    setIsSubmitting,
+    showAddAs: addFileMode === 'main',
+    resolvedAddAs,
+    addAsOptions,
+    defaultLanguageIso,
+  };
+};
+
+const AddFileModal = () => {
+  const {
+    pendingAddFiles,
+    addFileMode,
+    closeAddFileModal,
+    confirmAddFile,
+    openAddFilePicker,
+    acceptSelectedFiles,
+    removePendingAddFile,
+    defaultLanguageKey,
+    uploadProgress,
+  } = useEntityFiles();
+  const {
+    queue,
+    setQueue,
+    addAs,
+    setAddAs,
+    isSubmitting,
+    setIsSubmitting,
+    showAddAs,
+    resolvedAddAs,
+    addAsOptions,
+    defaultLanguageIso,
+  } = useAddFileDraft(pendingAddFiles, addFileMode ?? 'main', defaultLanguageKey);
 
   if (!addFileMode) {
     return null;

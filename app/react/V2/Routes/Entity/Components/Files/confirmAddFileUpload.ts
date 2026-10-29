@@ -1,4 +1,4 @@
-import type { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 import { t } from '#app/I18N/index.js';
 import { update, UploadService } from '#V2/api/files/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
@@ -15,18 +15,18 @@ type ConfirmAddFilePayload = {
 
 type ConfirmAddFileUploadDeps = {
   entitySharedId: string;
-  mountedRef: MutableRefObject<boolean>;
-  uploadServiceRef: MutableRefObject<UploadService | null>;
-  uploadHoldTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
-  uploadHoldResolveRef: MutableRefObject<(() => void) | null>;
+  mountedRef: RefObject<boolean>;
+  uploadServiceRef: RefObject<UploadService | null>;
+  uploadHoldTimerRef: RefObject<ReturnType<typeof setTimeout> | null>;
+  uploadHoldResolveRef: RefObject<(() => void) | null>;
   setUploadProgress: (value: number | null) => void;
   closeAddFileModal: () => void;
   refreshEntity: () => Promise<void>;
 };
 
 const holdUploadComplete = async (
-  uploadHoldTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>,
-  uploadHoldResolveRef: MutableRefObject<(() => void) | null>
+  uploadHoldTimerRef: RefObject<ReturnType<typeof setTimeout> | null>,
+  uploadHoldResolveRef: RefObject<(() => void) | null>
 ) => {
   const timerRef = uploadHoldTimerRef;
   const resolveRef = uploadHoldResolveRef;
@@ -55,11 +55,10 @@ const createUploadService = (
 
 const uploadAndMaybeUpdateLanguage = async (
   service: UploadService,
-  file: File,
-  originalname: string,
-  language?: string
+  { file, language }: ConfirmAddFilePayload,
+  originalname: string
 ): Promise<boolean> => {
-  const uploaded = (await service.upload([file]))[0];
+  const [uploaded] = await service.upload([file]);
   if (!uploaded || !('_id' in uploaded)) return false;
   if (language) {
     try {
@@ -105,12 +104,7 @@ const uploadPayload = async (payload: ConfirmAddFilePayload, deps: ConfirmAddFil
   });
 
   try {
-    return await uploadAndMaybeUpdateLanguage(
-      service,
-      payload.file,
-      originalname,
-      payload.language
-    );
+    return await uploadAndMaybeUpdateLanguage(service, payload, originalname);
   } catch {
     return false;
   } finally {

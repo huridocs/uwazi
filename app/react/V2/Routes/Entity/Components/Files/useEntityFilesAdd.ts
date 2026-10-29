@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
+} from 'react';
 import type { UploadService } from '#V2/api/files/index.js';
 import { confirmAddFilesUpload, type ConfirmAddFilePayload } from './confirmAddFileUpload.js';
 import { fileQueueKey, isPdfFile } from './fileHelpers.js';
@@ -10,16 +19,12 @@ type UseEntityFilesAddArgs = {
   refreshEntity: () => Promise<void>;
 };
 
-const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddArgs) => {
-  const [pendingAddFiles, setPendingAddFiles] = useState<File[]>([]);
-  const [addFileMode, setAddFileMode] = useState<AddFileMode | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const addFileModeRef = useRef<AddFileMode | null>(null);
+const useUploadSession = () => {
   const mountedRef = useRef(true);
   const uploadServiceRef = useRef<UploadService | null>(null);
   const uploadHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const uploadHoldResolveRef = useRef<(() => void) | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -37,23 +42,43 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
     };
   }, []);
 
+  return {
+    mountedRef,
+    uploadServiceRef,
+    uploadHoldTimerRef,
+    uploadHoldResolveRef,
+    uploadProgress,
+    setUploadProgress,
+  };
+};
+
+const useAddFileMode = ({
+  fileInputRef,
+  addFileModeRef,
+  setPendingAddFiles,
+  setUploadProgress,
+}: {
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  addFileModeRef: RefObject<AddFileMode | null>;
+  setPendingAddFiles: Dispatch<SetStateAction<File[]>>;
+  setUploadProgress: (value: number | null) => void;
+}) => {
+  const [addFileMode, setAddFileMode] = useState<AddFileMode | null>(null);
+
+  const syncInputAccept = useCallback(
+    (mode: AddFileMode) => {
+      if (fileInputRef.current) {
+        fileInputRef.current.multiple = true;
+        fileInputRef.current.accept = mode === 'translation' ? '.pdf,application/pdf' : '';
+      }
+    },
+    [fileInputRef]
+  );
+
   const clearAddFileMode = useCallback(() => {
     setAddFileMode(null);
     addFileModeRef.current = null;
-  }, []);
-
-  const closeAddFileModal = useCallback(() => {
-    setPendingAddFiles([]);
-    clearAddFileMode();
-    setUploadProgress(null);
-  }, [clearAddFileMode]);
-
-  const syncInputAccept = useCallback((mode: AddFileMode) => {
-    if (fileInputRef.current) {
-      fileInputRef.current.multiple = true;
-      fileInputRef.current.accept = mode === 'translation' ? '.pdf,application/pdf' : '';
-    }
-  }, []);
+  }, [addFileModeRef]);
 
   const requestAddFile = useCallback(
     (mode: AddFileMode) => {
@@ -63,7 +88,7 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
       setUploadProgress(null);
       syncInputAccept(mode);
     },
-    [syncInputAccept]
+    [addFileModeRef, setPendingAddFiles, setUploadProgress, syncInputAccept]
   );
 
   const openAddFilePicker = useCallback(() => {
@@ -71,19 +96,31 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
     if (!mode || !fileInputRef.current) return;
     syncInputAccept(mode);
     fileInputRef.current.click();
-  }, [syncInputAccept]);
+  }, [addFileModeRef, fileInputRef, syncInputAccept]);
 
-  const acceptSelectedFiles = useCallback((selectedFiles: File[]) => {
-    const mode = addFileModeRef.current;
-    if (!mode || selectedFiles.length === 0) return;
-    const accepted = mode === 'translation' ? selectedFiles.filter(isPdfFile) : selectedFiles;
-    if (accepted.length === 0) return;
-    setPendingAddFiles(current => {
-      const seen = new Set(current.map(fileQueueKey));
-      const added = accepted.filter(file => !seen.has(fileQueueKey(file)));
-      return added.length === 0 ? current : [...current, ...added];
-    });
-  }, []);
+  return { addFileMode, clearAddFileMode, requestAddFile, openAddFilePicker };
+};
+
+const usePendingAddFiles = (
+  fileInputRef: RefObject<HTMLInputElement | null>,
+  addFileModeRef: RefObject<AddFileMode | null>
+) => {
+  const [pendingAddFiles, setPendingAddFiles] = useState<File[]>([]);
+
+  const acceptSelectedFiles = useCallback(
+    (selectedFiles: File[]) => {
+      const mode = addFileModeRef.current;
+      if (!mode || selectedFiles.length === 0) return;
+      const accepted = mode === 'translation' ? selectedFiles.filter(isPdfFile) : selectedFiles;
+      if (accepted.length === 0) return;
+      setPendingAddFiles(current => {
+        const seen = new Set(current.map(fileQueueKey));
+        const added = accepted.filter(file => !seen.has(fileQueueKey(file)));
+        return added.length === 0 ? current : [...current, ...added];
+      });
+    },
+    [addFileModeRef]
+  );
 
   const removePendingAddFile = useCallback((file: File) => {
     const key = fileQueueKey(file);
@@ -94,13 +131,51 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
     (event: ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = event.target.files ? Array.from(event.target.files) : [];
       const input = fileInputRef.current;
-      if (input) {
-        input.value = '';
-      }
+      if (input) input.value = '';
       acceptSelectedFiles(selectedFiles);
     },
-    [acceptSelectedFiles]
+    [acceptSelectedFiles, fileInputRef]
   );
+
+  return {
+    pendingAddFiles,
+    setPendingAddFiles,
+    acceptSelectedFiles,
+    removePendingAddFile,
+    handleFileInputChange,
+  };
+};
+
+const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddArgs) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const addFileModeRef = useRef<AddFileMode | null>(null);
+  const {
+    mountedRef,
+    uploadServiceRef,
+    uploadHoldTimerRef,
+    uploadHoldResolveRef,
+    uploadProgress,
+    setUploadProgress,
+  } = useUploadSession();
+  const {
+    pendingAddFiles,
+    setPendingAddFiles,
+    acceptSelectedFiles,
+    removePendingAddFile,
+    handleFileInputChange,
+  } = usePendingAddFiles(fileInputRef, addFileModeRef);
+  const { addFileMode, clearAddFileMode, requestAddFile, openAddFilePicker } = useAddFileMode({
+    fileInputRef,
+    addFileModeRef,
+    setPendingAddFiles,
+    setUploadProgress,
+  });
+
+  const closeAddFileModal = useCallback(() => {
+    setPendingAddFiles([]);
+    clearAddFileMode();
+    setUploadProgress(null);
+  }, [clearAddFileMode, setPendingAddFiles, setUploadProgress]);
 
   const confirmAddFile = useCallback(
     async (payloads: ConfirmAddFilePayload[]) => {
@@ -125,6 +200,8 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
       entitySharedId,
       mountedRef,
       refreshEntity,
+      setPendingAddFiles,
+      setUploadProgress,
       uploadHoldResolveRef,
       uploadHoldTimerRef,
       uploadServiceRef,

@@ -1,4 +1,12 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { useAtomValue } from 'jotai';
 import { useRevalidator } from 'react-router';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
@@ -9,6 +17,7 @@ import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { buildEntityFileRows } from './buildEntityFileRows.js';
 import { refreshEntityFiles } from './refreshEntityFiles.js';
+import type { EntityFileRow } from './types.js';
 import { useEntityFilesAdd } from './useEntityFilesAdd.js';
 import { useEntityFilesDelete } from './useEntityFilesDelete.js';
 import { useEntityFilesPanel } from './useEntityFilesPanel.js';
@@ -17,51 +26,48 @@ import type { EntityFilesContextValue, FilesSideTabId } from './entityFilesConte
 
 const EntityFilesContext = createContext<EntityFilesContextValue | null>(null);
 
-const EntityFilesProvider = ({
-  entity,
-  onRefreshEntity,
-  children,
-}: {
-  entity: Entity;
-  onRefreshEntity?: () => Promise<void>;
-  children: React.ReactNode;
-}) => {
+const useEntityFileRows = (entity: Entity, focusedRowId: string | undefined) => {
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-  const { revalidate } = useRevalidator();
-  const updateEntityUrl = useUpdateEntityUrl();
-  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
-
-  const {
-    focusedRowId,
-    setFocusedRowId,
-    isEditing,
-    editFocus,
-    filePanelMode,
-    setFocusedRow,
-    openFilePreview,
-    openFilePreviewForRow,
-    openFileEdit,
-    closeFilePreview,
-    setEditing,
-  } = useEntityFilesPanel();
-
   const { primaryRows, supportingRows, mainDocumentId } = useMemo(
     () => buildEntityFileRows(entity, templates, locale, defaultLanguage),
     [defaultLanguage, entity, locale, templates]
   );
-
   const allRows = useMemo(() => [...primaryRows, ...supportingRows], [primaryRows, supportingRows]);
   const resolvedFocusedRowId = focusedRowId || mainDocumentId || allRows[0]?.rowId;
   const focusedRow = allRows.find(row => row.rowId === resolvedFocusedRowId);
+  return { defaultLanguage, primaryRows, supportingRows, mainDocumentId, allRows, focusedRow };
+};
 
+const useEntityFileCommands = ({
+  entity,
+  onRefreshEntity,
+  revalidate,
+  updateEntityUrl,
+  allRows,
+  selectedRowIds,
+  setSelectedRowIds,
+  setFocusedRowId,
+  setEditing,
+  isEditing,
+}: {
+  entity: Entity;
+  onRefreshEntity?: () => Promise<void>;
+  revalidate: () => Promise<void>;
+  updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
+  allRows: EntityFileRow[];
+  selectedRowIds: string[];
+  setSelectedRowIds: Dispatch<SetStateAction<string[]>>;
+  setFocusedRowId: Dispatch<SetStateAction<string | undefined>>;
+  setEditing: (editing: boolean) => void;
+  isEditing: boolean;
+}) => {
   const refreshEntity = useCallback(
     async () => refreshEntityFiles(entity.sharedId, revalidate, onRefreshEntity),
     [entity.sharedId, onRefreshEntity, revalidate]
   );
-
   const saveRow = useCallback(
     async (payload: { _id: string; originalname: string; language?: string }) => {
       await update(payload);
@@ -70,44 +76,19 @@ const EntityFilesProvider = ({
     },
     [refreshEntity, setEditing]
   );
-
-  const {
-    pendingDeleteRows,
-    requestDeleteRow,
-    requestDeleteSelected,
-    closeDeleteModal,
-    deleteRows,
-  } = useEntityFilesDelete({
+  const deleteApi = useEntityFilesDelete({
     allRows,
     selectedRowIds,
     setSelectedRowIds,
     setFocusedRowId,
     refreshEntity,
   });
-
-  const {
-    pendingAddFiles,
-    addFileMode,
-    uploadProgress,
-    fileInputRef,
-    requestAddFile,
-    openAddFilePicker,
-    acceptSelectedFiles,
-    removePendingAddFile,
-    closeAddFileModal,
-    confirmAddFile,
-    handleFileInputChange,
-  } = useEntityFilesAdd({
-    entitySharedId: entity.sharedId,
-    refreshEntity,
-  });
-
+  const addApi = useEntityFilesAdd({ entitySharedId: entity.sharedId, refreshEntity });
   useEntityFilesSocketRefresh({
     sharedId: entity.sharedId,
     isFileEditing: isEditing,
     refreshEntity,
   });
-
   const navigateToFilesSideTab = useCallback(
     (tab: FilesSideTabId) => {
       updateEntityUrl({
@@ -121,6 +102,67 @@ const EntityFilesProvider = ({
     },
     [updateEntityUrl]
   );
+  return { refreshEntity, saveRow, navigateToFilesSideTab, ...deleteApi, ...addApi };
+};
+
+const EntityFilesProvider = ({
+  entity,
+  onRefreshEntity,
+  children,
+}: {
+  entity: Entity;
+  onRefreshEntity?: () => Promise<void>;
+  children: React.ReactNode;
+}) => {
+  const { revalidate } = useRevalidator();
+  const updateEntityUrl = useUpdateEntityUrl();
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
+  const {
+    focusedRowId,
+    setFocusedRowId,
+    isEditing,
+    editFocus,
+    filePanelMode,
+    setFocusedRow,
+    openFilePreview,
+    openFilePreviewForRow,
+    openFileEdit,
+    closeFilePreview,
+    setEditing,
+  } = useEntityFilesPanel();
+  const { defaultLanguage, primaryRows, supportingRows, mainDocumentId, allRows, focusedRow } =
+    useEntityFileRows(entity, focusedRowId);
+  const {
+    saveRow,
+    navigateToFilesSideTab,
+    pendingDeleteRows,
+    requestDeleteRow,
+    requestDeleteSelected,
+    closeDeleteModal,
+    deleteRows,
+    pendingAddFiles,
+    addFileMode,
+    uploadProgress,
+    fileInputRef,
+    requestAddFile,
+    openAddFilePicker,
+    acceptSelectedFiles,
+    removePendingAddFile,
+    closeAddFileModal,
+    confirmAddFile,
+    handleFileInputChange,
+  } = useEntityFileCommands({
+    entity,
+    onRefreshEntity,
+    revalidate,
+    updateEntityUrl,
+    allRows,
+    selectedRowIds,
+    setSelectedRowIds,
+    setFocusedRowId,
+    setEditing,
+    isEditing,
+  });
 
   const value = useMemo(
     () => ({
