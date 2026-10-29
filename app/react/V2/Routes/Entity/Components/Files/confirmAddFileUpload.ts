@@ -1,5 +1,7 @@
-import type { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
+import { t } from '#app/I18N/index.js';
 import { update, UploadService } from '#V2/api/files/index.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 
 const UPLOAD_COMPLETE_HOLD_MS = 500;
@@ -13,18 +15,18 @@ type ConfirmAddFilePayload = {
 
 type ConfirmAddFileUploadDeps = {
   entitySharedId: string;
-  mountedRef: MutableRefObject<boolean>;
-  uploadServiceRef: MutableRefObject<UploadService | null>;
-  uploadHoldTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
-  uploadHoldResolveRef: MutableRefObject<(() => void) | null>;
+  mountedRef: RefObject<boolean>;
+  uploadServiceRef: RefObject<UploadService | null>;
+  uploadHoldTimerRef: RefObject<ReturnType<typeof setTimeout> | null>;
+  uploadHoldResolveRef: RefObject<(() => void) | null>;
   setUploadProgress: (value: number | null) => void;
   closeAddFileModal: () => void;
   refreshEntity: () => Promise<void>;
 };
 
 const holdUploadComplete = async (
-  uploadHoldTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>,
-  uploadHoldResolveRef: MutableRefObject<(() => void) | null>
+  uploadHoldTimerRef: RefObject<ReturnType<typeof setTimeout> | null>,
+  uploadHoldResolveRef: RefObject<(() => void) | null>
 ) => {
   const timerRef = uploadHoldTimerRef;
   const resolveRef = uploadHoldResolveRef;
@@ -53,13 +55,18 @@ const createUploadService = (
 
 const uploadAndMaybeUpdateLanguage = async (
   service: UploadService,
-  file: File,
-  originalname: string,
-  language?: string
+  { file, language }: ConfirmAddFilePayload,
+  originalname: string
 ): Promise<boolean> => {
-  const uploaded = (await service.upload([file]))[0];
+  const [uploaded] = await service.upload([file]);
   if (!uploaded || !('_id' in uploaded)) return false;
-  if (language) await update({ ...uploaded, originalname, language });
+  if (language) {
+    try {
+      await update({ ...uploaded, originalname, language });
+    } catch {
+      return true;
+    }
+  }
   return true;
 };
 
@@ -86,10 +93,7 @@ const cleanupUpload = (
   if (mountedRef.current) setUploadProgress(null);
 };
 
-const confirmAddFileUpload = async (
-  payload: ConfirmAddFilePayload,
-  deps: ConfirmAddFileUploadDeps
-): Promise<void> => {
+const uploadPayload = async (payload: ConfirmAddFilePayload, deps: ConfirmAddFileUploadDeps) => {
   const { service, originalname } = createUploadService(payload, deps.entitySharedId);
   const serviceRef = deps.uploadServiceRef;
   const isMounted = deps.mountedRef;
@@ -100,17 +104,29 @@ const confirmAddFileUpload = async (
   });
 
   try {
-    const ok = await uploadAndMaybeUpdateLanguage(
-      service,
-      payload.file,
-      originalname,
-      payload.language
-    );
-    if (ok) await finishUploadUI(deps);
+    return await uploadAndMaybeUpdateLanguage(service, payload, originalname);
+  } catch {
+    return false;
   } finally {
     cleanupUpload(service, deps);
   }
 };
 
-export { confirmAddFileUpload };
+const confirmAddFilesUpload = async (
+  payloads: ConfirmAddFilePayload[],
+  deps: ConfirmAddFileUploadDeps
+): Promise<number> => {
+  const uploaded = await payloads.reduce(async (previous, payload, index) => {
+    const count = await previous;
+    if (count < index) return count;
+    const ok = await uploadPayload(payload, deps);
+    return ok ? count + 1 : count;
+  }, Promise.resolve(0));
+  if (uploaded === payloads.length && uploaded > 0) await finishUploadUI(deps);
+  else if (uploaded > 0) await deps.refreshEntity();
+  else if (payloads.length > 0) notify(t('System', 'Something went wrong', null, false), 'error');
+  return uploaded;
+};
+
+export { confirmAddFilesUpload };
 export type { ConfirmAddFilePayload, ConfirmAddFileUploadDeps };

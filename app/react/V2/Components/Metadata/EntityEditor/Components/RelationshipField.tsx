@@ -8,12 +8,12 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import type { InheritColumn } from '../../relationshipInherit.js';
 import { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
+import type { RelationshipCandidateSearch } from './RelationshipCandidateList.js';
 import { EntityField } from './EntityField.js';
 
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -22,7 +22,7 @@ type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
-  lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
+  lookupSearch?: RelationshipCandidateSearch;
   targetTemplateId?: string;
   relationTypeId?: string;
   inheritColumns?: InheritColumn[];

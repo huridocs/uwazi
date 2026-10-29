@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import preview from '#storybook/preview';
 import { storyExtend } from '#app/stories/storyExtend.js';
-import { BrowserRouter } from 'react-router';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import { MetadataDisplayFooter } from '#app/V2/Routes/Entity/Components/index.js';
+import { EntityFilesProvider } from '#V2/Routes/Entity/Components/Files/index.js';
 import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import {
@@ -92,9 +93,10 @@ const MetadataStoryShell = ({
     return { ...entity, metadata };
   }, [entity, showGeolocationProperties]);
 
-  return (
-    <div className="tw-content">
-      <BrowserRouter>
+  const router = createMemoryRouter([
+    {
+      path: '*',
+      element: (
         <Provider store={store}>
           <EntityScopedProvider
             key={storyReadyEntity.sharedId}
@@ -102,18 +104,26 @@ const MetadataStoryShell = ({
             language={storyReadyEntity.language ?? 'en'}
           >
             <MetadataEditingProvider>
-              <Panel>
-                <Panel.Body>
-                  <MetadataRecord entity={storyReadyEntity} />
-                </Panel.Body>
-                <Panel.Footer>
-                  <MetadataDisplayFooter host="main" />
-                </Panel.Footer>
-              </Panel>
+              <EntityFilesProvider entity={storyReadyEntity}>
+                <Panel>
+                  <Panel.Body>
+                    <MetadataRecord entity={storyReadyEntity} />
+                  </Panel.Body>
+                  <Panel.Footer>
+                    <MetadataDisplayFooter host="main" />
+                  </Panel.Footer>
+                </Panel>
+              </EntityFilesProvider>
             </MetadataEditingProvider>
           </EntityScopedProvider>
         </Provider>
-      </BrowserRouter>
+      ),
+    },
+  ]);
+
+  return (
+    <div className="tw-content">
+      <RouterProvider router={router} />
     </div>
   );
 };

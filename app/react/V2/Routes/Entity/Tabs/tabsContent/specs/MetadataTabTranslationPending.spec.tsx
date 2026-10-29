@@ -8,6 +8,7 @@ import {
   EntityScopedProvider,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { EntityFilesProvider } from '#V2/Routes/Entity/Components/Files/index.js';
 import { MetadataDisplayFooter } from '#V2/Routes/Entity/Components/metadata/MetadataDisplayFooter.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
@@ -72,13 +73,15 @@ const renderEditor = (upsert: jest.Mock, sessionRef: { current: Session | null }
           ]}
         >
           <EntityScopedProvider entity={entity} language="en">
-            <SessionBridge
-              onSession={session => {
-                sessionRef.current = session;
-              }}
-            />
-            <MetadataTab entity={entity} host="main" />
-            <MetadataDisplayFooter host="main" />
+            <EntityFilesProvider entity={entity}>
+              <SessionBridge
+                onSession={session => {
+                  sessionRef.current = session;
+                }}
+              />
+              <MetadataTab entity={entity} host="main" />
+              <MetadataDisplayFooter host="main" />
+            </EntityFilesProvider>
           </EntityScopedProvider>
         </TestAtomStoreProvider>
       </ServicesProvider>

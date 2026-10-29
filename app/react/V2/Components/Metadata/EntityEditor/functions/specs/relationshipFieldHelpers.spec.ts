@@ -155,21 +155,41 @@ describe('defaultRelationshipLookup', () => {
         { sharedId: 'e1', title: 'One' },
         { sharedId: 'e2', title: '' },
       ],
+      count: 330,
     });
 
-    await expect(defaultRelationshipLookup({ search: 'o', template: 'tpl' })).resolves.toEqual([
-      { value: 'e1', label: 'One' },
-      { value: 'e2', label: 'e2' },
-    ]);
+    await expect(defaultRelationshipLookup({ search: 'o', template: 'tpl' })).resolves.toEqual({
+      options: [
+        { value: 'e1', label: 'One' },
+        { value: 'e2', label: 'e2' },
+      ],
+      total: 330,
+    });
     expect(lookupEntities).toHaveBeenCalledWith({
       entityTitle: 'o',
       template: 'tpl',
-      limit: 50,
+      limit: 200,
     });
   });
 
-  it('returns an empty list for unexpected responses', async () => {
+  it('requests the next page from the given offset', async () => {
+    lookupEntities.mockResolvedValue({ rows: [{ sharedId: 'e3', title: 'Three' }], count: 330 });
+
+    await defaultRelationshipLookup({ search: '', template: 'tpl', offset: 200 });
+
+    expect(lookupEntities).toHaveBeenCalledWith({
+      entityTitle: '',
+      template: 'tpl',
+      limit: 200,
+      offset: 200,
+    });
+  });
+
+  it('returns an empty page for unexpected responses', async () => {
     lookupEntities.mockResolvedValue(null);
-    await expect(defaultRelationshipLookup({ search: 'x' })).resolves.toEqual([]);
+    await expect(defaultRelationshipLookup({ search: 'x' })).resolves.toEqual({
+      options: [],
+      total: 0,
+    });
   });
 });

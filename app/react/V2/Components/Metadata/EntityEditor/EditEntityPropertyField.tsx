@@ -29,7 +29,9 @@ import type { DisplayProperty } from './functions/relationshipGrouping.js';
 import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+  relationshipListOptions,
   thesaurusToOptions,
+  type RelationshipLookup,
   type RelationshipLookupSearchArgs,
 } from './functions/relationshipFieldHelpers.js';
 
@@ -47,11 +49,7 @@ type EditEntityPropertyFieldProps = {
   registerPendingAttachment: (attachment: ClientFile) => void;
   removePendingAttachmentIfUnused: (fileLocalID: string) => void;
   onEditSource?: (entityId: string, label: string, templateId?: string) => void;
-  relationshipLookup: (params: {
-    search: string;
-    template?: string;
-    limit?: number;
-  }) => Promise<{ value: string; label: string }[]>;
+  relationshipLookup: RelationshipLookup;
   relationshipLookupSearch: (
     args: RelationshipLookupSearchArgs
   ) => Promise<MultiselectListOption[]>;
@@ -174,28 +172,27 @@ const EditEntityPropertyField = ({
             ? (entityId, label) => onEditSource(entityId, label, property.content)
             : undefined
         }
-        lookupSearch={async search => {
+        lookupSearch={async (search, offset) => {
           const selectedValues = getValues(fieldPath) ?? [];
           const lookedUp = await relationshipLookup({
             search,
             template: property.content,
             limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+            offset,
           });
-          const lookedUpOptions = lookedUp.map(option => ({
-            label: option.label,
-            searchLabel: option.label,
-            value: option.value,
-          }));
-          return relationshipLookupSearch({
-            property,
-            selectedValues,
-            lookedUpOptions: lookedUpOptions.filter(
-              option =>
-                !search.trim() ||
-                option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-            ),
-            includeCachedOptions: !search.trim(),
-          });
+          const term = search.trim().toLowerCase();
+          return {
+            options: await relationshipLookupSearch({
+              property,
+              selectedValues,
+              lookedUpOptions: relationshipListOptions(lookedUp).filter(
+                option => !term || option.searchLabel.toLowerCase().includes(term)
+              ),
+              includeCachedOptions: !term,
+            }),
+            total: lookedUp.total,
+            fetched: lookedUp.options.length,
+          };
         }}
       />
     );

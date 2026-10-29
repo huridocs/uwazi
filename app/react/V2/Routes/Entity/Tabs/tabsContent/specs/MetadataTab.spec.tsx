@@ -14,6 +14,7 @@ import {
   useEntityContext,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { EntityFilesProvider } from '#V2/Routes/Entity/Components/Files/index.js';
 import { MetadataDisplayFooter } from '#V2/Routes/Entity/Components/metadata/MetadataDisplayFooter.js';
 import { MetadataTab } from '../MetadataTab.js';
 
@@ -78,7 +79,9 @@ const renderSession = async (upsert: jest.Mock) => {
           ]}
         >
           <EntityScopedProvider entity={entity} language="en">
-            <HostPair onSession={onSession} />
+            <EntityFilesProvider entity={entity}>
+              <HostPair onSession={onSession} />
+            </EntityFilesProvider>
           </EntityScopedProvider>
         </TestAtomStoreProvider>
       </ServicesProvider>

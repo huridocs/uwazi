@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   InformationCircleIcon,
   LinkIcon,
@@ -7,9 +7,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
-import { debounce } from '#app/utils/index.js';
 import { CompactSearchInput } from '#V2/Components/Forms/CompactSearchInput.js';
-import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationCaption } from '#V2/Components/Metadata/Components/RelationCaption.js';
 import {
   RelationshipConnectionsTable,
@@ -19,6 +17,11 @@ import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { InheritColumn } from '../../relationshipInherit.js';
 import { EntityFieldLabel } from '../functions/fieldErrorState.js';
+import {
+  RelationshipCandidateList,
+  useRelationshipCandidates,
+  type RelationshipCandidateSearch,
+} from './RelationshipCandidateList.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -28,7 +31,7 @@ type RelationshipFieldEditorProps = {
   values: MetadataValue[];
   onChange: (values: MetadataValue[]) => void;
   columns?: InheritColumn[];
-  lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
+  lookupSearch?: RelationshipCandidateSearch;
   onEditSource?: (entityId: string, label: string) => void;
   disabled?: boolean;
   searchId?: string;
@@ -51,7 +54,6 @@ const RelationshipFieldEditor = ({
 }: RelationshipFieldEditorProps) => {
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState('');
-  const [candidates, setCandidates] = useState<MultiselectListOption[]>([]);
 
   const selectedIds = useMemo(
     () => values.map(value => String(value.value ?? '')).filter(Boolean),
@@ -68,36 +70,13 @@ const RelationshipFieldEditor = ({
     [targetTemplateId, values]
   );
 
-  const runSearch = async (search: string) => {
-    if (!lookupSearch) {
-      setCandidates([]);
-      return;
-    }
-    const results = await lookupSearch(search);
-    setCandidates(results.filter(option => !selectedIds.includes(option.value)));
-  };
-
-  const runSearchRef = useRef(runSearch);
-  runSearchRef.current = runSearch;
-
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((search: string) => {
-        runSearchRef.current(search).catch(() => undefined);
-      }, 300),
-    []
-  );
-
-  useEffect(() => {
-    if (!adding) {
-      return;
-    }
-    if (!query) {
-      runSearchRef.current('').catch(() => undefined);
-      return;
-    }
-    debouncedSearch(query);
-  }, [adding, debouncedSearch, query]);
+  const { candidates, fetched, loadMore, reset, setShowAll, showAll, total } =
+    useRelationshipCandidates({
+      lookupSearch,
+      selectedIds,
+      adding,
+      query,
+    });
 
   const addEntity = (option: MultiselectListOption) => {
     const label = typeof option.label === 'string' ? option.label : option.searchLabel;
@@ -111,7 +90,7 @@ const RelationshipFieldEditor = ({
     ]);
     setQuery('');
     setAdding(false);
-    setCandidates([]);
+    reset();
   };
 
   const removeEntity = (entityId: string) => {
@@ -173,28 +152,17 @@ const RelationshipFieldEditor = ({
             placeholder={t('System', 'Search entities…', null, false)}
             onChange={setQuery}
           />
-          <div className="max-h-45 overflow-auto">
-            {candidates.length === 0 ? (
-              <div className="px-3 py-2 text-xs text-ink-muted">
-                <Translate>No matching entities.</Translate>
-              </div>
-            ) : (
-              candidates.map(option => (
-                <button
-                  key={option.value}
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => addEntity(option)}
-                  className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-start transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <TemplatePill
-                    templateId={targetTemplateId ?? ''}
-                    label={typeof option.label === 'string' ? option.label : option.searchLabel}
-                  />
-                </button>
-              ))
-            )}
-          </div>
+          <RelationshipCandidateList
+            candidates={candidates}
+            disabled={disabled}
+            expanded={showAll}
+            fetched={fetched}
+            targetTemplateId={targetTemplateId}
+            total={total}
+            onAdd={addEntity}
+            onLoadMore={loadMore}
+            onToggle={() => setShowAll(current => !current)}
+          />
         </div>
       ) : (
         <button
@@ -202,6 +170,7 @@ const RelationshipFieldEditor = ({
           disabled={disabled}
           onClick={() => {
             setQuery('');
+            setShowAll(false);
             setAdding(true);
           }}
           className="flex h-7 cursor-pointer items-center gap-1.5 rounded-md bg-warm px-2.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"

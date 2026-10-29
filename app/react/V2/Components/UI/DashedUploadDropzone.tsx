@@ -3,7 +3,7 @@ import { CloudUploadStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 
 type DashedUploadDropzoneProps = {
   onPick: () => void;
-  onDropFile: (file: File | undefined) => void;
+  onDropFiles: (files: File[]) => void;
   disabled?: boolean;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
@@ -11,7 +11,7 @@ type DashedUploadDropzoneProps = {
 
 const DashedUploadDropzone = ({
   onPick,
-  onDropFile,
+  onDropFiles,
   disabled,
   title,
   subtitle,
@@ -33,7 +33,7 @@ const DashedUploadDropzone = ({
         event.preventDefault();
         setDragging(false);
         if (disabled) return;
-        onDropFile(event.dataTransfer.files?.[0]);
+        onDropFiles(Array.from(event.dataTransfer.files ?? []));
       }}
       className={[
         'flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed bg-warm py-6 transition-colors',

@@ -5,6 +5,7 @@ import { RelationshipField } from '#V2/Components/Metadata/EntityEditor/Componen
 import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
+  relationshipListOptions,
 } from '#V2/Components/Metadata/EntityEditor/functions/relationshipFieldHelpers.js';
 import type { DisplayProperty } from '#V2/Components/Metadata/EntityEditor/functions/relationshipGrouping.js';
 
@@ -33,25 +34,24 @@ const LibraryMultiEditRelationship = ({
       targetTemplateId={property.content}
       relationTypeId={property.relationType}
       inheritColumns={[]}
-      lookupSearch={async search => {
+      lookupSearch={async (search, offset) => {
         const selectedValues = (getValues(field) as MetadataValue[] | undefined) ?? [];
         const lookedUp = await defaultRelationshipLookup({
           search,
           template: property.content,
+          offset,
         });
-        const lookedUpOptions = lookedUp.map(option => ({
-          label: option.label,
-          searchLabel: option.label,
-          value: option.value,
-        }));
-
-        return mergeRelationshipLookupOptions({
-          property,
-          selectedValues,
-          lookedUpOptions,
-          cache,
-          includeCachedOptions: !search.trim(),
-        });
+        return {
+          options: mergeRelationshipLookupOptions({
+            property,
+            selectedValues,
+            lookedUpOptions: relationshipListOptions(lookedUp),
+            cache,
+            includeCachedOptions: !search.trim(),
+          }),
+          total: lookedUp.total,
+          fetched: lookedUp.options.length,
+        };
       }}
     />
   );
