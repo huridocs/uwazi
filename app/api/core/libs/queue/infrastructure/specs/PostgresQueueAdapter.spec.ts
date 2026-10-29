@@ -187,34 +187,6 @@ describe('PostgresQueueAdapter', () => {
       const { rows } = await pool().query('SELECT "tenant_id" FROM jobs WHERE "id" = $1', [id]);
       expect(rows).toEqual([{ tenant_id: 'acme' }]);
     });
-
-    it('should insert without declared decorateJobRow columns while they do not exist yet', async () => {
-      const manager = transactionManager();
-      const adapter = DefaultPostgresQueueAdapter(manager, () => ({ tenant_id: 'acme' }), [
-        'tenant_id',
-      ]);
-
-      await pool().query('ALTER TABLE jobs DROP COLUMN "tenant_id"');
-      try {
-        const id = await adapter.pushJob(pushInput());
-        const { rows } = await pool().query('SELECT * FROM jobs WHERE "id" = $1', [id]);
-        expect(rows[0]).not.toHaveProperty('tenant_id');
-      } finally {
-        await pool().query('ALTER TABLE jobs ADD COLUMN "tenant_id" TEXT');
-      }
-    });
-
-    it('should store declared decorateJobRow columns while they exist', async () => {
-      const manager = transactionManager();
-      const adapter = DefaultPostgresQueueAdapter(manager, () => ({ tenant_id: 'acme' }), [
-        'tenant_id',
-      ]);
-
-      const id = await adapter.pushJob(pushInput());
-
-      const { rows } = await pool().query('SELECT "tenant_id" FROM jobs WHERE "id" = $1', [id]);
-      expect(rows).toEqual([{ tenant_id: 'acme' }]);
-    });
   });
 
   it('should keep polling, with a warning, while the jobs table does not exist', async () => {

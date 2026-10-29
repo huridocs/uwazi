@@ -24,15 +24,13 @@ export function DefaultQueueAdapter(transactionManager: TransactionManager) {
 
 export function DefaultPostgresQueueAdapter(
   transactionManager: PostgresTransactionManager,
-  decorateJobRow?: (job: PushJobInput) => Record<string, unknown>,
-  decoratedColumns?: string[]
+  decorateJobRow?: (job: PushJobInput) => Record<string, unknown>
 ) {
   return new PostgresQueueAdapter({
     workerKnex: PostgresDB.knex,
     transactionManager,
     logger: LoggerFactory.systemLogger(),
     decorateJobRow,
-    decoratedColumns,
   });
 }
 
