@@ -12,7 +12,7 @@ const mockState = {
   pendingAddFiles: [new File(['x'], 'a.txt', { type: 'text/plain' })],
   addFileMode: 'main' as const,
   closeAddFileModal: jest.fn(),
-  confirmAddFile: () => new Promise<number>(() => {}),
+  confirmAddFile: async () => new Promise<number>(() => {}),
   openAddFilePicker: jest.fn(),
   acceptSelectedFiles: jest.fn(),
   removePendingAddFile: jest.fn(),
