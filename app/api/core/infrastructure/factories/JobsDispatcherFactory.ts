@@ -6,12 +6,23 @@ import {
   DefaultPostgresQueueAdapter,
   DefaultQueueAdapter,
 } from '#api/core/libs/queue/configuration/factories.js';
-import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { QueueAdapter, PushJobInput } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { UwaziDispatcherFactory } from '../jobs/UwaziDispatcherFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 const SYSTEM_NAMESPACE = 'system';
+
+/** The jobs-table column the dispatch writes so the backup tool can scope jobs per tenant. */
+const TENANT_ID_COLUMN = 'tenant_id';
+
+/**
+ * The Uwazi-specific tenant scope for a pushed job, written into the jobs table as tenant_id.
+ * Tenant jobs are scoped by their namespace (the tenant name); system jobs belong to no tenant.
+ */
+const tenantIdForJob = (job: PushJobInput): { tenant_id: string | null } => ({
+  tenant_id: job.namespace === SYSTEM_NAMESPACE ? null : job.namespace,
+});
 
 type MongoQueueAdapterFactory = (transactionManager: MongoTransactionManager) => QueueAdapter;
 
@@ -29,7 +40,9 @@ class JobsDispatcherFactory {
     mongoQueueAdapter: MongoQueueAdapterFactory = DefaultQueueAdapter
   ): JobsDispatcher {
     const queueAdapter = isPostgresCoreActive()
-      ? DefaultPostgresQueueAdapter(ExecutionContext.postgresTransactionManager)
+      ? DefaultPostgresQueueAdapter(ExecutionContext.postgresTransactionManager, tenantIdForJob, [
+          TENANT_ID_COLUMN,
+        ])
       : mongoQueueAdapter(ExecutionContext.mongoTransactionManager);
 
     return UwaziDispatcherFactory(
@@ -64,4 +77,4 @@ class JobsDispatcherFactory {
   }
 }
 
-export { JobsDispatcherFactory };
+export { JobsDispatcherFactory, tenantIdForJob };
