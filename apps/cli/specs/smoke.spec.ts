@@ -78,6 +78,9 @@ describe('uwazi binary', () => {
     ['sessions --schema', ['sessions', 'last', '--schema'], 0],
     ['activity --schema', ['activity', 'list', '--schema'], 0],
     ['archives --schema', ['archives', 'list', '--schema'], 0],
+    ['db clear --schema', ['db', 'clear', '--schema'], 0],
+    ['db import --schema', ['db', 'import', '--schema'], 0],
+    ['db blank-state dump --schema', ['db', 'blank-state', 'dump', '--schema'], 0],
     ['an invalid request', ['users', 'create', '--tenant', 'x', '--request', '{}'], 2],
   ])('should not load the backend for %s', (_case, args, exitCode) => {
     const { status, modules } = loadedModules(args);

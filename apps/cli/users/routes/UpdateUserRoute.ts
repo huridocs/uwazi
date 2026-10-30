@@ -7,9 +7,7 @@ import type { UpdateUserCliInput } from '../controllers/UpdateUserController.js'
 import { UserReference } from '../UserReference.js';
 
 class UpdateUserRoute implements Route<UpdateUserCliInput, UpdatedUserOutput> {
-  readonly group = 'users';
-
-  readonly name = 'update';
+  readonly command = ['users', 'update'];
 
   readonly describe = 'Change a user; omitted fields stay as they are';
 

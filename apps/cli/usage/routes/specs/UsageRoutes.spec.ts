@@ -2,7 +2,7 @@ import { UsageRoutes } from '../../UsageRoutes.js';
 
 describe('UsageRoutes', () => {
   it('should register usage report for one tenant or every tenant', () => {
-    expect(UsageRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(UsageRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['usage report', 'single-or-all'],
     ]);
   });

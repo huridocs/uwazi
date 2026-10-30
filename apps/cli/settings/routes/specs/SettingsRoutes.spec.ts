@@ -2,7 +2,7 @@ import { ZodError } from 'zod';
 import { SettingsRoutes } from '../../SettingsRoutes.js';
 
 const route = (name: string) => {
-  const found = SettingsRoutes.all().find(r => r.name === name);
+  const found = SettingsRoutes.all().find(r => r.command[r.command.length - 1] === name);
   if (!found) throw new Error(`no settings ${name} route`);
   return found;
 };
@@ -21,7 +21,7 @@ const issuesOf = (fn: () => unknown) => {
 
 describe('SettingsRoutes', () => {
   it('should register the settings commands for a single tenant', () => {
-    expect(SettingsRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(SettingsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['settings get', 'single'],
       ['settings update', 'single'],
     ]);

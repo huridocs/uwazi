@@ -1,15 +1,13 @@
 import { z } from 'zod';
 import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
-import type { CleanTenantOutput } from '../contracts.js';
+import type { ClearTenantOutput } from '../contracts.js';
 
 const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
-class CleanTenantRoute implements Route<NoInput, CleanTenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'clean';
+class ClearTenantRoute implements Route<NoInput, ClearTenantOutput> {
+  readonly command = ['db', 'clear'];
 
   readonly describe = "Delete every row of a tenant's PostgreSQL data, keeping the registry row";
 
@@ -22,13 +20,13 @@ class CleanTenantRoute implements Route<NoInput, CleanTenantOutput> {
   readonly fieldMap = {};
 
   private readonly controller = new LazyModule(
-    async () => import('../controllers/CleanTenantController.js')
+    async () => import('../controllers/ClearTenantController.js')
   );
 
-  async handle(): Promise<CleanTenantOutput> {
-    const { CleanTenantController } = await this.controller.get();
-    return CleanTenantController.handle();
+  async handle(): Promise<ClearTenantOutput> {
+    const { ClearTenantController } = await this.controller.get();
+    return ClearTenantController.handle();
   }
 }
 
-export { CleanTenantRoute };
+export { ClearTenantRoute };

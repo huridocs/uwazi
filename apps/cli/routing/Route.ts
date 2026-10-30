@@ -13,10 +13,8 @@ type CliArgv = Record<string, unknown>;
  * whatever tenant the TenantMiddleware selected.
  */
 interface Route<Input = unknown, Output = unknown> {
-  /** First word of the command (`users`). */
-  group: string;
-  /** Second word of the command (`list`). */
-  name: string;
+  /** Full command path, e.g. `['db', 'blank-state', 'dump']`. */
+  command: string[];
   describe: string;
   tenancy: Tenancy;
   needs: ConnectionNeeds;

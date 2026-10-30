@@ -9,7 +9,7 @@ import {
   clearBlankState,
   seedBlankState,
 } from '#api/infrastructure/blank_state/specs/blankStateFixtures.js';
-import { ControllerSpecs } from '../../../testing/ControllerSpecs.js';
+import { ControllerSpecs } from '../../../../testing/ControllerSpecs.js';
 import { BlankStateDumpOutputSchema } from '../../contracts.js';
 import { DumpBlankStateController } from '../DumpBlankStateController.js';
 

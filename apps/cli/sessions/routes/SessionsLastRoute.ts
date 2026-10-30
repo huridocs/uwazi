@@ -7,9 +7,7 @@ const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class SessionsLastRoute implements Route<NoInput, SessionsLastOutput> {
-  readonly group = 'sessions';
-
-  readonly name = 'last';
+  readonly command = ['sessions', 'last'];
 
   readonly describe = "Report when a tenant's last session activity happened";
 
