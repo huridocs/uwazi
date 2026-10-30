@@ -4,7 +4,6 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm, UseFormSetValue } from 'react-hook-form';
-import isUndefined from 'lodash/isUndefined.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { useSetAtom } from 'jotai';
 import * as FilesAPI from '#V2/api/files/index.js';
@@ -170,9 +169,6 @@ const Collection = () => {
 
   const submit = async (data: ClientSettings) => {
     const payload = { ...data };
-    if (!isUndefined(payload.newNameGeneration) && !payload.newNameGeneration) {
-      delete payload.newNameGeneration;
-    }
     if (themeCustomization) {
       const lightLogo = payload.themeAssets?.siteLogo?.light?.trim();
       const lightFavicon = payload.themeAssets?.favicon?.light?.trim();
@@ -349,19 +345,6 @@ const Collection = () => {
                   watch={watch}
                   setValue={setValue}
                 />
-                {!settings.newNameGeneration && (
-                  <CollectionOptionToggle
-                    valueKey="newNameGeneration"
-                    label={
-                      <Translate className="text-sm font-medium text-ink">
-                        Non-latin characters support
-                      </Translate>
-                    }
-                    tip={tips.characterSupport}
-                    watch={watch}
-                    setValue={setValue}
-                  />
-                )}
               </div>
             </Card>
             <SeoSettingsCard

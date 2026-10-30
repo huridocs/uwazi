@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
 import { PropertyName } from './PropertyName.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
@@ -26,12 +26,11 @@ const createSchema = (isRequired: boolean) =>
 class NestedProperty extends FilterableProperty {
   nestedProperties: string[];
 
-  constructor(props: Props, context?: Context) {
+  constructor(props: Props) {
     const name =
-      props.name ||
-      PropertyName.fromLabel(`${props.label}_${PropertyTypeEnum.Nested}`, context).value;
+      props.name || PropertyName.fromLabel(`${props.label}_${PropertyTypeEnum.Nested}`).value;
 
-    super({ ...props, name, type: props.type || PropertyTypeEnum.Nested }, context);
+    super({ ...props, name, type: props.type || PropertyTypeEnum.Nested });
 
     this.nestedProperties = props.nestedProperties || [];
   }

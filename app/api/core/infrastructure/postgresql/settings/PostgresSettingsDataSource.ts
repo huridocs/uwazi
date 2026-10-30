@@ -101,10 +101,6 @@ export class PostgresSettingsDataSource
     return (await this.readSlice(['languages']))?.languages;
   }
 
-  async readNewNameGeneration(): Promise<boolean> {
-    return Boolean((await this.readSlice(['newNameGeneration']))?.newNameGeneration);
-  }
-
   async readOpenPublicEndpoint(): Promise<boolean> {
     return Boolean((await this.readSlice(['openPublicEndpoint']))?.openPublicEndpoint);
   }

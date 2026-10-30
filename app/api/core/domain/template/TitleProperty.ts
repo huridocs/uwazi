@@ -1,5 +1,4 @@
 import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
-import { Context } from '#api/core/domain/template/Property.js';
 import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from './errors.js';
 import { PropertyType } from './PropertyType.js';
 
@@ -13,8 +12,8 @@ class TitleProperty extends CommonProperty {
 
   generatedId: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'text', name: props.name || 'title' }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || 'text', name: props.name || 'title' });
     this.prioritySorting = props.prioritySorting || false;
     this.generatedId = props.generatedId || false;
 

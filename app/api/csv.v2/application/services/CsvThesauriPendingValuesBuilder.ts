@@ -17,7 +17,6 @@ type BuildParams = {
   template: Template;
   headerAnalysis: HeaderAnalysis;
   defaultLanguage: string;
-  newNameGeneration: boolean;
 };
 
 type BuildResult = {
@@ -44,8 +43,7 @@ const PARENT_CHILD_SEPARATOR = '::';
 
 const normalizeLabel = (label: string) => sanitizeThesaurusLabel(label).toLowerCase();
 
-const sanitizeHeader = (header: string, newNameGeneration: boolean) =>
-  PropertyName.fromLabel(header, { newNameGeneration }).value;
+const sanitizeHeader = (header: string) => PropertyName.fromLabel(header).value;
 
 const isSelectLikeProperty = (property: Property): property is SelectLikeProperty =>
   (property.type === 'select' || property.type === 'multiselect') &&
@@ -149,7 +147,7 @@ const ensurePendingEntry = (
 
 export class CsvThesauriPendingValuesBuilder {
   static build(params: BuildParams): BuildResult {
-    const { importId, rows, template, headerAnalysis, defaultLanguage, newNameGeneration } = params;
+    const { importId, rows, template, headerAnalysis, defaultLanguage } = params;
     const pendingEntries = new Map<string, CsvThesauriPendingEntry>();
     const issues: CsvThesauriPendingIssue[] = [];
 
@@ -167,7 +165,7 @@ export class CsvThesauriPendingValuesBuilder {
     }
 
     rows.forEach(row => {
-      const sanitizedHeaders = row.headers.map(header => sanitizeHeader(header, newNameGeneration));
+      const sanitizedHeaders = row.headers.map(header => sanitizeHeader(header));
       const rowValues = new Map<string, string>();
       sanitizedHeaders.forEach((header, index) => {
         rowValues.set(header, row.values[index] ?? '');

@@ -1,5 +1,5 @@
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
-import { Context, Property } from '../../domain/template/Property.js';
+import { Property } from '../../domain/template/Property.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
@@ -17,8 +17,8 @@ type Deps = {
 
 class RelationshipPropertyCreatorService extends AbstractPropertyCreatorService<Deps> {
   // eslint-disable-next-line class-methods-use-this
-  async createProperty(input: V1RelationshipPropertyProps, context: Context): Promise<Property> {
-    const property = V1RelationshipProperty.create(input, context);
+  async createProperty(input: V1RelationshipPropertyProps): Promise<Property> {
+    const property = V1RelationshipProperty.create(input);
 
     const relationshipTypeExists = await this.deps.relationshipTypesDS.typesExist([
       property.relationType,

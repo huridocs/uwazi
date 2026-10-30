@@ -1,4 +1,3 @@
-import { Context } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
@@ -9,8 +8,8 @@ type Props = {
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
 class PreviewProperty extends AbstractImageProperty {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Preview }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Preview });
 
     this.validate();
   }

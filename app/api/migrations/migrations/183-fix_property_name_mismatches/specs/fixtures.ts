@@ -1,4 +1,17 @@
-import db, { DBFixture } from '#api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
+
+type SettingsDocument = {
+  _id: ReturnType<typeof db.id>;
+  site_name: string;
+  newNameGeneration: boolean;
+  languages: { key: string; label: string; default?: boolean }[];
+};
+
+type Fixture = {
+  settings: SettingsDocument[];
+  templates: unknown[];
+  entities: unknown[];
+};
 
 const templateWithMismatchesId = db.id();
 const templateCorrectId = db.id();
@@ -24,7 +37,7 @@ const createCommonProps = () => [
   },
 ];
 
-export const fixtures: DBFixture = {
+export const fixtures = {
   settings: [
     {
       _id: db.id(),
@@ -240,7 +253,7 @@ export const fixtures: DBFixture = {
       },
     },
   ],
-};
+} satisfies Fixture;
 
 export {
   templateWithMismatchesId,

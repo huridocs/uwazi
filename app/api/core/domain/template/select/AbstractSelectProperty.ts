@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors.js';
@@ -13,8 +13,8 @@ type Props = {
 class AbstractSelectProperty extends FilterableProperty {
   content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
 
-  constructor(props: Props, context?: Context) {
-    super(props, context);
+  constructor(props: Props) {
+    super(props);
     this.content = props.content;
 
     this.validateAbstractSelectProperty();

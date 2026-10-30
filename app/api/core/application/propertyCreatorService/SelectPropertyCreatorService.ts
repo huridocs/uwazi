@@ -1,5 +1,5 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { Context, Property } from '../../domain/template/Property.js';
+import { Property } from '../../domain/template/Property.js';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
 import { IncorrectPropertyTypeError } from '../errors.js';
 import {
@@ -20,8 +20,8 @@ type Props = SelectPropertyProps | MultiSelectPropertyProps;
 
 class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> {
   // eslint-disable-next-line class-methods-use-this
-  protected async createProperty(props: Props, context: Context): Promise<Property> {
-    const select = this.createSelectOrMultiSelectProperty(props, context);
+  protected async createProperty(props: Props): Promise<Property> {
+    const select = this.createSelectOrMultiSelectProperty(props);
 
     const thesaurusExists = await this.deps.thesauriDS.existsById(select.content);
 
@@ -33,13 +33,10 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private createSelectOrMultiSelectProperty(
-    props: Props,
-    context: Context
-  ): SelectProperty | MultiSelectProperty {
-    if (props.type === 'select') return new SelectProperty(props, context);
+  private createSelectOrMultiSelectProperty(props: Props): SelectProperty | MultiSelectProperty {
+    if (props.type === 'select') return new SelectProperty(props);
 
-    if (props.type === 'multiselect') return new MultiSelectProperty(props, context);
+    if (props.type === 'multiselect') return new MultiSelectProperty(props);
 
     throw new IncorrectPropertyTypeError(props.type || 'undefined', 'SelectPropertyCreatorService');
   }

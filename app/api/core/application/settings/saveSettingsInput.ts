@@ -211,7 +211,6 @@ const SaveSettingsInputSchema = z
       .regex(/^[a-zA-Z0-9._]*$/)
       .optional(),
     mapLayers: z.array(z.string()).min(1).optional(),
-    newNameGeneration: z.literal(true).optional(),
     ocrServiceEnabled: z.boolean().optional(),
     filterUnauthorizedRelated: z.boolean().optional(),
     sync: z.array(syncSchema).optional(),

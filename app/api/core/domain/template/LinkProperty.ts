@@ -2,7 +2,6 @@ import { z } from 'zod';
 import {
   Property,
   PropertyProps,
-  Context,
   CreatePropertyAssignmentInput,
 } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
@@ -27,8 +26,8 @@ const createSchema = (shouldValidateForRequired = false) =>
     .max(1, 'Link Property only accepts a single value.');
 
 class LinkProperty extends Property {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Link }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Link });
 
     this.validate();
   }

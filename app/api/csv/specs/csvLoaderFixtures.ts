@@ -165,7 +165,7 @@ export default {
           _id: db.id(),
           type: propertyTypes.text,
           label: 'additional tag(s)',
-          name: templateUtils.safeName('additional tag(s)', true),
+          name: templateUtils.safeName('additional tag(s)'),
         },
         {
           _id: db.id(),
@@ -296,7 +296,6 @@ export default {
         { key: 'es', label: 'Spanish' },
         { key: 'fr', label: 'French' },
       ],
-      newNameGeneration: true,
       dateFormat: 'dd/MM/yyyy',
     },
   ],

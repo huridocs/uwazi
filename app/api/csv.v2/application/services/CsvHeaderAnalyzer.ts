@@ -18,7 +18,6 @@ type PartitionResult = {
 type AnalyzerOptions = {
   availableLanguages: string[];
   defaultLanguage: string;
-  newNameGeneration: boolean;
 };
 type HeaderAnalysis = {
   headersWithoutLanguage: string[];
@@ -27,10 +26,10 @@ type HeaderAnalysis = {
   defaultLanguage: string;
 };
 
-const sanitizeHeaders = (headers: string[], newNameGeneration: boolean): SanitizedHeader[] =>
+const sanitizeHeaders = (headers: string[]): SanitizedHeader[] =>
   headers.map(header => ({
     original: header,
-    sanitized: PropertyName.fromLabel(header, { newNameGeneration }).value,
+    sanitized: PropertyName.fromLabel(header).value,
   }));
 
 const detectLanguageSuffix = (header: string, languages: string[]) => {
@@ -162,7 +161,7 @@ const collectHeaderIssues = (params: {
 
 class CsvHeaderAnalyzer {
   static analyze(headers: string[], template: Template, options: AnalyzerOptions): HeaderAnalysis {
-    const sanitizedHeaders = sanitizeHeaders(headers, options.newNameGeneration);
+    const sanitizedHeaders = sanitizeHeaders(headers);
     const { headersWithoutLanguage, languagesPerHeader } = partitionHeaders(
       sanitizedHeaders,
       options.availableLanguages
