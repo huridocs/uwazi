@@ -2,7 +2,7 @@ import { ZodError } from 'zod';
 import { TenantsRoutes } from '../../TenantsRoutes.js';
 
 const route = (name: string) => {
-  const found = TenantsRoutes.all().find(r => r.name === name);
+  const found = TenantsRoutes.all().find(r => r.command[r.command.length - 1] === name);
   if (!found) throw new Error(`no tenants ${name} route`);
   return found;
 };
@@ -21,7 +21,7 @@ const issuesOf = (fn: () => unknown) => {
 
 describe('TenantsRoutes', () => {
   it('should register every tenants command with its tenancy', () => {
-    expect(TenantsRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(TenantsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['tenants list', 'none'],
       ['tenants get', 'none'],
       ['tenants register', 'none'],
@@ -31,21 +31,11 @@ describe('TenantsRoutes', () => {
       ['tenants maintenance', 'none'],
       ['tenants stats', 'none'],
       ['tenants health-check', 'none'],
-      ['tenants clean', 'single'],
-      ['tenants export', 'single'],
-      ['tenants import', 'single'],
     ]);
   });
 
-  it('should never need Redis, and only the backup commands need the admin pool', () => {
-    TenantsRoutes.all().forEach(r => expect(r.needs.redis).toBe(false));
-    TenantsRoutes.all().forEach(r => expect(r.needs.sessions).toBe(false));
-
-    const byName = Object.fromEntries(TenantsRoutes.all().map(r => [r.name, r.needs]));
-    expect(byName.clean).toEqual({ redis: false, sessions: false, postgresAdmin: true });
-    expect(byName.export).toEqual({ redis: false, sessions: false, postgresAdmin: true });
-    expect(byName.import).toEqual({ redis: false, sessions: false, postgresAdmin: true });
-    expect(byName.list).toEqual({ redis: false, sessions: false });
+  it('should never need Redis, the session store or the admin pool', () => {
+    TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
   });
 
   describe('list', () => {
@@ -106,34 +96,6 @@ describe('TenantsRoutes', () => {
         maintenance: true,
       });
       expect(issuesOf(() => parse('maintenance', { name: 'acme' }))).toEqual(['maintenance']);
-    });
-  });
-
-  describe('import', () => {
-    it('should take clear and nullSync, leaving them undefined when absent', () => {
-      expect(parse('import', {})).toEqual({});
-      expect(parse('import', { clear: true })).toEqual({ clear: true });
-      expect(parse('import', { nullSync: true })).toEqual({ nullSync: true });
-    });
-
-    it('should reject non-boolean clear and nullSync', () => {
-      expect(issuesOf(() => parse('import', { clear: 'yes' }))).toEqual(['clear']);
-      expect(issuesOf(() => parse('import', { nullSync: 'yes' }))).toEqual(['nullSync']);
-    });
-
-    it('should expose clear and null-sync as flags merged into the request', () => {
-      const importRoute = route('import');
-      const merge = importRoute.requestFromFlags;
-      if (!merge) throw new Error('import should merge flags into its request');
-
-      expect(importRoute.request.parse(merge({ clear: true }, {}))).toEqual({ clear: true });
-      expect(importRoute.request.parse(merge({ 'null-sync': true }, {}))).toEqual({
-        nullSync: true,
-      });
-      expect(importRoute.request.parse(merge({ clear: false, 'null-sync': false }, {}))).toEqual(
-        {}
-      );
-      expect(importRoute.options).toBeDefined();
     });
   });
 });

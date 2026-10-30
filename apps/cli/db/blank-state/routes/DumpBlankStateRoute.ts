@@ -1,15 +1,13 @@
 import { z } from 'zod';
-import { LazyModule } from '../../routing/LazyModule.js';
-import type { Route } from '../../routing/Route.js';
+import { LazyModule } from '../../../routing/LazyModule.js';
+import type { Route } from '../../../routing/Route.js';
 import type { BlankStateDumpOutput } from '../contracts.js';
 
 const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class DumpBlankStateRoute implements Route<NoInput, BlankStateDumpOutput> {
-  readonly group = 'blank-state';
-
-  readonly name = 'dump';
+  readonly command = ['db', 'blank-state', 'dump'];
 
   readonly describe = "Dump a tenant's PostgreSQL data to the blank-state dump file";
 

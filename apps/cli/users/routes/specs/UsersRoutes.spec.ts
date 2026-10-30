@@ -2,7 +2,7 @@ import { ZodError } from 'zod';
 import { UsersRoutes } from '../../UsersRoutes.js';
 
 const route = (name: string) => {
-  const found = UsersRoutes.all().find(r => r.name === name);
+  const found = UsersRoutes.all().find(r => r.command[r.command.length - 1] === name);
   if (!found) throw new Error(`no users ${name} route`);
   return found;
 };
@@ -21,7 +21,7 @@ const issuesOf = (fn: () => unknown) => {
 
 describe('UsersRoutes', () => {
   it('should register the users commands with their tenancy', () => {
-    expect(UsersRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(UsersRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['users create', 'single'],
       ['users update', 'single'],
       ['users delete', 'single'],

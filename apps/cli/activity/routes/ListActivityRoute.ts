@@ -7,9 +7,7 @@ import {
 } from '../contracts.js';
 
 class ListActivityRoute implements Route<ListActivityRequest, ListActivityOutput> {
-  readonly group = 'activity';
-
-  readonly name = 'list';
+  readonly command = ['activity', 'list'];
 
   readonly describe = "List a tenant's latest activity log entries";
 
