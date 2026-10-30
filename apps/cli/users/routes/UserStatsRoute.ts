@@ -7,9 +7,7 @@ const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class UserStatsRoute implements Route<NoInput, RoleCountsOutput> {
-  readonly group = 'users';
-
-  readonly name = 'stats';
+  readonly command = ['users', 'stats'];
 
   readonly describe = 'Count active users by role, for a tenant or every tenant';
 

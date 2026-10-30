@@ -5,9 +5,7 @@ import type { TenantsOutput } from '../contracts.js';
 
 /** The empty request is still parsed, so an unexpected field is rejected. */
 class ListTenantsRoute implements Route<Record<string, never>, TenantsOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'list';
+  readonly command = ['tenants', 'list'];
 
   readonly describe = 'List every registered tenant, as stored';
 

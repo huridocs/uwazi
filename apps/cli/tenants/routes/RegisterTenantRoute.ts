@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class RegisterTenantRoute implements Route<RegisterTenantInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'register';
+  readonly command = ['tenants', 'register'];
 
   readonly describe = 'Register a tenant, or update the one already registered';
 

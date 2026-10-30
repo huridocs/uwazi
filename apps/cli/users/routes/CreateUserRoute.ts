@@ -6,9 +6,7 @@ import type { CreatedUserOutput } from '../contracts.js';
 import type { CreateUserCliInput } from '../controllers/CreateUserController.js';
 
 class CreateUserRoute implements Route<CreateUserCliInput, CreatedUserOutput> {
-  readonly group = 'users';
-
-  readonly name = 'create';
+  readonly command = ['users', 'create'];
 
   readonly describe = 'Create a user in a tenant';
 

@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class UpdateTenantRoute implements Route<UpdateTenantInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'update';
+  readonly command = ['tenants', 'update'];
 
   readonly describe = 'Change a tenant; omitted fields stay, null removes';
 

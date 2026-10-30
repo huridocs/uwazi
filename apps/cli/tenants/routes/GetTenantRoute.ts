@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class GetTenantRoute implements Route<TenantNameInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'get';
+  readonly command = ['tenants', 'get'];
 
   readonly describe = 'Print the registry row of one tenant, as stored';
 

@@ -4,7 +4,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { BLANK_STATE_DUMP_FILE } from '#api/infrastructure/blank_state/paths.js';
 import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
-import { assertPostgresCoreTenant } from '../../tenants/controllers/assertPostgresCoreTenant.js';
+import { assertPostgresCoreTenant } from '../../controllers/assertPostgresCoreTenant.js';
 import type { BlankStateDumpOutput } from '../contracts.js';
 import type { BlankStateDeps } from './BlankStateDeps.js';
 
