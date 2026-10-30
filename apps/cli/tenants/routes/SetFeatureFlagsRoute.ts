@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class SetFeatureFlagsRoute implements Route<SetFeatureFlagsInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'feature-flags';
+  readonly command = ['tenants', 'feature-flags'];
 
   readonly describe = 'Merge feature flags; a flag sent as null is removed';
 

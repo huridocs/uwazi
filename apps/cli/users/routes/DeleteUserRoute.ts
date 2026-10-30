@@ -5,9 +5,7 @@ import type { DeletedUserOutput } from '../contracts.js';
 import { UserReference, UserReferenceInput } from '../UserReference.js';
 
 class DeleteUserRoute implements Route<UserReferenceInput, DeletedUserOutput> {
-  readonly group = 'users';
-
-  readonly name = 'delete';
+  readonly command = ['users', 'delete'];
 
   readonly describe = 'Soft-delete a user';
 

@@ -2,8 +2,8 @@ import { ZodError } from 'zod';
 import { BlankStateRoutes } from '../../BlankStateRoutes.js';
 
 const route = (name: string) => {
-  const found = BlankStateRoutes.all().find(r => r.name === name);
-  if (!found) throw new Error(`no blank-state ${name} route`);
+  const found = BlankStateRoutes.all().find(r => r.command[r.command.length - 1] === name);
+  if (!found) throw new Error(`no db blank-state ${name} route`);
   return found;
 };
 
@@ -21,9 +21,9 @@ const issuesOf = (fn: () => unknown) => {
 
 describe('BlankStateRoutes', () => {
   it('should register the blank-state commands with their tenancy', () => {
-    expect(BlankStateRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
-      ['blank-state dump', 'single'],
-      ['blank-state restore', 'single'],
+    expect(BlankStateRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
+      ['db blank-state dump', 'single'],
+      ['db blank-state restore', 'single'],
     ]);
   });
 

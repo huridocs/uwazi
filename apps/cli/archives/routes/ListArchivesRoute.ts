@@ -5,9 +5,7 @@ import type { ArchivesOutput } from '../contracts.js';
 
 /** The empty request is still parsed, so an unexpected field is rejected. */
 class ListArchivesRoute implements Route<Record<string, never>, ArchivesOutput> {
-  readonly group = 'archives';
-
-  readonly name = 'list';
+  readonly command = ['archives', 'list'];
 
   readonly describe = 'List the archived tenants, as stored, newest first';
 

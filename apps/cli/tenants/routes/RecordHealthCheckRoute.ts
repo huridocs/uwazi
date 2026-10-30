@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class RecordHealthCheckRoute implements Route<RecordHealthCheckInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'health-check';
+  readonly command = ['tenants', 'health-check'];
 
   readonly describe = 'Store the latest health check for a tenant';
 

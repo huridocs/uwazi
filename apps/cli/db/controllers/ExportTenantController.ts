@@ -10,7 +10,7 @@ import type { TenantBackupDeps } from './TenantBackupDeps.js';
  * nothing on purpose: stdout carries the stream only, so the CLI presenter must stay silent.
  *
  * Progress defaults to on when stderr is a terminal and stdout is not a pipe. A file redirect
- * (`> file`) still reports progress; a pipe into `tenants import` stays silent, so the two halves
+ * (`> file`) still reports progress; a pipe into `db import` stays silent, so the two halves
  * of the pipeline don't fight over the terminal with competing cursor-control output.
  */
 class ExportTenantController {

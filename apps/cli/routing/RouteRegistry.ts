@@ -1,6 +1,6 @@
 import { ActivityRoutes } from '../activity/ActivityRoutes.js';
 import { ArchivesRoutes } from '../archives/ArchivesRoutes.js';
-import { BlankStateRoutes } from '../blank-state/BlankStateRoutes.js';
+import { DbRoutes } from '../db/DbRoutes.js';
 import { SegmentationRoutes } from '../segmentation/SegmentationRoutes.js';
 import { SessionsRoutes } from '../sessions/SessionsRoutes.js';
 import { SettingsRoutes } from '../settings/SettingsRoutes.js';
@@ -21,7 +21,7 @@ class RouteRegistry {
       ...SessionsRoutes.all(),
       ...ActivityRoutes.all(),
       ...ArchivesRoutes.all(),
-      ...BlankStateRoutes.all(),
+      ...DbRoutes.all(),
     ];
   }
 }

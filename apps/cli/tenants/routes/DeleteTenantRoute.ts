@@ -4,9 +4,7 @@ import { LazyModule } from '../../routing/LazyModule.js';
 import type { Route } from '../../routing/Route.js';
 
 class DeleteTenantRoute implements Route<TenantNameInput, { name: string }> {
-  readonly group = 'tenants';
-
-  readonly name = 'delete';
+  readonly command = ['tenants', 'delete'];
 
   readonly describe = 'Remove a tenant from the registry, leaving its data alone';
 

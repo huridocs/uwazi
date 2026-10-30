@@ -15,8 +15,7 @@ class ThingExists extends ConflictError {
 }
 
 const listThings = (handle: Route['handle']): Route => ({
-  group: 'things',
-  name: 'list',
+  command: ['things', 'list'],
   describe: 'List things',
   tenancy: 'none',
   needs: { redis: true, sessions: false },
@@ -280,9 +279,7 @@ describe('CliApplication', () => {
 
   it('should call route methods on the route itself, keeping `this`', async () => {
     class ClassRoute implements Route<{ name: string }, string> {
-      readonly group = 'things';
-
-      readonly name = 'show';
+      readonly command = ['things', 'show'];
 
       readonly describe = 'Show a thing';
 
@@ -316,6 +313,35 @@ describe('CliApplication', () => {
 
     expect(exitCode).toBe(ExitCode.Validation);
     expect(JSON.parse(stderr.text).error.code).toBe('usage.invalid');
+  });
+
+  it('should resolve a three-word command through nested groups', async () => {
+    const handle = jest.fn().mockResolvedValue({ restored: true });
+    const { app, stdout } = setUp({
+      ...listThings(handle),
+      command: ['db', 'blank-state', 'dump'],
+      request: z.object({}).strict(),
+    });
+
+    const exitCode = await app.run(['db', 'blank-state', 'dump']);
+
+    expect(exitCode).toBe(ExitCode.Ok);
+    expect(handle).toHaveBeenCalledWith({});
+    expect(JSON.parse(stdout.text)).toEqual({ restored: true });
+  });
+
+  it('should reject a nested group without its command', async () => {
+    const { app, stderr, connections } = setUp({
+      ...listThings(jest.fn()),
+      command: ['db', 'blank-state', 'dump'],
+      request: z.object({}).strict(),
+    });
+
+    const exitCode = await app.run(['db', 'blank-state']);
+
+    expect(exitCode).toBe(ExitCode.Validation);
+    expect(JSON.parse(stderr.text).error.code).toBe('usage.invalid');
+    expect(connections.open).not.toHaveBeenCalled();
   });
 
   it('should restore console methods after the command', async () => {

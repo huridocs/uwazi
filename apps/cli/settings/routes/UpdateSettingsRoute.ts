@@ -5,9 +5,7 @@ import type { SettingsOutput } from '../contracts.js';
 import type { UpdateSettingsCliInput } from '../controllers/UpdateSettingsController.js';
 
 class UpdateSettingsRoute implements Route<UpdateSettingsCliInput, SettingsOutput> {
-  readonly group = 'settings';
-
-  readonly name = 'update';
+  readonly command = ['settings', 'update'];
 
   readonly describe = 'Change settings; top-level fields sent replace the stored ones';
 

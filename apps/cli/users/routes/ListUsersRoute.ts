@@ -6,9 +6,7 @@ import type { UserListItem } from '../contracts.js';
 import type { ListUsersCliInput } from '../controllers/ListUsersController.js';
 
 class ListUsersRoute implements Route<ListUsersCliInput, UserListItem[]> {
-  readonly group = 'users';
-
-  readonly name = 'list';
+  readonly command = ['users', 'list'];
 
   readonly describe = 'List the active users of a tenant, or of every tenant';
 
