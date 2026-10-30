@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class UpdateStatsRoute implements Route<UpdateStatsInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'stats';
+  readonly command = ['tenants', 'stats'];
 
   readonly describe = 'Store the usage figures another tool computed';
 

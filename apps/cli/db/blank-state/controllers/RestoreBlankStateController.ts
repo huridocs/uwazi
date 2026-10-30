@@ -5,8 +5,8 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { BlankStateEmptyError } from '#api/infrastructure/blank_state/BlankStateEmptyError.js';
 import { BLANK_STATE_DUMP_FILE } from '#api/infrastructure/blank_state/paths.js';
 import { PgTenantBackup } from '#api/infrastructure/tenant_backup/PgTenantBackup.js';
-import { assertPostgresCoreTenant } from '../../tenants/controllers/assertPostgresCoreTenant.js';
-import { reindexTenant } from '../../tenants/controllers/reindexTenant.js';
+import { assertPostgresCoreTenant } from '../../controllers/assertPostgresCoreTenant.js';
+import { reindexTenant } from '../../controllers/reindexTenant.js';
 import type { BlankStateRestoreOutput } from '../contracts.js';
 import type { BlankStateDeps } from './BlankStateDeps.js';
 

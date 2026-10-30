@@ -14,7 +14,7 @@ const importOptions = (y: Argv): Argv =>
     .option('clear', {
       type: 'boolean',
       default: false,
-      describe: "Clean the tenant's data before importing (retry a failed import)",
+      describe: "Clear the tenant's data before importing (retry a failed import)",
     })
     .option('null-sync', {
       type: 'boolean',
@@ -31,9 +31,7 @@ const mergeFlags = (argv: CliArgv, request: unknown): unknown => {
 
 /** Loads a COPY stream from stdin; `--clear` wipes the tenant first, `--null-sync` clears sync config. */
 class ImportTenantRoute implements Route<ImportInput, ImportTenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'import';
+  readonly command = ['db', 'import'];
 
   readonly describe =
     'Restore a tenant from a backup stream on stdin, rewriting tenant_id (--null-sync clears sync config)';

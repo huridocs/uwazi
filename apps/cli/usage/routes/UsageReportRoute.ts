@@ -7,9 +7,7 @@ const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class UsageReportRoute implements Route<NoInput, UsageReportOutput> {
-  readonly group = 'usage';
-
-  readonly name = 'report';
+  readonly command = ['usage', 'report'];
 
   readonly describe = 'Report what a tenant consumes: content, storage, last activity';
 

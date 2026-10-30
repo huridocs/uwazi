@@ -1,7 +1,7 @@
 # uwazi CLI
 
 Command-line interface for administering Uwazi tenants, organised as `<group> <command>`, e.g.
-`users create`. It is meant for scripts and other programs as much as for people, so the
+`users create` (a command may nest one level, e.g. `db blank-state dump`). It is meant for scripts and other programs as much as for people, so the
 input is JSON, the output is JSON, and failures have stable codes and exit codes.
 
 It runs the same use cases as the HTTP API, in-process, as the system actor.
@@ -9,17 +9,17 @@ It runs the same use cases as the HTTP API, in-process, as the system actor.
 This page covers what every command shares. What each command does, its rules and its errors are
 in the module's own page:
 
-| Module                               | Commands                                                                                                                            |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                                                   |
-| [settings](docs/settings.md)         | `get`, `update`                                                                                                                     |
-| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check`, `clean`, `export`, `import` |
-| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                                                        |
-| [usage](docs/usage.md)               | `report`                                                                                                                            |
-| [sessions](docs/sessions.md)         | `last`                                                                                                                              |
-| [activity](docs/activity.md)         | `list`                                                                                                                              |
-| [archives](docs/archives.md)         | `list`                                                                                                                              |
-| [blank-state](docs/blank-state.md)   | `dump`, `restore`                                                                                                                   |
+| Module                               | Commands                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                      |
+| [settings](docs/settings.md)         | `get`, `update`                                                                                        |
+| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
+| [db](docs/db.md)                     | `clear`, `export`, `import`, `blank-state dump`, `blank-state restore`                                 |
+| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
+| [usage](docs/usage.md)               | `report`                                                                                               |
+| [sessions](docs/sessions.md)         | `last`                                                                                                 |
+| [activity](docs/activity.md)         | `list`                                                                                                 |
+| [archives](docs/archives.md)         | `list`                                                                                                 |
 
 ## Running it
 
@@ -48,7 +48,7 @@ talking to the wrong database:
 
 `MONGO_URI`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_APP_USER`,
 `POSTGRES_APP_PASSWORD`, `REDIS_HOST` for commands that need Redis, and `SESSIONS_BACKEND` for
-commands that read the session store (`usage report`, `sessions last`). The `blank-state` commands and `tenants clean`, `tenants export`, `tenants import`
+commands that read the session store (`usage report`, `sessions last`). The `db` commands
 also require `POSTGRES_USER` and `POSTGRES_PASSWORD`: they write through the admin/migrator pool,
 which bypasses row-level security.
 
@@ -59,16 +59,16 @@ and written, as it does for the server.
 
 ## Input
 
-| Option                | Meaning                                                                                                                                                                 |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                               |
-| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                              |
-| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                        |
-| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `archives …` and the registry commands under `tenants …` (not `tenants clean`/`export`/`import`). |
-| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                 |
-| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                          |
-| `--verbose`           | Add stack traces to errors.                                                                                                                                             |
-| `--help`, `--version` |                                                                                                                                                                         |
+| Option                | Meaning                                                                                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                                          |
+| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                                         |
+| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                                   |
+| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `archives …` and the registry commands under `tenants …` (not `db clear`/`export`/`import`/`blank-state …`). |
+| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                            |
+| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                                     |
+| `--verbose`           | Add stack traces to errors.                                                                                                                                                        |
+| `--help`, `--version` |                                                                                                                                                                                    |
 
 Unknown request fields are rejected. `--schema` is the reference for each command's input:
 
@@ -90,8 +90,8 @@ unknown field.
   results.
 - The registry commands under `tenants …` take neither. They administer the registry that sits
   above every tenant, so there is no tenant to run _in_; the tenant they act _on_ travels in the
-  request as `name`. The backup commands (`tenants clean`, `tenants export`, `tenants import`)
-  are the exception: they run in one tenant and take `--tenant`.
+  request as `name`. The `db` commands are the exception: they run in one tenant and take
+  `--tenant`.
 - `archives …` takes neither as well: an archived tenant is no longer in the registry.
 
 ## Output

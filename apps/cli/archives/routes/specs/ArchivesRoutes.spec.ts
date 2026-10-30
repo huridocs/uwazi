@@ -3,7 +3,7 @@ import { ArchivesRoutes } from '../../ArchivesRoutes.js';
 
 describe('ArchivesRoutes', () => {
   it('should register archives list outside any tenant', () => {
-    expect(ArchivesRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(ArchivesRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['archives list', 'none'],
     ]);
   });
@@ -25,6 +25,6 @@ describe('ArchivesRoutes', () => {
   });
 
   it('should be known to the uwazi binary', () => {
-    expect(RouteRegistry.all().map(r => `${r.group} ${r.name}`)).toContain('archives list');
+    expect(RouteRegistry.all().map(r => r.command.join(' '))).toContain('archives list');
   });
 });

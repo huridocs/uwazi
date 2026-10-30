@@ -3,7 +3,7 @@ import { SessionsRoutes } from '../../SessionsRoutes.js';
 
 describe('SessionsRoutes', () => {
   it('should register sessions last for one tenant or every tenant', () => {
-    expect(SessionsRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(SessionsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['sessions last', 'single-or-all'],
     ]);
   });
@@ -20,6 +20,6 @@ describe('SessionsRoutes', () => {
   });
 
   it('should be known to the uwazi binary', () => {
-    expect(RouteRegistry.all().map(r => `${r.group} ${r.name}`)).toContain('sessions last');
+    expect(RouteRegistry.all().map(r => r.command.join(' '))).toContain('sessions last');
   });
 });

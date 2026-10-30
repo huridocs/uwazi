@@ -33,6 +33,11 @@ type CliApplicationOptions = {
   env?: Env;
 };
 
+type CommandNode = {
+  commands: Map<string, CommandNode>;
+  routes: Route[];
+};
+
 /**
  * The `uwazi` binary: parses the command line and runs one route through the pipeline. Owns
  * the per-command lifecycle, so routes only map input to a use case.
@@ -116,31 +121,7 @@ class CliApplication {
       }
     );
 
-    this.groups().forEach((routes, group) => {
-      parser.command(group, `Manage ${group}`, groupParser => {
-        routes.forEach(route => {
-          groupParser.command(
-            route.name,
-            route.describe,
-            y => {
-              const withFlags = route.options ? route.options(y) : y;
-              return TenantOptions.options(route.tenancy, withFlags)
-                .option('request', RequestInput.option)
-                .option('schema', {
-                  type: 'boolean',
-                  default: false,
-                  describe: 'Print the JSON schema of --request and exit',
-                });
-            },
-            async args => {
-              onExit(await this.execute(route, args));
-            }
-          );
-        });
-        return groupParser.demandCommand(1, `Choose a ${group} command`);
-      });
-    });
-
+    this.registerTree(parser, this.commandTree(), onExit);
     return parser;
   }
 
@@ -218,7 +199,7 @@ class CliApplication {
     const { TenantMiddleware } = await this.loadBackend(route);
 
     const context: CliContext = {
-      route: `${route.group} ${route.name}`,
+      route: route.command.join(' '),
       input,
       json: !argv.pretty,
       tenants,
@@ -233,11 +214,50 @@ class CliApplication {
     return context.result;
   }
 
-  private groups(): Map<string, Route[]> {
-    return this.routes.reduce(
-      (groups, route) => groups.set(route.group, [...(groups.get(route.group) ?? []), route]),
-      new Map<string, Route[]>()
-    );
+  private commandTree(): CommandNode {
+    const root: CommandNode = { commands: new Map(), routes: [] };
+    for (const route of this.routes) {
+      let node = root;
+      route.command.forEach((word, index) => {
+        if (index === route.command.length - 1) {
+          node.routes.push(route);
+          return;
+        }
+        const next = node.commands.get(word) ?? { commands: new Map(), routes: [] };
+        node.commands.set(word, next);
+        node = next;
+      });
+    }
+    return root;
+  }
+
+  private registerTree(parser: Argv, node: CommandNode, onExit: (code: ExitCode) => void): void {
+    node.routes.forEach(route => {
+      parser.command(
+        route.command[route.command.length - 1],
+        route.describe,
+        y => {
+          const withFlags = route.options ? route.options(y) : y;
+          return TenantOptions.options(route.tenancy, withFlags)
+            .option('request', RequestInput.option)
+            .option('schema', {
+              type: 'boolean',
+              default: false,
+              describe: 'Print the JSON schema of --request and exit',
+            });
+        },
+        async args => {
+          onExit(await this.execute(route, args));
+        }
+      );
+    });
+
+    node.commands.forEach((child, word) => {
+      parser.command(word, `Manage ${word}`, subParser => {
+        this.registerTree(subParser, child, onExit);
+        return subParser.demandCommand(1, `Choose a ${word} command`);
+      });
+    });
   }
 
   private presenter(pretty: boolean, verbose: boolean): Presenter {
