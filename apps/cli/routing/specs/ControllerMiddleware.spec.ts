@@ -4,8 +4,7 @@ import { ControllerMiddleware } from '../ControllerMiddleware.js';
 import { Route } from '../Route.js';
 
 const route = (handle: Route['handle']): Route => ({
-  group: 'things',
-  name: 'list',
+  command: ['things', 'list'],
   describe: 'List things',
   tenancy: 'none',
   needs: { redis: false, sessions: false },

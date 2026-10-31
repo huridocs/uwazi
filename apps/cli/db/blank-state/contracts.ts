@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * What `uwazi blank-state …` prints. Owned by the CLI, not shared with the HTTP API:
+ * What `uwazi db blank-state …` prints. Owned by the CLI, not shared with the HTTP API:
  * the manager depends on these shapes, so fields are only ever added.
  */
 

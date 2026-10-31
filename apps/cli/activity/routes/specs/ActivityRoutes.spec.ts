@@ -3,7 +3,7 @@ import { ActivityRoutes } from '../../ActivityRoutes.js';
 
 describe('ActivityRoutes', () => {
   it('should register activity list for exactly one tenant', () => {
-    expect(ActivityRoutes.all().map(r => [`${r.group} ${r.name}`, r.tenancy])).toEqual([
+    expect(ActivityRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['activity list', 'single'],
     ]);
   });
@@ -25,6 +25,6 @@ describe('ActivityRoutes', () => {
   });
 
   it('should be known to the uwazi binary', () => {
-    expect(RouteRegistry.all().map(r => `${r.group} ${r.name}`)).toContain('activity list');
+    expect(RouteRegistry.all().map(r => r.command.join(' '))).toContain('activity list');
   });
 });

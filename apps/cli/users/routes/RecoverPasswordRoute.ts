@@ -5,9 +5,7 @@ import type { RecoveryRequestedOutput } from '../contracts.js';
 import type { RecoverPasswordCliInput } from '../controllers/RecoverPasswordController.js';
 
 class RecoverPasswordRoute implements Route<RecoverPasswordCliInput, RecoveryRequestedOutput> {
-  readonly group = 'users';
-
-  readonly name = 'recover-password';
+  readonly command = ['users', 'recover-password'];
 
   readonly describe = 'Email a user a link to set a new password';
 

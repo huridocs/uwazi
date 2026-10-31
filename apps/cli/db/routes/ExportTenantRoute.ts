@@ -7,9 +7,7 @@ type NoInput = z.infer<typeof NoInput>;
 
 /** The COPY stream goes straight to stdout, so there is no result to present. */
 class ExportTenantRoute implements Route<NoInput, void> {
-  readonly group = 'tenants';
-
-  readonly name = 'export';
+  readonly command = ['db', 'export'];
 
   readonly describe =
     "Export a tenant's PostgreSQL data to stdout as a portable backup (COPY stream)";

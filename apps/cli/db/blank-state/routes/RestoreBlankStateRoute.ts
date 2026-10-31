@@ -1,7 +1,7 @@
 import type { Argv } from 'yargs';
 import { z } from 'zod';
-import { LazyModule } from '../../routing/LazyModule.js';
-import type { CliArgv, Route } from '../../routing/Route.js';
+import { LazyModule } from '../../../routing/LazyModule.js';
+import type { CliArgv, Route } from '../../../routing/Route.js';
 import type { BlankStateRestoreOutput } from '../contracts.js';
 import type { RestoreBlankStateInput } from '../controllers/RestoreBlankStateController.js';
 
@@ -16,9 +16,7 @@ const mergeForceFlag = (argv: CliArgv, request: unknown): unknown =>
   argv.force ? { ...(request as Record<string, unknown>), force: true } : request;
 
 class RestoreBlankStateRoute implements Route<RestoreBlankStateInput, BlankStateRestoreOutput> {
-  readonly group = 'blank-state';
-
-  readonly name = 'restore';
+  readonly command = ['db', 'blank-state', 'restore'];
 
   readonly describe = 'Restore the blank-state dump into a tenant (destructive with force)';
 
