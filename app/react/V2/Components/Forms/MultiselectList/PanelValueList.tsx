@@ -161,6 +161,7 @@ const PanelValueList = ({
                   >
                     <input
                       type="checkbox"
+                      id={row.value}
                       name={row.value}
                       checked={selected}
                       onChange={() => onToggle(row.value)}

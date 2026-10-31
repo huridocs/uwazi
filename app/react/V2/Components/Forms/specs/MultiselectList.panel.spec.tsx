@@ -70,6 +70,11 @@ describe('MultiselectList panel', () => {
     expect(screen.getByRole('checkbox', { name: 'Americas › Albania' })).toBeChecked();
   });
 
+  it('sets the checkbox id to the option value', () => {
+    renderPanel([option('thes1.2')]);
+    expect(screen.getByRole('checkbox')).toHaveAttribute('id', 'thes1.2');
+  });
+
   it('shows a short list in full, without the switch', () => {
     renderPanel([option('One'), option('Two')]);
     expect(screen.queryByRole('button', { name: 'All' })).not.toBeInTheDocument();
