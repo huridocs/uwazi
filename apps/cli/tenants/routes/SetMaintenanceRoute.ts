@@ -5,9 +5,7 @@ import type { Route } from '../../routing/Route.js';
 import type { TenantOutput } from '../contracts.js';
 
 class SetMaintenanceRoute implements Route<SetMaintenanceInput, TenantOutput> {
-  readonly group = 'tenants';
-
-  readonly name = 'maintenance';
+  readonly command = ['tenants', 'maintenance'];
 
   readonly describe = 'Put a tenant under maintenance, or take it out';
 

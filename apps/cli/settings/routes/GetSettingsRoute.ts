@@ -7,9 +7,7 @@ const NoInput = z.object({}).strict();
 type NoInput = z.infer<typeof NoInput>;
 
 class GetSettingsRoute implements Route<NoInput, SettingsOutput> {
-  readonly group = 'settings';
-
-  readonly name = 'get';
+  readonly command = ['settings', 'get'];
 
   readonly describe = "Print a tenant's whole settings document, sync included";
 

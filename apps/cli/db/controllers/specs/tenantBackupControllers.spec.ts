@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import type { Tenant } from '#api/tenants/tenantContext.js';
 import { NotPostgresTenantError } from '#api/infrastructure/tenant_backup/NotPostgresTenantError.js';
-import { CleanTenantController } from '../CleanTenantController.js';
+import { ClearTenantController } from '../ClearTenantController.js';
 import { ExportTenantController } from '../ExportTenantController.js';
 import { ImportTenantController } from '../ImportTenantController.js';
 
@@ -73,7 +73,7 @@ describe('tenant backup controllers', () => {
 
   it('rejects a tenant that is not running on Postgres', async () => {
     await expect(
-      testingEnvironment.runWithContext(async () => CleanTenantController.handle({ pool }), {
+      testingEnvironment.runWithContext(async () => ClearTenantController.handle({ pool }), {
         tenant: tenantFor(SOURCE_TENANT, false),
       })
     ).rejects.toBeInstanceOf(NotPostgresTenantError);
@@ -84,7 +84,7 @@ describe('tenant backup controllers', () => {
 
     const reindex = jest.fn(async () => undefined);
     const output = await testingEnvironment.runWithContext(
-      async () => CleanTenantController.handle({ pool, reindex }),
+      async () => ClearTenantController.handle({ pool, reindex }),
       { tenant: tenantFor(SOURCE_TENANT) }
     );
 
@@ -107,7 +107,7 @@ describe('tenant backup controllers', () => {
 
     await expect(
       testingEnvironment.runWithContext(
-        async () => CleanTenantController.handle({ pool, reindex }),
+        async () => ClearTenantController.handle({ pool, reindex }),
         { tenant: tenantFor(SOURCE_TENANT) }
       )
     ).rejects.toThrow('reindex boom');
