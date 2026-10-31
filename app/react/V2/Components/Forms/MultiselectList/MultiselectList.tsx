@@ -7,17 +7,12 @@ import { t, Translate } from '#app/I18N/index.js';
 import { debounce } from '#app/utils/index.js';
 import { Label } from '../Label.js';
 import { Checkbox } from '../Checkbox.js';
-import { CompactSearchInput } from '../CompactSearchInput.js';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';
 import { MultiselectListGroup } from './MultiselectListGroup.js';
+import { PanelValueList } from './PanelValueList.js';
 import { InputField, RadioSelect } from '../index.js';
 
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
-
-const relationshipPanelClassName =
-  'flex flex-col overflow-hidden rounded-lg border border-border bg-paper';
-
-const relationshipListClassName = 'w-full max-h-[11.25rem] overflow-y-auto px-2 py-2';
 
 const defaultListClass = 'w-full grow overflow-y-auto px-2 pt-2';
 
@@ -180,6 +175,11 @@ const MultiselectList = ({
     setSelectedOrSuggestedItems(newSet);
   }, [availableItems, selections]);
 
+  const applySearch = (value: string) => {
+    setSearchTerm(value);
+    setIsDirty(true);
+  };
+
   const handleSelect = (_value: string) => {
     let newValues;
     if (singleSelect) {
@@ -245,8 +245,7 @@ const MultiselectList = ({
         key={item.value}
         className={cx(
           !selected && searchTerm && !showAll && 'opacity-70',
-          itemClassName ??
-            (panel ? 'flex items-center py-0.5' : 'mb-2 flex items-center rounded-lg')
+          itemClassName ?? 'mb-2 flex items-center rounded-lg'
         )}
       >
         <Checkbox
@@ -288,7 +287,6 @@ const MultiselectList = ({
         onClick={() => handleGroupToggle(group.value)}
         itemContainerClassName={itemContainerClassName}
         itemClassName={itemClassName}
-        plain={Boolean(panel && checkboxes)}
       >
         {group.items?.map(renderItem)}
       </MultiselectListGroup>
@@ -314,12 +312,7 @@ const MultiselectList = ({
 
   const renderFilters = () =>
     !hideFilters ? (
-      <div
-        className={
-          panel ? 'flex flex-nowrap border-b border-border px-3 py-2' : 'flex flex-nowrap mx-1 my-4'
-        }
-        data-testid="multiselectlist-filters"
-      >
+      <div className="mx-1 my-4 flex flex-nowrap" data-testid="multiselectlist-filters">
         <RadioSelect
           name="filter"
           orientation="horizontal"
@@ -351,72 +344,51 @@ const MultiselectList = ({
       </div>
     ) : null;
 
-  const renderSearch = () =>
-    panel ? (
-      <CompactSearchInput
-        id={id}
-        placeholder={t('System', 'Search', null, false)}
-        value={searchTerm}
-        onChange={value => {
-          setSearchTerm(value);
-          setIsDirty(true);
-        }}
-      />
-    ) : (
-      <InputField
+  if (panel) {
+    return (
+      <PanelValueList
         id={id}
         label={label}
-        hideLabel
-        placeholder={t('System', 'Search', null, false)}
-        value={searchTerm}
-        clearFieldAction={() => {
-          setSearchTerm('');
-        }}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setSearchTerm(e.currentTarget.value);
-          setIsDirty(true);
-        }}
+        hasErrors={Boolean(hasErrors)}
+        items={availableItems}
+        selections={selections}
+        onToggle={handleSelect}
+        searchTerm={searchTerm}
+        onSearchTerm={applySearch}
+        hideFilters={hideFilters}
+        noItems={<WrapChild>{noItems}</WrapChild>}
       />
     );
+  }
 
   return (
-    <div className={cx(panel ? 'flex flex-col' : 'flex h-full flex-col', className)}>
-      <div className={panel ? 'flex flex-col gap-1.5' : 'flex w-full flex-col gap-1.5 bg-paper'}>
+    <div className={cx('flex h-full flex-col', className)}>
+      <div className="flex w-full flex-col gap-1.5 bg-paper">
         <Label htmlFor={id} hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
-        {panel ? (
-          <div className={relationshipPanelClassName}>
-            {renderSearch()}
-            {renderFilters()}
-            {availableItems?.length === 0 ? (
-              <div className="px-3 py-2 text-xs text-ink-muted">
-                <WrapChild>{noItems}</WrapChild>
-              </div>
-            ) : (
-              <ul className={relationshipListClassName} ref={optionsRef}>
-                {availableItems?.map(renderItem)}
-              </ul>
-            )}
-          </div>
-        ) : (
-          <>
-            {renderSearch()}
-            {renderFilters()}
-          </>
-        )}
+        <InputField
+          id={id}
+          label={label}
+          hideLabel
+          placeholder={t('System', 'Search', null, false)}
+          value={searchTerm}
+          clearFieldAction={() => {
+            setSearchTerm('');
+          }}
+          onChange={event => applySearch(event.currentTarget.value)}
+        />
+        {renderFilters()}
       </div>
 
-      {!panel && availableItems?.length === 0 && (
+      {availableItems?.length === 0 && (
         <div className="flex h-full w-full grow items-start justify-center">
           <WrapChild>{noItems}</WrapChild>
         </div>
       )}
-      {!panel && (
-        <ul className={itemContainerClassName ?? defaultListClass} ref={optionsRef}>
-          {availableItems?.map(renderItem)}
-        </ul>
-      )}
+      <ul className={itemContainerClassName ?? defaultListClass} ref={optionsRef}>
+        {availableItems?.map(renderItem)}
+      </ul>
     </div>
   );
 };
