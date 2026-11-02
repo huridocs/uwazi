@@ -25,7 +25,13 @@ import {
   renderScalarContent,
 } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
-import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
+import {
+  connectionPillsForField,
+  isEntityRelationshipValue,
+  sharedRelationshipTemplateId,
+  type OpenEntityTarget,
+} from './Components/ConnectionPills.js';
+import { RelationshipTemplateDot } from './Components/RelationshipTemplateDot.js';
 import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
 import { SystemDatesLine, entityHasSystemDates } from './Components/SystemDatesLine.js';
@@ -122,10 +128,25 @@ const standardPropertyCard = ({
   if (!content) {
     return null;
   }
+  const templateProperty = templatePropertyById.get(field._id);
+  const sharedTemplateId =
+    isRelationshipProperty(field) && !field.hideLabel
+      ? sharedRelationshipTemplateId(
+          field.values.filter(isEntityRelationshipValue),
+          field.relationShipTarget || templateProperty?.content
+        )
+      : undefined;
   return fieldCard(
     field,
     metadataGridClassForProperty(field),
-    <MetadataCard title={title}>{content}</MetadataCard>
+    <MetadataCard
+      title={title}
+      icon={
+        sharedTemplateId ? <RelationshipTemplateDot templateId={sharedTemplateId} /> : undefined
+      }
+    >
+      {content}
+    </MetadataCard>
   );
 };
 
