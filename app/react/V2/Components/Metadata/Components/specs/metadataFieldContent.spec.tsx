@@ -117,7 +117,10 @@ describe('renderFieldContent density', () => {
 
     expect(screenMap).toHaveAttribute('data-height', '220');
     expect(screenMap).toHaveAttribute('data-show-controls', 'undefined');
-    expect(container.querySelector('[data-part="print-map"]')).toHaveAttribute('aria-hidden', 'true');
+    expect(container.querySelector('[data-part="print-map"]')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    );
     expect(printMap).toHaveAttribute('data-height', '302');
     expect(printMap).toHaveAttribute('data-show-controls', 'false');
     expect(container.querySelector('[data-part="map-credit"]')).not.toBeNull();

@@ -230,7 +230,9 @@ describe('inheritedCellContent', () => {
         'ia1'
       )
     );
-    expect(document.querySelector('[data-part="screen-map"] [data-testid="map"]')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-part="screen-map"] [data-testid="map"]')
+    ).toBeInTheDocument();
     expect(screen.queryByText('IA1')).not.toBeInTheDocument();
   });
 

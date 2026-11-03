@@ -219,9 +219,15 @@ describe('Entity view', () => {
 
     const root = document.querySelector('[data-print-root]');
     expect(root).not.toBeNull();
-    expect(within(root as HTMLElement).getByRole('heading', { name: 'Sample Entity' })).toBeInTheDocument();
-    expect(within(root as HTMLElement).queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
-    expect(root?.contains(sideTablist().getByRole('tab', { name: relationshipsSideTab }))).toBe(false);
+    expect(
+      within(root as HTMLElement).getByRole('heading', { name: 'Sample Entity' })
+    ).toBeInTheDocument();
+    expect(
+      within(root as HTMLElement).queryByRole('tab', { name: 'Metadata' })
+    ).not.toBeInTheDocument();
+    expect(root?.contains(sideTablist().getByRole('tab', { name: relationshipsSideTab }))).toBe(
+      false
+    );
   });
 
   it('keeps the pane viewer and hides the view switch without a page view', async () => {
