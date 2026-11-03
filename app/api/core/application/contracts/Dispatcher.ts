@@ -27,7 +27,6 @@ type TemplatePostProcessParams = {
   renamedProperties: { [oldName: string]: string };
   fullReindex: boolean;
   resaveForFilterChange: boolean;
-  tenantName: string;
 };
 
 type DenormalizeThesaurusParams = {
