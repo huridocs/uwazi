@@ -23,6 +23,7 @@ import {
 } from './updateEntitiesMetadataV1Bridge.js';
 import { validateConnectionSchema } from './validateConnectionSchema.js';
 import { relationshipsSearch } from './relationshipsSearch.js';
+import { ConnectedEntitiesForGrouping } from './ConnectedEntitiesForGrouping.js';
 import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 function excludeRefs(template) {
@@ -127,7 +128,15 @@ export default {
 
   async getGroupsByConnection(id, language, options = {}) {
     return Promise.all([
-      this.getByDocument(id, language, undefined, undefined, undefined, false),
+      this.getDocumentHubs(id).then(async connections =>
+        processRelationshipCollection({
+          relationshipArray: connections,
+          connectedDocuments: await ConnectedEntitiesForGrouping.load(connections, language),
+          sharedId: id,
+          unpublished: true,
+          language,
+        })
+      ),
       templatesAPI.get(),
       getRelationshipTypesDS().getAll(),
     ]).then(([references, templates, relationTypes]) => {
