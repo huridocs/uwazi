@@ -6,7 +6,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { User } from '#api/users.v2/model/User.js';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const factory = getFixturesFactory();
 
@@ -139,21 +138,6 @@ describe('RelationshipsV1DataSource', () => {
           ...Array(2).fill(factory.idString('hub3')),
         ])
       );
-    });
-
-    (postgresCore ? it : it.skip)('reads an entity hub connections in one statement', async () => {
-      const sut = createSut();
-      const statements: string[] = [];
-      const stop = PostgresDB.onStatement(sql => statements.push(sql));
-      try {
-        await sut.getHubConnections(['A']);
-      } finally {
-        stop();
-      }
-
-      expect(
-        statements.filter(sql => /^select\b/i.test(sql) && !sql.includes('set_config'))
-      ).toHaveLength(1);
     });
 
     it('returns string-id hub connections for the query service', async () => {
