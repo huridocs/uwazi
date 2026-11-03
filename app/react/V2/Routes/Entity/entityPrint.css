@@ -144,6 +144,26 @@
     display: none !important;
   }
 
+  /* Pins are SVG fills / cluster backgrounds. Without exact color adjust,
+     print drops them (or needs "Background graphics"). Keep ink on paper. */
+  [data-print-root] [data-part='print-map'] :is(.leaflet-marker-icon, .leaflet-marker-icon svg, .leaflet-marker-icon path, .marker-cluster, .marker-cluster > div) {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Clusters: border instead of translucent fill so the count stays visible
+     even when backgrounds are omitted. */
+  [data-print-root] [data-part='print-map'] .marker-cluster {
+    background: none !important;
+  }
+
+  [data-print-root] [data-part='print-map'] .marker-cluster > div {
+    background: none !important;
+    border: 0.5rem solid #6ecc39;
+    color: #1a1a1a !important;
+    font-weight: 600;
+  }
+
   [data-print-root] [data-part='map-credit'] {
     display: block !important;
     margin: 0.25rem 0 0 !important;
