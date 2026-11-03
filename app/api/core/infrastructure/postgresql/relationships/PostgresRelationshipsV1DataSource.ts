@@ -96,9 +96,14 @@ export class PostgresRelationshipsV1DataSource
     }
 
     const ownHubs = PostgresRelationshipsV1DataSource.ownHubsQuery(entitiesSharedIds, options);
+    const hubIds = await this.distinctHubsFrom(ownHubs.sql, ownHubs.bindings);
+    if (hubIds.length === 0) {
+      return [];
+    }
+
     const rows = await this.rawRows<PostgresRelationshipRow>(
-      `SELECT * FROM connections WHERE "hub" IN (${ownHubs.sql})`,
-      ownHubs.bindings
+      `SELECT * FROM connections WHERE "hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})`,
+      hubIds
     );
     return rows.map(PostgresRelationshipMapper.toV1Relationship);
   }
@@ -178,10 +183,17 @@ export class PostgresRelationshipsV1DataSource
   }
 
   async getHubConnectionsForEntity(sharedId: string): Promise<HubConnection[]> {
+    const hubIds = await this.distinctHubsFrom(`SELECT "hub" FROM connections WHERE "entity" = ?`, [
+      sharedId,
+    ]);
+    if (hubIds.length === 0) {
+      return [];
+    }
+
     const rows = await this.rawRows<PostgresRelationshipRow>(
       `SELECT c.* FROM connections c
-       WHERE c."hub" IN (SELECT "hub" FROM connections WHERE "entity" = ?)`,
-      [sharedId]
+       WHERE c."hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})`,
+      hubIds
     );
     return rows.map(PostgresRelationshipMapper.toHubConnection);
   }
@@ -415,9 +427,16 @@ export class PostgresRelationshipsV1DataSource
     entitySharedId: string,
     relationTypeFilter: (string | null)[]
   ): Promise<V1Relationship[]> {
-    const bindings: unknown[] = [entitySharedId, entitySharedId];
+    const hubIds = await this.distinctHubsFrom(`SELECT "hub" FROM connections WHERE "entity" = ?`, [
+      entitySharedId,
+    ]);
+    if (hubIds.length === 0) {
+      return [];
+    }
+
+    const bindings: unknown[] = [...hubIds, entitySharedId];
     let sql = `SELECT c.* FROM connections c
-       WHERE c."hub" IN (SELECT "hub" FROM connections WHERE "entity" = ?)
+       WHERE c."hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})
          AND c."entity" <> ?`;
 
     const nonNullTemplates = relationTypeFilter
@@ -482,7 +501,14 @@ export class PostgresRelationshipsV1DataSource
     filteredSharedIds: string[],
     limit: number
   ): Promise<SearchHub[]> {
-    const bindings: unknown[] = [entitySharedId, entitySharedId];
+    const hubIds = await this.distinctHubsFrom(`SELECT "hub" FROM connections WHERE "entity" = ?`, [
+      entitySharedId,
+    ]);
+    if (hubIds.length === 0) {
+      return [];
+    }
+
+    const bindings: unknown[] = [...hubIds, entitySharedId];
     let connectionMatch: string;
     if (filteredConnectionIds.length) {
       connectionMatch = `c."_id" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredConnectionIds.length)})`;
@@ -498,7 +524,7 @@ export class PostgresRelationshipsV1DataSource
 
     const rows = await this.rawRows<PostgresRelationshipRow>(
       `SELECT c.* FROM connections c
-       WHERE c."hub" IN (SELECT "hub" FROM connections WHERE "entity" = ?)
+       WHERE c."hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})
          AND (c."entity" = ? OR ${connectionMatch})`,
       bindings
     );
@@ -626,6 +652,12 @@ export class PostgresRelationshipsV1DataSource
     return Array.from({ length: count }, () => '?').join(', ');
   }
 
+  private static distinctHubIds(rows: { hub: string | null }[]): string[] {
+    return [
+      ...new Set(rows.map(row => row.hub).filter((hub): hub is string => typeof hub === 'string')),
+    ];
+  }
+
   private static toStringId(value: unknown): string {
     if (value === undefined || value === null) return '';
     if (value instanceof ObjectId) return value.toHexString();
@@ -635,6 +667,11 @@ export class PostgresRelationshipsV1DataSource
       return '';
     }
     return String(value);
+  }
+
+  private async distinctHubsFrom(sql: string, bindings: unknown[]): Promise<string[]> {
+    const hubRows = await this.rawRows<{ hub: string | null }>(sql, bindings);
+    return PostgresRelationshipsV1DataSource.distinctHubIds(hubRows);
   }
 
   private async rawRows<T = Record<string, unknown>>(
