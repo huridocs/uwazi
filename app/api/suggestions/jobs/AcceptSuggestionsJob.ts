@@ -6,7 +6,6 @@ import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { tenants } from '#api/tenants/index.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
 import { UwaziJobParams, UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
@@ -47,7 +46,10 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
     jobInfo?: JobInfo
   ): Promise<void> {
     const { extractorId } = params;
-    const tenantName = jobInfo?.namespace ?? tenants.current().name;
+    if (!jobInfo) {
+      throw new Error('AcceptSuggestionsJob requires a job namespace');
+    }
+    const tenantName = jobInfo.namespace;
     try {
       const { processed, progress } = await this.props.useCase.execute({
         extractorId,
