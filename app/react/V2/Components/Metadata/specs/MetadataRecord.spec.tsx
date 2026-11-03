@@ -983,18 +983,23 @@ describe('MetadataRecord', () => {
     expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
-  it('colors unconstrained relationship pills from the related entity template', () => {
+  it('puts the shared related-template color beside the field label, not on each chip', () => {
     renderRecord();
 
     const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
+    const titleRow = relationshipd.parentElement;
+    expect(titleRow).toBeInstanceOf(HTMLElement);
+    const labelDot = titleRow?.querySelector('span[aria-hidden="true"]');
+    expect(labelDot).toHaveStyle({ backgroundColor: '#2563eb' });
+    expect(labelDot).not.toHaveStyle({ backgroundColor: '#c03b22' });
+
     const card = relationshipd.closest('div.overflow-hidden');
     expect(card).toBeInstanceOf(HTMLElement);
     if (!(card instanceof HTMLElement)) {
       return;
     }
     const diana = within(card).getByRole('link', { name: /Diana/i });
-    const pill = diana.querySelector('span[title="Diana"]');
-    expect(pill?.firstElementChild).toHaveStyle({ backgroundColor: '#2563eb' });
-    expect(pill?.firstElementChild).not.toHaveStyle({ backgroundColor: '#c03b22' });
+    const quietChip = diana.querySelector('span[title="Diana"]');
+    expect(quietChip?.firstElementChild).not.toHaveStyle({ backgroundColor: '#2563eb' });
   });
 });
