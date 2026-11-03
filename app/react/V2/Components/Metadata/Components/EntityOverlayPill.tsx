@@ -21,11 +21,16 @@ type EntityOverlayPillProps = {
   label: string;
   icon?: EntityIconData | null;
   authorized?: boolean;
+  /** Shared-template lists: plain chip; the field label carries the type dot. */
+  quiet?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 const pillClass =
   'inline-flex min-w-0 max-w-full cursor-pointer items-center rounded-md transition-opacity hover:opacity-80';
+
+const quietChipClass =
+  'inline-flex h-6 min-w-0 max-w-full items-center rounded-md border border-border-soft bg-paper px-2 text-xs font-medium text-ink transition-colors hover:bg-warm';
 
 const EntityOverlayPill = ({
   sharedId,
@@ -33,10 +38,15 @@ const EntityOverlayPill = ({
   label,
   icon,
   authorized = true,
+  quiet = false,
   onOpenEntity,
 }: EntityOverlayPillProps) => {
   const settings = useAtomValue(settingsAtom);
-  const inner: ReactNode = (
+  const inner: ReactNode = quiet ? (
+    <span className={quietChipClass} title={label}>
+      <span className="truncate">{label}</span>
+    </span>
+  ) : (
     <span className="inline-flex max-w-full items-center gap-1.5">
       {icon ? <EntityIcon data={icon} /> : null}
       <TemplatePill templateId={templateId} label={label} />
