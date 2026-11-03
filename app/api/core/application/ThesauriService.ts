@@ -9,11 +9,6 @@ type Deps = {
   thesaurusTranslationService: ThesaurusTranslationService;
 };
 
-type UpdateContext = {
-  tenantName: string;
-  actorId?: string;
-};
-
 class ThesauriService {
   constructor(private deps: Deps) {}
 
@@ -44,14 +39,12 @@ class ThesauriService {
 
   private async denormalizeChangedValues(
     thesaurus: Thesaurus,
-    diff: ReturnType<Thesaurus['getDiff']>,
-    tenantName: string
+    diff: ReturnType<Thesaurus['getDiff']>
   ) {
     const valueIds = [...diff.updatedValues, ...diff.removedValues].map(value => value.id);
 
     if (valueIds.length) {
       await this.deps.dispatcher.denormalizeThesaurus({
-        tenantName,
         thesaurusId: thesaurus.id,
         valueIds,
       });
@@ -65,7 +58,7 @@ class ThesauriService {
     await this.deps.thesaurusTranslationService.create(thesaurus);
   }
 
-  async update(thesaurus: Thesaurus, context: UpdateContext): Promise<void> {
+  async update(thesaurus: Thesaurus): Promise<void> {
     const diff = thesaurus.getDiff();
 
     if (ThesauriService.shouldSkipUpdate(diff)) {
@@ -82,7 +75,7 @@ class ThesauriService {
 
     await this.deps.thesaurusTranslationService.update(diff);
 
-    await this.denormalizeChangedValues(thesaurus, diff, context.tenantName);
+    await this.denormalizeChangedValues(thesaurus, diff);
   }
 }
 

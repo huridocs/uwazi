@@ -39,7 +39,6 @@ const processImportRows = async (params: {
   context: ImportContext;
   callbacks: Callbacks;
   deps: ProcessRowsDeps;
-  tenantName: string;
   actorId: string;
   batchSize: number;
   failurePolicy: FailurePolicy;
@@ -52,7 +51,7 @@ const processImportRows = async (params: {
   cancelled: boolean;
   stopReason?: string;
 }> => {
-  const { context, callbacks, deps, batchSize, failurePolicy, tenantName, actorId } = params;
+  const { context, callbacks, deps, batchSize, failurePolicy, actorId } = params;
   const { totalRows } = context;
   let processedRows = context.csvImport.progress?.processedRows ?? 0;
   const startOffset = Math.min(
@@ -102,7 +101,6 @@ const processImportRows = async (params: {
       },
       context,
       insertContext: {
-        tenantName,
         actorId,
         targetLanguage: context.defaultLanguage,
       },

@@ -32,10 +32,7 @@ class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
 
   // eslint-disable-next-line max-statements
-  async apply(
-    pendingDoc: CsvImportThesauriValues,
-    executionContext: { tenantName: string; userId: string }
-  ): Promise<ApplyResult> {
+  async apply(pendingDoc: CsvImportThesauriValues): Promise<ApplyResult> {
     const existingThesaurus = await getThesaurusSchemaById(
       this.deps.thesauriDS,
       pendingDoc.thesaurusId
@@ -49,10 +46,7 @@ class PendingThesauriValuesApplier {
       const currentThesaurus = await getThesaurusById(this.deps.thesauriDS, pendingDoc.thesaurusId);
       const updatedThesaurusDomain = appendValuesToThesaurus(currentThesaurus, diff.valuesToAppend);
 
-      await this.deps.thesauriService.update(updatedThesaurusDomain, {
-        tenantName: executionContext.tenantName,
-        actorId: executionContext.userId,
-      });
+      await this.deps.thesauriService.update(updatedThesaurusDomain);
 
       updatedThesaurus = toSchema(updatedThesaurusDomain);
     }

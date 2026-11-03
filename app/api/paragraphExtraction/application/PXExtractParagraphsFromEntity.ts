@@ -81,7 +81,6 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
       await this.transactionManager.run(async () =>
         this.deps.entitiesService.delete(paragraphs, {
           actor: this.getActor(),
-          tenantName: this.tenant.name,
         })
       );
 

@@ -18,7 +18,6 @@ type ThesaurusOption = {
 type Deps = {
   thesauriDS: ThesauriDataSource;
   dispatcher: Dispatcher;
-  tenantName: string;
 };
 
 const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption[] =>
@@ -64,7 +63,6 @@ class PropagateThesaurusTranslationService {
         await this.deps.dispatcher.denormalizeThesaurus({
           thesaurusId,
           valueIds,
-          tenantName: this.deps.tenantName,
         });
       })
     );
