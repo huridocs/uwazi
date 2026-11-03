@@ -18,7 +18,10 @@ const EntityMainPaneHeaderComponent = ({
   const documentName = mainDocument?.originalname || mainDocument?.filename;
 
   return (
-    <div className="flex shrink-0 items-center gap-2 min-h-11 pt-1 pb-2 px-3 border-b border-border">
+    <div
+      data-part="entity-title"
+      className="flex shrink-0 items-center gap-2 min-h-11 pt-1 pb-2 px-3 border-b border-border"
+    >
       <div className="min-w-0 flex-1">
         <TemplateLabel templateId={entity.template} variant="tag" />
         <h1
