@@ -21,7 +21,6 @@ import type {
   RelationshipsV1DataSource,
   RelationshipSourceEntity,
   RelationshipUpdate,
-  SearchHub,
   V1Relationship,
 } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
@@ -420,10 +419,7 @@ export class MongoRelationshipsV1DataSource
     }));
   }
 
-  async getRightSideConnections(
-    entitySharedId: string,
-    relationTypeFilter: (string | null)[]
-  ): Promise<V1Relationship[]> {
+  async getRightSideConnections(entitySharedId: string): Promise<V1Relationship[]> {
     const hubsIds = (await this.getCollection().find({ entity: entitySharedId }).toArray()).map(
       r => r.hub
     );
@@ -432,139 +428,10 @@ export class MongoRelationshipsV1DataSource
       .find({
         hub: { $in: hubsIds },
         entity: { $ne: entitySharedId },
-        ...(relationTypeFilter.length
-          ? {
-              template: {
-                $in: relationTypeFilter.map(t =>
-                  t === null ? null : MongoRelationshipsV1DataSource.toObjectId(t)
-                ),
-              },
-            }
-          : {}),
       })
       .toArray();
 
     return docs.map(doc => MongoRelationshipsV1DataSource.toV1Relationship(doc));
-  }
-
-  async getMatchingHubsCount(
-    entitySharedId: string,
-    searchResultIds: string[],
-    filteredConnectionIds: string[]
-  ): Promise<number> {
-    const [countResult] = await this.getCollection()
-      .aggregate([
-        { $match: { entity: entitySharedId } },
-        {
-          $lookup: {
-            from: 'connections',
-            localField: 'hub',
-            foreignField: 'hub',
-            as: 'connections',
-          },
-        },
-        {
-          $match: {
-            ...(filteredConnectionIds.length
-              ? {
-                  'connections._id': {
-                    $in: filteredConnectionIds.map(id =>
-                      MongoRelationshipsV1DataSource.toObjectId(id)
-                    ),
-                  },
-                }
-              : { 'connections.entity': { $in: searchResultIds } }),
-          },
-        },
-        { $group: { _id: '$hub' } },
-        { $count: 'total' },
-      ])
-      .toArray();
-
-    return countResult?.total || 0;
-  }
-
-  async getHubsForSearch(
-    entitySharedId: string,
-    filteredConnectionIds: string[],
-    filteredSharedIds: string[],
-    limit: number
-  ): Promise<SearchHub[]> {
-    const rows = await this.getCollection()
-      .aggregate([
-        { $match: { entity: entitySharedId } },
-        { $project: { hub: 1 } },
-        {
-          $lookup: {
-            from: 'connections',
-            localField: 'hub',
-            foreignField: 'hub',
-            as: 'connections',
-          },
-        },
-        {
-          $project: {
-            hub: 1,
-            connections: {
-              $filter: {
-                input: '$connections',
-                as: 'conn',
-                cond: {
-                  $and: [
-                    {
-                      $or: [
-                        { $eq: ['$$conn.entity', entitySharedId] },
-                        ...(filteredConnectionIds.length
-                          ? [
-                              {
-                                $in: [
-                                  '$$conn._id',
-                                  filteredConnectionIds.map(id =>
-                                    MongoRelationshipsV1DataSource.toObjectId(id)
-                                  ),
-                                ],
-                              },
-                            ]
-                          : [{ $in: ['$$conn.entity', filteredSharedIds] }]),
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        },
-        { $match: { 'connections.entity': { $in: filteredSharedIds } } },
-        {
-          $addFields: {
-            sortValue: {
-              $min: {
-                $map: {
-                  input: '$connections',
-                  as: 'conn',
-                  in: {
-                    $cond: {
-                      if: { $ne: ['$$conn.entity', entitySharedId] },
-                      then: { $indexOfArray: [filteredSharedIds, '$$conn.entity'] },
-                      else: 999999,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        { $sort: { sortValue: 1 } },
-        { $limit: limit },
-      ])
-      .toArray();
-
-    return rows.map(row => ({
-      hub: String(row.hub),
-      connections: (row.connections as any[]).map(conn =>
-        MongoRelationshipsV1DataSource.toV1Relationship(conn)
-      ),
-    }));
   }
 
   async getEntitiesAffectedByHubs(hubIds: string[]): Promise<string[]> {

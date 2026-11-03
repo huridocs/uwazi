@@ -213,6 +213,23 @@ describe('Entity view', () => {
     expect(screen.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
   });
 
+  it('prints the main pane record without the tabs or the side pane', async () => {
+    renderEntity({ mainDocument: undefined });
+    await checkEntityRendered();
+
+    const root = document.querySelector('[data-print-root]');
+    expect(root).not.toBeNull();
+    expect(
+      within(root as HTMLElement).getByRole('heading', { name: 'Sample Entity' })
+    ).toBeInTheDocument();
+    expect(
+      within(root as HTMLElement).queryByRole('tab', { name: 'Metadata' })
+    ).not.toBeInTheDocument();
+    expect(root?.contains(sideTablist().getByRole('tab', { name: relationshipsSideTab }))).toBe(
+      false
+    );
+  });
+
   it('keeps the pane viewer and hides the view switch without a page view', async () => {
     renderEntity();
     await checkEntityRendered();

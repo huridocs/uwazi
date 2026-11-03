@@ -19,7 +19,6 @@ import type {
   RelationshipsV1DataSource,
   RelationshipSourceEntity,
   RelationshipUpdate,
-  SearchHub,
   V1Relationship,
 } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
@@ -423,142 +422,21 @@ export class PostgresRelationshipsV1DataSource
     }));
   }
 
-  async getRightSideConnections(
-    entitySharedId: string,
-    relationTypeFilter: (string | null)[]
-  ): Promise<V1Relationship[]> {
+  async getRightSideConnections(entitySharedId: string): Promise<V1Relationship[]> {
     const hubIds = await this.distinctHubsFrom(`SELECT "hub" FROM connections WHERE "entity" = ?`, [
       entitySharedId,
     ]);
     if (hubIds.length === 0) {
       return [];
-    }
-
-    const bindings: unknown[] = [...hubIds, entitySharedId];
-    let sql = `SELECT c.* FROM connections c
-       WHERE c."hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})
-         AND c."entity" <> ?`;
-
-    const nonNullTemplates = relationTypeFilter
-      .filter(type => type !== null)
-      .map(type => PostgresRelationshipsV1DataSource.toStringId(type));
-    const hasNull = relationTypeFilter.includes(null);
-
-    if (relationTypeFilter.length) {
-      if (hasNull && nonNullTemplates.length) {
-        sql += ` AND (c."template" IS NULL OR c."template" IN (${PostgresRelationshipsV1DataSource.placeholders(
-          nonNullTemplates.length
-        )}))`;
-        bindings.push(...nonNullTemplates);
-      } else if (hasNull) {
-        sql += ` AND c."template" IS NULL`;
-      } else if (nonNullTemplates.length) {
-        sql += ` AND c."template" IN (${PostgresRelationshipsV1DataSource.placeholders(nonNullTemplates.length)})`;
-        bindings.push(...nonNullTemplates);
-      }
-    }
-
-    const rows = await this.rawRows<PostgresRelationshipRow>(sql, bindings);
-    return rows.map(PostgresRelationshipMapper.toV1Relationship);
-  }
-
-  async getMatchingHubsCount(
-    entitySharedId: string,
-    searchResultIds: string[],
-    filteredConnectionIds: string[]
-  ): Promise<number> {
-    const bindings: unknown[] = [entitySharedId];
-    let inner: string;
-    if (filteredConnectionIds.length) {
-      inner = `c."_id" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredConnectionIds.length)})`;
-      bindings.push(
-        ...filteredConnectionIds.map(id => PostgresRelationshipsV1DataSource.toStringId(id))
-      );
-    } else {
-      inner = searchResultIds.length
-        ? `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(searchResultIds.length)})`
-        : 'FALSE';
-      bindings.push(...searchResultIds);
-    }
-
-    const rows = await this.rawRows<{ total: number }>(
-      `SELECT COUNT(DISTINCT r."hub")::int AS total
-       FROM connections r
-       WHERE r."entity" = ?
-         AND EXISTS (
-           SELECT 1 FROM connections c
-           WHERE c."hub" = r."hub" AND ${inner}
-         )`,
-      bindings
-    );
-
-    return rows[0]?.total ?? 0;
-  }
-
-  async getHubsForSearch(
-    entitySharedId: string,
-    filteredConnectionIds: string[],
-    filteredSharedIds: string[],
-    limit: number
-  ): Promise<SearchHub[]> {
-    const hubIds = await this.distinctHubsFrom(`SELECT "hub" FROM connections WHERE "entity" = ?`, [
-      entitySharedId,
-    ]);
-    if (hubIds.length === 0) {
-      return [];
-    }
-
-    const bindings: unknown[] = [...hubIds, entitySharedId];
-    let connectionMatch: string;
-    if (filteredConnectionIds.length) {
-      connectionMatch = `c."_id" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredConnectionIds.length)})`;
-      bindings.push(
-        ...filteredConnectionIds.map(id => PostgresRelationshipsV1DataSource.toStringId(id))
-      );
-    } else {
-      connectionMatch = filteredSharedIds.length
-        ? `c."entity" IN (${PostgresRelationshipsV1DataSource.placeholders(filteredSharedIds.length)})`
-        : 'FALSE';
-      bindings.push(...filteredSharedIds);
     }
 
     const rows = await this.rawRows<PostgresRelationshipRow>(
       `SELECT c.* FROM connections c
        WHERE c."hub" IN (${PostgresRelationshipsV1DataSource.placeholders(hubIds.length)})
-         AND (c."entity" = ? OR ${connectionMatch})`,
-      bindings
+         AND c."entity" <> ?`,
+      [...hubIds, entitySharedId]
     );
-
-    const byHub = new Map<string, V1Relationship[]>();
-    rows.forEach(row => {
-      const relation = PostgresRelationshipMapper.toV1Relationship(row);
-      const hub = relation.hub.toString();
-      const existing = byHub.get(hub);
-      if (existing) {
-        existing.push(relation);
-      } else {
-        byHub.set(hub, [relation]);
-      }
-    });
-
-    const hubs: { hub: string; connections: V1Relationship[]; sortValue: number }[] = [];
-    byHub.forEach((connections, hub) => {
-      if (!connections.some(connection => filteredSharedIds.includes(connection.entity))) {
-        return;
-      }
-
-      let sortValue = 999999;
-      connections.forEach(connection => {
-        if (connection.entity !== entitySharedId) {
-          sortValue = Math.min(sortValue, filteredSharedIds.indexOf(connection.entity));
-        }
-      });
-
-      hubs.push({ hub, connections, sortValue });
-    });
-
-    hubs.sort((a, b) => a.sortValue - b.sortValue);
-    return hubs.slice(0, limit).map(hub => ({ hub: hub.hub, connections: hub.connections }));
+    return rows.map(PostgresRelationshipMapper.toV1Relationship);
   }
 
   async getEntitiesAffectedByHubs(hubIds: string[]): Promise<string[]> {
