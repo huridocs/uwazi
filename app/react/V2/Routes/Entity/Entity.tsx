@@ -51,6 +51,7 @@ import { useResolvedEntityMainTab } from './Tabs/hooks/useResolvedEntityMainTab.
 import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
 import { useEntityMainTabs } from './Tabs/hooks/useEntityMainTabs.js';
 import { LoaderResponse } from './types.js';
+import './entityPrint.css';
 
 const EntityCreateRelationshipModal = () => {
   const { mainDocument } = useEntityLanguage();
@@ -81,22 +82,20 @@ const EntityMainColumn = React.memo(() => {
       className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
       data-testid="entity-v2"
     >
-      <div className="shrink-0">
-        <div className="px-3 pt-2 pb-1 md:pt-2.5">
-          <TabsMainButtons
-            entity={entity}
-            mainDocument={mainDocument}
-            onTabChange={onMainTabChange}
-          />
-        </div>
+      <div className="shrink-0 px-3 pt-2 pb-1 md:pt-2.5">
+        <TabsMainButtons
+          entity={entity}
+          mainDocument={mainDocument}
+          onTabChange={onMainTabChange}
+        />
+      </div>
+      <div data-print-root className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {showMainPaneHeader ? (
           <EntityMainPaneHeader
             entity={entity}
             showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
           />
         ) : null}
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <MainTabsContent
             activeTabId={mainTabId}
@@ -105,8 +104,8 @@ const EntityMainColumn = React.memo(() => {
             pagePlaintext={pagePlaintext}
           />
         </div>
-        <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
       </div>
+      <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
     </div>
   );
 });

@@ -111,9 +111,16 @@ describe('renderFieldContent density', () => {
   });
 
   it('uses default geo sizes when density omitted', () => {
-    render(<>{renderFieldContent(geoProp)}</>);
-    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '220');
-    expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'undefined');
+    const { container } = render(<>{renderFieldContent(geoProp)}</>);
+    const screenMap = container.querySelector('[data-part="screen-map"] [data-testid="map"]');
+    const printMap = container.querySelector('[data-part="print-map"] [data-testid="map"]');
+
+    expect(screenMap).toHaveAttribute('data-height', '220');
+    expect(screenMap).toHaveAttribute('data-show-controls', 'undefined');
+    expect(container.querySelector('[data-part="print-map"]')).toHaveAttribute('aria-hidden', 'true');
+    expect(printMap).toHaveAttribute('data-height', '302');
+    expect(printMap).toHaveAttribute('data-show-controls', 'false');
+    expect(container.querySelector('[data-part="map-credit"]')).not.toBeNull();
   });
 
   it('keeps a video min height and a scrollable timelink list', () => {
@@ -163,7 +170,8 @@ describe('renderFieldContent density', () => {
     expect(screen.getByTestId('media-player').parentElement?.className).not.toContain('max-h-32');
 
     rerender(<>{renderFieldContent(geoProp, { density: 'compact' })}</>);
-    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '160');
-    expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'false');
+    const screenMap = document.querySelector('[data-part="screen-map"] [data-testid="map"]');
+    expect(screenMap).toHaveAttribute('data-height', '160');
+    expect(screenMap).toHaveAttribute('data-show-controls', 'false');
   });
 });
