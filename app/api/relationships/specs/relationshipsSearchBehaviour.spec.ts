@@ -142,7 +142,9 @@ describe.each(testConfigs)('relationships search behaviour ($name)', ({ postgres
     expect(hubsOf(result, 'center')).toEqual(hubIds('hub1', 'hub2'));
   });
 
-  it('should pick a hub reaching the first search result when several hubs tie at the limit', async () => {
+  it('should pick the lowest hub id when several hubs tie at the limit', async () => {
+    // ids are assigned on first use: hub1 < hub2, but hub2 is stored first
+    const [lowest] = hubIds('hub1', 'hub2');
     await setUp({
       entities: [
         entity('center', 'templateA'),
@@ -150,8 +152,8 @@ describe.each(testConfigs)('relationships search behaviour ($name)', ({ postgres
         entity('b1', 'templateB', 'beta one'),
       ],
       connections: [
-        ...factory.hub('hub1', 'center', [{ entity: 'a1', template: 'rel1' }]),
         ...factory.hub('hub2', 'center', [{ entity: 'a1', template: 'rel2' }]),
+        ...factory.hub('hub1', 'center', [{ entity: 'a1', template: 'rel1' }]),
         ...factory.hub('hub3', 'center', [{ entity: 'b1', template: 'rel1' }]),
       ],
     });
@@ -160,11 +162,31 @@ describe.each(testConfigs)('relationships search behaviour ($name)', ({ postgres
 
     expect(result).toMatchObject({ totalHubs: 3, totalRows: 2, requestedHubs: 1 });
     expect(result.rows.map(row => row.sharedId)).toEqual(['a1', 'center']);
-    expect(hubsOf(result, 'a1')).toHaveLength(1);
-    expect(hubIds('hub1', 'hub2')).toContain(hubsOf(result, 'a1')[0]);
+    expect(hubsOf(result, 'a1')).toEqual([lowest]);
   });
 
-  // Accepted behaviour changes, asserted once hub selection moves in memory:
-  it.todo('should count a hub once toward `limit` when the entity appears twice in it');
-  it.todo('should order hubs tied on sort position by hub id');
+  it('should count a hub once toward `limit` when the entity appears twice in it', async () => {
+    await setUp({
+      entities: [
+        entity('center', 'templateA'),
+        entity('a1', 'templateA', 'alpha one'),
+        entity('b1', 'templateB', 'beta one'),
+      ],
+      connections: [
+        ...factory.hub('hub1', 'center', [
+          { entity: 'a1', template: 'rel1' },
+          { entity: 'center', template: 'rel1' },
+        ]),
+        ...factory.hub('hub2', 'center', [{ entity: 'b1', template: 'rel1' }]),
+      ],
+    });
+
+    const result = await search({ sort: 'title', order: 'asc', limit: 2 });
+
+    expect(result).toMatchObject({ totalHubs: 2, totalRows: 2, requestedHubs: 2 });
+    expect(result.rows.map(row => row.sharedId)).toEqual(['a1', 'b1', 'center']);
+    expect(hubsOf(result, 'a1')).toEqual(hubIds('hub1'));
+    expect(hubsOf(result, 'b1')).toEqual(hubIds('hub2'));
+    expect(hubsOf(result, 'center')).toEqual(hubIds('hub1', 'hub1', 'hub2'));
+  });
 });
