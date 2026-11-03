@@ -57,7 +57,6 @@ const setUpUseCase = () => {
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({
     entitiesStatusDS,
     dispatcher,
-    tenantName: 'any_tenant',
   });
 
   return {
@@ -90,7 +89,6 @@ describe('PXExtractParagraphFromEntities', () => {
       entitySharedId: input.entitySharedIds[0],
       userId: input.userId,
       extractorId: input.extractorId,
-      tenantName: 'any_tenant',
       entityStatusId: expect.any(String),
     });
 
@@ -98,9 +96,11 @@ describe('PXExtractParagraphFromEntities', () => {
       entitySharedId: input.entitySharedIds[1],
       userId: input.userId,
       extractorId: input.extractorId,
-      tenantName: 'any_tenant',
       entityStatusId: expect.any(String),
     });
+
+    expect((dispatcher.dispatch as jest.Mock).mock.calls[0][1]).not.toHaveProperty('tenantName');
+    expect((dispatcher.dispatch as jest.Mock).mock.calls[1][1]).not.toHaveProperty('tenantName');
   });
 
   it('should mark each EntityStatus as Processing', async () => {
@@ -159,8 +159,8 @@ describe('PXExtractParagraphFromEntities', () => {
       entitySharedId: input.entitySharedIds[0],
       userId: input.userId,
       extractorId: input.extractorId,
-      tenantName: 'any_tenant',
       entityStatusId: expect.any(String),
     });
+    expect((dispatcher.dispatch as jest.Mock).mock.calls[0][1]).not.toHaveProperty('tenantName');
   });
 });

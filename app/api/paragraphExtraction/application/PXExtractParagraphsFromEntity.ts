@@ -41,7 +41,6 @@ type Deps = {
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;
-  tenantName: string;
   entitiesService: EntitiesService;
   segmentationDirectory: SegmentationDirectory;
 };
@@ -64,7 +63,7 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
       const files = await this.getSegmentationFiles(segmentations);
 
       const extractionKey = PXExtractionKey.create({
-        tenantName: this.deps.tenantName,
+        tenantName: this.tenant.name,
         userId: input.userId,
         entityStatusId: input.entityStatusId,
       });
