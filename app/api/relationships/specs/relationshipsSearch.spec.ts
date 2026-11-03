@@ -2,6 +2,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import relationships from '../relationships.js';
 
 const fixutreFactory = getFixturesFactory();
@@ -79,13 +80,36 @@ const searchWithContext = async (sharedId: string, query: any, language: string,
     relationships.search(sharedId, query, language, user)
   );
 
-describe('relationships search', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures, 'relationships_search');
-  });
+type ConnectionRow = { hub: { toString(): string } };
+const withConnectionsByHub = <T extends { connections: ConnectionRow[] }>(row: T): T => ({
+  ...row,
+  connections: [...row.connections].sort((a, b) =>
+    a.hub.toString().localeCompare(b.hub.toString())
+  ),
+});
 
-  afterAll(async () => {
-    await testingEnvironment.tearDown();
+type TestConfig = { name: string; postgresCore: boolean };
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
+];
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
+describe.each(testConfigs)('relationships search ($name)', ({ postgresCore }) => {
+  const setUp = async (dbFixtures: DBFixture) => {
+    await testingEnvironment.setUp(dbFixtures, {
+      elasticIndex: 'relationships_search',
+      postgres: true,
+    });
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+  };
+
+  beforeEach(async () => {
+    await setUp(fixtures);
   });
 
   it('should return empty results when entity does not exists (should be 404, this is for backwards compat)', async () => {
@@ -109,7 +133,9 @@ describe('relationships search', () => {
       requestedHubs: 10,
     });
 
-    expect(results.rows).toMatchObject([
+    // hub3 and hub4 tie on sort position (both reach entity4); their relative order is
+    // backend-dependent, so compare connections in hub id order
+    expect(results.rows.map(withConnectionsByHub)).toMatchObject([
       {
         title: entity2.title,
         connections: [
@@ -276,7 +302,7 @@ describe('relationships search', () => {
       ],
     };
 
-    await testingEnvironment.setUp(customFixtures, 'relationships_search');
+    await setUp(customFixtures);
 
     const results = await searchWithContext(
       'entity1',
@@ -357,21 +383,18 @@ describe('relationships search', () => {
   });
 
   it('should filter out connections to self', async () => {
-    await testingEnvironment.setUp(
-      {
-        ...fixtures,
-        connections: [
-          ...fixutreFactory.hub('hub1', 'entity1', [
-            { entity: 'entity2', template: 'relationType1' },
-            { entity: 'entity1', template: null },
-          ]),
-          ...fixutreFactory.hub('hub2', 'entity1', [
-            { entity: 'entity3', template: 'relationType1' },
-          ]),
-        ],
-      },
-      'relationships_search'
-    );
+    await setUp({
+      ...fixtures,
+      connections: [
+        ...fixutreFactory.hub('hub1', 'entity1', [
+          { entity: 'entity2', template: 'relationType1' },
+          { entity: 'entity1', template: null },
+        ]),
+        ...fixutreFactory.hub('hub2', 'entity1', [
+          { entity: 'entity3', template: 'relationType1' },
+        ]),
+      ],
+    });
 
     const results = await searchWithContext('entity1', {}, 'en', {});
 

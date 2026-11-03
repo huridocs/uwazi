@@ -121,11 +121,6 @@ export type RelationshipPropertyHubCandidate = {
   templates: string[];
 };
 
-export type SearchHub = {
-  hub: string;
-  connections: V1Relationship[];
-};
-
 export interface RelationshipsV1DataSource {
   /** Generic reads. */
   find(query?: RelationshipQuery, options?: FindOptions): Promise<V1Relationship[]>;
@@ -173,21 +168,8 @@ export interface RelationshipsV1DataSource {
     sharedId: string,
     relationType: string
   ): Promise<RelationshipPropertyHubCandidate[]>;
-  getRightSideConnections(
-    entitySharedId: string,
-    relationTypeFilter: (string | null)[]
-  ): Promise<V1Relationship[]>;
-  getMatchingHubsCount(
-    entitySharedId: string,
-    searchResultIds: string[],
-    filteredConnectionIds: string[]
-  ): Promise<number>;
-  getHubsForSearch(
-    entitySharedId: string,
-    filteredConnectionIds: string[],
-    filteredSharedIds: string[],
-    limit: number
-  ): Promise<SearchHub[]>;
+  /** Every connection of the hubs the entity is in, except the entity's own. */
+  getRightSideConnections(entitySharedId: string): Promise<V1Relationship[]>;
   getEntitiesAffectedByHubs(hubIds: string[]): Promise<string[]>;
   getHubsToDelete(hubIds: string[]): Promise<string[]>;
 }
