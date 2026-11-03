@@ -88,10 +88,8 @@ const sortBySearchResultOrder = (entitiesWithConnections, entitySharedId, search
   });
 
 const getRightSideConnections = async (entitySharedId, relationTypeFilter) => {
-  const all = await RelationshipsV1DataSourceFactory.default().getRightSideConnections(
-    entitySharedId,
-    []
-  );
+  const all =
+    await RelationshipsV1DataSourceFactory.default().getRightSideConnections(entitySharedId);
   return {
     all,
     ofRelationTypes: RelationshipsHubSelection.byRelationType(all, relationTypeFilter),

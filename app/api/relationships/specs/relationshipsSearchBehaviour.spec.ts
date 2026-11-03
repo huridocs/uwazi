@@ -6,7 +6,7 @@ import relationships from '../relationships.js';
 
 const factory = getFixturesFactory();
 
-const settings = [
+const settings: DBFixture['settings'] = [
   { _id: testingDB.id(), languages: [{ key: 'en', label: 'english', default: true }] },
 ];
 const templates = [factory.template('templateA'), factory.template('templateB')];
