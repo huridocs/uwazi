@@ -207,10 +207,8 @@ export function registerJobs(register: Register) {
       })
   );
 
-  register(AcceptSuggestionsJob, async (tenantName: string) => {
-    const { job } = await AcceptSuggestionsFactory.createDefault({
-      tenantName,
-    });
+  register(AcceptSuggestionsJob, async () => {
+    const { job } = await AcceptSuggestionsFactory.createDefault();
     return job;
   });
 

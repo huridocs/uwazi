@@ -2,18 +2,20 @@ import { ObjectId } from 'mongodb';
 import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
-import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { tenants } from '#api/tenants/index.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
 import { UwaziJobParams, UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type CustomParams = UwaziJobParams & {
-  tenantName: string;
   extractorId: string;
 };
 
 type Props = {
-  tenantName: string;
   useCase: AcceptSuggestionsUseCase;
   dispatcher: JobsDispatcher;
   batchSize: number;
@@ -39,8 +41,13 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
   }
 
   // eslint-disable-next-line max-statements
-  async handle(_heartBeatCallBack: HeartbeatCallback, params: CustomParams): Promise<void> {
+  async handle(
+    _heartBeatCallBack: HeartbeatCallback,
+    params: CustomParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
     const { extractorId } = params;
+    const tenantName = jobInfo?.namespace ?? tenants.current().name;
     try {
       const { processed, progress } = await this.props.useCase.execute({
         extractorId,
@@ -50,7 +57,7 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
       if (progress) {
         const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
         emitToTenantAdminsAndEditors(
-          params.tenantName,
+          tenantName,
           'ix_model_status',
           extractorId,
           'processing_auto_accept',
@@ -61,7 +68,7 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
         if ((progress.total || 0) > 0 && progress.processed >= (progress.total || 0)) {
           await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
           emitToTenantAdminsAndEditors(
-            params.tenantName,
+            tenantName,
             'ix_model_status',
             extractorId,
             'ready',
@@ -71,7 +78,7 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
         }
       } else {
         emitToTenantAdminsAndEditors(
-          params.tenantName,
+          tenantName,
           'ix_model_status',
           extractorId,
           'processing_auto_accept'
@@ -81,7 +88,6 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
       if (processed > 0) {
         await this.props.dispatcher.dispatch(AcceptSuggestionsJob, {
           extractorId,
-          tenantName: params.tenantName,
           userId: params.userId,
         });
         return;
@@ -90,7 +96,7 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
       // Auto-accept finished: cleanup model run and emit 'ready'
       await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
       emitToTenantAdminsAndEditors(
-        params.tenantName,
+        tenantName,
         'ix_model_status',
         extractorId,
         'ready',
