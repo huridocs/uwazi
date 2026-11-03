@@ -93,6 +93,7 @@ describe.each(testConfigs)('relationships search behaviour ($name)', ({ postgres
         entity('center', 'templateA'),
         entity('a1', 'templateA', 'alpha one'),
         entity('b1', 'templateB', 'beta one'),
+        entity('c1', 'templateA', 'gamma one'),
       ],
       connections: [
         // b1 is reached through rel1, but only rel1+templateA is requested
@@ -101,6 +102,8 @@ describe.each(testConfigs)('relationships search behaviour ($name)', ({ postgres
         ...factory.hub('hub2', 'center', [{ entity: 'a1', template: 'rel2' }]),
         // rel3 is not part of the filter at all
         ...factory.hub('hub3', 'center', [{ entity: 'a1', template: 'rel3' }]),
+        // c1 is only reached through rel3, so it is not searched at all
+        ...factory.hub('hub4', 'center', [{ entity: 'c1', template: 'rel3' }]),
       ],
     });
 

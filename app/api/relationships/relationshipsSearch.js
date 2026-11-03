@@ -3,6 +3,7 @@ import entities from '#api/entities/entities.js';
 import { ObjectId } from 'mongodb';
 import { search } from '../search/index.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
+import { RelationshipsHubSelection } from './RelationshipsHubSelection.js';
 
 const getMatchingHubsCount = async (entitySharedId, searchResultIds, filteredConnections) =>
   RelationshipsV1DataSourceFactory.default().getMatchingHubsCount(
@@ -99,17 +100,25 @@ const sortBySearchResultOrder = (entitiesWithConnections, entitySharedId, search
     return indexA - indexB;
   });
 
-const getRightSideConnections = async (entitySharedId, relationTypeFilter) =>
-  RelationshipsV1DataSourceFactory.default().getRightSideConnections(
+const getRightSideConnections = async (entitySharedId, relationTypeFilter) => {
+  const all = await RelationshipsV1DataSourceFactory.default().getRightSideConnections(
     entitySharedId,
-    relationTypeFilter
+    []
   );
+  return {
+    all,
+    ofRelationTypes: RelationshipsHubSelection.byRelationType(all, relationTypeFilter),
+  };
+};
 
 export const relationshipsSearch = async (entitySharedId, query, language, user) => {
   const { relationTypeFilter, entityTemplateFilter, filterCombinations } =
     processFilterCombinations(query);
 
-  const rightSideConnections = await getRightSideConnections(entitySharedId, relationTypeFilter);
+  const { ofRelationTypes: rightSideConnections } = await getRightSideConnections(
+    entitySharedId,
+    relationTypeFilter
+  );
 
   const searchResult = await search.search(
     {
