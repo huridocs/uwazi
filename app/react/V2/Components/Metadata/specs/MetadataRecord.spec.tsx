@@ -780,7 +780,7 @@ describe('MetadataRecord', () => {
     const rela = sectionForLabel('Relationshipa');
     const table = within(rela).getByRole('table');
     expect(rela).toHaveTextContent('Inherited long text content for relationship a');
-    expect(within(table).getByTestId('map')).toBeInTheDocument();
+    expect(table.querySelector('[data-part="screen-map"] [data-testid="map"]')).toBeInTheDocument();
     expect(within(table).getByRole('link', { name: /A1/i })).toBeInTheDocument();
     expect(within(table).getByRole('columnheader', { name: /Body text/ })).toBeInTheDocument();
     expect(within(table).getByRole('columnheader', { name: /Location/ })).toBeInTheDocument();
@@ -840,11 +840,10 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Own location' })).not.toBeInTheDocument();
-    const groupedMap = within(
-      screen
-        .getByText('Grouped geolocation properties')
-        .closest('div.overflow-hidden') as HTMLElement
-    ).getByTestId('map');
+    const groupedMap = screen
+      .getByText('Grouped geolocation properties')
+      .closest('div.overflow-hidden')
+      ?.querySelector('[data-part="screen-map"] [data-testid="map"]');
     expect(groupedMap).toHaveAttribute('data-marker-count', '2');
 
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
@@ -893,7 +892,9 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(
-      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+      sectionForLabel('Grouped geolocation properties').querySelector(
+        '[data-part="screen-map"] [data-testid="map"]'
+      )
     ).toHaveAttribute('data-marker-count', '1');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
@@ -976,7 +977,9 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(
-      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+      sectionForLabel('Grouped geolocation properties').querySelector(
+        '[data-part="screen-map"] [data-testid="map"]'
+      )
     ).toHaveAttribute('data-marker-count', '4');
 
     expect(screen.queryByRole('heading', { name: 'Inherited location A' })).not.toBeInTheDocument();

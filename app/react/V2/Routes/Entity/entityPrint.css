@@ -1,0 +1,179 @@
+/* Entity view V2 print. The main pane marks its record with data-print-root.
+   Ancestors drop the screen layout so the record flows onto the page, and
+   everything beside that path (navbar, tabs, side pane, footers) is hidden.
+   _print.scss does not apply while this root is present. */
+
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  html:has([data-print-root]),
+  html:has([data-print-root]) body,
+  html:has([data-print-root]) .tw-content,
+  html:has([data-print-root]) .dark {
+    color-scheme: light !important;
+    --color-theme-bg-primary: #fff !important;
+    --color-theme-bg-surface: #fff !important;
+    --color-theme-bg-warm: #fff !important;
+    --color-theme-bg-muted: #fff !important;
+    --color-theme-surface-raised: #fff !important;
+    --color-theme-surface-warm: #fff !important;
+    --color-theme-surface-page: #fff !important;
+    --color-theme-surface-parchment: #fff !important;
+    --color-theme-surface-muted: #fff !important;
+    --color-theme-text-primary: #1a1a1a !important;
+    --color-theme-action-primary: #1a1a1a !important;
+    --color-theme-text-secondary: #333 !important;
+    --color-theme-text-tertiary: #555 !important;
+    --color-theme-text-muted: #555 !important;
+    --color-theme-border-primary: #ede7db !important;
+    --color-theme-border-soft: #e2dbc9 !important;
+    --color-ink: #1a1a1a !important;
+    --color-paper: #fff !important;
+    --color-ink-tertiary: #555 !important;
+    --color-border: #ede7db !important;
+    --bg-primary: #fff !important;
+  }
+
+  html:has([data-print-root]),
+  html:has([data-print-root]) body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body:has([data-print-root]) :has([data-print-root]) {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-inline: 0 !important;
+    background: #fff !important;
+  }
+
+  body:has([data-print-root]) > :not([data-print-root], :has([data-print-root])),
+  body:has([data-print-root]) :has([data-print-root]) > :not([data-print-root], :has([data-print-root])) {
+    display: none !important;
+  }
+
+  [data-print-root] {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #1a1a1a !important;
+  }
+
+  [data-print-root] :not([data-part='map-frame'], [data-part='map-frame'] *) {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  [data-print-root],
+  [data-print-root] * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  [data-print-root] [data-part='entity-title'] {
+    margin: 0 0 1rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  [data-print-root] [data-part='entity-title'] :is(button, select) {
+    display: none !important;
+  }
+
+  [data-print-root] h1,
+  [data-print-root] h1 span {
+    display: block !important;
+    overflow: visible !important;
+    -webkit-line-clamp: unset !important;
+    font-size: 1.25rem;
+    line-height: 1.25;
+  }
+
+  [data-print-root] [data-property-row] {
+    display: block !important;
+  }
+
+  [data-print-root] [data-property-row] > * {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  [data-print-root] [data-field-key] {
+    break-inside: avoid;
+  }
+
+  [data-print-root] :is(h1, h2, h3) {
+    break-after: avoid;
+  }
+
+  /* Screen map steps aside. The paper copy was tiled at 19cm × 8cm while
+     hidden, then clipped to the card so the markers stay in frame. */
+  [data-print-root] [data-part='screen-map'] {
+    display: none !important;
+  }
+
+  [data-print-root] [data-part='map-frame'] {
+    height: 8cm !important;
+    overflow: hidden !important;
+    break-inside: avoid;
+    position: relative !important;
+  }
+
+  [data-print-root] [data-part='print-map'] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+  }
+
+  [data-print-root] [data-part='print-map'] .leaflet-control-container {
+    display: none !important;
+  }
+
+  /* Pins are SVG fills / cluster backgrounds. Without exact color adjust,
+     print drops them (or needs "Background graphics"). Keep ink on paper. */
+  [data-print-root] [data-part='print-map'] :is(.leaflet-marker-icon, .leaflet-marker-icon svg, .leaflet-marker-icon path, .marker-cluster, .marker-cluster > div) {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Clusters: border instead of translucent fill so the count stays visible
+     even when backgrounds are omitted. */
+  [data-print-root] [data-part='print-map'] .marker-cluster {
+    background: none !important;
+  }
+
+  [data-print-root] [data-part='print-map'] .marker-cluster > div {
+    background: none !important;
+    border: 0.5rem solid #6ecc39;
+    color: #1a1a1a !important;
+    font-weight: 600;
+  }
+
+  [data-print-root] [data-part='map-credit'] {
+    display: block !important;
+    margin: 0.25rem 0 0 !important;
+    font-size: 0.6875rem;
+    color: #555 !important;
+  }
+
+  [data-print-root] [data-part='map-credit'] a {
+    color: #555 !important;
+    border: 0 !important;
+    text-decoration: none !important;
+  }
+}
