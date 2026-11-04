@@ -10,7 +10,6 @@ import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
@@ -26,7 +25,6 @@ import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type Input = {
   importId: string;
-  tenantName?: string;
   userId?: string;
   callbacks: Callbacks;
 };
@@ -58,7 +56,6 @@ type FinalizeSuccessInput = {
   processedRows: number;
   failedRows: number;
   importId: string;
-  tenantName: string;
   userId: string;
 };
 
@@ -100,15 +97,7 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   }
 
   private async finalizeSuccess(input: FinalizeSuccessInput) {
-    const {
-      entitiesCreated,
-      entitiesUpdated,
-      processedRows,
-      failedRows,
-      importId,
-      tenantName,
-      userId,
-    } = input;
+    const { entitiesCreated, entitiesUpdated, processedRows, failedRows, importId, userId } = input;
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
       const updatedStats: CsvImportStats = {
@@ -123,16 +112,11 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
       const withStats = withStatus.withStats(updatedStats);
       const withFilesCleanup = CsvImportDomain.withFilesCleanup(withStats, 'pending');
       await this.deps.csvImportsDS.update(withFilesCleanup);
-      await this.dispatchFilesCleanup(importId, tenantName, userId);
+      await this.dispatchFilesCleanup(importId, userId);
     });
   }
 
-  private async runImport(
-    importId: string,
-    callbacks: Callbacks,
-    tenantName: string,
-    userId?: string
-  ) {
+  private async runImport(importId: string, callbacks: Callbacks, userId?: string) {
     const context = await loadCsvImportEntitiesContext(
       {
         csvImportsDS: this.deps.csvImportsDS,
@@ -162,7 +146,6 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
           fileStorage: this.deps.fileStorage,
           idGenerator: this.deps.idGenerator,
         },
-        tenantName,
         actorId,
         batchSize: this.getBatchSize(),
         failurePolicy: CSV_IMPORT_FAILURE_POLICY,
@@ -188,7 +171,6 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
       processedRows,
       failedRows: report.failedRows,
       importId,
-      tenantName,
       userId: actorId,
     });
   }
@@ -215,9 +197,8 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
 
   private async runImportWithErrorHandling(input: Input) {
     const { importId, callbacks, userId } = input;
-    const tenantName = input.tenantName ?? tenants.current().name;
     try {
-      await this.runImport(importId, callbacks, tenantName, userId);
+      await this.runImport(importId, callbacks, userId);
       await this.emitSuccessIfNotCancelled(importId, callbacks);
     } catch (error) {
       await this.handleRunImportError(importId, callbacks, error);

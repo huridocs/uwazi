@@ -118,7 +118,6 @@ describe('dataviz scheduled refresh jobs runtime migration', () => {
       await testingEnvironment.runWithContext(async () =>
         rescheduleDatavizRefresh({
           datavizId,
-          tenantName: TENANT,
           userId: 'user1',
           datavizDS: DatavizFactory.dataSource(),
           jobsDispatcher: ExecutionContext.jobsDispatcher,

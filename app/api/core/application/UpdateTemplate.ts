@@ -84,7 +84,6 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
     const context = {
       fullReindex,
       language,
-      tenantName: this.tenant.name,
       userId: this.actorId,
     };
 

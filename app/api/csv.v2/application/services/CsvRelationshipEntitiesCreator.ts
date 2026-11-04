@@ -34,10 +34,9 @@ const createRelationshipEntitiesBatch = async (params: {
   transactionManager: TransactionManager;
   templateId: string;
   titles: string[];
-  tenantName: string;
   userId: string;
 }) => {
-  const { entitiesService, transactionManager, templateId, titles, tenantName, userId } = params;
+  const { entitiesService, transactionManager, templateId, titles, userId } = params;
   if (!titles.length) {
     return 0;
   }
@@ -52,7 +51,6 @@ const createRelationshipEntitiesBatch = async (params: {
   );
   await transactionManager.run(async () => {
     await entitiesService.insert(entities, {
-      tenantName,
       actorId: userId,
       targetLanguage: entities[0].languages[0],
     });

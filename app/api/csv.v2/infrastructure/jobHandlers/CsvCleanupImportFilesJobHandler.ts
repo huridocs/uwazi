@@ -7,7 +7,6 @@ import {
 import { CsvCleanupImportFilesJob } from '../../application/jobs/CsvCleanupImportFilesJob.js';
 
 type Params = UwaziJobParams & {
-  tenantName: string;
   importId: string;
 };
 
@@ -21,17 +20,14 @@ export class CsvCleanupImportFilesJobHandler extends UwaziJobHandler<Params> {
   }
 
   private static parseParams(params: DispatchableParams): Params {
-    const { importId, tenantName, userId } = params;
+    const { importId, userId } = params;
     if (typeof importId !== 'string') {
       throw new Error('CsvCleanupImportFilesJobHandler requires params.importId:string');
-    }
-    if (typeof tenantName !== 'string') {
-      throw new Error('CsvCleanupImportFilesJobHandler requires params.tenantName:string');
     }
     if (typeof userId !== 'string') {
       throw new Error('CsvCleanupImportFilesJobHandler requires params.userId:string');
     }
-    return { importId, tenantName, userId };
+    return { importId, userId };
   }
 
   async handleDispatch(

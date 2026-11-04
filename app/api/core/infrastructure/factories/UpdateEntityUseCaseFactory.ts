@@ -37,7 +37,6 @@ class UpdateEntityUseCaseFactory {
       { filesDS },
       {
         userId: ExecutionContext.actor?._id?.toString(),
-        tenantName: tenant.name,
       }
     );
 

@@ -6,7 +6,7 @@ import { Suggestions } from '#api/suggestions/suggestions.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { recomputeStatesForIds } from '../updateState.js';
 
-type Input = { extractorId: string; batchSize: number; tenantName?: string };
+type Input = { extractorId: string; batchSize: number };
 
 type Output = { processed: number; progress?: { total: number; processed: number } };
 

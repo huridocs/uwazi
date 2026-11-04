@@ -4,32 +4,30 @@ import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors
 type CleanupAwareUseCase = {
   shouldDispatchCleanupOnCancelled(importId: string): Promise<boolean>;
   shouldDispatchCleanupOnFailed(importId: string): Promise<boolean>;
-  dispatchFilesCleanup(importId: string, tenantName: string, userId: string): Promise<void>;
+  dispatchFilesCleanup(importId: string, userId: string): Promise<void>;
   markAsFailed(importId: string): Promise<void>;
 };
 
 const dispatchCleanupAfterCancelledStage = async (params: {
   useCase: CleanupAwareUseCase;
   importId: string;
-  tenantName: string;
   userId: string;
 }) => {
-  const { useCase, importId, tenantName, userId } = params;
+  const { useCase, importId, userId } = params;
   if (!(await useCase.shouldDispatchCleanupOnCancelled(importId))) {
     return;
   }
-  await useCase.dispatchFilesCleanup(importId, tenantName, userId);
+  await useCase.dispatchFilesCleanup(importId, userId);
 };
 
 const handleTerminalFailureCleanup = async (params: {
   useCase: CleanupAwareUseCase;
   importId: string;
-  tenantName: string;
   userId: string;
   error: unknown;
   jobInfo?: JobInfo;
 }) => {
-  const { useCase, importId, tenantName, userId, error, jobInfo } = params;
+  const { useCase, importId, userId, error, jobInfo } = params;
   const isLastRetry = Boolean(jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries);
   if (isLastRetry) {
     await useCase.markAsFailed(importId);
@@ -42,7 +40,7 @@ const handleTerminalFailureCleanup = async (params: {
   if (!(await useCase.shouldDispatchCleanupOnFailed(importId))) {
     return;
   }
-  await useCase.dispatchFilesCleanup(importId, tenantName, userId);
+  await useCase.dispatchFilesCleanup(importId, userId);
 };
 
 export { dispatchCleanupAfterCancelledStage, handleTerminalFailureCleanup };
