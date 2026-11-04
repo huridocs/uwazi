@@ -8,13 +8,13 @@ import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/U
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { QueueOptions } from '#api/core/libs/queue/application/QueueOptions.js';
 
-type Params = UwaziJobParams & PXExtractParagraphsFromEntityInput & { tenantName: string };
+type Params = UwaziJobParams & PXExtractParagraphsFromEntityInput;
 
 @QueueOptions({ lockWindow: 1000 * 60 })
 @PrivilegedJob()
 class PXExtractParagraphsFromEntityJob extends UwaziJobHandler<Params> {
   async handle(_heartBeatCallBack: HeartbeatCallback, params: Params, jobInfo: JobInfo) {
-    const useCase = PXExtractParagraphsFromEntityFactory.createDefault(params.tenantName);
+    const useCase = PXExtractParagraphsFromEntityFactory.createDefault();
     const isRetriable = jobInfo.retryCount < jobInfo.maxRetries;
 
     await useCase.execute(params, isRetriable);

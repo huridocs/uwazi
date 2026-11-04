@@ -135,7 +135,6 @@ const createSut = () =>
       mongoTransactionManager,
     });
     const idGenerator = MongoIdHandler;
-    const tenantName = tenants.current().name;
     const segmentationDirectory = SegmentationDirectoryFactory.default();
 
     const entitiesService = EntitiesServiceFactory.default({
@@ -155,14 +154,12 @@ const createSut = () =>
         entitiesStatusDS,
         idGenerator,
         logger: createMockLogger(),
-        tenantName,
         segmentationDirectory,
       },
       { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );
 
     return {
-      tenantName,
       extractionService,
       fileStorage,
       extractParagraphs,

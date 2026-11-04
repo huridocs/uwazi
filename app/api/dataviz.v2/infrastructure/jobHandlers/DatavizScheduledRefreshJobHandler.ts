@@ -12,7 +12,6 @@ import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/U
 
 type Params = {
   datavizId: string;
-  tenantName: string;
 } & UwaziJobParams;
 
 type JobDependencies = {
@@ -29,7 +28,6 @@ class DatavizScheduledRefreshJobHandler extends UwaziJobHandler<Params> {
   private async rescheduleIfNeeded(params: Params) {
     await rescheduleDatavizRefresh({
       datavizId: params.datavizId,
-      tenantName: params.tenantName,
       userId: params.userId,
       datavizDS: this.deps.datavizDS,
       jobsDispatcher: this.deps.jobsDispatcher,

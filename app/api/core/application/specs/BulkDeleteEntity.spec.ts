@@ -158,7 +158,6 @@ describe('BulkDeleteEntityUseCase', () => {
       {
         name: 'BulkCleanupEntityJob',
         params: {
-          tenantName: tenants.current().name,
           sharedIds: expect.arrayContaining(['A1', 'A2', 'B1']),
           userId: actor._id.toString(),
         },
@@ -625,12 +624,13 @@ describe('BulkDeleteEntityUseCase', () => {
           expect.objectContaining({
             name: 'BulkCleanupEntityJob',
             params: {
-              tenantName: tenants.current().name,
               sharedIds: ['entity_with_write'],
               userId: collaboratorUser!._id!.toString(),
             },
           }),
         ]);
+
+        expect(jobs[0].params).not.toHaveProperty('tenantName');
 
         expect(spy).toHaveBeenCalledWith(['entity_with_write']);
 

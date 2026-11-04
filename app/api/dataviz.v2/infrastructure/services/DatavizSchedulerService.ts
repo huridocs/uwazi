@@ -8,7 +8,6 @@ import { cancelPendingDatavizRefreshJobs } from './cancelPendingDatavizRefreshJo
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;
-  tenantName: string;
   /**
    * The tenant's Mongo queue, given only to postgresCore tenants: refresh jobs dispatched before
    * the tenant switched wait there until their next run moves them to Postgres, so cancelling
@@ -36,7 +35,6 @@ class DatavizSchedulerService implements DatavizScheduler {
 
     const params = {
       datavizId: dataviz.id,
-      tenantName: this.deps.tenantName,
       userId: actor._id.toString(),
     };
 

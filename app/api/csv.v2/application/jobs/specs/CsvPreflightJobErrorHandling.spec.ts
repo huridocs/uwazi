@@ -85,7 +85,6 @@ describe('CsvPreflightJob error handling', () => {
     await expect(
       useCase.execute({
         importId: 'import',
-        tenantName: 'tenant',
         userId: 'user',
         callbacks,
       })

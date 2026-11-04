@@ -51,7 +51,6 @@ class CreateEntityFromPDFUseCaseFactory {
       {},
       {
         userId: actor?._id?.toString(),
-        tenantName: tenant.name,
       }
     );
 

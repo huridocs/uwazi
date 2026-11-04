@@ -37,7 +37,6 @@ type Callbacks = BaseCallbacks & {
 
 type Input = {
   importId: string;
-  tenantName: string;
   userId: string;
   callbacks: Callbacks;
 };
@@ -109,18 +108,13 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     index: number;
     total: number;
     callbacks: Callbacks;
-    tenantName: string;
-    userId: string;
   }): Promise<{
     result: PendingValuesProcessingResult;
     updatedDoc: CsvImportThesauriValues;
   }> {
-    const { pendingDoc, index, total, callbacks, tenantName, userId } = params;
+    const { pendingDoc, index, total, callbacks } = params;
     const { diff, appliedValues } = await this.transactionManager.run(async () =>
-      this.pendingValuesApplier.apply(pendingDoc, {
-        tenantName,
-        userId,
-      })
+      this.pendingValuesApplier.apply(pendingDoc)
     );
     if (diff.valuesToAppend.length && Object.keys(diff.translations).length) {
       await UpdateEntriesByContextUseCaseFactory.default().execute({
@@ -165,10 +159,9 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     csvImport: CsvImport;
     pendingDocs: CsvImportThesauriValues[];
     importId: string;
-    tenantName: string;
     userId: string;
   }) {
-    const { csvImport, pendingDocs, importId, tenantName, userId } = params;
+    const { csvImport, pendingDocs, importId, userId } = params;
     const totals = CsvImportThesauriValues.aggregateStats(pendingDocs);
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
@@ -187,7 +180,6 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
         return;
       }
       await this.deps.jobsDispatcher.dispatch(CsvCreateRelationshipEntitiesJobHandler, {
-        tenantName,
         userId,
         importId,
       });
@@ -220,7 +212,7 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<void> {
-    const { importId, callbacks, tenantName, userId } = input;
+    const { importId, callbacks, userId } = input;
     if (await this.deps.csvImportsDS.isCancelled(importId)) {
       return;
     }
@@ -247,8 +239,6 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
           index,
           total: pendingDocs.length,
           callbacks,
-          tenantName,
-          userId,
         });
         pendingDocs[index - 1] = updatedDoc;
       }
@@ -257,7 +247,6 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
         csvImport,
         pendingDocs,
         importId,
-        tenantName,
         userId,
       });
       if (await this.deps.csvImportsDS.isCancelled(importId)) {
