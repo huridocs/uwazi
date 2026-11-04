@@ -96,7 +96,6 @@ describe('ExtractionUseCase', () => {
           error_message: undefined,
         },
         entityStatusId: extractionKey.entityStatusId,
-        tenantName: extractionKey.tenantName,
         userId: extractionKey.userId,
       },
       { retryCount: 2, maxRetries: 3, namespace: 'tenant' }
@@ -114,7 +113,6 @@ describe('ExtractionUseCase', () => {
     const params = {
       results: { success: false, data_url: 'any_url', error_message: 'error message' },
       entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };
 
@@ -127,7 +125,6 @@ describe('ExtractionUseCase', () => {
     const params = {
       results: { success: true, data_url: undefined, error_message: undefined },
       entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };
 
@@ -140,7 +137,6 @@ describe('ExtractionUseCase', () => {
     const params = {
       results: { success: false, data_url: 'url', error_message: undefined },
       entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };
 

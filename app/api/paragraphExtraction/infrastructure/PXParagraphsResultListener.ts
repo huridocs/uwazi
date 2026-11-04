@@ -49,7 +49,6 @@ export class PXParagraphsResultListener {
           error_message: results.error_message,
         },
         entityStatusId: extractionKey.entityStatusId,
-        tenantName: extractionKey.tenantName,
         userId: extractionKey.userId,
       });
     });

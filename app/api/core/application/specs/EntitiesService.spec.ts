@@ -190,7 +190,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
         });
 
@@ -215,7 +214,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
           emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
         });
@@ -232,7 +230,6 @@ describe('EntitiesService', () => {
           sut.insert([entity], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           })
         );
 
@@ -256,7 +253,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
         });
 
@@ -265,9 +261,11 @@ describe('EntitiesService', () => {
             sharedId: entity.sharedId,
             targetLanguage: 'en',
             templateId: entity.template.id,
-            tenantName: 'tenantName',
           },
         ]);
+        expect((dispatcher.syncRelationships as jest.Mock).mock.calls[0][0][0]).not.toHaveProperty(
+          'tenantName'
+        );
       });
     });
 
@@ -281,7 +279,6 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () =>
           sut.insert([entity1, entity2, entity3], {
             actorId: 'actorId',
-            tenantName: 'tenantName',
             targetLanguage: 'en',
           })
         );
@@ -306,7 +303,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity1, entity2, entity3], {
             targetLanguage: 'en',
             actorId: 'testActor',
-            tenantName: 'testTenant',
           });
         });
 
@@ -316,21 +312,21 @@ describe('EntitiesService', () => {
             sharedId: entity1.sharedId,
             targetLanguage: 'en',
             templateId: entity1.template.id,
-            tenantName: 'testTenant',
           },
           {
             sharedId: entity2.sharedId,
             targetLanguage: 'en',
             templateId: entity2.template.id,
-            tenantName: 'testTenant',
           },
           {
             sharedId: entity3.sharedId,
             targetLanguage: 'en',
             templateId: entity3.template.id,
-            tenantName: 'testTenant',
           },
         ]);
+        (dispatcher.syncRelationships as jest.Mock).mock.calls[0][0].forEach((item: object) => {
+          expect(item).not.toHaveProperty('tenantName');
+        });
       });
 
       it('should emit EntityCreatedEvent for each entity on commit', async () => {
@@ -342,7 +338,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity1, entity2], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
         });
 
@@ -373,7 +368,6 @@ describe('EntitiesService', () => {
           await sut.insert([entity1, entity2], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
           emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
         });
@@ -391,7 +385,6 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () =>
           sut.insert([entity1, entity2, entity3], {
             actorId: 'actorId',
-            tenantName: 'tenantName',
             targetLanguage: 'en',
           })
         );
@@ -432,7 +425,6 @@ describe('EntitiesService', () => {
           await sut.insert([], {
             targetLanguage: 'en',
             actorId: 'actorId',
-            tenantName: 'tenantName',
           });
         });
 

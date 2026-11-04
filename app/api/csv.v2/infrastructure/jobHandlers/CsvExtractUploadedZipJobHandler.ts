@@ -15,7 +15,6 @@ import {
 } from './CsvCleanupDispatch.js';
 
 type Params = UwaziJobParams & {
-  tenantName: string;
   importId: string;
 };
 
@@ -30,17 +29,14 @@ export class CsvExtractUploadedZipJobHandler extends UwaziJobHandler<Params> {
   }
 
   private static parseParams(params: DispatchableParams): Params {
-    const { importId, tenantName, userId } = params;
+    const { importId, userId } = params;
     if (typeof importId !== 'string') {
       throw new Error('CsvExtractUploadedZipJobHandler requires params.importId:string');
-    }
-    if (typeof tenantName !== 'string') {
-      throw new Error('CsvExtractUploadedZipJobHandler requires params.tenantName:string');
     }
     if (typeof userId !== 'string') {
       throw new Error('CsvExtractUploadedZipJobHandler requires params.userId:string');
     }
-    return { importId, tenantName, userId };
+    return { importId, userId };
   }
 
   async handleDispatch(
@@ -56,12 +52,14 @@ export class CsvExtractUploadedZipJobHandler extends UwaziJobHandler<Params> {
   }
 
   async handle(heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo): Promise<void> {
-    const { tenantName } = params;
+    if (!jobInfo) {
+      throw new Error('CsvExtractUploadedZipJobHandler requires a job namespace');
+    }
+    const tenantName = jobInfo.namespace;
 
     try {
       await this.deps.useCase.execute({
         importId: params.importId,
-        tenantName,
         userId: params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
@@ -103,14 +101,12 @@ export class CsvExtractUploadedZipJobHandler extends UwaziJobHandler<Params> {
       await dispatchCleanupAfterCancelledStage({
         useCase: this.deps.useCase,
         importId: params.importId,
-        tenantName,
         userId: params.userId,
       });
     } catch (e) {
       await handleTerminalFailureCleanup({
         useCase: this.deps.useCase,
         importId: params.importId,
-        tenantName,
         userId: params.userId,
         error: e,
         jobInfo,

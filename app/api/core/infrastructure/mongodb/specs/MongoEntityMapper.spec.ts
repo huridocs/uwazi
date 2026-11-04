@@ -462,6 +462,17 @@ describe('TemplateMapper', () => {
     ]);
   });
 
+  it('should map a null relationship metadata value without throwing', () => {
+    const entities = createEntitiesDBO();
+    const entitiesDomain = MongoEntityMapper.toDomain(entities as any[], templateDbo as any);
+    entitiesDomain.translations.en.metadata.relationship.value = null as any;
+
+    const [englishDbo] = MongoEntityMapper.toDBO(entitiesDomain).filter(
+      dbo => dbo.language === 'en'
+    );
+    expect(englishDbo.metadata.relationship).toBeNull();
+  });
+
   describe('preview field mapping', () => {
     it('should map preview from DBO to domain', () => {
       const entitiesWithPreview = factory.entityInMultipleLanguages(

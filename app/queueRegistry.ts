@@ -207,10 +207,8 @@ export function registerJobs(register: Register) {
       })
   );
 
-  register(AcceptSuggestionsJob, async (tenantName: string) => {
-    const { job } = await AcceptSuggestionsFactory.createDefault({
-      tenantName,
-    });
+  register(AcceptSuggestionsJob, async () => {
+    const { job } = await AcceptSuggestionsFactory.createDefault();
     return job;
   });
 
@@ -309,12 +307,12 @@ export function registerJobs(register: Register) {
 
   ListenerRegistration.registerJobs(register);
 
-  register(DatavizScheduledRefreshJobHandler, async namespace =>
-    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  register(DatavizScheduledRefreshJobHandler, async () =>
+    DatavizFactory.scheduledRefreshJobHandler()
   );
 
-  register(DatavizScheduledRefreshJobLegacyToken, async namespace =>
-    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  register(DatavizScheduledRefreshJobLegacyToken, async () =>
+    DatavizFactory.scheduledRefreshJobHandler()
   );
 
   register(

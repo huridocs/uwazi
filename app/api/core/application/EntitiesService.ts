@@ -57,7 +57,6 @@ type Deps = {
 };
 
 type InsertContext = {
-  tenantName: string;
   actorId: string;
   targetLanguage: LanguageISO6391;
   providedTranslations?: ProvidedTranslations;
@@ -72,7 +71,6 @@ type UpsertContext = {
 };
 
 type DeleteContext = {
-  tenantName: string;
   actor: User;
 };
 
@@ -146,7 +144,6 @@ class EntitiesService {
         sharedId: entity.sharedId,
         targetLanguage: context.targetLanguage,
         templateId: entity.template.id,
-        tenantName: context.tenantName,
       }))
     );
 
@@ -238,7 +235,6 @@ class EntitiesService {
     await this.deps.dispatcher.cleanupEntities(
       chunks.map(chunk => ({
         sharedIds: chunk,
-        tenantName: context.tenantName,
       }))
     );
 

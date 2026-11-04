@@ -96,7 +96,6 @@ class DatavizFactory {
   static schedulerService() {
     return new DatavizSchedulerService({
       jobsDispatcher: ExecutionContext.jobsDispatcher,
-      tenantName: ExecutionContext.tenant.name,
       mongoQueueDispatcher: isPostgresCoreActive() ? JobsDispatcherFactory.mongoQueue() : undefined,
     });
   }
@@ -205,7 +204,7 @@ class DatavizFactory {
     );
   }
 
-  static scheduledRefreshJobHandler(_namespace: string) {
+  static scheduledRefreshJobHandler() {
     return new DatavizScheduledRefreshJobHandler({
       job: this.refreshSnapshotJob(),
       datavizDS: this.dataSource(),

@@ -66,7 +66,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const buildInput = (importId: string, userId = 'u1') => ({
     importId,
-    tenantName: tenants.current().name,
     userId,
     callbacks,
   });
@@ -149,10 +148,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         expect(stagedRows[0].headers).toEqual(['title', 'description']);
         expect(stagedRows[0].values).toEqual(['Doc 1', 'Value, With, Commas']);
         expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvPreflightJobHandler, {
-          tenantName: tenants.current().name,
           userId,
           importId: id,
         });
+        expect(jobsDispatcher.dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
       }
     );
 
