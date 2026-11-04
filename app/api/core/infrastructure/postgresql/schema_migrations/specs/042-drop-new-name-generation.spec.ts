@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-describe('041-drop-new-name-generation', () => {
+describe('042-drop-new-name-generation', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });

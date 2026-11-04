@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { migration } from '../040-apply-new-property-names.js';
+import { migration } from '../041-apply-new-property-names.js';
 import {
   TENANT_A,
   TENANT_B,
   country,
   renameFixtures,
   settingsRow,
-} from './040-apply-new-property-names.fixtures.js';
+} from './041-apply-new-property-names.fixtures.js';
 
 const TABLES = [
   'settings',
@@ -31,7 +31,7 @@ const ofTenant = async (table: string, tenantId: string) =>
 const run = async (tenants = [TENANT_A, TENANT_B]) =>
   testingEnvironment.pg.runDataMigration(migration, tenants);
 
-describe('040-apply-new-property-names', () => {
+describe('041-apply-new-property-names', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });
