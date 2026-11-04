@@ -9,14 +9,13 @@ import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFac
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 
 type Props = {
-  tenantName: string;
   connection?: Db;
   mongoTransactionManager?: TransactionManager;
   entitiesStatusDS?: PXEntitiesStatusDataSource;
 };
 
 export class PXExtractParagraphsFromEntitiesFactory {
-  static async createDefault(props: Props) {
+  static async createDefault(props: Props = {}) {
     const connection = props.connection ?? getConnection();
     const transactionManager = props.mongoTransactionManager ?? ExecutionContext.transactionManager;
 
@@ -30,7 +29,6 @@ export class PXExtractParagraphsFromEntitiesFactory {
     return new PXExtractParagraphsFromEntities({
       entitiesStatusDS,
       dispatcher: ExecutionContext.jobsDispatcher,
-      tenantName: props.tenantName,
     });
   }
 }

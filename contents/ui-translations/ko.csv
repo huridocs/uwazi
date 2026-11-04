@@ -1706,6 +1706,7 @@ Yes,네
 You can add one or many items in this form.,이 양식에서 하나 또는 여러 개의 항목을 추가할 수 있습니다.
 You can also enter this secret key into your Authenticator app.,이 비밀 키를 인증기 앱에 입력할 수도 있습니다.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
+"You can delete at most 10,000 entities at once.","한 번에 최대 10,000개의 엔티티만 삭제할 수 있습니다."
 "You can embed advanced components like maps, charts and entity lists in your page.","페이지에 지도, 차트, 엔티티 목록과 같은 고급 구성 요소를 삽입할 수 있습니다."
 You do not have write permission on all entities,모든 엔티티에 대해 쓰기 권한이 없습니다.
 You have unsaved changes. Discard them? This action cannot be undone.,저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.

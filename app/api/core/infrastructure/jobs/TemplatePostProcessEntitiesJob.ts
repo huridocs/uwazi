@@ -1,4 +1,7 @@
-import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -6,7 +9,6 @@ import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/U
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type Params = UwaziJobParams & {
-  tenantName: string;
   entitiesIds: string[];
   templateId: string;
   language: string;
@@ -29,7 +31,11 @@ export class TemplatePostProcessEntitiesJob extends UwaziJobHandler<Params> {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, params: Params) {
+  async handle(_heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo) {
+    if (!jobInfo) {
+      throw new Error('TemplatePostProcessEntitiesJob requires a job namespace');
+    }
+    const tenantName = jobInfo.namespace;
     await this.dependencies.useCase.execute({
       entitiesIds: params.entitiesIds,
       language: params.language,
@@ -41,9 +47,9 @@ export class TemplatePostProcessEntitiesJob extends UwaziJobHandler<Params> {
       fullReindex: params.fullReindex,
       resaveForFilterChange: params.resaveForFilterChange,
       onAllEntitiesDenormalized: () =>
-        emitToTenant(params.tenantName, 'templateProcessed', { templateId: params.templateId }),
+        emitToTenant(tenantName, 'templateProcessed', { templateId: params.templateId }),
       onProgress: (processing: { active: boolean; totalJobs: number; completedJobs: number }) =>
-        emitToTenant(params.tenantName, 'templateProcessing', {
+        emitToTenant(tenantName, 'templateProcessing', {
           templateId: params.templateId,
           processing,
         }),

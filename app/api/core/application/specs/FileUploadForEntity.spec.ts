@@ -87,28 +87,23 @@ describe('FileUploadForEntity', () => {
       });
       const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
-      const { useCase, pathManager, actorId, tenantName } = testingEnvironment.runWithContext(
-        () => {
-          const filesService = FilesServiceFactory.default(
-            { jobsDispatcher, eventBus },
-            {
-              userId: ExecutionContext.actor?._id?.toString(),
-              tenantName: tenants.current().name,
-            }
-          );
-          const pm = new PathManager({ tenant: tenants.current() });
-          const aId = ExecutionContext.actor?._id?.toString();
-          const tName = tenants.current().name;
-          return {
-            useCase: FileUploadForEntityFactory.default({ filesService }),
-            pathManager: pm,
-            actorId: aId,
-            tenantName: tName,
-          };
-        }
-      );
+      const { useCase, pathManager, actorId } = testingEnvironment.runWithContext(() => {
+        const filesService = FilesServiceFactory.default(
+          { jobsDispatcher, eventBus },
+          {
+            userId: ExecutionContext.actor?._id?.toString(),
+          }
+        );
+        const pm = new PathManager({ tenant: tenants.current() });
+        const aId = ExecutionContext.actor?._id?.toString();
+        return {
+          useCase: FileUploadForEntityFactory.default({ filesService }),
+          pathManager: pm,
+          actorId: aId,
+        };
+      });
 
-      return { useCase, schedulePDFPostProcessMock, eventBus, pathManager, actorId, tenantName };
+      return { useCase, schedulePDFPostProcessMock, eventBus, pathManager, actorId };
     };
 
     it('should upload and save file in db', async () => {
@@ -130,7 +125,7 @@ describe('FileUploadForEntity', () => {
     });
 
     it('should dispatch PDFPostProcessJobHandler for document files', async () => {
-      const { useCase, schedulePDFPostProcessMock, tenantName } = createSut();
+      const { useCase, schedulePDFPostProcessMock } = createSut();
 
       const result = await useCase.execute({
         entityId: 'entity1',
@@ -141,9 +136,9 @@ describe('FileUploadForEntity', () => {
       expect(schedulePDFPostProcessMock).toHaveBeenCalledWith([
         {
           documentId: result._id,
-          tenantName,
         },
       ]);
+      expect(schedulePDFPostProcessMock.mock.calls[0][0][0]).not.toHaveProperty('tenantName');
     });
 
     it('should store file in the correct directory on filesystem', async () => {

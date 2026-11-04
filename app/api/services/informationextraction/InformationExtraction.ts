@@ -976,13 +976,10 @@ class InformationExtraction {
     );
 
     const dispatcher = ExecutionContext.jobsDispatcher;
-    const { job } = await AcceptSuggestionsFactory.createDefault({
-      tenantName: tenant.name,
-    });
+    const { job } = await AcceptSuggestionsFactory.createDefault();
     const userId = model?.processRun?.initiatorUserId;
     await dispatcher.dispatch(job.constructor as any, {
       extractorId,
-      tenantName: tenant.name,
       userId,
     });
     return true;

@@ -855,12 +855,15 @@ describe('CsvImportEntitiesJob (integration)', () => {
         expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
           RelationshipSyncJob,
           expect.objectContaining({
-            tenantName: tenants.current().name,
             templateId,
             targetLanguage: 'en',
             sharedId: expect.any(String),
           })
         );
+        const relationshipSyncCall = jobsDispatcher.dispatch.mock.calls.find(
+          ([job]) => job === RelationshipSyncJob
+        );
+        expect(relationshipSyncCall?.[1]).not.toHaveProperty('tenantName');
       }
     );
 

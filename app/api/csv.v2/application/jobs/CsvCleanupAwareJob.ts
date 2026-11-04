@@ -50,9 +50,8 @@ abstract class CsvCleanupAwareJob<
     return csvImport.status === CsvImportStatus.Failed && csvImport.filesCleanup === 'pending';
   }
 
-  async dispatchFilesCleanup(importId: string, tenantName: string, userId: string) {
+  async dispatchFilesCleanup(importId: string, userId: string) {
     await this.deps.jobsDispatcher.dispatch(CsvCleanupImportFilesJobHandler, {
-      tenantName,
       userId,
       importId,
     });

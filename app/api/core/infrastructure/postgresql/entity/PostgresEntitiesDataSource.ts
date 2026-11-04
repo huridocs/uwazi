@@ -319,12 +319,23 @@ export class PostgresEntitiesDataSource
     if (propertyNames.length === 0) return;
 
     const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
-    const conditions = propertyNames.flatMap(propName =>
-      deletedSharedIds.map(id => ({ [propName]: [{ value: id }] }))
-    );
+    // Expands each entity's reference values once and hash-joins them against the deleted ids.
+    // One `metadata @>` per property × id instead made Postgres test thousands of conditions on
+    // every row of the tenant.
     const rows = await this.table
       .where({ language: defaultLanguage })
-      .whereJsonSupersetOfAny('metadata', conditions)
+      .whereRaw(
+        `"sharedId" IN (
+          SELECT e."sharedId" FROM ?? e
+          CROSS JOIN LATERAL jsonb_each(e.metadata) AS prop
+          CROSS JOIN LATERAL jsonb_array_elements(
+            CASE WHEN jsonb_typeof(prop.value) = 'array' THEN prop.value ELSE '[]'::jsonb END
+          ) AS item
+          JOIN unnest(?::text[]) AS deleted(id) ON deleted.id = item->>'value'
+          WHERE e.language = ? AND prop.key = ANY(?::text[])
+        )`,
+        [this.table.tableName, deletedSharedIds, defaultLanguage, propertyNames]
+      )
       .select(['sharedId'])
       .all();
     const affectedSharedIds = rows.map(r => r.sharedId);
@@ -382,16 +393,17 @@ export class PostgresEntitiesDataSource
     const entries = Object.entries(propertyNames);
     if (!entries.length || !sharedIds.length) return;
 
-    let expr = 'metadata';
-    const bindings: unknown[] = [this.table.tableName];
+    const oldNames = entries.map(([oldName]) => oldName);
+    const buildPairs = entries.map(() => '?::text, metadata->?').join(', ');
+
+    const bindings: unknown[] = [this.table.tableName, oldNames];
     entries.forEach(([oldName, newName]) => {
-      expr = `(${expr} - ?::text[]) || jsonb_build_object(?::text, ${expr}->?)`;
-      bindings.push([oldName], newName, oldName);
+      bindings.push(newName, oldName);
     });
     bindings.push(sharedIds);
 
     await this.updateAndRecord(
-      `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
+      `UPDATE ?? SET metadata = (metadata - ?::text[]) || jsonb_build_object(${buildPairs}) WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
       bindings
     );
     this.markModified(sharedIds);

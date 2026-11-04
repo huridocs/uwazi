@@ -1713,6 +1713,7 @@ Yes,Evet
 You can add one or many items in this form.,Bu forma bir veya birden fazla öğe ekleyebilirsiniz.
 You can also enter this secret key into your Authenticator app.,Bu gizli anahtarı Authenticator uygulamanıza da girebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
+"You can delete at most 10,000 entities at once.","Aynı anda en fazla 10.000 varlık silebilirsiniz."
 "You can embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, grafikler ve varlık listeleri gibi gelişmiş bileşenleri ekleyebilirsiniz."
 You do not have write permission on all entities,Tüm varlıklar üzerinde yazma izniniz yok
 You have unsaved changes. Discard them? This action cannot be undone.,Kaydedilmemiş değişiklikleriniz var. Bunlardan vazgeçmek istiyor musunuz? Bu işlem geri alınamaz.

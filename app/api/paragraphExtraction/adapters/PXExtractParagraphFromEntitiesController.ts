@@ -25,9 +25,7 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
 
     this.ensureUser();
 
-    const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault({
-      tenantName: this.tenantName,
-    });
+    const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault();
 
     await useCase.execute({ ...dto, userId: this.user._id });
 

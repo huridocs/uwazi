@@ -5,7 +5,6 @@ import { computeNextLockedUntil } from '#shared/dataviz/computeNextLockedUntil.j
 
 type RescheduleParams = {
   datavizId: string;
-  tenantName: string;
   userId: string;
   datavizDS: DatavizDataSource;
   jobsDispatcher: JobsDispatcher;
@@ -13,7 +12,6 @@ type RescheduleParams = {
 
 const rescheduleDatavizRefresh = async ({
   datavizId,
-  tenantName,
   userId,
   datavizDS,
   jobsDispatcher,
@@ -31,7 +29,7 @@ const rescheduleDatavizRefresh = async ({
   const lockedUntil = computeNextLockedUntil(dataviz.refresh);
   await jobsDispatcher.dispatch(
     DatavizScheduledRefreshJobHandlerToken,
-    { datavizId, tenantName, userId },
+    { datavizId, userId },
     { lockedUntil }
   );
 };

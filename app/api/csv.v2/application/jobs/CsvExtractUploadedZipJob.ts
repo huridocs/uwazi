@@ -61,7 +61,6 @@ const toExtractFailure = (error: Error) => {
 
 type Input = {
   importId: string;
-  tenantName: string;
   userId: string;
   callbacks: Callbacks;
 };
@@ -71,7 +70,6 @@ type ExtractionParams = {
   destination: string;
   filename: string;
   callbacks: Callbacks;
-  tenantName: string;
   userId: string;
 };
 
@@ -112,9 +110,8 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
     return this.deps.csvImportsDS.isCancelled(importId);
   }
 
-  private async dispatchPreflight(importId: string, tenantName: string, userId: string) {
+  private async dispatchPreflight(importId: string, userId: string) {
     await this.deps.jobsDispatcher.dispatch(CsvPreflightJobHandler, {
-      tenantName,
       userId,
       importId,
     });
@@ -149,7 +146,7 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
 
   async handleExtractionSuccess(
     importId: string,
-    context: { tenantName: string; userId: string },
+    context: { userId: string },
     normalizeResult: FileNormalizeResult
   ) {
     // success: clear any prior failure and mark files extracted
@@ -166,7 +163,7 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
       if (await this.deps.csvImportsDS.isCancelled(importId)) {
         return;
       }
-      await this.dispatchPreflight(importId, context.tenantName, context.userId);
+      await this.dispatchPreflight(importId, context.userId);
     });
   }
 
@@ -247,14 +244,7 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
       return;
     }
     await this.stageRows(params.importId, params.destination, params.callbacks);
-    await this.handleExtractionSuccess(
-      params.importId,
-      {
-        tenantName: params.tenantName,
-        userId: params.userId,
-      },
-      normalizeResult
-    );
+    await this.handleExtractionSuccess(params.importId, { userId: params.userId }, normalizeResult);
     if (await this.isCancelled(params.importId)) {
       return;
     }
@@ -270,7 +260,7 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
   }
 
   async execute(input: Input): Promise<void> {
-    const { importId, callbacks, tenantName, userId } = input;
+    const { importId, callbacks, userId } = input;
     if (await this.isCancelled(importId)) {
       return;
     }
@@ -287,7 +277,6 @@ class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
       destination,
       filename,
       callbacks,
-      tenantName,
       userId,
     });
   }

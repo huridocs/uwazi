@@ -1714,6 +1714,7 @@ Yes,Yes
 You can add one or many items in this form.,You can add one or many items in this form.
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
+"You can delete at most 10,000 entities at once.","You can delete at most 10,000 entities at once."
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
