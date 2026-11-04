@@ -28,7 +28,6 @@ describe('rescheduleDatavizRefresh', () => {
 
     await rescheduleDatavizRefresh({
       datavizId: 'dv1',
-      tenantName: 'tenant1',
       userId: 'user1',
       datavizDS: datavizDS as any,
       jobsDispatcher: { dispatch } as any,
@@ -36,9 +35,10 @@ describe('rescheduleDatavizRefresh', () => {
 
     expect(dispatch).toHaveBeenCalledWith(
       DatavizScheduledRefreshJobHandlerToken,
-      expect.objectContaining({ datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' }),
+      { datavizId: 'dv1', userId: 'user1' },
       expect.objectContaining({ lockedUntil: expect.any(Number) })
     );
+    expect(dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
   });
 
   it('should not enqueue when the dataviz was deleted', async () => {
@@ -49,7 +49,6 @@ describe('rescheduleDatavizRefresh', () => {
 
     await rescheduleDatavizRefresh({
       datavizId: 'dv1',
-      tenantName: 'tenant1',
       userId: 'user1',
       datavizDS: datavizDS as any,
       jobsDispatcher: { dispatch } as any,

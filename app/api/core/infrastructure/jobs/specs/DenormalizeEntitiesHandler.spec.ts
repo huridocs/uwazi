@@ -211,7 +211,6 @@ describe('DenormalizeEntitiesHandler', () => {
       jest.fn(),
       {
         kind: 'thesaurus',
-        tenantName: tenants.current().name,
         userId,
         thesaurusId,
         valueIds: [factory.id('countries_canada').toString()],
@@ -227,12 +226,12 @@ describe('DenormalizeEntitiesHandler', () => {
       name: 'DenormalizeEntitiesChunkHandler',
       params: {
         kind: 'thesaurus',
-        tenantName: tenants.current().name,
         userId,
         thesaurusId,
       },
       namespace: tenants.current().name,
     });
+    expect(jobs[0].params).not.toHaveProperty('tenantName');
     expect([...jobs[0].params.sharedIds].sort()).toEqual(['entity_1', 'entity_6', 'entity_9']);
   });
 
@@ -244,7 +243,6 @@ describe('DenormalizeEntitiesHandler', () => {
       jest.fn(),
       {
         kind: 'relationships',
-        tenantName: tenants.current().name,
         userId,
         sharedIds: ['entity_1'],
       },
@@ -259,11 +257,11 @@ describe('DenormalizeEntitiesHandler', () => {
       name: 'DenormalizeEntitiesChunkHandler',
       params: {
         kind: 'relationships',
-        tenantName: tenants.current().name,
         userId,
       },
       namespace: tenants.current().name,
     });
+    expect(jobs[0].params).not.toHaveProperty('tenantName');
     expect([...jobs[0].params.sharedIds].sort()).toEqual(['entity_10', 'entity_6', 'entity_9']);
   });
 
@@ -277,7 +275,6 @@ describe('DenormalizeEntitiesHandler', () => {
       jest.fn(),
       {
         kind: 'thesaurus',
-        tenantName: tenants.current().name,
         userId,
         thesaurusId,
         valueIds: [],
@@ -313,7 +310,6 @@ describe('DenormalizeEntitiesHandler', () => {
       jest.fn(),
       {
         kind: 'relationships',
-        tenantName: tenants.current().name,
         userId: 'user-1',
         sharedIds: ['root'],
       },

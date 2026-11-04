@@ -105,12 +105,7 @@ describe('PendingThesauriValuesApplier', () => {
   ) => {
     const { applier, transactionManager } = applierBundle;
     return testingEnvironment.runWithContext(async () => {
-      const result = await transactionManager.run(async () =>
-        applier.apply(pendingDoc, {
-          tenantName: tenants.current().name,
-          userId: fixturesFactory.idString('pending-thesauri-user'),
-        })
-      );
+      const result = await transactionManager.run(async () => applier.apply(pendingDoc));
       if (result.diff.valuesToAppend.length && Object.keys(result.diff.translations).length) {
         await UpdateEntriesByContextUseCaseFactory.default().execute({
           contextId: pendingDoc.thesaurusId,

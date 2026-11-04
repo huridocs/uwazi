@@ -11,7 +11,7 @@ jest.mock('#api/dataviz.v2/infrastructure/services/rescheduleDatavizRefresh.js',
   rescheduleDatavizRefresh: jest.fn(),
 }));
 
-const testParams = { datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' };
+const testParams = { datavizId: 'dv1', userId: 'user1' };
 
 const createJobHandler = (job: { execute: jest.Mock }) => {
   const handler = new DatavizScheduledRefreshJobHandler({
@@ -39,9 +39,11 @@ describe('DatavizScheduledRefreshJobHandler', () => {
     expect(rescheduleDatavizRefresh).toHaveBeenCalledWith(
       expect.objectContaining({
         datavizId: 'dv1',
-        tenantName: 'tenant1',
         userId: 'user1',
       })
+    );
+    expect((rescheduleDatavizRefresh as jest.Mock).mock.calls[0][0]).not.toHaveProperty(
+      'tenantName'
     );
   });
 

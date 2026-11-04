@@ -39,7 +39,6 @@ const headerValidationErrorMessage = (issues: { message: string }[]) => {
 
 type Input = {
   importId: string;
-  tenantName: string;
   userId: string;
   callbacks: Callbacks;
 };
@@ -275,7 +274,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
-    const { importId, callbacks, tenantName, userId } = input;
+    const { importId, callbacks, userId } = input;
     if (await this.deps.csvImportsDS.isCancelled(importId)) {
       return { importId, status: CsvImportStatus.Cancelled };
     }
@@ -397,7 +396,6 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
           return;
         }
         await this.deps.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
-          tenantName,
           userId,
           importId,
         });

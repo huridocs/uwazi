@@ -3,13 +3,7 @@ import entities from '#api/entities/entities.js';
 import { ObjectId } from 'mongodb';
 import { search } from '../search/index.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
-
-const getMatchingHubsCount = async (entitySharedId, searchResultIds, filteredConnections) =>
-  RelationshipsV1DataSourceFactory.default().getMatchingHubsCount(
-    entitySharedId,
-    searchResultIds,
-    filteredConnections
-  );
+import { RelationshipsHubSelection } from './RelationshipsHubSelection.js';
 
 const processFilterCombinations = query => {
   const combinations = Object.entries(query.filter || {}).reduce(
@@ -32,19 +26,6 @@ const processFilterCombinations = query => {
     filterCombinations: combinations,
   };
 };
-
-const filterMatchingConnections = (connections, searchResults, filterCombinations) =>
-  connections.filter(connection => {
-    const matchingEntity = searchResults.rows.find(r => r.sharedId === connection.entity);
-    if (!matchingEntity) return false;
-
-    return filterCombinations.some(
-      combo =>
-        (connection.template?.equals(combo.relationTypeId) ||
-          (combo.relationTypeId === null && !connection.template)) &&
-        combo.entityTemplateId === matchingEntity.template?.toString()
-    );
-  });
 
 const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, language) => {
   const leftSideEntity = await entities.getById(entitySharedId, language);
@@ -79,13 +60,20 @@ const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, 
     });
 };
 
-const getHubs = async (entitySharedId, filteredConnections, filteredSharedIds, limit) =>
-  RelationshipsV1DataSourceFactory.default().getHubsForSearch(
-    entitySharedId,
-    filteredConnections,
-    filteredSharedIds,
-    limit
-  );
+/** The selected hubs, in order, each with the entity's own connections and the candidates. */
+const getHubs = async (entitySharedId, hubIds, candidates) => {
+  if (!hubIds.length) return [];
+
+  const candidateIds = new Set(candidates.map(connection => connection._id.toString()));
+  const connections = await RelationshipsV1DataSourceFactory.default().find({ hub: hubIds });
+
+  const connectionsByHub = new Map(hubIds.map(hub => [hub, []]));
+  connections
+    .filter(c => c.entity === entitySharedId || candidateIds.has(c._id.toString()))
+    .forEach(connection => connectionsByHub.get(connection.hub.toString()).push(connection));
+
+  return hubIds.map(hub => ({ hub, connections: connectionsByHub.get(hub) }));
+};
 
 const sortBySearchResultOrder = (entitiesWithConnections, entitySharedId, searchResult) =>
   entitiesWithConnections.sort((a, b) => {
@@ -99,17 +87,21 @@ const sortBySearchResultOrder = (entitiesWithConnections, entitySharedId, search
     return indexA - indexB;
   });
 
-const getRightSideConnections = async (entitySharedId, relationTypeFilter) =>
-  RelationshipsV1DataSourceFactory.default().getRightSideConnections(
-    entitySharedId,
-    relationTypeFilter
-  );
+const getRightSideConnections = async (entitySharedId, relationTypeFilter) => {
+  const all =
+    await RelationshipsV1DataSourceFactory.default().getRightSideConnections(entitySharedId);
+  return {
+    all,
+    ofRelationTypes: RelationshipsHubSelection.byRelationType(all, relationTypeFilter),
+  };
+};
 
 export const relationshipsSearch = async (entitySharedId, query, language, user) => {
   const { relationTypeFilter, entityTemplateFilter, filterCombinations } =
     processFilterCombinations(query);
 
-  const rightSideConnections = await getRightSideConnections(entitySharedId, relationTypeFilter);
+  const { all: allRightSideConnections, ofRelationTypes: rightSideConnections } =
+    await getRightSideConnections(entitySharedId, relationTypeFilter);
 
   const searchResult = await search.search(
     {
@@ -125,26 +117,26 @@ export const relationshipsSearch = async (entitySharedId, query, language, user)
     user
   );
 
-  const filteredSharedIds = searchResult.rows.map(r => r.sharedId);
-
-  const matchingConnections = filterMatchingConnections(
+  const rows = RelationshipsHubSelection.indexSearchRows(searchResult.rows);
+  const matchingConnections = RelationshipsHubSelection.matchingConnections(
     rightSideConnections,
-    searchResult,
+    rows,
     filterCombinations
   );
-  const filteredConnections = matchingConnections.map(r => r._id);
-
-  const totalHubs = await getMatchingHubsCount(
-    entitySharedId,
-    filteredSharedIds,
-    filteredConnections
+  const candidates = RelationshipsHubSelection.candidateConnections(
+    matchingConnections,
+    allRightSideConnections,
+    rows
   );
-
   const limit = Number(query.limit) || 10;
 
   const entitiesWithConnections = await destructureHubsIntoEntities(
     entitySharedId,
-    await getHubs(entitySharedId, filteredConnections, filteredSharedIds, limit),
+    await getHubs(
+      entitySharedId,
+      RelationshipsHubSelection.topHubIds(candidates, rows, limit),
+      candidates
+    ),
     searchResult,
     language
   );
@@ -152,7 +144,7 @@ export const relationshipsSearch = async (entitySharedId, query, language, user)
   return {
     totalRows: new Set(matchingConnections.map(r => r.entity)).size || searchResult.totalRows,
     requestedHubs: limit,
-    totalHubs,
+    totalHubs: RelationshipsHubSelection.countHubs(candidates),
     rows: sortBySearchResultOrder(entitiesWithConnections, entitySharedId, searchResult),
   };
 };

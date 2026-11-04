@@ -5,12 +5,8 @@ import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFac
 import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus.js';
 import { PXExtractParagraphsFromEntitiesFactory } from './PXExtractParagraphsFromEntitiesFactory.js';
 
-type Props = {
-  tenantName: string;
-};
-
 export class PXExtractParagraphsByEntityStatusFactory {
-  static async createDefault({ tenantName }: Props) {
+  static async createDefault() {
     const connection = getConnection();
     const { transactionManager } = ExecutionContext;
 
@@ -21,7 +17,6 @@ export class PXExtractParagraphsByEntityStatusFactory {
 
     const extractParagraphsFromEntities =
       await PXExtractParagraphsFromEntitiesFactory.createDefault({
-        tenantName,
         connection,
         entitiesStatusDS,
         mongoTransactionManager: transactionManager,

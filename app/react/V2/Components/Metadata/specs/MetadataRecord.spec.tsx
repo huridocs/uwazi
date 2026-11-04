@@ -780,7 +780,7 @@ describe('MetadataRecord', () => {
     const rela = sectionForLabel('Relationshipa');
     const table = within(rela).getByRole('table');
     expect(rela).toHaveTextContent('Inherited long text content for relationship a');
-    expect(within(table).getByTestId('map')).toBeInTheDocument();
+    expect(table.querySelector('[data-part="screen-map"] [data-testid="map"]')).toBeInTheDocument();
     expect(within(table).getByRole('link', { name: /A1/i })).toBeInTheDocument();
     expect(within(table).getByRole('columnheader', { name: /Body text/ })).toBeInTheDocument();
     expect(within(table).getByRole('columnheader', { name: /Location/ })).toBeInTheDocument();
@@ -840,11 +840,10 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Own location' })).not.toBeInTheDocument();
-    const groupedMap = within(
-      screen
-        .getByText('Grouped geolocation properties')
-        .closest('div.overflow-hidden') as HTMLElement
-    ).getByTestId('map');
+    const groupedMap = screen
+      .getByText('Grouped geolocation properties')
+      .closest('div.overflow-hidden')
+      ?.querySelector('[data-part="screen-map"] [data-testid="map"]');
     expect(groupedMap).toHaveAttribute('data-marker-count', '2');
 
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
@@ -893,7 +892,9 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(
-      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+      sectionForLabel('Grouped geolocation properties').querySelector(
+        '[data-part="screen-map"] [data-testid="map"]'
+      )
     ).toHaveAttribute('data-marker-count', '1');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
@@ -976,25 +977,32 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
     expect(
-      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+      sectionForLabel('Grouped geolocation properties').querySelector(
+        '[data-part="screen-map"] [data-testid="map"]'
+      )
     ).toHaveAttribute('data-marker-count', '4');
 
     expect(screen.queryByRole('heading', { name: 'Inherited location A' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
-  it('colors unconstrained relationship pills from the related entity template', () => {
+  it('puts the shared related-template color beside the field label, not on each chip', () => {
     renderRecord();
 
     const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
+    const titleRow = relationshipd.parentElement;
+    expect(titleRow).toBeInstanceOf(HTMLElement);
+    const labelDot = titleRow?.querySelector('span[aria-hidden="true"]');
+    expect(labelDot).toHaveStyle({ backgroundColor: '#2563eb' });
+    expect(labelDot).not.toHaveStyle({ backgroundColor: '#c03b22' });
+
     const card = relationshipd.closest('div.overflow-hidden');
     expect(card).toBeInstanceOf(HTMLElement);
     if (!(card instanceof HTMLElement)) {
       return;
     }
     const diana = within(card).getByRole('link', { name: /Diana/i });
-    const pill = diana.querySelector('span[title="Diana"]');
-    expect(pill?.firstElementChild).toHaveStyle({ backgroundColor: '#2563eb' });
-    expect(pill?.firstElementChild).not.toHaveStyle({ backgroundColor: '#c03b22' });
+    const quietChip = diana.querySelector('span[title="Diana"]');
+    expect(quietChip?.firstElementChild).not.toHaveStyle({ backgroundColor: '#2563eb' });
   });
 });

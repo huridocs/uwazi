@@ -113,8 +113,9 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '160');
-    expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'false');
+    const screenMap = document.querySelector('[data-part="screen-map"] [data-testid="map"]');
+    expect(screenMap).toHaveAttribute('data-height', '160');
+    expect(screenMap).toHaveAttribute('data-show-controls', 'false');
   });
 
   it('renders media inherited values with compact density', () => {
@@ -229,7 +230,9 @@ describe('inheritedCellContent', () => {
         'ia1'
       )
     );
-    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-part="screen-map"] [data-testid="map"]')
+    ).toBeInTheDocument();
     expect(screen.queryByText('IA1')).not.toBeInTheDocument();
   });
 

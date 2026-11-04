@@ -25,7 +25,6 @@ describe('DatavizSchedulerService', () => {
     const cancelByParams = jest.fn();
     const service = new DatavizSchedulerService({
       jobsDispatcher: { cancelByParams, dispatch: jest.fn() } as any,
-      tenantName: 'tenant1',
     });
 
     await service.cancelPending('dv1');
@@ -43,24 +42,23 @@ describe('DatavizSchedulerService', () => {
     const cancelByParams = jest.fn();
     const service = new DatavizSchedulerService({
       jobsDispatcher: { cancelByParams, dispatch } as any,
-      tenantName: 'tenant1',
     });
 
     const actor = User.createFrom({ _id: 'user1', role: 'admin' });
     await service.schedule(baseDataviz(), actor, true);
 
     expect(cancelByParams).toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith(
-      DatavizScheduledRefreshJobHandlerToken,
-      expect.objectContaining({ datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' })
-    );
+    expect(dispatch).toHaveBeenCalledWith(DatavizScheduledRefreshJobHandlerToken, {
+      datavizId: 'dv1',
+      userId: 'user1',
+    });
+    expect(dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
   });
 
   it('should dispatch with lockedUntil when not immediate', async () => {
     const dispatch = jest.fn();
     const service = new DatavizSchedulerService({
       jobsDispatcher: { cancelByParams: jest.fn(), dispatch } as any,
-      tenantName: 'tenant1',
     });
 
     const actor = User.createFrom({ _id: 'user1', role: 'admin' });
@@ -68,8 +66,9 @@ describe('DatavizSchedulerService', () => {
 
     expect(dispatch).toHaveBeenCalledWith(
       DatavizScheduledRefreshJobHandlerToken,
-      expect.objectContaining({ datavizId: 'dv1' }),
+      { datavizId: 'dv1', userId: 'user1' },
       expect.objectContaining({ lockedUntil: expect.any(Number) })
     );
+    expect(dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
   });
 });

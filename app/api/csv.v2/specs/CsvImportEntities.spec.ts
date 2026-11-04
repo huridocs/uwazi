@@ -143,7 +143,6 @@ describe('CsvImportEntities (integration)', () => {
       expect(fakeDispatcher.calls).toEqual([
         expect.objectContaining({
           params: expect.objectContaining({
-            tenantName: tenants.current().name,
             userId: f.idString('uploader'),
             importId: result.id,
           }),
@@ -215,7 +214,6 @@ describe('CsvImportEntities (integration)', () => {
         expect(fakeDispatcher.calls).toEqual([
           expect.objectContaining({
             params: expect.objectContaining({
-              tenantName: tenants.current().name,
               userId: f.idString('uploader'),
               importId: result.id,
             }),

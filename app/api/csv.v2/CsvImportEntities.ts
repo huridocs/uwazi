@@ -1,7 +1,6 @@
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource.js';
 import { CsvImportDomain } from './domain/CsvImport.js';
@@ -57,7 +56,6 @@ export class CsvImportEntities extends AbstractUseCase<
     await this.transactionManager.run(async () => {
       await this.deps.csvImportsDS.insert(csvImportWithStorage);
       await this.deps.jobsDispatcher.dispatch(CsvExtractUploadedZipJobHandler, {
-        tenantName: tenants.current().name,
         userId: input.userId,
         importId: id,
       });

@@ -38,7 +38,6 @@ type Callbacks = BaseCallbacks & {
 
 type Input = {
   importId: string;
-  tenantName: string;
   userId: string;
   callbacks: Callbacks;
 };
@@ -93,18 +92,10 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
     observedTitles: number;
     createdEntities: number;
     importId: string;
-    tenantName: string;
     userId: string;
   }) {
-    const {
-      csvImport,
-      relationshipDocs,
-      observedTitles,
-      createdEntities,
-      importId,
-      tenantName,
-      userId,
-    } = params;
+    const { csvImport, relationshipDocs, observedTitles, createdEntities, importId, userId } =
+      params;
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(
@@ -122,7 +113,6 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
         return;
       }
       await this.deps.jobsDispatcher.dispatch(CsvImportEntitiesJobHandler, {
-        tenantName,
         userId,
         importId,
       });
@@ -132,12 +122,11 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
   private async runCreation(params: {
     importId: string;
     titlesByTemplate: Map<string, Set<string>>;
-    tenantName: string;
     userId: string;
     totalTemplates: number;
     callbacks: Callbacks;
   }) {
-    const { titlesByTemplate, totalTemplates, callbacks, importId, tenantName, userId } = params;
+    const { titlesByTemplate, totalTemplates, callbacks, importId, userId } = params;
     const observedTitles = CsvCreateRelationshipEntitiesJob.countObservedTitles(titlesByTemplate);
     const shouldContinue = async () => !(await this.deps.csvImportsDS.isCancelled(importId));
     if (!titlesByTemplate.size) {
@@ -167,7 +156,6 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
           transactionManager: this.transactionManager,
           templateId,
           titles,
-          tenantName,
           userId,
         }),
       shouldContinue,
@@ -214,7 +202,7 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
   }
 
   private async runApplyFlow(input: Input) {
-    const { importId, tenantName, userId, callbacks } = input;
+    const { importId, userId, callbacks } = input;
     const { csvImport, titlesByTemplate, totalTemplates } = await loadRelationshipCreationContext({
       csvImportsDS: this.deps.csvImportsDS,
       relationshipPendingValuesDS: this.deps.relationshipPendingValuesDS,
@@ -226,7 +214,6 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
     const creation = await this.runCreation({
       importId,
       titlesByTemplate,
-      tenantName,
       userId,
       totalTemplates,
       callbacks,
@@ -237,7 +224,6 @@ class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, D
       observedTitles: creation.observedTitles,
       createdEntities: creation.createdEntities,
       importId,
-      tenantName,
       userId,
     });
   }

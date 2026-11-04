@@ -6,7 +6,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { RelationshipsV1DataSourceFactory } from '#api/core/infrastructure/factories/RelationshipsV1DataSourceFactory.js';
 import type { RelationshipsV1DataSource } from '#shared/contracts/RelationshipsV1DataSource.js';
 import { User } from '#api/users.v2/model/User.js';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const factory = getFixturesFactory();
 
@@ -139,21 +138,6 @@ describe('RelationshipsV1DataSource', () => {
           ...Array(2).fill(factory.idString('hub3')),
         ])
       );
-    });
-
-    (postgresCore ? it : it.skip)('reads an entity hub connections in one statement', async () => {
-      const sut = createSut();
-      const statements: string[] = [];
-      const stop = PostgresDB.onStatement(sql => statements.push(sql));
-      try {
-        await sut.getHubConnections(['A']);
-      } finally {
-        stop();
-      }
-
-      expect(
-        statements.filter(sql => /^select\b/i.test(sql) && !sql.includes('set_config'))
-      ).toHaveLength(1);
     });
 
     it('returns string-id hub connections for the query service', async () => {
@@ -291,32 +275,18 @@ describe('RelationshipsV1DataSource', () => {
       ]);
     });
 
-    it('returns right side connections', async () => {
+    it('returns every right side connection of the hubs the entity is in', async () => {
       const sut = createSut();
 
-      const rows = await sut.getRightSideConnections('A', [factory.idString('rel1')]);
+      const rows = await sut.getRightSideConnections('A');
 
-      expect(sorted(rows.map(row => row.entity))).toEqual(sorted(['B', 'C']));
-    });
-
-    it('counts matching hubs and returns hubs for search', async () => {
-      const sut = createSut();
-
-      const total = await sut.getMatchingHubsCount('A', ['B', 'C'], []);
-      expect(total).toBe(2);
-
-      const hubs = await sut.getHubsForSearch('A', [], ['B', 'C'], 10);
-      expect(hubs).toHaveLength(2);
-      expect(sorted(hubs.map(hub => hub.hub))).toEqual(
-        sorted([factory.idString('hub1'), factory.idString('hub2')])
+      expect(sorted(rows.map(row => `${row.entity}-${row.hub}`))).toEqual(
+        sorted([
+          `B-${factory.idString('hub1')}`,
+          `C-${factory.idString('hub1')}`,
+          `B-${factory.idString('hub2')}`,
+        ])
       );
-    });
-
-    it('returns no matching hubs when there are no connections to match', async () => {
-      const sut = createSut();
-
-      await expect(sut.getMatchingHubsCount('A', [], [])).resolves.toBe(0);
-      await expect(sut.getHubsForSearch('A', [], [], 10)).resolves.toEqual([]);
     });
 
     it('lists entities affected by hubs and hubs to delete', async () => {

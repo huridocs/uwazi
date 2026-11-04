@@ -39,6 +39,6 @@ type BatchDeps = {
   idGenerator: IdGenerator;
 };
 
-type InsertContext = { tenantName: string; actorId: string; targetLanguage: LanguageISO6391 };
+type InsertContext = { actorId: string; targetLanguage: LanguageISO6391 };
 
 export type { BatchContext, BatchDeps, InsertContext };

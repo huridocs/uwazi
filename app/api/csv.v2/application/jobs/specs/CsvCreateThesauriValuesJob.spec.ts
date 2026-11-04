@@ -4,7 +4,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
@@ -139,7 +138,6 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
         const importId = fixturesFactory.idString('create-thesauri-import');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('create-thesauri-user');
-        const tenantName = tenants.current().name;
 
         const csvImport = CsvImportDomain.withStorage(
           CsvImportDomain.create({
@@ -183,7 +181,6 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
         const callbacks = createCallbacks();
         await useCase.execute({
           importId,
-          tenantName,
           userId,
           callbacks,
         });
@@ -250,7 +247,6 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
         const importId = fixturesFactory.idString('create-thesauri-default-only-import');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('create-thesauri-default-only-user');
-        const tenantName = tenants.current().name;
 
         const csvImport = CsvImportDomain.withStorage(
           CsvImportDomain.create({
@@ -287,7 +283,6 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
 
         await useCase.execute({
           importId,
-          tenantName,
           userId,
           callbacks: createCallbacks(),
         });

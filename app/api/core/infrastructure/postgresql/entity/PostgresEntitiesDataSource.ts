@@ -382,16 +382,17 @@ export class PostgresEntitiesDataSource
     const entries = Object.entries(propertyNames);
     if (!entries.length || !sharedIds.length) return;
 
-    let expr = 'metadata';
-    const bindings: unknown[] = [this.table.tableName];
+    const oldNames = entries.map(([oldName]) => oldName);
+    const buildPairs = entries.map(() => '?::text, metadata->?').join(', ');
+
+    const bindings: unknown[] = [this.table.tableName, oldNames];
     entries.forEach(([oldName, newName]) => {
-      expr = `(${expr} - ?::text[]) || jsonb_build_object(?::text, ${expr}->?)`;
-      bindings.push([oldName], newName, oldName);
+      bindings.push(newName, oldName);
     });
     bindings.push(sharedIds);
 
     await this.updateAndRecord(
-      `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
+      `UPDATE ?? SET metadata = (metadata - ?::text[]) || jsonb_build_object(${buildPairs}) WHERE "sharedId" = ANY(?::text[]) RETURNING "_id"`,
       bindings
     );
     this.markModified(sharedIds);
