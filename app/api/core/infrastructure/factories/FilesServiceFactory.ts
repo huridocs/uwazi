@@ -35,7 +35,6 @@ class FilesServiceFactory {
       },
       context ?? {
         userId: ExecutionContext.actor?._id?.toString(),
-        tenantName: ExecutionContext.tenant.name,
       }
     );
   }

@@ -75,7 +75,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const userId = f.idString('uploader');
     await job.handleDispatch(
       heartBeat,
-      { tenantName: tenants.current().name, userId, ...params },
+      { userId, ...params },
       { namespace: tenants.current().name, ...jobInfo }
     );
     return { heartBeat, userId };
@@ -186,10 +186,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         // progress implies at least one heartbeat
         expect(heartBeat).toHaveBeenCalled();
         expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvPreflightJobHandler, {
-          tenantName: tenants.current().name,
           userId,
           importId: id,
         });
+        expect(jobsDispatcher.dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
       }
     );
 
@@ -237,10 +237,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         })
       );
       expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvCleanupImportFilesJobHandler, {
-        tenantName: tenants.current().name,
         userId: expect.any(String),
         importId: id,
       });
+      expect(jobsDispatcher.dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
     });
   });
 });

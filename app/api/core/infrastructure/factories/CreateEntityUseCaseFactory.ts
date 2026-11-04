@@ -52,7 +52,6 @@ class CreateEntityUseCaseFactory {
       {},
       {
         userId: actor?._id?.toString(),
-        tenantName: tenant.name,
       }
     );
 

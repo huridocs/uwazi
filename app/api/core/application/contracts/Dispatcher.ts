@@ -4,16 +4,13 @@ type SyncRelationshipsParams = {
   sharedId: string;
   targetLanguage: LanguageISO6391;
   templateId: string;
-  tenantName: string;
 };
 
 type CleanupEntityParams = {
   sharedIds: string[];
-  tenantName: string;
 };
 
 type PDFPostProcessParams = {
-  tenantName: string;
   documentId: string;
 };
 
@@ -27,11 +24,9 @@ type TemplatePostProcessParams = {
   renamedProperties: { [oldName: string]: string };
   fullReindex: boolean;
   resaveForFilterChange: boolean;
-  tenantName: string;
 };
 
 type DenormalizeThesaurusParams = {
-  tenantName: string;
   thesaurusId: string;
   valueIds: string[];
 };

@@ -42,7 +42,6 @@ type Deps = {
 
 type FilesServiceContext = {
   userId?: string;
-  tenantName?: string;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -74,12 +73,10 @@ class FilesService {
    * This method must be called within a transaction context using
    * transactionManager.run(): the V2 event can only be emitted inside one.
    *
-   * Actor (userId) and tenant (tenantName) are injected at construction time via
-   * FilesServiceFactory, which reads them from ExecutionContext. Do not pass them
-   * as method arguments.
+   * Actor (userId) is injected at construction time via FilesServiceFactory,
+   * which reads it from ExecutionContext. Do not pass it as a method argument.
    *
    * @param files - Array of BaseFile domain objects to insert
-   * @throws {Error} If PDFDocument files in processing status are inserted but no userId/tenantName in context
    */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
@@ -87,13 +84,7 @@ class FilesService {
 
       const processingPDFs = files
         .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
-        .map(f => {
-          const { tenantName } = this.context;
-          if (!tenantName) {
-            throw new Error('PDFPostProcess needs a tenant name');
-          }
-          return { tenantName, documentId: f.id };
-        });
+        .map(f => ({ documentId: f.id }));
 
       if (processingPDFs.length > 0) {
         await this.deps.jobsDispatcher.postProcessPDFs(processingPDFs);

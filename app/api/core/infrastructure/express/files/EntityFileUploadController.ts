@@ -100,7 +100,6 @@ class EntityFileUploadController extends AbstractController {
         { jobsDispatcher, transactionManager },
         {
           userId: ExecutionContext.actor?._id?.toString(),
-          tenantName: ExecutionContext.tenant.name,
         }
       ),
     });

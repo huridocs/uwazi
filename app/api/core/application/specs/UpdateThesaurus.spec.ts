@@ -356,7 +356,6 @@ describe('UpdateThesaurusUseCase', () => {
         {
           name: 'DenormalizeEntitiesHandler',
           params: {
-            tenantName: tenants.current().name,
             thesaurusId: before._id.toString(),
             valueIds: [
               before.values[0].id,
@@ -367,6 +366,7 @@ describe('UpdateThesaurusUseCase', () => {
           },
         },
       ]);
+      expect(jobs[0].params).not.toHaveProperty('tenantName');
     });
 
     it('should throw when thesaurus does not exists', async () => {
@@ -391,7 +391,6 @@ describe('UpdateThesaurusUseCase', () => {
             lockedUntil: Date.now() + 100000,
             params: {
               thesaurusId: factory.id('countries').toString(),
-              tenantName: tenants.current().name,
             },
             createdAt: Date.now(),
             failed: false,
@@ -408,7 +407,6 @@ describe('UpdateThesaurusUseCase', () => {
             lockedUntil: 0,
             params: {
               thesaurusId: factory.id('countries').toString(),
-              tenantName: tenants.current().name,
             },
             createdAt: Date.now(),
             failed: false,
@@ -426,7 +424,6 @@ describe('UpdateThesaurusUseCase', () => {
             name: 'DenormalizeEntitiesHandler',
             params: {
               thesaurusId: factory.id('countries').toString(),
-              tenantName: 'tenant_1',
             },
             createdAt: Date.now(),
             failed: false,
@@ -464,11 +461,11 @@ describe('UpdateThesaurusUseCase', () => {
             name: 'DenormalizeEntitiesHandler',
             params: expect.objectContaining({
               thesaurusId: factory.id('countries').toString(),
-              tenantName: tenants.current().name,
             }),
           },
         ])
       );
+      jobs.forEach(job => expect(job.params).not.toHaveProperty('tenantName'));
     });
 
     it('should revert when thesaurus update fails', async () => {

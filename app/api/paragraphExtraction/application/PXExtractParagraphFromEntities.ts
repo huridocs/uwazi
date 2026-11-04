@@ -17,7 +17,6 @@ type Output = any;
 type Dependencies = {
   dispatcher: JobsDispatcher;
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  tenantName: string;
 };
 
 class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
@@ -44,7 +43,6 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         extractorId,
         userId,
         entityStatusId: entityStatus.id,
-        tenantName: this.dependencies.tenantName,
       });
     });
   }

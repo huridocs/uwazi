@@ -7,7 +7,6 @@ import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 
 describe('PropagateThesaurusTranslationService', () => {
   const thesaurusId = 'thesaurus-1';
-  const tenantName = 'tenant-1';
 
   const makeThesaurus = (values: Thesaurus['values']) =>
     new Thesaurus({ id: thesaurusId, name: 'Dict', values });
@@ -23,7 +22,6 @@ describe('PropagateThesaurusTranslationService', () => {
     const sut = new PropagateThesaurusTranslationService({
       thesauriDS: { getById } as unknown as ThesauriDataSource,
       dispatcher: { denormalizeThesaurus } as unknown as Dispatcher,
-      tenantName,
     });
 
     return { sut, denormalizeThesaurus, getById };
@@ -46,8 +44,8 @@ describe('PropagateThesaurusTranslationService', () => {
     expect(denormalizeThesaurus).toHaveBeenCalledWith({
       thesaurusId,
       valueIds: ['age id'],
-      tenantName,
     });
+    expect(denormalizeThesaurus.mock.calls[0][0]).not.toHaveProperty('tenantName');
   });
 
   it('should dispatch denormalization for nested thesaurus values', async () => {
@@ -73,8 +71,8 @@ describe('PropagateThesaurusTranslationService', () => {
     expect(denormalizeThesaurus).toHaveBeenCalledWith({
       thesaurusId,
       valueIds: ['child_id'],
-      tenantName,
     });
+    expect(denormalizeThesaurus.mock.calls[0][0]).not.toHaveProperty('tenantName');
   });
 
   it('should dispatch denormalization for duplicated child labels across parents', async () => {
@@ -116,9 +114,9 @@ describe('PropagateThesaurusTranslationService', () => {
         'no_in_court',
         'no_in_government',
       ]),
-      tenantName,
     });
     expect(denormalizeThesaurus).toHaveBeenCalledTimes(1);
+    expect(denormalizeThesaurus.mock.calls[0][0]).not.toHaveProperty('tenantName');
   });
 
   it('should dispatch once per thesaurus, unioning changed values across locales', async () => {
@@ -148,8 +146,8 @@ describe('PropagateThesaurusTranslationService', () => {
     expect(denormalizeThesaurus).toHaveBeenCalledWith({
       thesaurusId,
       valueIds: expect.arrayContaining(['age id', 'email id']),
-      tenantName,
     });
+    expect(denormalizeThesaurus.mock.calls[0][0]).not.toHaveProperty('tenantName');
   });
 
   it('should not dispatch when no translation value changed', async () => {

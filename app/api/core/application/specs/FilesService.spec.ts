@@ -27,7 +27,6 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -274,9 +273,11 @@ describe('FilesService', () => {
         expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledWith([
           {
             documentId: document.id,
-            tenantName: tenants.current().name,
           },
         ]);
+        expect(
+          (jobsDispatcher.postProcessPDFs as jest.Mock).mock.calls[0][0][0]
+        ).not.toHaveProperty('tenantName');
       });
 
       it('should emit a FileCreatedEvent per file inside the transaction', async () => {
