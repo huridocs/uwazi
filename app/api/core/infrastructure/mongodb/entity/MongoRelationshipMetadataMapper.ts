@@ -47,11 +47,13 @@ const relationshipEntryToDomain = (entry: unknown) => {
 };
 
 const MongoRelationshipMetadataMapper = {
-  toDBO(value: unknown[]) {
+  toDBO(value: unknown) {
+    if (!Array.isArray(value)) return value;
     return value.map(entry => relationshipEntryToDBO(entry));
   },
 
-  toDomain(value: unknown[]) {
+  toDomain(value: unknown) {
+    if (!Array.isArray(value)) return value;
     return value.map(entry => relationshipEntryToDomain(entry));
   },
 };

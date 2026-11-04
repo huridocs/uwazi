@@ -1384,6 +1384,33 @@ describe('EntitiesDataSource', () => {
         expect(indexedEntity?.metadata?.text).toBeUndefined();
         expect(indexedEntity?.metadata?.renamed).toEqual([{ value: 'Text' }]);
       });
+
+      it('should rename multiple metadata properties in a single update', async () => {
+        const { sut, transactionManager } = createSut();
+
+        const template = createSampleTemplate();
+        const entity = createEntity(['en'], template);
+        entity.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
+          template.createPropertyAssignment('text', { value: [{ value: 'Text' }] }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
+        ]);
+        await transactionManager.run(async () => {
+          await sut.bulkInsert([entity]);
+        });
+
+        await transactionManager.run(async () => {
+          await sut.renameMetadataProperties({ text: 'renamed', numeric: 'renamed_number' }, [
+            entity.sharedId,
+          ]);
+        });
+
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
+        expect(stored.metadata.text).toBeUndefined();
+        expect(stored.metadata.numeric).toBeUndefined();
+        expect(stored.metadata.renamed).toEqual([{ value: 'Text' }]);
+        expect(stored.metadata.renamed_number).toEqual([{ value: 42 }]);
+      });
     });
 
     describe('bulkUpdateDeprecated', () => {
