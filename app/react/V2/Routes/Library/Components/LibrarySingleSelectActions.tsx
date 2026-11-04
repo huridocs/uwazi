@@ -4,7 +4,7 @@ import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
-import { librarySelectionActions } from './librarySelectionActions.js';
+import { bulkDeleteLimitTitle, librarySelectionActions } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { editorRoles } from './libraryResultsFooterActions.js';
 
@@ -15,7 +15,7 @@ const iconButtonClassName =
   'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-ink-secondary transition-colors hover:bg-warm hover:text-ink';
 
 const deleteButtonClassName =
-  'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-seal transition-colors hover:bg-seal-tint';
+  'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md p-1.5 text-seal transition-colors hover:bg-seal-tint disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent';
 
 type LibrarySingleSelectActionsProps = {
   entityBasePath?: string;
@@ -25,6 +25,7 @@ type LibrarySingleSelectActionsProps = {
   onClose: () => void;
   leading?: ReactNode;
   includeViewEntity?: boolean;
+  deleteDisabled?: boolean;
 };
 
 const actionById = (id: LibraryBulkAction) =>
@@ -38,6 +39,7 @@ const LibrarySingleSelectActions = ({
   onClose,
   leading,
   includeViewEntity = true,
+  deleteDisabled = false,
 }: LibrarySingleSelectActionsProps) => (
   <>
     <div className="flex min-w-0 items-center gap-2">
@@ -58,7 +60,11 @@ const LibrarySingleSelectActions = ({
           <button
             type="button"
             aria-label={t('System', 'Delete', null, false)}
-            onClick={() => onAction?.('delete')}
+            title={deleteDisabled ? bulkDeleteLimitTitle() : undefined}
+            disabled={deleteDisabled}
+            onClick={() => {
+              if (!deleteDisabled) onAction?.('delete');
+            }}
             className={deleteButtonClassName}
           >
             {actionById('delete')?.icon}

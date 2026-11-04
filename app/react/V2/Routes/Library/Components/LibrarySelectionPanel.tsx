@@ -4,6 +4,7 @@ import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { orderedSelectionIds } from '../librarySelection.js';
 import { LibraryMultiEdit } from './LibraryMultiEdit.js';
 import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
+import { deleteExceedsBulkLimit } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import { LibrarySelectionRow } from './LibrarySelectionRow.js';
@@ -135,6 +136,7 @@ const LibrarySelectionPanel = ({
       >
         <LibrarySingleSelectActions
           includeViewEntity={false}
+          deleteDisabled={deleteExceedsBulkLimit(selectedIds.length)}
           onAction={onAction}
           onEdit={onEdit}
           onClose={onClose}

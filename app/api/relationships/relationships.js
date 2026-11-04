@@ -33,6 +33,13 @@ function excludeRefs(template) {
 
 class RequiredParameters extends ValidationError {}
 
+// A table of contents can be tens of KB and is repeated on every reference to the same entity;
+// connection lists never display it.
+const withoutTableOfContents = entity =>
+  entity.documents
+    ? { ...entity, documents: entity.documents.map(({ toc, ...document }) => document) }
+    : entity;
+
 const getRelationshipTypesDS = () =>
   RelationshipTypesDataSourceFactory.default({
     transactionManager: TransactionManagerFactory.mongo(),
@@ -109,7 +116,7 @@ export default {
         'icon',
       ]).then(_connectedDocuments => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
-          res[doc.sharedId] = doc;
+          res[doc.sharedId] = withoutTableOfContents(doc);
           return res;
         }, {});
 

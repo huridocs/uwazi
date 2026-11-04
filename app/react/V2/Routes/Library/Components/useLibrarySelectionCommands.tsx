@@ -7,6 +7,7 @@ import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { useServices } from '#V2/services/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
+import { deleteExceedsBulkLimit } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { LibrarySelectionDialogs } from './LibrarySelectionDialogs.js';
 
@@ -140,7 +141,12 @@ const useLibrarySelectionCommands = (
       edit.startEdit();
       return;
     }
-    if (action === 'delete' || action === 'permissions') {
+    if (action === 'delete') {
+      if (deleteExceedsBulkLimit(selectedIds.length)) return;
+      open(action);
+      return;
+    }
+    if (action === 'permissions') {
       open(action);
     }
   };

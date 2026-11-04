@@ -32,7 +32,6 @@ const LibrarySelectionDialogs = ({
     {dialog === 'delete' ? (
       <ConfirmationModal
         header={deleteTitle(count)}
-        body="Undo restores them until your next delete or bulk change."
         acceptButton="Delete"
         dangerStyle
         disabled={deleting}
