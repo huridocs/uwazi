@@ -319,12 +319,23 @@ export class PostgresEntitiesDataSource
     if (propertyNames.length === 0) return;
 
     const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
-    const conditions = propertyNames.flatMap(propName =>
-      deletedSharedIds.map(id => ({ [propName]: [{ value: id }] }))
-    );
+    // Expands each entity's reference values once and hash-joins them against the deleted ids.
+    // One `metadata @>` per property × id instead made Postgres test thousands of conditions on
+    // every row of the tenant.
     const rows = await this.table
       .where({ language: defaultLanguage })
-      .whereJsonSupersetOfAny('metadata', conditions)
+      .whereRaw(
+        `"sharedId" IN (
+          SELECT e."sharedId" FROM ?? e
+          CROSS JOIN LATERAL jsonb_each(e.metadata) AS prop
+          CROSS JOIN LATERAL jsonb_array_elements(
+            CASE WHEN jsonb_typeof(prop.value) = 'array' THEN prop.value ELSE '[]'::jsonb END
+          ) AS item
+          JOIN unnest(?::text[]) AS deleted(id) ON deleted.id = item->>'value'
+          WHERE e.language = ? AND prop.key = ANY(?::text[])
+        )`,
+        [this.table.tableName, deletedSharedIds, defaultLanguage, propertyNames]
+      )
       .select(['sharedId'])
       .all();
     const affectedSharedIds = rows.map(r => r.sharedId);
