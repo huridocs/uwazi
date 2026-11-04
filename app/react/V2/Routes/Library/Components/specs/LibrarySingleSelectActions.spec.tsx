@@ -12,7 +12,7 @@ import { LibrarySingleSelectActions } from '../LibrarySingleSelectActions.js';
 const adminUser = { _id: 'admin1', role: 'admin', username: 'admin', email: 'admin@uwazi.io' };
 
 const renderActions = (
-  props: { onEdit?: jest.Mock; onAction?: jest.Mock } = {},
+  props: { onEdit?: jest.Mock; onAction?: jest.Mock; deleteDisabled?: boolean } = {},
   user: typeof adminUser | Record<string, never> = adminUser
 ) =>
   render(
@@ -28,6 +28,7 @@ const renderActions = (
           onClose={() => undefined}
           onEdit={props.onEdit}
           onAction={props.onAction}
+          deleteDisabled={props.deleteDisabled}
           includeViewEntity={false}
         />
       </TestAtomStoreProvider>
@@ -56,5 +57,18 @@ describe('LibrarySingleSelectActions', () => {
     expect(screen.queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('does not delete when delete is disabled', () => {
+    const onAction = jest.fn();
+    renderActions({ onAction, deleteDisabled: true });
+    const deleteButton = within(actionBar()).getByRole('button', { name: 'Delete' });
+    expect(deleteButton).toBeDisabled();
+    expect(deleteButton).toHaveAttribute(
+      'title',
+      'You can delete at most 10,000 entities at once.'
+    );
+    fireEvent.click(deleteButton);
+    expect(onAction).not.toHaveBeenCalled();
   });
 });
