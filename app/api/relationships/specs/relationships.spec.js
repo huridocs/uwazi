@@ -127,6 +127,14 @@ describe('relationships', () => {
       expect(relationshipWithTemplate.template).not.toBe(null);
     });
 
+    it('should return connected entities documents without their table of contents', async () => {
+      const relations = await relationships.getByDocument('doc2', 'en');
+      const documents = relations.flatMap(r => r.entityData.documents || []);
+
+      expect(documents.map(d => d.filename)).toContain('doc2enFile');
+      documents.forEach(d => expect(d).not.toHaveProperty('toc'));
+    });
+
     it('should not return hubs that are connected only to other languages', async () => {
       const relations = await relationships.getByDocument('doc2', 'es');
       expect(relations.filter(r => r.hub.equals(hub8)).length).toBe(0);
