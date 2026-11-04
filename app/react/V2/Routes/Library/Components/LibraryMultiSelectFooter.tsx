@@ -2,7 +2,11 @@ import React, { type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
-import { librarySelectionActions } from './librarySelectionActions.js';
+import {
+  bulkDeleteLimitTitle,
+  deleteExceedsBulkLimit,
+  librarySelectionActions,
+} from './librarySelectionActions.js';
 import type { LibraryBulkAction, LibrarySelectionAction } from './librarySelectionActions.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import { LibrarySelectAllBox } from './LibrarySelectAllBox.js';
@@ -13,7 +17,7 @@ const barGhostClassName = 'text-ink-secondary hover:bg-warm hover:text-ink';
 const barDangerClassName = 'text-seal-label hover:bg-seal-tint/40';
 
 const barButtonClassName =
-  'shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3';
+  'shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent sm:px-3';
 
 type BarTone = 'lead' | 'ghost' | 'danger';
 
@@ -59,22 +63,29 @@ const LibraryMultiSelectFooter = ({
   const actions = librarySelectionActions();
   const leadActions = actions.filter(action => action.id !== 'delete');
   const deleteAction = actions.find(action => action.id === 'delete');
+  const deleteDisabled = deleteExceedsBulkLimit(count);
   const barButton = ({
     icon,
     label,
     tone,
     onClick,
+    disabled = false,
+    title,
   }: {
     icon: ReactNode;
     label: string;
     tone: BarTone;
     onClick?: () => void;
+    disabled?: boolean;
+    title?: string;
   }) => (
     <button
       key={label}
       type="button"
       aria-label={label}
-      onClick={onClick}
+      title={title}
+      disabled={disabled}
+      onClick={disabled ? undefined : onClick}
       className={`inline-flex ${barButtonClassName} ${barToneClass(tone)}`}
     >
       <span className={tone === 'danger' ? 'text-seal' : 'text-ink-tertiary'}>{icon}</span>
@@ -116,6 +127,8 @@ const LibraryMultiSelectFooter = ({
                   icon: deleteAction.icon,
                   label: deleteAction.label,
                   tone: 'danger',
+                  disabled: deleteDisabled,
+                  title: deleteDisabled ? bulkDeleteLimitTitle() : undefined,
                   onClick: () => onAction?.(deleteAction.id),
                 })
               : null}
