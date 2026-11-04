@@ -1709,6 +1709,7 @@ Yes,Да
 You can add one or many items in this form.,В этой форме вы можете добавить один или несколько элементов.
 You can also enter this secret key into your Authenticator app.,Вы также можете ввести этот секретный ключ в приложение Authenticator.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
+"You can delete at most 10,000 entities at once.","За один раз можно удалить не более 10 000 объектов."
 "You can embed advanced components like maps, charts and entity lists in your page.","Вы можете встраивать в свою страницу сложные компоненты, такие как карты, диаграммы и списки объектов."
 You do not have write permission on all entities,У вас нет прав на запись во все объекты
 You have unsaved changes. Discard them? This action cannot be undone.,У вас есть несохраненные изменения. Отклонить их? Это действие нельзя отменить.
