@@ -36,8 +36,39 @@ describe('getThemedPortalRoot', () => {
   });
 });
 
+const mountOpenMenu = () => {
+  const themed = document.createElement('div');
+  themed.className = 'tw-content';
+  document.body.appendChild(themed);
+  render(
+    <FileRowKebab
+      row={row}
+      onView={jest.fn()}
+      onRename={jest.fn()}
+      onChangeLanguage={jest.fn()}
+      onDelete={jest.fn()}
+      showLanguageAction
+    />,
+    { container: themed }
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Row actions' }));
+  return { themed, menu: screen.getByRole('menu') };
+};
+
 describe('FileRowKebab', () => {
   it('portals the menu into .tw-content and closes on Escape', () => {
+    const { themed, menu } = mountOpenMenu();
+    expect(themed.contains(menu)).toBe(true);
+    expect(screen.getByText('Change language')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Download' })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu')).toBeNull();
+    themed.remove();
+  });
+
+  it('runs a menu action on mouse down', () => {
+    const onView = jest.fn();
     const themed = document.createElement('div');
     themed.className = 'tw-content';
     document.body.appendChild(themed);
@@ -45,7 +76,7 @@ describe('FileRowKebab', () => {
     render(
       <FileRowKebab
         row={row}
-        onView={jest.fn()}
+        onView={onView}
         onRename={jest.fn()}
         onChangeLanguage={jest.fn()}
         onDelete={jest.fn()}
@@ -55,13 +86,31 @@ describe('FileRowKebab', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Row actions' }));
-    const menu = screen.getByRole('menu');
-    expect(themed.contains(menu)).toBe(true);
-    expect(screen.getByText('Change language')).toBeInTheDocument();
-
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.mouseDown(screen.getByRole('menuitem', { name: 'View' }));
+    expect(onView).toHaveBeenCalledWith(row);
     expect(screen.queryByRole('menu')).toBeNull();
 
+    themed.remove();
+  });
+
+  it('does not offer View while the file is processing', () => {
+    const themed = document.createElement('div');
+    themed.className = 'tw-content';
+    document.body.appendChild(themed);
+    render(
+      <FileRowKebab
+        row={{ ...row, status: 'processing' }}
+        onView={jest.fn()}
+        onRename={jest.fn()}
+        onChangeLanguage={jest.fn()}
+        onDelete={jest.fn()}
+        showLanguageAction={false}
+      />,
+      { container: themed }
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Row actions' }));
+    expect(screen.queryByRole('menuitem', { name: 'View' })).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Rename' })).toBeInTheDocument();
     themed.remove();
   });
 });

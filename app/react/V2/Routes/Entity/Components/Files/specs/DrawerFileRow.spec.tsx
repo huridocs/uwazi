@@ -20,14 +20,15 @@ jest.mock('../FileThumbnail', () => ({
 }));
 
 jest.mock('../ViewFileButton', () => ({
-  ViewFileButton: ({ onClick }: { onClick: () => void }) => (
-    <button type="button" onClick={onClick}>
+  ViewFileButton: ({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) => (
+    <button type="button" onClick={onClick} disabled={disabled}>
       View
     </button>
   ),
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({
+  UwaziLoader: () => null,
   LanguageSelect: ({
     value,
     onChange,
@@ -67,6 +68,123 @@ const buildRow = (overrides: Partial<EntityFileRow> = {}): EntityFileRow => ({
 });
 
 describe('DrawerFileRow', () => {
+  it('puts the language beside the size and does not repeat the type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByText('1 KB · EN')).toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+  });
+
+  it('shows size only for a supporting file', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ category: 'supporting', languageKey: 'other' })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByText('1 KB')).toBeInTheDocument();
+    expect(screen.queryByText(/other/)).not.toBeInTheDocument();
+  });
+
+  it('edits a primary name and language without the type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByLabelText('Language')).toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+  });
+
+  it('edits a supporting file without a language selector or type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ category: 'supporting', languageKey: 'other' })}
+        editing
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.queryByLabelText('Language')).not.toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+    expect(screen.getByText('1 KB')).toBeInTheDocument();
+  });
+
+  it('downloads a file and hides download for a link', () => {
+    const clicked: string[] = [];
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
+      this: HTMLAnchorElement
+    ) {
+      clicked.push(this.getAttribute('href') ?? '');
+    });
+    const { rerender } = render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Download doc.pdf' }));
+    expect(clicked).toEqual(['/api/files/doc.pdf?download=true']);
+
+    rerender(
+      <DrawerFileRow
+        row={buildRow({
+          kind: 'link',
+          displayName: 'Website',
+          raw: {
+            _id: 'file-1',
+            originalname: 'Website',
+            url: 'https://example.com',
+            fileType: 'externalURL',
+          },
+        })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.queryByRole('button', { name: /Download/ })).not.toBeInTheDocument();
+  });
+
+  it('disables view while the file is processing', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ status: 'processing' })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'View' })).toBeDisabled();
+  });
+
   it('commits trimmed name and language when save is clicked', async () => {
     const onCommit = jest.fn().mockResolvedValue(undefined);
     render(

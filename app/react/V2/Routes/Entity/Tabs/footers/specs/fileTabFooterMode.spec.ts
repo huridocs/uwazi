@@ -1,35 +1,22 @@
 import { resolveFileTabFooterMode } from '../fileTabFooterMode.js';
 
 describe('resolveFileTabFooterMode', () => {
-  it('returns empty while editing even with multi and focused', () => {
+  it('returns empty while editing a file', () => {
     expect(
       resolveFileTabFooterMode({
         isEditing: true,
         isMulti: true,
         hasFocusedRow: true,
-        filePanelMode: 'details',
       })
     ).toBe('empty');
   });
 
-  it('keeps focused chrome for preview under multi-select', () => {
+  it('returns multi when several files are selected', () => {
     expect(
       resolveFileTabFooterMode({
         isEditing: false,
         isMulti: true,
         hasFocusedRow: true,
-        filePanelMode: 'preview',
-      })
-    ).toBe('focused');
-  });
-
-  it('uses multi footer for details under multi-select', () => {
-    expect(
-      resolveFileTabFooterMode({
-        isEditing: false,
-        isMulti: true,
-        hasFocusedRow: true,
-        filePanelMode: 'details',
       })
     ).toBe('multi');
   });
@@ -40,7 +27,6 @@ describe('resolveFileTabFooterMode', () => {
         isEditing: false,
         isMulti: false,
         hasFocusedRow: true,
-        filePanelMode: 'details',
       })
     ).toBe('focused');
   });

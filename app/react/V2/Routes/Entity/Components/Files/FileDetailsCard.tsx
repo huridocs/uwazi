@@ -8,14 +8,14 @@ const FileDetailsCard = ({
   headerAction: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="space-y-3 rounded-md bg-warm p-4">
+  <div className="space-y-2">
     <div className="flex items-center justify-between">
       <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
         <Translate>File details</Translate>
       </div>
       {headerAction}
     </div>
-    {children}
+    <div className="flex flex-col gap-3">{children}</div>
   </div>
 );
 
