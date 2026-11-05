@@ -12,6 +12,7 @@ a freshly provisioned tenant starts from. Shared options, output and exit codes 
 | `db upgrade`             | Migrates a backup file to the latest schema          |
 | `db blank-state dump`    | Writes the tenant's PostgreSQL data to the dump file |
 | `db blank-state restore` | Restores the dump file into a tenant                 |
+| `db blank-state upgrade` | Migrates the dump file to the latest schema          |
 
 These commands run in one tenant, so they take `--tenant` — except `db upgrade`, which runs in
 none (see below). They write through the
@@ -151,8 +152,8 @@ A migration that fails in the scratch database fails the command with that migra
 ## db blank-state
 
 Dump and restore the PostgreSQL blank state: the tenant data a freshly provisioned tenant starts
-from. A golden tenant is configured through the app, dumped to a single committed dump file, and
-that file is restored into each new tenant. The dump is the same portable stream `db export`
+from. The `default` tenant of a development instance is configured through the app, dumped to a
+single committed dump file, and that file is restored into each new tenant. The dump is the same portable stream `db export`
 produces, so `db blank-state` shares the tenant backup engine.
 
 These commands run against PostgreSQL only: no Mongo blank state is read or written.
@@ -174,8 +175,9 @@ Prints the tables that were exported, sorted:
 { "tables": ["activitylogs", "settings", "templates", "users", "..."] }
 ```
 
-This is how the shipped dump is regenerated after configuring the golden tenant or after a schema
-migration changes the tenant schema.
+This is how the shipped dump is regenerated after changing the blank state's content through the
+app. After a schema migration, use `db blank-state upgrade` instead: it needs no configured tenant.
+The rows of every table are written in primary key order, so a regenerated dump diffs cleanly.
 
 ### db blank-state restore
 
@@ -222,6 +224,36 @@ Prints:
 | `tenant_backup.schema_version_mismatch` | 2    | The dump's schema version differs from this database's                            |
 | `tenant_backup.premature_end`           | 2    | The dump ended before a table's COPY section was complete                         |
 | `tenant_backup.tenant_has_data`         | 4    | The tenant already has data and `force` was not set                               |
+
+### db blank-state upgrade
+
+```sh
+yarn uwazi db blank-state upgrade
+```
+
+Migrates the committed dump file to the latest PostgreSQL schema, in place, the way `db upgrade`
+migrates any backup: through a scratch database, never the live one. It writes the dump under the
+`default` tenant, in primary key order, and only replaces the file once the new one is complete.
+A dump of `default` already at the latest version is left as it is.
+
+Run it, and commit the file, when the committed dump's spec reports that the dump is behind the
+migrations: every schema migration needs the dump regenerated in the same pull request.
+
+It takes no `--tenant` and, like `db upgrade`, needs `POSTGRES_ADMIN_USER` and
+`POSTGRES_ADMIN_PASSWORD`.
+
+Prints:
+
+```json
+{ "fromVersion": 39, "toVersion": 42 }
+```
+
+| Code                                     | Exit | When                                                                 |
+| ---------------------------------------- | ---- | -------------------------------------------------------------------- |
+| `blank_state.empty`                      | 3    | There is no dump file to upgrade                                     |
+| `tenant_backup.backup_newer_than_schema` | 2    | The dump is at a newer schema version than this release's migrations |
+| `tenant_backup.malformed_manifest`       | 2    | The dump's manifest cannot be parsed                                 |
+| `tenant_backup.premature_end`            | 2    | The dump is empty or ends before a table's COPY section is complete  |
 
 Every command can also return the shared codes: `validation.failed` and `usage.invalid` (exit 2),
 `config.missing` and `unexpected` (exit 1).

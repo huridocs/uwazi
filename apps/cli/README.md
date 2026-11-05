@@ -9,17 +9,17 @@ It runs the same use cases as the HTTP API, in-process, as the system actor.
 This page covers what every command shares. What each command does, its rules and its errors are
 in the module's own page:
 
-| Module                               | Commands                                                                                               |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                      |
-| [settings](docs/settings.md)         | `get`, `update`                                                                                        |
-| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
-| [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`                      |
-| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
-| [usage](docs/usage.md)               | `report`                                                                                               |
-| [sessions](docs/sessions.md)         | `last`                                                                                                 |
-| [activity](docs/activity.md)         | `list`                                                                                                 |
-| [archives](docs/archives.md)         | `list`                                                                                                 |
+| Module                               | Commands                                                                                                 |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                        |
+| [settings](docs/settings.md)         | `get`, `update`                                                                                          |
+| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check`   |
+| [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`, `blank-state upgrade` |
+| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                             |
+| [usage](docs/usage.md)               | `report`                                                                                                 |
+| [sessions](docs/sessions.md)         | `last`                                                                                                   |
+| [activity](docs/activity.md)         | `list`                                                                                                   |
+| [archives](docs/archives.md)         | `list`                                                                                                   |
 
 ## Running it
 

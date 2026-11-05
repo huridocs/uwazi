@@ -28,6 +28,7 @@ describe('DbRoutes', () => {
       ['db upgrade', 'none'],
       ['db blank-state dump', 'single'],
       ['db blank-state restore', 'single'],
+      ['db blank-state upgrade', 'none'],
     ]);
   });
 
