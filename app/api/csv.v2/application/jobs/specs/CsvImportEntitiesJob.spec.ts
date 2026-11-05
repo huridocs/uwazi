@@ -49,7 +49,6 @@ const fixtures = {
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
       dateFormat: 'YYYY/MM/DD',
-      features: { newNameGeneration: false },
     },
   ],
   templates: [
@@ -855,12 +854,15 @@ describe('CsvImportEntitiesJob (integration)', () => {
         expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
           RelationshipSyncJob,
           expect.objectContaining({
-            tenantName: tenants.current().name,
             templateId,
             targetLanguage: 'en',
             sharedId: expect.any(String),
           })
         );
+        const relationshipSyncCall = jobsDispatcher.dispatch.mock.calls.find(
+          ([job]) => job === RelationshipSyncJob
+        );
+        expect(relationshipSyncCall?.[1]).not.toHaveProperty('tenantName');
       }
     );
 

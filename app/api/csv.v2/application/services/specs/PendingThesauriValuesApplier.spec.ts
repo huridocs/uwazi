@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable max-statements */
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -27,7 +28,6 @@ const fixtures = {
         { key: 'en' as LanguageISO6391, label: 'English', default: true },
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
-      features: { newNameGeneration: false },
     },
   ],
   dictionaries: [fixturesFactory.thesauri('applier-thesaurus', [])],
@@ -105,12 +105,7 @@ describe('PendingThesauriValuesApplier', () => {
   ) => {
     const { applier, transactionManager } = applierBundle;
     return testingEnvironment.runWithContext(async () => {
-      const result = await transactionManager.run(async () =>
-        applier.apply(pendingDoc, {
-          tenantName: tenants.current().name,
-          userId: fixturesFactory.idString('pending-thesauri-user'),
-        })
-      );
+      const result = await transactionManager.run(async () => applier.apply(pendingDoc));
       if (result.diff.valuesToAppend.length && Object.keys(result.diff.translations).length) {
         await UpdateEntriesByContextUseCaseFactory.default().execute({
           contextId: pendingDoc.thesaurusId,

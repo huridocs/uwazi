@@ -1296,6 +1296,84 @@ describe('EntitiesDataSource', () => {
 
         expect(indexedEntityA?.metadata?.rel).toEqual([{ value: 'keep-1', label: 'k1' }]);
       });
+
+      it('should remove several deleted sharedIds across every reference property at once', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel', 'thesaurus1'),
+              factory.property('category', 'select'),
+            ]),
+            factory.template('OtherTemplate', [factory.property('tags', 'multiselect')]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {
+              rel: [
+                { value: 'deleted-1', label: 'd1' },
+                { value: 'keep-1', label: 'k1' },
+              ],
+              category: [{ value: 'deleted-2', label: 'd2' }],
+            }),
+            factory.entity('entity-b', 'OtherTemplate', {
+              tags: [
+                { value: 'keep-2', label: 'k2' },
+                { value: 'deleted-2', label: 'd2' },
+              ],
+            }),
+            factory.entity('entity-c', 'RefTemplate', {
+              rel: [{ value: 'keep-3', label: 'k3' }],
+            }),
+          ],
+        });
+
+        const { sut, transactionManager } = createSut();
+
+        await transactionManager.run(async () => {
+          await sut.deleteReferencesToSharedIds(['deleted-1', 'deleted-2']);
+        });
+
+        const stored = await testingEnvironment.db.getAllFrom('entities');
+        const bySharedId = (sharedId: string) => stored.find(e => e.sharedId === sharedId);
+
+        expect(bySharedId('entity-a')?.metadata).toMatchObject({
+          rel: [{ value: 'keep-1', label: 'k1' }],
+          category: [],
+        });
+        expect(bySharedId('entity-b')?.metadata.tags).toEqual([{ value: 'keep-2', label: 'k2' }]);
+        expect(bySharedId('entity-c')?.metadata.rel).toEqual([{ value: 'keep-3', label: 'k3' }]);
+      });
+
+      it('should not touch entities where the sharedId only appears in a non-reference property', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('RefTemplate', [
+              factory.relationshipProp('rel', 'thesaurus1'),
+              factory.property('notes', 'text'),
+            ]),
+          ],
+          entities: [
+            factory.entity('entity-a', 'RefTemplate', {
+              rel: [{ value: 'keep-1', label: 'k1' }],
+              notes: [{ value: 'deleted-1' }],
+            }),
+          ],
+        });
+
+        const { sut, transactionManager } = createSut();
+
+        await transactionManager.run(async () => {
+          await sut.deleteReferencesToSharedIds(['deleted-1']);
+        });
+
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
+
+        expect(stored.metadata).toMatchObject({
+          rel: [{ value: 'keep-1', label: 'k1' }],
+          notes: [{ value: 'deleted-1' }],
+        });
+      });
     });
 
     describe('touchEntitiesBySharedIds', () => {
@@ -1383,6 +1461,33 @@ describe('EntitiesDataSource', () => {
 
         expect(indexedEntity?.metadata?.text).toBeUndefined();
         expect(indexedEntity?.metadata?.renamed).toEqual([{ value: 'Text' }]);
+      });
+
+      it('should rename multiple metadata properties in a single update', async () => {
+        const { sut, transactionManager } = createSut();
+
+        const template = createSampleTemplate();
+        const entity = createEntity(['en'], template);
+        entity.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
+          template.createPropertyAssignment('text', { value: [{ value: 'Text' }] }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
+        ]);
+        await transactionManager.run(async () => {
+          await sut.bulkInsert([entity]);
+        });
+
+        await transactionManager.run(async () => {
+          await sut.renameMetadataProperties({ text: 'renamed', numeric: 'renamed_number' }, [
+            entity.sharedId,
+          ]);
+        });
+
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
+        expect(stored.metadata.text).toBeUndefined();
+        expect(stored.metadata.numeric).toBeUndefined();
+        expect(stored.metadata.renamed).toEqual([{ value: 'Text' }]);
+        expect(stored.metadata.renamed_number).toEqual([{ value: 42 }]);
       });
     });
 

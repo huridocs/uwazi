@@ -48,7 +48,6 @@ const defaultCommonProperties = (suffix = '') => [
 const fixtures: DBFixture = {
   settings: [
     {
-      newNameGeneration: true,
       project: 'cejil',
       languages: [{ key: 'en', label: 'English', default: true }],
     },
@@ -379,9 +378,9 @@ describe('UpdateTemplateUseCase', () => {
           language: 'en',
           fullReindex: false,
           resaveForFilterChange: false,
-          tenantName: expect.any(String),
         })
       );
+      expect(dispatchMock.mock.calls[0][0]).not.toHaveProperty('tenantName');
     });
 
     it(`should emit a ${TemplateUpdatedEvent.name} event`, async () => {

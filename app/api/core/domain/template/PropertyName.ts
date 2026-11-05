@@ -1,4 +1,3 @@
-import { Context } from '#api/core/domain/template/Property.js';
 import { safeName } from './utils/propertyNameGeneration.js';
 
 class PropertyName {
@@ -8,8 +7,8 @@ class PropertyName {
     this.value = value;
   }
 
-  static fromLabel(label: string, context?: Context) {
-    return new PropertyName(safeName(label, context?.newNameGeneration));
+  static fromLabel(label: string) {
+    return new PropertyName(safeName(label));
   }
 }
 

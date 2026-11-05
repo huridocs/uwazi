@@ -32,15 +32,10 @@ const buildTemplate = (type: 'select' | 'multiselect' = 'select') => {
   return TemplateBuilder.aTemplate({ id: TEMPLATE_ID }).withProperties([property]).build();
 };
 
-const analyzeHeaders = (
-  template: ReturnType<typeof buildTemplate>,
-  headers: string[],
-  newNameGeneration = false
-) =>
+const analyzeHeaders = (template: ReturnType<typeof buildTemplate>, headers: string[]) =>
   CsvHeaderAnalyzer.analyze(headers, template, {
     availableLanguages: AVAILABLE_LANGUAGES,
     defaultLanguage: DEFAULT_LANGUAGE,
-    newNameGeneration,
   });
 
 describe('CsvThesauriPendingValuesBuilder', () => {
@@ -63,12 +58,11 @@ describe('CsvThesauriPendingValuesBuilder', () => {
       template,
       headerAnalysis: analyzeHeaders(template, headers),
       defaultLanguage: DEFAULT_LANGUAGE,
-      newNameGeneration: false,
     });
 
     expect(issues).toHaveLength(0);
     expect(pendingValues.entries).toHaveLength(1);
-    const entry = pendingValues.entries[0];
+    const [entry] = pendingValues.entries;
     expect(entry.propertyName).toBe('select_property');
     expect(entry.roots).toHaveLength(1);
     expect(entry.roots[0]).toMatchObject({
@@ -97,7 +91,6 @@ describe('CsvThesauriPendingValuesBuilder', () => {
       template,
       headerAnalysis: analyzeHeaders(template, headers),
       defaultLanguage: DEFAULT_LANGUAGE,
-      newNameGeneration: false,
     });
 
     const entry = pendingValues.entries[0];
@@ -124,7 +117,6 @@ describe('CsvThesauriPendingValuesBuilder', () => {
       template,
       headerAnalysis: analyzeHeaders(template, headers),
       defaultLanguage: DEFAULT_LANGUAGE,
-      newNameGeneration: false,
     });
 
     expect(issues).toHaveLength(1);
@@ -153,10 +145,9 @@ describe('CsvThesauriPendingValuesBuilder', () => {
       template,
       headerAnalysis: analyzeHeaders(template, headers),
       defaultLanguage: DEFAULT_LANGUAGE,
-      newNameGeneration: false,
     });
 
-    const root = pendingValues.entries[0].roots[0];
+    const [root] = pendingValues.entries[0].roots;
     expect(root.languages).toEqual({ en: 'Apple', es: 'Manzana' });
   });
 
@@ -179,7 +170,6 @@ describe('CsvThesauriPendingValuesBuilder', () => {
       template,
       headerAnalysis: analyzeHeaders(template, headers),
       defaultLanguage: DEFAULT_LANGUAGE,
-      newNameGeneration: false,
     });
 
     expect(issues).toEqual(

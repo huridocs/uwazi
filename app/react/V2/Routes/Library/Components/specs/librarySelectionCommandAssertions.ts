@@ -23,8 +23,9 @@ const panelAction = (name: string) => within(panelFooter()).getByRole('button', 
 const expectDeleteCopy = (dialog: HTMLElement) => {
   expect(within(dialog).getByRole('heading', { name: 'Delete 3 entities?' })).toBeInTheDocument();
   expect(
-    within(dialog).getByText('Undo restores them until your next delete or bulk change.')
-  ).toBeInTheDocument();
+    within(dialog).queryByText('Undo restores them until your next delete or bulk change.')
+  ).not.toBeInTheDocument();
+  expect(within(dialog).queryByTestId('modal-body')).not.toBeInTheDocument();
   expect(dialog.querySelector('.text-seal')).toBeTruthy();
   expect(within(dialog).getByRole('button', { name: 'Delete' })).toHaveClass('bg-button-danger');
 };

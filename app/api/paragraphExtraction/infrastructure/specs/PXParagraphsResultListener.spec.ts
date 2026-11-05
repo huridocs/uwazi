@@ -65,9 +65,9 @@ describe('PXParagraphsResultListener', () => {
         error_message: resultMessage.error_message,
       },
       entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     });
+    expect((dispatcher.dispatch as jest.Mock).mock.calls[0][1]).not.toHaveProperty('tenantName');
   });
 
   it('should dispatch within the context of the tenant encoded in the extraction key', async () => {

@@ -46,7 +46,7 @@ const fixtures: DBFixture = {
         _id: db.id(),
         type: propertyTypes.text,
         label: 'país',
-        name: 'pa_s',
+        name: 'país',
       },
     ]),
   ],
@@ -69,14 +69,14 @@ const fixtures: DBFixture = {
       template: factory.id('template2'),
       language: 'en',
       metadata: {
-        pa_s: [{ value: 'pais' }],
+        país: [{ value: 'pais' }],
       },
     },
     {
       template: factory.id('template2'),
       language: 'es',
       metadata: {
-        pa_s: [{ value: 'pais' }],
+        país: [{ value: 'pais' }],
       },
     },
   ],

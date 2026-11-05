@@ -1,5 +1,4 @@
 import {
-  Context,
   CreatePropertyAssignmentInput,
   Property,
   PropertyProps,
@@ -26,12 +25,11 @@ const createSchema = (isRequired: boolean) =>
   z.array(EntrySchema).min(isRequired ? 1 : 0, 'Geolocation Property is required');
 
 class GeolocationProperty extends Property {
-  constructor(props: Props, context?: Context) {
+  constructor(props: Props) {
     const name =
-      props.name ||
-      PropertyName.fromLabel(`${props.label}_${PropertyTypeEnum.Geolocation}`, context).value;
+      props.name || PropertyName.fromLabel(`${props.label}_${PropertyTypeEnum.Geolocation}`).value;
 
-    super({ ...props, type: props.type || PropertyTypeEnum.Geolocation, name }, context);
+    super({ ...props, type: props.type || PropertyTypeEnum.Geolocation, name });
 
     this.validate();
   }

@@ -1,6 +1,5 @@
 /* eslint-disable max-statements, max-lines, max-classes-per-file */
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -92,7 +91,6 @@ const fixtures = {
         { key: 'en' as LanguageISO6391, label: 'English', default: true },
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
-      features: { newNameGeneration: false },
     },
   ],
   dictionaries: [fixturesFactory.thesauri('preflightThesaurus', [])],
@@ -148,7 +146,6 @@ describe('CsvPreflightJob (integration)', () => {
       const importId = fixturesFactory.idString('preflight-happy-import');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('preflight-happy-user');
-      const tenantName = tenants.current().name;
 
       await insertImport(csvImportsDS, { importId, templateId, userId });
       await stageRows(rowsDS, {
@@ -157,7 +154,7 @@ describe('CsvPreflightJob (integration)', () => {
       });
 
       const callbacks = createCallbacks();
-      const result = await useCase.execute({ importId, tenantName, userId, callbacks });
+      const result = await useCase.execute({ importId, userId, callbacks });
 
       expect(result).toEqual({
         importId,
@@ -198,8 +195,9 @@ describe('CsvPreflightJob (integration)', () => {
       expect(callbacks.onProgress).toHaveBeenCalled();
       expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
         CsvCreateThesauriValuesJobHandler,
-        expect.objectContaining({ importId, tenantName, userId })
+        expect.objectContaining({ importId, userId })
       );
+      expect(jobsDispatcher.dispatch.mock.calls[0][1]).not.toHaveProperty('tenantName');
     });
 
     itWithContext(
@@ -209,7 +207,6 @@ describe('CsvPreflightJob (integration)', () => {
         const importId = fixturesFactory.idString('preflight-trim-import');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('preflight-trim-user');
-        const tenantName = tenants.current().name;
 
         await insertImport(csvImportsDS, { importId, templateId, userId });
         await stageRows(rowsDS, {
@@ -222,7 +219,7 @@ describe('CsvPreflightJob (integration)', () => {
           ].join('\n'),
         });
 
-        await useCase.execute({ importId, tenantName, userId, callbacks: createCallbacks() });
+        await useCase.execute({ importId, userId, callbacks: createCallbacks() });
 
         const pendingDocs = await thesauriValuesDS.getByImport(importId);
         expect(pendingDocs).toHaveLength(1);
@@ -251,7 +248,6 @@ describe('CsvPreflightJob (integration)', () => {
         const importId = fixturesFactory.idString('preflight-issues-import');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('preflight-issues-user');
-        const tenantName = tenants.current().name;
 
         await insertImport(csvImportsDS, { importId, templateId, userId });
         await stageRows(rowsDS, {
@@ -260,7 +256,7 @@ describe('CsvPreflightJob (integration)', () => {
         });
 
         const callbacks = createCallbacks();
-        await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
+        await expect(useCase.execute({ importId, userId, callbacks })).rejects.toThrow(
           'Thesauri values contain errors'
         );
 
@@ -290,7 +286,6 @@ describe('CsvPreflightJob (integration)', () => {
         const importId = fixturesFactory.idString('preflight-headers-import');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('preflight-headers-user');
-        const tenantName = tenants.current().name;
 
         await insertImport(csvImportsDS, { importId, templateId, userId });
         await stageRows(rowsDS, {
@@ -299,7 +294,7 @@ describe('CsvPreflightJob (integration)', () => {
         });
 
         const callbacks = createCallbacks();
-        await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
+        await expect(useCase.execute({ importId, userId, callbacks })).rejects.toThrow(
           'Property "select_property" uses languages, but is missing columns for: en.'
         );
 
@@ -351,7 +346,6 @@ describe('CsvPreflightJob (integration)', () => {
         const importId = fixturesFactory.idString('preflight-missing-language-column');
         createdImportIds.push(importId);
         const userId = fixturesFactory.idString('preflight-missing-language-column-user');
-        const tenantName = tenants.current().name;
 
         await insertImport(csvImportsDS, { importId, templateId, userId });
         await stageRows(rowsDS, {
@@ -360,7 +354,7 @@ describe('CsvPreflightJob (integration)', () => {
         });
 
         const callbacks = createCallbacks();
-        await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
+        await expect(useCase.execute({ importId, userId, callbacks })).rejects.toThrow(
           'Property "title" uses languages, but is missing columns for: fr.'
         );
 

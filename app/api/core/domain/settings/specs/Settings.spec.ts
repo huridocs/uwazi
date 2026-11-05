@@ -145,16 +145,6 @@ describe('Settings', () => {
     });
   });
 
-  describe('didEnableNewNameGeneration()', () => {
-    it('should detect a false-to-true flip against the previous snapshot', () => {
-      const previous = new Settings({});
-      const settings = new Settings({ newNameGeneration: true });
-
-      expect(settings.didEnableNewNameGeneration(previous)).toBe(true);
-      expect(settings.didEnableNewNameGeneration(settings)).toBe(false);
-    });
-  });
-
   describe('deactivateSyncConfig()', () => {
     it('should disable the named active config and leave others', () => {
       const settings = new Settings({

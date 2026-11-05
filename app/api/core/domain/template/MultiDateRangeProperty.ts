@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
@@ -42,8 +42,8 @@ const createSchema = (isRequired: boolean) =>
   z.array(EntrySchema).min(isRequired ? 1 : 0, 'Multi Date Range Property is required');
 
 class MultiDateRangeProperty extends FilterableProperty {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.MultiDateRange }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.MultiDateRange });
     this.compatibleTypes = [PropertyTypeEnum.DateRange];
 
     this.validate();

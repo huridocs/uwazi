@@ -115,7 +115,6 @@ describe('PDFPostProcessJob', () => {
       heartBeatCallBack,
       {
         documentId,
-        tenantName: tenants.current().name,
         userId: permissionsContext.getUserInContext()?._id?.toString() || '',
       },
       { namespace: tenants.current().name, ...jobInfo }

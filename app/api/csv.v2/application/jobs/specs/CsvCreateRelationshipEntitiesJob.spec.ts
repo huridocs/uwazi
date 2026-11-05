@@ -3,7 +3,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
@@ -29,7 +28,6 @@ const fixtures = {
         { key: 'en' as LanguageISO6391, label: 'English', default: true },
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
-      features: { newNameGeneration: false },
     },
   ],
   templates: [
@@ -91,7 +89,6 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
         throw new Error('Test user id is missing');
       }
       const userId = user._id.toString();
-      const tenantName = tenants.current().name;
 
       permissionsContext.setUserInContext(user);
 
@@ -118,7 +115,6 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
 
       await useCase.execute({
         importId,
-        tenantName,
         userId,
         callbacks: createCallbacks(),
       });

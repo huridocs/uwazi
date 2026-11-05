@@ -21,7 +21,6 @@ type Input = {
 
 type CollectPostProcessJobProps = {
   diff: TemplateDiff;
-  tenantName: string;
   language: LanguageISO6391;
   fullReindex: boolean;
   resaveForFilterChange: boolean;
@@ -37,7 +36,6 @@ class TemplatePostProcessService {
       if (diff.hasAnyPostProcessChanges()) {
         await this.collectPostProcessJobParams(
           {
-            tenantName: context!.tenantName,
             language: context!.language,
             fullReindex: false,
             resaveForFilterChange: false,
@@ -48,7 +46,6 @@ class TemplatePostProcessService {
       } else if (diff.hasFilterablePropertyChanges()) {
         await this.collectPostProcessJobParams(
           {
-            tenantName: context!.tenantName,
             language: context!.language,
             fullReindex: false,
             resaveForFilterChange: true,
@@ -70,7 +67,6 @@ class TemplatePostProcessService {
               language: context.language,
               fullReindex: true,
               resaveForFilterChange: false,
-              tenantName: context.tenantName,
               diff: new TemplateDiff(template, template),
             },
             dispatch
@@ -81,7 +77,7 @@ class TemplatePostProcessService {
   }
 
   private async collectPostProcessJobParams(
-    { diff, language, fullReindex, resaveForFilterChange, tenantName }: CollectPostProcessJobProps,
+    { diff, language, fullReindex, resaveForFilterChange }: CollectPostProcessJobProps,
     dispatch: (params: TemplatePostProcessParams) => void
   ) {
     const limit = 50;
@@ -104,7 +100,6 @@ class TemplatePostProcessService {
         renamedProperties: diff.renamedProperties,
         fullReindex,
         resaveForFilterChange,
-        tenantName,
       });
     });
   }

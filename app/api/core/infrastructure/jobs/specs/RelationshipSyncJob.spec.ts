@@ -4,7 +4,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import relationships from '#api/relationships/relationships.js';
-import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
@@ -70,7 +69,6 @@ describe('RelationshipSyncJob', () => {
         sharedId: 'entity_1',
         targetLanguage: 'en',
         templateId: templateId.toHexString(),
-        tenantName: tenants.current().name,
         userId: permissionsContext.getUserInContext()!._id?.toString()!,
       });
     });
@@ -96,7 +94,6 @@ describe('RelationshipSyncJob', () => {
           sharedId: 'non_existent_entity',
           targetLanguage: 'en',
           templateId: templateId.toHexString(),
-          tenantName: tenants.current().name,
           userId: permissionsContext.getUserInContext()!._id?.toString()!,
         })
       )

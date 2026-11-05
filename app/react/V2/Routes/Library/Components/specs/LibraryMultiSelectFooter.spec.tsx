@@ -12,7 +12,8 @@ const adminUser = { _id: 'admin1', role: 'admin', username: 'admin', email: 'adm
 
 const renderFooter = (
   onAction: jest.Mock = jest.fn(),
-  user: typeof adminUser | Record<string, never> = adminUser
+  user: typeof adminUser | Record<string, never> = adminUser,
+  count = 2
 ) =>
   render(
     <TestAtomStoreProvider
@@ -23,7 +24,7 @@ const renderFooter = (
       ]}
     >
       <LibraryMultiSelectFooter
-        count={2}
+        count={count}
         loadedIds={['a', 'b']}
         selectedIds={['a', 'b']}
         onClear={() => undefined}
@@ -58,5 +59,40 @@ describe('LibraryMultiSelectFooter', () => {
     expect(within(actions()).queryByTestId('library-footer-divider')).not.toBeInTheDocument();
     expect(within(actions()).getByRole('button', { name: 'Export CSV' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+  });
+
+  it('disables Delete when 10000 or more entities are selected', () => {
+    const onAction = jest.fn();
+    const { rerender } = renderFooter(onAction, adminUser, 10000);
+    const deleteButton = within(actions()).getByRole('button', { name: 'Delete' });
+    expect(deleteButton).toBeDisabled();
+    expect(deleteButton).toHaveAttribute(
+      'title',
+      'You can delete at most 10,000 entities at once.'
+    );
+    fireEvent.click(deleteButton);
+    expect(onAction).not.toHaveBeenCalled();
+
+    rerender(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [translationsAtom, translations],
+          [userAtom, adminUser],
+        ]}
+      >
+        <LibraryMultiSelectFooter
+          count={9999}
+          loadedIds={['a', 'b']}
+          selectedIds={['a', 'b']}
+          onClear={() => undefined}
+          onSelectLoaded={() => undefined}
+          onDeselectLoaded={() => undefined}
+          onAction={onAction}
+        />
+      </TestAtomStoreProvider>
+    );
+    fireEvent.click(within(actions()).getByRole('button', { name: 'Delete' }));
+    expect(onAction).toHaveBeenCalledWith('delete');
   });
 });

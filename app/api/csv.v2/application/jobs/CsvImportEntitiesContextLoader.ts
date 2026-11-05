@@ -48,7 +48,6 @@ const loadCsvImportEntitiesContext = async (
   const analyzerOptions: AnalyzerOptions = {
     availableLanguages,
     defaultLanguage,
-    newNameGeneration: Boolean(settings?.newNameGeneration),
   };
 
   let headerAnalysis;
@@ -70,10 +69,7 @@ const loadCsvImportEntitiesContext = async (
     totalRows,
     thesaurusIndex,
     relationshipIndex,
-    sanitizedHeaders: CsvEntitiesImportMapper.sanitizeHeaders(
-      firstStagedRow.headers,
-      analyzerOptions.newNameGeneration
-    ),
+    sanitizedHeaders: CsvEntitiesImportMapper.sanitizeHeaders(firstStagedRow.headers),
     headerAnalysis,
   };
 };

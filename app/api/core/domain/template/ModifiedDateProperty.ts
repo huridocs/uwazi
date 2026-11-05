@@ -1,5 +1,4 @@
 import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
-import { Context } from '#api/core/domain/template/Property.js';
 import {
   ModifiedDatePropertyInvalidNameError,
   ModifiedDatePropertyInvalidTypeError,
@@ -11,8 +10,8 @@ type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPro
 class ModifiedDateProperty extends CommonProperty {
   prioritySorting: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'date', name: props.name || 'editDate' }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || 'date', name: props.name || 'editDate' });
     this.prioritySorting = props.prioritySorting || false;
 
     this.validate();

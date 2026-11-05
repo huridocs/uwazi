@@ -39,7 +39,6 @@ const headerValidationErrorMessage = (issues: { message: string }[]) => {
 
 type Input = {
   importId: string;
-  tenantName: string;
   userId: string;
   callbacks: Callbacks;
 };
@@ -275,7 +274,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
-    const { importId, callbacks, tenantName, userId } = input;
+    const { importId, callbacks, userId } = input;
     if (await this.deps.csvImportsDS.isCancelled(importId)) {
       return { importId, status: CsvImportStatus.Cancelled };
     }
@@ -293,12 +292,10 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
         return { importId, status: CsvImportStatus.Cancelled };
       }
       const template = await this.getTemplate(csvImport.templateId);
-      const [availableLanguages, defaultLanguage, settings] = await Promise.all([
+      const [availableLanguages, defaultLanguage] = await Promise.all([
         this.deps.settingsDS.getLanguageKeys(),
         this.deps.settingsDS.getDefaultLanguageKey(),
-        this.deps.settingsDS.get(),
       ]);
-      const newNameGeneration = Boolean(settings?.newNameGeneration);
 
       const [{ headers }] = stagedRows;
       let headerAnalysis: HeaderAnalysis;
@@ -310,7 +307,6 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
           options: {
             availableLanguages,
             defaultLanguage,
-            newNameGeneration,
           },
         });
       } catch (error) {
@@ -320,7 +316,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
         }
         throw error;
       }
-      const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(headers, newNameGeneration);
+      const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(headers);
 
       const { pendingValues, issues: pendingIssues } = CsvThesauriPendingValuesBuilder.build({
         importId,
@@ -328,7 +324,6 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
         template,
         headerAnalysis,
         defaultLanguage,
-        newNameGeneration,
       });
 
       const titlesByTemplate = collectRelationshipTitlesFromRows({
@@ -401,7 +396,6 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
           return;
         }
         await this.deps.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
-          tenantName,
           userId,
           importId,
         });

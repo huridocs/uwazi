@@ -1714,6 +1714,7 @@ Yes,ใช่
 You can add one or many items in this form.,คุณสามารถเพิ่มรายการหนึ่งรายการหรือหลายรายการในแบบฟอร์มนี้ได้
 You can also enter this secret key into your Authenticator app.,คุณยังสามารถป้อนรหัสลับนี้ลงในแอป Authenticator ของคุณได้อีกด้วย
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
+"You can delete at most 10,000 entities at once.","คุณสามารถลบเอนทิตีได้สูงสุด 10,000 รายการในครั้งเดียว"
 "You can embed advanced components like maps, charts and entity lists in your page.",คุณสามารถฝังองค์ประกอบขั้นสูง เช่น แผนที่ แผนภูมิ และรายชื่อเอนทิตี ลงในหน้าของคุณได้
 You do not have write permission on all entities,คุณไม่มีสิทธิ์การเขียนสำหรับทุกเอนทิตี
 You have unsaved changes. Discard them? This action cannot be undone.,มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณต้องการยกเลิกการเปลี่ยนแปลงเหล่านี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้
