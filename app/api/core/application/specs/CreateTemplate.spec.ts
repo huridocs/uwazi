@@ -62,7 +62,6 @@ const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   settings: [
     {
-      newNameGeneration: true,
       project: 'cejil',
     },
   ],

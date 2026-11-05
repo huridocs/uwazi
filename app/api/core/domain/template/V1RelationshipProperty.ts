@@ -9,12 +9,7 @@ import {
 import { z } from 'zod';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import {
-  Context,
-  CreatePropertyAssignmentInput,
-  Property,
-  PropertyUpdateInfo,
-} from './Property.js';
+import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
 import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
 import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
 
@@ -61,25 +56,21 @@ class V1RelationshipProperty extends FilterableProperty {
     showInCard?: boolean,
     filter?: boolean,
     defaultfilter?: boolean,
-    prioritySorting?: boolean,
-    context?: Context
+    prioritySorting?: boolean
   ) {
-    super(
-      {
-        id,
-        type: 'relationship',
-        name,
-        label,
-        template,
-        noLabel,
-        required,
-        showInCard,
-        filter,
-        defaultfilter,
-        prioritySorting,
-      },
-      context
-    );
+    super({
+      id,
+      type: 'relationship',
+      name,
+      label,
+      template,
+      noLabel,
+      required,
+      showInCard,
+      filter,
+      defaultfilter,
+      prioritySorting,
+    });
     this.content = content || '';
     this.relationType = relationType;
     this.inheritedPropertyId = inheritedPropertyId;
@@ -156,7 +147,7 @@ class V1RelationshipProperty extends FilterableProperty {
     createSchema(this.required).parse(property);
   }
 
-  static create(props: Omit<Props, 'type'>, context?: Context) {
+  static create(props: Omit<Props, 'type'>) {
     return new V1RelationshipProperty(
       props.id,
       props?.name!,
@@ -171,8 +162,7 @@ class V1RelationshipProperty extends FilterableProperty {
       props.showInCard,
       props.filter,
       props.defaultfilter,
-      props.prioritySorting,
-      context
+      props.prioritySorting
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
@@ -20,8 +20,8 @@ const createSchema = (isRequired: boolean) =>
     .max(1, 'Markdown Property only accepts a single value.');
 
 class MarkdownProperty extends FilterableProperty {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.Markdown }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.Markdown });
     this.compatibleTypes = ['text'];
 
     this.validate();

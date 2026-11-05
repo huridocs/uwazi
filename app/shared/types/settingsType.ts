@@ -98,7 +98,6 @@ export interface Settings {
   customJS?: string;
   mapApiKey?: string;
   mapLayers?: string[];
-  newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   filterUnauthorizedRelated?: boolean;
   sync?: SettingsSyncSchema[];

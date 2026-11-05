@@ -36,7 +36,6 @@ const seed = async () =>
     new Settings({
       _id: SETTINGS_ID,
       site_name: 'Uwazi',
-      newNameGeneration: true,
       filterUnauthorizedRelated: true,
       languages: [{ key: 'en', label: 'English', default: true }],
       sync: [{ url: 'http://sync.target', active: true } as any],
@@ -55,7 +54,6 @@ const allReads = async (ds: PostgresSettingsDataSource) => ({
   languages: await ds.readLanguages(),
   languageKeys: await ds.getLanguageKeys(),
   defaultLanguage: await ds.getDefaultLanguageKey(),
-  newNameGeneration: await ds.readNewNameGeneration(),
   filterUnauthorizedRelated: await ds.readFilterUnauthorizedRelated(),
   sync: await ds.readSyncConfig(),
   contactMail: await ds.readContactMail(),
