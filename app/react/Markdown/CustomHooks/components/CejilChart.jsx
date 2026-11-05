@@ -5,7 +5,7 @@ import { StackedDualBarChart, arrayUtils } from '#app/Charts/index.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 
 const countriesTemplate = '58b2f3a35d59f31e1345b480';
-const countryKey = 'pa_s';
+const countryKey = 'país';
 
 class CejilChart extends Component {
   componentDidMount() {
