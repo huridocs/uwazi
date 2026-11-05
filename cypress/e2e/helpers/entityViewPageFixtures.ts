@@ -8,7 +8,7 @@ export const contents = `<h1>My entity view</h1>
 <p className="custom-title"><Value path="entityRaw.title" /></p>
 <h4>Detalle</h4>
 ${textWithDynamicValues}
-<Repeat path="entityRaw.metadata.pa_s">
+<Repeat path="entityRaw.metadata.país">
   <li className="custom-list">
     <Value path="label" />
   </li>

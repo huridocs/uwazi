@@ -9,7 +9,7 @@ import parsingUtils from '../utils/parsingUtils.js';
 
 const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';
-const countryKey = 'pa_s';
+const countryKey = 'país';
 
 function conformSearchQuery(types) {
   return api.search(new RequestParams({ types, limit: 0 }));
