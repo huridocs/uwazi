@@ -6,7 +6,7 @@ import { FileDetailsField } from './FileDetailsField.js';
 import { EntityFileRow } from './types.js';
 
 const badgeClass = {
-  primary: 'bg-warning-light text-warning',
+  primary: 'bg-warning-light text-ink',
   supporting: 'bg-vellum text-ink-secondary',
 };
 

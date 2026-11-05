@@ -52,8 +52,8 @@ const EntityUrlSync = ({ children }: { children: ReactNode }) => {
       search: location.search,
       hash: location.hash,
     });
-    return () => unbindEntityUrlSession();
   }, [location.hash, location.pathname, location.search, navigate, store]);
+  useEffect(() => () => unbindEntityUrlSession(), []);
   return createElement(
     EntityUrlSearchContext.Provider,
     { value: search },
