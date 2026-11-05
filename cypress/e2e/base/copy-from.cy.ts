@@ -52,7 +52,7 @@ describe('Copy from entity', () => {
           cy.contains('Feb 26, 2016');
         });
 
-        cy.get('.metadata-name-pa_s').within(() => {
+        cy.get('.metadata-name-país').within(() => {
           cy.contains('Costa Rica');
         });
 
@@ -129,7 +129,7 @@ describe('Copy from entity', () => {
 
         cy.get('.metadata-name-fecha').contains('Dec 1, 2018');
 
-        cy.get('.metadata-name-pa_s').contains('Venezuela');
+        cy.get('.metadata-name-país').contains('Venezuela');
 
         cy.get('.metadata-name-firmantes').contains('Cecilia Medina Quiroga');
 
