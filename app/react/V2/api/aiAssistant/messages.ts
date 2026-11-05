@@ -5,7 +5,7 @@ import { ApiResponse } from '../ApiResponse.js';
 
 type SendMessageInput = {
   message: string;
-  password: string;
+  password?: string;
   jobId?: string;
 };
 
@@ -19,9 +19,8 @@ const sendMessage = async (
   try {
     const requestParams = new RequestParams({
       message: input.message,
-      password: input.password,
+      ...(input.password ? { password: input.password } : {}),
       ...(input.jobId ? { jobId: input.jobId } : {}),
-      // Context bar is UI-only for now; send empty payload until wired end-to-end.
       context: { mode: 'auto', chips: [] },
     });
     const response = await api.post('aiAssistant/messages', requestParams);

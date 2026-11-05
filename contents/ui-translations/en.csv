@@ -96,6 +96,7 @@ Advanced,Advanced
 Advanced colors,Advanced colors
 Advanced ECharts overrides,Advanced ECharts overrides
 Aggregation,Aggregation
+AI Assistant,AI Assistant
 Alias,Alias
 ALL,ALL
 All,All
@@ -121,11 +122,13 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,Any
 Any entity,Any entity
 any single character,any single character
 Any type,Any type
 Anyone can see this entity,Anyone can see this entity
+API key,API key
 Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
@@ -164,8 +167,13 @@ Back to,Back to
 Back to details,Back to details
 Back to search,Back to search
 Bad Request,Bad Request
+Base URL,Base URL
 Basic,Basic
 Bert,Bert
+Bert (external service),Bert (external service)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert stays available as the default provider. Other providers use an API key stored on this collection.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.
+Bert wants to make a change,Bert wants to make a change
 Bidirectional,Bidirectional
 Body,Body
 boolean,boolean
@@ -260,6 +268,7 @@ Configure templates,Configure templates
 Confirm,Confirm
 CONFIRM,CONFIRM
 Confirm action,Confirm action
+Confirm Bert action,Confirm Bert action
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Are you sure you want to delete all the selected items?
 Confirm deletion,Confirm deletion
@@ -835,6 +844,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,Mixed access
 ML TOC,ML TOC
+Model,Model
 Modified,Modified
 Month,Month
 Monthly,Monthly
@@ -975,6 +985,7 @@ og:image,og:image
 og:title,og:title
 Ok,Ok
 OK,OK
+Ollama,Ollama
 On this entity,On this entity
 one character,one character
 Only essential,Only essential
@@ -996,6 +1007,7 @@ Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
+OpenAI compatible,OpenAI compatible
 Operator,Operator
 Options,Options
 or,or
@@ -1118,6 +1130,7 @@ ProTip!,ProTip!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors."
+Provider,Provider
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -1656,6 +1669,7 @@ Username is too short,Username is too short
 Usernames cannot have spaces,Usernames cannot have spaces
 Users,Users
 Users & Groups,Users & Groups
+Using,Using
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
@@ -1711,6 +1725,7 @@ x less,less
 x more,more
 Year,Year
 Yes,Yes
+"Yes, don't ask again this session","Yes, don't ask again this session"
 You can add one or many items in this form.,You can add one or many items in this form.
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in

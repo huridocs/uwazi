@@ -96,6 +96,7 @@ Advanced,အဆင့်မြင့်
 Advanced colors,အဆင့်မြင့်အရောင်များ
 Advanced ECharts overrides,အဆင့်မြင့် ECharts အစားထိုးခြင်းများ
 Aggregation,ပေါင်းစည်းမှု
+AI Assistant,AI လက်ထောက်
 Alias,အမည်ဝှက်
 ALL,အားလုံး
 All,အားလုံး
@@ -121,11 +122,13 @@ An error occurred,အမှားတစ်ခု ဖြစ်ပေါ်ခဲ�
 Analytics,ခွဲခြမ်းစိတ်ဖြာခြင်း
 Analytics description,သင့်စုဆောင်းမှုလည်ပတ်မှုဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာချက်များကို လိုက်လံကြည့်ရှုလိုပါက၊ Uwazi သည် Google Analytics နှင့် Matomo နှစ်ခုလုံးကို ထောက်ပံ့ပေးပါသည်။
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,မည်သည့်
 Any entity,မည်သည့်အဖွဲ့အစည်းမဆို
 any single character,မည်သည့် တစ်လုံးတည်းသော အက္ခရာမဆို
 Any type,မည်သည့်အမျိုးအစားမဆို
 Anyone can see this entity,မည်သူမဆို ဤအရာကို မြင်နိုင်သည်။
+API key,API သော့
 Appearance,ပုံသဏ္ဍာန်
 Apply,အသုံးချပါ
 Are you sure you want to continue?,ဆက်လက်လုပ်ဆောင်ချင်ပါသလား?
@@ -163,8 +166,13 @@ Back to,ပြန်သွားရန်
 Back to details,အသေးစိတ်သို့ ပြန်သွား
 Back to search,ရှာဖွေမှုသို့ ပြန်သွားရန်
 Bad Request,မမှန်ကန်သော တောင်းဆိုချက်
+Base URL,အခြေခံ URL
 Basic,အခြေခံ
 Bert,Bert
+Bert (external service),Bert (ပြင်ပ ဝန်ဆောင်မှု)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert သည် ပုံသေ ပံ့ပိုးသူအဖြစ် ဆက်လက် ရရှိနိုင်သည်။ အခြား ပံ့ပိုးသူများသည် ဤစုစည်းမှုတွင် သိမ်းထားသော API သော့ကို အသုံးပြုသည်။
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Bert သည် တန်နန့် ဝန်ဆောင်မှု URL ကို အသုံးပြုသည်။ စကားပြောခန်းသည် အသုံးပြုသူ စကားဝှက်ကို တောင်း၍ Bert က ထိုအသုံးပြုသူအဖြစ် Uwazi ကို ခေါ်နိုင်ရန် ဖြစ်သည်။
+Bert wants to make a change,Bert က ပြောင်းလဲမှု ပြုလုပ်လိုသည်
 Bidirectional,နှစ်ဖက်ဆိုင်သော
 Body,စာကိုယ်
 boolean,ဘူလီယန်
@@ -257,6 +265,7 @@ Configure templates,ပုံစံများကို ပြင်ဆင်�
 Confirm,အတည်ပြုရန်
 CONFIRM,အတည်ပြုရန်
 Confirm action,လုပ်ဆောင်ချက်အတည်ပြုပါ
+Confirm Bert action,Bert လုပ်ဆောင်ချက်ကို အတည်ပြုပါ
 Confirm delete connection,ချိတ်ဆက်မှု ဖျက်ခြင်းကို အတည်ပြုပါ။
 Confirm delete multiple items,ရွေးချယ်ထားသော အရာအားလုံးကို ဖျက်ရန် သေချာပါသလား?
 Confirm deletion,ဖျက်ရန် အတည်ပြုပါ
@@ -825,6 +834,7 @@ mismatched passwords,စကားဝှက်များ မကိုက်ည�
 mismatching,မကိုက်ညီခြင်း
 Mixed access,ရောထားသော ဝင်ရောက်သုံးစွဲမှု
 ML TOC,ML TOC
+Model,မော်ဒယ်
 Modified,ပြင်ဆင်ထားသော
 Month,လ
 Monthly,လစဉ်
@@ -963,6 +973,7 @@ og:image,og:image
 og:title,og:title
 Ok,အိုကေ
 OK,အိုကေ
+Ollama,Ollama
 On this entity,ဤအဖွဲ့အစည်းအပေါ်
 one character,အက္ခရာတစ်လုံး
 Only essential,မရှိမဖြစ် လိုအပ်သည်များသာ
@@ -981,6 +992,7 @@ Open group,အုပ်စုကို ဖွင့်ရန်
 Open link,လင့်ခ်ဖွင့်ပါ
 Open PDF,PDF ဖွင့်ပါ
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
+OpenAI compatible,OpenAI နှင့် ကိုက်ညီသည်
 Operator,လုပ်ဆောင်ချက်
 Options,ရွေးချယ်စရာများ
 or,သို့မဟုတ်
@@ -1102,6 +1114,7 @@ Protection,ကာကွယ်မှု
 ProTip!,အထူးအကြံပြုချက်!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.",ဂရပ်ဇယားပြင်ဆင်ရန် အသင့်ဖြစ်သော ဒေတာကို JSON အဖြစ် ပေးပါ။ စီးရီးတိုင်းတွင် id၊ label နှင့် တစ်ကြောင်းစီအတွက် label နှင့် value ပါဝင်သည့် points အစီအစဉ်တစ်ခု လိုအပ်ပါသည်။ points ပေါ်တွင် Optional key သတ်မှတ်ခြင်းက အရောင်များကို တည်ငြိမ်စေသည်။
+Provider,ပံ့ပိုးသူ
 Public entities description,သတိပြုပါ: ရွေးချယ်ထားသော အဖွဲ့အစည်းများသည် **အများပြည်သူမြင်သာမည့်** ဖြစ်ပါသည်။ မည်သူမဆို ၎င်းတို့ကို မြင်နိုင်ပါလိမ့်မည်။
 Public form settings description,ဒီမှာ သင်သည် အများပြည်သူ ဖောင် ရောက်ရှိမည့်နေရာနှင့် ဖြူစာရင်းထဲရှိ တင်ပုံများကို စိတ်ကြိုက် ပြင်ဆင်နိုင်ပါသည်။
 Public Form submit URL,အများပြည်သူ ဖောင် တင်သွင်းရန် URL
@@ -1627,6 +1640,7 @@ Username is too short,အသုံးပြုသူအမည် တိုလွ
 Usernames cannot have spaces,အသုံးပြုသူအမည်များတွင် အကွာအဝေးများ မထည့်နိုင်ပါ။
 Users,အသုံးပြုသူများ
 Users & Groups,အသုံးပြုသူများနှင့်အုပ်စုများ
+Using,အသုံးပြုနေသည်
 Using Authenticator,Authenticator ကို အသုံးပြုခြင်း
 Using URLs,URL များကို အသုံးပြုခြင်း
 Uwazi,Uwazi
@@ -1682,6 +1696,7 @@ x less,x လျော့
 x more,x ပို
 Year,နှစ်
 Yes,ဟုတ်ကဲ့
+"Yes, don't ask again this session",ဟုတ်ကဲ့ ဤဆက်ရှင်တွင် ထပ်မမေးပါနှင့်
 You can add one or many items in this form.,ဤဖောင်တွင် ပစ္စည်းတစ်ခု သို့မဟုတ် အများအပြား ထည့်နိုင်သည်။
 You can also enter this secret key into your Authenticator app.,သင်သည် Authenticator အက်ပ်တွင်လည်း ဤလျှို့ဝှက်ကုဒ်ကို ထည့်သွင်းနိုင်ပါသည်။
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်

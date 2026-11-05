@@ -39,6 +39,43 @@ describe('SendAIAssistantMessage', () => {
     expect(pollScheduler.schedulePoll).toHaveBeenCalledWith({ jobId: 'job-42' }, 0);
   });
 
+  it('should start an in-process LLM turn when the provider is not Bert', async () => {
+    const startLlmTurn = jest.fn().mockResolvedValue(undefined);
+    const useCase = new SendAIAssistantMessage({
+      aiAssistantService: {
+        submitMessage: jest.fn(),
+        getJobStatus: jest.fn(),
+      },
+      pollScheduler: { schedulePoll: jest.fn() },
+      getSettings: {
+        execute: jest.fn().mockResolvedValue({ provider: 'openai_compat' }),
+      } as any,
+      startLlmTurn,
+    });
+
+    const actor = { _id: 'user-1', role: 'editor' } as any;
+    const result = await useCase.execute({
+      tenantName: 'default',
+      userId: 'user-1',
+      message: 'List templates',
+      actor,
+      language: 'en',
+      sessionId: 'sid',
+      protocol: 'http',
+      instanceHost: 'localhost',
+    });
+
+    expect(result.jobId).toEqual(expect.any(String));
+    expect(startLlmTurn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        conversationId: result.jobId,
+        message: 'List templates',
+        actor,
+        sessionId: 'sid',
+      })
+    );
+  });
+
   it('should continue an existing conversation when conversationJobId is provided', async () => {
     const aiAssistantService: AIAssistantService = {
       submitMessage: jest.fn().mockResolvedValue({ jobId: 'job-42' }),

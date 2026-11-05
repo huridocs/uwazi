@@ -10,6 +10,9 @@ import { BertPasswordGate } from './BertPasswordGate.js';
 import { BertWelcome } from './BertWelcome.js';
 import { ChatMessageView } from './ChatMessage.js';
 import { ChatInput } from './ChatInput.js';
+import { BertConfirmPrompt } from './BertConfirmPrompt.js';
+import type { AIAssistantToolConfirmPayload } from '#V2/api/aiAssistant/events.js';
+import type { ConfirmDecision } from '#V2/api/aiAssistant/confirm.js';
 import type { ContextAddOptionId, ContextChip, ContextScopeMode, ChatMessage } from './types.js';
 
 type BertModalProps = {
@@ -26,12 +29,15 @@ type BertModalProps = {
   streamingMessageId: string | null;
   replyError: string | null;
   needsPasswordUnlock: boolean;
+  pendingConfirm?: AIAssistantToolConfirmPayload | null;
+  toolActivity?: string | null;
   setContextMode: (mode: ContextScopeMode) => void;
   setDraftMessage: (value: string) => void;
   removeContextChip: (chipId: string) => void;
   addContextOption: (optionId: ContextAddOptionId) => void;
   unlockWithPassword: (password: string) => void;
   sendMessage: () => void;
+  respondToConfirm?: (decision: ConfirmDecision) => void;
   finishStreaming: () => void;
   clearChat: () => void | Promise<void>;
 };
@@ -64,12 +70,15 @@ const BertModal = ({
   streamingMessageId,
   replyError,
   needsPasswordUnlock,
+  pendingConfirm = null,
+  toolActivity = null,
   setContextMode,
   setDraftMessage,
   removeContextChip,
   addContextOption,
   unlockWithPassword,
   sendMessage,
+  respondToConfirm,
   finishStreaming,
   clearChat,
 }: BertModalProps) => {
@@ -104,7 +113,16 @@ const BertModal = ({
             onStreamProgress={scrollToBottom}
           />
         ))}
-        {isThinking ? <BertThinking progress={jobProgress} /> : null}
+        {isThinking ? (
+          <BertThinking
+            progress={
+              toolActivity ? `${t('System', 'Using', null, false)} ${toolActivity}` : jobProgress
+            }
+          />
+        ) : null}
+        {pendingConfirm && respondToConfirm ? (
+          <BertConfirmPrompt pending={pendingConfirm} onDecide={respondToConfirm} />
+        ) : null}
         {replyError ? (
           <div
             role="alert"

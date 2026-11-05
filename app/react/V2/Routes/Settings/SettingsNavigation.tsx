@@ -33,6 +33,9 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/dashboard', <Translate>Dashboard</Translate>)}</li>
               <li>{renderLink('settings/users', <Translate>Users & Groups</Translate>)}</li>
               <li>{renderLink('settings/collection', <Translate>Collection</Translate>)}</li>
+              <FeatureToggle feature="aiAssistant">
+                <li>{renderLink('settings/ai-assistant', <Translate>AI Assistant</Translate>)}</li>
+              </FeatureToggle>
               <li>{renderLink('settings/navlinks', <Translate>Menu</Translate>)}</li>
               <li>{renderLink('settings/pages', <Translate>Pages</Translate>)}</li>
               <li>{renderLink('settings/dataviz', <Translate>Data visualizations</Translate>)}</li>

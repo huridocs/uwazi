@@ -96,6 +96,7 @@ Advanced,고급
 Advanced colors,고급 색상
 Advanced ECharts overrides,고급 ECharts 재정의
 Aggregation,집계
+AI Assistant,AI 어시스턴트
 Alias,별칭
 ALL,전체 필터
 All,전체 필터
@@ -121,11 +122,13 @@ An error occurred,오류가 발생했습니다.
 Analytics,분석
 Analytics description,"컬렉션 방문과 관련된 분석 데이터를 추적하고 싶다면, Uwazi는 Google Analytics와 Matomo를 모두 지원합니다."
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,전체
 Any entity,모든 엔티티
 any single character,어떤 한 글자라도
 Any type,모든 유형
 Anyone can see this entity,누구나 이 개체를 볼 수 있습니다
+API key,API 키
 Appearance,등장 순서
 Apply,적용
 Are you sure you want to continue?,정말 계속하시겠습니까?
@@ -164,8 +167,13 @@ Back to,이전으로
 Back to details,상세 정보로 돌아가기
 Back to search,검색으로
 Bad Request,잘못된 요청
+Base URL,기본 URL
 Basic,기본
 Bert,Bert
+Bert (external service),Bert (외부 서비스)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert는 기본 제공자로 계속 사용할 수 있습니다. 다른 제공자는 이 컬렉션에 저장된 API 키를 사용합니다.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Bert는 테넌트 서비스 URL을 사용합니다. 채팅은 사용자 비밀번호를 물어 Bert가 해당 사용자로 Uwazi를 호출하게 합니다.
+Bert wants to make a change,Bert가 변경을 하려고 합니다
 Bidirectional,양방향
 Body,바디
 boolean,부울
@@ -257,6 +265,7 @@ Configure templates,템플릿 구성
 Confirm,확인
 CONFIRM,확인
 Confirm action,작업 확인
+Confirm Bert action,Bert 작업 확인
 Confirm delete connection,연결 삭제 확인
 Confirm delete multiple items,선택한 모든 항목을 정말로 삭제하시겠습니까?
 Confirm deletion,삭제 확인
@@ -827,6 +836,7 @@ mismatched passwords,비밀번호가 일치하지 않습니다
 mismatching,불일치
 Mixed access,혼합 접근
 ML TOC,ML 목차
+Model,모델
 Modified,수정됨
 Month,월
 Monthly,매월
@@ -967,6 +977,7 @@ og:image,og:image
 og:title,og:title
 Ok,확인
 OK,확인
+Ollama,Ollama
 On this entity,이 엔티티에 관하여
 one character,한 글자
 Only essential,꼭 필요한 것만
@@ -988,6 +999,7 @@ Open group,그룹 펼치기
 Open link,링크 열기
 Open PDF,PDF 열기
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
+OpenAI compatible,OpenAI 호환
 Operator,연산자
 Options,옵션
 or,또는
@@ -1110,6 +1122,7 @@ ProTip!,프로 팁
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","차트에 바로 사용할 수 있는 데이터를 JSON 형식으로 제공하십시오. 각 시리즈에는 ID, 레이블, 그리고 각 행마다
  레이블과 값이 포함된 점(point) 배열이 필요합니다. 점(point)에 키를 추가하면 색상을 일관되게 유지하는 데 도움이 됩니다."
+Provider,제공자
 Public entities description,주의: 선택한 항목은 **공개**로 설정됩니다. 누구나 이를 볼 수 있습니다.
 Public form settings description,여기에서 공개 양식의 전송 대상과 허용 목록에 포함된 템플릿을 설정할 수 있습니다.
 Public Form submit URL,공개 양식 제출 URL
@@ -1648,6 +1661,7 @@ Username is too short,사용자 이름이 너무 짧습니다.
 Usernames cannot have spaces,사용자 이름에는 공백을 사용할 수 없습니다.
 Users,사용자
 Users & Groups,사용자 및 그룹
+Using,사용 중
 Using Authenticator,인증기 사용법
 Using URLs,URL 사용
 Uwazi,Uwazi
@@ -1703,6 +1717,7 @@ x less,덜 보기
 x more,더 보기
 Year,연도
 Yes,네
+"Yes, don't ask again this session","예, 이 세션에서 다시 묻지 않음"
 You can add one or many items in this form.,이 양식에서 하나 또는 여러 개의 항목을 추가할 수 있습니다.
 You can also enter this secret key into your Authenticator app.,이 비밀 키를 인증기 앱에 입력할 수도 있습니다.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:

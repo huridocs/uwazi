@@ -5,6 +5,15 @@ import {
 } from '#shared/types/commonTypes.js';
 import { ThemeVars } from '#shared/types/themeVars.js';
 
+export type AIAssistantProvider = 'bert-external' | 'openai_compat' | 'anthropic' | 'ollama';
+
+export interface AIAssistantSettings {
+  provider: AIAssistantProvider;
+  apiKey?: string;
+  baseUrl?: string;
+  model?: string;
+}
+
 export interface AutomaticTranslationConfig {
   active: boolean;
   templates?: {
@@ -98,6 +107,12 @@ export interface Settings {
   customJS?: string;
   mapApiKey?: string;
   mapLayers?: string[];
+  /**
+   * LLM provider config for Bert. API keys are stored in the clear (same debt as `mapApiKey`).
+   * Not part of the public/admin settings allowlists — read/write only via `/api/aiAssistant/settings`.
+   * The Bert service URL stays on the tenant flag `aiAssistantServiceUrl`, never here.
+   */
+  aiAssistant?: AIAssistantSettings;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   filterUnauthorizedRelated?: boolean;

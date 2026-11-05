@@ -5,6 +5,8 @@ import {
   type AIAssistantErrorPayload,
   type AIAssistantProgressPayload,
   type AIAssistantReplyPayload,
+  type AIAssistantToolActivityPayload,
+  type AIAssistantToolConfirmPayload,
 } from '#V2/api/aiAssistant/events.js';
 
 type UseAIAssistantSocketOptions = {
@@ -12,6 +14,34 @@ type UseAIAssistantSocketOptions = {
   onReply: (payload: AIAssistantReplyPayload) => void;
   onError: (payload: AIAssistantErrorPayload) => void;
   onProgress?: (payload: AIAssistantProgressPayload) => void;
+  onToolConfirm?: (payload: AIAssistantToolConfirmPayload) => void;
+  onToolActivity?: (payload: AIAssistantToolActivityPayload) => void;
+};
+
+type SocketHandlers = {
+  [aiAssistantEvents.reply]: (payload: AIAssistantReplyPayload) => void;
+  [aiAssistantEvents.error]: (payload: AIAssistantErrorPayload) => void;
+  [aiAssistantEvents.progress]: (payload: AIAssistantProgressPayload) => void;
+  [aiAssistantEvents.toolConfirm]: (payload: AIAssistantToolConfirmPayload) => void;
+  [aiAssistantEvents.toolActivity]: (payload: AIAssistantToolActivityPayload) => void;
+};
+
+const bindSocket = (handlers: SocketHandlers) => {
+  (
+    Object.entries(handlers) as Array<[keyof SocketHandlers, SocketHandlers[keyof SocketHandlers]]>
+  ).forEach(([event, handler]) => {
+    socket.on(event, handler);
+  });
+
+  return () => {
+    (
+      Object.entries(handlers) as Array<
+        [keyof SocketHandlers, SocketHandlers[keyof SocketHandlers]]
+      >
+    ).forEach(([event, handler]) => {
+      socket.off(event, handler);
+    });
+  };
 };
 
 const useAIAssistantSocket = ({
@@ -19,34 +49,22 @@ const useAIAssistantSocket = ({
   onReply,
   onError,
   onProgress,
+  onToolConfirm,
+  onToolActivity,
 }: UseAIAssistantSocketOptions) => {
   useEffect(() => {
     if (!enabled) {
       return undefined;
     }
 
-    const handleReply = (payload: AIAssistantReplyPayload) => {
-      onReply(payload);
-    };
-
-    const handleError = (payload: AIAssistantErrorPayload) => {
-      onError(payload);
-    };
-
-    const handleProgress = (payload: AIAssistantProgressPayload) => {
-      onProgress?.(payload);
-    };
-
-    socket.on(aiAssistantEvents.reply, handleReply);
-    socket.on(aiAssistantEvents.error, handleError);
-    socket.on(aiAssistantEvents.progress, handleProgress);
-
-    return () => {
-      socket.off(aiAssistantEvents.reply, handleReply);
-      socket.off(aiAssistantEvents.error, handleError);
-      socket.off(aiAssistantEvents.progress, handleProgress);
-    };
-  }, [enabled, onError, onProgress, onReply]);
+    return bindSocket({
+      [aiAssistantEvents.reply]: onReply,
+      [aiAssistantEvents.error]: onError,
+      [aiAssistantEvents.progress]: payload => onProgress?.(payload),
+      [aiAssistantEvents.toolConfirm]: payload => onToolConfirm?.(payload),
+      [aiAssistantEvents.toolActivity]: payload => onToolActivity?.(payload),
+    });
+  }, [enabled, onError, onProgress, onReply, onToolActivity, onToolConfirm]);
 };
 
 export { useAIAssistantSocket };

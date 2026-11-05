@@ -96,6 +96,7 @@ Advanced,Gelişmiş
 Advanced colors,Gelişmiş renkler
 Advanced ECharts overrides,Gelişmiş ECharts geçersiz kılmaları
 Aggregation,Toplama
+AI Assistant,Yapay zeka asistanı
 Alias,Takma ad
 ALL,TÜM
 All,Tümü
@@ -121,11 +122,13 @@ An error occurred,Bir hata oluştu
 Analytics,Analitik
 Analytics description,"Koleksiyon ziyaretlerinizle ilgili analiz verilerini takip etmek istiyorsanız, Uwazi hem Google Analytics’i hem de Matomo’yu desteklemektedir."
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,Herhangi bir
 Any entity,Herhangi bir varlık
 any single character,herhangi bir tek karakter
 Any type,Herhangi bir tür
 Anyone can see this entity,Bu varlığı herkes görebilir
+API key,API anahtarı
 Appearance,Görünüş
 Apply,Uygula
 Are you sure you want to continue?,Devam etmek istediğinizden emin misiniz?
@@ -164,8 +167,13 @@ Back to,Geri dön
 Back to details,Ayrıntılara geri dön
 Back to search,Aramaya geri dön
 Bad Request,Hatalı İstek
+Base URL,Temel URL
 Basic,Temel
 Bert,Bert
+Bert (external service),Bert (harici hizmet)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert varsayılan sağlayıcı olarak kullanılabilir kalır. Diğer sağlayıcılar bu koleksiyonda saklanan bir API anahtarı kullanır.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,"Bert kiracı hizmet URL'sini kullanır. Sohbet, Bert'in Uwazi'yi o kullanıcı olarak çağırması için kullanıcı parolasını ister."
+Bert wants to make a change,Bert bir değişiklik yapmak istiyor
 Bidirectional,İki yönlü
 Body,Gövde
 boolean,boolean
@@ -260,6 +268,7 @@ Configure templates,Şablonları yapılandır
 Confirm,Onayla
 CONFIRM,ONAYLA
 Confirm action,Eylemi onayla
+Confirm Bert action,Bert eylemini onayla
 Confirm delete connection,Bağlantıyı silmeyi onaylayın
 Confirm delete multiple items,Seçilen tüm öğeleri silmek istediğinizden emin misiniz?
 Confirm deletion,Silmeyi onayla
@@ -834,6 +843,7 @@ mismatched passwords,Şifreler uyuşmuyor
 mismatching,uyumsuzluk
 Mixed access,Karma erişim
 ML TOC,ML İçindekiler
+Model,Model
 Modified,Değiştirildi
 Month,Ay
 Monthly,Aylık
@@ -974,6 +984,7 @@ og:image,og:image
 og:title,og:title
 Ok,Tamam
 OK,TAMAM
+Ollama,Ollama
 On this entity,Bu varlıkta
 one character,bir karakter
 Only essential,Sadece zorunlu olanlar
@@ -995,6 +1006,7 @@ Open group,Grubu aç
 Open link,Bağlantıyı aç
 Open PDF,PDF'yi aç
 Open the two-factor Authenticator app on your device,Cihazınızda iki faktörlü Kimlik Doğrulayıcı uygulamasını açın
+OpenAI compatible,OpenAI uyumlu
 Operator,İşleç
 Options,Seçenekler
 or,ya da
@@ -1117,6 +1129,7 @@ ProTip!,Uzman İpucu!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Grafik oluşturmaya hazır verileri JSON formatında sağlayın. Her serinin bir kimlik (id), etiket ve her satırda
  etiket ile değeri içeren bir noktalar dizisi olması gerekir. Noktalarda isteğe bağlı anahtar kullanılması, renklerin sabit kalmasına yardımcı olur."
+Provider,Sağlayıcı
 Public entities description,Dikkat: Seçilen varlıklar **herkese açık** olacaktır. Herkes bunları görebilecektir.
 Public form settings description,Burada genel formun hedefini ve izin verilen şablonları yapılandırabilirsiniz
 Public Form submit URL,Genel Form Gönderme URL'si
@@ -1655,6 +1668,7 @@ Username is too short,Kullanıcı adı çok kısa
 Usernames cannot have spaces,Kullanıcı adlarında boşluk bulunamaz
 Users,Kullanıcılar
 Users & Groups,Kullanıcılar ve Gruplar
+Using,Kullanılıyor
 Using Authenticator,Authenticator'ı Kullanma
 Using URLs,URL'lerin kullanımı
 Uwazi,Uwazi
@@ -1710,10 +1724,11 @@ x less,daha az
 x more,daha az
 Year,Yıl
 Yes,Evet
+"Yes, don't ask again this session","Evet, bu oturumda tekrar sorma"
 You can add one or many items in this form.,Bu forma bir veya birden fazla öğe ekleyebilirsiniz.
 You can also enter this secret key into your Authenticator app.,Bu gizli anahtarı Authenticator uygulamanıza da girebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
-"You can delete at most 10,000 entities at once.","Aynı anda en fazla 10.000 varlık silebilirsiniz."
+"You can delete at most 10,000 entities at once.",Aynı anda en fazla 10.000 varlık silebilirsiniz.
 "You can embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, grafikler ve varlık listeleri gibi gelişmiş bileşenleri ekleyebilirsiniz."
 You do not have write permission on all entities,Tüm varlıklar üzerinde yazma izniniz yok
 You have unsaved changes. Discard them? This action cannot be undone.,Kaydedilmemiş değişiklikleriniz var. Bunlardan vazgeçmek istiyor musunuz? Bu işlem geri alınamaz.

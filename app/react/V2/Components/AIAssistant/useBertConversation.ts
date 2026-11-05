@@ -1,12 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
-import { sendMessage as sendAIAssistantMessage } from '#V2/api/aiAssistant/messages.js';
-import {
-  getBertSessionPassword,
-  hasBertSessionPassword,
-  setBertSessionPassword,
-} from './bertSessionPassword.js';
-import { createId, formatTime } from './bertChatUtils.js';
-import { useAIAssistantSocket } from './useAIAssistantSocket.js';
+import { useMemo } from 'react';
+import type { ChatSetters } from './bertSocketHandlers.js';
+import { useBertChatState } from './useBertChatState.js';
+import { useBertConversationActions } from './useBertConversationActions.js';
+import { useBertLiveSession } from './useBertLiveSession.js';
+import { useBertPasswordSettings } from './useBertPasswordSettings.js';
 import { useMockBertReplies } from './useMockBertReplies.js';
 import type { ReplyScenario } from './useMockBertReplies.js';
 import type { ChatMessage, ContextChip } from './types.js';
@@ -27,195 +24,72 @@ const useBertConversation = ({
   initialMessages = [],
   contextChips,
 }: UseBertConversationOptions) => {
-  const [messages, setMessages] = useState<ChatMessage[]>(() =>
-    initialMessages.map(message => ({ ...message }))
-  );
-  const [draftMessage, setDraftMessage] = useState('');
-  const [isThinking, setIsThinking] = useState(false);
-  const [jobProgress, setJobProgress] = useState<string | null>(null);
-  const [replyError, setReplyError] = useState<string | null>(null);
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
-  const [isPasswordUnlocked, setIsPasswordUnlocked] = useState(
-    () => mockReplies || hasBertSessionPassword()
-  );
-
-  const passwordRef = useRef<string | null>(getBertSessionPassword());
-  const conversationJobIdRef = useRef<string | null>(null);
-  const pendingJobIdRef = useRef<string | null>(null);
-  const isThinkingRef = useRef(false);
-
+  const chat = useBertChatState(initialMessages);
+  const password = useBertPasswordSettings(mockReplies);
   const { sendMockReply } = useMockBertReplies({ replyScenario });
-
-  const isReplying = isThinking || streamingMessageId !== null;
-  const needsPasswordUnlock = !mockReplies && !isPasswordUnlocked;
-
-  const matchesCurrentConversation = useCallback((jobId: string) => {
-    const currentConversationId = conversationJobIdRef.current;
-    if (!currentConversationId) {
-      return false;
-    }
-
-    return String(jobId) === String(currentConversationId);
-  }, []);
-
-  const unlockWithPassword = useCallback((password: string) => {
-    passwordRef.current = password;
-    setBertSessionPassword(password);
-    setIsPasswordUnlocked(true);
-  }, []);
-
-  const handleAssistantReply = useCallback(
-    (payload: { jobId: string; message: string }) => {
-      if (!matchesCurrentConversation(payload.jobId)) {
-        return;
-      }
-
-      const reply: ChatMessage = {
-        id: createId(),
-        role: 'assistant',
-        timestamp: formatTime(),
-        text: payload.message,
-      };
-
-      conversationJobIdRef.current = String(payload.jobId);
-      pendingJobIdRef.current = null;
-      isThinkingRef.current = false;
-      setMessages(current => [...current, reply]);
-      setIsThinking(false);
-      setJobProgress(null);
-      setStreamingMessageId(reply.id);
-    },
-    [matchesCurrentConversation]
+  const setters: ChatSetters & { setDraftMessage: (value: string) => void } = useMemo(
+    () => ({
+      setMessages: chat.setMessages,
+      setPendingConfirm: chat.setPendingConfirm,
+      setToolActivity: chat.setToolActivity,
+      setIsThinking: chat.setIsThinking,
+      setJobProgress: chat.setJobProgress,
+      setStreamingMessageId: chat.setStreamingMessageId,
+      setReplyError: chat.setReplyError,
+      setDraftMessage: chat.setDraftMessage,
+    }),
+    [
+      chat.setDraftMessage,
+      chat.setIsThinking,
+      chat.setJobProgress,
+      chat.setMessages,
+      chat.setPendingConfirm,
+      chat.setReplyError,
+      chat.setStreamingMessageId,
+      chat.setToolActivity,
+    ]
   );
 
-  const handleAssistantProgress = useCallback(
-    (payload: { jobId: string; progress: string }) => {
-      if (!matchesCurrentConversation(payload.jobId)) {
-        return;
-      }
+  const isReplying =
+    chat.isThinking || chat.streamingMessageId !== null || chat.pendingConfirm !== null;
+  const needsPasswordUnlock =
+    !mockReplies && password.requiresPassword && !password.isPasswordUnlocked;
 
-      setJobProgress(payload.progress);
-    },
-    [matchesCurrentConversation]
-  );
-
-  const handleAssistantError = useCallback(
-    (payload: { jobId: string; error: string }) => {
-      if (!matchesCurrentConversation(payload.jobId)) {
-        return;
-      }
-
-      pendingJobIdRef.current = null;
-      isThinkingRef.current = false;
-      setReplyError(payload.error || 'Bert could not complete your request. Try again.');
-      setIsThinking(false);
-      setJobProgress(null);
-    },
-    [matchesCurrentConversation]
-  );
-
-  useAIAssistantSocket({
-    enabled: open && !mockReplies && isPasswordUnlocked,
-    onReply: handleAssistantReply,
-    onError: handleAssistantError,
-    onProgress: handleAssistantProgress,
+  useBertLiveSession({
+    enabled: open && !mockReplies && password.isPasswordUnlocked,
+    jobRefs: chat.jobRefs,
+    setters,
   });
 
-  const sendMessage = useCallback(async () => {
-    const text = draftMessage.trim();
-    if (!text || isReplying) return;
-
-    const userMessage: ChatMessage = {
-      id: createId(),
-      role: 'user',
-      timestamp: formatTime(),
-      text,
-    };
-
-    setMessages(current => [...current, userMessage]);
-    setDraftMessage('');
-    setReplyError(null);
-    isThinkingRef.current = true;
-    setIsThinking(true);
-    setJobProgress(null);
-    setStreamingMessageId(null);
-
-    if (mockReplies) {
-      sendMockReply(
-        text,
-        contextChips,
-        reply => {
-          setMessages(current => [...current, reply]);
-          setStreamingMessageId(reply.id);
-        },
-        error => setReplyError(error),
-        () => {
-          isThinkingRef.current = false;
-          setIsThinking(false);
-        }
-      );
-      return;
-    }
-
-    const password = passwordRef.current;
-    if (!password) {
-      setReplyError('Enter your Uwazi password to send messages.');
-      isThinkingRef.current = false;
-      setIsThinking(false);
-      return;
-    }
-
-    const [response, error] = await sendAIAssistantMessage({
-      message: text,
-      password,
-      jobId: conversationJobIdRef.current ?? undefined,
-    });
-
-    if (error || !response?.jobId) {
-      setReplyError(
-        error?.json?.prettyMessage ||
-          'Bert could not complete your request. Check your connection and try again.'
-      );
-      isThinkingRef.current = false;
-      setIsThinking(false);
-      return;
-    }
-
-    const jobId = String(response.jobId);
-    conversationJobIdRef.current = jobId;
-    pendingJobIdRef.current = jobId;
-  }, [contextChips, draftMessage, isReplying, mockReplies, sendMockReply]);
-
-  const clearChat = useCallback(() => {
-    conversationJobIdRef.current = null;
-    pendingJobIdRef.current = null;
-    isThinkingRef.current = false;
-    setMessages([]);
-    setDraftMessage('');
-    setReplyError(null);
-    setIsThinking(false);
-    setJobProgress(null);
-    setStreamingMessageId(null);
-  }, []);
-
-  const finishStreaming = useCallback(() => {
-    setStreamingMessageId(null);
-  }, []);
+  const actions = useBertConversationActions({
+    draftMessage: chat.draftMessage,
+    isReplying,
+    mockReplies,
+    requiresPassword: password.requiresPassword,
+    passwordRef: password.passwordRef,
+    conversationJobId: chat.jobRefs.current.conversationJobId,
+    pendingConfirm: chat.pendingConfirm,
+    contextChips,
+    sendMockReply,
+    setters,
+    jobRefs: chat.jobRefs,
+    setStreamingMessageId: chat.setStreamingMessageId,
+  });
 
   return {
-    messages,
-    draftMessage,
+    messages: chat.messages,
+    draftMessage: chat.draftMessage,
     isReplying,
-    isThinking,
-    jobProgress,
-    streamingMessageId,
-    replyError,
+    isThinking: chat.isThinking,
+    jobProgress: chat.jobProgress,
+    streamingMessageId: chat.streamingMessageId,
+    replyError: chat.replyError,
     needsPasswordUnlock,
-    setDraftMessage,
-    unlockWithPassword,
-    sendMessage,
-    finishStreaming,
-    clearChat,
+    pendingConfirm: chat.pendingConfirm,
+    toolActivity: chat.toolActivity,
+    setDraftMessage: chat.setDraftMessage,
+    unlockWithPassword: password.unlockWithPassword,
+    ...actions,
   };
 };
 

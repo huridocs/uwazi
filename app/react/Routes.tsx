@@ -12,6 +12,10 @@ import { Settings } from '#V2/Routes/Settings/Settings.js';
 import { Login } from './Users/Login.js';
 import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
+import {
+  AIAssistantSettings,
+  aiAssistantSettingsLoader,
+} from '#V2/Routes/Settings/AIAssistant/AIAssistantSettings.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
@@ -337,6 +341,11 @@ const getRoutesLayout = (
         path="collection"
         element={adminsOnlyRoute(<Collection />)}
         loader={collectionLoader(headers)}
+      />
+      <Route
+        path="ai-assistant"
+        element={adminsOnlyRoute(<AIAssistantSettings />)}
+        loader={aiAssistantSettingsLoader(headers)}
       />
       <Route
         path="users"

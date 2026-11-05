@@ -96,6 +96,7 @@ Advanced,Avancé
 Advanced colors,Couleurs avancées
 Advanced ECharts overrides,Remplacements avancés dans ECharts
 Aggregation,Agrégation
+AI Assistant,Assistant IA
 Alias,Alias
 ALL,TOUT
 All,Tout
@@ -121,11 +122,13 @@ An error occurred,Une erreur s'est produite
 Analytics,Analyse de données
 Analytics description,"Si vous souhaitez suivre les statistiques de visites de votre collection, Uwazi prend en charge Google Analytics et Matomo."
 AND OR NOT,ET OU NON
+Anthropic,Anthropic
 Any,Peu importe
 Any entity,Toute entité
 any single character,n'importe quel caractère
 Any type,Tout type
 Anyone can see this entity,Tout le monde peut voir cette entité
+API key,Clé API
 Appearance,Apparition
 Apply,Appliquer
 Are you sure you want to continue?,Êtes-vous sûr de vouloir continuer ?
@@ -164,8 +167,13 @@ Back to,Retour à
 Back to details,Retour aux détails
 Back to search,Retour à la recherche
 Bad Request,Erreur de requête
+Base URL,URL de base
 Basic,Notions de base
 Bert,Bert
+Bert (external service),Bert (service externe)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert reste disponible comme fournisseur par défaut. Les autres fournisseurs utilisent une clé API enregistrée sur cette collection.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Bert utilise l'URL du service du tenant. Le chat demande le mot de passe de l'utilisateur pour que Bert appelle Uwazi en son nom.
+Bert wants to make a change,Bert veut apporter une modification
 Bidirectional,Bidirectionnel
 Body,Corps
 boolean,booléen
@@ -260,6 +268,7 @@ Configure templates,Configurer les modèles
 Confirm,Confirmer
 CONFIRM,CONFIRMER
 Confirm action,Confirmer l'action
+Confirm Bert action,Confirmer l'action de Bert
 Confirm delete connection,Confirmer la suppression de la connexion
 Confirm delete multiple items,Êtes-vous sûr de vouloir supprimer tous les éléments sélectionnés ?
 Confirm deletion,Confirmer la suppression
@@ -835,6 +844,7 @@ mismatched passwords,Les mots de passe ne correspondent pas
 mismatching,non correspondant
 Mixed access,Accès mixte
 ML TOC,Table des matières ML
+Model,Modèle
 Modified,Modifié
 Month,Mois
 Monthly,Mensuel
@@ -975,6 +985,7 @@ og:image,og:image
 og:title,og:title
 Ok,D'accord
 OK,OK
+Ollama,Ollama
 On this entity,Sur cette entité
 one character,un caractère
 Only essential,Uniquement l'essentiel
@@ -996,6 +1007,7 @@ Open group,Ouvrir le groupe
 Open link,Ouvrir le lien
 Open PDF,Ouvrir le PDF
 Open the two-factor Authenticator app on your device,Ouvrez l'application d'authentification à deux facteurs sur votre appareil
+OpenAI compatible,Compatible OpenAI
 Operator,Opérateur
 Options,Options
 or,ou
@@ -1118,6 +1130,7 @@ ProTip!,ProTip !
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Fournissez des données prêtes à être représentées sous forme de graphique au format JSON. Chaque série doit comporter un identifiant, une étiquette et un tableau de points contenant
  une étiquette et une valeur par ligne. Une clé facultative associée aux points permet de stabiliser les couleurs."
+Provider,Fournisseur
 Public entities description,Attention : les entités sélectionnées deviendront **publiques**. Tout le monde pourra les voir.
 Public form settings description,Vous pouvez configurer ici la destination du formulaire public ainsi que les modèles figurant sur la liste blanche
 Public Form submit URL,URL d'envoi du formulaire public
@@ -1655,6 +1668,7 @@ Username is too short,Le nom d'utilisateur est trop court
 Usernames cannot have spaces,Les noms d'utilisateur ne doivent pas contenir d'espaces
 Users,Utilisateurs
 Users & Groups,Utilisateurs et groupes
+Using,Utilisation de
 Using Authenticator,Utilisation d'Authenticator
 Using URLs,Utilisation des URL
 Uwazi,Uwazi
@@ -1710,10 +1724,11 @@ x less,x en moins
 x more,x en plus
 Year,Année
 Yes,Oui
+"Yes, don't ask again this session","Oui, ne plus demander pendant cette session"
 You can add one or many items in this form.,Vous pouvez ajouter un ou plusieurs éléments dans ce formulaire.
 You can also enter this secret key into your Authenticator app.,Vous pouvez également saisir cette clé secrète dans votre application Authenticator.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
-"You can delete at most 10,000 entities at once.","Vous pouvez supprimer au maximum 10 000 entités à la fois."
+"You can delete at most 10,000 entities at once.",Vous pouvez supprimer au maximum 10 000 entités à la fois.
 "You can embed advanced components like maps, charts and entity lists in your page.","Vous pouvez intégrer à votre page des composants avancés tels que des cartes, des graphiques et des listes d'entités."
 You do not have write permission on all entities,Vous ne disposez pas des droits d'écriture sur toutes les entités.
 You have unsaved changes. Discard them? This action cannot be undone.,Vous avez des modifications non enregistrées. Voulez-vous les ignorer ? Cette action ne peut pas être annulée.

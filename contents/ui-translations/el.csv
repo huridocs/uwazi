@@ -96,6 +96,7 @@ Advanced,Για προχωρημένους
 Advanced colors,Προηγμένα χρώματα
 Advanced ECharts overrides,Προηγμένες παραμετροποιήσεις του ECharts
 Aggregation,Συνάθροιση
+AI Assistant,Βοηθός ΤΝ
 Alias,Ψευδώνυμο
 ALL,ΟΛΑ
 All,Όλα
@@ -121,11 +122,13 @@ An error occurred,Παρουσιάστηκε σφάλμα
 Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,Οποιοδήποτε
 Any entity,Οποιαδήποτε οντότητα
 any single character,οποιοσδήποτε χαρακτήρας
 Any type,Οποιοσδήποτε τύπος
 Anyone can see this entity,Οποιοσδήποτε μπορεί να δει αυτή την οντότητα
+API key,Κλειδί API
 Appearance,Εμφάνιση
 Apply,Εφαρμογή
 Are you sure you want to continue?,Θέλετε σίγουρα να συνεχίσετε;
@@ -164,8 +167,13 @@ Back to,Επιστροφή σε
 Back to details,Επιστροφή στις λεπτομέρειες
 Back to search,Επιστροφή στην αναζήτηση
 Bad Request,Κακό αίτημα
+Base URL,Βασικό URL
 Basic,Βασικό
 Bert,Bert
+Bert (external service),Bert (εξωτερική υπηρεσία)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Ο Bert παραμένει διαθέσιμος ως προεπιλεγμένος πάροχος. Οι άλλοι πάροχοι χρησιμοποιούν ένα κλειδί API αποθηκευμένο σε αυτή τη συλλογή.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Ο Bert χρησιμοποιεί τη διεύθυνση υπηρεσίας του tenant. Η συνομιλία ζητά τον κωδικό του χρήστη ώστε ο Bert να καλεί το Uwazi ως αυτός ο χρήστης.
+Bert wants to make a change,Ο Bert θέλει να κάνει μια αλλαγή
 Bidirectional,Αμφίδρομος
 Body,Σώμα
 boolean,boolean
@@ -259,6 +267,7 @@ Configure templates,Διαμόρφωση προτύπων
 Confirm,Επιβεβαίωση
 CONFIRM,ΕΠΙΒΕΒΑΙΩΣΗ
 Confirm action,Επιβεβαίωση ενέργειας
+Confirm Bert action,Επιβεβαίωση ενέργειας του Bert
 Confirm delete connection,Επιβεβαίωση διαγραφής σύνδεσης
 Confirm delete multiple items,Θέλετε σίγουρα να διαγράψετε όλα τα επιλεγμένα στοιχεία;
 Confirm deletion,Επιβεβαίωση διαγραφής
@@ -834,6 +843,7 @@ mismatched passwords,Οι κωδικοί δεν ταιριάζουν
 mismatching,αναντιστοίχιση
 Mixed access,Μικτή πρόσβαση
 ML TOC,Πίνακας περιεχομένων ML
+Model,Μοντέλο
 Modified,Τροποποιημένο
 Month,Μήνας
 Monthly,Μηνιαία
@@ -974,6 +984,7 @@ og:image,og:image
 og:title,og:title
 Ok,Εντάξει
 OK,Εντάξει
+Ollama,Ollama
 On this entity,Σε αυτή την οντότητα
 one character,ένας χαρακτήρας
 Only essential,Μόνο τα απαραίτητα
@@ -995,6 +1006,7 @@ Open group,Άνοιγμα ομάδας
 Open link,Άνοιγμα συνδέσμου
 Open PDF,Άνοιγμα PDF
 Open the two-factor Authenticator app on your device,Ανοίξτε την εφαρμογή πιστοποίησης δύο παραγόντων στη συσκευή σας
+OpenAI compatible,Συμβατό με OpenAI
 Operator,Τελεστής
 Options,Επιλογές
 or,ή
@@ -1117,6 +1129,7 @@ ProTip!,Συμβουλή:
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Παρέχετε δεδομένα έτοιμα για γράφημα σε μορφή JSON. Κάθε σειρά πρέπει να περιλαμβάνει αναγνωριστικό (id), ετικέτα (label) και έναν πίνακα σημείων (points) με
 ετικέτα και τιμή σε κάθε σειρά. Ένα προαιρετικό κλειδί (key) στα σημεία βοηθά στη σταθεροποίηση των χρωμάτων."
+Provider,Πάροχος
 Public entities description,Προσοχή: οι επιλεγμένες οντότητες θα είναι **δημόσιες**. Οποιοσδήποτε θα μπορεί να τις δει.
 Public form settings description,Εδώ μπορείτε να διαμορφώσετε τον προορισμό της δημόσιας φόρμας και τα πρότυπα που περιλαμβάνονται στη λίστα επιτρεπόμενων προτύπων.
 Public Form submit URL,URL δημόσιας φόρμας υποβολής
@@ -1655,6 +1668,7 @@ Username is too short,Το όνομα χρήστη είναι πολύ μικρ�
 Usernames cannot have spaces,Τα ονόματα χρηστών δεν μπορούν να έχουν κενά
 Users,Χρήστες
 Users & Groups,Χρήστες & Ομάδες
+Using,Χρήση
 Using Authenticator,Χρήση της εφαρμογής πιστοποίησης ταυτότητας
 Using URLs,Χρήση URLs
 Uwazi,Uwazi
@@ -1710,10 +1724,11 @@ x less,λιγότερα
 x more,περισσότερα
 Year,Έτος
 Yes,Ναι
+"Yes, don't ask again this session","Ναι, να μην ξαναρωτήσει σε αυτή την περίοδο"
 You can add one or many items in this form.,Μπορείτε να προσθέσετε ένα ή πολλά στοιχεία σε αυτή τη φόρμα.
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
-"You can delete at most 10,000 entities at once.","Μπορείτε να διαγράψετε έως 10.000 οντότητες κάθε φορά."
+"You can delete at most 10,000 entities at once.",Μπορείτε να διαγράψετε έως 10.000 οντότητες κάθε φορά.
 "You can embed advanced components like maps, charts and entity lists in your page.","Μπορείτε να ενσωματώσετε στη σελίδα σας προηγμένα στοιχεία, όπως χάρτες, γραφήματα και λίστες οντοτήτων."
 You do not have write permission on all entities,Δεν έχετε δικαιώματα εγγραφής σε όλες τις οντότητες
 You have unsaved changes. Discard them? This action cannot be undone.,Έχετε αλλαγές που δεν έχουν αποθηκευτεί. Θέλετε να τις απορρίψετε; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.

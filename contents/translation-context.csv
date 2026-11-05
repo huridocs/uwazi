@@ -1585,3 +1585,18 @@ File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the stor
 Save theme,Button label,Settings > Collection,Saves theme and branding from the side panel without saving other unsaved collection settings.,false
 Show all,Button label,Shared (used across 2 views),"Expands the folded file list on the entity metadata tab and the library entity preview when more than six files are present. The count and the word files sit beside this label.",false
 "You can delete at most 10,000 entities at once.",Tooltip,Library,"Tooltip on the disabled Delete button when 10,000 or more entities are selected.",false
+Confirm Bert action,Accessible label,AI Assistant (Bert) panel,Accessible name of the confirmation dialog shown when Bert wants to change collection data.,false
+Bert wants to make a change,UI text,AI Assistant (Bert) panel,Heading in the confirmation prompt when Bert is about to run a write tool.,false
+"Yes, don't ask again this session",Button label,AI Assistant (Bert) panel,Confirms the write and skips further confirmation prompts for the rest of the browser session.,false
+Using,UI text,AI Assistant (Bert) panel,Prefix before the tool name while Bert is running a tool (concatenated with the tool name).,false
+Bert (external service),Option label,Settings > AI Assistant,Provider dropdown option for the existing Bert HTTP service.,false
+OpenAI compatible,Option label,Settings > AI Assistant,Provider dropdown option for OpenAI-compatible chat completions APIs.,false
+Anthropic,Option label,Settings > AI Assistant,Provider dropdown option for the Anthropic Messages API.,true
+Ollama,Option label,Settings > AI Assistant,Provider dropdown option for a local Ollama server.,true
+Provider,Field label,Settings > AI Assistant,Label of the dropdown that chooses which AI provider Bert uses.,false
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,UI text,Settings > AI Assistant,Help text under the provider dropdown explaining that Bert remains the default and other providers store an API key on the collection.,false
+Model,Field label,Settings > AI Assistant,Label of the model name field for LLM providers.,false
+API key,Field label,Settings > AI Assistant,Label of the password field for the LLM provider API key.,false
+Base URL,Field label,Settings > AI Assistant,Label of the optional API base URL field for LLM providers.,false
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,UI text,Settings > AI Assistant,Help text shown when Bert (external service) is selected: the service URL is the tenant flag and chat still asks for the user password.,false
+AI Assistant,Navigation item,Settings,Admin settings nav link to the AI Assistant provider page.,false

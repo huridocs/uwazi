@@ -96,6 +96,7 @@ Advanced,Додатково
 Advanced colors,Розширені кольори
 Advanced ECharts overrides,Розширені перевизначення ECharts
 Aggregation,Агрегація
+AI Assistant,Помічник ШІ
 Alias,Псевдонім
 ALL,ВСІ
 All,ВСІ
@@ -121,11 +122,13 @@ An error occurred,Виникла помилка
 Analytics,Аналітика
 Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,Будь-який
 Any entity,Будь-який суб'єкт
 any single character,будь-який окремий символ
 Any type,Будь-який тип
 Anyone can see this entity,Цей об’єкт може побачити будь-хто
+API key,Ключ API
 Appearance,Порядок появи
 Apply,Подати заявку
 Are you sure you want to continue?,"Ви впевнені, що хочете продовжувати?"
@@ -164,8 +167,13 @@ Back to,Назад до
 Back to details,Повернутися до детальної інформації
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
+Base URL,Базовий URL
 Basic,Базовий
 Bert,Bert
+Bert (external service),Bert (зовнішній сервіс)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,"Bert залишається доступним як провайдер за замовчуванням. Інші провайдери використовують ключ API, збережений у цій колекції."
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,"Bert використовує URL сервісу тенанта. Чат запитує пароль користувача, щоб Bert викликав Uwazi від його імені."
+Bert wants to make a change,Bert хоче внести зміну
 Bidirectional,Двонаправлений
 Body,Основна частина
 boolean,логічні оператори
@@ -260,6 +268,7 @@ Configure templates,Налаштування шаблонів
 Confirm,Підтвердити
 CONFIRM,ПІДТВЕРДИТИ
 Confirm action,Підтвердити дію
+Confirm Bert action,Підтвердити дію Bert
 Confirm delete connection,Підтвердити видалення з'єднання
 Confirm delete multiple items,"Ви впевнені, що хочете видалити всі вибрані елементи?"
 Confirm deletion,Підтвердити видалення
@@ -835,6 +844,7 @@ mismatched passwords,Паролі не збігаються
 mismatching,невідповідність
 Mixed access,Доступ змішаного типу
 ML TOC,Зміст для машинного навчання
+Model,Модель
 Modified,Змінено
 Month,Місяць
 Monthly,Щомісяця
@@ -975,6 +985,7 @@ og:image,og:image
 og:title,og:title
 Ok,Гаразд
 OK,ГАРАЗД.
+Ollama,Ollama
 On this entity,На цьому об’єкті
 one character,один символ
 Only essential,Тільки найнеобхідніше
@@ -996,6 +1007,7 @@ Open group,Відкрита група
 Open link,Відкрити посилання
 Open PDF,Відкрити PDF
 Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
+OpenAI compatible,Сумісний з OpenAI
 Operator,Оператор
 Options,Параметри
 or,або
@@ -1118,6 +1130,7 @@ ProTip!,Професійна підказка!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Надайте дані у форматі JSON, готові для побудови діаграми. Кожен ряд повинен містити ідентифікатор, мітку та масив точок, у якому
 кожен рядок містить мітку та значення. Опціональний ключ у масиві точок допомагає забезпечити стабільність кольорів."
+Provider,Провайдер
 Public entities description,Увага: вибрані організації будуть **публічними**. Їх зможе побачити будь-хто.
 Public form settings description,Тут ви можете налаштувати призначення публічної форми та шаблони білого списку
 Public Form submit URL,Публічна форма надсилання URL-адреси
@@ -1656,6 +1669,7 @@ Username is too short,Ім'я користувача занадто коротк
 Usernames cannot have spaces,В іменах користувачів не може бути пробілів
 Users,Користувачі
 Users & Groups,Користувачі та групи
+Using,Використовується
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
 Uwazi,Uwazi
@@ -1711,10 +1725,11 @@ x less,менше
 x more,більше
 Year,Рік
 Yes,Так.
+"Yes, don't ask again this session","Так, більше не запитувати в цій сесії"
 You can add one or many items in this form.,Ви можете додати один або декілька елементів у цій формі.
 You can also enter this secret key into your Authenticator app.,Ви також можете ввести цей секретний ключ у вашому додатку Authenticator.
 You can create metadata templates in,Ви можете створювати шаблони метаданих у
-"You can delete at most 10,000 entities at once.","За один раз можна видалити не більше 10 000 об’єктів."
+"You can delete at most 10,000 entities at once.",За один раз можна видалити не більше 10 000 об’єктів.
 "You can embed advanced components like maps, charts and entity lists in your page.","Ви можете вбудовувати на свою сторінку складні компоненти, такі як карти, діаграми та списки об’єктів."
 You do not have write permission on all entities,У вас немає прав на запис для всіх об’єктів
 You have unsaved changes. Discard them? This action cannot be undone.,У вас є незбережені зміни. Видалити їх? Цю дію неможливо скасувати.

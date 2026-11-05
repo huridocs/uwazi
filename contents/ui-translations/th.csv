@@ -96,6 +96,7 @@ Advanced,ขั้นสูง
 Advanced colors,สีขั้นสูง
 Advanced ECharts overrides,การแทนที่ Advanced ECharts
 Aggregation,การรวม
+AI Assistant,ผู้ช่วย AI
 Alias,นามแฝง
 ALL,ทั้งหมด
 All,ทั้งหมด
@@ -121,11 +122,13 @@ An error occurred,เกิดข้อผิดพลาด
 Analytics,การวิเคราะห์
 Analytics description,หากท่านต้องการติดตามข้อมูลวิเคราะห์ที่เกี่ยวข้องกับจำนวนผู้เข้าชมคอลเลกชัน Uwazi รองรับทั้ง Google Analytics และ Matomo
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,ใดๆ
 Any entity,เอนทิตีใดก็ตาม
 any single character,ตัวอักษรใดก็ตาม
 Any type,ประเภทใดก็ตาม
 Anyone can see this entity,ใครก็ตามสามารถเห็นเอนทิตีนี้ได้
+API key,คีย์ API
 Appearance,ลำดับการปรากฏ
 Apply,นำไปใช้
 Are you sure you want to continue?,คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ?
@@ -164,8 +167,13 @@ Back to,กลับไปยัง
 Back to details,กลับสู่รายละเอียด
 Back to search,กลับไปที่การค้นหา
 Bad Request,คำขอผิดพลาด
+Base URL,URL ฐาน
 Basic,พื้นฐาน
 Bert,Bert
+Bert (external service),Bert (บริการภายนอก)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,Bert ยังใช้ได้เป็นผู้ให้บริการเริ่มต้น ผู้ให้บริการอื่นใช้คีย์ API ที่เก็บไว้ในคอลเลกชันนี้
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,Bert ใช้ URL ของบริการเทแนนท์ แชทจะขอรหัสผ่านของผู้ใช้เพื่อให้ Bert เรียก Uwazi ในนามของผู้ใช้นั้น
+Bert wants to make a change,Bert ต้องการทำการเปลี่ยนแปลง
 Bidirectional,สองทาง
 Body,เนื้อหา
 boolean,บูลีน
@@ -260,6 +268,7 @@ Configure templates,กำหนดค่าแม่แบบ
 Confirm,ยืนยัน
 CONFIRM,ยืนยัน
 Confirm action,ยืนยันการดำเนินการ
+Confirm Bert action,ยืนยันการกระทำของ Bert
 Confirm delete connection,ยืนยันการลบการเชื่อมต่อ
 Confirm delete multiple items,คุณแน่ใจหรือไม่ว่าต้องการลบรายการที่เลือกทั้งหมด
 Confirm deletion,ยืนยันการลบ
@@ -835,6 +844,7 @@ mismatched passwords,รหัสผ่านไม่ตรงกัน
 mismatching,ไม่ตรงกัน
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
+Model,โมเดล
 Modified,แก้ไขแล้ว
 Month,เดือน
 Monthly,รายเดือน
@@ -975,6 +985,7 @@ og:image,og:image
 og:title,og:title
 Ok,ตกลง
 OK,ตกลง
+Ollama,Ollama
 On this entity,เกี่ยวกับเอนทิตีนี้
 one character,ตัวอักษรหนึ่งตัว
 Only essential,เฉพาะสิ่งที่จำเป็นเท่านั้น
@@ -996,6 +1007,7 @@ Open group,เปิดกลุ่ม
 Open link,เปิดลิงก์
 Open PDF,เปิดไฟล์ PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
+OpenAI compatible,เข้ากันได้กับ OpenAI
 Operator,ตัวดำเนินการ
 Options,ตัวเลือก
 or,หรือ
@@ -1118,6 +1130,7 @@ ProTip!,โปรทิป!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","ส่งข้อมูลในรูปแบบ JSON ที่พร้อมใช้สำหรับสร้างกราฟ แต่ละชุดข้อมูลต้องมี id, label และอาร์เรย์ของจุด (points) ที่แต่ละแถวมี
  label และค่า (value) สำหรับแต่ละจุด การใช้ key (หากมี) ในอาร์เรย์ของจุดจะช่วยรักษาสีให้คงที่"
+Provider,ผู้ให้บริการ
 Public entities description,คำเตือน: เอนทิตีที่เลือกไว้จะ **เป็นสาธารณะ** ใครก็ตามสามารถดูได้
 Public form settings description,ที่นี่คุณสามารถกำหนดจุดหมายปลายทางของแบบฟอร์มสาธารณะและแม่แบบที่อยู่ในรายชื่ออนุญาตได้
 Public Form submit URL,URL สำหรับการส่งแบบฟอร์มสาธารณะ
@@ -1656,6 +1669,7 @@ Username is too short,ชื่อผู้ใช้สั้นเกินไ�
 Usernames cannot have spaces,ชื่อผู้ใช้ไม่สามารถมีช่องว่างได้
 Users,ผู้ใช้
 Users & Groups,ผู้ใช้และกลุ่ม
+Using,กำลังใช้
 Using Authenticator,การใช้ Authenticator
 Using URLs,การใช้ URL
 Uwazi,Uwazi
@@ -1711,6 +1725,7 @@ x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,ใช่
+"Yes, don't ask again this session",ใช่ ไม่ต้องถามอีกในเซสชันนี้
 You can add one or many items in this form.,คุณสามารถเพิ่มรายการหนึ่งรายการหรือหลายรายการในแบบฟอร์มนี้ได้
 You can also enter this secret key into your Authenticator app.,คุณยังสามารถป้อนรหัสลับนี้ลงในแอป Authenticator ของคุณได้อีกด้วย
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้

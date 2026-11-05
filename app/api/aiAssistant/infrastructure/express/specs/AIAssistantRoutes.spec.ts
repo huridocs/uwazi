@@ -35,11 +35,11 @@ describe('AIAssistantRoutes', () => {
       ],
     });
     tenants.current().featureFlags!.aiAssistant = true;
-  });
+  }, 60_000);
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
+  }, 60_000);
 
   beforeEach(() => {
     tenants.current().domain = '127.0.0.1';
@@ -115,6 +115,7 @@ describe('AIAssistantRoutes', () => {
         tenantName: expect.any(String),
         userId: adminUser._id,
         message: 'Summarise this case',
+        sessionId: expect.any(String),
         credentials: expect.objectContaining({
           username: adminUser.username,
           password: 'secret',
@@ -122,7 +123,46 @@ describe('AIAssistantRoutes', () => {
         }),
       })
     );
-    expect(execute.mock.calls[0][0]).not.toHaveProperty('sessionId');
+  });
+
+  it('should return the default Bert provider on GET /api/aiAssistant/settings', async () => {
+    const response = await request(app)
+      .get('/api/aiAssistant/settings')
+      .set('Cookie', 'connect.sid=test-session');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      provider: 'bert-external',
+      requiresPassword: true,
+    });
+  });
+
+  it('should persist LLM provider settings without putting them on GET /api/settings', async () => {
+    const saveResponse = await request(app)
+      .post('/api/aiAssistant/settings')
+      .set('Cookie', 'connect.sid=test-session')
+      .send({
+        provider: 'openai_compat',
+        apiKey: 'sk-test',
+        baseUrl: 'https://api.openai.com/v1',
+        model: 'gpt-4.1-mini',
+      });
+
+    expect(saveResponse.status).toBe(200);
+    expect(saveResponse.body).toEqual({
+      provider: 'openai_compat',
+      apiKey: 'sk-test',
+      baseUrl: 'https://api.openai.com/v1',
+      model: 'gpt-4.1-mini',
+      requiresPassword: false,
+    });
+
+    const readResponse = await request(app)
+      .get('/api/aiAssistant/settings')
+      .set('Cookie', 'connect.sid=test-session');
+
+    expect(readResponse.body.apiKey).toBe('sk-test');
+    expect(readResponse.body.requiresPassword).toBe(false);
   });
 
   it('should return 400 when the request has no session cookie', async () => {

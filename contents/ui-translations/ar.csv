@@ -96,6 +96,7 @@ Advanced,متقدم
 Advanced colors,ألوان متقدمة
 Advanced ECharts overrides,تجاوزات ECharts المتقدمة
 Aggregation,تجميع
+AI Assistant,مساعد الذكاء الاصطناعي
 Alias,اسم مستعار
 ALL,الكل
 All,الكل
@@ -121,11 +122,13 @@ An error occurred,حدث خطأ
 Analytics,التحليلات
 Analytics description,إذا كنت ترغب في تتبع الإحصاءات المتعلقة بزيارات مجموعتك، فإن Uwazi يدعم كل من Google Analytics وMatomo.
 AND OR NOT,AND OR NOT
+Anthropic,Anthropic
 Any,أي
 Any entity,أي كيان
 any single character,أي حرف واحد
 Any type,أي نوع
 Anyone can see this entity,يمكن لأي شخص رؤية هذا الكيان
+API key,مفتاح API
 Appearance,الظهور
 Apply,تطبيق
 Are you sure you want to continue?,هل أنت متأكد من أنك تريد المتابعة؟
@@ -164,8 +167,13 @@ Back to,العودة إلى
 Back to details,العودة إلى التفاصيل
 Back to search,العودة إلى البحث
 Bad Request,طلب غير صحيح
+Base URL,عنوان URL الأساسي
 Basic,أساسي
 Bert,Bert
+Bert (external service),Bert (خدمة خارجية)
+Bert stays available as the default provider. Other providers use an API key stored on this collection.,يبقى Bert متاحًا كمزود افتراضي. تستخدم المزودات الأخرى مفتاح API مخزنًا في هذه المجموعة.
+Bert uses the tenant service URL. Chat asks for the user password so Bert can call Uwazi as that user.,يستخدم Bert عنوان URL لخدمة المستأجر. يطلب الدردشة كلمة مرور المستخدم حتى يستدعي Bert أووازي باسم ذلك المستخدم.
+Bert wants to make a change,يريد Bert إجراء تغيير
 Bidirectional,ثنائي الاتجاه
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
 boolean,منطقية
@@ -259,6 +267,7 @@ Configure templates,تكوين القوالب
 Confirm,تأكيد
 CONFIRM,تأكيد
 Confirm action,تأكيد الإجراء
+Confirm Bert action,تأكيد إجراء Bert
 Confirm delete connection,تأكيد حذف الاتصال
 Confirm delete multiple items,هل ترغب في حذف كل العناصر المختارة؟
 Confirm deletion,تأكيد الحذف
@@ -834,6 +843,7 @@ mismatched passwords,كلمات المرور غير متطابقة
 mismatching,عدم التطابق
 Mixed access,وصول مختلط
 ML TOC,جدول محتويات ML
+Model,النموذج
 Modified,آخر تعديل
 Month,شهر
 Monthly,شهري
@@ -974,6 +984,7 @@ og:image,og:image
 og:title,og:title
 Ok,موافق
 OK,موافق
+Ollama,Ollama
 On this entity,بشأن هذا الكيان
 one character,حرف واحد
 Only essential,الأمور الضرورية فقط
@@ -995,6 +1006,7 @@ Open group,فتح المجموعة
 Open link,فتح الرابط
 Open PDF,فتح ملف PDF
 Open the two-factor Authenticator app on your device,افتح تطبيق المصادقة الثنائية في جهازك
+OpenAI compatible,متوافق مع OpenAI
 Operator,عامل
 Options,خيارات
 or,أو
@@ -1117,6 +1129,7 @@ ProTip!,نصيحة احترافية!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","قم بتوفير البيانات الجاهزة للعرض في الرسوم البيانية بتنسيق JSON. يجب أن تحتوي كل سلسلة على معرّف (id) وتسمية (label) ومصفوفة من النقاط تتضمن
 التسمية والقيمة في كل صف. ويساعد وجود مفتاح اختياري في النقاط على تثبيت الألوان."
+Provider,المزود
 Public entities description,تنبيه: ستكون الكيانات المحددة **عامة**. وسيتمكن أي شخص من رؤيتها.
 Public form settings description,هنا يمكنك تكوين وجهة النموذج العام والقوالب المدرجة في القائمة البيضاء
 Public Form submit URL,عنوان URL لإرسال النموذج العام
@@ -1655,6 +1668,7 @@ Username is too short,اسم المستخدم قصير جداً
 Usernames cannot have spaces,لا يجوز أن تحتوي أسماء المستخدمين على مسافات
 Users,المستخدمين
 Users & Groups,المستخدمون والمجموعات
+Using,استخدام
 Using Authenticator,استخدام تطبيق Authenticator
 Using URLs,استخدام عناوين URL
 Uwazi,Uwazi
@@ -1710,6 +1724,7 @@ x less,X أقل
 x more,X أكثر
 Year,سنة
 Yes,نعم
+"Yes, don't ask again this session",نعم، لا تسأل مرة أخرى في هذه الجلسة
 You can add one or many items in this form.,يمكنك إضافة عنصر واحد أو عدة عناصر في هذا النموذج.
 You can also enter this secret key into your Authenticator app.,يمكنك أيضًا إدخال هذا المفتاح السري في تطبيق Authenticator الخاص بك.
 You can create metadata templates in,يمكنك إنشاء قوالب البيانات الوصفية في
