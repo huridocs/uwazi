@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable max-statements */
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -27,7 +28,6 @@ const fixtures = {
         { key: 'en' as LanguageISO6391, label: 'English', default: true },
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
-      features: { newNameGeneration: false },
     },
   ],
   dictionaries: [fixturesFactory.thesauri('applier-thesaurus', [])],

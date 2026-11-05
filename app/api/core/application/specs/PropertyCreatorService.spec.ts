@@ -107,15 +107,12 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Text',
-          type: PropertyTypeEnum.Date,
-          template: new ObjectId().toString(),
-        },
-        {}
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Text',
+        type: PropertyTypeEnum.Date,
+        template: new ObjectId().toString(),
+      })
     ).rejects.toThrow(PropertyTypeMismatchError);
   });
 
@@ -127,15 +124,12 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Text Label',
-          type: PropertyTypeEnum.Text,
-          template: templateId.toString(),
-        },
-        {}
-      )
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Text Label',
+        type: PropertyTypeEnum.Text,
+        template: templateId.toString(),
+      })
     ).resolves.toBeInstanceOf(TextProperty);
   });
 
@@ -147,16 +141,13 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create(
-        {
-          id: prevCreated.toHexString(),
-          type: PropertyTypeEnum.Text,
-          label: 'Previous created',
-          name: 'prev_created',
-          template: templateId.toString(),
-        },
-        {}
-      )
+      sut.create({
+        id: prevCreated.toHexString(),
+        type: PropertyTypeEnum.Text,
+        label: 'Previous created',
+        name: 'prev_created',
+        template: templateId.toString(),
+      })
     ).resolves.toBeInstanceOf(TextProperty);
   });
 });

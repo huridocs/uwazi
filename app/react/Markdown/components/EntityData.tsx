@@ -17,15 +17,13 @@ import { errorCollector } from '../utils.js';
 interface Options {
   formattedEntity: any;
   propertyName: string;
-  newNameGeneration: boolean;
   template?: IImmutable<ClientTemplateSchema>;
 }
 
-const mapStateToProps = ({ entityView, templates, thesauris, settings }: IStore) => ({
+const mapStateToProps = ({ entityView, templates, thesauris }: IStore) => ({
   entity: entityView.entity,
   templates,
   thesauri: thesauris,
-  newNameGeneration: settings.collection.get('newNameGeneration') || false,
 });
 
 const connector = connect(mapStateToProps);
@@ -35,8 +33,8 @@ type ComponentProps = EntityDataProps & MappedProps;
 
 const rootProperties = ['title', 'creationDate', 'editDate'];
 
-const getPropertyData = ({ formattedEntity, propertyName, newNameGeneration }: Options) =>
-  formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName, newNameGeneration));
+const getPropertyData = ({ formattedEntity, propertyName }: Options) =>
+  formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName));
 
 const getPropertyName = (propertyName: string, _template: IImmutable<ClientTemplateSchema>) => {
   const template = ensure<IImmutable<ClientTemplateSchema>>(_template);
@@ -51,10 +49,8 @@ const getPropertyName = (propertyName: string, _template: IImmutable<ClientTempl
 const extractRootProperty = ({ formattedEntity, propertyName }: Options) =>
   formattedEntity[propertyName];
 
-const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
-  const propertyData = formattedEntity.metadata.find(
-    (p: any) => p.name === safeName(propertyName, newNameGeneration)
-  );
+const extractMetadataProperty = ({ formattedEntity, propertyName }: Options) => {
+  const propertyData = formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName));
   if (!propertyData) {
     throw new Error(`"value-of": ${propertyName} is invalid.`);
   }
@@ -73,8 +69,8 @@ const extractRootLabel = ({ propertyName, template: _template }: Options) => {
   return <Translate context={context}>{term}</Translate>;
 };
 
-const extractMetadataLabel = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
-  const propertyData = getPropertyData({ formattedEntity, propertyName, newNameGeneration });
+const extractMetadataLabel = ({ formattedEntity, propertyName }: Options) => {
+  const propertyData = getPropertyData({ formattedEntity, propertyName });
   if (!propertyData) {
     throw new Error(`"label-of": ${propertyName} is invalid.`);
   }
@@ -114,7 +110,6 @@ const EntityData = ({
   thesauri,
   'value-of': propValueOf,
   'label-of': propLabelOf,
-  newNameGeneration,
 }: ComponentProps) => {
   // Prefer entity from Entity V2 page-view atom (no Redux); fall back to V1 entityView.
   const entityPageView = useAtomValue(entityPageViewAtom);
@@ -131,7 +126,7 @@ const EntityData = ({
     const attributeValue = getProperty(propValueOf, propLabelOf);
     const propertyName = getPropertyName(attributeValue, template);
     const renderMethod = getMethod(propValueOf, propertyName);
-    output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
+    output = <>{renderMethod({ formattedEntity, propertyName, template })}</>;
   } catch (err) {
     errorCollector.add(err, 'EntityData', { valueOf: propValueOf, labelOf: propLabelOf });
   }
