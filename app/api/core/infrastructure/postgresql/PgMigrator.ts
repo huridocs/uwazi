@@ -114,6 +114,12 @@ export class PgMigrator {
     return new Set(result.rows.map(r => r.delta));
   }
 
+  /** The highest delta among the migration files on disk, schema and data alike; 0 when none. */
+  latestAvailableVersion(): number {
+    const migrations = this.readMigrationFiles();
+    return migrations.length ? migrations[migrations.length - 1].delta : 0;
+  }
+
   async getCurrentVersion(): Promise<number> {
     await this.ensureTrackingTable();
     const result = await this.pool.query<{ delta: number }>(
