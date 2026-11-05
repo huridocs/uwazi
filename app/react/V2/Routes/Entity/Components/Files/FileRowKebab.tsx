@@ -59,30 +59,19 @@ const getThemedPortalRoot = (from: HTMLElement | null) => {
   );
 };
 
-const fileRowMenuActions = ({
+const mutationActions = ({
   row,
-  canWrite,
   showLanguageAction,
-  disableMutations,
-  onView,
   onRename,
   onChangeLanguage,
   onDelete,
-}: FileRowKebabProps & { canWrite: boolean }): MenuAction[] => {
-  const downloadUrl = canDownloadRow(row) ? fileDownloadUrl(row) : '';
+}: Pick<
+  FileRowKebabProps,
+  'row' | 'showLanguageAction' | 'onRename' | 'onChangeLanguage' | 'onDelete'
+>): MenuAction[] => {
   const actions: MenuAction[] = [
-    { id: 'view', label: 'View', icon: EyeIcon, onClick: () => onView(row) },
+    { id: 'rename', label: 'Rename', icon: PencilIcon, onClick: () => onRename(row) },
   ];
-  if (downloadUrl) {
-    actions.push({
-      id: 'download',
-      label: 'Download',
-      icon: ArrowDownTrayIcon,
-      onClick: () => triggerDownload(downloadUrl),
-    });
-  }
-  if (!canWrite || disableMutations) return actions;
-  actions.push({ id: 'rename', label: 'Rename', icon: PencilIcon, onClick: () => onRename(row) });
   if (showLanguageAction) {
     actions.push({
       id: 'language',
@@ -99,6 +88,36 @@ const fileRowMenuActions = ({
     danger: true,
     separatorBefore: true,
   });
+  return actions;
+};
+
+const fileRowMenuActions = ({
+  row,
+  canWrite,
+  showLanguageAction,
+  disableMutations,
+  onView,
+  onRename,
+  onChangeLanguage,
+  onDelete,
+}: FileRowKebabProps & { canWrite: boolean }): MenuAction[] => {
+  const downloadUrl = canDownloadRow(row) ? fileDownloadUrl(row) : '';
+  const actions: MenuAction[] =
+    row.status === 'processing'
+      ? []
+      : [{ id: 'view', label: 'View', icon: EyeIcon, onClick: () => onView(row) }];
+  if (downloadUrl) {
+    actions.push({
+      id: 'download',
+      label: 'Download',
+      icon: ArrowDownTrayIcon,
+      onClick: () => triggerDownload(downloadUrl),
+    });
+  }
+  if (!canWrite || disableMutations) return actions;
+  actions.push(
+    ...mutationActions({ row, showLanguageAction, onRename, onChangeLanguage, onDelete })
+  );
   return actions;
 };
 

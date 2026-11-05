@@ -1,6 +1,12 @@
 /** @jest-environment jsdom */
 import type { EntityFileRow } from '../../../Components/Files/types.js';
-import { downloadRowsAsZip, fileDownloadUrl } from '../FileDownloadButton.js';
+import { downloadRows, downloadRowsAsZip, fileDownloadUrl } from '../FileDownloadButton.js';
+
+const mockNotify = jest.fn();
+
+jest.mock('#V2/utils/notifyBridge.js', () => ({
+  notify: (...args: unknown[]) => mockNotify(...args),
+}));
 
 const row = (kind: EntityFileRow['kind'], raw: EntityFileRow['raw']): EntityFileRow => ({
   rowId: 'r1',
@@ -103,5 +109,31 @@ describe('downloadRowsAsZip', () => {
     await downloadRowsAsZip([first, second], 'shared-1.zip');
     expect(clicked).toEqual(['blob:zip|shared-1.zip']);
     expectZipEntries(await readBlob(savedBlob(blobs)));
+  });
+
+  it('reports an error when a selected file cannot be downloaded', async () => {
+    mockNotify.mockClear();
+    const first = row('pdf', {
+      fileType: 'document',
+      filename: 'main.pdf',
+      originalname: 'Main.pdf',
+    });
+    const second = row('pdf', {
+      fileType: 'attachment',
+      filename: 'extra.pdf',
+      originalname: 'Extra.pdf',
+    });
+    const clicked: string[] = [];
+    jest.spyOn(global, 'fetch').mockResolvedValue(new Response(null, { status: 404 }));
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
+      this: HTMLAnchorElement
+    ) {
+      clicked.push(this.getAttribute('href') ?? '');
+    });
+
+    await downloadRows([first, second], 'shared-1.zip');
+
+    expect(clicked).toEqual([]);
+    expect(mockNotify).toHaveBeenCalledWith('Something went wrong', 'error');
   });
 });

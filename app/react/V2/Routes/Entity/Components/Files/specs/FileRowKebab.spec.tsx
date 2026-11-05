@@ -92,4 +92,25 @@ describe('FileRowKebab', () => {
 
     themed.remove();
   });
+
+  it('does not offer View while the file is processing', () => {
+    const themed = document.createElement('div');
+    themed.className = 'tw-content';
+    document.body.appendChild(themed);
+    render(
+      <FileRowKebab
+        row={{ ...row, status: 'processing' }}
+        onView={jest.fn()}
+        onRename={jest.fn()}
+        onChangeLanguage={jest.fn()}
+        onDelete={jest.fn()}
+        showLanguageAction={false}
+      />,
+      { container: themed }
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Row actions' }));
+    expect(screen.queryByRole('menuitem', { name: 'View' })).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Rename' })).toBeInTheDocument();
+    themed.remove();
+  });
 });

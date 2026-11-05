@@ -1,7 +1,8 @@
 import React from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { zipSync } from 'fflate';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import { Button } from '#V2/Components/UI/index.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
 
@@ -65,13 +66,17 @@ const downloadRowsAsZip = async (rows: EntityFileRow[], filename: string) => {
 const canDownloadRow = (row: EntityFileRow) =>
   row.status !== 'processing' && Boolean(fileDownloadUrl(row));
 
-const downloadRows = (rows: EntityFileRow[], zipName = 'files.zip') => {
+const downloadRows = async (rows: EntityFileRow[], zipName = 'files.zip') => {
   const ready = rows.filter(canDownloadRow);
-  if (ready.length > 1) {
-    void downloadRowsAsZip(ready, zipName);
+  if (ready.length <= 1) {
+    ready.forEach(row => triggerDownload(fileDownloadUrl(row)));
     return;
   }
-  ready.forEach(row => triggerDownload(fileDownloadUrl(row)));
+  try {
+    await downloadRowsAsZip(ready, zipName);
+  } catch {
+    notify(t('System', 'Something went wrong', null, false), 'error');
+  }
 };
 
 const FileDownloadButton = ({ href }: { href: string }) => (

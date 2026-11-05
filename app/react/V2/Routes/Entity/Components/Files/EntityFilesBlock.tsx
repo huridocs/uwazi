@@ -41,10 +41,7 @@ const rowLine = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) =>
           if (!processing) openRow(row, onPreview);
         }}
       >
-        <span
-          dir="ltr"
-          className="block min-w-0 max-w-full truncate text-xs font-medium text-ink"
-        >
+        <span dir="ltr" className="block min-w-0 max-w-full truncate text-xs font-medium text-ink">
           {fileShownName(row)}
         </span>
         {facts ? <span className="text-nano text-ink-tertiary">{facts}</span> : null}
@@ -132,7 +129,9 @@ const EntityFilesBlock = () => {
             variant="warm"
             className="inline-flex items-center"
             data-part="download-all"
-            onClick={() => downloadRows(files.downloadable, `${entity.sharedId}.zip`)}
+            onClick={() => {
+              void downloadRows(files.downloadable, `${entity.sharedId}.zip`);
+            }}
           >
             <ArrowDownTrayIcon className={iconClass} />
             <Translate>Download all</Translate>

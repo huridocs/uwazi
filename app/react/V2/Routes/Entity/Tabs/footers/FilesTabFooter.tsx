@@ -1,10 +1,18 @@
 import React from 'react';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { useTabGroup } from '#V2/Components/UI/Tabs/useTabGroup.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
+import { SIDE_TAB } from '../tabIds.js';
 import { FilesToolbar } from '../../Components/Files/FilesToolbar.js';
 import { isFileRowSelectable } from '../../Components/Files/fileHelpers.js';
 import { canDownloadRow, downloadRows } from './FileDownloadButton.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
+
+const toolbarShowsBulkActions = (
+  isMobile: boolean | undefined,
+  selectedCount: number,
+  sideTabId: string | undefined
+) => isMobile !== false || selectedCount < 2 || sideTabId !== SIDE_TAB.FILE;
 
 const FilesTabFooter = () => {
   const {
@@ -17,6 +25,7 @@ const FilesTabFooter = () => {
     requestDeleteSelected,
   } = useEntityFiles();
   const isMobile = useIsMobile();
+  const { activeTabId } = useTabGroup('entity-side');
 
   const allRows = [...primaryRows, ...supportingRows];
   const selectableRows = allRows.filter(isFileRowSelectable);
@@ -34,15 +43,17 @@ const FilesTabFooter = () => {
         totalCount={selectableRows.length}
         selectedCount={selectedSelectableCount}
         downloadCount={downloadableSelected.length}
-        showBulkActions={isMobile}
+        showBulkActions={toolbarShowsBulkActions(isMobile, selectedSelectableCount, activeTabId)}
         onAddFile={() => requestAddFile('main')}
         onSelectAll={() => setSelectedRowIds(selectableRows.map(row => row.rowId))}
         onDeselectAll={() => setSelectedRowIds([])}
         onDeleteSelected={requestDeleteSelected}
-        onDownloadSelected={() => downloadRows(downloadableSelected, `${entity.sharedId}.zip`)}
+        onDownloadSelected={() => {
+          void downloadRows(downloadableSelected, `${entity.sharedId}.zip`);
+        }}
       />
     </EntityTabFooter>
   );
 };
 
-export { FilesTabFooter };
+export { FilesTabFooter, toolbarShowsBulkActions };

@@ -37,7 +37,9 @@ const multiFileFooter = ({
           <Button
             variant="warm"
             className="inline-flex items-center"
-            onClick={() => downloadRows(selectedRows, zipName)}
+            onClick={() => {
+              void downloadRows(selectedRows, zipName);
+            }}
           >
             <ArrowDownTrayIcon className={iconClass} />
             <Translate>Download</Translate> {downloadCount}
