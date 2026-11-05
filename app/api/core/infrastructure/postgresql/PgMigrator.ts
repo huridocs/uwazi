@@ -71,14 +71,18 @@ export class PgMigrator {
   }
 
   private readMigrationFiles(): MigrationFile[] {
-    const files = readdirSync(this.migrationsDir);
+    return PgMigrator.readMigrationFilesIn(this.migrationsDir);
+  }
+
+  private static readMigrationFilesIn(migrationsDir: string): MigrationFile[] {
+    const files = readdirSync(migrationsDir);
     const migrations = files
       .map(fileName => {
         const parsed = parseMigrationFile(fileName);
         if (!parsed) return null;
         return {
           ...parsed,
-          filePath: path.join(this.migrationsDir, fileName),
+          filePath: path.join(migrationsDir, fileName),
         };
       })
       .filter((m): m is MigrationFile => m !== null)
@@ -98,7 +102,7 @@ export class PgMigrator {
         migrations.filter(m => m.delta === delta).map(m => m.name)
       );
       throw new Error(
-        `Duplicate migration delta(s) in ${this.migrationsDir}: ${duplicates
+        `Duplicate migration delta(s) in ${migrationsDir}: ${duplicates
           .map((delta, i) => `delta ${delta} (${duplicateFiles[i].join(', ')})`)
           .join('; ')}`
       );
@@ -116,7 +120,12 @@ export class PgMigrator {
 
   /** The highest delta among the migration files on disk, schema and data alike; 0 when none. */
   latestAvailableVersion(): number {
-    const migrations = this.readMigrationFiles();
+    return PgMigrator.latestVersionIn(this.migrationsDir);
+  }
+
+  /** latestAvailableVersion without a database: it only reads the directory. */
+  static latestVersionIn(migrationsDir: string): number {
+    const migrations = PgMigrator.readMigrationFilesIn(migrationsDir);
     return migrations.length ? migrations[migrations.length - 1].delta : 0;
   }
 

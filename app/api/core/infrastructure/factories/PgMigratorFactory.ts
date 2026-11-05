@@ -5,7 +5,10 @@ import pg from 'pg';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { PgDataMigrationRunner } from '#api/core/infrastructure/postgresql/PgDataMigrationRunner.js';
-import { PgMigrationLoader } from '#api/core/infrastructure/postgresql/PgMigrationLoader.js';
+import {
+  PgMigrationLoader,
+  type LoadPgMigration,
+} from '#api/core/infrastructure/postgresql/PgMigrationLoader.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { tenants } from '#api/tenants/index.js';
 
@@ -20,6 +23,9 @@ type PgMigratorConnections = {
   listTenants: () => string[];
 };
 
+/** Specs point a migrator at a fixture directory, loaded the way Jest can import. */
+type PgMigratorSource = { migrationsDir?: string; loadMigration?: LoadPgMigration };
+
 class PgMigratorFactory {
   static readonly MIGRATIONS_DIR = path.join(__dirname, '../postgresql/schema_migrations');
 
@@ -33,10 +39,15 @@ class PgMigratorFactory {
   }
 
   /** A migrator over the given connections, e.g. a scratch database holding one tenant. */
-  static forConnections(logger: Logger, connections: PgMigratorConnections): PgMigrator {
-    return new PgMigrator(PgMigratorFactory.MIGRATIONS_DIR, connections.pool, {
+  static forConnections(
+    logger: Logger,
+    connections: PgMigratorConnections,
+    source: PgMigratorSource = {}
+  ): PgMigrator {
+    const migrationsDir = source.migrationsDir ?? PgMigratorFactory.MIGRATIONS_DIR;
+    return new PgMigrator(migrationsDir, connections.pool, {
       logger,
-      loadMigration: PgMigrationLoader.fromDisk,
+      loadMigration: source.loadMigration ?? PgMigrationLoader.fromDisk,
       dataRunner: new PgDataMigrationRunner({
         adminKnex: connections.adminKnex,
         appKnex: connections.appKnex,
@@ -48,4 +59,4 @@ class PgMigratorFactory {
 }
 
 export { PgMigratorFactory };
-export type { PgMigratorConnections };
+export type { PgMigratorConnections, PgMigratorSource };
