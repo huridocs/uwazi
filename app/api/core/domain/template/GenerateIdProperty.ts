@@ -1,4 +1,4 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { generateID } from '#shared/IDGenerator.js';
 import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
@@ -21,8 +21,8 @@ const createSchema = (isRequired: boolean) =>
     .max(1, 'Generated ID Property only accepts a single value.');
 
 class GenerateIdProperty extends FilterableProperty {
-  constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || PropertyTypeEnum.GeneratedId }, context);
+  constructor(props: Props) {
+    super({ ...props, type: props.type || PropertyTypeEnum.GeneratedId });
 
     this.validate();
   }

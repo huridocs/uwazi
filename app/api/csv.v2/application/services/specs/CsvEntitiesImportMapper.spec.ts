@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable max-statements */
 import moment from 'moment';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -67,9 +68,8 @@ const buildAssignments = (params: {
   const headerAnalysis = CsvHeaderAnalyzer.analyze(headers, template, {
     availableLanguages: LANGUAGES,
     defaultLanguage: DEFAULT_LANGUAGE,
-    newNameGeneration: false,
   });
-  const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(headers, false);
+  const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(headers);
   return CsvEntitiesImportMapper.buildPropertyAssignments({
     template,
     headerAnalysis,

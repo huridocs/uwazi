@@ -1,5 +1,5 @@
 import db from '#api/utils/testing_db.js';
-import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   generateIds,
@@ -29,16 +29,13 @@ describe('templates utils', () => {
         );
 
         expect(result[0].name).toBe('my_prop');
-        expect(result[1].name).toBe('my_fore_gn_pr_p_');
+        expect(result[1].name).toBe('my_foreïgn$próp_');
         expect(result[2].name).toBe('my_prop_geolocation');
       });
     });
 
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
-        await mutatePersistedSettings(settings =>
-          settings.apply({ newNameGeneration: true }, () => '')
-        );
         const result = await testingEnvironment.runWithContext(async () =>
           generateNames([
             { label: ' my prop ', name: '', type: 'text' },
@@ -79,9 +76,6 @@ describe('templates utils', () => {
       });
 
       it('should not start with _, -, +, $', async () => {
-        await mutatePersistedSettings(settings =>
-          settings.apply({ newNameGeneration: true }, () => '')
-        );
         const result = await testingEnvironment.runWithContext(async () =>
           generateNames([
             { label: '.test ', name: '', type: 'text' },

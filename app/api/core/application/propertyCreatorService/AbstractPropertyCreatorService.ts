@@ -1,5 +1,5 @@
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
-import { Context, Property } from '../../domain/template/Property.js';
+import { Property } from '../../domain/template/Property.js';
 import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory.js';
 
 type Deps<ExtendedDeps> = {
@@ -11,15 +11,15 @@ type Input = PropertyFactoryCreateInput;
 abstract class AbstractPropertyCreatorService<ExtendedDeps = {}> {
   constructor(protected deps: Deps<ExtendedDeps>) {}
 
-  async create(input: Input, context: Context): Promise<Property> {
-    const property = await this.createProperty(input, context);
+  async create(input: Input): Promise<Property> {
+    const property = await this.createProperty(input);
 
     await this.validate(property);
 
     return property;
   }
 
-  protected abstract createProperty(input: Input, context: Context): Promise<Property>;
+  protected abstract createProperty(input: Input): Promise<Property>;
 
   private async validate(property: Property) {
     const templates = await this.deps.templatesDS.getTemplatesByPropertyName(property);

@@ -1,4 +1,4 @@
-import { Context, Property } from '#api/core/domain/template/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
@@ -41,55 +41,55 @@ type CreateInput =
   | MediaPropertyProps;
 
 class PropertyFactory {
-  static create(input: CreateInput, context: Context): Property {
+  static create(input: CreateInput): Property {
     switch (input.type) {
       case 'text':
-        return new TextProperty(input, context);
+        return new TextProperty(input);
 
       case 'numeric':
-        return new NumericProperty(input, context);
+        return new NumericProperty(input);
 
       case 'preview':
-        return new PreviewProperty(input, context);
+        return new PreviewProperty(input);
 
       case 'multidate':
-        return new MultiDateProperty(input, context);
+        return new MultiDateProperty(input);
 
       case 'multidaterange':
-        return new MultiDateRangeProperty(input, context);
+        return new MultiDateRangeProperty(input);
 
       case 'media':
-        return new MediaProperty(input, context);
+        return new MediaProperty(input);
 
       case 'markdown':
-        return new MarkdownProperty(input, context);
+        return new MarkdownProperty(input);
 
       case 'link':
-        return new LinkProperty(input, context);
+        return new LinkProperty(input);
 
       case 'image':
-        return new ImageProperty(input, context);
+        return new ImageProperty(input);
 
       case 'geolocation':
-        return new GeolocationProperty(input, context);
+        return new GeolocationProperty(input);
 
       case 'daterange':
-        return new DateRangeProperty(input, context);
+        return new DateRangeProperty(input);
 
       case 'date':
-        return new DateProperty(input, context);
+        return new DateProperty(input);
 
       case 'generatedid':
-        return new GenerateIdProperty(input, context);
+        return new GenerateIdProperty(input);
 
       case 'select':
-        return new SelectProperty(input, context);
+        return new SelectProperty(input);
 
       case 'multiselect':
-        return new MultiSelectProperty(input, context);
+        return new MultiSelectProperty(input);
 
       case 'relationship':
-        return V1RelationshipProperty.create(input, context);
+        return V1RelationshipProperty.create(input);
 
       case 'nested':
         return new NestedProperty(input);

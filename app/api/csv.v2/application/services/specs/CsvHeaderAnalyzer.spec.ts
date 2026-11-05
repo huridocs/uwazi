@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
@@ -72,7 +73,6 @@ describe('CsvHeaderAnalyzer', () => {
       const analysis = CsvHeaderAnalyzer.analyze(headers, template, {
         availableLanguages: AVAILABLE_LANGUAGES,
         defaultLanguage: DEFAULT_LANGUAGE,
-        newNameGeneration: false,
       });
 
       expect(analysis.headersWithoutLanguage).toEqual(
@@ -106,7 +106,6 @@ describe('CsvHeaderAnalyzer', () => {
       const analysis = CsvHeaderAnalyzer.analyze(headers, template, {
         availableLanguages: ['en', 'es', 'fr'],
         defaultLanguage: DEFAULT_LANGUAGE,
-        newNameGeneration: false,
       });
 
       expect(Array.from(analysis.languagesPerHeader.title ?? []).sort()).toEqual([
@@ -121,33 +120,13 @@ describe('CsvHeaderAnalyzer', () => {
       ]);
     });
 
-    it('should sanitize headers using PropertyName rules with new name generation', () => {
+    it('should keep characters outside the replaced set when sanitizing headers', () => {
       const template = buildTemplate();
       const headers = ['Complex@Prop__es', 'Complex@Prop__en'];
-
-      expectAnalyzerError(
-        () =>
-          CsvHeaderAnalyzer.analyze(headers, template, {
-            availableLanguages: AVAILABLE_LANGUAGES,
-            defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
-          }),
-        error => {
-          expect(error.issues).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                reason: 'UnknownProperty',
-                property: 'complex_prop',
-              }),
-            ])
-          );
-        }
-      );
 
       const analysis = CsvHeaderAnalyzer.analyze(headers, template, {
         availableLanguages: AVAILABLE_LANGUAGES,
         defaultLanguage: DEFAULT_LANGUAGE,
-        newNameGeneration: true,
       });
 
       expect(Array.from(analysis.languagesPerHeader['complex@prop'] ?? [])).toEqual(
@@ -166,7 +145,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -190,7 +168,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -214,7 +191,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -240,7 +216,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: ['en', 'es', 'fr'],
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -270,7 +245,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -294,7 +268,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(
@@ -325,7 +298,6 @@ describe('CsvHeaderAnalyzer', () => {
           CsvHeaderAnalyzer.analyze(headers, template, {
             availableLanguages: AVAILABLE_LANGUAGES,
             defaultLanguage: DEFAULT_LANGUAGE,
-            newNameGeneration: false,
           }),
         error => {
           expect(error.issues).toEqual(

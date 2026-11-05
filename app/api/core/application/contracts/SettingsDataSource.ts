@@ -14,7 +14,6 @@ export interface SettingsDataSource {
   update(settings: Settings): Promise<Settings>;
   readPresentation(): Promise<Settings | null>;
   readLanguages(): Promise<LanguagesListSchema | undefined>;
-  readNewNameGeneration(): Promise<boolean>;
   readOpenPublicEndpoint(): Promise<boolean>;
   readOcrServiceEnabled(): Promise<boolean>;
   readAllowedPublicTemplates(): Promise<SettingsType['allowedPublicTemplates']>;
