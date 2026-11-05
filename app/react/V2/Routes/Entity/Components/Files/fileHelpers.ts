@@ -7,6 +7,17 @@ type FileLike = Pick<File, 'type' | 'name'>;
 
 const isFileRowSelectable = (row: Pick<EntityFileRow, 'status'>) => row.status !== 'processing';
 
+const extensionSuffix = /\.[A-Za-z0-9]{1,5}$/;
+
+const fileShownName = (row: EntityFileRow) =>
+  row.kind === 'link' ? row.displayName : row.displayName.replace(extensionSuffix, '');
+
+const fileFactsLine = (row: EntityFileRow) =>
+  [row.typeLabel, row.sizeLabel, row.languageKey]
+    .map(value => value.trim())
+    .filter(value => value !== '' && value !== '—')
+    .join(' · ');
+
 const fileQueueKey = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
 
 const isPdfFile = (file: FileLike) =>
@@ -62,7 +73,9 @@ const resolveFileLanguage = (rawLanguage?: string) => {
 };
 
 export {
+  fileFactsLine,
   fileQueueKey,
+  fileShownName,
   isFileRowSelectable,
   isPdfFile,
   fileSupportsLanguage,

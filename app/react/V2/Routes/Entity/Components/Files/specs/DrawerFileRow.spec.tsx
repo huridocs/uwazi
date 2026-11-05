@@ -67,6 +67,63 @@ const buildRow = (overrides: Partial<EntityFileRow> = {}): EntityFileRow => ({
 });
 
 describe('DrawerFileRow', () => {
+  it('puts the language beside the size and does not repeat the type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByText('1 KB · EN')).toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+  });
+
+  it('downloads a file and hides download for a link', () => {
+    const clicked: string[] = [];
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
+      this: HTMLAnchorElement
+    ) {
+      clicked.push(this.getAttribute('href') ?? '');
+    });
+    const { rerender } = render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Download doc.pdf' }));
+    expect(clicked).toEqual(['/api/files/doc.pdf?download=true']);
+
+    rerender(
+      <DrawerFileRow
+        row={buildRow({
+          kind: 'link',
+          displayName: 'Website',
+          raw: {
+            _id: 'file-1',
+            originalname: 'Website',
+            url: 'https://example.com',
+            fileType: 'externalURL',
+          },
+        })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.queryByRole('button', { name: /Download/ })).not.toBeInTheDocument();
+  });
+
   it('commits trimmed name and language when save is clicked', async () => {
     const onCommit = jest.fn().mockResolvedValue(undefined);
     render(

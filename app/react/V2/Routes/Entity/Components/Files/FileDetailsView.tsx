@@ -1,13 +1,12 @@
 import React from 'react';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { PencilStrokeIcon } from '#V2/Components/CustomIcons/PencilStrokeIcon.js';
 import { Translate } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { fileSupportsLanguage } from './fileHelpers.js';
-import { getRowIcon } from './fileRowIcon.js';
+import { getDetailsIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
 import { FileDetailsCard } from './FileDetailsCard.js';
-import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { EntityFileRow } from './types.js';
 
@@ -25,31 +24,42 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
             <button
               type="button"
               onClick={onEdit}
-              className="flex cursor-pointer items-center gap-1 rounded px-2 py-0.5 text-micro font-medium text-ink-secondary transition-colors hover:bg-paper hover:text-ink"
+              className="flex cursor-pointer items-center gap-1 rounded px-2 py-0.5 text-meta font-medium leading-normal text-ink-secondary transition-colors hover:bg-paper hover:text-ink"
             >
-              <PencilIcon className="h-micro w-micro text-ink-tertiary" />
+              <PencilStrokeIcon className="h-micro w-micro text-ink-tertiary" />
               <Translate>Edit</Translate>
             </button>
           </EntityWriteAuthorization>
         }
       >
         <FileDetailsField label={<Translate>Name</Translate>}>
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            {getRowIcon(row)}
-            <span className="truncate text-sm text-ink">{row.displayName}</span>
-          </div>
+          <span className="flex min-w-0 items-center gap-2 text-sm font-normal leading-relaxed text-ink">
+            {getDetailsIcon(row)}
+            <span className="truncate">{row.displayName}</span>
+          </span>
         </FileDetailsField>
-
-        <div className="grid grid-cols-2 gap-3">
-          {showLanguage ? (
-            <FileDetailsField label={<Translate>Language</Translate>}>
-              <span className="text-sm text-ink-secondary">{row.languageKey}</span>
-            </FileDetailsField>
-          ) : null}
-          <FileDetailsReadonlyMeta row={row} />
-        </div>
+        <FileDetailsField label={<Translate>Type</Translate>}>
+          <span className="flex items-center gap-1.5 text-sm font-normal leading-relaxed text-ink">
+            {getDetailsIcon(row)}
+            <span>{row.typeLabel}</span>
+          </span>
+        </FileDetailsField>
+        <FileDetailsField label={<Translate>Size</Translate>}>
+          <span dir="ltr" className="text-sm font-normal leading-relaxed text-ink">
+            {row.sizeLabel}
+          </span>
+        </FileDetailsField>
+        {showLanguage ? (
+          <FileDetailsField label={<Translate>Language</Translate>}>
+            <span className="text-sm font-normal leading-relaxed text-ink">{row.languageKey}</span>
+          </FileDetailsField>
+        ) : null}
+        <FileDetailsField label={<Translate>Modified</Translate>}>
+          <span dir="ltr" className="text-sm font-normal leading-relaxed text-ink">
+            {row.modifiedLabel}
+          </span>
+        </FileDetailsField>
       </FileDetailsCard>
-
       <FileDocumentContextBadge row={row} />
       <FileDeleteAction row={row} />
     </div>

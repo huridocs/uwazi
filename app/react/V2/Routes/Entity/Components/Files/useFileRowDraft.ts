@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import {
@@ -9,6 +9,20 @@ import {
 import type { EntityFileRow } from './types.js';
 
 type FileRowDraftPayload = { _id: string; originalname: string; language?: string };
+
+const useResetDraft = (
+  row: EntityFileRow,
+  setDraftName: (name: string) => void,
+  setDraftLanguage: (language: string) => void
+) => {
+  const rowRef = useRef(row);
+  rowRef.current = row;
+  return useCallback(() => {
+    const { current } = rowRef;
+    setDraftName(current.raw.originalname || current.displayName);
+    setDraftLanguage(resolveFileLanguage(current.raw.language));
+  }, [setDraftLanguage, setDraftName]);
+};
 
 const useFileRowDraft = (row: EntityFileRow) => {
   const [draftName, setDraftName] = useState(row.raw.originalname || row.displayName);
@@ -21,11 +35,7 @@ const useFileRowDraft = (row: EntityFileRow) => {
     type: row.raw.mimetype || '',
     name: row.raw.originalname || row.displayName,
   });
-
-  const resetDraft = () => {
-    setDraftName(row.raw.originalname || row.displayName);
-    setDraftLanguage(resolveFileLanguage(row.raw.language));
-  };
+  const resetDraft = useResetDraft(row, setDraftName, setDraftLanguage);
 
   const commit = async (
     onSave: (payload: FileRowDraftPayload) => Promise<void>,

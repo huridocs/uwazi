@@ -2,6 +2,13 @@ import React, { useCallback } from 'react';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { TranslationsPanel } from '../../Components/Files/TranslationsPanel.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
+import { useEntityTabNavigation } from '../EntityTabsContext.js';
+
+const openFileLink = (row: EntityFileRow) => {
+  const url = row.raw.url || '';
+  if (row.kind === 'link' && url) window.open(url, '_blank', 'noopener,noreferrer');
+  return row.kind === 'link';
+};
 
 const TranslationsTab = () => {
   const {
@@ -12,21 +19,28 @@ const TranslationsTab = () => {
     navigateToFilesSideTab,
     openFilePreviewForRow,
   } = useEntityFiles();
+  const { showSidePane } = useEntityTabNavigation();
+
+  const revealFileSide = useCallback(() => {
+    navigateToFilesSideTab('file');
+    showSidePane();
+  }, [navigateToFilesSideTab, showSidePane]);
 
   const onFocusRow = useCallback(
     (row: EntityFileRow) => {
       setFocusedRowId(row.rowId);
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [setFocusedRowId, navigateToFilesSideTab]
+    [revealFileSide, setFocusedRowId]
   );
 
   const onViewRow = useCallback(
     (row: EntityFileRow) => {
+      if (openFileLink(row)) return;
       openFilePreviewForRow(row.rowId);
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [navigateToFilesSideTab, openFilePreviewForRow]
+    [openFilePreviewForRow, revealFileSide]
   );
 
   return (

@@ -1,12 +1,17 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { EntityFileRow, FileKind } from '../types.js';
 import { EntityFilesBlock } from '../EntityFilesBlock.js';
 
-const mockEntityFiles: { primaryRows: EntityFileRow[]; supportingRows: EntityFileRow[] } = {
+const mockEntityFiles: {
+  primaryRows: EntityFileRow[];
+  supportingRows: EntityFileRow[];
+  entity: { sharedId: string };
+} = {
   primaryRows: [],
   supportingRows: [],
+  entity: { sharedId: 'shared-1' },
 };
 
 jest.mock('../EntityFilesContext', () => ({
@@ -108,6 +113,42 @@ const buttonNamed = (root: HTMLElement, name: string) => {
     throw new Error(`missing ${name}`);
   }
   return match;
+};
+
+const recordAnchorClicks = () => {
+  const clicked: string[] = [];
+  jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
+    this: HTMLAnchorElement
+  ) {
+    clicked.push(`${this.getAttribute('href')}|${this.download}`);
+  });
+  return clicked;
+};
+
+const stubClientZip = () => {
+  if (typeof URL.createObjectURL !== 'function') {
+    Object.defineProperty(URL, 'createObjectURL', { writable: true, value: () => '' });
+  }
+  if (typeof URL.revokeObjectURL !== 'function') {
+    Object.defineProperty(URL, 'revokeObjectURL', { writable: true, value: () => undefined });
+  }
+  const fetched: string[] = [];
+  jest.spyOn(global, 'fetch').mockImplementation(async input => {
+    fetched.push(String(input));
+    return new Response('body');
+  });
+  jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:files');
+  jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+  return fetched;
+};
+
+const clickDownloadAll = () => {
+  render(<EntityFilesBlock />);
+  const downloadAll = document.querySelector('[data-part="download-all"]');
+  if (!(downloadAll instanceof HTMLButtonElement)) {
+    throw new Error('expected download all');
+  }
+  fireEvent.click(downloadAll);
 };
 
 describe('EntityFilesBlock', () => {
@@ -220,25 +261,20 @@ describe('EntityFilesBlock', () => {
     );
   });
 
-  it('downloads each file url and skips links', () => {
+  it('downloads every file as one zip and skips links', async () => {
+    mockEntityFiles.entity = { sharedId: 'shared-1' };
     mockEntityFiles.primaryRows = [primary('p1', 'Main', 'main.txt')];
     mockEntityFiles.supportingRows = [
       attachment('s1', 'Extra', 'extra.txt'),
       linkRow('l1', 'Website', 'https://example.com/doc'),
     ];
-    const clicked: string[] = [];
-    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
-      this: HTMLAnchorElement
-    ) {
-      clicked.push(this.getAttribute('href') ?? '');
+    const fetched = stubClientZip();
+    const clicked = recordAnchorClicks();
+    clickDownloadAll();
+    await waitFor(() => {
+      expect(clicked).toEqual(['blob:files|shared-1.zip']);
     });
-    render(<EntityFilesBlock />);
-    const downloadAll = document.querySelector('[data-part="download-all"]');
-    if (!(downloadAll instanceof HTMLButtonElement)) {
-      throw new Error('expected download all');
-    }
-    fireEvent.click(downloadAll);
-    expect(clicked).toEqual([
+    expect(fetched).toEqual([
       '/api/files/main.txt?download=true',
       '/api/files/extra.txt?download=true',
     ]);

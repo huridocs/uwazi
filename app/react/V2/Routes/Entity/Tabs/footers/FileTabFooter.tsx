@@ -12,41 +12,55 @@ import { EntityTabFooter } from '../EntityTabFooter.js';
 import { resolveFileTabFooterMode } from './fileTabFooterMode.js';
 import {
   FileDownloadButton,
+  canDownloadRow,
   downloadRows,
   fileDownloadUrl,
   iconClass,
 } from './FileDownloadButton.js';
 
-const multiFileFooter = (
-  selectedRows: EntityFileRow[],
-  deletableSelectedRows: EntityFileRow[],
-  requestDeleteSelected: () => void
-) => (
-  <EntityTabFooter highlighted inset="side">
-    <div className="flex w-full flex-wrap items-center justify-between gap-2">
-      <Button
-        variant="warm"
-        className="inline-flex items-center"
-        onClick={() => downloadRows(selectedRows)}
-      >
-        <ArrowDownTrayIcon className={iconClass} />
-        <Translate>Download all</Translate>
-      </Button>
-      {deletableSelectedRows.length > 0 ? (
-        <EntityWriteAuthorization>
+const multiFileFooter = ({
+  selectedRows,
+  deletableSelectedRows,
+  requestDeleteSelected,
+  zipName,
+}: {
+  selectedRows: EntityFileRow[];
+  deletableSelectedRows: EntityFileRow[];
+  requestDeleteSelected: () => void;
+  zipName: string;
+}) => {
+  const downloadCount = selectedRows.filter(canDownloadRow).length;
+  return (
+    <EntityTabFooter highlighted inset="side">
+      <div className="flex w-full flex-wrap items-center justify-between gap-2">
+        {downloadCount > 0 ? (
           <Button
-            variant="dangerSubtle"
-            className="inline-flex items-center gap-1.5"
-            onClick={requestDeleteSelected}
+            variant="warm"
+            className="inline-flex items-center"
+            onClick={() => downloadRows(selectedRows, zipName)}
           >
-            <TrashIcon className="h-3 w-3 shrink-0" />
-            <Translate>Delete</Translate> {deletableSelectedRows.length}
+            <ArrowDownTrayIcon className={iconClass} />
+            <Translate>Download</Translate> {downloadCount}
           </Button>
-        </EntityWriteAuthorization>
-      ) : null}
-    </div>
-  </EntityTabFooter>
-);
+        ) : (
+          <span />
+        )}
+        {deletableSelectedRows.length > 0 ? (
+          <EntityWriteAuthorization>
+            <Button
+              variant="dangerSubtle"
+              className="inline-flex items-center gap-1.5"
+              onClick={requestDeleteSelected}
+            >
+              <TrashIcon className="h-3 w-3 shrink-0" />
+              <Translate>Delete</Translate> {deletableSelectedRows.length}
+            </Button>
+          </EntityWriteAuthorization>
+        ) : null}
+      </div>
+    </EntityTabFooter>
+  );
+};
 
 const previewFileFooter = (downloadUrl: string, closeFilePreview: () => void) => (
   <EntityTabFooter inset="side">
@@ -78,7 +92,7 @@ const detailsFileFooter = ({
       <div className="flex items-center gap-2">
         <Button variant="warm" className="inline-flex items-center" onClick={openFilePreview}>
           <EyeIcon className={iconClass} />
-          <Translate>View</Translate>
+          <Translate>Open</Translate>
         </Button>
         {downloadUrl ? <FileDownloadButton href={downloadUrl} /> : null}
       </div>
@@ -127,10 +141,14 @@ const fileTabFooterContent = (files: EntityFilesContextValue) => {
     isEditing: files.isEditing,
     isMulti: selectedRows.length > 1,
     hasFocusedRow: Boolean(files.focusedRow),
-    filePanelMode: files.filePanelMode,
   });
   if (mode === 'multi') {
-    return multiFileFooter(selectedRows, deletableSelectedRows, files.requestDeleteSelected);
+    return multiFileFooter({
+      selectedRows,
+      deletableSelectedRows,
+      requestDeleteSelected: files.requestDeleteSelected,
+      zipName: `${files.entity.sharedId}.zip`,
+    });
   }
   if (mode !== 'focused' || !files.focusedRow) {
     return <EntityTabFooter inset="side" />;

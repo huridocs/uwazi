@@ -3,13 +3,16 @@ import { CheckIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
-import { FileLanguageChip } from './FileLanguageChip.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
+import { FileRowDownloadButton } from './FileRowDownloadButton.js';
 import { FileThumbnail } from './FileThumbnail.js';
 import { ViewFileButton } from './ViewFileButton.js';
 import { isFileRowSelectable } from './fileHelpers.js';
 import { useFileRowDraft } from './useFileRowDraft.js';
 import { EntityFileRow } from './types.js';
+
+const rowFacts = (row: EntityFileRow) =>
+  [row.sizeLabel, row.languageKey].filter(value => value !== '' && value !== '—').join(' · ');
 
 const DrawerFileRow = ({
   row,
@@ -44,9 +47,10 @@ const DrawerFileRow = ({
   useEffect(() => {
     if (!editing) return;
     resetDraft();
-    nameInputRef.current?.focus();
-    nameInputRef.current?.select();
-  }, [editing, row.displayName, row.raw.language, row.raw.originalname]);
+    const input = nameInputRef.current;
+    input?.focus();
+    input?.select();
+  }, [editing, nameInputRef, resetDraft, row.displayName, row.raw.language, row.raw.originalname]);
 
   const save = async () => commit(onCommit, { trimName: true });
 
@@ -98,16 +102,12 @@ const DrawerFileRow = ({
           <div className="flex items-center gap-1.5">
             <p className="truncate text-xs font-medium text-ink">{row.displayName}</p>
             <FileProcessStatusIndicator status={row.status} />
-            {row.languageKey !== '—' ? (
-              <FileLanguageChip>{row.languageKey}</FileLanguageChip>
-            ) : null}
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
-            <span dir="ltr" className="text-nano text-ink-tertiary">
-              {row.sizeLabel}
+          {rowFacts(row) ? (
+            <span dir="ltr" className="truncate text-nano text-ink-tertiary">
+              {rowFacts(row)}
             </span>
-          </div>
+          ) : null}
         </div>
       )}
       <div className="flex shrink-0 items-center gap-1 pr-2">
@@ -148,6 +148,7 @@ const DrawerFileRow = ({
                 </button>
               </EntityWriteAuthorization>
             ) : null}
+            <FileRowDownloadButton row={row} />
             <ViewFileButton onClick={() => onView(row)} />
           </>
         )}

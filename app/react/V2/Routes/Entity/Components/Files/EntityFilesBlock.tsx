@@ -1,28 +1,18 @@
 import React, { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
-import { Button, Modal } from '#V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 import {
-  FileDownloadButton,
+  canDownloadRow,
   downloadRows,
   fileDownloadUrl,
   iconClass,
   triggerDownload,
 } from '../../Tabs/footers/FileDownloadButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
-import { FilePreviewView } from './FilePreviewView.js';
+import { fileFactsLine, fileShownName } from './fileHelpers.js';
+import { FilePreviewModal } from './FilePreviewModal.js';
 import type { EntityFileRow } from './types.js';
-
-const extensionSuffix = /\.[A-Za-z0-9]{1,5}$/;
-
-const shownName = (row: EntityFileRow) =>
-  row.kind === 'link' ? row.displayName : row.displayName.replace(extensionSuffix, '');
-
-const factsLine = (row: EntityFileRow) =>
-  [row.typeLabel, row.sizeLabel, row.languageKey]
-    .map(value => value.trim())
-    .filter(value => value !== '' && value !== '—')
-    .join(' · ');
 
 const foldLimit = 6;
 const foldedCount = 5;
@@ -36,13 +26,10 @@ const openRow = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) =>
   onPreview(row);
 };
 
-const canDownload = (row: EntityFileRow) =>
-  row.status !== 'processing' && Boolean(fileDownloadUrl(row));
-
 const rowLine = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) => {
   const processing = row.status === 'processing';
   const url = processing ? '' : fileDownloadUrl(row);
-  const facts = factsLine(row);
+  const facts = fileFactsLine(row);
   return (
     <div key={row.rowId} className="flex min-w-0 items-center gap-2">
       <button
@@ -55,7 +42,7 @@ const rowLine = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) =>
         }}
       >
         <span dir="ltr" className="w-full truncate text-xs font-medium text-ink">
-          {shownName(row)}
+          {fileShownName(row)}
         </span>
         {facts ? <span className="text-nano text-ink-tertiary">{facts}</span> : null}
       </button>
@@ -111,7 +98,7 @@ const listedFiles = (
     visible = ordered.slice(0, foldedCount);
   }
   const primaryIds = new Set(primaryRows.map(row => row.rowId));
-  const downloadable = ordered.filter(canDownload);
+  const downloadable = ordered.filter(canDownloadRow);
   return {
     ordered,
     total: ordered.length,
@@ -121,29 +108,8 @@ const listedFiles = (
   };
 };
 
-const previewModal = (row: EntityFileRow, onClose: () => void) => {
-  const url = fileDownloadUrl(row);
-  return (
-    <Modal size="xxxl" ariaLabel={row.displayName}>
-      <Modal.Header>
-        <h2 className="truncate text-sm font-bold text-ink">{row.displayName}</h2>
-        <Modal.CloseButton onClick={onClose} />
-      </Modal.Header>
-      <Modal.Body className="min-h-96">
-        <FilePreviewView row={row} />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="warm" onClick={onClose}>
-          <Translate>Close</Translate>
-        </Button>
-        {url ? <FileDownloadButton href={url} /> : null}
-      </Modal.Footer>
-    </Modal>
-  );
-};
-
 const EntityFilesBlock = () => {
-  const { primaryRows, supportingRows } = useEntityFiles();
+  const { entity, primaryRows, supportingRows } = useEntityFiles();
   const [expanded, setExpanded] = useState(false);
   const [preview, setPreview] = useState<EntityFileRow | null>(null);
   const files = listedFiles(primaryRows, supportingRows, expanded);
@@ -163,7 +129,7 @@ const EntityFilesBlock = () => {
             variant="warm"
             className="inline-flex items-center"
             data-part="download-all"
-            onClick={() => downloadRows(files.downloadable)}
+            onClick={() => downloadRows(files.downloadable, `${entity.sharedId}.zip`)}
           >
             <ArrowDownTrayIcon className={iconClass} />
             <Translate>Download all</Translate>
@@ -183,7 +149,7 @@ const EntityFilesBlock = () => {
           <Translate>Show all</Translate> {files.total} <Translate>files</Translate>
         </button>
       ) : null}
-      {preview ? previewModal(preview, () => setPreview(null)) : null}
+      {preview ? <FilePreviewModal row={preview} onClose={() => setPreview(null)} /> : null}
     </section>
   );
 };

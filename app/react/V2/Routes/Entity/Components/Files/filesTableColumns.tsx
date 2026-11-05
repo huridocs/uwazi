@@ -3,6 +3,7 @@ import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type { DataTableColumn } from '#V2/Components/UI/DataTable/types.js';
 import { fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
+import { FileRowDownloadButton } from './FileRowDownloadButton.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileRowKebab } from './FileRowKebab.js';
 import { EntityFileRow } from './types.js';
@@ -122,7 +123,8 @@ const filesDataTableColumns = ({
       width: '2rem',
       align: 'right',
       cell: row => (
-        <div className="flex items-center justify-end" onClick={stopRowClick}>
+        <div className="flex items-center justify-end gap-1" onClick={stopRowClick}>
+          <FileRowDownloadButton row={row} />
           <FileRowKebab
             row={row}
             onView={onViewRow}

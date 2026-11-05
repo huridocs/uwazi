@@ -12,7 +12,10 @@ import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,
 } from '../Components/relationships/index.js';
+import { DrawerFilesList } from '../Components/Files/DrawerFilesList.js';
 import { FilesTab } from './tabsContent/FilesTab.js';
+
+type FilesLayout = 'table' | 'drawer';
 
 type MainTabsContentProps = {
   activeTabId: MainTabId;
@@ -20,6 +23,7 @@ type MainTabsContentProps = {
   mainDocument?: FileType;
   pagePlaintext?: string;
   groupId?: string;
+  filesLayout?: FilesLayout;
 };
 
 const mainTabSwitchContent = ({
@@ -29,9 +33,11 @@ const mainTabSwitchContent = ({
   pagePlaintext,
   relationshipsOnMain,
   focusDocumentPanel,
+  filesLayout,
 }: MainTabsContentProps & {
   relationshipsOnMain: boolean;
   focusDocumentPanel: () => void;
+  filesLayout: FilesLayout;
 }): ReactNode => {
   switch (activeTabId) {
     case MAIN_TAB.DOCUMENT:
@@ -50,7 +56,13 @@ const mainTabSwitchContent = ({
         </div>
       );
     case MAIN_TAB.FILES:
-      return <FilesTab />;
+      return filesLayout === 'drawer' ? (
+        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-warm">
+          <DrawerFilesList />
+        </div>
+      ) : (
+        <FilesTab />
+      );
     default:
       return null;
   }
@@ -62,6 +74,7 @@ const useMainTabsPanel = ({
   mainDocument,
   pagePlaintext,
   groupId,
+  filesLayout = 'table',
 }: MainTabsContentProps) => {
   const activeTabId = useResolvedEntityMainTab(urlActiveTabId, groupId);
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
@@ -82,6 +95,7 @@ const useMainTabsPanel = ({
       pagePlaintext,
       relationshipsOnMain,
       focusDocumentPanel,
+      filesLayout,
     }),
   };
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { zipSync } from 'fflate';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
@@ -12,21 +13,65 @@ const fileDownloadUrl = (row: EntityFileRow) => {
   return row.raw.filename ? `${base}?download=true` : base;
 };
 
-const triggerDownload = (url: string) => {
+const triggerDownload = (url: string, filename = '') => {
   const link = document.createElement('a');
   link.href = url;
-  link.download = '';
+  link.download = filename;
   link.rel = 'noreferrer';
   document.body.appendChild(link);
   link.click();
   link.remove();
 };
 
-const downloadRows = (rows: EntityFileRow[]) => {
-  rows.forEach(row => {
-    const url = fileDownloadUrl(row);
-    if (url) triggerDownload(url);
-  });
+const nextName = (base: string, used: Set<string>) => {
+  const dot = base.lastIndexOf('.');
+  const stem = dot > 0 ? base.slice(0, dot) : base;
+  const ext = dot > 0 ? base.slice(dot) : '';
+  let index = 2;
+  let next = `${stem} (${index})${ext}`;
+  while (used.has(next)) {
+    index += 1;
+    next = `${stem} (${index})${ext}`;
+  }
+  return next;
+};
+
+const zipEntryName = (name: string, used: Set<string>) => {
+  const base = name.replace(/[\\/]/g, '').trim() || 'file';
+  const entry = used.has(base) ? nextName(base, used) : base;
+  used.add(entry);
+  return entry;
+};
+
+const downloadRowsAsZip = async (rows: EntityFileRow[], filename: string) => {
+  const used = new Set<string>();
+  const files: Record<string, Uint8Array> = {};
+  const named = rows.map(row => ({
+    name: zipEntryName(row.raw.originalname || row.displayName, used),
+    row,
+  }));
+  await Promise.all(
+    named.map(async item => {
+      const response = await fetch(fileDownloadUrl(item.row), { credentials: 'same-origin' });
+      if (!response.ok) throw new Error('file not found');
+      files[item.name] = new Uint8Array(await response.arrayBuffer());
+    })
+  );
+  const href = URL.createObjectURL(new Blob([zipSync(files, { level: 0 })]));
+  triggerDownload(href, filename);
+  window.setTimeout(() => URL.revokeObjectURL(href), 1000);
+};
+
+const canDownloadRow = (row: EntityFileRow) =>
+  row.status !== 'processing' && Boolean(fileDownloadUrl(row));
+
+const downloadRows = (rows: EntityFileRow[], zipName = 'files.zip') => {
+  const ready = rows.filter(canDownloadRow);
+  if (ready.length > 1) {
+    void downloadRowsAsZip(ready, zipName);
+    return;
+  }
+  ready.forEach(row => triggerDownload(fileDownloadUrl(row)));
 };
 
 const FileDownloadButton = ({ href }: { href: string }) => (
@@ -36,4 +81,12 @@ const FileDownloadButton = ({ href }: { href: string }) => (
   </Button>
 );
 
-export { FileDownloadButton, downloadRows, fileDownloadUrl, triggerDownload, iconClass };
+export {
+  FileDownloadButton,
+  canDownloadRow,
+  downloadRows,
+  downloadRowsAsZip,
+  fileDownloadUrl,
+  triggerDownload,
+  iconClass,
+};

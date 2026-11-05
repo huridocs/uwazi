@@ -4,14 +4,29 @@ import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { FileDetailsView } from '../../Components/Files/FileDetailsView.js';
 import { FileDetailsEditor } from '../../Components/Files/FileDetailsEditor.js';
 import { FilePreviewView } from '../../Components/Files/FilePreviewView.js';
+import { FileSelectionList } from '../../Components/Files/FileSelectionList.js';
 
 const FilesSideTab = () => {
-  const { focusedRow, isEditing, editFocus, filePanelMode, setIsEditing, saveRow } =
-    useEntityFiles();
+  const {
+    focusedRow,
+    isEditing,
+    editFocus,
+    filePanelMode,
+    setIsEditing,
+    saveRow,
+    primaryRows,
+    supportingRows,
+    selectedRowIds,
+  } = useEntityFiles();
+  const selectedRows = [...primaryRows, ...supportingRows].filter(row =>
+    selectedRowIds.includes(row.rowId)
+  );
 
   let body: React.ReactNode;
 
-  if (!focusedRow) {
+  if (selectedRows.length > 1 && !isEditing) {
+    body = <FileSelectionList rows={selectedRows} />;
+  } else if (!focusedRow) {
     body = (
       <div className="flex h-full items-center justify-center text-ink-muted">
         <Translate>Select a file</Translate>

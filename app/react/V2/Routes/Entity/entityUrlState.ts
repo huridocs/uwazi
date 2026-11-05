@@ -46,7 +46,14 @@ const EntityUrlSync = ({ children }: { children: ReactNode }) => {
   const split = useMemo(() => splitEntityHash(location.hash), [location.hash]);
   const search = stripSearch(location.search);
   useRouterPageAtom(split.page, store);
-  useEffect(() => () => unbindEntityUrlSession(), []);
+  useEffect(() => {
+    bindEntityUrlSession(navigate, store, {
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+    });
+    return () => unbindEntityUrlSession();
+  }, [location.hash, location.pathname, location.search, navigate, store]);
   return createElement(
     EntityUrlSearchContext.Provider,
     { value: search },
