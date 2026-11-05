@@ -1,18 +1,20 @@
 # db
 
 Operate on one tenant's PostgreSQL data: clear it, export it to a portable backup stream, import
-a backup stream into it, and dump or restore the blank state a freshly provisioned tenant starts
-from. Shared options, output and exit codes are in the [README](../README.md).
+a backup stream into it, upgrade a backup to the latest schema, and dump or restore the blank state
+a freshly provisioned tenant starts from. Shared options, output and exit codes are in the [README](../README.md).
 
 | Command                  | Does                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | `db clear`               | Deletes every row of a tenant's PostgreSQL data      |
 | `db export`              | Streams a tenant's PostgreSQL data to stdout         |
 | `db import`              | Loads a backup stream from stdin into a tenant       |
+| `db upgrade`             | Migrates a backup file to the latest schema          |
 | `db blank-state dump`    | Writes the tenant's PostgreSQL data to the dump file |
 | `db blank-state restore` | Restores the dump file into a tenant                 |
 
-These commands run in one tenant, so they take `--tenant`. They write through the
+These commands run in one tenant, so they take `--tenant` — except `db upgrade`, which runs in
+none (see below). They write through the
 admin/migrator pool (which bypasses row-level security), and therefore need `POSTGRES_USER` and
 `POSTGRES_PASSWORD` in addition to the usual environment. They fail with
 `tenant_backup.not_postgres` (exit 4) when the tenant is not running on Postgres. They never
@@ -98,6 +100,53 @@ the total COPY row count.
 | `tenant_backup.schema_version_mismatch` | 2    | The stream's schema version differs from this database's                                        |
 | `tenant_backup.unknown_table`           | 2    | The manifest names a table that is not a known tenant data table                                |
 | `tenant_backup.premature_end`           | 2    | The stream ended before a table's COPY section was complete                                     |
+
+## db upgrade
+
+```sh
+yarn uwazi db upgrade --input acme.uwazidump --output acme.latest.uwazidump
+# replace an existing output file:
+yarn uwazi db upgrade --input acme.uwazidump --output acme.latest.uwazidump --force
+```
+
+Migrates a backup file to the latest PostgreSQL schema, so an old backup can be imported again
+(`db import` only loads a backup at the database's exact schema version). **It never touches the
+live database**: it creates a scratch database, migrates it to the backup's schema version, loads
+the backup into it, runs the remaining migrations over that data — data migrations included, for
+that one tenant — exports the result, and drops the scratch database, also when something fails.
+
+```sh
+yarn uwazi db upgrade --input old.uwazidump --output new.uwazidump
+yarn uwazi db import --tenant acme < new.uwazidump
+```
+
+- It takes no `--tenant`: the backup's own tenant only exists inside the scratch database, and the
+  upgraded backup keeps its `sourceTenant`.
+- Only PostgreSQL migrations run. Mongo migrations, Elasticsearch and files are not involved.
+- A backup already at the latest version is copied unchanged.
+- The output is written to a temporary file next to it and renamed into place when complete, so
+  a failure leaves no partial file.
+- `--output` must differ from `--input`; an existing output is refused unless `--force` is given.
+
+Creating and dropping a database needs the PostgreSQL superuser, so besides the `db` credentials
+it requires `POSTGRES_ADMIN_USER` and `POSTGRES_ADMIN_PASSWORD` (default `admin`/`admin` outside
+production). The scratch database is named `uwazi_upgrade_<id>` and is created on the server
+`POSTGRES_HOST` points to; a process killed mid-upgrade can leave one behind, which is safe to drop.
+
+Prints:
+
+```json
+{ "sourceTenant": "acme", "fromVersion": 39, "toVersion": 42, "tables": ["activitylogs", "..."] }
+```
+
+| Code                                     | Exit | When                                                                   |
+| ---------------------------------------- | ---- | ---------------------------------------------------------------------- |
+| `usage.invalid`                          | 2    | `--input` is missing, `--output` is `--input`, or `--output` exists    |
+| `tenant_backup.backup_newer_than_schema` | 2    | The backup is at a newer schema version than this release's migrations |
+| `tenant_backup.malformed_manifest`       | 2    | The backup's manifest cannot be parsed                                 |
+| `tenant_backup.premature_end`            | 2    | The backup is empty or ends before a table's COPY section is complete  |
+
+A migration that fails in the scratch database fails the command with that migration's error.
 
 ## db blank-state
 

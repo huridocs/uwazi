@@ -13,8 +13,17 @@ const ImportTenantOutputSchema = z.object({
   rows: z.number().int().nonnegative(),
 });
 
+/** What `uwazi db upgrade …` prints: the backup's tenant, the versions it moved between, its tables. */
+const UpgradeBackupOutputSchema = z.object({
+  sourceTenant: z.string(),
+  fromVersion: z.number().int().nonnegative(),
+  toVersion: z.number().int().nonnegative(),
+  tables: z.array(z.string()),
+});
+
 type ClearTenantOutput = z.infer<typeof ClearTenantOutputSchema>;
 type ImportTenantOutput = z.infer<typeof ImportTenantOutputSchema>;
+type UpgradeBackupOutput = z.infer<typeof UpgradeBackupOutputSchema>;
 
-export { ClearTenantOutputSchema, ImportTenantOutputSchema };
-export type { ClearTenantOutput, ImportTenantOutput };
+export { ClearTenantOutputSchema, ImportTenantOutputSchema, UpgradeBackupOutputSchema };
+export type { ClearTenantOutput, ImportTenantOutput, UpgradeBackupOutput };
