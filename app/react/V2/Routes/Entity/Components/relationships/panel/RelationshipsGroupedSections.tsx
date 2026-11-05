@@ -10,7 +10,6 @@ import {
 import { RelationshipGroupedCard } from '../rows/RelationshipGroupedCard.js';
 import { RelationshipsGroupLabel } from '../rows/RelationshipsGroupLabel.js';
 import {
-  panelEntryCount,
   renderPanelEntryRows,
   RelationshipsPanelEntryList,
 } from '../panel/RelationshipsPanelEntryList.js';
@@ -25,17 +24,22 @@ type RelationshipsGroupedSectionsProps = RelationshipPanelRowHandlers & {
   variant: 'list' | 'tree';
 };
 
-const renderGroupLabel = (
-  groupKey: string,
-  groupBy: RelationshipsPanelGroupBy,
-  groupContext: GroupLabelContext,
-  groupMarkersList: RelationshipMarker[]
-) => (
+const renderGroupLabel = ({
+  groupKey,
+  groupBy,
+  groupContext,
+  markers,
+}: {
+  groupKey: string;
+  groupBy: RelationshipsPanelGroupBy;
+  groupContext: GroupLabelContext;
+  markers: RelationshipMarker[];
+}) => (
   <RelationshipsGroupLabel
     groupKey={groupKey}
     groupBy={groupBy}
     groupContext={groupContext}
-    markers={groupMarkersList}
+    markers={markers}
   />
 );
 
@@ -95,9 +99,14 @@ const renderSubGroups = ({
 }: SubGroupRenderParams) => {
   const subGroups = groupMarkers(groupMarkersList, subGroupBy, groupContext).map(
     ([subKey, subMarkers]) => {
-      const title = renderGroupLabel(subKey, subGroupBy, groupContext, subMarkers);
+      const title = renderGroupLabel({
+        groupKey: subKey,
+        groupBy: subGroupBy,
+        groupContext,
+        markers: subMarkers,
+      });
       const color = getGroupColor(subKey, subGroupBy, groupContext, subMarkers);
-      const count = panelEntryCount(subMarkers, rowProps.selfSharedId, flat);
+      const count = subMarkers.length;
       const markerIds = subMarkers.map(marker => marker._id);
       const entries = renderPanelEntries({
         markersList: subMarkers,
@@ -154,9 +163,14 @@ const RelationshipsGroupedSections = ({
   const primaryGroups = groupMarkers(markers, groupBy, groupContext);
 
   const sections = primaryGroups.map(([key, groupMarkersList]) => {
-    const title = renderGroupLabel(key, groupBy, groupContext, groupMarkersList);
+    const title = renderGroupLabel({
+      groupKey: key,
+      groupBy,
+      groupContext,
+      markers: groupMarkersList,
+    });
     const color = getGroupColor(key, groupBy, groupContext, groupMarkersList);
-    const count = panelEntryCount(groupMarkersList, rowProps.selfSharedId, flat);
+    const count = groupMarkersList.length;
     const markerIds = groupMarkersList.map(marker => marker._id);
     const content =
       subGroupBy === 'none'
