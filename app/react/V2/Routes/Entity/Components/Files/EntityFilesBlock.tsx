@@ -10,7 +10,7 @@ import {
   triggerDownload,
 } from '../../Tabs/footers/FileDownloadButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
-import { fileFactsLine, fileShownName } from './fileHelpers.js';
+import { fileFactsLine, fileRowShowsLanguage, fileShownName } from './fileHelpers.js';
 import { FilePreviewModal } from './FilePreviewModal.js';
 import type { EntityFileRow } from './types.js';
 
@@ -29,7 +29,7 @@ const openRow = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) =>
 const rowLine = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) => {
   const processing = row.status === 'processing';
   const url = processing ? '' : fileDownloadUrl(row);
-  const facts = fileFactsLine(row);
+  const facts = fileFactsLine(row, fileRowShowsLanguage(row));
   return (
     <div key={row.rowId} className="flex min-w-0 items-center gap-2">
       <button

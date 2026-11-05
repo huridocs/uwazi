@@ -44,6 +44,18 @@ const zipEntryName = (name: string, used: Set<string>) => {
   return entry;
 };
 
+let activeZipUrl = '';
+
+const releaseZipUrl = () => {
+  if (!activeZipUrl) return;
+  URL.revokeObjectURL(activeZipUrl);
+  activeZipUrl = '';
+};
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', releaseZipUrl);
+}
+
 const downloadRowsAsZip = async (rows: EntityFileRow[], filename: string) => {
   const used = new Set<string>();
   const files: Record<string, Uint8Array> = {};
@@ -58,9 +70,10 @@ const downloadRowsAsZip = async (rows: EntityFileRow[], filename: string) => {
       files[item.name] = new Uint8Array(await response.arrayBuffer());
     })
   );
+  releaseZipUrl();
   const href = URL.createObjectURL(new Blob([zipSync(files, { level: 0 })]));
+  activeZipUrl = href;
   triggerDownload(href, filename);
-  window.setTimeout(() => URL.revokeObjectURL(href), 1000);
 };
 
 const canDownloadRow = (row: EntityFileRow) =>

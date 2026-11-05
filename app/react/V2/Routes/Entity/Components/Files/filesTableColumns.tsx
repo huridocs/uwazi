@@ -1,7 +1,7 @@
 import React from 'react';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type { DataTableColumn } from '#V2/Components/UI/DataTable/types.js';
-import { fileSupportsLanguage } from './fileHelpers.js';
+import { fileRowShowsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileRowDownloadButton } from './FileRowDownloadButton.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
@@ -131,10 +131,7 @@ const filesDataTableColumns = ({
             onRename={onRenameRow}
             onChangeLanguage={onChangeLanguageRow}
             onDelete={onDeleteRow}
-            showLanguageAction={fileSupportsLanguage({
-              type: row.raw.mimetype || '',
-              name: row.raw.originalname || row.displayName,
-            })}
+            showLanguageAction={fileRowShowsLanguage(row)}
             disableMutations={row.status === 'processing'}
           />
         </div>

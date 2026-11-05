@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import {
   fileLanguageSelectOptions,
-  fileSupportsLanguage,
+  fileRowShowsLanguage,
   resolveFileLanguage,
 } from './fileHelpers.js';
 import type { EntityFileRow } from './types.js';
@@ -31,10 +31,7 @@ const useFileRowDraft = (row: EntityFileRow) => {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const locale = useAtomValue(localeAtom);
   const languageOptions = useMemo(() => fileLanguageSelectOptions(locale), [locale]);
-  const showLanguage = fileSupportsLanguage({
-    type: row.raw.mimetype || '',
-    name: row.raw.originalname || row.displayName,
-  });
+  const showLanguage = fileRowShowsLanguage(row);
   const resetDraft = useResetDraft(row, setDraftName, setDraftLanguage);
 
   const commit = async (

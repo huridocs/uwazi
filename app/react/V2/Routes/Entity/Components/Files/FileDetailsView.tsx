@@ -2,7 +2,7 @@ import React from 'react';
 import { PencilStrokeIcon } from '#V2/Components/CustomIcons/PencilStrokeIcon.js';
 import { Translate } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
-import { fileSupportsLanguage } from './fileHelpers.js';
+import { fileRowShowsLanguage } from './fileHelpers.js';
 import { getDetailsIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
@@ -11,10 +11,7 @@ import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { EntityFileRow } from './types.js';
 
 const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => {
-  const showLanguage = fileSupportsLanguage({
-    type: row.raw.mimetype || '',
-    name: row.raw.originalname || row.displayName,
-  });
+  const showLanguage = fileRowShowsLanguage(row);
 
   return (
     <div className="space-y-3">

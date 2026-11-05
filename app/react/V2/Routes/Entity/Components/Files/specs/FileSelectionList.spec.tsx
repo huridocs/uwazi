@@ -8,7 +8,11 @@ jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-const row = (rowId: string, displayName: string): EntityFileRow => ({
+const row = (
+  rowId: string,
+  displayName: string,
+  overrides: Partial<Pick<EntityFileRow, 'category' | 'fileType'>> = {}
+): EntityFileRow => ({
   rowId,
   displayName,
   kind: 'pdf',
@@ -16,9 +20,13 @@ const row = (rowId: string, displayName: string): EntityFileRow => ({
   sizeLabel: '213 KB',
   languageKey: 'English',
   modifiedLabel: '—',
-  category: 'primary',
-  fileType: 'document',
-  raw: { fileType: 'document', originalname: displayName },
+  category: overrides.category ?? 'primary',
+  fileType: overrides.fileType ?? 'document',
+  raw: {
+    fileType: overrides.fileType ?? 'document',
+    originalname: displayName,
+    mimetype: 'application/pdf',
+  },
 });
 
 describe('FileSelectionList', () => {
@@ -31,5 +39,15 @@ describe('FileSelectionList', () => {
     expect(screen.getByText('2 files selected')).toBeInTheDocument();
     expect(screen.getByText('Velasquez_Judgment_1988')).toBeInTheDocument();
     expect(screen.getAllByText('PDF · 213 KB · English')).toHaveLength(2);
+  });
+
+  it('omits language for a supporting file', () => {
+    render(
+      <FileSelectionList
+        rows={[row('a', 'g2505275.pdf', { category: 'supporting', fileType: 'attachment' })]}
+      />
+    );
+    expect(screen.getByText('PDF · 213 KB')).toBeInTheDocument();
+    expect(screen.queryByText(/English/)).not.toBeInTheDocument();
   });
 });

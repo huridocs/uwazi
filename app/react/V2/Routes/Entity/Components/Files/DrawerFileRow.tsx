@@ -12,7 +12,9 @@ import { useFileRowDraft } from './useFileRowDraft.js';
 import { EntityFileRow } from './types.js';
 
 const rowFacts = (row: EntityFileRow) =>
-  [row.sizeLabel, row.languageKey].filter(value => value !== '' && value !== '—').join(' · ');
+  [row.sizeLabel, row.category === 'primary' ? row.languageKey : '']
+    .filter(value => value !== '' && value !== '—')
+    .join(' · ');
 
 const DrawerFileRow = ({
   row,
@@ -91,7 +93,6 @@ const DrawerFileRow = ({
                 disabled={saving}
               />
             ) : null}
-            <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
             <span dir="ltr" className="text-nano text-ink-tertiary">
               {row.sizeLabel}
             </span>
@@ -149,7 +150,7 @@ const DrawerFileRow = ({
               </EntityWriteAuthorization>
             ) : null}
             <FileRowDownloadButton row={row} />
-            <ViewFileButton onClick={() => onView(row)} />
+            <ViewFileButton disabled={row.status === 'processing'} onClick={() => onView(row)} />
           </>
         )}
       </div>

@@ -109,6 +109,10 @@ describe('downloadRowsAsZip', () => {
     await downloadRowsAsZip([first, second], 'shared-1.zip');
     expect(clicked).toEqual(['blob:zip|shared-1.zip']);
     expectZipEntries(await readBlob(savedBlob(blobs)));
+    await new Promise(resolve => {
+      setTimeout(resolve, 1100);
+    });
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
   });
 
   it('reports an error when a selected file cannot be downloaded', async () => {

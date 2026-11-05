@@ -20,14 +20,15 @@ jest.mock('../FileThumbnail', () => ({
 }));
 
 jest.mock('../ViewFileButton', () => ({
-  ViewFileButton: ({ onClick }: { onClick: () => void }) => (
-    <button type="button" onClick={onClick}>
+  ViewFileButton: ({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) => (
+    <button type="button" onClick={onClick} disabled={disabled}>
       View
     </button>
   ),
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({
+  UwaziLoader: () => null,
   LanguageSelect: ({
     value,
     onChange,
@@ -82,6 +83,52 @@ describe('DrawerFileRow', () => {
     expect(screen.queryByText('PDF')).not.toBeInTheDocument();
   });
 
+  it('shows size only for a supporting file', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ category: 'supporting', languageKey: 'other' })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByText('1 KB')).toBeInTheDocument();
+    expect(screen.queryByText(/other/)).not.toBeInTheDocument();
+  });
+
+  it('edits a primary name and language without the type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByLabelText('Language')).toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+  });
+
+  it('edits a supporting file without a language selector or type', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ category: 'supporting', languageKey: 'other' })}
+        editing
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.queryByLabelText('Language')).not.toBeInTheDocument();
+    expect(screen.queryByText('PDF')).not.toBeInTheDocument();
+    expect(screen.getByText('1 KB')).toBeInTheDocument();
+  });
+
   it('downloads a file and hides download for a link', () => {
     const clicked: string[] = [];
     jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function recordClick(
@@ -122,6 +169,20 @@ describe('DrawerFileRow', () => {
       />
     );
     expect(screen.queryByRole('button', { name: /Download/ })).not.toBeInTheDocument();
+  });
+
+  it('disables view while the file is processing', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow({ status: 'processing' })}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'View' })).toBeDisabled();
   });
 
   it('commits trimmed name and language when save is clicked', async () => {

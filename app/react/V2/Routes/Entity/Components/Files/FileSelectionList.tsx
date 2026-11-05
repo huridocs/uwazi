@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { fileFactsLine, fileShownName } from './fileHelpers.js';
+import { fileFactsLine, fileRowShowsLanguage, fileShownName } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import type { EntityFileRow } from './types.js';
 
@@ -19,7 +19,9 @@ const FileSelectionList = ({ rows }: { rows: EntityFileRow[] }) => (
           <p className="truncate text-xs font-medium text-ink" title={row.displayName}>
             {fileShownName(row)}
           </p>
-          <p className="mt-0.5 truncate text-meta text-ink-tertiary">{fileFactsLine(row)}</p>
+          <p className="mt-0.5 truncate text-meta text-ink-tertiary">
+            {fileFactsLine(row, fileRowShowsLanguage(row))}
+          </p>
         </div>
       </div>
     ))}

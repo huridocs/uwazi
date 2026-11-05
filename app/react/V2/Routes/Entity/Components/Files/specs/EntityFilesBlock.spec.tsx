@@ -100,7 +100,8 @@ const expectNotesRow = () => {
   const view = screen.getByTitle('Notes.txt');
   expect(view.tagName).toBe('BUTTON');
   expect(view.querySelector('[dir="ltr"]')).toHaveTextContent('Notes');
-  expect(view).toHaveTextContent('PDF · 12 KB · English');
+  expect(view).toHaveTextContent('PDF · 12 KB');
+  expect(view).not.toHaveTextContent('English');
   const download = screen.getByRole('button', { name: 'Download Notes.txt' });
   expect(download).not.toHaveTextContent('Download');
 };
