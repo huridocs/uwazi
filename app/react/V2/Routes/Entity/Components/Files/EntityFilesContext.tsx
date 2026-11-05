@@ -32,7 +32,7 @@ const useEntityFileRows = (entity: Entity, focusedRowId: string | undefined) => 
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   const { primaryRows, supportingRows, mainDocumentId } = useMemo(
-    () => buildEntityFileRows(entity, templates, locale, defaultLanguage),
+    () => buildEntityFileRows({ entity, templates, locale, defaultLanguage }),
     [defaultLanguage, entity, locale, templates]
   );
   const allRows = useMemo(() => [...primaryRows, ...supportingRows], [primaryRows, supportingRows]);

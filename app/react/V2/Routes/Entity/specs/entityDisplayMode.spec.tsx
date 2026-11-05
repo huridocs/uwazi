@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { TestRouterContext } from '#V2/testing/index.js';
@@ -17,7 +17,8 @@ jest.mock('#app/Markdown/index.js', () => ({
   ),
 }));
 
-jest.mock('#V2/Components/PDFViewer', () => ({
+jest.mock('#V2/Components/PDFViewer/index.js', () => ({
+  ...jest.requireActual('#V2/Components/PDFViewer/index.js'),
   PDF: () => <div data-testid="mock-pdf" />,
 }));
 
@@ -62,6 +63,8 @@ const adminUser = {
   username: 'admin',
   email: 'admin@example.com',
 } as const;
+
+const mainTabs = () => within(screen.getAllByTestId('tabs-comp')[0]);
 
 const renderEntity = ({
   withPage = true,
@@ -176,7 +179,11 @@ describe('entity display mode', () => {
   it('stays on the entity viewer when another main tab is selected', async () => {
     renderEntity();
     fireEvent.click(await screen.findByRole('button', { name: 'Entity view' }));
-    fireEvent.click(await screen.findByRole('tab', { name: 'Document' }));
+    const documentTab = await mainTabs().findByRole('tab', { name: 'Document' });
+    fireEvent.click(documentTab);
+    await waitFor(() => {
+      expect(documentTab).toHaveAttribute('aria-selected', 'true');
+    });
     expect(await screen.findByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();

@@ -13,6 +13,20 @@ describe('formatLanguageName', () => {
   it('falls back to English names when the UI locale is missing', () => {
     expect(formatLanguageName('en', '')).toBe('English');
   });
+
+  it('uses the catalog name when the runtime only echoes the code', () => {
+    const real = Intl.DisplayNames;
+    function CodeOnlyDisplayNames(this: { of(code: string): string }) {
+      this.of = (code: string) => code;
+    }
+    Object.assign(Intl, { DisplayNames: CodeOnlyDisplayNames });
+    try {
+      expect(formatLanguageName('aa', 'und-x-code')).toBe('Afar');
+      expect(formatLanguageName('ab', 'und-x-code')).toBe('Abkhazian');
+    } finally {
+      Object.assign(Intl, { DisplayNames: real });
+    }
+  });
 });
 
 describe('formatLanguageOptionLabel', () => {

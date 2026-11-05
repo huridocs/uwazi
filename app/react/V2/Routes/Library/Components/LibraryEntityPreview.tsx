@@ -149,6 +149,7 @@ const LibraryEntityPreviewView = ({
               entity={entity}
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
+              filesLayout="drawer"
             />
           </div>
           <LibraryEntityPreviewFooter

@@ -6,18 +6,23 @@ import { useEntityFiles } from './EntityFilesContext.js';
 
 type AddTranslationButtonProps = {
   className?: string;
+  showIcon?: boolean;
 };
 
 const AddTranslationButton = ({
   className = 'mt-2 inline-flex cursor-pointer items-center gap-1.5 px-1 text-xs font-medium text-ink-secondary transition-colors hover:text-ink',
+  showIcon = true,
 }: AddTranslationButtonProps) => {
   const { requestAddFile } = useEntityFiles();
 
   return (
     <EntityWriteAuthorization>
       <button type="button" onClick={() => requestAddFile('translation')} className={className}>
-        <PlusIcon className="h-3.5 w-3.5" aria-hidden />
-        <Translate>Add translation</Translate>
+        {showIcon ? <PlusIcon className="h-3.5 w-3.5" aria-hidden /> : null}
+        <span>
+          {showIcon ? null : '+ '}
+          <Translate>Add translation</Translate>
+        </span>
       </button>
     </EntityWriteAuthorization>
   );

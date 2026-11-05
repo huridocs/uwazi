@@ -17,9 +17,17 @@ const getLanguageDisplayNames = (locale: string): Intl.DisplayNames | undefined 
   }
 };
 
+const catalogLanguageName = (iso6391: string) =>
+  availableLanguages.find(item => item.ISO639_1 === iso6391)?.label;
+
+const isEchoedCode = (name: string, iso6391: string) =>
+  name.localeCompare(iso6391, undefined, { sensitivity: 'accent' }) === 0;
+
 const formatLanguageName = (iso6391: string, uiLocale: string): string => {
   const code = iso6391.toUpperCase();
-  const name = getLanguageDisplayNames(uiLocale || 'en')?.of(iso6391);
+  const resolved = getLanguageDisplayNames(uiLocale || 'en')?.of(iso6391);
+  const name =
+    resolved && !isEchoedCode(resolved, iso6391) ? resolved : catalogLanguageName(iso6391);
   if (!name) {
     return code;
   }

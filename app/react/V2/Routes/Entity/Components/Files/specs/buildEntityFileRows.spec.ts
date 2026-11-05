@@ -63,7 +63,7 @@ describe('buildEntityFileRows', () => {
       ]
     );
 
-    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'en', defaultLanguage: 'en' });
 
     expect(result.primaryRows).toHaveLength(2);
     expect(result.supportingRows).toHaveLength(1);
@@ -92,7 +92,7 @@ describe('buildEntityFileRows', () => {
       },
     ]);
 
-    const result = buildEntityFileRows(entity, templates, 'es', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'es', defaultLanguage: 'en' });
     const byId = Object.fromEntries(result.primaryRows.map(row => [row.rowId, row]));
 
     expect(byId['doc-en']?.languageKey).toBe('Inglés');
@@ -156,7 +156,7 @@ describe('buildEntityFileRows', () => {
       ]
     );
 
-    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'en', defaultLanguage: 'en' });
     const byId = Object.fromEntries(
       [...result.primaryRows, ...result.supportingRows].map(row => [row.rowId, row])
     );
@@ -194,7 +194,7 @@ describe('buildEntityFileRows', () => {
       ]
     );
 
-    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'en', defaultLanguage: 'en' });
 
     expect(result.primaryRows[0]?.kind).toBe('pdf');
     expect(result.primaryRows[0]?.typeLabel).toBe('PDF');
@@ -224,7 +224,7 @@ describe('buildEntityFileRows', () => {
       },
     ]);
 
-    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'en', defaultLanguage: 'en' });
 
     expect(result.primaryRows.find(row => row.rowId === 'processing-doc')?.status).toBe(
       'processing'
@@ -251,7 +251,7 @@ describe('buildEntityFileRows', () => {
       },
     ]);
 
-    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+    const result = buildEntityFileRows({ entity, templates, locale: 'en', defaultLanguage: 'en' });
 
     expect(result.mainDocumentId).toBe('legacy-doc');
     expect(result.primaryRows.find(row => row.rowId === 'legacy-doc')?.fileType).toBe(

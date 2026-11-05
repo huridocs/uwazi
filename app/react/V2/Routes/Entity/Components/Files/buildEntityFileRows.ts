@@ -46,12 +46,19 @@ const formatFileDate = (timestamp?: number, locale?: string) => {
   return asDate.isValid ? asDate.toLocaleString(DateTime.DATE_MED) : '—';
 };
 
-const buildEntityFileRows = (
-  entity: Entity,
-  templates: ClientTemplateSchema[],
-  locale: string,
-  defaultLanguage?: string
-) => {
+type BuildEntityFileRowsInput = {
+  entity: Entity;
+  templates: ClientTemplateSchema[];
+  locale: string;
+  defaultLanguage?: string;
+};
+
+const buildEntityFileRows = ({
+  entity,
+  templates,
+  locale,
+  defaultLanguage,
+}: BuildEntityFileRowsInput) => {
   const formattedFiles = formatEntityFiles(entity, templates, locale, defaultLanguage);
   const mainDocument = formattedFiles.find(entry => entry.fileType === 'mainDocument')?.file;
   const files = formattedFiles.map(({ file, fileType }) => ({ ...file, fileType }));

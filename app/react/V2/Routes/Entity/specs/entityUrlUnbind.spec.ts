@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, renderHook } from '@testing-library/react';
+import { act, render, renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { Provider } from 'jotai';
 import { EntityUrlSync, useUpdateEntityUrl } from '../entityUrlState.js';
@@ -52,6 +52,39 @@ describe('entity URL session unbind', () => {
       await Promise.resolve();
     });
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps URL updates working after EntityUrlSync remounts', async () => {
+    let update: ReturnType<typeof useUpdateEntityUrl> = () => {};
+    const Probe = () => {
+      update = useUpdateEntityUrl();
+      return null;
+    };
+    const tree = (id: string) =>
+      React.createElement(
+        MemoryRouter,
+        { key: id, initialEntries: ['/entity/1?m=metadata#s=search'] },
+        React.createElement(
+          Provider,
+          null,
+          React.createElement(EntityUrlSync, null, React.createElement(Probe))
+        )
+      );
+
+    const view = render(tree('a'));
+    view.rerender(tree('b'));
+    act(() => {
+      update({
+        search: next => {
+          next.set('m', 'files');
+        },
+      });
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(mockNavigate).toHaveBeenCalled();
+    view.unmount();
   });
 
   it('drops a queued URL flush when EntityUrlSync unmounts', async () => {

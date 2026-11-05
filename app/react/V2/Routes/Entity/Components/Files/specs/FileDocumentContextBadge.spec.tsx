@@ -20,6 +20,7 @@ jest.mock('../EntityFilesContext', () => ({
     primaryRows: mockPrimaryRows,
     setFocusedRowId: mockSetFocusedRowId,
     requestAddFile: mockRequestAddFile,
+    entity: { title: 'Judgment' },
   }),
 }));
 
@@ -62,24 +63,27 @@ describe('FileDocumentContextBadge', () => {
     expect(screen.queryAllByRole('button')).toHaveLength(1);
   });
 
+  const expectTranslationChips = () => {
+    expect(screen.getByText('Translations')).toBeInTheDocument();
+    expect(screen.getByText('doc-en.pdf')).toBeInTheDocument();
+    expect(screen.getByText('doc-es.pdf')).toBeInTheDocument();
+    expect(screen.getByText('doc-en.pdf').closest('button')).toBeNull();
+    expect(screen.getByText('doc-es.pdf').closest('button')).not.toBeNull();
+  };
+
   it('renders chips for each primary row, highlights the current one, and switches focus on click', () => {
     const currentRow = buildRow({ rowId: 'f1', languageKey: 'en', displayName: 'doc-en.pdf' });
     const otherRow = buildRow({ rowId: 'f2', languageKey: 'es', displayName: 'doc-es.pdf' });
     mockPrimaryRows = [currentRow, otherRow];
 
     render(<FileDocumentContextBadge row={currentRow} />);
-
-    expect(screen.getByText('Translations')).toBeInTheDocument();
-    expect(screen.getByText('doc-en.pdf')).toBeInTheDocument();
-    expect(screen.getByText('doc-es.pdf')).toBeInTheDocument();
-    expect(screen.getByText('doc-en.pdf').closest('button')).toBeNull();
-    expect(screen.getByText('doc-es.pdf').closest('button')).not.toBeNull();
+    expectTranslationChips();
 
     fireEvent.click(screen.getByText('doc-es.pdf'));
     expect(mockSetFocusedRowId).toHaveBeenCalledWith('f2');
   });
 
-  it('renders Active primary when the row is the ready main document', () => {
+  it('renders Primary and the entity title for a primary document', () => {
     const row = buildRow({
       rowId: 'main',
       raw: { _id: 'main', originalname: 'doc.pdf', filename: 'doc.pdf', fileType: 'document' },
@@ -88,7 +92,9 @@ describe('FileDocumentContextBadge', () => {
 
     render(<FileDocumentContextBadge row={row} />);
 
-    expect(screen.getByText('Active primary')).toBeInTheDocument();
+    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Judgment')).toBeInTheDocument();
+    expect(screen.queryByText('Active primary')).toBeNull();
   });
 
   it('renders Primary when the row is not the active main document', () => {
