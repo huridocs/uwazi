@@ -91,7 +91,6 @@ const fixtures = {
         { key: 'en' as LanguageISO6391, label: 'English', default: true },
         { key: 'es' as LanguageISO6391, label: 'Spanish' },
       ],
-      features: { newNameGeneration: false },
     },
   ],
   dictionaries: [fixturesFactory.thesauri('preflightThesaurus', [])],

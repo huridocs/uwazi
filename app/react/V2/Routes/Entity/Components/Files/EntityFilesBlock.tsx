@@ -36,12 +36,15 @@ const rowLine = (row: EntityFileRow, onPreview: (row: EntityFileRow) => void) =>
         type="button"
         title={row.displayName}
         disabled={processing}
-        className={`flex min-w-0 flex-1 flex-col items-start text-left ${processing ? 'opacity-60' : ''}`}
+        className={`flex min-w-0 flex-1 flex-col overflow-hidden text-left ${processing ? 'opacity-60' : ''}`}
         onClick={() => {
           if (!processing) openRow(row, onPreview);
         }}
       >
-        <span dir="ltr" className="w-full truncate text-xs font-medium text-ink">
+        <span
+          dir="ltr"
+          className="block min-w-0 max-w-full truncate text-xs font-medium text-ink"
+        >
           {fileShownName(row)}
         </span>
         {facts ? <span className="text-nano text-ink-tertiary">{facts}</span> : null}

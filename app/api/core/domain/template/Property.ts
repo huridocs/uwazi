@@ -26,10 +26,6 @@ type Props = {
   noLabel?: boolean;
 };
 
-type Context = {
-  newNameGeneration?: boolean;
-};
-
 type CreatePropertyAssignmentInput<T = PropertyValue> = {
   value: T[];
   language?: LanguageISO6391;
@@ -54,14 +50,12 @@ class Property {
 
   protected compatibleTypes: PropertyType[] = [];
 
-  constructor(props: Props, context?: Context) {
+  constructor(props: Props) {
     this.id = props.id;
     this.type = props.type;
     this.label = props.label;
     this.template = props.template;
-    this._name = props.name
-      ? new PropertyName(props.name)
-      : PropertyName.fromLabel(this.label, context);
+    this._name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
     this.required = props.required || false;
     this.noLabel = props.noLabel || false;
     this.showInCard = props.showInCard || false;
@@ -134,4 +128,4 @@ class Property {
 }
 
 export { Property };
-export type { PropertyUpdateInfo, Props as PropertyProps, Context, CreatePropertyAssignmentInput };
+export type { PropertyUpdateInfo, Props as PropertyProps, CreatePropertyAssignmentInput };

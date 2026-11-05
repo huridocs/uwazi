@@ -237,15 +237,27 @@ describe('EntityFilesBlock', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('opens a preview modal from the file name', () => {
-    mockEntityFiles.supportingRows = [attachment('s1', 'Notes.txt', 'notes.txt')];
-    render(<EntityFilesBlock />);
-    const notes = screen.getByTitle('Notes.txt');
-    expect(notes).not.toHaveTextContent('—');
-    fireEvent.click(notes);
-    const dialog = screen.getByRole('dialog');
-    expect(buttonNamed(dialog, 'Close')).toHaveClass('bg-warm');
-    expect(buttonNamed(dialog, 'Download')).toHaveClass('bg-warm');
+  describe('file name', () => {
+    it('keeps a long file name inside its row', () => {
+      const displayName = 'a-very-long-file-name-that-truncates.pdf';
+      mockEntityFiles.supportingRows = [attachment('s1', displayName, 'long.pdf')];
+      render(<EntityFilesBlock />);
+      const name = screen.getByText('a-very-long-file-name-that-truncates');
+      expect(name).toHaveClass('block', 'min-w-0', 'max-w-full', 'truncate');
+      expect(name.parentElement).toHaveClass('min-w-0', 'overflow-hidden');
+      expect(name.parentElement).not.toHaveClass('items-start');
+    });
+
+    it('opens a preview modal from the file name', () => {
+      mockEntityFiles.supportingRows = [attachment('s1', 'Notes.txt', 'notes.txt')];
+      render(<EntityFilesBlock />);
+      const notes = screen.getByTitle('Notes.txt');
+      expect(notes).not.toHaveTextContent('—');
+      fireEvent.click(notes);
+      const dialog = screen.getByRole('dialog');
+      expect(buttonNamed(dialog, 'Close')).toHaveClass('bg-warm');
+      expect(buttonNamed(dialog, 'Download')).toHaveClass('bg-warm');
+    });
   });
 
   it('opens a link in a new window and does not show a download control', () => {

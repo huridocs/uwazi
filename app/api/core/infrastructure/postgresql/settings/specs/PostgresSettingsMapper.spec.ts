@@ -13,7 +13,6 @@ const sampleSettings = (id: string): SettingsType =>
     customCSS: 'body {}',
     customJS: 'console.log(1)',
     private: true,
-    newNameGeneration: true,
     openPublicEndpoint: false,
     ocrServiceEnabled: true,
     filterUnauthorizedRelated: false,
@@ -66,7 +65,6 @@ describe('PostgresSettingsMapper', () => {
     expect(row.custom_css).toBe('body {}');
     expect(row.custom_js).toBe('console.log(1)');
     expect(row.private).toBe(true);
-    expect(row.new_name_generation).toBe(true);
     expect(row.custom).toEqual({ extra: true });
   });
 

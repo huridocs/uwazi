@@ -1,4 +1,4 @@
-import { Context, Property, PropertyProps } from '#api/core/domain/template/Property.js';
+import { Property, PropertyProps } from '#api/core/domain/template/Property.js';
 
 type Props = {
   filter?: boolean;
@@ -13,8 +13,8 @@ abstract class FilterableProperty extends Property {
 
   prioritySorting: boolean;
 
-  constructor(props: Props, context?: Context) {
-    super(props, context);
+  constructor(props: Props) {
+    super(props);
 
     this.filter = props.filter || false;
     this.defaultfilter = props.defaultfilter || false;

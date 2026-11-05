@@ -101,6 +101,15 @@ const renderSession = async (upsert: jest.Mock) => {
 };
 
 describe('MetadataTab shared session', () => {
+  it('clips horizontal overflow on the metadata scroller', async () => {
+    await renderSession(jest.fn());
+    const scrollers = screen.getAllByTestId('metadata-record').map(record => record.parentElement);
+    expect(scrollers).toHaveLength(2);
+    scrollers.forEach(scroller => {
+      expect(scroller).toHaveClass('overflow-x-hidden', 'overflow-y-auto');
+    });
+  });
+
   it('marks the session dirty when the title changes', async () => {
     const { getSession } = await renderSession(jest.fn());
 

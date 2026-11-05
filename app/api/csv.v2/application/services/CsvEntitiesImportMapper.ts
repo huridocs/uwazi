@@ -41,8 +41,8 @@ type RelationshipValueIndex = Map<
   Map<string, { label: string; matches: Array<{ sharedId: string; templateId: string }> }>
 >;
 
-const sanitizeHeaders = (headers: string[], newNameGeneration: boolean) =>
-  headers.map(header => PropertyName.fromLabel(header, { newNameGeneration }).value);
+const sanitizeHeaders = (headers: string[]) =>
+  headers.map(header => PropertyName.fromLabel(header).value);
 
 const DATE_FORMAT_FALLBACK = 'YYYY/MM/DD';
 const MULTI_VALUE_SEPARATOR = '|';
@@ -681,8 +681,8 @@ class CsvEntitiesImportMapper {
     return index;
   }
 
-  static sanitizeHeaders(headers: string[], newNameGeneration: boolean) {
-    return sanitizeHeaders(headers, newNameGeneration);
+  static sanitizeHeaders(headers: string[]) {
+    return sanitizeHeaders(headers);
   }
 
   static buildPropertyAssignments(params: {
