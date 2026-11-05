@@ -20,20 +20,11 @@ type FilesTableSectionProps = {
   onDeleteRow: (row: EntityFileRow) => void;
 };
 
-const FilesTableSection = ({
-  title,
-  rows,
-  selectedRowIds,
-  focusedRowId,
-  showLanguageColumn = true,
-  emptyDescription,
-  onSelectRows,
-  onFocusRow,
-  onViewRow,
-  onRenameRow,
-  onChangeLanguageRow,
-  onDeleteRow,
-}: FilesTableSectionProps) => {
+const useSectionSelection = (
+  rows: EntityFileRow[],
+  selectedRowIds: string[],
+  onSelectRows: (ids: string[]) => void
+) => {
   const rowIdsInSection = useMemo(() => new Set(rows.map(row => row.rowId)), [rows]);
 
   const selectedIds = useMemo(
@@ -66,6 +57,29 @@ const FilesTableSection = ({
   const selectableRows = useMemo(() => rows.filter(isFileRowSelectable), [rows]);
   const allSelected =
     selectableRows.length > 0 && selectableRows.every(row => selectedIds.has(row.rowId));
+
+  return { selectedIds, onToggleRow, onToggleAll, allSelected };
+};
+
+const FilesTableSection = ({
+  title,
+  rows,
+  selectedRowIds,
+  focusedRowId,
+  showLanguageColumn = true,
+  emptyDescription,
+  onSelectRows,
+  onFocusRow,
+  onViewRow,
+  onRenameRow,
+  onChangeLanguageRow,
+  onDeleteRow,
+}: FilesTableSectionProps) => {
+  const { selectedIds, onToggleRow, onToggleAll, allSelected } = useSectionSelection(
+    rows,
+    selectedRowIds,
+    onSelectRows
+  );
 
   const columns = useMemo(
     () =>
