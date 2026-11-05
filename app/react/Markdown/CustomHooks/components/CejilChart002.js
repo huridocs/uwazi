@@ -8,7 +8,7 @@ import { CejilChart } from './CejilChart.js';
 import parsingUtils from '../utils/parsingUtils.js';
 
 const judgesCommisionersTemplate = '58b2f3a35d59f31e1345b4b6';
-const countryKey = 'pa_s';
+const countryKey = 'país';
 const male = 'dedcc624-0e11-4d4e-90d5-d1c0ea4c7a18';
 const female = 'f2457229-e142-4b74-b595-2ac2f9b5f64e';
 const sexTranslationsContext = '58b2f3a35d59f31e1345b52d';

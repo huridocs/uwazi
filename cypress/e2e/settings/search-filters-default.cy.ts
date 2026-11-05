@@ -176,7 +176,7 @@ describe('search filters path', () => {
         clickAnyCountryOption();
         clickAnyCountryOption();
         cy.get('body').then($body => {
-          const switcher = $body.find('label[for="pa_sswitcher"].switcher');
+          const switcher = $body.find('label[for="paísswitcher"].switcher');
           if (switcher.length) {
             cy.wrap(switcher.first()).click({ force: true });
           }
