@@ -5,7 +5,7 @@
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
-import { entityWithRelations } from './fixtures/entityWithRelations.js';
+import { entityWithHub, entityWithRelations } from './fixtures/entityWithRelations.js';
 import * as utils from '#app/utils/index.js';
 
 beforeAll(() => {
@@ -161,6 +161,21 @@ describe('Relationships panel', () => {
   });
 
   describe('tree view', () => {
+    it('counts a hub like the list and still shows its parties when expanded', async () => {
+      const user = userEvent.setup();
+      renderRelationshipsPanel({ entity: entityWithHub });
+
+      expect(screen.getByRole('button', { name: 'Related 2' })).toBeInTheDocument();
+
+      await user.click(screen.getByRole('radio', { name: 'Tree' }));
+
+      await user.click(screen.getByRole('button', { name: 'Related 2' }));
+
+      expect(screen.getByText('First Party')).toBeInTheDocument();
+      expect(screen.getByText('Second Party')).toBeInTheDocument();
+      expect(screen.getByText('parties')).toBeInTheDocument();
+    });
+
     it('groups relationships by target entity when tree view is selected', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel();

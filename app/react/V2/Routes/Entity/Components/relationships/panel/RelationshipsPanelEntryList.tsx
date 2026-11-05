@@ -27,12 +27,6 @@ type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   flat?: boolean;
 };
 
-const panelEntryCount = (
-  markers: RelationshipMarker[],
-  selfSharedId: string,
-  flat = false
-): number => (flat ? markers.length : buildPanelListEntries(markers, selfSharedId).length);
-
 const entryMatchesId = (entry: PanelListEntry, id: string): boolean => {
   if (entry.kind === 'reference') return entry.marker._id === id;
   if (entry.kind === 'aggregate') return entry.aggregate.markerIds.includes(id);
@@ -125,4 +119,4 @@ const RelationshipsPanelEntryList = ({
   return <>{content}</>;
 };
 
-export { panelEntryCount, renderPanelEntryRows, RelationshipsPanelEntryList };
+export { renderPanelEntryRows, RelationshipsPanelEntryList };
