@@ -15,8 +15,9 @@ const SHEET_STACK = {
 } as const;
 
 const SHEET_OVERLAY_ORDER = 100;
+const FILE_PREVIEW_SHEET_ORDER = 1000;
 
 const sheetZ = (index: number) => 70 + index * 2;
 
 export type { SheetEntry };
-export { sheetStackAtom, SHEET_STACK, SHEET_OVERLAY_ORDER, sheetZ };
+export { sheetStackAtom, SHEET_STACK, SHEET_OVERLAY_ORDER, FILE_PREVIEW_SHEET_ORDER, sheetZ };
