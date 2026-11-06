@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';
 import type { FileType } from '#shared/types/fileType.js';
@@ -24,7 +24,11 @@ import {
 } from './Components/index.js';
 import type { EditEntityFormValues } from './functions/buildEditEntityDefaultValues.js';
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
-import { metadataFormPath, type FormMetadataProperty } from './functions/formatMetadataForForm.js';
+import {
+  metadataFormKey,
+  metadataFormPath,
+  type FormMetadataProperty,
+} from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
 import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
@@ -76,20 +80,21 @@ const EditEntityPropertyField = ({
   relationshipLookup,
   relationshipLookupSearch,
 }: EditEntityPropertyFieldProps) => {
-  const { getValues } = useFormContext<EditEntityFormValues>();
+  const { control, getValues } = useFormContext<EditEntityFormValues>();
+  const formMetadata = useWatch({ control, name: 'metadata' });
   const field = getMetadataFieldPath(property);
   const registerOptions = { required: property.required };
   const context = activeTemplateId;
-  const inheritColumns = useMemo(
-    () =>
-      property.type === 'relationship'
-        ? buildInheritColumns(property, metadataProperties, {
-            templates,
-            sourceMetadata: entityMetadata,
-          })
-        : [],
-    [property, metadataProperties, templates, entityMetadata]
-  );
+  const inheritColumns = useMemo(() => {
+    if (property.type !== 'relationship') return [];
+    const sourceMetadata = Object.fromEntries(
+      metadataProperties.map(item => [
+        item.name,
+        formMetadata?.[metadataFormKey(item.name)] ?? entityMetadata?.[item.name],
+      ])
+    );
+    return buildInheritColumns(property, metadataProperties, { templates, sourceMetadata });
+  }, [entityMetadata, formMetadata, metadataProperties, property, templates]);
 
   if (property.type === 'text' || property.type === 'numeric') {
     return (

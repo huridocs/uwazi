@@ -37,7 +37,7 @@ describe('groupRelationshipProperties', () => {
     },
   ];
 
-  it('should keep non-relationship properties and merge matching relationships', () => {
+  it('should group relationship properties that share a template and relation type', () => {
     const grouped = groupRelationshipProperties(properties);
 
     expect(grouped).toHaveLength(3);
@@ -54,7 +54,7 @@ describe('groupRelationshipProperties', () => {
     });
   });
 
-  it('should share one source list for inherited properties of the same template', () => {
+  it('should group inherited properties by relation type', () => {
     const grouped = groupRelationshipProperties([
       {
         _id: 'md',
@@ -78,8 +78,9 @@ describe('groupRelationshipProperties', () => {
       },
     ]);
 
-    expect(grouped).toHaveLength(1);
-    expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark', 'relationshipgeo']);
+    expect(grouped.map(property => property.name)).toEqual(['relationshipmark', 'relationshipgeo']);
+    expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark']);
+    expect(grouped[1].groupedRelationshipNames).toEqual(['relationshipgeo']);
   });
 });
 
