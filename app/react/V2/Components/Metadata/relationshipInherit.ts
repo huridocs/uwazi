@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import {
   inheritedCellContent,
   inheritedCellSortKey,
@@ -66,7 +65,9 @@ const inheritColumnLabel = (
 
 type InheritColumnContext = {
   templates: InheritColumnTemplate[];
-  sourceMetadata?: Entity['metadata'];
+  sourceMetadata?: {
+    [name: string]: ReadonlyArray<{ value?: unknown; [key: string]: unknown }> | undefined;
+  };
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 

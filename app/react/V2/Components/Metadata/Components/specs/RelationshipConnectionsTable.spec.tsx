@@ -212,6 +212,28 @@ describe('RelationshipConnectionsTable layout', () => {
 });
 
 describe('RelationshipConnectionsTable cells', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('shows Show more when markdown content is taller than the clamp', () => {
+    const height = function boxHeight(this: HTMLElement) {
+      return this.classList.contains('max-h-24') ? 96 : 400;
+    };
+    jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockImplementation(height);
+    jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(height);
+    render(
+      <RelationshipConnectionsTable
+        preview
+        rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
+        columns={[
+          { label: 'Markdown', inheritedType: 'markdown', cellsByEntityId: { e1: <p>tall</p> } },
+        ]}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'Show more' })).toBeInTheDocument();
+  });
+
   it('lists each entity with its inherited values', () => {
     render(
       <RelationshipConnectionsTable
