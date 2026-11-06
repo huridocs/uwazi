@@ -1,7 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
-import { InheritRollupChip } from './InheritRollupChip.js';
+import { renderPreviewCell } from './PreviewClamp.js';
 import type { EntityIconData } from '../../CustomIcons/index.js';
 
 type RelationshipTableColumn = {
@@ -17,12 +17,6 @@ type RelationshipTableRow = {
   templateId?: string;
   authorized?: false;
   icon?: EntityIconData | null;
-};
-
-type InheritRollup = {
-  label: string;
-  text: string;
-  title: string;
 };
 
 const stackLabelClass =
@@ -49,7 +43,7 @@ type ConnectionCardStackProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel: string;
-  rollups?: InheritRollup[];
+  preview?: boolean;
 };
 
 const ConnectionCardStack = ({
@@ -60,7 +54,7 @@ const ConnectionCardStack = ({
   onOpenEntity,
   renderActions,
   emptyLabel,
-  rollups = [],
+  preview = false,
 }: ConnectionCardStackProps) => {
   if (rows.length === 0) {
     return (
@@ -71,23 +65,10 @@ const ConnectionCardStack = ({
   }
 
   return (
-    <div className="grid w-full min-w-0 grid-cols-[fit-content(40%)_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1">
-      {rollups.map(rollup => (
-        <React.Fragment key={rollup.label}>
-          <span className={stackLabelClass}>
-            <Translate context={translationContext}>{rollup.label}</Translate>
-          </span>
-          <span className="min-w-0">
-            <InheritRollupChip text={rollup.text} title={rollup.title} />
-          </span>
-        </React.Fragment>
-      ))}
+    <div className="flex w-full min-w-0 flex-col gap-2">
       {rows.map(row => (
-        <div
-          key={row.id}
-          className="col-span-2 grid grid-cols-subgrid items-baseline gap-y-1 rounded-md border border-border/40 px-2.5 py-2.5"
-        >
-          <div className="col-span-2 flex items-center justify-between gap-2">
+        <div key={row.id} className="min-w-0 rounded-md border border-border/40 px-2.5 py-2.5">
+          <div className="flex items-center justify-between gap-2">
             <EntityOverlayPill
               sharedId={row.id}
               templateId={row.templateId || targetTemplateId || ''}
@@ -98,14 +79,24 @@ const ConnectionCardStack = ({
             />
             {renderActions?.(row)}
           </div>
-          {columns.map(column => (
-            <React.Fragment key={column.label}>
-              <span className={stackLabelClass}>
-                <Translate context={translationContext}>{column.label}</Translate>
-              </span>
-              <span className="min-w-0">{renderInheritedCell(cellContent(column, row.id))}</span>
-            </React.Fragment>
-          ))}
+          {columns.length > 0 ? (
+            <div className="mt-1.5 grid grid-cols-[fit-content(40%)_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5">
+              {columns.map(column => (
+                <React.Fragment key={column.label}>
+                  <span className={stackLabelClass}>
+                    <Translate context={translationContext}>{column.label}</Translate>
+                  </span>
+                  <span className="min-w-0">
+                    {renderPreviewCell(
+                      renderInheritedCell(cellContent(column, row.id)),
+                      column.inheritedType,
+                      preview
+                    )}
+                  </span>
+                </React.Fragment>
+              ))}
+            </div>
+          ) : null}
         </div>
       ))}
     </div>
@@ -113,4 +104,4 @@ const ConnectionCardStack = ({
 };
 
 export { ConnectionCardStack, cellContent, renderInheritedCell };
-export type { RelationshipTableColumn, RelationshipTableRow, InheritRollup };
+export type { RelationshipTableColumn, RelationshipTableRow };

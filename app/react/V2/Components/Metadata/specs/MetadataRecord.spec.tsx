@@ -761,12 +761,14 @@ describe('MetadataRecord', () => {
     renderRecord();
 
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
-    expect(screen.getByText('Relationshipa')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Relationshipa' })).toBeInTheDocument();
     expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
     expect(screen.queryByRole('rowheader', { name: 'Relationshipa' })).not.toBeInTheDocument();
-    expect(screen.getAllByText(/via/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
+    expect(screen.queryByText(/via/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/inherits/)).not.toBeInTheDocument();
+    expect(sectionForLabel('Relationshipa').querySelector('p')).toHaveTextContent(
+      'Relationship: Relates to'
+    );
     expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
     expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Relationshipc'));
@@ -785,9 +787,10 @@ describe('MetadataRecord', () => {
     expect(within(table).getByRole('columnheader', { name: /Body text/ })).toBeInTheDocument();
     expect(within(table).getByRole('columnheader', { name: /Location/ })).toBeInTheDocument();
 
-    expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
+    expect(screen.queryByText(/via/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/inherits/)).not.toBeInTheDocument();
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Relationshipa' })).toBeInTheDocument();
   });
 
   it('shows own map and inherited location in property order', () => {
@@ -986,23 +989,18 @@ describe('MetadataRecord', () => {
     expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
-  it('puts the shared related-template color beside the field label, not on each chip', () => {
+  it('shows a link-only relationship as an entity table without a template dot', () => {
     renderRecord();
 
     const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
-    const titleRow = relationshipd.parentElement;
-    expect(titleRow).toBeInstanceOf(HTMLElement);
-    const labelDot = titleRow?.querySelector('span[aria-hidden="true"]');
-    expect(labelDot).toHaveStyle({ backgroundColor: '#2563eb' });
-    expect(labelDot).not.toHaveStyle({ backgroundColor: '#c03b22' });
-
+    expect(relationshipd.parentElement?.querySelector('span[aria-hidden="true"]')).toBeNull();
     const card = relationshipd.closest('div.overflow-hidden');
     expect(card).toBeInstanceOf(HTMLElement);
     if (!(card instanceof HTMLElement)) {
       return;
     }
-    const diana = within(card).getByRole('link', { name: /Diana/i });
-    const quietChip = diana.querySelector('span[title="Diana"]');
-    expect(quietChip?.firstElementChild).not.toHaveStyle({ backgroundColor: '#2563eb' });
+    const table = within(card).getByRole('table');
+    expect(within(table).getByRole('link', { name: /Diana/i })).toBeInTheDocument();
+    expect(table.querySelector('.overflow-x-auto')).toBeNull();
   });
 });

@@ -73,13 +73,13 @@ describe('MetadataDisplay', () => {
       cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
-    it('shows inheriting connections as scrollable tables in property order', () => {
+    it('shows inheriting connections as tables in property order', () => {
       cy.contains('p', 'Relationships').should('not.exist');
 
       const multiselectInherit = inheritingRelationshipCard('Relationship with inheritance');
       multiselectInherit.within(() => {
-        cy.contains('via').should('exist');
-        cy.contains('inherits Multiselect from events').should('exist');
+        cy.contains('via').should('not.exist');
+        cy.contains('inherits').should('not.exist');
         cy.contains('th', 'Event Report').should('exist');
         cy.contains('th', 'Multiselect from events').should('exist');
         cy.contains('Maria Rodriguez - Witness').should('exist');

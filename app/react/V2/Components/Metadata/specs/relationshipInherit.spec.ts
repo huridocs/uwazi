@@ -11,7 +11,7 @@ describe('relationshipGroupKey', () => {
     expect(relationshipGroupKey({})).toBe('::');
   });
 
-  it('should group inherited properties by target template, ignoring relation type', () => {
+  it('should group inherited properties by content and relation type', () => {
     const markdown = {
       content: 'tpl',
       relationType: 'rel-a',
@@ -24,8 +24,11 @@ describe('relationshipGroupKey', () => {
       inherited: true,
       inherit: { property: 'geo', type: 'geolocation' },
     };
-    expect(relationshipGroupKey(markdown)).toBe(relationshipGroupKey(geo));
-    expect(relationshipGroupKey(markdown)).toBe('inherit::tpl');
+    expect(relationshipGroupKey(markdown)).toBe('inherit::tpl::rel-a');
+    expect(relationshipGroupKey(geo)).toBe('inherit::tpl::rel-b');
+    expect(relationshipGroupKey({ ...geo, relationType: 'rel-a' })).toBe(
+      relationshipGroupKey(markdown)
+    );
   });
 });
 
@@ -108,7 +111,7 @@ describe('buildInheritColumns', () => {
     });
   });
 
-  it('should keep an empty cellsByEntityId when source metadata is missing', () => {
+  it('should return an empty cellsByEntityId when source metadata is missing', () => {
     expect(buildInheritColumns(metadataProperties[0], metadataProperties, { templates })).toEqual([
       {
         label: 'Inherited label',
@@ -220,7 +223,7 @@ describe('buildInheritColumns', () => {
     expect(columns[1].sortKeyByEntityId?.e1).toBe('Witness');
   });
 
-  it('should include inherited siblings from the same template when relation types differ', () => {
+  it('should build columns for properties that share content and relation type', () => {
     const markdown: InheritColumnProperty = {
       _id: 'md',
       type: 'relationship',
@@ -252,6 +255,19 @@ describe('buildInheritColumns', () => {
         },
       ],
     });
-    expect(columns.map(column => column.label)).toEqual(['Markdown', 'Geolocation']);
+    expect(columns.map(column => column.label)).toEqual(['Markdown']);
+    expect(
+      buildInheritColumns(geo, [markdown, geo], {
+        templates: [
+          {
+            _id: 'use-test',
+            properties: [
+              { _id: 'md-id', label: 'Markdown' },
+              { _id: 'geo-id', label: 'Geolocation' },
+            ],
+          },
+        ],
+      }).map(column => column.label)
+    ).toEqual(['Geolocation']);
   });
 });

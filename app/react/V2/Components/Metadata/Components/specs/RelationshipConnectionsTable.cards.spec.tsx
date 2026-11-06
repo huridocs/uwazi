@@ -26,12 +26,6 @@ describe('RelationshipConnectionsTable cards', () => {
         return this.hasAttribute('data-connections-root') ? 400 : 0;
       },
     });
-    Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-      configurable: true,
-      get() {
-        return this.hasAttribute('data-connections-probe') ? 600 : 0;
-      },
-    });
   });
 
   afterEach(() => {
@@ -41,15 +35,9 @@ describe('RelationshipConnectionsTable cards', () => {
         return 0;
       },
     });
-    Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-      configurable: true,
-      get() {
-        return 0;
-      },
-    });
   });
 
-  it('places distinct rollups on the card set, not each card', () => {
+  it('shows one card per entity with each property label and value', () => {
     render(
       <RelationshipConnectionsTable
         rows={[
@@ -58,39 +46,21 @@ describe('RelationshipConnectionsTable cards', () => {
         ]}
         columns={[
           { label: 'Country', cellsByEntityId: { e1: 'Kenya', e2: 'Kenya' } },
-          { label: 'Role', cellsByEntityId: { e1: 'Judge', e2: 'Clerk' } },
+          { label: 'Role', cellsByEntityId: { e1: 'Judge', e2: '' } },
         ]}
       />
     );
     const stack = cardStack();
-    expect(within(stack).getAllByText('1 distinct')).toHaveLength(1);
+    expect(stack.querySelectorAll('.rounded-md.border')).toHaveLength(2);
+    expect(within(stack).getAllByText('Country')).toHaveLength(2);
     expect(within(stack).getAllByText('Kenya')).toHaveLength(2);
-  });
-
-  it('repeats inherit labels and values on each card', () => {
-    render(
-      <RelationshipConnectionsTable
-        rows={[
-          { id: 'e1', label: 'Alpha', templateId: 't1' },
-          { id: 'e2', label: 'Beta', templateId: 't1' },
-        ]}
-        columns={[
-          { label: 'Country', cellsByEntityId: { e1: 'Kenya', e2: 'Kenya' } },
-          { label: 'Role', cellsByEntityId: { e1: 'Judge', e2: 'Clerk' } },
-        ]}
-      />
-    );
-    const stack = cardStack();
-    const grid = stack.firstElementChild;
-    expect(grid?.className).toContain('grid-cols-[fit-content(40%)_minmax(0,1fr)]');
-    expect(stack.querySelector('.grid-cols-subgrid')).toBeTruthy();
-    expect(within(stack).getAllByText('Kenya')[0].className).not.toContain('whitespace-nowrap');
-    expect(within(stack).getAllByText('Country')).toHaveLength(3);
+    expect(within(stack).getAllByText('—')).toHaveLength(1);
     expect(within(stack).getByText('Judge')).toBeInTheDocument();
-    expect(within(stack).getByText('Clerk')).toBeInTheDocument();
+    expect(within(stack).queryByText('Clerk')).not.toBeInTheDocument();
+    expect(within(stack).getAllByText('Kenya')[0]).toHaveClass('break-words');
   });
 
-  it('keeps edit actions on each card', () => {
+  it('shows the row action on the card', () => {
     render(
       <RelationshipConnectionsTable
         rows={[{ id: 'e1', label: 'Alpha', templateId: 't1' }]}

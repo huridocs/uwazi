@@ -55,7 +55,7 @@ const inheritsValue = (property: RelationshipGroupProperty): boolean =>
 
 const relationshipGroupKey = (property: RelationshipGroupProperty): string =>
   inheritsValue(property)
-    ? `inherit::${property.content ?? ''}`
+    ? `inherit::${property.content ?? ''}::${property.relationType ?? ''}`
     : `${property.content ?? ''}::${property.relationType ?? ''}`;
 
 const inheritColumnLabel = (
@@ -80,7 +80,7 @@ const buildInheritColumns = (
         candidate.type === 'relationship' &&
         candidate.inherited &&
         candidate.content === property.content &&
-        (inheritsValue(property) || candidate.relationType === property.relationType)
+        candidate.relationType === property.relationType
     )
     .map(candidate => {
       const values = sourceMetadata?.[candidate.name];

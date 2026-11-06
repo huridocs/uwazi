@@ -8,7 +8,9 @@ import { RelationshipFieldEditor } from '../RelationshipFieldEditor.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  Translate: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <span className={className}>{children}</span>
+  ),
   t: (_context: string, key: string) => key,
 }));
 
@@ -18,10 +20,6 @@ jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
 
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({
   RelationshipConnectionsTable: () => null,
-}));
-
-jest.mock('#V2/Components/Metadata/Components/RelationCaption.js', () => ({
-  RelationCaption: () => null,
 }));
 
 const options: MultiselectListOption[] = Array.from({ length: 8 }, (_, index) => ({
@@ -41,6 +39,37 @@ const expandCandidates = async (user: ReturnType<typeof userEvent.setup>) => {
 };
 
 describe('RelationshipFieldEditor', () => {
+  it('shows the relationship type under the field title', () => {
+    const { container } = render(
+      <RelationshipFieldEditor
+        title="Contractors"
+        relationLabel="Works with"
+        values={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Contractors')).toBeInTheDocument();
+    expect(screen.getByText('Works with').closest('p')).toHaveClass('text-meta');
+    expect(screen.getByText('Relationship:')).toHaveClass('sr-only');
+    expect(container.querySelector('svg')).toBeTruthy();
+    expect(screen.getByText('Contractors').parentElement?.querySelector('svg')).toBeNull();
+  });
+
+  it('shows only the title when the relationship type matches it', () => {
+    render(
+      <RelationshipFieldEditor
+        title="People"
+        relationLabel=" péople "
+        values={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.queryByText('Relationship:')).not.toBeInTheDocument();
+    expect(screen.queryByText(/péople/)).not.toBeInTheDocument();
+  });
+
   it('loads the remaining candidates when more options is clicked', async () => {
     const user = userEvent.setup();
     const lookupSearch = jest.fn(async (_search: string, offset = 0) => {
