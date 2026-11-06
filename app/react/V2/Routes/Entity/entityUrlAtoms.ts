@@ -154,13 +154,15 @@ const commitNavigateUrl = ({
     }
   }
   const generation = sessionGeneration;
-  urlWrite = urlWrite.catch(() => undefined).then(async () => {
-    if (generation !== sessionGeneration) return;
-    await navigate(
-      { pathname: fallback.pathname, search: patch.search, hash: nextHash },
-      { replace: batch.replace, preventScrollReset: true }
-    );
-  });
+  urlWrite = urlWrite
+    .catch(() => undefined)
+    .then(async () => {
+      if (generation !== sessionGeneration) return;
+      await navigate(
+        { pathname: fallback.pathname, search: patch.search, hash: nextHash },
+        { replace: batch.replace, preventScrollReset: true }
+      );
+    });
 };
 
 const applyFlushedUrl = ({
