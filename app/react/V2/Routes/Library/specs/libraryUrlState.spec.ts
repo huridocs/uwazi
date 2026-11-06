@@ -59,12 +59,14 @@ describe('libraryUrlState', () => {
   });
 
   describe('search params', () => {
-    it('omits defaults from the serialized URL', () => {
+    it('defaults to 50 results per page and omits that default from the URL', () => {
+      expect(DEFAULT_LIBRARY_URL_STATE.limit).toBe(50);
+      expect(parseLibrarySearchParams(new URLSearchParams()).limit).toBe(50);
       const state = {
         filters: { type: ['abc'] },
         andFilters: [],
         search: 'batman',
-        limit: 30,
+        limit: 50,
         page: 1,
         sort: '',
         order: 'desc' as const,
@@ -114,10 +116,17 @@ describe('libraryUrlState', () => {
     });
 
     it('reads a leftover from offset as a page and does not write it back', () => {
+      const parsed = parseLibrarySearchParams(new URLSearchParams('from=100&limit=50'));
+      expect(parsed.page).toBe(3);
+      expect(parsed.limit).toBe(50);
+      expect(serializeLibrarySearchString(parsed)).toBe('page=3');
+    });
+
+    it('keeps a non-default page size when rewriting a leftover from offset', () => {
       const parsed = parseLibrarySearchParams(new URLSearchParams('from=60&limit=30'));
       expect(parsed.page).toBe(3);
       expect(parsed.limit).toBe(30);
-      expect(serializeLibrarySearchString(parsed)).toBe('page=3');
+      expect(serializeLibrarySearchString(parsed)).toBe('limit=30&page=3');
     });
 
     it('keeps existing view params and falls back to cards when none is set', () => {
