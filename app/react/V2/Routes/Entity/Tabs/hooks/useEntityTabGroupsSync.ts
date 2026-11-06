@@ -35,6 +35,9 @@ const useEntityTabGroupsSync = ({
   setTabGroups,
 }: UseEntityTabGroupsSyncParams) => {
   const previousSharedId = useRef(entity.sharedId);
+  const mainFromUrl = searchParams.get(MAIN_TAB_PARAM);
+  const mainId =
+    isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
 
   useEffect(() => {
     if (previousSharedId.current === entity.sharedId) return;
@@ -47,32 +50,25 @@ const useEntityTabGroupsSync = ({
   }, [clearPendingSideTab, entity.sharedId, setTabGroups]);
 
   useEffect(() => {
+    setTabGroups(prev =>
+      prev['entity-main']?.activeTabId === mainId
+        ? prev
+        : mergeTabGroup(prev, 'entity-main', { activeTabId: mainId })
+    );
+  }, [mainId, setTabGroups]);
+
+  useEffect(() => {
     setTabGroups(prev => {
-      const mainFromUrl = searchParams.get(MAIN_TAB_PARAM);
-      const mainId =
-        isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
       const sideButtonsForMain = buttonsFor(mainId, searchDirty);
       const sideFromHash = hashParams.get(SIDE_TAB_PARAM);
       const sideId =
         pendingSideTabId && sideButtonsForMain.some(button => button.id === pendingSideTabId)
           ? pendingSideTabId
           : resolveSideTabId(sideFromHash, sideButtonsForMain, prev['entity-side']?.activeTabId);
-      let next = mergeTabGroup(prev, 'entity-main', { activeTabId: mainId });
-      if (sideId) {
-        next = mergeTabGroup(next, 'entity-side', { activeTabId: sideId });
-      }
-      return next;
+      if (!sideId || prev['entity-side']?.activeTabId === sideId) return prev;
+      return mergeTabGroup(prev, 'entity-side', { activeTabId: sideId });
     });
-  }, [
-    activeMainTab,
-    buttonsFor,
-    hashParams,
-    mainTabIds,
-    pendingSideTabId,
-    searchDirty,
-    searchParams,
-    setTabGroups,
-  ]);
+  }, [buttonsFor, hashParams, mainId, pendingSideTabId, searchDirty, setTabGroups]);
 };
 
 export { useEntityTabGroupsSync };

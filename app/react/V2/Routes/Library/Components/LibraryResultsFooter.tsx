@@ -12,6 +12,7 @@ import {
   renderActionItems,
   renderPdfFileInput,
 } from './libraryResultsFooterActions.js';
+import { DEFAULT_LIBRARY_URL_STATE } from '../libraryUrlState.js';
 import { LibraryPagination } from './LibraryPagination.js';
 import { useLibraryResultsFooterMenus } from './useLibraryResultsFooterMenus.js';
 
@@ -36,7 +37,7 @@ const LibraryResultsFooter = ({
   onOpenFilters,
   onShowResults,
   page = 1,
-  limit = 30,
+  limit = DEFAULT_LIBRARY_URL_STATE.limit,
   total = 0,
   onPageChange = () => undefined,
   onLimitChange = () => undefined,

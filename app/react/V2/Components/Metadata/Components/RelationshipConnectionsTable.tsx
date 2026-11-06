@@ -1,40 +1,28 @@
-import React, { memo, useMemo, useRef, type ReactNode, type RefObject } from 'react';
+import React, { memo, useMemo, useRef, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { inheritedTypeLayout, propertyRowTracks } from '../inheritedTypeLayout.js';
-import {
-  ConnectionCols,
-  connectionsTableClass,
-  entityColumnClass,
-} from './connectionTableLayout.js';
 import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
 import {
   ConnectionCardStack,
   cellContent,
+  columnKey,
   renderInheritedCell,
   type RelationshipTableColumn,
   type RelationshipTableRow,
 } from './ConnectionCardStack.js';
-import { InheritRollupChip } from './InheritRollupChip.js';
-import { inheritView } from './mergeConnectionRows.js';
+import { mergeConnectionRows } from './mergeConnectionRows.js';
+import { renderPreviewCell } from './PreviewClamp.js';
 import { useTableFitsContainer } from './useTableFitsContainer.js';
 
-const inheritedCellClass = (inheritedType?: string) =>
-  `${inheritedTypeLayout(inheritedType).minWidthClass} border-t border-s border-border/40 px-3 py-1.5 align-middle`;
+const headerClass =
+  'min-w-0 break-words py-1.5 text-start text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
 
-const inheritColumnHeaderClass = (inheritedType?: string) =>
-  `${inheritedTypeLayout(inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-semibold`;
+const inheritedCellClass =
+  'min-w-0 break-words border-s border-t border-border/40 px-3 py-1.5 align-middle';
 
-const propertyCard = (key: string, title: ReactNode, children: ReactNode) => (
-  <div key={key} className="min-w-0 rounded-md border border-border/40 p-2.5">
-    <div className="text-meta font-semibold uppercase tracking-wider text-ink-tertiary">
-      {title}
-    </div>
-    <div className="mt-1.5 space-y-1.5">{children}</div>
-  </div>
-);
+const entityCellClass = 'min-w-0 break-words border-t border-border/40 px-1 py-1.5 align-middle';
 
 const connectedEntity = (
   row: RelationshipTableRow,
@@ -51,13 +39,10 @@ const connectedEntity = (
   />
 );
 
-type ConnectionsTableBody = {
-  probe?: boolean;
-  probeRef?: RefObject<HTMLTableElement | null>;
+type ConnectionsTableProps = {
   columns: RelationshipTableColumn[];
   rows: RelationshipTableRow[];
-  mergedRows: ReturnType<typeof inheritView>['mergedRows'];
-  summaries: ReturnType<typeof inheritView>['summaries'];
+  mergedRows: ReturnType<typeof mergeConnectionRows>;
   entityHeader: string;
   actionCol: boolean;
   colSpan: number;
@@ -66,58 +51,13 @@ type ConnectionsTableBody = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel: string;
+  preview: boolean;
 };
 
-const connectionPropertyRow = ({
-  columns,
-  rows,
-  mergedRows,
-  entityHeader,
-  translationContext,
-  targetTemplateId,
-  onOpenEntity,
-  renderActions,
-}: ConnectionsTableBody) => (
-  <div
-    data-testid="connection-property-row"
-    className="grid items-start gap-3"
-    style={{ gridTemplateColumns: propertyRowTracks(columns) }}
-  >
-    {propertyCard(
-      'entity',
-      <Translate>{entityHeader}</Translate>,
-      rows.map(row => (
-        <div key={row.id} className="flex items-center justify-between gap-2">
-          {connectedEntity(row, targetTemplateId, onOpenEntity)}
-          {renderActions?.(row)}
-        </div>
-      ))
-    )}
-    {columns.map((column, columnIndex) =>
-      propertyCard(
-        column.label,
-        <Translate context={translationContext}>{column.label}</Translate>,
-        mergedRows.flatMap(({ row, cells }) => {
-          const cell = cells[columnIndex];
-          if (!cell?.lead) return [];
-          return [
-            <div key={`${row.id}-${column.label}`}>
-              {renderInheritedCell(cellContent(column, row.id))}
-            </div>,
-          ];
-        })
-      )
-    )}
-  </div>
-);
-
 const connectionsTable = ({
-  probe = false,
-  probeRef,
   columns,
   rows,
   mergedRows,
-  summaries,
   entityHeader,
   actionCol,
   colSpan,
@@ -126,61 +66,41 @@ const connectionsTable = ({
   onOpenEntity,
   renderActions,
   emptyLabel,
-}: ConnectionsTableBody) => (
-  <table
-    ref={probe ? probeRef : undefined}
-    data-connections-probe={probe ? '' : undefined}
-    className={connectionsTableClass(probe, columns)}
-    aria-hidden={probe || undefined}
-  >
-    <ConnectionCols columns={columns} actionCol={actionCol} />
+  preview,
+}: ConnectionsTableProps) => (
+  <table className="w-full border-collapse text-sm">
     <caption className="sr-only">
       <Translate>Connected entities</Translate>
       {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
     </caption>
     <thead>
-      <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
-        <th scope="col" className="px-1 py-1.5 text-start font-semibold">
+      <tr>
+        <th scope="col" className={`${headerClass} px-1`}>
           <Translate>{entityHeader}</Translate>
         </th>
-        {columns.map((column, index) => {
-          const summary = summaries[index];
-          return (
-            <th
-              key={column.label}
-              scope="col"
-              className={inheritColumnHeaderClass(column.inheritedType)}
-            >
-              <span className="flex flex-col items-start gap-1">
-                <span className="inline-flex items-center gap-1">
-                  <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
-                  <Translate context={translationContext}>{column.label}</Translate>
-                </span>
-                {summary ? <InheritRollupChip text={summary.text} title={summary.title} /> : null}
-              </span>
-            </th>
-          );
-        })}
-        {actionCol ? (
-          <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
-        ) : null}
+        {columns.map(column => (
+          <th key={columnKey(column)} scope="col" className={`${headerClass} px-3`}>
+            <span className="inline-flex min-w-0 items-center gap-1">
+              <LinkIcon className="h-2.5 w-2.5 shrink-0 text-carbon" aria-hidden />
+              <Translate context={translationContext}>{column.label}</Translate>
+            </span>
+          </th>
+        ))}
+        {actionCol ? <th scope="col" className="w-0 px-2" aria-hidden /> : null}
       </tr>
     </thead>
     <tbody>
       {rows.length === 0 ? (
         <tr>
-          <td
-            colSpan={colSpan}
-            className="border-t border-border/40 px-3 py-2.5 text-xs text-ink-muted"
-          >
+          <td colSpan={colSpan} className={`${inheritedCellClass} text-xs text-ink-muted`}>
             <Translate>{emptyLabel}</Translate>
           </td>
         </tr>
       ) : (
         mergedRows.map(({ row, cells }) => (
           <tr key={row.id} className="transition-colors hover:bg-warm/30">
-            <td className={entityColumnClass(columns)}>
-              <div data-measure-cell>{connectedEntity(row, targetTemplateId, onOpenEntity)}</div>
+            <td className={entityCellClass}>
+              {connectedEntity(row, targetTemplateId, onOpenEntity)}
             </td>
             {cells.flatMap(cell => {
               if (!cell.lead) return [];
@@ -188,18 +108,20 @@ const connectionsTable = ({
               if (!column) return [];
               return [
                 <td
-                  key={`${row.id}-${column.label}`}
+                  key={`${row.id}-${columnKey(column)}`}
                   rowSpan={cell.rowSpan}
-                  className={inheritedCellClass(column.inheritedType)}
+                  className={inheritedCellClass}
                 >
-                  <div data-measure-cell className="min-w-0 break-words">
-                    {renderInheritedCell(cellContent(column, row.id))}
-                  </div>
+                  {renderPreviewCell(
+                    renderInheritedCell(cellContent(column, row.id)),
+                    column.inheritedType,
+                    preview
+                  )}
                 </td>,
               ];
             })}
             {actionCol ? (
-              <td className="border-s border-t border-border/40 bg-paper px-2 py-1 align-middle">
+              <td className="border-s border-t border-border/40 px-2 py-1 align-middle">
                 {renderActions?.(row)}
               </td>
             ) : null}
@@ -218,6 +140,7 @@ type RelationshipConnectionsTableProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel?: string;
+  preview?: boolean;
 };
 
 const RelationshipConnectionsTableComponent = ({
@@ -228,60 +151,53 @@ const RelationshipConnectionsTableComponent = ({
   onOpenEntity,
   renderActions,
   emptyLabel = 'No connected entities yet.',
+  preview = false,
 }: RelationshipConnectionsTableProps) => {
   const templates = useAtomValue(templatesAtom);
   const entityHeader =
     templates.find(template => template._id === targetTemplateId)?.name || 'Entity';
   const actionCol = Boolean(renderActions);
   const colSpan = columns.length + 1 + (actionCol ? 1 : 0);
-  const { mergedRows, summaries, rollups } = useMemo(
-    () => inheritView(rows, columns),
-    [columns, rows]
-  );
+  const mergedRows = useMemo(() => mergeConnectionRows(rows, columns), [columns, rows]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const probeRef = useRef<HTMLTableElement>(null);
-  const layout = useTableFitsContainer(containerRef, probeRef);
-  const tableBody: ConnectionsTableBody = {
-    columns,
-    rows,
-    mergedRows,
-    summaries,
-    entityHeader,
-    actionCol,
-    colSpan,
-    translationContext,
-    targetTemplateId,
-    onOpenEntity,
-    renderActions,
-    emptyLabel,
-  };
+  const layout = useTableFitsContainer(containerRef);
 
   return (
     <div
       ref={containerRef}
       data-testid="relationship-connections"
       data-connections-root
-      className="relative min-w-0 w-full overflow-hidden"
+      className="min-w-0 w-full"
     >
       {layout === 'stack' ? (
         <div data-testid="connection-card-stack">
           <ConnectionCardStack
-            rows={rows}
+            rows={mergedRows.map(merged => merged.row)}
             columns={columns}
             translationContext={translationContext}
             targetTemplateId={targetTemplateId}
             onOpenEntity={onOpenEntity}
             renderActions={renderActions}
             emptyLabel={emptyLabel}
-            rollups={rollups}
+            preview={preview}
           />
         </div>
-      ) : null}
-      {layout === 'properties' ? connectionPropertyRow(tableBody) : null}
-      {layout === 'table' ? connectionsTable(tableBody) : null}
-      <div className="invisible pointer-events-none absolute inset-x-0 top-0">
-        {connectionsTable({ ...tableBody, probe: true, probeRef })}
-      </div>
+      ) : (
+        connectionsTable({
+          columns,
+          rows,
+          mergedRows,
+          entityHeader,
+          actionCol,
+          colSpan,
+          translationContext,
+          targetTemplateId,
+          onOpenEntity,
+          renderActions,
+          emptyLabel,
+          preview,
+        })
+      )}
     </div>
   );
 };

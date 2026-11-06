@@ -24,14 +24,9 @@ import {
   renderFieldContent,
   renderScalarContent,
 } from './Components/metadataFieldContent.js';
-import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
-import {
-  connectionPillsForField,
-  isEntityRelationshipValue,
-  sharedRelationshipTemplateId,
-  type OpenEntityTarget,
-} from './Components/ConnectionPills.js';
-import { RelationshipTemplateDot } from './Components/RelationshipTemplateDot.js';
+import { specializedCardTitle } from './Components/metadataFieldTitle.js';
+import { isEntityRelationshipValue, type OpenEntityTarget } from './Components/ConnectionPills.js';
+import { Relationship } from './Components/Relationship.js';
 import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
 import { SystemDatesLine, entityHasSystemDates } from './Components/SystemDatesLine.js';
@@ -78,21 +73,44 @@ const inheritingPropertyCard = ({
 
 const propertyCardContent = (
   field: MetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>,
   onOpenEntity?: (target: OpenEntityTarget) => void
-) => {
-  let content: ReactNode;
-  if (isRelationshipProperty(field)) {
-    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
-  } else if (isLongField(field)) {
-    content = renderScalarContent(field, true);
-  } else {
-    content = renderFieldContent(field, { onOpenEntity });
-  }
-  if (!content) {
+) =>
+  isLongField(field)
+    ? renderScalarContent(field, true)
+    : renderFieldContent(field, { onOpenEntity });
+
+type StandardPropertyCardArgs = {
+  field: MetadataProperty;
+  translationContext: string;
+  templatePropertyById: Map<string, ClientProperty>;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
+  entity: Entity;
+  showDocumentPreview: boolean;
+};
+
+const linkOnlyRelationshipCard = ({
+  field,
+  translationContext,
+  templatePropertyById,
+  onOpenEntity,
+}: StandardPropertyCardArgs) => {
+  if (!isRelationshipProperty(field) || !field.values.some(isEntityRelationshipValue)) {
     return null;
   }
-  return <>{content}</>;
+  const templateProperty = templatePropertyById.get(field._id);
+  return fieldCard(
+    field,
+    metadataGridClassForProperty(field),
+    <Relationship
+      label={field.label}
+      translationContext={translationContext}
+      hideLabel={field.hideLabel}
+      values={field.values}
+      relationTypeId={templateProperty?.relationType}
+      targetTemplateId={field.relationShipTarget || templateProperty?.content}
+      onOpenEntity={onOpenEntity}
+    />
+  );
 };
 
 const standardPropertyCard = ({
@@ -102,14 +120,7 @@ const standardPropertyCard = ({
   onOpenEntity,
   entity,
   showDocumentPreview,
-}: {
-  field: MetadataProperty;
-  translationContext: string;
-  templatePropertyById: Map<string, ClientProperty>;
-  onOpenEntity?: (target: OpenEntityTarget) => void;
-  entity: Entity;
-  showDocumentPreview: boolean;
-}) => {
+}: StandardPropertyCardArgs) => {
   if (showDocumentPreview && field.type === 'preview') {
     return fieldCard(
       field,
@@ -121,32 +132,25 @@ const standardPropertyCard = ({
       />
     );
   }
-  const title = isRelationshipProperty(field)
-    ? fieldTitle(field.label, translationContext, field.hideLabel)
-    : specializedCardTitle(field, translationContext);
-  const content = propertyCardContent(field, templatePropertyById, onOpenEntity);
+  if (isRelationshipProperty(field)) {
+    return linkOnlyRelationshipCard({
+      field,
+      translationContext,
+      templatePropertyById,
+      onOpenEntity,
+      entity,
+      showDocumentPreview,
+    });
+  }
+  const title = specializedCardTitle(field, translationContext);
+  const content = propertyCardContent(field, onOpenEntity);
   if (!content) {
     return null;
   }
-  const templateProperty = templatePropertyById.get(field._id);
-  const sharedTemplateId =
-    isRelationshipProperty(field) && !field.hideLabel
-      ? sharedRelationshipTemplateId(
-          field.values.filter(isEntityRelationshipValue),
-          field.relationShipTarget || templateProperty?.content
-        )
-      : undefined;
   return fieldCard(
     field,
     metadataGridClassForProperty(field),
-    <MetadataCard
-      title={title}
-      icon={
-        sharedTemplateId ? <RelationshipTemplateDot templateId={sharedTemplateId} /> : undefined
-      }
-    >
-      {content}
-    </MetadataCard>
+    <MetadataCard title={title}>{content}</MetadataCard>
   );
 };
 
