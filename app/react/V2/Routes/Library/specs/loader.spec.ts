@@ -53,7 +53,7 @@ describe('library loader', () => {
 
     const redirected = await runLoader('http://localhost/en/libraryv2?from=60&limit=30');
     expect(redirected).toBeInstanceOf(Response);
-    expect((redirected as Response).headers.get('Location')).toBe('/en/libraryv2?page=3');
+    expect((redirected as Response).headers.get('Location')).toBe('/en/libraryv2?limit=30&page=3');
     expect(searchLibrary).toHaveBeenCalledTimes(1);
   });
 
@@ -78,7 +78,9 @@ describe('library loader', () => {
 
     expect(result).toBeInstanceOf(Response);
     const location = (result as Response).headers.get('Location');
-    expect(location).toBe('/en/library?filters=(status:(published))&search=arroz&sort=_score');
+    expect(location).toBe(
+      '/en/library?filters=(status:(published))&search=arroz&limit=30&sort=_score'
+    );
     expect(searchLibrary).not.toHaveBeenCalled();
   });
 

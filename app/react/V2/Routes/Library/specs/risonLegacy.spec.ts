@@ -50,7 +50,7 @@ describe('risonLegacy', () => {
   it('turns a V1 from offset into a page', () => {
     expect(legacyRisonToLibraryUrlState('(from:60,limit:30)').page).toBe(3);
     expect(serializeLibrarySearchString(legacyRisonToLibraryUrlState('(from:60,limit:30)'))).toBe(
-      'page=3'
+      'limit=30&page=3'
     );
   });
 
@@ -60,9 +60,10 @@ describe('risonLegacy', () => {
     expect(state.limit).toBe(30);
   });
 
-  it('maps unpublished-only to status:(restricted)', () => {
+  it('maps unpublished-only to status:(restricted) and the default page size', () => {
     const state = legacyRisonToLibraryUrlState('(unpublished:!t,includeUnpublished:!f)');
     expect(state.filters.status).toEqual(['restricted']);
+    expect(state.limit).toBe(50);
   });
 
   it('rewrites URLSearchParams and drops q', () => {
