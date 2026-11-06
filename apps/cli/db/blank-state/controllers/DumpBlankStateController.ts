@@ -29,7 +29,7 @@ class DumpBlankStateController {
   ): Promise<string[]> {
     const output = createWriteStream(dumpFile);
     try {
-      const tables = await backup.export(tenantId, output);
+      const tables = await backup.export(tenantId, output, { ordered: true });
       output.end();
       await finished(output);
       return tables;

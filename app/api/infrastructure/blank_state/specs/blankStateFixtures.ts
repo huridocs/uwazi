@@ -39,9 +39,9 @@ async function seedBlankState(
     ]
   );
   await pool.query(
-    `INSERT INTO settings ("tenant_id","_id","site_name","languages","private","new_name_generation")
-     VALUES ($1,$2,$3,$4,$5,$6)`,
-    [tenantId, settingsId, options.siteName ?? 'Uwazi', '[{"key":"en","default":true}]', true, true]
+    `INSERT INTO settings ("tenant_id","_id","site_name","languages","private")
+     VALUES ($1,$2,$3,$4,$5)`,
+    [tenantId, settingsId, options.siteName ?? 'Uwazi', '[{"key":"en","default":true}]', true]
   );
   await pool.query(
     `INSERT INTO users ("_id","tenant_id","username","password","email","role")
