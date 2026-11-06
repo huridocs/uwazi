@@ -157,7 +157,10 @@ const filtersFromLegacy = (
 
 const stateFromLegacyQuery = (query: LegacyRisonQuery): LibraryUrlState => {
   const { filters, andFilters } = filtersFromLegacy(query);
-  const limit = typeof query.limit === 'number' && query.limit > 0 ? query.limit : 30;
+  const limit =
+    typeof query.limit === 'number' && query.limit > 0
+      ? query.limit
+      : DEFAULT_LIBRARY_URL_STATE.limit;
   const from = typeof query.from === 'number' && query.from > 0 ? query.from : 0;
   return {
     filters,
