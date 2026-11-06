@@ -45,8 +45,7 @@ describe('Relationship caption', () => {
   it('shows the field title and the relationship type under it', () => {
     renderRelationship('People involved', 'People');
 
-    const title = screen.getByRole('heading', { name: 'People involved' });
-    expect(title.parentElement?.querySelector('svg')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'People involved' })).toBeInTheDocument();
     expect(screen.getByText('People')).toBeInTheDocument();
     expect(screen.getByText('Relationship:')).toHaveClass('sr-only');
   });

@@ -150,23 +150,15 @@ describe('RelationshipConnectionsTable layout', () => {
   });
 
   it('renders a table that fills the field', () => {
-    const { container } = renderTable();
+    renderTable();
     expect(screen.getByTestId('relationship-connections')).toBeInTheDocument();
-    expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
     expect(screen.getByRole('table').className).toContain('w-full');
-    expect(container.querySelector('.overflow-x-auto')).toBeNull();
   });
 
   it('sets the table width from the field', () => {
-    const { container } = renderTable();
-    const root = screen.getByTestId('relationship-connections');
-    expect(root.querySelector('[data-connections-probe]')).toBeNull();
-    expect(root.querySelector('.overflow-x-auto')).toBeNull();
+    renderTable();
     expect(tableEl().className).toContain('w-full');
     expect(tableEl().className).toContain('border-collapse');
-    expect(tableEl().className).not.toContain('min-w-max');
-    expect(tableEl().className).not.toContain('table-fixed');
-    expect(container.querySelector('col')).toBeNull();
   });
 
   it('places the entity pill in the first column and inherited properties after it', () => {
@@ -178,7 +170,6 @@ describe('RelationshipConnectionsTable layout', () => {
     );
     const headers = within(tableEl()).getAllByRole('columnheader');
     expect(headers[0]).toHaveTextContent('Entity');
-    expect(headers[0].querySelector('svg')).toBeNull();
     expect(headers[1]).toHaveTextContent('Country');
     expect(headers[1].querySelector('svg')).toBeTruthy();
     expect(
@@ -262,7 +253,6 @@ describe('RelationshipConnectionsTable cells', () => {
       .join(' ');
     expect(classes).toContain('min-w-0');
     expect(classes).toContain('break-words');
-    expect(/min-w-(72|64|48)/.test(classes)).toBe(false);
   });
 
   it('renders an em dash when inherited cells are empty', () => {

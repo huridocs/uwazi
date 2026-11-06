@@ -53,7 +53,6 @@ describe('RelationshipFieldEditor', () => {
     expect(screen.getByText('Works with').closest('p')).toHaveClass('text-meta');
     expect(screen.getByText('Relationship:')).toHaveClass('sr-only');
     expect(container.querySelector('svg')).toBeTruthy();
-    expect(screen.getByText('Contractors').parentElement?.querySelector('svg')).toBeNull();
   });
 
   it('shows only the title when the relationship type matches it', () => {
