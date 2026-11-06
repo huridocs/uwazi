@@ -4,6 +4,7 @@ import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
+import { DEFAULT_LIBRARY_URL_STATE } from '../libraryUrlState.js';
 import type { LibraryViewProps } from './libraryViewProps.js';
 import { uploadChosenLibraryPdfs } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
@@ -43,7 +44,7 @@ const LibraryView = ({
   onClosePreview,
   entityBasePath,
   page = 1,
-  limit = 30,
+  limit = DEFAULT_LIBRARY_URL_STATE.limit,
   onPageChange = () => undefined,
   onLimitChange = () => undefined,
   onEntityCreated,
