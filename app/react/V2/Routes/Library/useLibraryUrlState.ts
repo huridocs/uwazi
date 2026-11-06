@@ -1,8 +1,6 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useQueryStates } from 'nuqs';
 import {
-  readStoredLibraryFilters,
-  restoreLibraryFiltersFromStorage,
   storedLibraryFiltersFromPatch,
   writeStoredLibraryFilters,
 } from './libraryFiltersStorage.js';
@@ -24,7 +22,6 @@ const persistLibraryUrlFilters = (
 
 const useLibraryUrlState = () => {
   const [urlState, setUrlState] = useQueryStates(librarySearchParams);
-  const didRestoreFilters = useRef(false);
 
   const updateUrl = useCallback(
     (patch: LibraryUrlPatch) => {
@@ -36,24 +33,6 @@ const useLibraryUrlState = () => {
     },
     [setUrlState, urlState.andFilters, urlState.filters]
   );
-
-  useLayoutEffect(() => {
-    if (didRestoreFilters.current) {
-      return;
-    }
-    didRestoreFilters.current = true;
-    const restored = restoreLibraryFiltersFromStorage(
-      { filters: urlState.filters, andFilters: urlState.andFilters },
-      readStoredLibraryFilters()
-    );
-    if (!restored) {
-      return;
-    }
-    updateUrl({
-      filters: restored.filters,
-      andFilters: restored.andFilters.length ? restored.andFilters : null,
-    });
-  }, [updateUrl, urlState.andFilters, urlState.filters]);
 
   return { urlState, updateUrl };
 };
