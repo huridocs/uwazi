@@ -1,59 +1,31 @@
 import React from 'react';
+import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 
 type RelationCaptionProps = {
   relationLabel: string;
-  inheritLabel?: string;
-  inheritLabels?: string[];
+  fieldTitle: string;
 };
 
-const inheritLabelsFromColumns = (
-  columns: { label: string }[],
-  inheritLabel?: string,
-  inheritLabels?: string[]
-) => {
-  if (inheritLabels && inheritLabels.length > 0) {
-    return inheritLabels;
-  }
-  if (columns.length > 0) {
-    return columns.map(column => column.label);
-  }
-  if (inheritLabel) {
-    return [inheritLabel];
-  }
-  return undefined;
-};
+const sameRelationLabel = (fieldTitle: string, relationLabel: string) =>
+  fieldTitle.trim().localeCompare(relationLabel.trim(), undefined, { sensitivity: 'base' }) === 0;
 
-const inheritSuffix = (inheritLabel?: string, inheritLabels?: string[]) => {
-  if (inheritLabels && inheritLabels.length > 0) {
-    return (
-      <>
-        {' '}
-        · <Translate>inherits</Translate> {inheritLabels.join(', ')}
-      </>
-    );
+const RelationCaption = ({ relationLabel, fieldTitle }: RelationCaptionProps) => {
+  if (sameRelationLabel(fieldTitle, relationLabel)) {
+    return null;
   }
-  if (inheritLabel) {
-    return (
-      <>
-        {' '}
-        · <Translate>inherits</Translate> {inheritLabel}
-      </>
-    );
-  }
+
   return (
-    <>
-      {' '}
-      · <Translate>linked</Translate>
-    </>
+    <p className="flex min-w-0 items-center gap-1 text-meta text-ink-tertiary">
+      <LinkIcon className="h-3 w-3 shrink-0 text-carbon" aria-hidden />
+      <span>
+        <span className="sr-only">
+          <Translate>Relationship</Translate>:
+        </span>{' '}
+        {relationLabel}
+      </span>
+    </p>
   );
 };
 
-const RelationCaption = ({ relationLabel, inheritLabel, inheritLabels }: RelationCaptionProps) => (
-  <p className="-mt-1 text-[11px] text-ink-tertiary">
-    <Translate>via</Translate> <span className="font-medium text-carbon">{relationLabel}</span>
-    {inheritSuffix(inheritLabel, inheritLabels)}
-  </p>
-);
-
-export { RelationCaption, inheritLabelsFromColumns };
+export { RelationCaption };
