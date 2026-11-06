@@ -17,6 +17,7 @@ import type { IImmutable } from '#shared/types/Immutable.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
 import { AppDispatch } from '#app/thunkDispatch.js';
+import { useRememberedLibraryUrl } from '#V2/Routes/Library/useRememberedLibraryUrl.js';
 
 interface MenuProps {
   className: string;
@@ -34,6 +35,7 @@ const mapStateToProps = (state: IStore) => {
     links: settings.collection.get('links'),
     defaultLibraryView: settings.collection.get('defaultLibraryView'),
     privateInstance: settings.collection.get('private'),
+    libraryV2: Boolean(settings.collection.get('features')?.get('featureFlagLibraryV2')),
   };
 };
 
@@ -79,13 +81,16 @@ const MenuComponent = ({
   defaultLibraryView,
   privateInstance,
   isMobile,
+  libraryV2,
 }: mappedProps) => {
+  const location = useLocation();
   const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
 
-  const libraryUrl = () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const location = useLocation();
+  const libraryBaseUrl = () => {
+    if (libraryV2) {
+      return `/${libraryViewInfo[resolvedLibraryView].url}`;
+    }
     const searchParams = searchParamsFromLocationSearch(location, 'q') || {};
     const searchTerm = searchParams.searchTerm || '';
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
@@ -93,6 +98,7 @@ const MenuComponent = ({
 
     return `/${libraryViewInfo[resolvedLibraryView].url}/${encodeSearch(newParams)}`;
   };
+  const libraryUrl = useRememberedLibraryUrl(libraryBaseUrl(), libraryV2);
 
   const navLinks = links
     .map((link, index) => {
@@ -159,7 +165,7 @@ const MenuComponent = ({
           {(!privateInstance || (privateInstance === true && user?.get('_id'))) && (
             <li className="menuNav-item">
               <I18NLink
-                to={libraryUrl()}
+                to={libraryUrl}
                 onClick={() => {
                   setLibraryView();
                   hideMobileMenu();
