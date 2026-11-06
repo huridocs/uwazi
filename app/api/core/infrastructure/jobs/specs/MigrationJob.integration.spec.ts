@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 // eslint-disable-next-line no-restricted-imports
-import { mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -106,6 +106,26 @@ const createRunChain = (migrationsDir: string, reindexFails = false) => {
 
 const initialResults = () => ({ appliedDataDeltas: [], appliedSchemaDeltas: [] });
 
+const createTemporaryMongoMigrationsDir = () =>
+  mkdtempSync(path.join(os.tmpdir(), 'uwazi-mongo-migrations-'));
+
+const writeMongoMigration = (dir: string, delta: number, reindex: boolean) => {
+  const migrationDir = path.join(dir, `${delta}-migration`);
+  mkdirSync(migrationDir, { recursive: true });
+  writeFileSync(
+    path.join(migrationDir, 'index.js'),
+    `module.exports = {
+  delta: ${delta},
+  reindex: ${reindex},
+
+  async up(db) {
+    const collection = await db.collection('migrationProbe');
+    await collection.insertOne({ delta: ${delta} });
+  },
+};`
+  );
+};
+
 describe('MigrationJob (real chain)', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
@@ -196,6 +216,97 @@ describe('MigrationJob (real chain)', () => {
     expect(tenantBProbes.map(p => p.delta)).toEqual([2]);
 
     expect(results.appliedDataDeltas).toEqual([1, 2]);
+  });
+
+  it('applies a migration deployed while the reindex job is running', async () => {
+    const migrationsDir = createTemporaryMongoMigrationsDir();
+    writeMongoMigration(migrationsDir, 1, true);
+    writeMongoMigration(migrationsDir, 2, true);
+
+    try {
+      const { dispatcher, dispatchSpy, reindexTenant } = createRunChain(migrationsDir);
+      const results = initialResults();
+
+      // Deploy a new migration only once the reindex-only job has passed its start-of-job
+      // check and is actually reindexing: that is the window the fix must close.
+      reindexTenant.mockImplementationOnce(async () => {
+        reindexCalls.push(tenants.current().name);
+        writeMongoMigration(migrationsDir, 3, false);
+      });
+
+      await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+      // The migration deployed during reindex is applied by a re-dispatched normal job.
+      expect(results.appliedDataDeltas).toEqual([1, 2, 3]);
+      expect(dispatchSpy).toHaveBeenCalledTimes(4);
+      expect(
+        dispatchSpy.mock.calls.map(call => (call[1] as { reindexTenants: string[] }).reindexTenants)
+      ).toEqual([[], ['default'], ['default'], []]);
+
+      // The tenants already reindexed in this run are not reindexed again by the new job.
+      expect(reindexCalls).toEqual(['default']);
+
+      const defaultMigrations = await testingDB.mongodb!.collection('migrations').find().toArray();
+      expect(defaultMigrations.map(m => m.delta).sort()).toEqual([1, 2, 3]);
+      const defaultProbes = await testingDB.mongodb!.collection('migrationProbe').find().toArray();
+      expect(defaultProbes.map(p => p.delta).sort()).toEqual([1, 2, 3]);
+    } finally {
+      rmSync(migrationsDir, { recursive: true, force: true });
+    }
+  });
+
+  it('does not loop when the migration deployed during reindex also requires reindex', async () => {
+    const migrationsDir = createTemporaryMongoMigrationsDir();
+    writeMongoMigration(migrationsDir, 1, true);
+    writeMongoMigration(migrationsDir, 2, true);
+
+    try {
+      const { dispatcher, dispatchSpy, reindexTenant } = createRunChain(migrationsDir);
+      const results = initialResults();
+
+      reindexTenant.mockImplementationOnce(async () => {
+        reindexCalls.push(tenants.current().name);
+        writeMongoMigration(migrationsDir, 3, true);
+      });
+
+      await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+      expect(results.appliedDataDeltas).toEqual([1, 2, 3]);
+      expect(dispatchSpy).toHaveBeenCalledTimes(5);
+      expect(
+        dispatchSpy.mock.calls.map(call => (call[1] as { reindexTenants: string[] }).reindexTenants)
+      ).toEqual([[], ['default'], ['default'], [], ['default']]);
+      expect(reindexCalls).toEqual(['default', 'default']);
+    } finally {
+      rmSync(migrationsDir, { recursive: true, force: true });
+    }
+  });
+
+  it('applies a postgres migration deployed while the reindex job is running', async () => {
+    const migrationsDir = createTemporaryMongoMigrationsDir();
+    writeMongoMigration(migrationsDir, 1, true);
+
+    try {
+      const { dispatcher, dispatchSpy, reindexTenant } = createRunChain(migrationsDir);
+      const results = initialResults();
+
+      reindexTenant.mockImplementationOnce(async () => {
+        reindexCalls.push(tenants.current().name);
+        writeFileSync(
+          path.join(pgMigrationsDir, '001-deployed-during-reindex.sql'),
+          'CREATE TABLE IF NOT EXISTS migration_pg_probe_during_reindex (id serial);'
+        );
+      });
+
+      await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results });
+
+      expect(results.appliedSchemaDeltas).toEqual([1]);
+      expect(dispatchSpy).toHaveBeenCalledTimes(3);
+      expect(reindexCalls).toEqual(['default']);
+      expect(await createPgMigrator().getCurrentVersion()).toBe(1);
+    } finally {
+      rmSync(migrationsDir, { recursive: true, force: true });
+    }
   });
 
   it('does not reindex at all when no applied migration is flagged reindex:true', async () => {

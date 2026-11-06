@@ -277,17 +277,27 @@ describe('LibraryEntityPreview', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
-  it('shows file empty copy instead of empty tables when there are no files', async () => {
+  it('shows the side-pane file list instead of the wide table', async () => {
     renderPreview(entityWithoutDocument.sharedId);
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
-    expect(
-      await screen.findByText('No primary documents yet. Add a file to get started.')
-    ).toBeInTheDocument();
+    expect(await screen.findByText('No primary documents')).toBeInTheDocument();
     expect(
       screen.getByText('No supporting files yet. Add a file to get started.')
     ).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Select all files' })).not.toBeInTheDocument();
+    expect(screen.queryByText('File name')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+  });
+
+  it('opens the file preview from View and offers download on each row', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
+    expect(await screen.findByText('file.pdf')).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Select all files' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download file.pdf' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'View' }));
+    expect(await screen.findByRole('dialog', { name: 'file.pdf' })).toBeInTheDocument();
   });
 
   it('shows Add file on Files and opens the same add-file modal as entity viewer', async () => {

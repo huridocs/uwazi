@@ -3,6 +3,13 @@ import { t, Translate } from '#app/I18N/index.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { FilesTableSection } from '../../Components/Files/FilesTableSection.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
+import { useEntityTabNavigation } from '../EntityTabsContext.js';
+
+const openFileLink = (row: EntityFileRow) => {
+  const url = row.raw.url || '';
+  if (row.kind === 'link' && url) window.open(url, '_blank', 'noopener,noreferrer');
+  return row.kind === 'link';
+};
 
 const FilesTab = () => {
   const {
@@ -17,37 +24,52 @@ const FilesTab = () => {
     openFileEdit,
     requestDeleteRow,
   } = useEntityFiles();
+  const { showSidePane } = useEntityTabNavigation();
+
+  const revealFileSide = useCallback(() => {
+    navigateToFilesSideTab('file');
+    showSidePane();
+  }, [navigateToFilesSideTab, showSidePane]);
+
+  const onSelectRows = useCallback(
+    (ids: string[]) => {
+      setSelectedRowIds(ids);
+      if (ids.length > 1) revealFileSide();
+    },
+    [revealFileSide, setSelectedRowIds]
+  );
 
   const onFocus = useCallback(
     (row: EntityFileRow) => {
       setFocusedRowId(row.rowId);
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [setFocusedRowId, navigateToFilesSideTab]
+    [revealFileSide, setFocusedRowId]
   );
 
   const onView = useCallback(
     (row: EntityFileRow) => {
+      if (openFileLink(row)) return;
       openFilePreviewForRow(row.rowId);
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [navigateToFilesSideTab, openFilePreviewForRow]
+    [openFilePreviewForRow, revealFileSide]
   );
 
   const onRename = useCallback(
     (row: EntityFileRow) => {
       openFileEdit(row.rowId, 'name');
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [navigateToFilesSideTab, openFileEdit]
+    [openFileEdit, revealFileSide]
   );
 
   const onChangeLanguage = useCallback(
     (row: EntityFileRow) => {
       openFileEdit(row.rowId, 'language');
-      navigateToFilesSideTab('file');
+      revealFileSide();
     },
-    [navigateToFilesSideTab, openFileEdit]
+    [openFileEdit, revealFileSide]
   );
 
   return (
@@ -60,7 +82,7 @@ const FilesTab = () => {
         emptyDescription={
           <Translate>No primary documents yet. Add a file to get started.</Translate>
         }
-        onSelectRows={setSelectedRowIds}
+        onSelectRows={onSelectRows}
         onFocusRow={onFocus}
         onViewRow={onView}
         onRenameRow={onRename}
@@ -76,7 +98,7 @@ const FilesTab = () => {
         emptyDescription={
           <Translate>No supporting files yet. Add a file to get started.</Translate>
         }
-        onSelectRows={setSelectedRowIds}
+        onSelectRows={onSelectRows}
         onFocusRow={onFocus}
         onViewRow={onView}
         onRenameRow={onRename}

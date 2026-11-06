@@ -7,6 +7,17 @@ type FileLike = Pick<File, 'type' | 'name'>;
 
 const isFileRowSelectable = (row: Pick<EntityFileRow, 'status'>) => row.status !== 'processing';
 
+const extensionSuffix = /\.[A-Za-z0-9]{1,5}$/;
+
+const fileShownName = (row: EntityFileRow) =>
+  row.kind === 'link' ? row.displayName : row.displayName.replace(extensionSuffix, '');
+
+const fileFactsLine = (row: EntityFileRow, includeLanguage = true) =>
+  [row.typeLabel, row.sizeLabel, includeLanguage ? row.languageKey : '']
+    .map(value => value.trim())
+    .filter(value => value !== '' && value !== '—')
+    .join(' · ');
+
 const fileQueueKey = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
 
 const isPdfFile = (file: FileLike) =>
@@ -33,6 +44,13 @@ const fileSupportsLanguage = (file: FileLike) => {
   const extension = file.name.split('.').pop()?.toLowerCase();
   return ['pdf', 'doc', 'docx', 'txt', 'odt', 'rtf'].includes(extension ?? '');
 };
+
+const fileRowShowsLanguage = (row: Pick<EntityFileRow, 'category' | 'displayName' | 'raw'>) =>
+  row.category === 'primary' &&
+  fileSupportsLanguage({
+    type: row.raw.mimetype || '',
+    name: row.raw.originalname || row.displayName,
+  });
 
 const fileLanguageOptionsByLocale = new Map<string, LanguageSelectOption[]>();
 
@@ -62,9 +80,12 @@ const resolveFileLanguage = (rawLanguage?: string) => {
 };
 
 export {
+  fileFactsLine,
   fileQueueKey,
+  fileShownName,
   isFileRowSelectable,
   isPdfFile,
+  fileRowShowsLanguage,
   fileSupportsLanguage,
   fileLanguageSelectOptions,
   resolveFileLanguage,

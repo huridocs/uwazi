@@ -58,4 +58,31 @@ const entityWithRelations = {
   ],
 } as Entity;
 
-export { entityWithRelations };
+const entityWithHub = {
+  ...entityWithRelations,
+  relations: [
+    {
+      template: 'relA',
+      _id: 'c1',
+      hub: 'hub-a',
+      entity: 'shared1',
+      entityData: { title: 'Source', template: 'template1' },
+    },
+    {
+      template: null,
+      _id: 'c2',
+      hub: 'hub-a',
+      entity: 'target-1',
+      entityData: { title: 'First Party', template: 'template1' },
+    },
+    {
+      template: null,
+      _id: 'c3',
+      hub: 'hub-a',
+      entity: 'target-2',
+      entityData: { title: 'Second Party', template: 'template1' },
+    },
+  ],
+} as Entity;
+
+export { entityWithHub, entityWithRelations };

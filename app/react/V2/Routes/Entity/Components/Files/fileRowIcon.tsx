@@ -7,6 +7,7 @@ import {
   PhotoIcon,
   VideoCameraIcon,
 } from '@heroicons/react/24/outline';
+import { FileTextStrokeIcon } from '#V2/Components/CustomIcons/FileTextStrokeIcon.js';
 import type { EntityFileRow } from './types.js';
 
 const defaultIconClass = 'h-3.5 w-3.5 shrink-0 text-ink-muted';
@@ -47,6 +48,13 @@ const getExternalLinkIcon = (url: string, className: string) => {
   return <LinkIcon className={className} />;
 };
 
+const mediaFileIcon = (mime: string, className: string) => {
+  if (mime.startsWith('audio/')) return <MusicalNoteIcon className={className} />;
+  if (mime.startsWith('video/')) return <VideoCameraIcon className={className} />;
+  if (mime.startsWith('image/')) return <PhotoIcon className={className} />;
+  return null;
+};
+
 const getMimeFileIcon = ({
   mime = '',
   name = '',
@@ -58,17 +66,8 @@ const getMimeFileIcon = ({
     return getExternalLinkIcon(url, className);
   }
 
-  if (mime.startsWith('audio/')) {
-    return <MusicalNoteIcon className={className} />;
-  }
-
-  if (mime.startsWith('video/')) {
-    return <VideoCameraIcon className={className} />;
-  }
-
-  if (mime.startsWith('image/')) {
-    return <PhotoIcon className={className} />;
-  }
+  const mediaIcon = mediaFileIcon(mime, className);
+  if (mediaIcon) return mediaIcon;
 
   if (
     mime === 'application/pdf' ||
@@ -90,7 +89,14 @@ const getRowIcon = (row: EntityFileRow) =>
     fileType: row.fileType,
   });
 
+const getDetailsIcon = (row: EntityFileRow) =>
+  row.kind === 'pdf' || row.kind === 'document' ? (
+    <FileTextStrokeIcon className={defaultIconClass} />
+  ) : (
+    getRowIcon(row)
+  );
+
 const getBrowserFileIcon = (file: File) =>
   getMimeFileIcon({ mime: file.type, name: file.name, className: browserFileIconClass });
 
-export { getBrowserFileIcon, getMimeFileIcon, getRowIcon };
+export { getBrowserFileIcon, getDetailsIcon, getMimeFileIcon, getRowIcon };

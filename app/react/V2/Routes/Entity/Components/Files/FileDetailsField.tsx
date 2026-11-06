@@ -1,6 +1,7 @@
 import React from 'react';
 
-const fileFieldLabelClass = 'text-nano font-medium uppercase tracking-wide text-ink-muted';
+const fileFieldLabelClass =
+  'text-meta font-semibold uppercase leading-normal tracking-wider text-ink-secondary';
 
 const FileDetailsField = ({
   label,
@@ -9,9 +10,11 @@ const FileDetailsField = ({
   label: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="min-w-0 space-y-1">
-    <span className={fileFieldLabelClass}>{label}</span>
-    <div>{children}</div>
+  <div className="overflow-hidden rounded-md border border-border/40 bg-paper">
+    <div className="flex flex-col gap-2 px-4 py-3">
+      <span className={fileFieldLabelClass}>{label}</span>
+      {children}
+    </div>
   </div>
 );
 

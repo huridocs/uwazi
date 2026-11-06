@@ -36,6 +36,9 @@ const fakePgMigrator = {
   async getCurrentVersion() {
     return 0;
   },
+  async status() {
+    return { applied: [], pending: [] };
+  },
   async migrate() {
     return { applied: [], reindexTenants: [] };
   },

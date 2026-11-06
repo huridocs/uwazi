@@ -1,6 +1,14 @@
 import { normalizeFilters, type LibraryFiltersState } from './libraryUrlState.js';
 
 const LIBRARY_FILTERS_STORAGE_KEY = 'library-v2-filters';
+const listeners = new Set<() => void>();
+
+const subscribeToLibraryFilters = (listener: () => void): (() => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
 
 type StoredLibraryFilters = {
   filters: LibraryFiltersState;
@@ -32,9 +40,6 @@ const parseStoredLibraryFilters = (value: unknown): StoredLibraryFilters => {
   };
 };
 
-const isEmptyStoredLibraryFilters = (value: StoredLibraryFilters): boolean =>
-  !Object.keys(value.filters).length && !value.andFilters.length;
-
 const readStoredLibraryFilters = (): StoredLibraryFilters => {
   if (typeof window === 'undefined') {
     return emptyStoredLibraryFilters();
@@ -61,16 +66,7 @@ const writeStoredLibraryFilters = (state: StoredLibraryFilters): void => {
       andFilters: [...new Set(state.andFilters.filter(Boolean))],
     })
   );
-};
-
-const restoreLibraryFiltersFromStorage = (
-  url: StoredLibraryFilters,
-  stored: StoredLibraryFilters
-): StoredLibraryFilters | null => {
-  if (!isEmptyStoredLibraryFilters(url) || isEmptyStoredLibraryFilters(stored)) {
-    return null;
-  }
-  return stored;
+  listeners.forEach(listener => listener());
 };
 
 const storedLibraryFiltersFromPatch = (
@@ -85,7 +81,7 @@ export type { StoredLibraryFilters };
 export {
   LIBRARY_FILTERS_STORAGE_KEY,
   readStoredLibraryFilters,
-  restoreLibraryFiltersFromStorage,
+  subscribeToLibraryFilters,
   storedLibraryFiltersFromPatch,
   writeStoredLibraryFilters,
 };

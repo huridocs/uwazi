@@ -2,12 +2,19 @@ import React from 'react';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 
-const ViewFileButton = ({ onClick }: { onClick: () => void }) => (
+const ViewFileButton = ({
+  onClick,
+  disabled = false,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+}) => (
   <button
     type="button"
     onClick={onClick}
+    disabled={disabled}
     aria-label={t('System', 'View', null, false)}
-    className="inline-flex cursor-pointer items-center gap-1 rounded-md bg-warm px-2.5 py-1 text-micro font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
+    className="inline-flex cursor-pointer items-center gap-1 rounded-md bg-warm px-2.5 py-1 text-micro font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:cursor-default disabled:opacity-60"
   >
     <EyeIcon className="h-nano w-nano text-ink-tertiary" />
     <Translate>View</Translate>

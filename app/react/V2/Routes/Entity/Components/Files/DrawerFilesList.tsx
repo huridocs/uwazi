@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Translate, t } from '#app/I18N/index.js';
 import { AddTranslationButton } from './AddTranslationButton.js';
 import { DrawerFileRow } from './DrawerFileRow.js';
+import { FilePreviewModal } from './FilePreviewModal.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 import { EntityFileRow } from './types.js';
 
@@ -9,23 +10,19 @@ const sectionHeaderClass =
   'mb-3 px-1 text-nano font-semibold uppercase tracking-wider text-ink-tertiary';
 
 const DrawerFilesList = () => {
-  const {
-    primaryRows,
-    supportingRows,
-    mainDocumentId,
-    navigateToFilesSideTab,
-    openFilePreviewForRow,
-    saveRow,
-  } = useEntityFiles();
+  const { primaryRows, supportingRows, mainDocumentId, saveRow } = useEntityFiles();
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [preview, setPreview] = useState<EntityFileRow | null>(null);
 
-  const onView = useCallback(
-    (row: EntityFileRow) => {
-      openFilePreviewForRow(row.rowId);
-      navigateToFilesSideTab('file');
-    },
-    [navigateToFilesSideTab, openFilePreviewForRow]
-  );
+  const onView = useCallback((row: EntityFileRow) => {
+    if (row.status === 'processing') return;
+    if (row.kind === 'link') {
+      const url = row.raw.url || '';
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    setPreview(row);
+  }, []);
 
   const onEdit = useCallback((row: EntityFileRow) => {
     setEditingRowId(row.rowId);
@@ -106,6 +103,7 @@ const DrawerFilesList = () => {
           </div>
         )}
       </div>
+      {preview ? <FilePreviewModal row={preview} onClose={() => setPreview(null)} /> : null}
     </div>
   );
 };

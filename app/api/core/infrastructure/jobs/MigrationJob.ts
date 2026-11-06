@@ -305,6 +305,7 @@ class MigrationJob implements Dispatchable {
     );
 
     const appliedSchemas = await this.migrateSchema(jobParams, heartbeat);
+    const schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
 
     this.deps.logger.info(
       `Postgres migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
@@ -323,6 +324,12 @@ class MigrationJob implements Dispatchable {
       await this.reindexTenants(jobParams.reindexTenants, heartbeat);
     }
 
+    if (await this.dispatchIfNewWorkAppeared(jobParams, schemaVersion)) return;
+
+    this.logMigrationSummary(jobParams);
+  }
+
+  private logMigrationSummary(jobParams: NormalizedParams): void {
     const summary = [
       'Migration run complete',
       `  Mongo data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
@@ -331,6 +338,59 @@ class MigrationJob implements Dispatchable {
     ].join('\n');
 
     this.deps.logger.info(summary);
+  }
+
+  /**
+   * A job that ran to completion can be overtaken by a migration deployed while it was running:
+   * the running job already passed its start-of-job pending check, and `MigrationService.run()`
+   * skips dispatching while it exists. Re-check here and, if new work appeared, dispatch a fresh
+   * job so the deploy does not leave it stranded until the next run.
+   */
+  private async dispatchIfNewWorkAppeared(
+    jobParams: NormalizedParams,
+    schemaVersion: number
+  ): Promise<boolean> {
+    if (await this.hasNewMongoMigration(schemaVersion)) {
+      await this.dispatchNextMigrationJob(jobParams);
+      return true;
+    }
+
+    if (await this.hasNewPostgresMigrations()) {
+      await this.dispatchNextMigrationJob(jobParams);
+      return true;
+    }
+
+    return false;
+  }
+
+  private async hasNewMongoMigration(schemaVersion: number): Promise<boolean> {
+    const nextDelta = await this.getNextGlobalDelta(schemaVersion);
+    if (nextDelta === null) return false;
+
+    this.deps.logger.info(
+      `New Mongo data migrations appeared during this run, dispatching a migration job (next delta ${nextDelta})`,
+      { delta: nextDelta }
+    );
+    return true;
+  }
+
+  private async hasNewPostgresMigrations(): Promise<boolean> {
+    const { pending } = await this.deps.pgMigrator.status();
+    if (pending.length === 0) return false;
+
+    this.deps.logger.info(
+      'New Postgres migrations appeared during this run, dispatching a migration job',
+      { pending: pending.map(({ delta }) => delta) }
+    );
+    return true;
+  }
+
+  private async dispatchNextMigrationJob(jobParams: NormalizedParams): Promise<void> {
+    await this.deps.dispatcher.dispatch(MigrationJob, {
+      reindexTenants: [],
+      results: jobParams.results,
+      correlationId: jobParams.correlationId,
+    });
   }
 
   /**
