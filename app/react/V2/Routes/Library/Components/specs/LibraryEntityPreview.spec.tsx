@@ -413,7 +413,7 @@ describe('LibraryView preview pane', () => {
     expect(await screen.findByText('Case 11.481 (Gelman)')).toBeInTheDocument();
     expect(screen.getByTestId('library-entity-preview')).toBeInTheDocument();
     expect(screen.queryByTestId('library-selection-panel')).not.toBeInTheDocument();
-    expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Filters' })).not.toBeInTheDocument();
   });
 
   it('opens an empty entity form in the right panel', async () => {
@@ -422,7 +422,7 @@ describe('LibraryView preview pane', () => {
     expect(await screen.findByTestId('library-create-entity')).toBeInTheDocument();
     expect(screen.getByText('New entity')).toBeInTheDocument();
     expect(screen.getByLabelText(/Title/)).toHaveValue('');
-    expect(screen.queryByText('Filters')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Filters' })).not.toBeInTheDocument();
   });
 
   it('opens the native PDF file picker without a modal', async () => {
