@@ -21,6 +21,7 @@ import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.js';
 import { MobileOptionsMenu } from './MobileOptionsMenu.js';
 import { ThemeToggle } from './ThemeToggle.js';
+import { useRememberedLibraryUrl } from '#V2/Routes/Library/useRememberedLibraryUrl.js';
 
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
@@ -72,7 +73,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   const settings = useAtomValue(settingsAtom);
   const { barRef, compact: isMobile } = useCompactBar();
   const location = useLocation();
-  const libraryUrl = useMemo(
+  const libraryBaseUrl = useMemo(
     () =>
       buildLibraryUrl({
         location,
@@ -83,8 +84,11 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       }),
     [location, librarySearch, libraryFilters, settings.defaultLibraryView, settings.features]
   );
+  const libraryUrl = useRememberedLibraryUrl(
+    libraryBaseUrl,
+    Boolean(settings.features?.featureFlagLibraryV2)
+  );
   const shouldShowLibrary = !settings.private || authenticatedUser;
-  const headerLinks = settings.links ?? [];
   const { barAction, menuActions } = splitMobileActions(
     buildMobileActions({
       shouldShowLibrary,
@@ -114,7 +118,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3"
       >
         <div data-testid="header-leading" className="flex min-w-0 flex-1 items-center gap-3">
-          {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
+          {isMobile ? <MobileMenuDropdown links={settings.links ?? []} /> : null}
           <div className="min-w-0 overflow-hidden">
             <SiteName
               className="header-bar-brand min-w-0 px-0 py-0 text-base font-semibold"
@@ -122,7 +126,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
               hideTextWhenLogo
             />
           </div>
-          {!isMobile ? <MenuLinks links={headerLinks} endOverlapPx={16} /> : null}
+          {!isMobile ? <MenuLinks links={settings.links ?? []} endOverlapPx={16} /> : null}
         </div>
         <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />

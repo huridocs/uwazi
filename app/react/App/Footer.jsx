@@ -5,6 +5,7 @@ import { t, Translate, I18NLink } from '#app/I18N/index.js';
 import { resetConsent } from '#app/App/cookieConsent.js';
 import { createSelector } from 'reselect';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
+import { LibraryLink } from './LibraryLink.js';
 
 const getLibraryURL = libraryView =>
   libraryViewInfo[libraryView] ? `/${libraryViewInfo[libraryView].url}` : '/library';
@@ -46,9 +47,10 @@ class Footer extends Component {
           <li className="footer-nav_separator">&nbsp;</li>
 
           <li className="footer-nav_item">
-            <I18NLink to={getLibraryURL(this.props.defaultLibraryView)}>
-              <Translate>Library</Translate>
-            </I18NLink>
+            <LibraryLink
+              to={getLibraryURL(this.props.defaultLibraryView)}
+              libraryV2={this.props.libraryV2}
+            />
           </li>
           {(() => {
             if (!this.props.user._id) {
@@ -94,6 +96,7 @@ Footer.propTypes = {
   siteName: PropTypes.string,
   defaultLibraryView: PropTypes.string,
   cookiepolicy: PropTypes.bool,
+  libraryV2: PropTypes.bool,
 };
 
 Footer.defaultProps = {
@@ -111,6 +114,7 @@ export function mapStateToProps(state) {
     siteName: state.settings.collection.get('site_name'),
     defaultLibraryView: state.settings.collection.get('defaultLibraryView'),
     cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
+    libraryV2: Boolean(state.settings.collection.get('features')?.get('featureFlagLibraryV2')),
   };
 }
 
