@@ -60,6 +60,7 @@ let navigateRef: NavigateFn | null = null;
 let locationRef: LocationFallback = { pathname: '', search: '', hash: '' };
 let atomStoreRef: EntityUrlAtomStore | null = null;
 let sessionGeneration = 0;
+let urlWrite: Promise<void> = Promise.resolve();
 
 const readLiveLocation = (fallback: LocationFallback): LocationFallback => {
   if (typeof window === 'undefined') return fallback;
@@ -152,10 +153,14 @@ const commitNavigateUrl = ({
       setEntityPageAtom(patch.page, atomStoreRef);
     }
   }
-  void navigate(
-    { pathname: fallback.pathname, search: patch.search, hash: nextHash },
-    { replace: batch.replace, preventScrollReset: true }
-  );
+  const generation = sessionGeneration;
+  urlWrite = urlWrite.catch(() => undefined).then(async () => {
+    if (generation !== sessionGeneration) return;
+    await navigate(
+      { pathname: fallback.pathname, search: patch.search, hash: nextHash },
+      { replace: batch.replace, preventScrollReset: true }
+    );
+  });
 };
 
 const applyFlushedUrl = ({

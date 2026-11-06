@@ -57,7 +57,7 @@ describe('RelationshipConnectionsTable cards', () => {
     expect(within(stack).getAllByText('—')).toHaveLength(1);
     expect(within(stack).getByText('Judge')).toBeInTheDocument();
     expect(within(stack).queryByText('Clerk')).not.toBeInTheDocument();
-    expect(within(stack).getAllByText('Kenya')[0]).toHaveClass('break-words');
+    expect(within(stack).getAllByText('Kenya')[0]).toHaveClass('wrap-break-word');
   });
 
   it('orders cards the same way as the table', () => {
