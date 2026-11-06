@@ -5,7 +5,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { LibraryFooterMenu } from './LibraryFooterMenu.js';
 
-const LIBRARY_PAGE_SIZES = [30, 60, 120];
+const LIBRARY_PAGE_SIZES = [50, 250, 500];
 
 const stepClassName =
   'inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-secondary transition-colors hover:bg-warm hover:text-ink disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent';

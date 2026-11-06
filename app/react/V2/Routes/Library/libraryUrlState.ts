@@ -25,7 +25,7 @@ const DEFAULT_LIBRARY_URL_STATE: LibraryUrlState = {
   filters: {},
   andFilters: [],
   search: '',
-  limit: 30,
+  limit: 50,
   page: 1,
   sort: '',
   order: 'desc',
