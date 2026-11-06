@@ -6,8 +6,17 @@ const clampableType = (inheritedType?: string) =>
 
 const PreviewClamp = ({ children }: { children: ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const seen = useRef<string | undefined>(undefined);
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const next = ref.current?.textContent ?? '';
+    if (seen.current !== undefined && seen.current !== next) {
+      setExpanded(false);
+    }
+    seen.current = next;
+  }, [children]);
 
   useEffect(() => {
     const el = ref.current;

@@ -27,6 +27,7 @@ type InheritColumnProperty = {
 };
 
 type InheritColumn = {
+  id?: string;
   label: string;
   inheritedType?: PropertyTypeSchema;
   cellsByEntityId?: Record<string, ReactNode>;
@@ -73,8 +74,9 @@ const buildInheritColumns = (
   property: RelationshipGroupProperty,
   metadataProperties: InheritColumnProperty[],
   { templates, sourceMetadata, onOpenEntity }: InheritColumnContext
-): InheritColumn[] =>
-  metadataProperties
+): InheritColumn[] => {
+  if (!inheritsValue(property)) return [];
+  return metadataProperties
     .filter(
       candidate =>
         candidate.type === 'relationship' &&
@@ -102,12 +104,14 @@ const buildInheritColumns = (
       });
       const inheritType = candidate.inherit?.type;
       return {
+        id: candidate._id,
         label: inheritedTarget?.label ?? candidate.label,
         ...(inheritType && isPropertyType(inheritType) ? { inheritedType: inheritType } : {}),
         cellsByEntityId,
         sortKeyByEntityId,
       };
     });
+};
 
 const anchorInheritGroup = (
   siblings: RelationshipMetadataProperty[]

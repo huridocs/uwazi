@@ -67,7 +67,7 @@ describe('buildInheritColumns', () => {
 
   it('should build columns for matching inherited relationship properties', () => {
     expect(
-      buildInheritColumns(metadataProperties[0], metadataProperties, {
+      buildInheritColumns(metadataProperties[1], metadataProperties, {
         templates,
         sourceMetadata: {
           inherited_tags: [
@@ -85,6 +85,7 @@ describe('buildInheritColumns', () => {
       })
     ).toEqual([
       {
+        id: '2',
         label: 'Inherited label',
         cellsByEntityId: { 'entity-1': 'Nested' },
         sortKeyByEntityId: { 'entity-1': 'Nested' },
@@ -93,7 +94,7 @@ describe('buildInheritColumns', () => {
   });
 
   it('should map empty inheritedValue cells to undefined for dash fallback', () => {
-    const columns = buildInheritColumns(metadataProperties[0], metadataProperties, {
+    const columns = buildInheritColumns(metadataProperties[1], metadataProperties, {
       templates,
       sourceMetadata: {
         inherited_tags: [{ value: 'entity-1' }, { value: 'entity-2', inheritedValue: [] }],
@@ -112,8 +113,9 @@ describe('buildInheritColumns', () => {
   });
 
   it('should return an empty cellsByEntityId when source metadata is missing', () => {
-    expect(buildInheritColumns(metadataProperties[0], metadataProperties, { templates })).toEqual([
+    expect(buildInheritColumns(metadataProperties[1], metadataProperties, { templates })).toEqual([
       {
+        id: '2',
         label: 'Inherited label',
         cellsByEntityId: {},
         sortKeyByEntityId: {},
@@ -256,6 +258,9 @@ describe('buildInheritColumns', () => {
       ],
     });
     expect(columns.map(column => column.label)).toEqual(['Markdown']);
+    expect(columns[0]?.id).toBe('md');
+    const linkOnly = { ...markdown, _id: 'link', inherited: false, inherit: undefined };
+    expect(buildInheritColumns(linkOnly, [markdown, geo], { templates: [] })).toEqual([]);
     expect(
       buildInheritColumns(geo, [markdown, geo], {
         templates: [

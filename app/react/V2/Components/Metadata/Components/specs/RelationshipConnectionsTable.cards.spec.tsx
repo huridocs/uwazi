@@ -60,6 +60,20 @@ describe('RelationshipConnectionsTable cards', () => {
     expect(within(stack).getAllByText('Kenya')[0]).toHaveClass('break-words');
   });
 
+  it('orders cards the same way as the table', () => {
+    render(
+      <RelationshipConnectionsTable
+        rows={[
+          { id: 'e2', label: 'Ben', templateId: 't1' },
+          { id: 'e1', label: 'Ana', templateId: 't1' },
+        ]}
+        columns={[{ label: 'Country', cellsByEntityId: { e2: 'Zambia', e1: 'Kenya' } }]}
+      />
+    );
+    const text = cardStack().textContent ?? '';
+    expect(text.indexOf('Ana')).toBeLessThan(text.indexOf('Ben'));
+  });
+
   it('shows the row action on the card', () => {
     render(
       <RelationshipConnectionsTable

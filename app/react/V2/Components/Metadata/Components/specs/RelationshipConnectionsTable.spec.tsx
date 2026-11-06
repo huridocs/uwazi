@@ -75,6 +75,36 @@ describe('RelationshipConnectionsTable layout', () => {
     expect(toggle.closest('td')).not.toHaveTextContent('Second');
   });
 
+  it('returns a long edit-form value to Show more when the text changes', async () => {
+    jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(200);
+    jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);
+    const user = userEvent.setup();
+    const column = (text: string) => [
+      {
+        label: 'Markdown',
+        inheritedType: 'markdown',
+        cellsByEntityId: { e1: text },
+      },
+    ];
+    const { rerender } = render(
+      <RelationshipConnectionsTable
+        preview
+        rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
+        columns={column('first paragraph')}
+      />
+    );
+    await user.click(screen.getByRole('button', { name: 'Show more' }));
+    expect(screen.getByRole('button', { name: 'Show less' })).toBeInTheDocument();
+    rerender(
+      <RelationshipConnectionsTable
+        preview
+        rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
+        columns={column('second paragraph')}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'Show more' })).toBeInTheDocument();
+  });
+
   it('shows geolocation and record values in full', () => {
     jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(200);
     jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);

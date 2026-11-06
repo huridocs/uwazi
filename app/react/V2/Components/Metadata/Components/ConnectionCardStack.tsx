@@ -5,6 +5,7 @@ import { renderPreviewCell } from './PreviewClamp.js';
 import type { EntityIconData } from '../../CustomIcons/index.js';
 
 type RelationshipTableColumn = {
+  id?: string;
   label: string;
   inheritedType?: string;
   cellsByEntityId?: Record<string, ReactNode>;
@@ -18,6 +19,8 @@ type RelationshipTableRow = {
   authorized?: false;
   icon?: EntityIconData | null;
 };
+
+const columnKey = (column: RelationshipTableColumn) => column.id ?? column.label;
 
 const stackLabelClass =
   'min-w-0 wrap-break-word text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
@@ -82,7 +85,7 @@ const ConnectionCardStack = ({
           {columns.length > 0 ? (
             <div className="mt-1.5 grid grid-cols-[fit-content(40%)_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5">
               {columns.map(column => (
-                <React.Fragment key={column.label}>
+                <React.Fragment key={columnKey(column)}>
                   <span className={stackLabelClass}>
                     <Translate context={translationContext}>{column.label}</Translate>
                   </span>
@@ -103,5 +106,5 @@ const ConnectionCardStack = ({
   );
 };
 
-export { ConnectionCardStack, cellContent, renderInheritedCell };
+export { ConnectionCardStack, cellContent, columnKey, renderInheritedCell };
 export type { RelationshipTableColumn, RelationshipTableRow };

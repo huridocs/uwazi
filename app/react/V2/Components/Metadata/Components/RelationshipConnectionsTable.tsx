@@ -7,6 +7,7 @@ import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js
 import {
   ConnectionCardStack,
   cellContent,
+  columnKey,
   renderInheritedCell,
   type RelationshipTableColumn,
   type RelationshipTableRow,
@@ -78,7 +79,7 @@ const connectionsTable = ({
           <Translate>{entityHeader}</Translate>
         </th>
         {columns.map(column => (
-          <th key={column.label} scope="col" className={`${headerClass} px-3`}>
+          <th key={columnKey(column)} scope="col" className={`${headerClass} px-3`}>
             <span className="inline-flex min-w-0 items-center gap-1">
               <LinkIcon className="h-2.5 w-2.5 shrink-0 text-carbon" aria-hidden />
               <Translate context={translationContext}>{column.label}</Translate>
@@ -107,7 +108,7 @@ const connectionsTable = ({
               if (!column) return [];
               return [
                 <td
-                  key={`${row.id}-${column.label}`}
+                  key={`${row.id}-${columnKey(column)}`}
                   rowSpan={cell.rowSpan}
                   className={inheritedCellClass}
                 >
@@ -171,7 +172,7 @@ const RelationshipConnectionsTableComponent = ({
       {layout === 'stack' ? (
         <div data-testid="connection-card-stack">
           <ConnectionCardStack
-            rows={rows}
+            rows={mergedRows.map(merged => merged.row)}
             columns={columns}
             translationContext={translationContext}
             targetTemplateId={targetTemplateId}
