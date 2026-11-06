@@ -33,7 +33,7 @@ const renderInheritedCell = (cell: ReactNode): ReactNode => {
     return <span className="text-xs text-ink-muted">—</span>;
   }
   if (typeof cell === 'string') {
-    return <span className="break-words text-sm font-medium text-ink">{cell}</span>;
+    return <span className="wrap-break-word text-sm font-medium text-ink">{cell}</span>;
   }
   return cell;
 };

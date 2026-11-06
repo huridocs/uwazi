@@ -51,7 +51,7 @@ describe('RelationshipFieldEditor', () => {
 
     expect(screen.getByText('Contractors')).toBeInTheDocument();
     expect(screen.getByText('Works with').closest('p')).toHaveClass('text-meta');
-    expect(screen.getByText('Relationship:')).toHaveClass('sr-only');
+    expect(screen.getByText('Relationship').parentElement).toHaveClass('sr-only');
     expect(container.querySelector('svg')).toBeTruthy();
   });
 
@@ -65,7 +65,7 @@ describe('RelationshipFieldEditor', () => {
       />
     );
 
-    expect(screen.queryByText('Relationship:')).not.toBeInTheDocument();
+    expect(screen.queryByText('Relationship')).not.toBeInTheDocument();
     expect(screen.queryByText(/péople/)).not.toBeInTheDocument();
   });
 

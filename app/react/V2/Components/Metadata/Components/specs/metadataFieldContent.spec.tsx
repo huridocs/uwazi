@@ -121,6 +121,7 @@ describe('renderFieldContent density', () => {
       'aria-hidden',
       'true'
     );
+    expect(container.querySelector('[data-part="print-map"]')).toHaveAttribute('inert');
     expect(printMap).toHaveAttribute('data-height', '302');
     expect(printMap).toHaveAttribute('data-show-controls', 'false');
     expect(container.querySelector('[data-part="map-credit"]')).not.toBeNull();

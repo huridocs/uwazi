@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Map } from '#app/Map/index.js';
 import { MapProps } from '#app/Map/MapContainer.js';
@@ -73,6 +74,7 @@ const Geolocation = ({
         <div
           data-part="print-map"
           aria-hidden="true"
+          inert
           className="pointer-events-none absolute inset-0 overflow-hidden opacity-0"
         >
           <div className="absolute top-0 left-1/2 h-[8cm] w-[19cm] -translate-x-1/2 rtl:translate-x-1/2">

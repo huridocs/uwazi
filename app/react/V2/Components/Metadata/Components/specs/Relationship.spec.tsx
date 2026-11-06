@@ -47,7 +47,7 @@ describe('Relationship caption', () => {
 
     expect(screen.getByRole('heading', { name: 'People involved' })).toBeInTheDocument();
     expect(screen.getByText('People')).toBeInTheDocument();
-    expect(screen.getByText('Relationship:')).toHaveClass('sr-only');
+    expect(screen.getByText('Relationship').parentElement).toHaveClass('sr-only');
   });
 
   it('shows the connected entity when there are no inherited properties', () => {
@@ -62,7 +62,7 @@ describe('Relationship caption', () => {
     renderRelationship('  Relación  ', 'relacion');
 
     expect(screen.getByRole('heading', { name: 'Relación' })).toBeInTheDocument();
-    expect(screen.queryByText('Relationship:')).not.toBeInTheDocument();
+    expect(screen.queryByText('Relationship')).not.toBeInTheDocument();
     expect(screen.queryByText('relacion')).not.toBeInTheDocument();
   });
 });

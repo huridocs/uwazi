@@ -19,7 +19,10 @@ const RelationCaption = ({ relationLabel, fieldTitle }: RelationCaptionProps) =>
     <p className="flex min-w-0 items-center gap-1 text-meta text-ink-tertiary">
       <LinkIcon className="h-3 w-3 shrink-0 text-carbon" aria-hidden />
       <span>
-        <Translate className="sr-only">Relationship:</Translate> {relationLabel}
+        <span className="sr-only">
+          <Translate>Relationship</Translate>:
+        </span>{' '}
+        {relationLabel}
       </span>
     </p>
   );
