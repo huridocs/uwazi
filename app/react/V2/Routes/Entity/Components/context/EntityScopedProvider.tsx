@@ -13,6 +13,7 @@ import { ToCFileSync } from './ToCFileSync.js';
 import { MetadataEditingProvider } from './MetadataEditingContext.js';
 import { EntityOverlayProvider } from './EntityOverlayContext.js';
 import { EntityPageViewProvider, type EntityPageViewData } from '../EntityPageView/index.js';
+import { CompactCollapseBarProvider } from '../relationships/panel/compactCollapseBarScope.js';
 
 type EntityScopedProviderProps = {
   entity: Entity;
@@ -47,18 +48,20 @@ const EntityScopedProvider = ({
           <RelationshipsQueryProvider seed={relationshipQuery}>
             <RelationshipsProvider>
               <RelationshipsSelectionProvider>
-                <RelationshipsPanelFiltersProvider>
-                  <DocumentInteractionProvider>
-                    <TocProvider>
-                      <ToCFileSync />
-                      {inheritOverlay ? (
-                        children
-                      ) : (
-                        <EntityOverlayProvider>{children}</EntityOverlayProvider>
-                      )}
-                    </TocProvider>
-                  </DocumentInteractionProvider>
-                </RelationshipsPanelFiltersProvider>
+                <CompactCollapseBarProvider>
+                  <RelationshipsPanelFiltersProvider>
+                    <DocumentInteractionProvider>
+                      <TocProvider>
+                        <ToCFileSync />
+                        {inheritOverlay ? (
+                          children
+                        ) : (
+                          <EntityOverlayProvider>{children}</EntityOverlayProvider>
+                        )}
+                      </TocProvider>
+                    </DocumentInteractionProvider>
+                  </RelationshipsPanelFiltersProvider>
+                </CompactCollapseBarProvider>
               </RelationshipsSelectionProvider>
             </RelationshipsProvider>
           </RelationshipsQueryProvider>

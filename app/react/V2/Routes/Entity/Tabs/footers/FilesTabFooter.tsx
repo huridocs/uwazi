@@ -14,7 +14,11 @@ const toolbarShowsBulkActions = (
   sideTabId: string | undefined
 ) => isMobile !== false || selectedCount < 2 || sideTabId !== SIDE_TAB.FILE;
 
-const FilesTabFooter = () => {
+type FilesTabFooterProps = {
+  inset?: 'side' | 'main';
+};
+
+const FilesTabFooter = ({ inset = 'main' }: FilesTabFooterProps) => {
   const {
     entity,
     primaryRows,
@@ -38,7 +42,7 @@ const FilesTabFooter = () => {
   const hasSelection = selectedSelectableCount > 0;
 
   return (
-    <EntityTabFooter highlighted={hasSelection}>
+    <EntityTabFooter highlighted={hasSelection} inset={inset}>
       <FilesToolbar
         totalCount={selectableRows.length}
         selectedCount={selectedSelectableCount}

@@ -20,7 +20,7 @@ const headerClass =
   'min-w-0 break-words py-1.5 text-start text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
 
 const inheritedCellClass =
-  'min-w-0 break-words border-s border-t border-border/40 px-3 py-1.5 align-middle';
+  'min-w-0 overflow-hidden break-words border-s border-t border-border/40 px-3 py-1.5 align-middle';
 
 const entityCellClass = 'min-w-0 break-words border-t border-border/40 px-1 py-1.5 align-middle';
 
@@ -68,7 +68,7 @@ const connectionsTable = ({
   emptyLabel,
   preview,
 }: ConnectionsTableProps) => (
-  <table className="w-full border-collapse text-sm">
+  <table className="w-full table-fixed border-collapse text-sm">
     <caption className="sr-only">
       <Translate>Connected entities</Translate>
       {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
@@ -112,11 +112,13 @@ const connectionsTable = ({
                   rowSpan={cell.rowSpan}
                   className={inheritedCellClass}
                 >
-                  {renderPreviewCell(
-                    renderInheritedCell(cellContent(column, row.id)),
-                    column.inheritedType,
-                    preview
-                  )}
+                  <div className="max-w-full overflow-hidden [&_.map-container]:z-0">
+                    {renderPreviewCell(
+                      renderInheritedCell(cellContent(column, row.id)),
+                      column.inheritedType,
+                      preview
+                    )}
+                  </div>
                 </td>,
               ];
             })}

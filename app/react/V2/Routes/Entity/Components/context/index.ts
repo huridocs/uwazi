@@ -12,6 +12,7 @@ export {
   useRelationshipsSelection,
   useRelationshipsSelectionState,
   useRelationshipsSelectionActions,
+  useExitRelationshipsEdit,
 } from './RelationshipsSelectionContext.js';
 export {
   useRelationshipsPanelSearch,

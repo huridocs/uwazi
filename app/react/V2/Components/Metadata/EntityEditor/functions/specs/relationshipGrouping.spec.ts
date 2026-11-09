@@ -123,4 +123,46 @@ describe('syncGroupedRelationshipMetadata', () => {
       simple_text: [{ value: 'keep' }],
     });
   });
+
+  it('should keep each property inherited value when the shared entities are aligned', () => {
+    const metadata: Record<string, MetadataValue[]> = {
+      related_people: [
+        {
+          value: 'shared-1',
+          label: 'One',
+          inheritedType: 'geolocation',
+          inheritedValue: [{ value: { lat: 1, lon: 2 } }],
+        },
+        {
+          value: 'shared-2',
+          label: 'Two',
+          inheritedType: 'geolocation',
+          inheritedValue: [{ value: { lat: 3, lon: 4 } }],
+        },
+      ],
+      related_residents: [
+        {
+          value: 'shared-1',
+          label: 'Old',
+          inheritedType: 'image',
+          inheritedValue: [{ value: '/api/files/photo.png' }],
+        },
+      ],
+      simple_text: [{ value: 'keep' }],
+    };
+
+    expect(syncGroupedRelationshipMetadata(metadata, displayProperties)).toEqual({
+      related_people: metadata.related_people,
+      related_residents: [
+        {
+          value: 'shared-1',
+          label: 'One',
+          inheritedType: 'image',
+          inheritedValue: [{ value: '/api/files/photo.png' }],
+        },
+        { value: 'shared-2', label: 'Two' },
+      ],
+      simple_text: [{ value: 'keep' }],
+    });
+  });
 });

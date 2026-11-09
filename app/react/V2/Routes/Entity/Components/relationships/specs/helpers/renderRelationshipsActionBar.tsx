@@ -12,10 +12,7 @@ import { createStubEntityTabsState } from './createStubEntityTabsState.js';
 import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
-import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
-import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
-import { CreateRelationshipModal } from '../../create-reference/CreateRelationshipModal.js';
-import { ManageRelationTypesModal } from '../../create-reference/ManageRelationTypesModal.js';
+import { RelationshipsActionBarHarness } from './RelationshipsActionBarHarness.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
 import {
   relationshipQueryFromEntity,
@@ -32,10 +29,12 @@ const PdfControllerSetup = () => {
 
 type RenderRelationshipsActionBarOptions = {
   role?: ClientUserSchema['role'];
+  compact?: boolean;
 };
 
 const renderRelationshipsActionBar = ({
   role = 'admin',
+  compact = false,
 }: RenderRelationshipsActionBarOptions = {}) => {
   const store = createStore();
   store.set(userAtom, { _id: '1', role, username: role, email: `${role}@example.com` });
@@ -63,10 +62,7 @@ const renderRelationshipsActionBar = ({
             >
               <EntityTabsProvider value={createStubEntityTabsState()}>
                 <PdfControllerSetup />
-                <RelationshipsPanel />
-                <RelationshipsActionBar />
-                <CreateRelationshipModal />
-                <ManageRelationTypesModal />
+                <RelationshipsActionBarHarness compact={compact} />
               </EntityTabsProvider>
             </EntityScopedProvider>
           </ServicesProvider>
