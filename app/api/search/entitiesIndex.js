@@ -10,8 +10,10 @@ import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
 import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
+import { indexingConcurrency } from './indexingConcurrency.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { attachDefaultDocumentsFullText } from './entitiesIndexFullText.js';
 
 const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
@@ -107,7 +109,7 @@ const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   throw error;
 };
 
-function setFullTextSettings(defaultDocument, id, body, doc) {
+function fullTextSettings(defaultDocument, id) {
   const fullText = Object.values(defaultDocument.fullText).join('\f');
 
   let language;
@@ -119,46 +121,67 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
       LanguageUtils.fromISO639_3(defaultDocument.language)?.elastic || otherLanguageSchema.elastic;
   }
 
-  const fullTextObject = {
+  return {
     [`fullText_${language}`]: fullText,
     filename: defaultDocument.filename,
     fullText: { name: 'fullText', parent: id },
   };
-  body.push(fullTextObject);
-  delete doc.fullText;
 }
 
-const bulkIndex = async (docs, _action = 'index') => {
-  const body = [];
+const fullTextChildBody = (defaultDocument, id) => {
+  if (!defaultDocument.fullText) {
+    return null;
+  }
 
-  docs.forEach(doc => {
-    let docBody = { documents: [], ...doc };
-    docBody.fullText = 'entity';
-    const id = doc._id.toString();
-    ['_id', '_rev'].forEach(e => delete docBody[e]);
-    const action = {};
-    action[_action] = { _id: id };
-    if (_action === 'update') {
-      docBody = { doc: docBody };
-    }
+  const body = fullTextSettings(defaultDocument, id);
+  delete defaultDocument.fullText;
+  return body;
+};
 
-    const defaultDocument = { ...(entityDefaultDocument(doc.documents, doc.language, 'en') || {}) };
-
-    docBody.documents.forEach(document => {
-      delete document.fullText;
-    });
-
-    body.push(action);
-    body.push(docBody);
-
-    if (defaultDocument.fullText) {
-      body.push({
-        [_action]: { _id: `${id}_fullText`, routing: id },
-      });
-      setFullTextSettings(defaultDocument, id, body, doc);
-    }
+const entityBulkDocBody = (doc, _action) => {
+  let docBody = { documents: [], ...doc };
+  docBody.fullText = 'entity';
+  ['_id', '_rev'].forEach(key => {
+    delete docBody[key];
   });
 
+  if (_action === 'update') {
+    docBody = { doc: docBody };
+  }
+
+  return docBody;
+};
+
+const deleteFilesFullText = docBody => {
+  docBody.documents?.forEach(document => {
+    delete document.fullText;
+  });
+  docBody.attachments?.forEach(attachment => {
+    delete attachment.fullText;
+  });
+};
+
+const entityBulkBody = (doc, _action) => {
+  const docBody = entityBulkDocBody(doc, _action);
+  const id = doc._id.toString();
+
+  // Keep the default document's full text before stripping it from the entity body: it is the only full text that gets indexed, in its own child document below.
+  const defaultDocument = { ...(entityDefaultDocument(doc.documents, doc.language, 'en') || {}) };
+
+  deleteFilesFullText(docBody);
+
+  const items = [{ [_action]: { _id: id } }, docBody];
+
+  const childBody = fullTextChildBody(defaultDocument, id);
+  if (childBody) {
+    items.push({ [_action]: { _id: `${id}_fullText`, routing: id } }, childBody);
+  }
+
+  return items;
+};
+
+const bulkIndex = async (docs, _action = 'index') => {
+  const body = docs.flatMap(doc => entityBulkBody(doc, _action));
   const results = await elastic.bulk({ body });
 
   if (results.body.items) {
@@ -168,12 +191,18 @@ const bulkIndex = async (docs, _action = 'index') => {
   return results;
 };
 
-const getEntitiesToIndex = async (_query, stepBach, limit, select) => {
+const getEntitiesToIndex = async (_query, stepBatch, limit, select) => {
   const documentsFullText = Boolean(select && select.includes('+fullText'));
 
-  return EntitiesDAOFactory.default()
+  const entities = await EntitiesDAOFactory.default()
     .unrestricted()
-    .find({ ids: stepBach }, { limit, withFiles: documentsFullText ? { fullText: true } : true });
+    .find({ ids: stepBatch }, { limit, withFiles: true });
+
+  if (!documentsFullText) {
+    return entities;
+  }
+
+  return attachDefaultDocumentsFullText(entities);
 };
 
 const bulkIndexAndCallback = async assets => {
@@ -201,7 +230,7 @@ const indexBatch = async (totalRows, options) => {
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
-    .withConcurrency(10)
+    .withConcurrency(indexingConcurrency())
     .process(async stepBatch => {
       const entitiesToPreprocess = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
       const entitiesToIndex = await preprocessEntitiesToIndex(entitiesToPreprocess);
