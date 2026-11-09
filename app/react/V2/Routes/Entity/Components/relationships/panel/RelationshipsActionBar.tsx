@@ -19,6 +19,8 @@ import {
 import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
+import { CompactRelationshipsEditBar } from './CompactRelationshipsEditBar.js';
+import { useRetainCompactCollapseBar } from './compactCollapseBarScope.js';
 
 const iconClass = 'h-3 w-3 shrink-0';
 
@@ -70,13 +72,9 @@ const useRelationshipCommands = ({
   });
 
   const cancelEdit = useCallback(() => {
-    setSelected(new Set());
+    clearSelection();
     setEditMode(false);
-  }, [setEditMode, setSelected]);
-
-  const saveEdit = useCallback(() => {
-    setEditMode(false);
-  }, [setEditMode]);
+  }, [clearSelection, setEditMode]);
 
   const handleConfirmDelete = useCallback(async () => {
     await deleteSelected();
@@ -87,7 +85,7 @@ const useRelationshipCommands = ({
     focusRelationshipsPanel();
   }, [documentPdfSelection, focusRelationshipsPanel, openCreateRelationship]);
 
-  return { isDeleting, cancelEdit, saveEdit, handleConfirmDelete, handleCreate };
+  return { isDeleting, cancelEdit, handleConfirmDelete, handleCreate };
 };
 
 const useRelationshipsActionModel = () => {
@@ -128,7 +126,11 @@ const useRelationshipsActionModel = () => {
   };
 };
 
-const RelationshipsActionBar = () => {
+type RelationshipsActionBarProps = {
+  compact?: boolean;
+};
+
+const RelationshipsActionBar = ({ compact = false }: RelationshipsActionBarProps) => {
   const {
     editMode,
     setEditMode,
@@ -143,77 +145,88 @@ const RelationshipsActionBar = () => {
     allIds,
     isDeleting,
     cancelEdit,
-    saveEdit,
     handleConfirmDelete,
     handleCreate,
   } = useRelationshipsActionModel();
+  const compactEditBar = compact && editMode;
+  useRetainCompactCollapseBar(compactEditBar);
 
   return (
     <EntityWriteAuthorization>
-      <div className="flex w-full flex-wrap items-center justify-between gap-2">
-        {!editMode ? (
-          <Button
-            variant="warm"
-            className="inline-flex items-center"
-            onClick={() => setEditMode(true)}
-          >
-            <PencilIcon className={iconClass} />
-            <Translate>Edit</Translate>
-          </Button>
-        ) : (
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="warm" className="inline-flex items-center" onClick={handleCreate}>
-              <PlusIcon className={iconClass} />
-              <Translate>Create relationship</Translate>
+      {compactEditBar ? (
+        <CompactRelationshipsEditBar
+          hasSelection={hasSelection}
+          selectedCount={selectedCount}
+          totalCount={totalCount}
+          isDeleting={isDeleting}
+          onCreate={handleCreate}
+          onManageTypes={openManageRelationTypes}
+          onDelete={() => setConfirmDelete(true)}
+          onCancel={cancelEdit}
+        />
+      ) : (
+        <div className="flex w-full flex-wrap items-center justify-between gap-2">
+          {!editMode ? (
+            <Button
+              variant="warm"
+              className="inline-flex items-center"
+              onClick={() => setEditMode(true)}
+            >
+              <PencilIcon className={iconClass} />
+              <Translate>Edit</Translate>
             </Button>
-            <NeedAuthorization roles={['admin']}>
-              <Button
-                variant="warm"
-                className="inline-flex items-center"
-                onClick={openManageRelationTypes}
-              >
-                <Settings2StrokeIcon
-                  className={`${iconClass} text-ink-tertiary`}
-                  aria-hidden="true"
-                />
-                <Translate>Manage types</Translate>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="warm" className="inline-flex items-center" onClick={handleCreate}>
+                <PlusIcon className={iconClass} />
+                <Translate>Create relationship</Translate>
               </Button>
-            </NeedAuthorization>
-            <SelectControls
-              allSelected={allSelected}
-              hasSelection={hasSelection}
-              totalCount={totalCount}
-              onSelectAll={() => setSelected(new Set(allIds))}
-              onDeselectAll={() => setSelected(new Set())}
-            />
-          </div>
-        )}
-        {editMode && (
-          <div className="flex items-center gap-2">
-            {hasSelection && (
-              <>
-                <span className="text-xs text-ink-secondary">
-                  <Translate>Selected</Translate> {selectedCount} <Translate>of</Translate>{' '}
-                  {totalCount}
-                </span>
+              <NeedAuthorization roles={['admin']}>
                 <Button
-                  variant="danger"
-                  onClick={() => setConfirmDelete(true)}
-                  disabled={isDeleting}
+                  variant="warm"
+                  className="inline-flex items-center"
+                  onClick={openManageRelationTypes}
                 >
-                  <Translate>Delete</Translate>
+                  <Settings2StrokeIcon
+                    className={`${iconClass} text-ink-tertiary`}
+                    aria-hidden="true"
+                  />
+                  <Translate>Manage types</Translate>
                 </Button>
-              </>
-            )}
-            <Button variant="warm" onClick={cancelEdit} disabled={isDeleting}>
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button variant="primary" onClick={saveEdit} disabled={isDeleting}>
-              <Translate>Save</Translate>
-            </Button>
-          </div>
-        )}
-      </div>
+              </NeedAuthorization>
+              <SelectControls
+                allSelected={allSelected}
+                hasSelection={hasSelection}
+                totalCount={totalCount}
+                onSelectAll={() => setSelected(new Set(allIds))}
+                onDeselectAll={() => setSelected(new Set())}
+              />
+            </div>
+          )}
+          {editMode && (
+            <div className="flex items-center gap-2">
+              {hasSelection && (
+                <>
+                  <span className="text-xs text-ink-secondary">
+                    <Translate>Selected</Translate> {selectedCount} <Translate>of</Translate>{' '}
+                    {totalCount}
+                  </span>
+                  <Button
+                    variant="danger"
+                    onClick={() => setConfirmDelete(true)}
+                    disabled={isDeleting}
+                  >
+                    <Translate>Delete</Translate>
+                  </Button>
+                </>
+              )}
+              <Button variant="warm" onClick={cancelEdit} disabled={isDeleting}>
+                <Translate>Cancel</Translate>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {confirmDelete && (
         <ConfirmationModal

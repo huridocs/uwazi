@@ -102,7 +102,11 @@ const inheritingGroupCard = (
   const [primary] = siblings;
   const primaryTpl = ctx.templatePropertyById.get(primary._id);
   const columns = buildInheritColumns(
-    { content: primaryTpl?.content, inherited: true },
+    {
+      content: primaryTpl?.content,
+      relationType: primaryTpl?.relationType,
+      inherited: true,
+    },
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
     ),

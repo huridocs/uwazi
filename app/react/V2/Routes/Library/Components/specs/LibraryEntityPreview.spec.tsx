@@ -195,7 +195,7 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithDocument.sharedId, { onClose });
     await screen.findByText('Case 11.481 (Gelman)');
 
-    const footer = await screen.findByTestId('library-entity-preview-footer');
+    const footer = await screen.findByTestId('entity-tab-footer');
     fireEvent.click(within(footer).getByRole('button', { name: 'Close' }));
     expect(onClose).toHaveBeenCalledTimes(1);
 
@@ -242,6 +242,23 @@ describe('LibraryEntityPreview', () => {
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
+  it('shows the active tab footer while a metadata edit stays open', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    expect(await screen.findByRole('button', { name: 'Save' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: /^Relationships/ }));
+    const footer = screen.getByTestId('library-entity-preview-footer');
+    fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
+    expect(await screen.findByRole('button', { name: 'Create relationship' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Metadata' }));
+    expect(await screen.findByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Copy from/ })).toBeInTheDocument();
+  });
+
   it('confirms before canceling dirty metadata edits', async () => {
     renderPreview(entityWithoutDocument.sharedId, { user: adminUser, onAction: jest.fn() });
 
@@ -261,7 +278,7 @@ describe('LibraryEntityPreview', () => {
     expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
   });
 
-  it('opens metadata editing from Edit on Relationships', async () => {
+  it('stays on Relationships and shows the relationships toolbar after Edit', async () => {
     renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
     const panel = screen.getByRole('tabpanel');
@@ -272,9 +289,66 @@ describe('LibraryEntityPreview', () => {
     expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
     fireEvent.click(within(footer).getByRole('button', { name: 'Edit' }));
 
-    expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute('aria-selected', 'true');
-    expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /^Relationships/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(await screen.findByRole('button', { name: 'Create relationship' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Manage types' }));
+    expect(
+      await screen.findByRole('dialog', { name: 'Manage relationship types' })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('tab', { name: /^Relationships/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(
+      within(screen.getByTestId('library-entity-preview-footer')).getByRole('button', {
+        name: 'Edit',
+      })
+    ).toBeInTheDocument();
+  });
+
+  it('exits relationship edit when leaving the Relationships tab', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
+    fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
+    fireEvent.click(
+      within(screen.getByTestId('library-entity-preview-footer')).getByRole('button', {
+        name: 'Edit',
+      })
+    );
+    expect(await screen.findByRole('button', { name: 'Create relationship' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Metadata' }));
+    fireEvent.click(screen.getByRole('tab', { name: /^Relationships/ }));
+
+    const footer = screen.getByTestId('library-entity-preview-footer');
+    expect(within(footer).getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create relationship' })).not.toBeInTheDocument();
+  });
+
+  it('shows page controls, Close and View entity on Document', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
+    expect(await screen.findByRole('tab', { name: 'Document' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    const footer = await screen.findByTestId('entity-tab-footer');
+    expect(within(footer).getByRole('button', { name: 'Previous' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    expect(footer.firstElementChild?.firstElementChild).toContainElement(
+      within(footer).getByRole('button', { name: 'Previous' })
+    );
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(footer.firstElementChild).toHaveClass('flex-wrap');
   });
 
   it('shows the side-pane file list instead of the wide table', async () => {
@@ -295,20 +369,43 @@ describe('LibraryEntityPreview', () => {
     expect(await screen.findByText('file.pdf')).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Select all files' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Download file.pdf' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'View file.pdf' }).parentElement).not.toHaveClass(
+      'border-ink/30'
+    );
 
-    fireEvent.click(screen.getByRole('button', { name: 'View' }));
-    expect(await screen.findByRole('dialog', { name: 'file.pdf' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'View file.pdf' }));
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(await screen.findByRole('button', { name: 'Back to files' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Select all' })).not.toBeInTheDocument();
   });
 
-  it('shows Add file on Files and opens the same add-file modal as entity viewer', async () => {
-    renderPreview(entityWithoutDocument.sharedId, { user: adminUser });
+  it('keeps both file bars on a narrow screen', async () => {
+    renderPreview(entityWithDocument.sharedId, { mobile: true, onAction: jest.fn() });
+    fireEvent.click(await screen.findByRole('button', { name: 'Entity primary' }));
+    fireEvent.click(await screen.findByRole('option', { name: /Files/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'View file.pdf' }));
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(screen.getByRole('button', { name: 'Back to files' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('keeps Close and View entity on Files without Edit', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
 
     const footer = await screen.findByTestId('library-entity-preview-footer');
-    fireEvent.click(within(footer).getByRole('button', { name: /Add file/ }));
-
-    expect(await screen.findByText('Click to select files')).toBeInTheDocument();
-    expect(screen.getByText('or drag and drop here')).toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('button', { name: 'Select all' })).not.toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add translation' })).toBeInTheDocument();
   });
 
   it('does not offer Add file on Metadata', async () => {
@@ -322,6 +419,7 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithoutDocument.sharedId);
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
     const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
     expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
   });
 

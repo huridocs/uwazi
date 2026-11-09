@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Map } from '#app/Map/index.js';
 import { MapProps } from '#app/Map/MapContainer.js';
@@ -17,6 +18,7 @@ type GeolocationProps = {
   layers?: MapProps['layers'];
   zoom?: MapProps['zoom'];
   showLegend?: boolean;
+  showPrintMap?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -45,6 +47,7 @@ const Geolocation = ({
   zoom,
   height = 220,
   showLegend = false,
+  showPrintMap = true,
   onOpenEntity,
 }: GeolocationProps) => {
   if (!markers?.length) {
@@ -70,15 +73,18 @@ const Geolocation = ({
         <div data-part="screen-map">
           <Map height={height} showControls={showControls} {...sharedMapProps} />
         </div>
-        <div
-          data-part="print-map"
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 overflow-hidden opacity-0"
-        >
-          <div className="absolute top-0 left-1/2 h-[8cm] w-[19cm] -translate-x-1/2 rtl:translate-x-1/2">
-            <Map height={PAPER_MAP_HEIGHT} showControls={false} {...sharedMapProps} />
+        {showPrintMap ? (
+          <div
+            data-part="print-map"
+            aria-hidden="true"
+            inert
+            className="pointer-events-none absolute inset-0 overflow-hidden opacity-0"
+          >
+            <div className="absolute top-0 left-1/2 h-[8cm] w-[19cm] -translate-x-1/2 rtl:translate-x-1/2">
+              <Map height={PAPER_MAP_HEIGHT} showControls={false} {...sharedMapProps} />
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
       <p data-part="map-credit" className="hidden">
         {PAPER_MAP_CREDIT}

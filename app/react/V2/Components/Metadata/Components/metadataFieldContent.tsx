@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { type ReactElement } from 'react';
 import { Date } from './Date.js';
 import { SimpleValue } from './SimpleValue.js';
 import { Select } from './Select.js';
@@ -20,7 +20,7 @@ type FieldContentOptions = {
 const hasFilledText = (values?: Array<{ value?: string | null }>) =>
   Boolean(values?.some(value => value.value !== '' && value.value != null));
 
-const renderScalarContent = (data: MetadataProperty, long = false): ReactNode => {
+const renderScalarContent = (data: MetadataProperty, long = false): ReactElement | null => {
   if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
     return hasFilledText(data.values) ? <SimpleValue values={data.values} long={long} /> : null;
   }
@@ -45,7 +45,7 @@ const renderMediaOrImage = (
   data: MetadataProperty,
   compact: boolean,
   density: FieldContentOptions['density']
-): ReactNode => {
+): ReactElement | null => {
   const { fullWidth } = data;
   if (data.type === 'media') {
     return hasFilledText(data.values) ? (
@@ -70,7 +70,7 @@ const renderMediaOrImage = (
 const renderSpecializedContent = (
   data: MetadataProperty,
   options: FieldContentOptions = {}
-): ReactNode => {
+): ReactElement | null => {
   const compact = (options.density ?? 'default') === 'compact';
   if (data.type === 'relationship') {
     return connectionPillsForField(data, undefined, { onOpenEntity: options.onOpenEntity });
@@ -81,6 +81,7 @@ const renderSpecializedContent = (
         markers={data.values}
         height={compact ? 160 : undefined}
         showControls={compact ? false : undefined}
+        showPrintMap={!compact}
         showLegend={!compact && (data.propertyGroup?.length ?? 0) > 1}
         onOpenEntity={options.onOpenEntity}
       />
@@ -92,7 +93,10 @@ const renderSpecializedContent = (
   return renderMediaOrImage(data, compact, options.density);
 };
 
-const renderFieldContent = (data: MetadataProperty, options: FieldContentOptions = {}): ReactNode =>
+const renderFieldContent = (
+  data: MetadataProperty,
+  options: FieldContentOptions = {}
+): ReactElement | null =>
   renderSpecializedContent(data, options) ?? renderScalarContent(data, options.long ?? false);
 
 const hasRenderableMetadata = (data: MetadataProperty): boolean => {
