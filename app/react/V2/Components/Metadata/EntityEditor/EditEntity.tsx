@@ -33,6 +33,7 @@ import {
 } from './functions/editEntityErrors.js';
 import { findFirstErrorPath, focusAndScrollToInvalidField } from './functions/focusInvalidField.js';
 import {
+  alignGroupedRelationshipValues,
   getGroupedRelationshipSyncPairs,
   groupRelationshipProperties,
 } from './functions/relationshipGrouping.js';
@@ -204,8 +205,10 @@ const EditEntity = ({
         const sourceValues = getValues(metadataFormPath(mainName)) ?? [];
         otherNames.forEach(name => {
           const path = metadataFormPath(name);
-          if (JSON.stringify(getValues(path) ?? []) !== JSON.stringify(sourceValues)) {
-            setValue(path, sourceValues);
+          const currentValues = getValues(path) ?? [];
+          const aligned = alignGroupedRelationshipValues(sourceValues, currentValues);
+          if (JSON.stringify(currentValues) !== JSON.stringify(aligned)) {
+            setValue(path, aligned);
           }
         });
       });

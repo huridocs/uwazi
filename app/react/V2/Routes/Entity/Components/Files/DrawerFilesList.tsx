@@ -1,28 +1,59 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/index.js';
+import {
+  FileDownloadButton,
+  fileDownloadUrl,
+} from '#V2/Routes/Entity/Tabs/footers/FileDownloadButton.js';
 import { AddTranslationButton } from './AddTranslationButton.js';
 import { DrawerFileRow } from './DrawerFileRow.js';
-import { FilePreviewModal } from './FilePreviewModal.js';
+import { FilePreviewView } from './FilePreviewView.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 import { EntityFileRow } from './types.js';
 
 const sectionHeaderClass =
   'mb-3 px-1 text-nano font-semibold uppercase tracking-wider text-ink-tertiary';
 
+const openedFile = (row: EntityFileRow, onBack: () => void) => {
+  const url = fileDownloadUrl(row);
+  return (
+    <>
+      <div className="min-h-0 flex-1 overflow-auto">
+        <FilePreviewView row={row} />
+      </div>
+      <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-t border-border bg-paper px-3">
+        <Button variant="warm" className="inline-flex items-center" onClick={onBack}>
+          <ArrowLeftIcon className="h-3 w-3 shrink-0 text-ink-tertiary" />
+          <Translate>Back to files</Translate>
+        </Button>
+        {url ? <FileDownloadButton href={url} /> : <span />}
+      </div>
+    </>
+  );
+};
+
 const DrawerFilesList = () => {
-  const { primaryRows, supportingRows, mainDocumentId, saveRow } = useEntityFiles();
+  const { primaryRows, supportingRows, saveRow, openFilePreviewForRow, closeFilePreview } =
+    useEntityFiles();
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [preview, setPreview] = useState<EntityFileRow | null>(null);
 
-  const onView = useCallback((row: EntityFileRow) => {
-    if (row.status === 'processing') return;
-    if (row.kind === 'link') {
-      const url = row.raw.url || '';
-      if (url) window.open(url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    setPreview(row);
-  }, []);
+  useEffect(() => () => closeFilePreview(), [closeFilePreview]);
+
+  const onView = useCallback(
+    (row: EntityFileRow) => {
+      if (row.status === 'processing') return;
+      if (row.kind === 'link') {
+        const url = row.raw.url || '';
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+        return;
+      }
+      setPreview(row);
+      openFilePreviewForRow(row.rowId);
+    },
+    [openFilePreviewForRow]
+  );
 
   const onEdit = useCallback((row: EntityFileRow) => {
     setEditingRowId(row.rowId);
@@ -47,7 +78,13 @@ const DrawerFilesList = () => {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-auto px-3 py-4 pb-8">
+      {preview
+        ? openedFile(preview, () => {
+            setPreview(null);
+            closeFilePreview();
+          })
+        : null}
+      <div className={`min-h-0 flex-1 overflow-auto px-3 py-4 pb-8 ${preview ? 'hidden' : ''}`}>
         <div className="mb-2 flex items-baseline justify-between px-1">
           <div className={sectionHeaderClass}>
             <Translate>Primary documents</Translate>
@@ -67,7 +104,6 @@ const DrawerFilesList = () => {
                 <DrawerFileRow
                   key={row.rowId}
                   row={row}
-                  active={row.rowId === mainDocumentId}
                   editing={editingRowId === row.rowId}
                   onView={onView}
                   onEdit={onEdit}
@@ -103,7 +139,6 @@ const DrawerFilesList = () => {
           </div>
         )}
       </div>
-      {preview ? <FilePreviewModal row={preview} onClose={() => setPreview(null)} /> : null}
     </div>
   );
 };

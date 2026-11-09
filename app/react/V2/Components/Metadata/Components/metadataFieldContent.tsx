@@ -81,6 +81,7 @@ const renderSpecializedContent = (
         markers={data.values}
         height={compact ? 160 : undefined}
         showControls={compact ? false : undefined}
+        showPrintMap={!compact}
         showLegend={!compact && (data.propertyGroup?.length ?? 0) > 1}
         onOpenEntity={options.onOpenEntity}
       />

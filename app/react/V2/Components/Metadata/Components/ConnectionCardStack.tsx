@@ -89,7 +89,7 @@ const ConnectionCardStack = ({
                   <span className={stackLabelClass}>
                     <Translate context={translationContext}>{column.label}</Translate>
                   </span>
-                  <span className="min-w-0">
+                  <span className="max-w-full min-w-0 overflow-hidden [&_.map-container]:z-0">
                     {renderPreviewCell(
                       renderInheritedCell(cellContent(column, row.id)),
                       column.inheritedType,
