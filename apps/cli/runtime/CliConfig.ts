@@ -24,6 +24,9 @@ const SESSIONS_VARIABLES = ['SESSIONS_BACKEND'];
  */
 const POSTGRES_ADMIN_VARIABLES = ['POSTGRES_USER', 'POSTGRES_PASSWORD'];
 
+/** Commands that create and drop a scratch database, which only the Postgres superuser can do. */
+const SCRATCH_DATABASE_VARIABLES = ['POSTGRES_ADMIN_USER', 'POSTGRES_ADMIN_PASSWORD'];
+
 class CliConfig {
   /**
    * Only production is strict: development and tests rely on config.ts's local defaults, which
@@ -39,6 +42,7 @@ class CliConfig {
       ...(needs.redis ? ['REDIS_HOST'] : []),
       ...(needs.sessions ? SESSIONS_VARIABLES : []),
       ...(needs.postgresAdmin ? POSTGRES_ADMIN_VARIABLES : []),
+      ...(needs.scratchDatabase ? SCRATCH_DATABASE_VARIABLES : []),
     ];
   }
 

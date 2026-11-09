@@ -19,6 +19,8 @@ const PostgresEnvSchema = z
     POSTGRES_PASSWORD: z.string().default('migrator_user'),
     POSTGRES_APP_USER: z.string().default('app_user'),
     POSTGRES_APP_PASSWORD: z.string().default('app_user'),
+    POSTGRES_ADMIN_USER: z.string().default('admin'),
+    POSTGRES_ADMIN_PASSWORD: z.string().default('admin'),
   })
   .passthrough();
 
@@ -260,13 +262,20 @@ export const config = {
     host: pgEnv.POSTGRES_HOST,
     port: pgEnv.POSTGRES_PORT,
     database: pgEnv.POSTGRES_DB,
-    admin: {
+    /** Owns the tables: runs migrations and backups, bypasses row level security. */
+    migrator: {
       user: pgEnv.POSTGRES_USER,
       password: pgEnv.POSTGRES_PASSWORD,
     },
+    /** Runtime traffic, subject to row level security. */
     app: {
       user: pgEnv.POSTGRES_APP_USER,
       password: pgEnv.POSTGRES_APP_PASSWORD,
+    },
+    /** Superuser: creates and drops scratch databases only. */
+    admin: {
+      user: pgEnv.POSTGRES_ADMIN_USER,
+      password: pgEnv.POSTGRES_ADMIN_PASSWORD,
     },
   },
 };

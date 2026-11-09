@@ -41,6 +41,7 @@ describe('DumpBlankStateController', () => {
   afterEach(async () => {
     rmSync(dumpFile, { force: true });
     await clearBlankState(pool);
+    await pool.query('DELETE FROM relationship_types');
   });
 
   it('dumps every tenant data table to the dump file', async () => {
@@ -60,6 +61,24 @@ describe('DumpBlankStateController', () => {
 
     expect(existsSync(dumpFile)).toBe(true);
     expect(readFileSync(dumpFile, 'utf-8')).toContain('"sourceTenant"');
+  });
+
+  it('writes each table ordered by its primary key, so a regenerated dump diffs cleanly', async () => {
+    ControllerSpecs.useBackend(true);
+    const tenantId = testingTenants.current().name;
+    await pool.query(
+      `INSERT INTO relationship_types ("_id", "name", "tenant_id")
+       VALUES ('rt-3', 'C', $1), ('rt-1', 'A', $1), ('rt-2', 'B', $1)`,
+      [tenantId]
+    );
+
+    await ControllerSpecs.asCli(async () => DumpBlankStateController.handle({ pool, dumpFile }));
+
+    const ids = readFileSync(dumpFile, 'utf-8')
+      .split('\n')
+      .filter(line => line.startsWith(`${tenantId}\trt-`))
+      .map(line => line.split('\t')[1]);
+    expect(ids).toEqual(['rt-1', 'rt-2', 'rt-3']);
   });
 
   it('produces a dump that restores into a fresh tenant', async () => {

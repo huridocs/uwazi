@@ -107,7 +107,9 @@ describe('PgTenantBackup', () => {
       const events: TenantTableProgress[] = [];
       const capture = new CaptureStream();
 
-      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, event => events.push(event));
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, {
+        onProgress: event => events.push(event),
+      });
 
       const templates = events.filter(e => e.table === 'templates');
       expect(templates).toMatchObject([
@@ -116,6 +118,34 @@ describe('PgTenantBackup', () => {
       ]);
       expect(templates[0].total).toBe((await discoverDataTablesWithColumns(pool)).length);
       expect(events[events.length - 1]).toMatchObject({ done: true });
+    });
+
+    it('orders each table by its primary key when asked', async () => {
+      await pool.query(
+        `INSERT INTO templates ("_id", "name", "tenant_id")
+         VALUES ('tpl-3', 'C', $1), ('tpl-1', 'A', $1), ('tpl-2', 'B', $1)`,
+        [SOURCE_TENANT]
+      );
+      const capture = new CaptureStream();
+
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, { ordered: true });
+
+      const templateIds = capture.text
+        .split('\n')
+        .filter(line => line.startsWith(`${SOURCE_TENANT}\ttpl-`))
+        .map(line => line.split('\t')[1]);
+      expect(templateIds).toEqual(['tpl-1', 'tpl-2', 'tpl-3']);
+    });
+
+    it('writes the same manifest whether ordered or not', async () => {
+      await seedSource(pool, SOURCE_TENANT);
+      const plain = new CaptureStream();
+      const ordered = new CaptureStream();
+
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, plain);
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, ordered, { ordered: true });
+
+      expect(ordered.text.split('\n')[0]).toEqual(plain.text.split('\n')[0]);
     });
 
     it('reports running row counts as they stream', async () => {
@@ -127,7 +157,9 @@ describe('PgTenantBackup', () => {
       const events: TenantTableProgress[] = [];
       const capture = new CaptureStream();
 
-      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, event => events.push(event));
+      await new PgTenantBackup(pool).export(SOURCE_TENANT, capture, {
+        onProgress: event => events.push(event),
+      });
 
       const templates = events.filter(e => e.table === 'templates');
       expect(templates).toMatchObject([
