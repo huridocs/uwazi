@@ -1,43 +1,37 @@
 # Image thumbnails
 
 Date: 2026-11-06
-Status: implementation is in `app/api/imageThumbnails`. Node-wide flag, file-created listener, and a separate thumbnail controller are decided. `locationExists` and the front end are still open.
+Status: the module is `app/api/imageThumbnails`, and the backend behavior in this note is implemented. Library cards and compact metadata already request the thumbnails route. The entity page and the library side panel still request the full asset. Still open: the `<img>` audit, copying the derivative on sync, `locationExists`, and whether the load balancer honors `Cache-Control: no-store`.
 
-## Decided
+## Module
 
-- No thumbnail row on the file, and no extra column. The parent file is unchanged.
-- A give-up is `thumbnails/640/<filename>.skip` in object storage. The route stops when that object is there. A queued or running job is the only reason not to enqueue while the JPEG is still missing. Failed jobs are not that reason.
-- A response that streams the original, because the JPEG is not ready yet, is not cached. The app sends `Cache-Control: no-store`. Whether the load balancer honors that is an ask for the team.
-- JPEG quality starts at 60. It is one constant in code, not an environment setting. Change that constant to try another quality. Existing objects stay as they were until they are deleted.
-- `FEATURE_FLAG_IMAGE_THUMBNAILS` gates enqueueing the thumbnail job only. Missing or any value other than `true` means do not enqueue. Cards and compact metadata use `/files/thumbnails/` either way.
+`app/api/imageThumbnails`, beside `core`, the same way `paragraphExtraction` sits in `app/api`.
 
-## Feature flag
+Nothing outside the feature calls the use cases, so they do not live under `core`. Nothing else imports them, so this is not a `packages/` module: no public alias, no composition file, no import wall.
 
-`FEATURE_FLAG_IMAGE_THUMBNAILS` exists so the job can stay off until the libraries in Requirements are installed. It does not gate the route change.
+The module owns the domain rules, the use cases, the renderer, the job, the listeners, and `DownloadThumbnailController`. `app/api/files/routes.ts` only points `GET /files/thumbnails/:filename` at that controller, because the URL also serves existing PDF thumbnail rows. `FileCreatedEvent` and `FileDeletedEvent` stay core events. The listeners are picked up by the `app/api` listener manifest. The job is registered in `app/queueRegistry.ts`.
 
-Cards and compact metadata request `GET /files/thumbnails/<parent filename>`. If the JPEG is missing, that route streams the original. That is the same bytes as today, so the route change needs no flag.
+`config.imageThumbnails` is the node-wide flag. The shared `Dispatcher` has no thumbnail methods. Creating a thumbnail and counting an active one go through `JobsDispatcher`, inside the module, via `ImageThumbnailJobs`.
 
-The flag gates both places that enqueue the job: file creation (upload, entity save, CSV, preserve sync) and the missing-thumbnail request. Off, neither enqueues. The route still falls back to the original. On, both enqueue.
+## Plan
 
-Nice to have, for a partial install: the flag on means the job is enqueued. The job then does what the installed libraries can do. A JPEG still becomes a thumbnail when the JPEG decoder is present, even if HEIC is not. A file the installed libraries cannot decode fails that job. It does not turn the flag off, and it does not stop JPEG jobs.
+Library cards and compact metadata load a small image from `GET /files/thumbnails/:filename`. The full asset stays on the files routes, for the entity page, the library side panel, and anywhere else the image is actually being looked at.
 
-## Goal
+The load balancer already rate-limits these routes. The files routes are set high because they are what cards request today. Once cards and compact metadata use the thumbnails route, the files routes can be limited more aggressively, and the thumbnails route can keep the high limit a library needs. Nothing in Uwazi implements that limit. This work only moves the traffic.
 
-Library cards and compact metadata should load a small image from `GET /files/thumbnails/:filename`. The full asset stays on the files routes, for the entity page, the library side panel, and anywhere else the image is actually being looked at.
-
-The load balancer already rate-limits these routes. The files routes are set high because they are what cards request today. Once cards and compact metadata use the thumbnails route, the files routes can be limited more aggressively, and the thumbnails route can keep the high limit a library needs (hundreds of previews on one page). Nothing in Uwazi implements that limit. This work only moves the traffic.
-
-## What the thumbnails route is
+### What the thumbnails route is
 
 `GET /files/thumbnails/:filename` in `app/api/files/routes.ts`. The filename is the parent file's stored name, the same token `GET /files/:filename` uses. There is no second, thumbnail-only filename in the URL.
 
-`DownloadThumbnailController` serves this route. `DownloadFileController` only streams the original file row. The thumbnail controller does not list thumbnails, and it does not call `getThumbnails`. PDF cards do not use this route yet. They request `/api/files/<documentId>.jpg` on the deprecated files route. This work points those cards at `/files/thumbnails/<documentId>.jpg` so they sit on the thumbnail limit. The files route stays the way to fetch the PDF itself.
+`DownloadThumbnailController` serves this route. `DownloadFileController` only streams the original file row. The thumbnail controller does not list thumbnails, and it does not call `getThumbnails`.
 
-The route does not guess why an object is missing. See Request rule. With the flag on, a library that asks for 300 images enqueues 300 jobs. That is acceptable: workers, tenant priority, and the mercy system already stop one tenant from taking the queue.
+PDF cards used to request `/api/files/<documentId>.jpg` on the deprecated files route. Card URLs for those existing PDF thumbs are `/files/thumbnails/<documentId>.jpg`, so they sit on the thumbnail limit. The files route stays the way to fetch the PDF itself. That name is already the stored thumbnail. The route streams it before it treats a `.jpg` as a parent image that needs a derivative.
+
+The route does not guess why an object is missing. With the flag on, a library that asks for 300 images enqueues 300 jobs. That is acceptable: workers, tenant priority, and the mercy system already stop one tenant from taking the queue.
 
 With the flag on, generation also runs when an eligible image is created (upload, entity save, CSV import, preserve sync — the paths that already go through file creation). New files should then hit the route with the derivative already there.
 
-## Request rule
+### Request rule
 
 Eligibility is the filename extension. Nothing else. No mimetype sniff, no "is it animated?", no reading the missing object as a signal.
 
@@ -48,6 +42,8 @@ Eligibility is the filename extension. Nothing else. No mimetype sniff, no "is i
 
 `.gif` is in the list, so a thumbnail is expected. The job writes the first frame. The route does not detect animation.
 
+Before the steps below, the route streams a thumbnail stored under the requested filename when one exists. A `.jpg` card URL for a PDF then does not fall through into "this parent image needs a derivative."
+
 The route then does only this:
 
 1. Extension says no → stream the original. Stop.
@@ -57,27 +53,27 @@ The route then does only this:
 5. A job for this file is still queued or running → stream the original. Do not enqueue.
 6. Otherwise, and `FEATURE_FLAG_IMAGE_THUMBNAILS` is on → enqueue one, stream the original. Flag off → stream the original and do not enqueue.
 
-A queued or running job is the only jobs-table fact the route uses. It stops a second enqueue while that job exists. A failed job is not that fact. Those rows are reviewed and deleted, so a later request, with the flag on, would see "no JPEG, no job" and enqueue again.
+A queued or running job is the only jobs-table fact the route uses. It stops a second enqueue while that job exists. A failed job is not that fact. Those rows are reviewed and deleted.
 
 When the job gives up (retries exhausted, or a no-retry failure such as a file the decoder rejects), it writes the `.skip` marker and does not write a JPEG. That marker is an object in the thumbnail prefix, not a file row. Later requests hit step 4. Deleting the failed job does not bring the file back. Deleting the marker does: the next view enqueues again, which is the retry after a decoder fix.
 
-PDF card URLs are `/files/thumbnails/<documentId>.jpg`, and that name is already the stored thumbnail. Before the steps above, the route streams a thumbnail stored under the requested filename when one exists. A `.jpg` card URL then does not fall through into "this parent image needs a derivative."
+A response that streams the original, because the JPEG is not ready yet, is not cached. The app sends `Cache-Control: no-store`. Whether the load balancer honors that is an ask for the team.
 
-## Where the UI uses which bytes
+### Where the UI uses which bytes
 
-Thumbnails, this work:
+Thumbnails:
 
 - Library cards.
 - Compact metadata (table cells, inherited compact images, selection chips).
 
-Full asset, leave them:
+Full asset:
 
 - Entity page.
 - Library side panel (`LibraryEntityPreview` and the same entity body it renders).
 
-Those two are the known full-asset surfaces. Before implementation we still walk every `<img>` that today points at `/api/files/`, because a card and a side panel can share a component. Shared components need an explicit "thumb" vs "full" choice at the call site. Which card field becomes the thumb (image property, media-that-is-an-image, PDF preview) is a UI pass we align when we touch the cards, not a rule of the route.
+Those two are the known full-asset surfaces. Shared components need an explicit "thumb" vs "full" choice at the call site. Which card field becomes the thumb (image property, media-that-is-an-image, PDF preview) is a UI pass, not a rule of the route.
 
-## Storage name
+### Storage name
 
 `{sourceFileId}.jpg` next to the original is out. An uploaded file can already have that name.
 
@@ -88,8 +84,6 @@ Community practice is to keep derivatives out of the original key space:
 
 A suffix in the original directory can still collide with an uploaded name. A prefix cannot, because uploads never write there.
 
-Working scheme:
-
 | | |
 | --- | --- |
 | URL | `/files/thumbnails/<parent stored filename>` |
@@ -99,29 +93,49 @@ The `640` segment is the variant, so a later size does not overwrite this one. T
 
 The bytes are always JPEG. The object may be named `photo.png` because that is the parent's name. The response sets `Content-Type: image/jpeg`. The extension on the key is the parent's, not a claim about the encoding.
 
-PDF derivatives already on disk stay `{documentId}.jpg` where they are. This prefix is for the image derivatives we are adding. Card URLs for those existing PDF thumbs only change prefix: `/files/thumbnails/<documentId>.jpg`.
+PDF derivatives already on disk stay `{documentId}.jpg` where they are. This prefix is for the image derivatives we are adding.
 
-## One file row
+### One file row
 
-Decided: no second row and no new column. The route loads the parent by filename, checks read permission on that parent, then looks up `thumbnails/640/<filename>`. The derivative response is `image/jpeg`. The parent's mimetype stays whatever the upload stored.
+No second row and no new column. The parent file is unchanged. The route loads the parent by filename, checks read permission on that parent, then looks up `thumbnails/640/<filename>`. The derivative response is `image/jpeg`. The parent's mimetype stays whatever the upload stored.
 
 `getThumbnails` is not on this route. It feeds `Entity.setPreview` for PDF document previews. Image derivatives are not rows, so they do not enter that list. Cards request `/files/thumbnails/<parent>` on their own.
 
-## Rendition
+### Rendition
 
 - Longest side 640 px. Fits a large portrait card and a 2x display. Do not enlarge an image that is already smaller.
-- JPEG quality is a single constant, initial value **60**. Inspect real cards and edit that constant. No external configuration.
+- JPEG quality is a single constant, `IMAGE_THUMBNAIL_JPEG_QUALITY`, initial value **60**. Inspect real cards and edit that constant. No external configuration. Existing objects stay as they were until they are deleted.
 - EXIF orientation applied before resize.
-- Alpha flattened (white backing). One frame.
-- A pixel-count ceiling so a hostile image fails the job instead of the worker. The original file stays. The job writes the `.skip` marker.
+- Alpha flattened (white). One frame.
+- A pixel-count ceiling, `IMAGE_THUMBNAIL_MAX_PIXELS` (`268_402_689`, sharp's own input ceiling), so a hostile image fails the job instead of the worker. The original file stays. The job writes the `.skip` marker.
 
-Thumbnails are for cards and compact metadata only. Entity previews and the side panel keep requesting the original.
-
-## Which files
+### Which files
 
 The cutout is the extension list in Request rule. A stored mimetype of `application/octet-stream` does not matter. SVG, video, audio, and remote URLs are out because their extensions are out. PDFs already have their own derivative and are not in this list.
 
+The extension is compared in lowercase. The stored filename, and the object key, keep the uploaded case.
+
 `.heic` / `.heif` and `.bmp` are in the list, so a thumbnail is expected for them. If the binary cannot decode one, the job writes `.skip` and the route stops enqueueing. Shipping libvips with libheif, libde265, and ImageMagick is what makes those extensions succeed instead of skip. See HEIC and Library.
+
+### Feature flag
+
+`FEATURE_FLAG_IMAGE_THUMBNAILS` gates enqueueing only. Missing or any value other than `true` means do not enqueue. Cards and compact metadata use `/files/thumbnails/` either way. If the JPEG is missing, that route streams the original. That is the same bytes as today, so the route change needs no flag.
+
+The flag gates both places that enqueue: file creation (upload, entity save, CSV, preserve sync) and the missing-thumbnail request. Off, neither enqueues. The route still falls back to the original. On, both enqueue.
+
+It is read once with the other environment values and stored as `config.imageThumbnails`, the same way `queueBackend` is. It is a boolean on the config object. It is not a function.
+
+It is node-wide, not per tenant. Every tenant on that Node instance sees the same value. Turning it off stops enqueueing on that server, which is what you want while the image libraries are not installed there. It does not belong on `config.defaultTenant.featureFlags`.
+
+A per-tenant flag is a different mechanism: stored on the tenant and merged over the default tenant, like `fileCacheHeaders` and the rest of `app/api/tenants/featureFlags.ts`. That would limit who enqueues (fewer tenants, fewer jobs at once). It does not come from the environment. The libraries are installed per server, not per tenant, so a tenant flag can be on while that server cannot decode the file. A later option would compose with this one: node off means nobody enqueues; node on and tenant off means that tenant does not. Not built.
+
+For a partial install: the flag on means the job is enqueued. The job then does what the installed libraries can do. A JPEG still becomes a thumbnail when the JPEG decoder is present, even if HEIC is not. A file this binary cannot decode fails that job only. It does not turn the flag off, and it does not stop JPEG jobs. A missing library does not crash the process.
+
+### Delete and sync
+
+Delete of an image file also deletes `thumbnails/640/<filename>` and `thumbnails/640/<filename>.skip` when either is there. Delete runs whether or not the flag is on. A missing object is ignored.
+
+Sync should copy whichever of those two objects exists, with the parent, as part of the file sync. Prefer that copy over making the target generate on first view. If the source has written neither yet, the target does not have a derivative until a later sync. A copied `.skip` stops the target from enqueueing a file that already failed. That copy is not implemented. See Open.
 
 ### HEIC
 
@@ -136,13 +150,7 @@ Safari often transcodes HEIC to JPEG in the file picker, so many browser uploads
 
 sharp is the Node default for this job (libvips, EXIF orientation, header metadata for frame count, used across the Node image tooling). The runtime image cannot be "npm install sharp" alone: BMP wants ImageMagick linked into libvips, HEIC wants libheif and libde265, and the prebuilt sharp tarball has neither. The dependency we are accepting is a libvips build with those two extras, and sharp pointed at it. ImageMagick by itself can decode the same list, including BMP and HEIC, but it is a shell-out and a larger attack surface, and it does not remove the HEIC library requirement.
 
-## Delete and sync
-
-Delete of an image file also deletes `thumbnails/640/<filename>` and `thumbnails/640/<filename>.skip` when either is there.
-
-Sync copies whichever of those two objects exists, with the parent, as part of the file sync. Prefer that copy over making the target generate on first view. If the source has written neither yet, the target does not have a derivative until a later sync. A copied `.skip` stops the target from enqueueing a file that already failed.
-
-## Requirements
+### Requirements
 
 These must be on the app servers and on the queue workers before `FEATURE_FLAG_IMAGE_THUMBNAILS` is turned on. The deploy itself does not need them while the flag is off. `npm install sharp` alone is not enough: the published sharp binary does not decode iPhone HEIC (HEVC) or BMP.
 
@@ -163,71 +171,53 @@ Check before deploy, on a worker host:
 - `vips --vips-config` shows HEIF support and `Magick load: YES`.
 - One real iPhone `.heic` and one `.bmp` produce a JPEG through sharp. `sharp.format.heif.input === true` only means the container loader is present. HEVC is `metadata().compression === 'hevc'` on that iPhone file.
 
-## Ask the team
+## Implemented
 
-The thumbnail URL returns two different bodies over its life. The first request, before the JPEG exists, returns the original file and `Cache-Control: no-store`. A later request returns the small JPEG and may be cached.
+### Enqueue
 
-The app cannot force the load balancer to obey `no-store`. If the balancer stores the first response by URL and ignores that header, every card keeps receiving the full image from the balancer after the JPEG has been written.
+`EnqueueImageThumbnailOnFileCreated` listens to `FileCreatedEvent`. `FilesService.insert` only emits that event. `FilesServiceFactory` does not know about thumbnails. A request for a missing thumbnail still enqueues on its own, through `EnqueueImageThumbnails`. That is not a file creation.
 
-Question for the team: on `GET /files/thumbnails/*`, will the load balancer store a response that says `Cache-Control: no-store`? If it will, what do we set so the original is not kept and the JPEG, once it exists, still is?
+`file.type` tells the files apart. `custom` is a custom upload (logos and other files that are not entity attachments). The listener does enqueue those when the extension is eligible.
 
-## Open
+It does not enqueue `type: 'thumbnail'` (a PDF thumbnail is already a JPEG named `{documentId}.jpg`) or an attachment that carries a `url` (no local bytes).
 
-1. The `<img>` audit: every current `/api/files/` image, marked thumb or full, before the route change.
-2. Sync of a file does not yet copy `thumbnails/640/<filename>` or `thumbnails/640/<filename>.skip`. The Delete and sync section still stands. A synced image currently goes through file creation, so with the flag on the target enqueues a new thumbnail instead of copying one. TODO until that copy exists.
+`EnqueueImageThumbnails` checks `config.imageThumbnails` first. For each eligible filename it skips when the JPEG is already there, when `.skip` is there, or when `ImageThumbnailJobs.countActive` is greater than zero. Otherwise it enqueues one. The count is a `countDocuments` read on the queue, before the insert. It is not a job, and it is not a method on the shared `Dispatcher`. It cannot move inside the creation job: by then the second row already exists, and two workers can both pass the "already settled" check before either writes. Delete-then-dispatch, as thesaurus denormalize does, was rejected: the thumbnail that job would produce does not change, so the delete only delays it. A running job is not deleted by `deleteByParams` anyway.
 
-## Implementation review
+The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because an anonymous library request can enqueue it, lock window 60 seconds, max retries 3. The use case no-ops when the extension is out, or the JPEG or `.skip` already exists. A missing parent returns.
 
-### Feature flag: node-wide, not per tenant
+`ImageThumbnailUnavailable` (the renderer could not load) is retried and does not write `.skip`. `ImageThumbnailRejected` (the decoder rejected the file), or the last retry, writes a one-byte `.skip` and then fails as non-retryable. Both errors live in `domain/imageThumbnailErrors.ts`.
 
-These are two different switches. The first pass mixed them.
+### Serve
 
-A **node-wide** flag comes from the environment of that process. Every tenant on that Node instance sees the same value. Turning it off stops enqueueing on that server, which is what you want while the image libraries are not installed there. `FEATURE_FLAG_IMAGE_THUMBNAILS` is this kind of flag. It does not belong on `config.defaultTenant.featureFlags`.
+`ServeImageThumbnail` looks up a `type: 'thumbnail'` row for the requested filename first and streams it when the bytes are on disk. Otherwise it loads a parent of type `document`, `attachment`, or `custom`, then follows the request rule. The JPEG response is `image/jpeg` and may be cached. The fallback is the original, with `cache: 'no-store'`.
 
-A **per-tenant** flag is stored on the tenant and merged over the default tenant in config. `fileCacheHeaders` and the rest of `app/api/tenants/featureFlags.ts` are this kind. A tenant record can turn it on or off by itself. The benefit for this job: only the tenants that have it on enqueue, so a page of images on one tenant does not enqueue for the others. The cost: the libraries are installed per server, not per tenant. A tenant flag can be on while that server cannot decode the file, and off on a server that can.
+`DownloadThumbnailController` checks `EntityPermissionChecker` on an entity file (the parent, or the PDF thumbnail row) before streaming. A file that is not an entity file is allowed through, the same as the files route.
 
-Decided for now: node-wide, from the environment. A per-tenant limit on who enqueues is a later option, and it would be a tenant feature flag, not this env var. The two would compose (node off means nobody enqueues; node on and tenant off means that tenant does not). Not built.
+### Delete
 
-`FEATURE_FLAG_IMAGE_THUMBNAILS` is read once with the other environment values and stored as `config.imageThumbnails`, the same way `queueBackend` is. It is a boolean on the config object. It is not a function, and it is not a tenant feature flag.
+`DeleteImageThumbnailOnFileDeleted` listens to `FileDeletedEvent`. The payload is `{ fileId, filename }`. `FilesService` emits that and does not know about thumbnails. The listener, for an eligible extension, queues deletion of `thumbnails/640/<filename>` and `thumbnails/640/<filename>.skip`. A missing object is ignored.
 
-### File creation goes through a listener
+The event is emitted inside the transaction, before commit. The listener job does not join that transaction, so a delete that then rolls back can still remove the derivative. That was accepted so `FilesService` stays unaware of thumbnails.
 
-Decided, and done. `EnqueueImageThumbnailOnFileCreated` listens to `FileCreatedEvent`. `FilesService.insert` only emits that event. `FilesServiceFactory` does not know about thumbnails. A request for a missing thumbnail still enqueues on its own. That is not a file creation.
-
-`file.type` is the parameter that tells the files apart. `custom` is a custom upload (logos and other files that are not entity attachments). The listener does enqueue those when the extension is eligible. Skipping them is `file.type === 'custom'` if we decide they should not have derivatives.
-
-It does not enqueue `type: 'thumbnail'` (a PDF thumbnail is already a JPEG named `{documentId}.jpg`; generating another derivative of it is wrong) or an attachment that carries a `url` (no local bytes).
-
-Delete of the derivative is `DeleteImageThumbnailOnFileDeleted`, on `FileDeletedEvent`. The event carries `fileId` and `filename`. `FilesService` emits that and does not know about thumbnails. The listener deletes `thumbnails/640/<filename>` and the `.skip` object for an eligible extension, whether or not the flag is on. A missing object is ignored. The listener job is queued when the event is emitted, which is before the transaction commits. A delete that then rolls back can still remove the derivative.
-
-### Permissions
-
-Kept. `DownloadThumbnailController` checks `EntityPermissionChecker` on the parent, or on the PDF thumbnail row, before streaming. Same rule as the files route.
+A PDF delete also emits the event for the `{documentId}.jpg` thumbnail row. That name has an eligible extension, so the listener queues a delete of `thumbnails/640/<that name>` too. Nothing was written there. The delete ignores a missing object.
 
 ### `locationExists`
 
-Still open. Not happy with a second method. `fileExists` cannot point at `thumbnails/640/<filename>` because that key is not a file row. `createPath` was not changed. Writing a file already creates the directory; the new method only answers whether the object is already there. Discuss with the team before changing it.
-
-### Extension case
-
-Decided. The extension is compared in lowercase. The stored filename keeps its case.
-
-### Thumbnail route has its own controller
-
-Decided, and done. `GET /files/thumbnails/:filename` is `DownloadThumbnailController`. `DownloadFileController` only streams the file row it was asked for.
-
-### `countActiveByParams`
-
-Decided: keep it. Delete-then-dispatch, as thesaurus denormalize does, would drop a queued job and insert another. The thumbnail that job would produce does not change, so the delete only delays it. A running job is not deleted by `deleteByParams` anyway, so a second one would still start. The read is the check that stops that.
-
-### Its own module
-
-Decided. Image thumbnails are `app/api/imageThumbnails`, beside `core`, the same way `paragraphExtraction` sits in `app/api`. Nothing outside the feature calls the use cases, so they do not live under `core`, and nothing else imports them, so they are not a `packages/` module.
-
-The module owns the domain rules, the use cases, the renderer, the job, the listeners, and the handler for `GET /files/thumbnails/:filename`. `app/api/files/routes.ts` only points that URL at the handler, because the URL also serves PDF thumbnail rows. `FileCreatedEvent` and `FileDeletedEvent` stay core events. The module subscribes. Listeners are picked up by the `app/api` listener manifest.
-
-`config.imageThumbnails` stays the node-wide flag. The shared `Dispatcher` does not grow thumbnail methods. Creating a thumbnail and counting an active one go through `JobsDispatcher`, inside the module.
+`fileExists` takes a file row and cannot address `thumbnails/640/<filename>`. `locationExists` answers whether that object is already there. `createPath` was not changed. Writing a file already creates the directory. The method is in use. Changing it is still an open question. See Open.
 
 ### Front end
 
-Left as it is. Do not build on it until the backend review above is finished. The `<img>` audit is still open.
+Already switched, and not to be extended until the `<img>` audit:
+
+- `app/react/V2/shared/thumbnailRequestUrl.ts` rewrites an eligible `/api/files/` URL to `/files/thumbnails/`. Audio, video, and any other extension stay on `/api/files/`.
+- `app/react/V2/Routes/Library/Components/cardModel.ts` uses that helper for card thumbnails, including a document preview `.jpg`.
+- `app/react/V2/Components/Metadata/Components/Image.tsx` uses it only when `density` is `compact`. The default density keeps the original URL.
+
+The entity page and `LibraryEntityPreview` do not use the helper.
+
+## Open
+
+1. The `<img>` audit: every current `/api/files/` image, marked thumb or full. A card and a side panel can share a component, and the two call sites above were switched before that walk. Do not add more call sites until it is done.
+2. Sync of a file does not yet copy `thumbnails/640/<filename>` or `thumbnails/640/<filename>.skip`. The Delete and sync section still stands. A synced image currently goes through file creation, so with the flag on the target enqueues a new thumbnail instead of copying one.
+3. `locationExists` is a second method next to `fileExists`. Not happy with it. Discuss with the team before changing it. Do not remove it in the meantime: the derivative key is not a file row.
+4. The thumbnail URL returns two different bodies over its life. The first request, before the JPEG exists, returns the original file and `Cache-Control: no-store`. A later request returns the small JPEG and may be cached. The app cannot force the load balancer to obey `no-store`. If the balancer stores the first response by URL and ignores that header, every card keeps receiving the full image from the balancer after the JPEG has been written. Question for the team: on `GET /files/thumbnails/*`, will the load balancer store a response that says `Cache-Control: no-store`? If it will, what do we set so the original is not kept and the JPEG, once it exists, still is?
