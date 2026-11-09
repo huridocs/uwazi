@@ -9,6 +9,17 @@ Status: alignment. No application code yet.
 - A give-up is `thumbnails/640/<filename>.skip` in object storage. The route stops when that object is there. A queued or running job is the only reason not to enqueue while the JPEG is still missing. Failed jobs are not that reason.
 - A response that streams the original, because the JPEG is not ready yet, is not cached. The app sends `Cache-Control: no-store`. Whether the load balancer honors that is an ask for the team.
 - JPEG quality starts at 60. It is one constant in code, not an environment setting. Change that constant to try another quality. Existing objects stay as they were until they are deleted.
+- `FEATURE_FLAG_IMAGE_THUMBNAILS` gates enqueueing the thumbnail job only. Missing or any value other than `true` means do not enqueue. Cards and compact metadata use `/files/thumbnails/` either way.
+
+## Feature flag
+
+`FEATURE_FLAG_IMAGE_THUMBNAILS` exists so the job can stay off until the libraries in Requirements are installed. It does not gate the route change.
+
+Cards and compact metadata request `GET /files/thumbnails/<parent filename>`. If the JPEG is missing, that route streams the original. That is the same bytes as today, so the route change needs no flag.
+
+The flag gates both places that enqueue the job: file creation (upload, entity save, CSV, preserve sync) and the missing-thumbnail request. Off, neither enqueues. The route still falls back to the original. On, both enqueue.
+
+Nice to have, for a partial install: the flag on means the job is enqueued. The job then does what the installed libraries can do. A JPEG still becomes a thumbnail when the JPEG decoder is present, even if HEIC is not. A file the installed libraries cannot decode fails that job. It does not turn the flag off, and it does not stop JPEG jobs.
 
 ## Goal
 
@@ -22,9 +33,9 @@ The load balancer already rate-limits these routes. The files routes are set hig
 
 Today `DownloadFileController` loads one row with `getByFilename(filename, ['thumbnail'])` and streams that row's object. It does not list thumbnails, and it does not call `getThumbnails`. PDF cards do not use this route yet. They request `/api/files/<documentId>.jpg` on the deprecated files route. This work points those cards at `/files/thumbnails/<documentId>.jpg` so they sit on the thumbnail limit. The files route stays the way to fetch the PDF itself.
 
-The route does not guess why an object is missing. See Request rule. A library that asks for 300 images enqueues 300 jobs. That is acceptable: workers, tenant priority, and the mercy system already stop one tenant from taking the queue.
+The route does not guess why an object is missing. See Request rule. With the flag on, a library that asks for 300 images enqueues 300 jobs. That is acceptable: workers, tenant priority, and the mercy system already stop one tenant from taking the queue.
 
-Generation also runs when an eligible image is created (upload, entity save, CSV import, preserve sync — the paths that already go through file creation). New files should then hit the route with the derivative already there.
+With the flag on, generation also runs when an eligible image is created (upload, entity save, CSV import, preserve sync — the paths that already go through file creation). New files should then hit the route with the derivative already there.
 
 ## Request rule
 
@@ -44,9 +55,9 @@ The route then does only this:
 3. The JPEG is there → stream it.
 4. A give-up marker is there (`thumbnails/640/<filename>.skip`) → stream the original. Stop.
 5. A job for this file is still queued or running → stream the original. Do not enqueue.
-6. Otherwise → enqueue one, stream the original.
+6. Otherwise, and `FEATURE_FLAG_IMAGE_THUMBNAILS` is on → enqueue one, stream the original. Flag off → stream the original and do not enqueue.
 
-A queued or running job is the only jobs-table fact the route uses. It stops a second enqueue while that job exists. A failed job is not that fact. Those rows are reviewed and deleted, so a later request would see "no JPEG, no job" and enqueue again.
+A queued or running job is the only jobs-table fact the route uses. It stops a second enqueue while that job exists. A failed job is not that fact. Those rows are reviewed and deleted, so a later request, with the flag on, would see "no JPEG, no job" and enqueue again.
 
 When the job gives up (retries exhausted, or a no-retry failure such as a file the decoder rejects), it writes the `.skip` marker and does not write a JPEG. That marker is an object in the thumbnail prefix, not a file row. Later requests hit step 4. Deleting the failed job does not bring the file back. Deleting the marker does: the next view enqueues again, which is the retry after a decoder fix.
 
@@ -133,7 +144,7 @@ Sync copies whichever of those two objects exists, with the parent, as part of t
 
 ## Requirements
 
-These must be on the app servers and on the queue workers before this is deployed. `npm install sharp` alone is not enough: the published sharp binary does not decode iPhone HEIC (HEVC) or BMP.
+These must be on the app servers and on the queue workers before `FEATURE_FLAG_IMAGE_THUMBNAILS` is turned on. The deploy itself does not need them while the flag is off. `npm install sharp` alone is not enough: the published sharp binary does not decode iPhone HEIC (HEVC) or BMP.
 
 | Piece | Version | Why |
 | --- | --- | --- |
