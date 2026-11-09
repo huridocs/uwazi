@@ -22,4 +22,5 @@ export interface FileStorage {
   getFiles(inputs: FileLocation[]): Promise<FileContents[]>;
   getFile(input: FileLocation): FileContents;
   fileExists(filePath: BaseFile): Promise<boolean>;
+  locationExists(location: FileLocation): Promise<boolean>;
 }

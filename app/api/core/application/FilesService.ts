@@ -145,7 +145,9 @@ class FilesService {
     await this.deps.relV1DS.deleteByFiles(contentFiles.map(f => f.id));
 
     await ArrayUtils.sequentialFor(allFilesToDelete, async file =>
-      this.deps.eventEmitter.emit(new FileDeletedEvent({ fileId: file.id }))
+      this.deps.eventEmitter.emit(
+        new FileDeletedEvent({ fileId: file.id, filename: file.filename })
+      )
     );
 
     this.deps.transactionManager.onCommitted(async () => {

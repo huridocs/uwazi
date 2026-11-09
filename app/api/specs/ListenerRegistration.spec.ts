@@ -24,9 +24,13 @@ describe('ListenerRegistration', () => {
         'BroadcastSettingsChanged',
         'QueueSegmentationsOnFeatureEnabled',
       ]);
-      expect(registeredFor(registry, 'FileCreatedEvent')).toEqual(['SegmentOnFileCreated']);
+      expect(registeredFor(registry, 'FileCreatedEvent')).toEqual([
+        'EnqueueImageThumbnailOnFileCreated',
+        'SegmentOnFileCreated',
+      ]);
       expect(registeredFor(registry, 'FileDeletedEvent')).toEqual([
         'CleanupOcrRecordsOnFilesDeleted',
+        'DeleteImageThumbnailOnFileDeleted',
         'DeleteSegmentationsOnFileDeleted',
       ]);
       expect(registeredFor(registry, 'LanguageAddedEvent')).toEqual(['AddLanguagePagesListener']);
@@ -44,7 +48,10 @@ describe('ListenerRegistration', () => {
       ListenerRegistration.registerEvents(registry);
 
       expect(() => ListenerRegistration.registerEvents(registry)).not.toThrow();
-      expect(registeredFor(registry, 'FileCreatedEvent')).toEqual(['SegmentOnFileCreated']);
+      expect(registeredFor(registry, 'FileCreatedEvent')).toEqual([
+        'EnqueueImageThumbnailOnFileCreated',
+        'SegmentOnFileCreated',
+      ]);
     });
   });
 
@@ -69,10 +76,18 @@ describe('ListenerRegistration', () => {
           name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
           built: 'ProcessRelationshipAfterEntityUpdatedListener',
         },
+        {
+          name: 'FileCreatedEvent:EnqueueImageThumbnailOnFileCreated',
+          built: 'EnqueueImageThumbnailOnFileCreated',
+        },
         { name: 'FileCreatedEvent:SegmentOnFileCreated', built: 'SegmentOnFileCreated' },
         {
           name: 'FileDeletedEvent:CleanupOcrRecordsOnFilesDeleted',
           built: 'CleanupOcrRecordsOnFilesDeleted',
+        },
+        {
+          name: 'FileDeletedEvent:DeleteImageThumbnailOnFileDeleted',
+          built: 'DeleteImageThumbnailOnFileDeleted',
         },
         {
           name: 'FileDeletedEvent:DeleteSegmentationsOnFileDeleted',

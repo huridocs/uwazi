@@ -88,5 +88,8 @@ export function NoOpDispatcher(): JobsDispatcher {
     async countByName() {
       return 0;
     },
+    async countActiveByParams() {
+      return 0;
+    },
   };
 }
