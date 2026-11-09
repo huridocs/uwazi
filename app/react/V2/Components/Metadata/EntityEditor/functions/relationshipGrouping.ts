@@ -59,6 +59,30 @@ const getGroupedRelationshipSyncPairs = (
       return { mainName, otherNames };
     });
 
+const connectionValue = (value: MetadataValue): MetadataValue => {
+  const connection = { ...value };
+  delete connection.inheritedType;
+  delete connection.inheritedValue;
+  return connection;
+};
+
+const alignGroupedRelationshipValues = (
+  sourceValues: MetadataValue[],
+  currentValues: MetadataValue[]
+): MetadataValue[] => {
+  const currentByEntity = new Map(currentValues.map(value => [String(value.value ?? ''), value]));
+  return sourceValues.map(source => {
+    const current = currentByEntity.get(String(source.value ?? ''));
+    const connection = connectionValue(source);
+    if (!current) return connection;
+    return {
+      ...connection,
+      ...(current.inheritedType !== undefined ? { inheritedType: current.inheritedType } : {}),
+      ...(current.inheritedValue !== undefined ? { inheritedValue: current.inheritedValue } : {}),
+    };
+  });
+};
+
 const syncGroupedRelationshipMetadata = (
   metadata: Record<string, MetadataValue[]>,
   displayProperties: DisplayProperty[]
@@ -68,7 +92,8 @@ const syncGroupedRelationshipMetadata = (
   getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
     const sourceValues = synced[metadataFormKey(mainName)] ?? [];
     otherNames.forEach(name => {
-      synced[metadataFormKey(name)] = sourceValues;
+      const key = metadataFormKey(name);
+      synced[key] = alignGroupedRelationshipValues(sourceValues, synced[key] ?? []);
     });
   });
 
@@ -78,6 +103,7 @@ const syncGroupedRelationshipMetadata = (
 export {
   groupRelationshipProperties,
   getGroupedRelationshipSyncPairs,
+  alignGroupedRelationshipValues,
   syncGroupedRelationshipMetadata,
 };
 export type { DisplayProperty, GroupedRelationshipSyncPair };

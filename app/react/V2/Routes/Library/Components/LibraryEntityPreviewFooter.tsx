@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { PlusIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
-import { Button, useTabGroup } from '#V2/Components/UI/index.js';
+import type { FileType } from '#V2/api/entities/types.js';
+import { Button } from '#V2/Components/UI/index.js';
 import {
-  EntityWriteAuthorization,
+  useEntityLanguage,
   useEntityFiles,
   useEntityScopedEntity,
   useEntityWriteAuthorized,
   useMetadataEditing,
+  useExitRelationshipsEdit,
+  useRelationshipsSelection,
+  type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { MAIN_TAB, type MainTabId } from '#V2/Routes/Entity/Tabs/index.js';
+import { DocumentTabFooter } from '#V2/Routes/Entity/Tabs/footers/DocumentTabFooter.js';
+import { RelationshipsTabFooter } from '#V2/Routes/Entity/Tabs/footers/RelationshipsTabFooter.js';
 import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
@@ -24,7 +29,7 @@ type LibraryEntityPreviewFooterProps = {
   onAction?: (action: LibraryBulkAction) => void;
 };
 
-type PreviewBarProps = {
+type PreviewShellProps = {
   editingMetadata: boolean;
   isSaving: boolean;
   formId: string;
@@ -35,23 +40,10 @@ type PreviewBarProps = {
   onEdit?: () => void;
   onClose: () => void;
   href: string;
-  tabActions: React.ReactNode;
+  includeActions?: boolean;
 };
 
-const usePreviewMetadataEdit = () => {
-  const { selectTab } = useTabGroup('entity-main');
-  const { startEditing } = useMetadataEditing();
-  const canEdit = useEntityWriteAuthorized();
-  if (!canEdit) {
-    return undefined;
-  }
-  return () => {
-    selectTab(MAIN_TAB.METADATA);
-    startEditing('main');
-  };
-};
-
-const previewBar = ({
+const previewShell = ({
   editingMetadata,
   isSaving,
   formId,
@@ -62,8 +54,8 @@ const previewBar = ({
   onEdit,
   onClose,
   href,
-  tabActions,
-}: PreviewBarProps) => {
+  includeActions = true,
+}: PreviewShellProps) => {
   if (editingMetadata) {
     return (
       <>
@@ -87,28 +79,118 @@ const previewBar = ({
         onAction={onAction}
         onEdit={onEdit}
         onClose={onClose}
-        leading={tabActions}
+        includeActions={includeActions}
       />
     );
   }
   return (
-    <>
-      <div>{tabActions}</div>
-      <div className="flex items-center gap-2">
-        <LibraryFooterButton onClick={onClose}>
-          <Translate>Close</Translate>
-        </LibraryFooterButton>
-        <I18NLinkV2
-          to={href}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
-          style={{ backgroundColor: 'var(--text-primary)' }}
-        >
-          <Translate>View entity</Translate>
-          <ArrowRightIcon className="h-3.5 w-3.5" />
-        </I18NLinkV2>
-      </div>
-    </>
+    <div className="ms-auto flex items-center gap-2">
+      <LibraryFooterButton onClick={onClose}>
+        <Translate>Close</Translate>
+      </LibraryFooterButton>
+      <I18NLinkV2
+        to={href}
+        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
+        style={{ backgroundColor: 'var(--text-primary)' }}
+      >
+        <Translate>View entity</Translate>
+        <ArrowRightIcon className="h-3.5 w-3.5" />
+      </I18NLinkV2>
+    </div>
   );
+};
+
+const useClearFilesSelection = (mainTabId: MainTabId) => {
+  const { setSelectedRowIds, closeFilePreview } = useEntityFiles();
+  const onFilesRef = useRef(mainTabId === MAIN_TAB.FILES);
+
+  useEffect(() => {
+    const onFiles = mainTabId === MAIN_TAB.FILES;
+    if (onFilesRef.current && !onFiles) {
+      setSelectedRowIds([]);
+      closeFilePreview();
+    }
+    onFilesRef.current = onFiles;
+  }, [closeFilePreview, mainTabId, setSelectedRowIds]);
+};
+
+type ActiveTabFooterInput = {
+  mainTabId: MainTabId;
+  mainDocument?: FileType;
+  relationshipsEditMode: boolean;
+  entityBasePath: string;
+  sharedId: string;
+  onClose: () => void;
+};
+
+const activeTabFooter = ({
+  mainTabId,
+  mainDocument,
+  relationshipsEditMode,
+  entityBasePath,
+  sharedId,
+  onClose,
+}: ActiveTabFooterInput) => {
+  if (mainTabId === MAIN_TAB.DOCUMENT && mainDocument?.filename) {
+    return (
+      <DocumentTabFooter
+        mainDocument={mainDocument}
+        inset="side"
+        pageNavAlign="start"
+        trailing={
+          <LibrarySingleSelectActions
+            entityBasePath={entityBasePath}
+            sharedId={sharedId}
+            onClose={onClose}
+            includeActions={false}
+          />
+        }
+      />
+    );
+  }
+  if (mainTabId === MAIN_TAB.RELATIONSHIPS && relationshipsEditMode) {
+    return <RelationshipsTabFooter inset="side" />;
+  }
+  return null;
+};
+
+type EditForTabInput = {
+  mainTabId: MainTabId;
+  canEdit: boolean;
+  startEditing: (host: MetadataEditingHost) => void;
+  setRelationshipsEditMode: Dispatch<SetStateAction<boolean>>;
+};
+
+const editForTab = ({
+  mainTabId,
+  canEdit,
+  startEditing,
+  setRelationshipsEditMode,
+}: EditForTabInput) => {
+  if (!canEdit) return undefined;
+  if (mainTabId === MAIN_TAB.METADATA) return () => startEditing('main');
+  if (mainTabId === MAIN_TAB.RELATIONSHIPS) return () => setRelationshipsEditMode(true);
+  return undefined;
+};
+
+const useLibraryPreviewFooterState = (mainTabId: MainTabId) => {
+  const entity = useEntityScopedEntity();
+  const { mainDocument } = useEntityLanguage();
+  const { relationshipsEditMode, setRelationshipsEditMode } = useRelationshipsSelection();
+  const { filePanelMode } = useEntityFiles();
+  const canEdit = useEntityWriteAuthorized();
+  const editing = useMetadataEditing();
+  useClearFilesSelection(mainTabId);
+  useExitRelationshipsEdit(mainTabId === MAIN_TAB.RELATIONSHIPS);
+  return {
+    entity,
+    mainDocument,
+    relationshipsEditMode,
+    setRelationshipsEditMode,
+    filePanelMode,
+    canEdit,
+    editing,
+  };
 };
 
 const LibraryEntityPreviewFooter = ({
@@ -117,28 +199,18 @@ const LibraryEntityPreviewFooter = ({
   mainTabId,
   onAction,
 }: LibraryEntityPreviewFooterProps) => {
-  const entity = useEntityScopedEntity();
-  const { requestAddFile } = useEntityFiles();
-  const { isEditing, isSaving, formMountHost, formId, requestDiscard, requestStopTranslations } =
-    useMetadataEditing();
-  const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
-  const editingMetadata = isEditing && formMountHost === 'main';
-  const onEdit = usePreviewMetadataEdit();
-  const showAddFile = mainTabId === MAIN_TAB.FILES;
-  const tabActions = (
-    <>
-      {showAddFile ? (
-        <EntityWriteAuthorization>
-          <LibraryFooterButton
-            icon={<PlusIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
-            onClick={() => requestAddFile('main')}
-          >
-            <Translate>Add file</Translate>
-          </LibraryFooterButton>
-        </EntityWriteAuthorization>
-      ) : null}
-    </>
-  );
+  const state = useLibraryPreviewFooterState(mainTabId);
+  const viewingFile = mainTabId === MAIN_TAB.FILES && state.filePanelMode === 'preview';
+  const close = () => state.editing.requestStopTranslations(onClose);
+  const switched = activeTabFooter({
+    mainTabId,
+    mainDocument: state.mainDocument,
+    relationshipsEditMode: state.relationshipsEditMode,
+    entityBasePath,
+    sharedId: state.entity.sharedId,
+    onClose: close,
+  });
+  if (switched) return switched;
 
   return (
     <EntityTabFooter inset="side">
@@ -146,18 +218,27 @@ const LibraryEntityPreviewFooter = ({
         className="flex w-full items-center justify-between gap-2"
         data-testid="library-entity-preview-footer"
       >
-        {previewBar({
-          editingMetadata,
-          isSaving,
-          formId,
-          onDiscard: () => requestStopTranslations(() => requestDiscard('discard')),
+        {previewShell({
+          editingMetadata:
+            mainTabId === MAIN_TAB.METADATA &&
+            state.editing.isEditing &&
+            state.editing.formMountHost === 'main',
+          isSaving: state.editing.isSaving,
+          formId: state.editing.formId,
+          onDiscard: () =>
+            state.editing.requestStopTranslations(() => state.editing.requestDiscard('discard')),
           entityBasePath,
-          sharedId: entity.sharedId,
+          sharedId: state.entity.sharedId,
           onAction,
-          onEdit,
-          onClose: () => requestStopTranslations(onClose),
-          href,
-          tabActions,
+          includeActions: !viewingFile,
+          onEdit: editForTab({
+            mainTabId,
+            canEdit: state.canEdit,
+            startEditing: state.editing.startEditing,
+            setRelationshipsEditMode: state.setRelationshipsEditMode,
+          }),
+          onClose: close,
+          href: `${entityBasePath.replace(/^\//, '')}/${state.entity.sharedId}`,
         })}
       </div>
     </EntityTabFooter>

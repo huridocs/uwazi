@@ -59,6 +59,35 @@ describe('LibrarySingleSelectActions', () => {
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
   });
 
+  it('shows Close and View entity when actions are omitted', () => {
+    render(
+      <MemoryRouter>
+        <TestAtomStoreProvider
+          initialValues={[
+            [localeAtom, 'en'],
+            [translationsAtom, translations],
+            [userAtom, adminUser],
+          ]}
+        >
+          <LibrarySingleSelectActions
+            onClose={() => undefined}
+            includeActions={false}
+            entityBasePath="/entityv2"
+            sharedId="shared-doc"
+          />
+        </TestAtomStoreProvider>
+      </MemoryRouter>
+    );
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /View entity/ })).toHaveAttribute(
+      'href',
+      '/en/entityv2/shared-doc'
+    );
+    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+  });
+
   it('does not delete when delete is disabled', () => {
     const onAction = jest.fn();
     renderActions({ onAction, deleteDisabled: true });
