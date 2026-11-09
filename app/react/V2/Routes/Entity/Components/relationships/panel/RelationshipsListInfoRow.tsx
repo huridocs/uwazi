@@ -1,26 +1,15 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipsPanelStats } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import {
-  useEnsureResolved,
-  useRelationshipsPanelLayout,
-  useRelationshipsPanelUi,
-} from '#V2/Routes/Entity/Components/context/index.js';
+import { useCompactCollapseBarMounted } from './compactCollapseBarScope.js';
+import { RelationshipCollapseControls } from './RelationshipCollapseControls.js';
 
 type RelationshipsListInfoRowProps = {
   stats: RelationshipsPanelStats;
 };
 
 const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
-  const { groupBy } = useRelationshipsPanelLayout();
-  const { setExpandAllSignal, setCollapseAllSignal } = useRelationshipsPanelUi();
-  const ensureResolved = useEnsureResolved();
-  const groupingEnabled = groupBy !== 'none';
-
-  const handleExpandAll = useCallback(() => {
-    setExpandAllSignal(signal => signal + 1);
-    ensureResolved().catch(() => undefined);
-  }, [ensureResolved, setExpandAllSignal]);
+  const compactBarMounted = useCompactCollapseBarMounted();
 
   return (
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pb-2 pt-1 text-micro text-ink-tertiary">
@@ -32,32 +21,7 @@ const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
         <span className="font-semibold tabular-nums text-ink-secondary">{stats.references}</span>{' '}
         <Translate>references</Translate>
       </span>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          disabled={!groupingEnabled}
-          onClick={() => setCollapseAllSignal(signal => signal + 1)}
-          className={`px-1 font-medium ${
-            groupingEnabled
-              ? 'cursor-pointer text-ink-secondary hover:text-ink'
-              : 'cursor-not-allowed text-ink-muted'
-          }`}
-        >
-          <Translate>Collapse all</Translate>
-        </button>
-        <button
-          type="button"
-          disabled={!groupingEnabled}
-          onClick={handleExpandAll}
-          className={`px-1 font-medium ${
-            groupingEnabled
-              ? 'cursor-pointer text-ink-secondary hover:text-ink'
-              : 'cursor-not-allowed text-ink-muted'
-          }`}
-        >
-          <Translate>Expand all</Translate>
-        </button>
-      </div>
+      {compactBarMounted ? null : <RelationshipCollapseControls />}
     </div>
   );
 };

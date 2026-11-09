@@ -40,15 +40,6 @@ const openTab = (name: string | RegExp) => {
   expect(screen.getByRole('tab', { name })).toHaveAttribute('aria-selected', 'true');
 };
 
-const expectMetadataEditing = async () => {
-  expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
-    'aria-selected',
-    'true'
-  );
-  expect(await screen.findByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-};
-
 describe('library selection commands', () => {
   beforeEach(() => {
     resetEntityMocks();
@@ -67,15 +58,33 @@ describe('library selection commands', () => {
     expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
   });
 
-  it('keeps one text-only Edit on Files and Relationships, and edits from those tabs', async () => {
-    await selectMexico();
-    const footer = screen.getByTestId('library-entity-preview-footer');
-    openTab(/Files/);
-    expectTextOnlyEdit(footer);
-    openTab(/^Relationships/);
-    expectTextOnlyEdit(footer);
-    fireEvent.click(within(oneEntityActions()).getByRole('button', { name: 'Edit' }));
-    await expectMetadataEditing();
+  describe('active tab edit', () => {
+    it('does not offer Edit on Files', async () => {
+      await selectMexico();
+      openTab(/Files/);
+      const footer = screen.getByTestId('library-entity-preview-footer');
+      expect(within(footer).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+      expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Files/ })).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('edits relationships in place', async () => {
+      await selectMexico();
+      openTab(/^Relationships/);
+      expectTextOnlyEdit(screen.getByTestId('library-entity-preview-footer'));
+      fireEvent.click(within(oneEntityActions()).getByRole('button', { name: 'Edit' }));
+      expect(screen.getByRole('tab', { name: /^Relationships/ })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      );
+      expect(
+        await screen.findByRole('button', { name: 'Create relationship' })
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+      expect(within(oneEntityActions()).getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    });
   });
 
   it('opens permissions from the lock on the one-entity panel bar', async () => {

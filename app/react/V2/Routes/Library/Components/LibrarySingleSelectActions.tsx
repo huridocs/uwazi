@@ -25,6 +25,7 @@ type LibrarySingleSelectActionsProps = {
   onClose: () => void;
   leading?: ReactNode;
   includeViewEntity?: boolean;
+  includeActions?: boolean;
   deleteDisabled?: boolean;
 };
 
@@ -39,40 +40,45 @@ const LibrarySingleSelectActions = ({
   onClose,
   leading,
   includeViewEntity = true,
+  includeActions = true,
   deleteDisabled = false,
 }: LibrarySingleSelectActionsProps) => (
   <>
-    <div className="flex min-w-0 items-center gap-2">
-      <NeedAuthorization roles={editorRoles}>
-        <div data-testid="library-single-select-actions" className="flex shrink-0 items-center">
-          <LibraryFooterButton onClick={() => onEdit?.()}>
-            <Translate>Edit</Translate>
-          </LibraryFooterButton>
-          <button
-            type="button"
-            aria-label={t('System', 'Permissions', null, false)}
-            onClick={() => onAction?.('permissions')}
-            className={iconButtonClassName}
-          >
-            {actionById('permissions')?.icon}
-          </button>
-          <LibraryFooterDivider />
-          <button
-            type="button"
-            aria-label={t('System', 'Delete', null, false)}
-            title={deleteDisabled ? bulkDeleteLimitTitle() : undefined}
-            disabled={deleteDisabled}
-            onClick={() => {
-              if (!deleteDisabled) onAction?.('delete');
-            }}
-            className={deleteButtonClassName}
-          >
-            {actionById('delete')?.icon}
-          </button>
-        </div>
-      </NeedAuthorization>
-      {leading}
-    </div>
+    {includeActions ? (
+      <div className="flex min-w-0 items-center gap-2">
+        <NeedAuthorization roles={editorRoles}>
+          <div data-testid="library-single-select-actions" className="flex shrink-0 items-center">
+            {onEdit ? (
+              <LibraryFooterButton onClick={onEdit}>
+                <Translate>Edit</Translate>
+              </LibraryFooterButton>
+            ) : null}
+            <button
+              type="button"
+              aria-label={t('System', 'Permissions', null, false)}
+              onClick={() => onAction?.('permissions')}
+              className={iconButtonClassName}
+            >
+              {actionById('permissions')?.icon}
+            </button>
+            <LibraryFooterDivider />
+            <button
+              type="button"
+              aria-label={t('System', 'Delete', null, false)}
+              title={deleteDisabled ? bulkDeleteLimitTitle() : undefined}
+              disabled={deleteDisabled}
+              onClick={() => {
+                if (!deleteDisabled) onAction?.('delete');
+              }}
+              className={deleteButtonClassName}
+            >
+              {actionById('delete')?.icon}
+            </button>
+          </div>
+        </NeedAuthorization>
+        {leading}
+      </div>
+    ) : null}
     <div className="ms-auto flex shrink-0 items-center">
       <button
         type="button"

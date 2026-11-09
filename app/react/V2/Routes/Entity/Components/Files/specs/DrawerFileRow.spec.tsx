@@ -19,14 +19,6 @@ jest.mock('../FileThumbnail', () => ({
   FileThumbnail: () => <div data-testid="thumb" />,
 }));
 
-jest.mock('../ViewFileButton', () => ({
-  ViewFileButton: ({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) => (
-    <button type="button" onClick={onClick} disabled={disabled}>
-      View
-    </button>
-  ),
-}));
-
 jest.mock('#V2/Components/UI/index.js', () => ({
   UwaziLoader: () => null,
   LanguageSelect: ({
@@ -171,6 +163,26 @@ describe('DrawerFileRow', () => {
     expect(screen.queryByRole('button', { name: /Download/ })).not.toBeInTheDocument();
   });
 
+  it('opens the file from the row and leaves rename alone', () => {
+    const onView = jest.fn();
+    const file = buildRow();
+    render(
+      <DrawerFileRow
+        row={file}
+        editing={false}
+        onView={onView}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    fireEvent.click(screen.getByText('doc.pdf'));
+    fireEvent.click(screen.getByRole('button', { name: 'Rename' }));
+    expect(onView).toHaveBeenCalledTimes(1);
+    expect(onView).toHaveBeenCalledWith(file);
+    expect(screen.queryByRole('button', { name: 'View' })).not.toBeInTheDocument();
+  });
+
   it('disables view while the file is processing', () => {
     render(
       <DrawerFileRow
@@ -182,7 +194,7 @@ describe('DrawerFileRow', () => {
         onCommit={jest.fn()}
       />
     );
-    expect(screen.getByRole('button', { name: 'View' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'View doc.pdf' })).toBeDisabled();
   });
 
   it('commits trimmed name and language when save is clicked', async () => {

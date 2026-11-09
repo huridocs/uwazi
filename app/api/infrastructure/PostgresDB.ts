@@ -122,14 +122,15 @@ export class PostgresDB {
     );
   }
 
+  /** "admin" here is the migrator role (config.postgres.migrator), not the superuser. */
   private static adminConnectionConfig(): PostgresConnectionConfig {
     return (
       this._activeConfig ?? {
         host: config.postgres.host,
         port: config.postgres.port,
         database: config.postgres.database,
-        user: config.postgres.admin?.user,
-        password: config.postgres.admin?.password,
+        user: config.postgres.migrator?.user,
+        password: config.postgres.migrator?.password,
       }
     );
   }

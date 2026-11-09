@@ -20,6 +20,7 @@ import {
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
+import { ManageRelationTypesModal } from '#V2/Routes/Entity/Components/relationships/create-reference/ManageRelationTypesModal.js';
 import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
@@ -230,6 +231,7 @@ const LibraryPreviewReady = ({
             />
           </EntityFilesFromEntity>
           <EntityCreateRelationshipModal />
+          <ManageRelationTypesModal />
         </EntityScopedProvider>
       </EntityUrlSync>
     </ErrorBoundary>

@@ -14,7 +14,7 @@ const RelationshipsTabFooter = ({ inset = 'main' }: RelationshipsTabFooterProps)
 
   return (
     <EntityTabFooter highlighted={highlighted} inset={inset}>
-      <RelationshipsActionBar />
+      <RelationshipsActionBar compact={inset === 'side'} />
     </EntityTabFooter>
   );
 };

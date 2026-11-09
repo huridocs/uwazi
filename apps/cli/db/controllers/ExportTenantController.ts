@@ -27,7 +27,7 @@ class ExportTenantController {
     );
 
     try {
-      await new PgTenantBackup(pool).export(tenantId, stdout, progress.table);
+      await new PgTenantBackup(pool).export(tenantId, stdout, { onProgress: progress.table });
     } finally {
       progress.close();
     }
