@@ -2,6 +2,7 @@ import type { Pool } from 'pg';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import {
   discoverDataTablesWithColumns,
+  discoverPrimaryKeys,
   discoverTenantTables,
   EXCLUDED_TABLES,
 } from '../tenantTableDiscovery.js';
@@ -92,6 +93,16 @@ describe('tenantTableDiscovery', () => {
       expect(table.columns[0]).toBe('tenant_id');
       expect(table.columns.filter(column => column === 'tenant_id')).toHaveLength(1);
       expect(table.columns.length).toBeGreaterThan(1);
+    }
+  });
+
+  it('finds the primary key columns of every data table, in key order', async () => {
+    const keys = await discoverPrimaryKeys(pool);
+
+    expect(keys.get('settings')).toEqual(['tenant_id']);
+    expect(keys.get('page_locales')).toEqual(['page_id', 'language', 'tenant_id']);
+    for (const table of DATA_TABLES) {
+      expect(keys.get(table)?.length).toBeGreaterThan(0);
     }
   });
 });

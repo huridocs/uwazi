@@ -24,17 +24,36 @@ describe('BlankStateRoutes', () => {
     expect(BlankStateRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['db blank-state dump', 'single'],
       ['db blank-state restore', 'single'],
+      ['db blank-state upgrade', 'none'],
     ]);
   });
 
   it('should need the admin Postgres pool and never Redis or sessions', () => {
-    BlankStateRoutes.all().forEach(r =>
-      expect(r.needs).toEqual({ redis: false, sessions: false, postgresAdmin: true })
+    ['dump', 'restore'].forEach(name =>
+      expect(route(name).needs).toEqual({ redis: false, sessions: false, postgresAdmin: true })
     );
   });
 
-  it.each(['dump', 'restore'])('%s should reject unknown request fields, tenant included', name => {
-    expect(issuesOf(() => parse(name, { tenant: 'acme' }))).toContain('');
+  it('should also need a scratch database to upgrade the dump', () => {
+    expect(route('upgrade').needs).toEqual({
+      redis: false,
+      sessions: false,
+      postgresAdmin: true,
+      scratchDatabase: true,
+    });
+  });
+
+  it.each(['dump', 'restore', 'upgrade'])(
+    '%s should reject unknown request fields, tenant included',
+    name => {
+      expect(issuesOf(() => parse(name, { tenant: 'acme' }))).toContain('');
+    }
+  );
+
+  describe('upgrade', () => {
+    it('should take an empty request', () => {
+      expect(parse('upgrade', {})).toEqual({});
+    });
   });
 
   describe('dump', () => {

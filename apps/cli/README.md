@@ -9,17 +9,17 @@ It runs the same use cases as the HTTP API, in-process, as the system actor.
 This page covers what every command shares. What each command does, its rules and its errors are
 in the module's own page:
 
-| Module                               | Commands                                                                                               |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                      |
-| [settings](docs/settings.md)         | `get`, `update`                                                                                        |
-| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
-| [db](docs/db.md)                     | `clear`, `export`, `import`, `blank-state dump`, `blank-state restore`                                 |
-| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                           |
-| [usage](docs/usage.md)               | `report`                                                                                               |
-| [sessions](docs/sessions.md)         | `last`                                                                                                 |
-| [activity](docs/activity.md)         | `list`                                                                                                 |
-| [archives](docs/archives.md)         | `list`                                                                                                 |
+| Module                               | Commands                                                                                                 |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                        |
+| [settings](docs/settings.md)         | `get`, `update`                                                                                          |
+| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check`   |
+| [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`, `blank-state upgrade` |
+| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                             |
+| [usage](docs/usage.md)               | `report`                                                                                                 |
+| [sessions](docs/sessions.md)         | `last`                                                                                                   |
+| [activity](docs/activity.md)         | `list`                                                                                                   |
+| [archives](docs/archives.md)         | `list`                                                                                                   |
 
 ## Running it
 
@@ -59,16 +59,16 @@ and written, as it does for the server.
 
 ## Input
 
-| Option                | Meaning                                                                                                                                                                            |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                                          |
-| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                                         |
-| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                                   |
-| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `archives …` and the registry commands under `tenants …` (not `db clear`/`export`/`import`/`blank-state …`). |
-| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                            |
-| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                                     |
-| `--verbose`           | Add stack traces to errors.                                                                                                                                                        |
-| `--help`, `--version` |                                                                                                                                                                                    |
+| Option                | Meaning                                                                                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                                                        |
+| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                                                       |
+| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                                                 |
+| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `archives …`, `db upgrade` and the registry commands under `tenants …` (not `db clear`/`export`/`import`/`blank-state …`). |
+| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                                          |
+| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                                                   |
+| `--verbose`           | Add stack traces to errors.                                                                                                                                                                      |
+| `--help`, `--version` |                                                                                                                                                                                                  |
 
 Unknown request fields are rejected. `--schema` is the reference for each command's input:
 
