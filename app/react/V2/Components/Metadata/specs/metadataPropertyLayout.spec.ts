@@ -152,7 +152,7 @@ describe('metadataPropertyLayout', () => {
       });
     });
 
-    it('keeps one inherit group card at the first sibling in template order', () => {
+    it('places the inherit group at the first property in template order', () => {
       const first = inheritingSibling('inh-a', 'rel_a', 'Rel A');
       const second = inheritingSibling('inh-b', 'rel_b', 'Rel B');
       const templateMap = inheritSiblingTemplateMap();
@@ -171,7 +171,7 @@ describe('metadataPropertyLayout', () => {
       ]);
     });
 
-    it('splits read-mode inherit groups by relationship type', () => {
+    it('groups inherited properties by relationship type', () => {
       const first = inheritingSibling('inh-a', 'rel_a', 'Rel A');
       const second = inheritingSibling('inh-b', 'rel_b', 'Rel B');
       const templateMap = inheritSiblingTemplateMap();

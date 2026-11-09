@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { type ReactElement, useMemo, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 import {
@@ -83,7 +83,7 @@ const connectionPillsForField = (
   field: RelationshipMetadataProperty,
   templateProperty: ClientProperty | undefined,
   options: ConnectionPillsForFieldOptions = {}
-): ReactNode => {
+): ReactElement | null => {
   const values = field.values.filter(isEntityRelationshipValue);
   if (!values.length) {
     return null;

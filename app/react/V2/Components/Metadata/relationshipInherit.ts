@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import {
   inheritedCellContent,
   inheritedCellSortKey,
@@ -27,6 +26,7 @@ type InheritColumnProperty = {
 };
 
 type InheritColumn = {
+  id?: string;
   label: string;
   inheritedType?: PropertyTypeSchema;
   cellsByEntityId?: Record<string, ReactNode>;
@@ -55,7 +55,7 @@ const inheritsValue = (property: RelationshipGroupProperty): boolean =>
 
 const relationshipGroupKey = (property: RelationshipGroupProperty): string =>
   inheritsValue(property)
-    ? `inherit::${property.content ?? ''}`
+    ? `inherit::${property.content ?? ''}::${property.relationType ?? ''}`
     : `${property.content ?? ''}::${property.relationType ?? ''}`;
 
 const inheritColumnLabel = (
@@ -65,7 +65,9 @@ const inheritColumnLabel = (
 
 type InheritColumnContext = {
   templates: InheritColumnTemplate[];
-  sourceMetadata?: Entity['metadata'];
+  sourceMetadata?: {
+    [name: string]: ReadonlyArray<{ value?: unknown; [key: string]: unknown }> | undefined;
+  };
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -73,14 +75,15 @@ const buildInheritColumns = (
   property: RelationshipGroupProperty,
   metadataProperties: InheritColumnProperty[],
   { templates, sourceMetadata, onOpenEntity }: InheritColumnContext
-): InheritColumn[] =>
-  metadataProperties
+): InheritColumn[] => {
+  if (!inheritsValue(property)) return [];
+  return metadataProperties
     .filter(
       candidate =>
         candidate.type === 'relationship' &&
         candidate.inherited &&
         candidate.content === property.content &&
-        (inheritsValue(property) || candidate.relationType === property.relationType)
+        candidate.relationType === property.relationType
     )
     .map(candidate => {
       const values = sourceMetadata?.[candidate.name];
@@ -102,12 +105,14 @@ const buildInheritColumns = (
       });
       const inheritType = candidate.inherit?.type;
       return {
+        id: candidate._id,
         label: inheritedTarget?.label ?? candidate.label,
         ...(inheritType && isPropertyType(inheritType) ? { inheritedType: inheritType } : {}),
         cellsByEntityId,
         sortKeyByEntityId,
       };
     });
+};
 
 const anchorInheritGroup = (
   siblings: RelationshipMetadataProperty[]

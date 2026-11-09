@@ -116,6 +116,7 @@ describe('inheritedCellContent', () => {
     const screenMap = document.querySelector('[data-part="screen-map"] [data-testid="map"]');
     expect(screenMap).toHaveAttribute('data-height', '160');
     expect(screenMap).toHaveAttribute('data-show-controls', 'false');
+    expect(document.querySelector('[data-part="print-map"]')).toBeNull();
   });
 
   it('renders media inherited values with compact density', () => {

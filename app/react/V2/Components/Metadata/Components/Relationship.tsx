@@ -1,18 +1,15 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataCard } from './MetadataCard.js';
-import { RelationCaption, inheritLabelsFromColumns } from './RelationCaption.js';
-import {
-  ConnectionPills,
-  isEntityRelationshipValue,
-  type OpenEntityTarget,
-} from './ConnectionPills.js';
+import { RelationCaption } from './RelationCaption.js';
+import { isEntityRelationshipValue, type OpenEntityTarget } from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
 import type { InheritColumn } from '../relationshipInherit.js';
+
+const emptyColumns: InheritColumn[] = [];
 
 type RelationshipProps = {
   label: string;
@@ -23,8 +20,6 @@ type RelationshipProps = {
   relationTypeId?: string;
   targetTemplateId?: string;
   columns?: InheritColumn[];
-  inheritLabels?: string[];
-  inheritLabel?: string;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -36,9 +31,7 @@ const Relationship = ({
   values,
   relationTypeId,
   targetTemplateId,
-  columns: columnsProp,
-  inheritLabels,
-  inheritLabel,
+  columns = emptyColumns,
   onOpenEntity,
 }: RelationshipProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
@@ -60,49 +53,23 @@ const Relationship = ({
     icon: value.icon,
   }));
 
-  const columns =
-    columnsProp ??
-    (inheritLabel
-      ? [
-          {
-            label: inheritLabel,
-            cellsByEntityId: {},
-          },
-        ]
-      : []);
-
-  const resolvedInheritLabels = inheritLabelsFromColumns(columns, inheritLabel, inheritLabels);
-  const showsInheritedTable = columns.length > 0;
-
   return (
-    <MetadataCard className={className}>
-      <dt className="flex items-center gap-1.5">
-        <LinkIcon className="h-3.5 w-3.5 shrink-0 text-carbon" aria-hidden="true" />
-        <Translate
-          className={hideLabel ? 'sr-only' : 'text-sm font-bold leading-tight text-ink'}
-          context={translationContext}
-        >
+    <MetadataCard
+      className={className}
+      title={
+        <Translate className={hideLabel ? 'sr-only' : undefined} context={translationContext}>
           {label}
         </Translate>
-      </dt>
-      <dd className="mt-1 flex flex-col gap-1.5">
-        <RelationCaption relationLabel={relationLabel} inheritLabels={resolvedInheritLabels} />
-        {showsInheritedTable ? (
-          <RelationshipConnectionsTable
-            rows={rows}
-            columns={columns}
-            translationContext={translationContext}
-            targetTemplateId={targetTemplateId}
-            onOpenEntity={onOpenEntity}
-          />
-        ) : (
-          <ConnectionPills
-            values={entities}
-            targetTemplateId={targetTemplateId}
-            onOpenEntity={onOpenEntity}
-          />
-        )}
-      </dd>
+      }
+    >
+      <RelationCaption relationLabel={relationLabel} fieldTitle={label} />
+      <RelationshipConnectionsTable
+        rows={rows}
+        columns={columns}
+        translationContext={translationContext}
+        targetTemplateId={targetTemplateId}
+        onOpenEntity={onOpenEntity}
+      />
     </MetadataCard>
   );
 };

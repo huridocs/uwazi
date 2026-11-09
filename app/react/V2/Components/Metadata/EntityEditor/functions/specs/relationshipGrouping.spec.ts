@@ -37,7 +37,7 @@ describe('groupRelationshipProperties', () => {
     },
   ];
 
-  it('should keep non-relationship properties and merge matching relationships', () => {
+  it('should group relationship properties that share a template and relation type', () => {
     const grouped = groupRelationshipProperties(properties);
 
     expect(grouped).toHaveLength(3);
@@ -54,7 +54,7 @@ describe('groupRelationshipProperties', () => {
     });
   });
 
-  it('should share one source list for inherited properties of the same template', () => {
+  it('should group inherited properties by relation type', () => {
     const grouped = groupRelationshipProperties([
       {
         _id: 'md',
@@ -78,8 +78,9 @@ describe('groupRelationshipProperties', () => {
       },
     ]);
 
-    expect(grouped).toHaveLength(1);
-    expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark', 'relationshipgeo']);
+    expect(grouped.map(property => property.name)).toEqual(['relationshipmark', 'relationshipgeo']);
+    expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark']);
+    expect(grouped[1].groupedRelationshipNames).toEqual(['relationshipgeo']);
   });
 });
 
@@ -119,6 +120,48 @@ describe('syncGroupedRelationshipMetadata', () => {
     expect(syncGroupedRelationshipMetadata(metadata, displayProperties)).toEqual({
       related_people: source,
       related_residents: source,
+      simple_text: [{ value: 'keep' }],
+    });
+  });
+
+  it('should keep each property inherited value when the shared entities are aligned', () => {
+    const metadata: Record<string, MetadataValue[]> = {
+      related_people: [
+        {
+          value: 'shared-1',
+          label: 'One',
+          inheritedType: 'geolocation',
+          inheritedValue: [{ value: { lat: 1, lon: 2 } }],
+        },
+        {
+          value: 'shared-2',
+          label: 'Two',
+          inheritedType: 'geolocation',
+          inheritedValue: [{ value: { lat: 3, lon: 4 } }],
+        },
+      ],
+      related_residents: [
+        {
+          value: 'shared-1',
+          label: 'Old',
+          inheritedType: 'image',
+          inheritedValue: [{ value: '/api/files/photo.png' }],
+        },
+      ],
+      simple_text: [{ value: 'keep' }],
+    };
+
+    expect(syncGroupedRelationshipMetadata(metadata, displayProperties)).toEqual({
+      related_people: metadata.related_people,
+      related_residents: [
+        {
+          value: 'shared-1',
+          label: 'One',
+          inheritedType: 'image',
+          inheritedValue: [{ value: '/api/files/photo.png' }],
+        },
+        { value: 'shared-2', label: 'Two' },
+      ],
       simple_text: [{ value: 'keep' }],
     });
   });

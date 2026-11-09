@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   InformationCircleIcon,
-  LinkIcon,
   PencilSquareIcon,
   PlusIcon,
   XMarkIcon,
@@ -100,15 +99,9 @@ const RelationshipFieldEditor = ({
   return (
     <div className="space-y-1.5">
       <div>
-        <div className="flex items-center gap-1.5">
-          <LinkIcon className="h-3.5 w-3.5 shrink-0 text-carbon" aria-hidden />
-          <EntityFieldLabel context={translationContext} label={title} showError={showError} />
-        </div>
+        <EntityFieldLabel context={translationContext} label={title} showError={showError} />
         {relationLabel ? (
-          <RelationCaption
-            relationLabel={relationLabel}
-            inheritLabels={columns.map(column => column.label)}
-          />
+          <RelationCaption relationLabel={relationLabel} fieldTitle={title} />
         ) : null}
       </div>
 
@@ -117,6 +110,7 @@ const RelationshipFieldEditor = ({
         columns={columns}
         translationContext={translationContext}
         targetTemplateId={targetTemplateId}
+        preview
         renderActions={row => (
           <div className="flex items-center justify-end gap-0.5">
             <button
@@ -124,7 +118,7 @@ const RelationshipFieldEditor = ({
               disabled={disabled || !onEditSource}
               onClick={() => onEditSource?.(row.id, row.label)}
               title={t('System', 'Edit at source', null, false)}
-              className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-meta font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
             >
               <PencilSquareIcon className="h-3 w-3" aria-hidden />
               <Translate>Source</Translate>
@@ -181,7 +175,7 @@ const RelationshipFieldEditor = ({
       )}
 
       {columns.length > 0 ? (
-        <p className="flex items-start gap-1.5 text-[11px] text-ink-tertiary">
+        <p className="flex items-start gap-1.5 text-meta text-ink-tertiary">
           <InformationCircleIcon className="mt-px h-3 w-3 shrink-0 text-carbon" aria-hidden />
           <Translate>
             Inherited values are read-only. Change the connection above, or edit the source entity.

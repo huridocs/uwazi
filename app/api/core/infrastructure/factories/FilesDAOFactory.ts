@@ -4,9 +4,10 @@ import { PostgresFilesDAO } from '../postgresql/files/PostgresFilesDAO.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 
 class FilesDAOFactory {
-  static default(): MongoFilesDAO {
+  static default(overrides?: { accessContext?: AccessContext }): MongoFilesDAO {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresCore) {
@@ -17,7 +18,7 @@ class FilesDAOFactory {
       return new PostgresFilesDAO({
         tenantId: tenant.name,
         pgTransactionManager: pgTM,
-        accessContext: ExecutionContext.accessContext,
+        accessContext: overrides?.accessContext ?? ExecutionContext.accessContext,
       }) as any as MongoFilesDAO;
     }
 

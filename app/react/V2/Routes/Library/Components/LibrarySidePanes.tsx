@@ -33,8 +33,13 @@ const filtersList = ({
   />
 );
 
-const libraryRightPaneElement = (pane: LibraryRightPaneProps, onClosePreview: () => void) => (
+const libraryRightPaneElement = (
+  pane: LibraryRightPaneProps,
+  onClosePreview: () => void,
+  isMobile: boolean
+) => (
   <LibraryRightPane
+    isMobile={isMobile}
     creating={pane.creating}
     rows={pane.rows}
     selectedIds={pane.selectedIds}
@@ -77,7 +82,7 @@ const librarySidePanes = ({
   if (!isMobile) {
     return [
       <PaneLayout.Pane key="side" background="transparent">
-        {libraryRightPaneElement(pane, pane.onClosePreview)}
+        {libraryRightPaneElement(pane, pane.onClosePreview, isMobile)}
       </PaneLayout.Pane>,
     ];
   }
@@ -126,7 +131,7 @@ const librarySidePanes = ({
         mobileSnap={pane.creating ? 'full' : 'half'}
         onMobileClose={pane.onClosePreview}
       >
-        {libraryRightPaneElement(pane, popPreview)}
+        {libraryRightPaneElement(pane, popPreview, isMobile)}
       </PaneLayout.Pane>
     );
   }
