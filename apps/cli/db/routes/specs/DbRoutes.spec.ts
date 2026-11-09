@@ -25,15 +25,28 @@ describe('DbRoutes', () => {
       ['db clear', 'single'],
       ['db export', 'single'],
       ['db import', 'single'],
+      ['db upgrade', 'none'],
       ['db blank-state dump', 'single'],
       ['db blank-state restore', 'single'],
+      ['db blank-state upgrade', 'none'],
     ]);
   });
 
   it('should need the admin Postgres pool and never Redis or sessions', () => {
-    DbRoutes.all().forEach(r =>
-      expect(r.needs).toEqual({ redis: false, sessions: false, postgresAdmin: true })
-    );
+    DbRoutes.all()
+      .filter(r => r.command[r.command.length - 1] !== 'upgrade')
+      .forEach(r =>
+        expect(r.needs).toEqual({ redis: false, sessions: false, postgresAdmin: true })
+      );
+  });
+
+  it('should also need a scratch database to upgrade a backup', () => {
+    expect(route('upgrade').needs).toEqual({
+      redis: false,
+      sessions: false,
+      postgresAdmin: true,
+      scratchDatabase: true,
+    });
   });
 
   describe('clear', () => {
@@ -75,6 +88,33 @@ describe('DbRoutes', () => {
         {}
       );
       expect(importRoute.options).toBeDefined();
+    });
+  });
+
+  describe('upgrade', () => {
+    it('should require input and output, with force optional', () => {
+      expect(parse('upgrade', { input: 'a.uwazidump', output: 'b.uwazidump' })).toEqual({
+        input: 'a.uwazidump',
+        output: 'b.uwazidump',
+      });
+      expect(issuesOf(() => parse('upgrade', {})).sort()).toEqual(['input', 'output']);
+      expect(issuesOf(() => parse('upgrade', { input: 'a', output: 'b', force: 'yes' }))).toEqual([
+        'force',
+      ]);
+    });
+
+    it('should take input, output and force as flags merged into the request', () => {
+      const upgradeRoute = route('upgrade');
+      const merge = upgradeRoute.requestFromFlags;
+      if (!merge) throw new Error('upgrade should merge flags into its request');
+
+      expect(
+        upgradeRoute.request.parse(merge({ input: 'a', output: 'b', force: true }, {}))
+      ).toEqual({ input: 'a', output: 'b', force: true });
+      expect(
+        upgradeRoute.request.parse(merge({ input: 'a', output: 'b', force: false }, {}))
+      ).toEqual({ input: 'a', output: 'b' });
+      expect(upgradeRoute.options).toBeDefined();
     });
   });
 });

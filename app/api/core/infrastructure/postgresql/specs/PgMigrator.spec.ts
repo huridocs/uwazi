@@ -296,6 +296,31 @@ describe('PgMigrator', () => {
     });
   });
 
+  describe('latestAvailableVersion', () => {
+    it('should return 0 when there are no migration files', () => {
+      expect(createMigrator().latestAvailableVersion()).toBe(0);
+    });
+
+    it('should return the highest delta among schema and data migration files', () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      createMigration('003-backfill.ts', 'export const migration = {};');
+      createMigration('002-second.sql', 'SELECT 2');
+      createMigration('README.md', 'not a migration');
+
+      expect(createMigrator().latestAvailableVersion()).toBe(3);
+    });
+
+    it('should not depend on what has been applied', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      const migrator = createMigrator();
+      await migrator.migrate({ until: 0 });
+      createMigration('002-second.sql', 'SELECT 2');
+
+      expect(migrator.latestAvailableVersion()).toBe(2);
+      expect(await migrator.getCurrentVersion()).toBe(0);
+    });
+  });
+
   describe('migrateUntil', () => {
     it('should apply migrations up to the target version', async () => {
       createMigration('001-first.sql', 'SELECT 1');
