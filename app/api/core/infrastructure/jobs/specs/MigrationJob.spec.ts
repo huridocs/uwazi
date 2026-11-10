@@ -29,6 +29,10 @@ class FakePgMigrator {
     return this.currentVersion;
   }
 
+  async status(): Promise<{ applied: number[]; pending: unknown[] }> {
+    return { applied: this.appliedDeltas, pending: [] };
+  }
+
   async migrate({ until }: { until?: number } = {}): Promise<MigrateResult> {
     const target = Math.min(until ?? this.maxDelta, this.maxDelta);
     const deltas: number[] = [];

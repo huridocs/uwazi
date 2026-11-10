@@ -1585,6 +1585,7 @@ File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the stor
 Save theme,Button label,Settings > Collection,Saves theme and branding from the side panel without saving other unsaved collection settings.,false
 Show all,Button label,Shared (used across 2 views),"Expands the folded file list on the entity metadata tab and the library entity preview when more than six files are present. The count and the word files sit beside this label.",false
 "You can delete at most 10,000 entities at once.",Tooltip,Library,"Tooltip on the disabled Delete button when 10,000 or more entities are selected.",false
+Back to files,Button label,Library,Returns from an open file to the file list in the side panel.,false
 Cherrypick,UI text,Library,"Heading of the hint in the Library Select menu. It explains that records are picked one by one and is not itself an action.",false
 Click records to add them. Cmd + click works anytime.,Tooltip,Library,"Hint under Cherrypick on Apple keyboards: a click adds a record, and Command-click works even outside selection mode.",false
 Click records to add them. Ctrl + click works anytime.,Tooltip,Library,"Hint under Cherrypick on other keyboards: a click adds a record, and Control-click works even outside selection mode.",false

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { useMetadataEditing } from '../Components/context/index.js';
+import { useEntityFiles } from '../Components/Files/EntityFilesContext.js';
+import { useExitRelationshipsEdit, useMetadataEditing } from '../Components/context/index.js';
 import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
 import {
   keepMetadataTab,
@@ -21,12 +22,25 @@ type SideTabsFootersProps = {
   mainDocument?: FileType;
 };
 
-const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabsFootersProps) => {
+const useSideFooterState = (urlActiveTabId?: SideTabId) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
   const resolvedTabId = resolveControlledTabId(urlActiveTabId, atomActiveTabId);
   const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { isEditing, formMountHost } = useMetadataEditing();
-  const metadataActive = activeTabId === SIDE_TAB.METADATA;
+  const { filePanelMode } = useEntityFiles();
+  useExitRelationshipsEdit(activeTabId === SIDE_TAB.RELATIONSHIPS);
+  return {
+    activeTabId,
+    metadataActive: activeTabId === SIDE_TAB.METADATA,
+    isEditing,
+    formMountHost,
+    filePanelMode,
+  };
+};
+
+const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabsFootersProps) => {
+  const { activeTabId, metadataActive, isEditing, formMountHost, filePanelMode } =
+    useSideFooterState(urlActiveTabId);
 
   if (keepMetadataTab(Boolean(metadataActive), isEditing, formMountHost, 'side')) {
     return <MetadataTabFooter host="side" />;
@@ -49,7 +63,7 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
     case SIDE_TAB.FILE:
       return <FileTabFooter />;
     case SIDE_TAB.FILES:
-      return <FilesListSideFooter />;
+      return filePanelMode === 'preview' ? null : <FilesListSideFooter />;
     case SIDE_TAB.TRANSLATIONS:
       return <TranslationsTabFooter />;
     default:

@@ -18,6 +18,8 @@ jest.mock('../EntityFilesContext', () => ({
     mainDocumentId: undefined,
     saveRow: jest.fn(),
     requestAddFile: jest.fn(),
+    openFilePreviewForRow: jest.fn(),
+    closeFilePreview: jest.fn(),
   }),
 }));
 
@@ -68,11 +70,13 @@ describe('DrawerFilesList', () => {
     rows.supportingRows = [];
   });
 
-  it('opens the preview modal from View', () => {
+  it('opens the file in place from the row', () => {
     rows.primaryRows = [row({})];
     render(<DrawerFilesList />);
     fireEvent.click(screen.getByRole('button', { name: 'View doc.pdf' }));
-    expect(screen.getByRole('dialog', { name: 'doc.pdf' })).toBeInTheDocument();
+    expect(screen.getByText('preview')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back to files' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('opens a link in a new window', () => {

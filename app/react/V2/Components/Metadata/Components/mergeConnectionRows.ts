@@ -21,19 +21,6 @@ const connectionSortKey = (column: RelationshipTableColumn, entityId: string): s
   return '';
 };
 
-const distinctRollup = (
-  rows: RelationshipTableRow[],
-  column: RelationshipTableColumn
-): { text: string; title: string } | undefined => {
-  const present = rows
-    .map(row => connectionSortKey(column, row.id))
-    .filter(value => value.length > 0);
-  if (!present.length) return undefined;
-  const n = new Set(present).size;
-  if (n >= present.length) return undefined;
-  return { text: `${n} distinct`, title: `${n} distinct values across ${present.length}` };
-};
-
 type SortKey = (row: RelationshipTableRow, index: number) => string;
 
 const advanceSpan = ({
@@ -97,17 +84,5 @@ const mergeConnectionRows = (
   return merged;
 };
 
-const inheritView = (rows: RelationshipTableRow[], columns: RelationshipTableColumn[]) => {
-  const summaries = columns.map(column => distinctRollup(rows, column));
-  return {
-    mergedRows: mergeConnectionRows(rows, columns),
-    summaries,
-    rollups: summaries.flatMap((summary, index) => {
-      const column = columns[index];
-      return summary && column ? [{ label: column.label, ...summary }] : [];
-    }),
-  };
-};
-
-export { distinctRollup, inheritView, mergeConnectionRows, connectionSortKey };
+export { mergeConnectionRows };
 export type { MergedConnectionRow, MergedInheritCell };

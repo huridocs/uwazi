@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
@@ -10,7 +10,6 @@ import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
 import { RelationshipsSearchBar } from '../filters/RelationshipsSearchBar.js';
 import {
   useRelationshipsPanelLayout,
-  useRelationshipsSelectionActions,
   useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipsPanelData } from '../hooks/useRelationshipsPanelData.js';
@@ -78,8 +77,6 @@ const RelationshipsPanelView = ({
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
   const { view } = useRelationshipsPanelLayout();
-  const { setSelectedRelationshipIds, setRelationshipsEditMode } =
-    useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
 
   const {
@@ -98,14 +95,6 @@ const RelationshipsPanelView = ({
       selectRelationship(marker, { scrollPanel: true }).catch(() => undefined);
     },
     [focusDocumentOnSelect, onFocusDocument, selectRelationship]
-  );
-
-  useEffect(
-    () => () => {
-      setRelationshipsEditMode(false);
-      setSelectedRelationshipIds(new Set());
-    },
-    [setRelationshipsEditMode, setSelectedRelationshipIds]
   );
 
   return (

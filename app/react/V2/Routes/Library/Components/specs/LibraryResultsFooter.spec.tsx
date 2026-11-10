@@ -252,10 +252,15 @@ describe('LibraryResultsFooter', () => {
 
     it('changes how many entities are shown per page', () => {
       const onLimitChange = jest.fn();
-      renderFooter({ page: 1, limit: 30, total: 4398, onLimitChange });
-      fireEvent.click(screen.getByRole('button', { name: '30 per page' }));
-      fireEvent.click(screen.getByRole('menuitem', { name: '60 per page' }));
-      expect(onLimitChange).toHaveBeenCalledWith(60);
+      renderFooter({ page: 1, limit: 50, total: 4398, onLimitChange });
+      fireEvent.click(screen.getByRole('button', { name: '50 per page' }));
+      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
+        '50 per page',
+        '250 per page',
+        '500 per page',
+      ]);
+      fireEvent.click(screen.getByRole('menuitem', { name: '250 per page' }));
+      expect(onLimitChange).toHaveBeenCalledWith(250);
     });
 
     it('shows only the page control on mobile', () => {

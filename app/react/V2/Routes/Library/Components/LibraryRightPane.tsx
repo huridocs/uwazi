@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactElement } from 'react';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState } from '../libraryUrlState.js';
 import type { Chip } from './ActiveFiltersSheet.js';
@@ -39,37 +39,26 @@ type LibraryRightPaneProps = {
   onFocusProperty: (sharedId: string, fieldKey: string) => void;
   onSelectResult: (sharedId: string) => void;
   onClearSearch: () => void;
+  isMobile?: boolean;
 };
 
-const LibraryRightPane = ({
+const libraryPaneOverlay = ({
   creating,
-  rows,
+  onClosePreview,
+  onCreated,
   selectedIds,
   selectionPanelOpen,
+  rows,
   entityBasePath,
-  focusFieldKey,
-  aggregations,
-  filters,
-  andFilters,
-  chips,
-  onFiltersChange,
-  onAndFiltersChange,
-  onClosePreview,
   onCloseSelection,
   onRemoveSelection,
   onPreviewSelection,
-  onCreated,
   onAction,
   editingSelection = false,
   onEditSelection,
   onCancelEditSelection,
-  search,
-  paneTab,
-  onPaneTabChange,
-  onFocusProperty,
-  onSelectResult,
-  onClearSearch,
-}: LibraryRightPaneProps) => {
+  focusFieldKey,
+}: LibraryRightPaneProps): ReactElement | null => {
   if (creating) {
     return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
   }
@@ -90,21 +79,39 @@ const LibraryRightPane = ({
     );
   }
   const [selectedId] = selectedIds.length === 1 ? selectedIds : [];
-  if (selectedId) {
-    return (
-      <LibraryEntityPreview
-        key={selectedId}
-        sharedId={selectedId}
-        entityBasePath={entityBasePath}
-        onClose={onClosePreview}
-        onAction={onAction}
-        focusFieldKey={focusFieldKey}
-      />
-    );
+  if (!selectedId) {
+    return null;
   }
+  return (
+    <LibraryEntityPreview
+      key={selectedId}
+      sharedId={selectedId}
+      entityBasePath={entityBasePath}
+      onClose={onClosePreview}
+      onAction={onAction}
+      focusFieldKey={focusFieldKey}
+    />
+  );
+};
+
+const librarySideChrome = ({
+  search,
+  rows,
+  paneTab,
+  onPaneTabChange,
+  chips,
+  onFocusProperty,
+  onSelectResult,
+  onClearSearch,
+  aggregations,
+  filters,
+  andFilters,
+  onFiltersChange,
+  onAndFiltersChange,
+}: LibraryRightPaneProps) => {
   const hasResults = Boolean(search.trim()) && libraryResultViews(rows).length > 0;
   return (
-    <div className="flex h-full min-h-0 flex-col bg-warm">
+    <>
       <LibrarySideTabs
         activeId={paneTab}
         onChange={onPaneTabChange}
@@ -131,6 +138,29 @@ const LibraryRightPane = ({
           />
         )}
       </div>
+    </>
+  );
+};
+
+const LibraryRightPane = (props: LibraryRightPaneProps) => {
+  const overlay = libraryPaneOverlay(props);
+  const chrome = (
+    <div
+      hidden={!props.isMobile && overlay !== null}
+      className="flex h-full min-h-0 flex-col bg-warm"
+    >
+      {librarySideChrome(props)}
+    </div>
+  );
+  // On a phone the results list lives in its own sheet, so the preview pane replaces it.
+  // On desktop the list stays mounted behind the preview and keeps its filters, layout and scroll.
+  if (props.isMobile) {
+    return overlay ?? chrome;
+  }
+  return (
+    <div className="h-full min-h-0">
+      {chrome}
+      {overlay}
     </div>
   );
 };

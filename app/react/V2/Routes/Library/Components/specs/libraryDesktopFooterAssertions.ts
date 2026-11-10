@@ -12,7 +12,7 @@ const expectSelectThenPagination = (footer: HTMLElement) => {
   const select =
     within(trail).queryByRole('button', { name: 'Select' }) ??
     within(trail).getByRole('button', { name: /^\d+ selected$/ });
-  const perPage = within(trail).getByRole('button', { name: '30 per page' });
+  const perPage = within(trail).getByRole('button', { name: '50 per page' });
   const pager = within(trail).getByRole('navigation', { name: 'Pagination' });
   expect(follows(select, perPage)).toBe(true);
   expect(follows(perPage, pager)).toBe(true);

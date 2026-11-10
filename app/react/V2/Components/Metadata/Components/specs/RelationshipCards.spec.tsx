@@ -152,7 +152,7 @@ const renderCards = (
   );
 
 describe('RelationshipCards multi-inherit grouping', () => {
-  it('renders one card with N inherit columns for sibling inherits', () => {
+  it('renders one field with a column for each inherited property', () => {
     const templatePropertyById = new Map([
       ['p-country', peopleCountryProp],
       ['p-role', peopleRoleProp],
@@ -170,13 +170,30 @@ describe('RelationshipCards multi-inherit grouping', () => {
     expect(screen.queryByText('Role field')).not.toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /Country/ })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /Role/ })).toBeInTheDocument();
-    expect(screen.getByText(/inherits/)).toHaveTextContent('Country, Role');
     expect(within(screen.getByRole('table')).getByText('Kenya')).toBeInTheDocument();
     expect(within(screen.getByRole('table')).getByText('Witness')).toBeInTheDocument();
     expect(screen.getAllByRole('table')).toHaveLength(1);
   });
 
-  it('includes an entity that only appears on a later sibling', () => {
+  it('shows the relationship type under the field title', () => {
+    const templatePropertyById = new Map([
+      ['p-country', peopleCountryProp],
+      ['p-role', peopleRoleProp],
+    ]);
+    renderCards(
+      [
+        field({ id: 'p-country', name: 'people_country', label: 'People involved' }),
+        field({ id: 'p-role', name: 'people_role', label: 'Role field' }),
+      ],
+      templatePropertyById
+    );
+    const card = screen
+      .getByRole('heading', { name: 'People involved' })
+      .closest('div.overflow-hidden');
+    expect(card?.querySelector('p')).toHaveTextContent('Relationship: People');
+  });
+
+  it('lists every connected entity in the group', () => {
     const templatePropertyById = new Map([
       ['p-country', peopleCountryProp],
       ['p-role', peopleRoleProp],
@@ -199,7 +216,7 @@ describe('RelationshipCards multi-inherit grouping', () => {
     expect(within(table).getByText('Bea')).toBeInTheDocument();
   });
 
-  it('keeps separate cards for different group keys', () => {
+  it('renders a separate field for each group', () => {
     const templatePropertyById = new Map([
       ['p-country', peopleCountryProp],
       ['p-other', otherInheritProp],
@@ -214,13 +231,11 @@ describe('RelationshipCards multi-inherit grouping', () => {
     );
 
     expect(screen.getByText('People involved')).toBeInTheDocument();
-    expect(screen.getAllByText('Other inherit').filter(node => node.tagName === 'DT')).toHaveLength(
-      1
-    );
+    expect(screen.getByRole('heading', { name: 'Other inherit' })).toBeInTheDocument();
     expect(screen.getAllByRole('table')).toHaveLength(2);
   });
 
-  it('splits cards when sibling inherits use different relationship types', () => {
+  it('renders a separate field for each relationship type', () => {
     const templatePropertyById = new Map<string, ClientProperty>([
       ['p-country', peopleCountryProp],
       ['p-role', { ...peopleRoleProp, relationType: 'rel-other' }],
@@ -241,7 +256,7 @@ describe('RelationshipCards multi-inherit grouping', () => {
     expect(screen.getAllByRole('table')).toHaveLength(2);
   });
 
-  it('keeps a single inherit column for one inheriting field', () => {
+  it('renders the entity column and one inherited column for a single property', () => {
     const templatePropertyById = new Map([['p-country', peopleCountryProp]]);
 
     renderCards(

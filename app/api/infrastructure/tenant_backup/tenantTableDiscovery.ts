@@ -59,3 +59,26 @@ export async function discoverDataTablesWithColumns(pool: Pool): Promise<TableWi
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
+
+/**
+ * Primary key columns of every public table, in key order. Ordering an export by them makes the
+ * stream deterministic, so a regenerated dump diffs cleanly.
+ */
+export async function discoverPrimaryKeys(pool: Pool): Promise<Map<string, string[]>> {
+  const result = await pool.query<{ table_name: string; column_name: string }>(`
+    SELECT c.relname AS table_name, a.attname AS column_name
+    FROM pg_index i
+    JOIN pg_class c ON c.oid = i.indrelid
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY AS k(attnum, position)
+    JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = k.attnum
+    WHERE i.indisprimary AND n.nspname = 'public'
+    ORDER BY c.relname, k.position
+  `);
+
+  const keys = new Map<string, string[]>();
+  for (const row of result.rows) {
+    keys.set(row.table_name, [...(keys.get(row.table_name) ?? []), row.column_name]);
+  }
+  return keys;
+}

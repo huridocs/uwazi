@@ -9,7 +9,6 @@ const inheritingRelationshipCard = (label: string) =>
 const assertInheritedTableLayout = (card: Cypress.Chainable<JQuery<HTMLElement>>) => {
   card.within(() => {
     cy.get('[data-testid="relationship-connections"]').should('exist');
-    cy.get('.overflow-x-auto').should('not.exist');
     cy.get('table:not([aria-hidden])').should('have.class', 'w-full');
   });
 };
@@ -73,13 +72,11 @@ describe('MetadataDisplay', () => {
       cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
-    it('shows inheriting connections as scrollable tables in property order', () => {
+    it('shows inheriting connections as tables in property order', () => {
       cy.contains('p', 'Relationships').should('not.exist');
 
       const multiselectInherit = inheritingRelationshipCard('Relationship with inheritance');
       multiselectInherit.within(() => {
-        cy.contains('via').should('exist');
-        cy.contains('inherits Multiselect from events').should('exist');
         cy.contains('th', 'Event Report').should('exist');
         cy.contains('th', 'Multiselect from events').should('exist');
         cy.contains('Maria Rodriguez - Witness').should('exist');
