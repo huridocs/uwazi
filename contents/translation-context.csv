@@ -1585,3 +1585,12 @@ File usage,Card subtext,Settings > Dashboard,"Descriptive caption under the stor
 Save theme,Button label,Settings > Collection,Saves theme and branding from the side panel without saving other unsaved collection settings.,false
 Show all,Button label,Shared (used across 2 views),"Expands the folded file list on the entity metadata tab and the library entity preview when more than six files are present. The count and the word files sit beside this label.",false
 "You can delete at most 10,000 entities at once.",Tooltip,Library,"Tooltip on the disabled Delete button when 10,000 or more entities are selected.",false
+Cherrypick,UI text,Library,"Heading of the hint in the Library Select menu. It explains that records are picked one by one and is not itself an action.",false
+Click records to add them. Cmd + click works anytime.,Tooltip,Library,"Hint under Cherrypick on Apple keyboards: a click adds a record, and Command-click works even outside selection mode.",false
+Click records to add them. Ctrl + click works anytime.,Tooltip,Library,"Hint under Cherrypick on other keyboards: a click adds a record, and Control-click works even outside selection mode.",false
+Select this page,Option label,Library,"The only action in the Library Select menu. Selects the records loaded on the current page.",false
+on this page,UI text,Library,"Status in the selection count menu, after the count, saying the selection is among the records on the current page.",false
+Deselect this page,Option label,Library,"Selection count menu item that removes every record on the current page from the selection.",false
+Show the selected records,Option label,Library,"Selection count menu item that brings the list of selected records into view.",false
+Range,UI text,Library,"Heading of the second hint in the Library Select menu. Shift-click selects the records from the last one clicked through the one clicked now. It is not an action.",false
+Hold Shift and click to select from the last record through this one.,Tooltip,Library,"Hint under Range: hold Shift and click a record to select every record between it and the last one clicked.",false

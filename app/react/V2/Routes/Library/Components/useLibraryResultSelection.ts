@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   addLibraryEntity,
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   EMPTY_CLICK_MODIFIERS,
+  selectionInView,
   type LibraryClickModifiers,
 } from '../librarySelection.js';
 
@@ -14,6 +15,35 @@ type LibraryResultSelectionArgs = {
   allowRange: boolean;
 };
 
+/** When the page changes, drop selected records that are no longer on it.
+ *  A selection change on the same page is left alone, so a record chosen
+ *  before the list refreshes is not cleared early. */
+const usePruneHiddenSelection = (
+  pageIds: readonly string[],
+  selectedIds: readonly string[],
+  onSelectedIdsChange: (ids: string[]) => void
+) => {
+  const selectedRef = useRef(selectedIds);
+  const notifyRef = useRef(onSelectedIdsChange);
+  const pageIdsRef = useRef(pageIds);
+  selectedRef.current = selectedIds;
+  notifyRef.current = onSelectedIdsChange;
+  pageIdsRef.current = pageIds;
+  const visibleKey = pageIds.join('\0');
+
+  useEffect(() => {
+    const { current } = selectedRef;
+    const { current: visibleIds } = pageIdsRef;
+    const { current: notify } = notifyRef;
+    const next = selectionInView(current, visibleIds);
+    const changed =
+      next.length !== current.length || next.some((id, index) => id !== current[index]);
+    if (changed) {
+      notify(next);
+    }
+  }, [visibleKey]);
+};
+
 const useLibraryResultSelection = ({
   orderedIds,
   selectedIds,
@@ -21,6 +51,7 @@ const useLibraryResultSelection = ({
   allowRange,
 }: LibraryResultSelectionArgs) => {
   const [anchorId, setAnchorId] = useState<string>();
+  usePruneHiddenSelection(orderedIds, selectedIds, onSelectedIdsChange);
 
   useEffect(() => {
     if (selectedIds.length === 0) {
@@ -73,4 +104,4 @@ const useLibraryResultSelection = ({
   return { selectEntity, selectCluster, addEntity, clear };
 };
 
-export { useLibraryResultSelection };
+export { useLibraryResultSelection, usePruneHiddenSelection };

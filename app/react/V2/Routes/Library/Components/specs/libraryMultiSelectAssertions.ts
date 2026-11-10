@@ -45,10 +45,10 @@ const expectPanelChrome = () => {
 };
 
 const expectPageSelectionFooter = () => {
-  expect(screen.getByTestId('library-selected-count')).toHaveTextContent('3 selected');
+  expect(screen.getByRole('button', { name: '3 selected' })).toHaveTextContent('3 selected');
   expect(
-    within(selectionFooter()).getAllByRole('button', { name: 'Clear' }).length
-  ).toBeGreaterThan(0);
+    within(selectionFooter()).queryByRole('button', { name: 'Clear' })
+  ).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Create entity' })).not.toBeInTheDocument();
   expect(screen.queryByTestId('library-entity-preview')).not.toBeInTheDocument();
 };
@@ -125,8 +125,8 @@ const expectCloseClearsMap = async (renderLibrary: RenderLibrary) => {
 };
 
 const clearSelection = () => {
-  const [clear] = within(selectionFooter()).getAllByRole('button', { name: 'Clear' });
-  fireEvent.click(clear);
+  fireEvent.click(within(selectionFooter()).getByRole('button', { name: /^\d+ selected$/ }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Clear selection' }));
   expectCreateFooter();
 };
 

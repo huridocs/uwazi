@@ -3,6 +3,9 @@ import {
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   orderedSelectionIds,
+  pageSelectionScope,
+  selectionInView,
+  selectionWithoutPage,
   type LibrarySelection,
 } from '../librarySelection.js';
 
@@ -155,6 +158,44 @@ describe('applyLibraryClusterClick', () => {
       modifiers: { ...plain, ctrlKey: true },
     });
     expect(removed.ids).toEqual(['other']);
+  });
+});
+
+describe('selectionInView', () => {
+  it('keeps only selected records that are on the current page, in selection order', () => {
+    expect(
+      selectionInView(['gelman', 'mexico', 'other'], ['mexico', 'ellacuria', 'gelman'])
+    ).toEqual(['gelman', 'mexico']);
+  });
+
+  it('drops the selection when the page shows none of it', () => {
+    expect(selectionInView(['mexico', 'gelman'], ['other'])).toEqual([]);
+  });
+});
+
+describe('selectionWithoutPage', () => {
+  it('removes the current page and leaves nothing else selected', () => {
+    expect(selectionWithoutPage(['mexico', 'gelman'], ['mexico', 'ellacuria', 'gelman'])).toEqual(
+      []
+    );
+  });
+});
+
+describe('pageSelectionScope', () => {
+  it('says the whole page is selected', () => {
+    expect(pageSelectionScope(['mexico', 'gelman'], ['mexico', 'gelman'])).toEqual({
+      selectedOnPage: 2,
+      pageCount: 2,
+      allOnPage: true,
+    });
+  });
+
+  it('counts a partial page', () => {
+    expect(pageSelectionScope(['mexico'], ['mexico', 'gelman'])).toEqual({
+      selectedOnPage: 1,
+      pageCount: 2,
+      allOnPage: false,
+    });
   });
 });
 

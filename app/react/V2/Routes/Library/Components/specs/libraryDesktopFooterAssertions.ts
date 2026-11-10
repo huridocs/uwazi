@@ -1,8 +1,26 @@
 import { screen, waitFor, within } from '@testing-library/react';
 
-const multiSelectLabels = ['Edit', 'Export CSV', 'Permissions', 'Delete'];
+const multiSelectLabels = ['Edit', 'Export CSV', 'Actions', 'Delete'];
 
 const persistentLabels = ['Create entity', 'Upload PDF', 'Import CSV', 'Export CSV'] as const;
+
+const follows = (before: Node, after: Node) =>
+  before.compareDocumentPosition(after) === Node.DOCUMENT_POSITION_FOLLOWING;
+
+const expectSelectThenPagination = (footer: HTMLElement) => {
+  const trail = within(footer).getByTestId('library-footer-trail');
+  const select =
+    within(trail).queryByRole('button', { name: 'Select' }) ??
+    within(trail).getByRole('button', { name: /^\d+ selected$/ });
+  const perPage = within(trail).getByRole('button', { name: '30 per page' });
+  const pager = within(trail).getByRole('navigation', { name: 'Pagination' });
+  expect(follows(select, perPage)).toBe(true);
+  expect(follows(perPage, pager)).toBe(true);
+  const actions = footer.querySelector(
+    '[data-testid="library-results-actions"], [data-testid="library-multi-select-actions"]'
+  );
+  expect(actions).not.toContainElement(select);
+};
 
 const expectNoShareOrTemplate = () => {
   expect(screen.queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
@@ -48,6 +66,7 @@ const expectPersistentActions = (footer: HTMLElement) => {
         : within(left).getByRole('button', { name: label });
     expectShownLabel(control, label);
   });
+  expectSelectThenPagination(footer);
 };
 
 const expectIconOnly = (root: HTMLElement, label: string) => {
@@ -211,13 +230,7 @@ const expectDesktopLabelClasses = (footer: HTMLElement) => {
 
 const expectMultiSelectActions = (footer: HTMLElement) => {
   const actions = within(footer).getByTestId('library-multi-select-actions');
-  expect(childSequence(actions)).toEqual([
-    'Edit',
-    'Export CSV',
-    'Permissions',
-    'divider',
-    'Delete',
-  ]);
+  expect(childSequence(actions)).toEqual(['Edit', 'Export CSV', 'Actions', 'divider', 'Delete']);
   expectDesktopLabelClasses(footer);
   const edit = within(footer).getByRole('button', { name: 'Edit' });
   expect(edit.querySelector('svg')).toHaveAttribute('width', '13');
@@ -228,12 +241,14 @@ const expectMultiSelectActions = (footer: HTMLElement) => {
 };
 
 const expectMultiSelectSummary = (footer: HTMLElement) => {
-  expect(
-    within(footer).getByRole('checkbox', { name: 'Deselect the loaded entities' })
-  ).toBeInTheDocument();
-  expect(within(footer).getByTestId('library-selected-count')).toHaveTextContent(/\d+ selected/);
-  expect(within(footer).getByRole('button', { name: 'Clear' })).toBeInTheDocument();
-  ['Actions', 'Create entity', 'Upload PDF'].forEach(name => {
+  expect(within(footer).queryByRole('checkbox')).not.toBeInTheDocument();
+  expect(within(footer).getByRole('button', { name: /^\d+ selected$/ })).toHaveTextContent(
+    /\d+ selected/
+  );
+  expect(within(footer).queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+  expect(within(footer).queryByRole('button', { name: 'Select' })).not.toBeInTheDocument();
+  expectSelectThenPagination(footer);
+  ['Create entity', 'Upload PDF'].forEach(name => {
     expect(within(footer).queryByRole('button', { name })).not.toBeInTheDocument();
   });
   expect(within(footer).queryByRole('link', { name: 'Import CSV' })).not.toBeInTheDocument();

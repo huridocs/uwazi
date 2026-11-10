@@ -207,6 +207,7 @@ Chart type,Grafik türü
 Chart type uses a custom view,"Grafik türü, özel bir görünüm kullanır"
 Check to make this instance public (non-logged in users can see public documents and entities),"Bu örneğin herkese açık olmasını sağlamak için işaretleyin (giriş yapmamış kullanıcılar, herkese açık belgeleri ve varlıkları görebilir)"
 Checking which images fit the requirements,Hangi resimlerin gereksinimlere uygun olduğu kontrol ediliyor...
+Cherrypick,Tek tek seç
 Choose,Seç
 Choose PDF files,PDF dosyaları seç
 Choose relation type,İlişki türünü seçin
@@ -224,6 +225,8 @@ Clear selection,Seçimi temizle
 Clear selection filter,Seçim filtresini temizle
 Clear sort,Sıralamayı temizle
 Click,Tıkla
+Click records to add them. Cmd + click works anytime.,Kayıtları eklemek için tıklayın. Cmd + tıklama her zaman çalışır.
+Click records to add them. Ctrl + click works anytime.,Kayıtları eklemek için tıklayın. Ctrl + tıklama her zaman çalışır.
 Click to fill,Doldurmak için tıklayın
 Click to select an image,Bir resim seçmek için tıklayın
 Click to select audio or video,Ses veya videoyu seçmek için tıklayın
@@ -420,6 +423,7 @@ Deletion success,Silme işlemi başarıyla tamamlandı
 Density,Yoğunluk
 Description,Tanım
 Deselect all,Tüm seçimi kaldır
+Deselect this page,Bu sayfanın seçimini kaldır
 Detail,Ayrıntı
 Details,Ayrıntılar
 Direction,Yön
@@ -639,6 +643,7 @@ Hide restricted relationships from public,Kısıtlı ilişkileri herkesten gizle
 Hide task,Görevi gizle
 Hide the matches in,Eşleşmeleri gizle:
 Hide toolbar,Araç çubuğunu gizle
+Hold Shift and click to select from the last record through this one.,Son kayıttan buna kadar seçmek için Shift'e basılı tutup tıklayın.
 Hours,Saat
 How to combine sources,Kaynaklar nasıl birleştirilir
 HTML,HTML
@@ -975,6 +980,7 @@ og:title,og:title
 Ok,Tamam
 OK,TAMAM
 On this entity,Bu varlıkta
+on this page,bu sayfada
 one character,bir karakter
 Only essential,Sadece zorunlu olanlar
 "Only properties with the same name and configuration in every data source are available
@@ -1132,6 +1138,7 @@ QR Code,QR Kodu
 qr code,QR kodu
 Query,Sorgulama
 Queued,Sırada
+Range,Aralık
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Sorguyu mevcut koleksiyonunuzda yeniden çalıştırır. Bunu, varlıkları içe aktardıktan
@@ -1299,6 +1306,7 @@ Select text in target document,Hedef belgedeki metni seçin
 select text or a value,metin veya bir değer seçin
 Select the template to store the extracted paragraphs.,Çıkarılan paragrafları kaydetmek için şablonu seçin.
 Select the template with the source documents.,Kaynak belgelerin bulunduğu şablonu seçin.
+Select this page,Bu sayfayı seç
 Select values…,Değerleri seçin…
 Select...,Seç...
 Select…,Seçin…
@@ -1351,6 +1359,7 @@ Show less,Daha az göster
 Show more,Daha fazla göster
 Show remaining in panel,Panelde kalanları göster
 Show the matches in,Eşleşmeleri göster:
+Show the selected records,Seçili kayıtları göster
 Show toolbar,Araç çubuğunu göster
 Showing,Gösteriliyor
 Showing the top,Gösterilen ilk
@@ -1713,7 +1722,7 @@ Yes,Evet
 You can add one or many items in this form.,Bu forma bir veya birden fazla öğe ekleyebilirsiniz.
 You can also enter this secret key into your Authenticator app.,Bu gizli anahtarı Authenticator uygulamanıza da girebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
-"You can delete at most 10,000 entities at once.","Aynı anda en fazla 10.000 varlık silebilirsiniz."
+"You can delete at most 10,000 entities at once.",Aynı anda en fazla 10.000 varlık silebilirsiniz.
 "You can embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, grafikler ve varlık listeleri gibi gelişmiş bileşenleri ekleyebilirsiniz."
 You do not have write permission on all entities,Tüm varlıklar üzerinde yazma izniniz yok
 You have unsaved changes. Discard them? This action cannot be undone.,Kaydedilmemiş değişiklikleriniz var. Bunlardan vazgeçmek istiyor musunuz? Bu işlem geri alınamaz.

@@ -205,6 +205,7 @@ Chart type,Tipo de gráfico
 Chart type uses a custom view,El tipo de gráfico utiliza una vista personalizada
 Check to make this instance public (non-logged in users can see public documents and entities),Marca esta opción para que esta instancia sea pública (los usuarios que no hayan iniciado sesión podrán ver los documentos y las entidades públicas)
 Checking which images fit the requirements,Comprobando qué imágenes cumplen los requisitos...
+Cherrypick,Selección manual
 Choose,Seleccionar
 Choose PDF files,Elegir archivos PDF
 Choose relation type,Seleccionar tipo de relación
@@ -222,6 +223,8 @@ Clear selection,Borrar selección
 Clear selection filter,Borrar filtro de selección
 Clear sort,Quitar orden
 Click,Haz clic
+Click records to add them. Cmd + click works anytime.,Haz clic en los registros para añadirlos. Cmd + clic funciona en cualquier momento.
+Click records to add them. Ctrl + click works anytime.,Haz clic en los registros para añadirlos. Ctrl + clic funciona en cualquier momento.
 Click to fill,Click para completar
 Click to select an image,Click para seleccionar una imagen
 Click to select audio or video,Click para seleccionar audio o video
@@ -418,6 +421,7 @@ Deletion success,Eliminación exitosa
 Density,Densidad
 Description,Descripción
 Deselect all,Deseleccionar todo
+Deselect this page,Deseleccionar esta página
 Detail,Detalle
 Details,Detalle
 Direction,Dirección
@@ -637,6 +641,7 @@ Hide restricted relationships from public,Ocultar las relaciones restringidas al
 Hide task,Ocultar tarea
 Hide the matches in,Ocultar las coincidencias en
 Hide toolbar,Ocultar barra de herramientas
+Hold Shift and click to select from the last record through this one.,Mantén Shift y haz clic para seleccionar desde el último registro hasta este.
 Hours,Horas
 How to combine sources,Cómo combinar fuentes
 HTML,HTML
@@ -973,6 +978,7 @@ og:title,og:title
 Ok,De acuerdo
 OK,De acuerdo
 On this entity,En esta entidad
+on this page,en esta página
 one character,un carácter
 Only essential,Solo lo imprescindible
 "Only properties with the same name and configuration in every data source are available
@@ -1130,6 +1136,7 @@ QR Code,Código QR
 qr code,Código QR
 Query,Consulta
 Queued,En cola
+Range,Rango
 RAW,SIN FORMATO
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Vuelve a ejecutar la consulta en tu colección actual. Utiliza esta opción después de importar
@@ -1296,6 +1303,7 @@ Select text in target document,Seleccionar texto en documento de destino
 select text or a value,seleccionar texto o un valor
 Select the template to store the extracted paragraphs.,Selecciona la plantilla en la que quieres guardar los párrafos extraídos.
 Select the template with the source documents.,Selecciona la plantilla con los documentos originales.
+Select this page,Seleccionar esta página
 Select values…,Seleccionar valores…
 Select...,Seleccionar
 Select…,Seleccionar…
@@ -1348,6 +1356,7 @@ Show less,Mostrar menos
 Show more,Mostrar más
 Show remaining in panel,Mostrar los elementos restantes en el panel
 Show the matches in,Mostrar las coincidencias en
+Show the selected records,Mostrar los registros seleccionados
 Show toolbar,Mostrar la barra de herramientas
 Showing,Mostrando
 Showing the top,Mostrando los principales
@@ -1708,7 +1717,7 @@ Yes,Sí
 You can add one or many items in this form.,En este formulario puedes añadir uno o varios elementos.
 You can also enter this secret key into your Authenticator app.,También puedes introducir esta clave secreta en tu aplicación de autenticación.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
-"You can delete at most 10,000 entities at once.","Puedes eliminar como máximo 10.000 entidades a la vez."
+"You can delete at most 10,000 entities at once.",Puedes eliminar como máximo 10.000 entidades a la vez.
 "You can embed advanced components like maps, charts and entity lists in your page.","Puedes incorporar componentes avanzados, como mapas, gráficos y listas de entidades, en tu página."
 You do not have write permission on all entities,No tienes permiso de escritura en todas las entidades
 You have unsaved changes. Discard them? This action cannot be undone.,Tienes cambios sin guardar. ¿Quieres descartarlos? Esta acción no se puede deshacer.

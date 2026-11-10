@@ -207,6 +207,7 @@ Chart type,ประเภทกราฟ
 Chart type uses a custom view,ประเภทกราฟใช้มุมมองที่กำหนดเอง
 Check to make this instance public (non-logged in users can see public documents and entities),ทำเครื่องหมายเพื่อกำหนดให้อินสแตนซ์นี้เป็นสาธารณะ (ผู้ใช้ที่ยังไม่ได้เข้าสู่ระบบสามารถดูเอกสารและเอนทิตีสาธารณะได้)
 Checking which images fit the requirements,กำลังตรวจสอบภาพใดที่ตรงกับข้อกำหนด...
+Cherrypick,เลือกทีละรายการ
 Choose,เลือก
 Choose PDF files,เลือกไฟล์ PDF
 Choose relation type,เลือกประเภทความสัมพันธ์
@@ -224,6 +225,8 @@ Clear selection,ล้างการเลือก
 Clear selection filter,ล้างตัวกรองการเลือก
 Clear sort,ล้างการเรียง
 Click,คลิก
+Click records to add them. Cmd + click works anytime.,คลิกที่ระเบียนเพื่อเพิ่ม Cmd + คลิกใช้ได้ตลอดเวลา
+Click records to add them. Ctrl + click works anytime.,คลิกที่ระเบียนเพื่อเพิ่ม Ctrl + คลิกใช้ได้ตลอดเวลา
 Click to fill,คลิกเพื่อใส่ค่า
 Click to select an image,คลิกเพื่อเลือกภาพ
 Click to select audio or video,คลิกเพื่อเลือกไฟล์เสียงหรือวิดีโอ
@@ -420,6 +423,7 @@ Deletion success,การลบสำเร็จแล้ว
 Density,ความหนาแน่น
 Description,คำอธิบาย
 Deselect all,ยกเลิกการเลือกทั้งหมด
+Deselect this page,ยกเลิกการเลือกหน้านี้
 Detail,รายละเอียด
 Details,รายละเอียด
 Direction,ทิศทาง
@@ -639,6 +643,7 @@ Hide restricted relationships from public,ซ่อนความสัมพ�
 Hide task,ซ่อนงาน
 Hide the matches in,ซ่อนรายการที่ตรงกันใน
 Hide toolbar,ซ่อนแถบเครื่องมือ
+Hold Shift and click to select from the last record through this one.,กด Shift ค้างไว้แล้วคลิก เพื่อเลือกตั้งแต่ระเบียนล่าสุดจนถึงระเบียนนี้
 Hours,ชั่วโมง
 How to combine sources,วิธีรวมแหล่งข้อมูล
 HTML,HTML
@@ -976,6 +981,7 @@ og:title,og:title
 Ok,ตกลง
 OK,ตกลง
 On this entity,เกี่ยวกับเอนทิตีนี้
+on this page,ในหน้านี้
 one character,ตัวอักษรหนึ่งตัว
 Only essential,เฉพาะสิ่งที่จำเป็นเท่านั้น
 "Only properties with the same name and configuration in every data source are available
@@ -1133,6 +1139,7 @@ QR Code,รหัส QR
 qr code,คิวอาร์โค้ด
 Query,สืบค้น
 Queued,อยู่ในคิว
+Range,ช่วง
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","เรียกใช้คำสั่งนี้อีกครั้งกับคอลเลกชันปัจจุบันของคุณ ใช้คำสั่งนี้หลังจากนำเข้า
@@ -1300,6 +1307,7 @@ Select text in target document,เลือกข้อความในเอ�
 select text or a value,เลือกข้อความหรือค่า
 Select the template to store the extracted paragraphs.,เลือกแม่แบบเพื่อเก็บย่อหน้าที่ถูกแยกออกมา
 Select the template with the source documents.,เลือกแม่แบบที่มีเอกสารต้นฉบับ
+Select this page,เลือกหน้านี้
 Select values…,เลือกค่า…
 Select...,เลือก...
 Select…,เลือก…
@@ -1352,6 +1360,7 @@ Show less,แสดงน้อยลง
 Show more,แสดงมากขึ้น
 Show remaining in panel,แสดงจำนวนที่เหลือในแผง
 Show the matches in,แสดงรายการที่ตรงกันใน
+Show the selected records,แสดงระเบียนที่เลือก
 Show toolbar,แสดงแถบเครื่องมือ
 Showing,กำลังแสดง
 Showing the top,แสดงส่วนบน

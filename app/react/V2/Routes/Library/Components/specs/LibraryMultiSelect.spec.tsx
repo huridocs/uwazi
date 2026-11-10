@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import {
   clearSelection,
   clickCard,
@@ -21,6 +21,29 @@ import {
   resetEntityMocks,
   restoreMediaMock,
 } from './libraryMultiSelectHarness.js';
+
+const selectThisPage = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Select' }));
+  const menu = screen.getByRole('menu', { name: 'Select' });
+  expect(within(menu).queryByRole('menuitem', { name: /Cherrypick/ })).not.toBeInTheDocument();
+  expect(within(menu).getByTestId('library-cherrypick-hint')).toHaveTextContent(
+    /Click records to add them/
+  );
+  fireEvent.click(within(menu).getByRole('menuitem', { name: 'Select this page (3)' }));
+};
+
+const clearFromSelectMenu = () => {
+  fireEvent.click(screen.getByRole('button', { name: '3 selected' }));
+  const selectedMenu = screen.getByRole('menu', { name: '3 selected' });
+  expect(within(selectedMenu).getByTestId('library-cherrypick-hint')).toBeInTheDocument();
+  expect(within(selectedMenu).getByTestId('library-range-hint')).toBeInTheDocument();
+  expect(
+    within(selectedMenu).queryByRole('menuitem', { name: /Select this page/ })
+  ).not.toBeInTheDocument();
+  fireEvent.click(within(selectedMenu).getByRole('menuitem', { name: 'Clear selection' }));
+  expect(screen.queryByTestId('library-multi-select-footer')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Select' })).toBeInTheDocument();
+};
 
 describe('library multi-select', () => {
   beforeEach(() => {
@@ -42,6 +65,14 @@ describe('library multi-select', () => {
     expectFooterChrome();
     expectActionsMenu();
     clearSelection();
+  });
+
+  it('selects the current page and clears it from the select menu', async () => {
+    renderLibrary('cards');
+    await ready('Mexico');
+    selectThisPage();
+    expect(screen.getByTestId('library-selection-count')).toHaveTextContent('3 entities');
+    clearFromSelectMenu();
   });
 
   it('toggles entities with ctrl or cmd', async () => {

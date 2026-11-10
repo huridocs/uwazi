@@ -204,6 +204,7 @@ Chart type,ဂရပ်ဇယားအမျိုးအစား
 Chart type uses a custom view,ဂရပ်ဇယားအမျိုးအစားသည် စိတ်ကြိုက်မြင်ကွင်းကို အသုံးပြုသည်။
 Check to make this instance public (non-logged in users can see public documents and entities),ဤအင်စတန့်ကို အများပြည်သူကြည့်ရှုနိုင်အောင် သတ်မှတ်ထားသည်ကို စစ်ဆေးပါ (ဝင်ရောက်ထားခြင်းမရှိသော အသုံးပြုသူများသည် အများပြည်သူစာရွက်စာတမ်းများနှင့် အဖွဲ့အစည်းများကို ကြည့်ရှုနိုင်ပါသည်)
 Checking which images fit the requirements,လိုအပ်ချက်များနှင့် ကိုက်ညီသည့် ပုံများကို စစ်ဆေးနေပါသည်။
+Cherrypick,ကိုယ်တိုင်ရွေးချယ်ခြင်း
 Choose,ရွေးပါ
 Choose PDF files,PDF ဖိုင်များ ရွေးရန်
 Choose relation type,ဆက်နွယ်မှုအမျိုးအစားကိုရွေးပါ
@@ -221,6 +222,8 @@ Clear selection,ရွေးချယ်မှု ရှင်းရန်
 Clear selection filter,ရွေးချယ်မှု စစ်ထုတ်မှု ရှင်းရန်
 Clear sort,စီရန် ရှင်းရန်
 Click,နှိပ်ပါ
+Click records to add them. Cmd + click works anytime.,မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Cmd + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။
+Click records to add them. Ctrl + click works anytime.,မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Ctrl + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Click to select an image,ပုံတစ်ပုံရွေးရန် နှိပ်ပါ
 Click to select audio or video,အသံ သို့မဟုတ် ဗီဒီယိုကို ရွေးရန် နှိပ်ပါ
@@ -413,6 +416,7 @@ Deletion success,ဖျက်ခြင်းအောင်မြင်ပါပ
 Density,သိပ်သည်းမှု
 Description,ဖော်ပြချက်
 Deselect all,အားလုံးကိုရွေးချယ်ခြင်းဖျက်ရန်
+Deselect this page,ဤစာမျက်နှာကို ရွေးချယ်မှုဖျက်ရန်
 Detail,အသေးစိတ်
 Details,အသေးစိတ်အချက်အလက်များ
 Direction,ဦးတည်ချက်
@@ -632,6 +636,7 @@ Hide restricted relationships from public,ကန့်သတ်ထားသေ�
 Hide task,တာဝန် ဖုံးရန်
 Hide the matches in,ကိုက်ညီမှုများကို ဖျောက်ရန်
 Hide toolbar,ကိရိယာတန်းကို ဖျောက်ရန်
+Hold Shift and click to select from the last record through this one.,Shift ကိုဖိထားပြီး နှိပ်ပါ။ နောက်ဆုံးမှတ်တမ်းမှ ဤမှတ်တမ်းအထိ ရွေးသည်။
 Hours,နာရီ
 How to combine sources,ရင်းမြစ်များ ပေါင်းစည်းပုံ
 HTML,HTML
@@ -964,6 +969,7 @@ og:title,og:title
 Ok,အိုကေ
 OK,အိုကေ
 On this entity,ဤအဖွဲ့အစည်းအပေါ်
+on this page,ဤစာမျက်နှာတွင်
 one character,အက္ခရာတစ်လုံး
 Only essential,မရှိမဖြစ် လိုအပ်သည်များသာ
 "Only properties with the same name and configuration in every data source are available
@@ -1117,6 +1123,7 @@ QR Code,QR ကုဒ်
 qr code,QR ကုဒ်
 Query,မေးခွန်း
 Queued,စောင့်နေသည်
+Range,အပိုင်းအခြား
 RAW,မပြင်ဆင်ထားသော
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).",သင့်လက်ရှိ စုစည်းမှုပေါ်တွင် မေးခွန်းကို ထပ်မံ ပြေးသည်။ အဖွဲ့အစည်းများကို တင်သွင်းခြင်း သို့မဟုတ် တည်းဖြတ်ပြီးနောက်တွင်သာ အသုံးပြုပါ—ဂရပ်ဇယားဆက်တင်များကို ပြောင်းလဲသည့်အခါ မဟုတ်ပါ (ထိုဆက်တင်များကို သိမ်းဆည်းရန် လက်ကိုင်များကိုသာ သိမ်းဆည်းပါ)။
@@ -1282,6 +1289,7 @@ Select text in target document,ပစ်မှတ်စာရွက်တွင�
 select text or a value,စာသား သို့မဟုတ် တန်ဖိုးကို ရွေးပါ။
 Select the template to store the extracted paragraphs.,ထုတ်ယူထားသော ပိုဒ်များကို သိမ်းဆည်းရန် ပုံစံကို ရွေးပါ။
 Select the template with the source documents.,မူလစာရွက်စာတမ်းများပါဝင်သည့် ပုံစံကို ရွေးပါ။
+Select this page,ဤစာမျက်နှာကို ရွေးရန်
 Select values…,တန်ဖိုးများ ရွေးရန်…
 Select...,ရွေးချယ်ရန်...
 Select…,ရွေးရန်…
@@ -1334,6 +1342,7 @@ Show less,နည်းနည်းသာပြပါ
 Show more,ပိုမိုပြသရန်
 Show remaining in panel,ပန်နယ်တွင် ကျန်ရှိနေသည့် ပြသရန်
 Show the matches in,ကိုက်ညီမှုများကို ပြရန်
+Show the selected records,ရွေးထားသော မှတ်တမ်းများကို ပြရန်
 Show toolbar,ကိရိယာတန်းပြရန်
 Showing,ပြသနေသည်
 Showing the top,ထိပ်ဆုံးကို ပြနေသည်

@@ -207,6 +207,7 @@ Chart type,Chart type
 Chart type uses a custom view,Chart type uses a custom view
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
+Cherrypick,Cherrypick
 Choose,Choose
 Choose PDF files,Choose PDF files
 Choose relation type,Choose relation type
@@ -224,6 +225,8 @@ Clear selection,Clear selection
 Clear selection filter,Clear selection filter
 Clear sort,Clear sort
 Click,Click
+Click records to add them. Cmd + click works anytime.,Click records to add them. Cmd + click works anytime.
+Click records to add them. Ctrl + click works anytime.,Click records to add them. Ctrl + click works anytime.
 Click to fill,Click to fill
 Click to select an image,Click to select an image
 Click to select audio or video,Click to select audio or video
@@ -420,6 +423,7 @@ Deletion success,Deletion success
 Density,Density
 Description,Description
 Deselect all,Deselect all
+Deselect this page,Deselect this page
 Detail,Detail
 Details,Details
 Direction,Direction
@@ -639,6 +643,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide task,Hide task
 Hide the matches in,Hide the matches in
 Hide toolbar,Hide toolbar
+Hold Shift and click to select from the last record through this one.,Hold Shift and click to select from the last record through this one.
 Hours,Hours
 How to combine sources,How to combine sources
 HTML,HTML
@@ -976,6 +981,7 @@ og:title,og:title
 Ok,Ok
 OK,OK
 On this entity,On this entity
+on this page,on this page
 one character,one character
 Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
@@ -1133,6 +1139,7 @@ QR Code,QR Code
 qr code,qr code
 Query,Query
 Queued,Queued
+Range,Range
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
@@ -1300,6 +1307,7 @@ Select text in target document,Select text in target document
 select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
+Select this page,Select this page
 Select values…,Select values…
 Select...,Select...
 Select…,Select…
@@ -1352,6 +1360,7 @@ Show less,Show less
 Show more,Show more
 Show remaining in panel,Show remaining in panel
 Show the matches in,Show the matches in
+Show the selected records,Show the selected records
 Show toolbar,Show toolbar
 Showing,Showing
 Showing the top,Showing the top

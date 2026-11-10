@@ -206,6 +206,7 @@ Chart type,Τύπος γραφήματος
 Chart type uses a custom view,Ο τύπος γραφήματος χρησιμοποιεί μια προσαρμοσμένη προβολή
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
 Checking which images fit the requirements,Έλεγχος των εικόνων που πληρούν τις απαιτήσεις...
+Cherrypick,Χειροκίνητη επιλογή
 Choose,Επιλέξτε
 Choose PDF files,Επιλογή αρχείων PDF
 Choose relation type,Επιλέξτε τον τύπο σχέσης
@@ -223,6 +224,8 @@ Clear selection,Καθαρισμός επιλογής
 Clear selection filter,Καθαρισμός φίλτρου επιλογής
 Clear sort,Καθαρισμός ταξινόμησης
 Click,Κάντε κλικ
+Click records to add them. Cmd + click works anytime.,Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Cmd + κλικ λειτουργεί ανά πάσα στιγμή.
+Click records to add them. Ctrl + click works anytime.,Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Ctrl + κλικ λειτουργεί ανά πάσα στιγμή.
 Click to fill,Κάντε κλικ για να συμπληρώσετε
 Click to select an image,Κάντε κλικ για να επιλέξετε μια εικόνα
 Click to select audio or video,Κάντε κλικ για να επιλέξετε αρχείο ήχου ή βίντεο
@@ -419,6 +422,7 @@ Deletion success,Επιτυχία διαγραφής
 Density,Πυκνότητα
 Description,Περιγραφή
 Deselect all,Αποεπιλογή όλων
+Deselect this page,Αποεπιλογή αυτής της σελίδας
 Detail,Λεπτομέρεια
 Details,Λεπτομέρειες
 Direction,Κατεύθυνση
@@ -638,6 +642,7 @@ Hide restricted relationships from public,Απόκρυψη σχέσεων με �
 Hide task,Απόκρυψη εργασίας
 Hide the matches in,Απόκρυψη των αντιστοιχίσεων σε
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
+Hold Shift and click to select from the last record through this one.,Κρατήστε πατημένο το Shift και κάντε κλικ για να επιλέξετε από την τελευταία εγγραφή μέχρι αυτή.
 Hours,Ώρες
 How to combine sources,Πώς να συνδυάσετε πηγές
 HTML,HTML
@@ -975,6 +980,7 @@ og:title,og:title
 Ok,Εντάξει
 OK,Εντάξει
 On this entity,Σε αυτή την οντότητα
+on this page,σε αυτήν τη σελίδα
 one character,ένας χαρακτήρας
 Only essential,Μόνο τα απαραίτητα
 "Only properties with the same name and configuration in every data source are available
@@ -1132,6 +1138,7 @@ QR Code,Κωδικός QR
 qr code,Κωδικός QR
 Query,Ερώτημα
 Queued,Σε αναμονή
+Range,Εύρος
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Εκτελεί εκ νέου την ερώτηση στην τρέχουσα συλλογή σας. Χρησιμοποιήστε αυτή τη λειτουργία μετά την εισαγωγή
@@ -1299,6 +1306,7 @@ Select text in target document,Επιλογή κειμένου στο έγγρα
 select text or a value,επιλέξτε κείμενο ή μια τιμή
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
+Select this page,Επιλογή αυτής της σελίδας
 Select values…,Επιλογή τιμών…
 Select...,Επιλέξτε...
 Select…,Επιλογή…
@@ -1351,6 +1359,7 @@ Show less,Εμφάνιση λιγότερων
 Show more,Εμφάνιση περισσότερων
 Show remaining in panel,Εμφάνιση του υπολοίπου στο πλαίσιο
 Show the matches in,Εμφάνιση των αντιστοιχίσεων σε
+Show the selected records,Εμφάνιση των επιλεγμένων εγγραφών
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
 Showing the top,Εμφάνιση των κορυφαίων
@@ -1713,7 +1722,7 @@ Yes,Ναι
 You can add one or many items in this form.,Μπορείτε να προσθέσετε ένα ή πολλά στοιχεία σε αυτή τη φόρμα.
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
-"You can delete at most 10,000 entities at once.","Μπορείτε να διαγράψετε έως 10.000 οντότητες κάθε φορά."
+"You can delete at most 10,000 entities at once.",Μπορείτε να διαγράψετε έως 10.000 οντότητες κάθε φορά.
 "You can embed advanced components like maps, charts and entity lists in your page.","Μπορείτε να ενσωματώσετε στη σελίδα σας προηγμένα στοιχεία, όπως χάρτες, γραφήματα και λίστες οντοτήτων."
 You do not have write permission on all entities,Δεν έχετε δικαιώματα εγγραφής σε όλες τις οντότητες
 You have unsaved changes. Discard them? This action cannot be undone.,Έχετε αλλαγές που δεν έχουν αποθηκευτεί. Θέλετε να τις απορρίψετε; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
