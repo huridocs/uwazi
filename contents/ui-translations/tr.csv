@@ -226,8 +226,8 @@ Clear selection,Seçimi temizle
 Clear selection filter,Seçim filtresini temizle
 Clear sort,Sıralamayı temizle
 Click,Tıkla
-Click records to add them. Cmd + click works anytime.,Kayıtları eklemek için tıklayın. Cmd + tıklama her zaman çalışır.
-Click records to add them. Ctrl + click works anytime.,Kayıtları eklemek için tıklayın. Ctrl + tıklama her zaman çalışır.
+"Click records to add them. Cmd + click works anytime.","Kayıtları eklemek için tıklayın. Cmd + tıklama her zaman çalışır."
+"Click records to add them. Ctrl + click works anytime.","Kayıtları eklemek için tıklayın. Ctrl + tıklama her zaman çalışır."
 Click to fill,Doldurmak için tıklayın
 Click to select an image,Bir resim seçmek için tıklayın
 Click to select audio or video,Ses veya videoyu seçmek için tıklayın
@@ -644,7 +644,7 @@ Hide restricted relationships from public,Kısıtlı ilişkileri herkesten gizle
 Hide task,Görevi gizle
 Hide the matches in,Eşleşmeleri gizle:
 Hide toolbar,Araç çubuğunu gizle
-Hold Shift and click to select from the last record through this one.,Son kayıttan buna kadar seçmek için Shift'e basılı tutup tıklayın.
+"Hold Shift and click to select from the last record through this one.","Son kayıttan buna kadar seçmek için Shift'e basılı tutup tıklayın."
 Hours,Saat
 How to combine sources,Kaynaklar nasıl birleştirilir
 HTML,HTML

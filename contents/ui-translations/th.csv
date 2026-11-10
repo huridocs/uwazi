@@ -226,8 +226,8 @@ Clear selection,ล้างการเลือก
 Clear selection filter,ล้างตัวกรองการเลือก
 Clear sort,ล้างการเรียง
 Click,คลิก
-Click records to add them. Cmd + click works anytime.,คลิกที่ระเบียนเพื่อเพิ่ม Cmd + คลิกใช้ได้ตลอดเวลา
-Click records to add them. Ctrl + click works anytime.,คลิกที่ระเบียนเพื่อเพิ่ม Ctrl + คลิกใช้ได้ตลอดเวลา
+"Click records to add them. Cmd + click works anytime.","คลิกที่ระเบียนเพื่อเพิ่ม Cmd + คลิกใช้ได้ตลอดเวลา"
+"Click records to add them. Ctrl + click works anytime.","คลิกที่ระเบียนเพื่อเพิ่ม Ctrl + คลิกใช้ได้ตลอดเวลา"
 Click to fill,คลิกเพื่อใส่ค่า
 Click to select an image,คลิกเพื่อเลือกภาพ
 Click to select audio or video,คลิกเพื่อเลือกไฟล์เสียงหรือวิดีโอ
@@ -644,7 +644,7 @@ Hide restricted relationships from public,ซ่อนความสัมพ�
 Hide task,ซ่อนงาน
 Hide the matches in,ซ่อนรายการที่ตรงกันใน
 Hide toolbar,ซ่อนแถบเครื่องมือ
-Hold Shift and click to select from the last record through this one.,กด Shift ค้างไว้แล้วคลิก เพื่อเลือกตั้งแต่ระเบียนล่าสุดจนถึงระเบียนนี้
+"Hold Shift and click to select from the last record through this one.","กด Shift ค้างไว้แล้วคลิก เพื่อเลือกตั้งแต่ระเบียนล่าสุดจนถึงระเบียนนี้"
 Hours,ชั่วโมง
 How to combine sources,วิธีรวมแหล่งข้อมูล
 HTML,HTML

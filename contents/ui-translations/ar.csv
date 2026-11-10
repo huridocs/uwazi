@@ -225,8 +225,8 @@ Clear selection,مسح التحديد
 Clear selection filter,مسح عامل تصفية التحديد
 Clear sort,إلغاء الترتيب
 Click,انقر
-Click records to add them. Cmd + click works anytime.,انقر على السجلات لإضافتها. يعمل Cmd + النقر في أي وقت.
-Click records to add them. Ctrl + click works anytime.,انقر على السجلات لإضافتها. يعمل Ctrl + النقر في أي وقت.
+"Click records to add them. Cmd + click works anytime.","انقر على السجلات لإضافتها. يعمل Cmd + النقر في أي وقت."
+"Click records to add them. Ctrl + click works anytime.","انقر على السجلات لإضافتها. يعمل Ctrl + النقر في أي وقت."
 Click to fill,انقر للتعبئة
 Click to select an image,انقر لاختيار صورة
 Click to select audio or video,انقر لاختيار ملف صوتي أو فيديو
@@ -643,7 +643,7 @@ Hide restricted relationships from public,إخفاء العلاقات المقي
 Hide task,إخفاء المهمة
 Hide the matches in,إخفاء المطابقات في
 Hide toolbar,إخفاء شريط الأدوات
-Hold Shift and click to select from the last record through this one.,اضغط باستمرار على Shift وانقر لتحديد السجلات من آخر سجل حتى هذا.
+"Hold Shift and click to select from the last record through this one.","اضغط باستمرار على Shift وانقر لتحديد السجلات من آخر سجل حتى هذا."
 Hours,ساعات
 How to combine sources,كيفية دمج المصادر
 HTML,HTML

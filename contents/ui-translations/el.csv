@@ -225,8 +225,8 @@ Clear selection,Καθαρισμός επιλογής
 Clear selection filter,Καθαρισμός φίλτρου επιλογής
 Clear sort,Καθαρισμός ταξινόμησης
 Click,Κάντε κλικ
-Click records to add them. Cmd + click works anytime.,Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Cmd + κλικ λειτουργεί ανά πάσα στιγμή.
-Click records to add them. Ctrl + click works anytime.,Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Ctrl + κλικ λειτουργεί ανά πάσα στιγμή.
+"Click records to add them. Cmd + click works anytime.","Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Cmd + κλικ λειτουργεί ανά πάσα στιγμή."
+"Click records to add them. Ctrl + click works anytime.","Κάντε κλικ στις εγγραφές για να τις προσθέσετε. Το Ctrl + κλικ λειτουργεί ανά πάσα στιγμή."
 Click to fill,Κάντε κλικ για να συμπληρώσετε
 Click to select an image,Κάντε κλικ για να επιλέξετε μια εικόνα
 Click to select audio or video,Κάντε κλικ για να επιλέξετε αρχείο ήχου ή βίντεο
@@ -643,7 +643,7 @@ Hide restricted relationships from public,Απόκρυψη σχέσεων με �
 Hide task,Απόκρυψη εργασίας
 Hide the matches in,Απόκρυψη των αντιστοιχίσεων σε
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
-Hold Shift and click to select from the last record through this one.,Κρατήστε πατημένο το Shift και κάντε κλικ για να επιλέξετε από την τελευταία εγγραφή μέχρι αυτή.
+"Hold Shift and click to select from the last record through this one.","Κρατήστε πατημένο το Shift και κάντε κλικ για να επιλέξετε από την τελευταία εγγραφή μέχρι αυτή."
 Hours,Ώρες
 How to combine sources,Πώς να συνδυάσετε πηγές
 HTML,HTML

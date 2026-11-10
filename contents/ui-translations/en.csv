@@ -226,8 +226,8 @@ Clear selection,Clear selection
 Clear selection filter,Clear selection filter
 Clear sort,Clear sort
 Click,Click
-Click records to add them. Cmd + click works anytime.,Click records to add them. Cmd + click works anytime.
-Click records to add them. Ctrl + click works anytime.,Click records to add them. Ctrl + click works anytime.
+"Click records to add them. Cmd + click works anytime.","Click records to add them. Cmd + click works anytime."
+"Click records to add them. Ctrl + click works anytime.","Click records to add them. Ctrl + click works anytime."
 Click to fill,Click to fill
 Click to select an image,Click to select an image
 Click to select audio or video,Click to select audio or video
@@ -644,7 +644,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide task,Hide task
 Hide the matches in,Hide the matches in
 Hide toolbar,Hide toolbar
-Hold Shift and click to select from the last record through this one.,Hold Shift and click to select from the last record through this one.
+"Hold Shift and click to select from the last record through this one.","Hold Shift and click to select from the last record through this one."
 Hours,Hours
 How to combine sources,How to combine sources
 HTML,HTML

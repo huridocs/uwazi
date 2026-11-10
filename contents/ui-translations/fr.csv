@@ -226,8 +226,8 @@ Clear selection,Effacer la sélection
 Clear selection filter,Effacer le filtre de sélection
 Clear sort,Effacer le tri
 Click,Cliquez
-Click records to add them. Cmd + click works anytime.,Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment.
-Click records to add them. Ctrl + click works anytime.,Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment.
+"Click records to add them. Cmd + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment."
+"Click records to add them. Ctrl + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment."
 Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
@@ -644,7 +644,7 @@ Hide restricted relationships from public,Masquer les relations restreintes au p
 Hide task,Masquer la tâche
 Hide the matches in,Masquer les correspondances dans
 Hide toolbar,Masquer la barre d'outils
-Hold Shift and click to select from the last record through this one.,Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci.
+"Hold Shift and click to select from the last record through this one.","Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci."
 Hours,Heures
 How to combine sources,Comment combiner les sources
 HTML,HTML
