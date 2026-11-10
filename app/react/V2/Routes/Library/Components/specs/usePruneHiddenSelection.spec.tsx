@@ -22,4 +22,21 @@ describe('usePruneHiddenSelection', () => {
     expect(onSelectedIdsChange).toHaveBeenCalledTimes(1);
     expect(onSelectedIdsChange).toHaveBeenCalledWith(['mexico']);
   });
+
+  it('keeps a selection that is already open before the first page is known', () => {
+    const onSelectedIdsChange = jest.fn();
+    const { rerender } = renderHook(
+      ({ pageIds, selectedIds }: { pageIds: readonly string[]; selectedIds: readonly string[] }) =>
+        usePruneHiddenSelection(pageIds, selectedIds, onSelectedIdsChange),
+      { initialProps: { pageIds: [] as readonly string[], selectedIds: ['entity-1'] } }
+    );
+
+    expect(onSelectedIdsChange).not.toHaveBeenCalled();
+
+    rerender({ pageIds: [], selectedIds: ['entity-1'] });
+    expect(onSelectedIdsChange).not.toHaveBeenCalled();
+
+    rerender({ pageIds: ['other'], selectedIds: ['entity-1'] });
+    expect(onSelectedIdsChange).toHaveBeenCalledWith([]);
+  });
 });

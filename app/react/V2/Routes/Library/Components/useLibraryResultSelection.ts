@@ -16,8 +16,9 @@ type LibraryResultSelectionArgs = {
 };
 
 /** When the page changes, drop selected records that are no longer on it.
- *  A selection change on the same page is left alone, so a record chosen
- *  before the list refreshes is not cleared early. */
+ *  The first page is left alone: a record already open is not cleared before
+ *  the reader has moved. A selection change on the same page is also left
+ *  alone, so a record chosen before the list refreshes is not cleared early. */
 const usePruneHiddenSelection = (
   pageIds: readonly string[],
   selectedIds: readonly string[],
@@ -26,12 +27,17 @@ const usePruneHiddenSelection = (
   const selectedRef = useRef(selectedIds);
   const notifyRef = useRef(onSelectedIdsChange);
   const pageIdsRef = useRef(pageIds);
+  const firstPage = useRef(true);
   selectedRef.current = selectedIds;
   notifyRef.current = onSelectedIdsChange;
   pageIdsRef.current = pageIds;
   const visibleKey = pageIds.join('\0');
 
   useEffect(() => {
+    if (firstPage.current) {
+      firstPage.current = false;
+      return;
+    }
     const { current } = selectedRef;
     const { current: visibleIds } = pageIdsRef;
     const { current: notify } = notifyRef;
