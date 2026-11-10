@@ -1,13 +1,7 @@
 import { useCallback } from 'react';
 import { useSetAtom } from 'jotai';
-import { useTabGroup } from '#V2/Components/UI/index.js';
-import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '../../Tabs/EntityTabsContext.js';
-import { useUpdateEntityUrl } from '../../entityUrlState.js';
-import { SIDE_TAB_PARAM } from '../../urlParams.js';
-import { applyMainTabSearchParam } from '../../Tabs/entityTabState.js';
-import { useEntityPageView } from '../EntityPageView/EntityPageViewContext.js';
-import { MAIN_TAB, SIDE_TAB, type MainTabId } from '../../Tabs/tabIds.js';
+import { MAIN_TAB } from '../../Tabs/tabIds.js';
 import {
   esFieldToFocusKey,
   focusMetadataFieldAtom,
@@ -15,41 +9,16 @@ import {
 
 const useJumpToSearchHit = () => {
   const setFocusField = useSetAtom(focusMetadataFieldAtom);
-  const updateEntityUrl = useUpdateEntityUrl();
-  const { selectTab: selectMainTab } = useTabGroup('entity-main');
-  const { stageSideTab } = useEntityTabNavigation();
-  const { mainDocument } = useEntityLanguage();
-  const hasMainDocument = Boolean(mainDocument?.filename);
-  const { hasEntityPageView } = useEntityPageView();
-
-  const ensureMainTab = useCallback(
-    (mainTab: MainTabId, options?: { hash?: (params: URLSearchParams) => void }) => {
-      selectMainTab(mainTab);
-      stageSideTab(SIDE_TAB.SEARCH);
-      updateEntityUrl({
-        search: next =>
-          applyMainTabSearchParam(next, mainTab, {
-            hasMainDocument,
-            retainDocumentTab: hasEntityPageView,
-          }),
-        hash: next => {
-          next.set(SIDE_TAB_PARAM, SIDE_TAB.SEARCH);
-          options?.hash?.(next);
-        },
-      });
-    },
-    [hasEntityPageView, hasMainDocument, selectMainTab, stageSideTab, updateEntityUrl]
-  );
-
+  const { openSearchHit } = useEntityTabNavigation();
   const jumpToProperty = useCallback(
     (esField: string) => {
       setFocusField({ fieldKey: esFieldToFocusKey(esField) });
-      ensureMainTab(MAIN_TAB.METADATA);
+      openSearchHit(MAIN_TAB.METADATA);
     },
-    [ensureMainTab, setFocusField]
+    [openSearchHit, setFocusField]
   );
 
-  return { ensureMainTab, jumpToProperty };
+  return { ensureMainTab: openSearchHit, jumpToProperty };
 };
 
 export { useJumpToSearchHit };

@@ -8,8 +8,11 @@ import {
   type MainTabId,
   type SideTabId,
 } from './tabIds.js';
+import type { PaneChoice } from './paneTabSelection.js';
 
 const pendingSideTabAtom = atom<SideTabId | null>(null);
+const pendingLeftTabAtom = atom<SideTabId | null>(null);
+const paneChoiceAtom = atom<PaneChoice | null>(null);
 
 type SideTabButton = { id: string };
 type UpdateEntityUrl = (options: UpdateEntityUrlOptions) => void;
@@ -24,6 +27,11 @@ const pickMainTab = (candidate: string | null, hasMainDocument: boolean): MainTa
   const mainTabIds = getMainTabIds(hasMainDocument);
   if (isValidMainTab(candidate) && mainTabIds.has(candidate)) return candidate;
   return hasMainDocument ? MAIN_TAB.DOCUMENT : MAIN_TAB.METADATA;
+};
+
+const entityViewTab = (rawMain: string | null, resolvedMain: MainTabId): SideTabId => {
+  if (rawMain && isValidSideTab(rawMain) && !isValidMainTab(rawMain)) return rawMain;
+  return resolvedMain;
 };
 
 const resolveMainTabFromUrl = (
@@ -50,6 +58,26 @@ const resolveSideTabId = (
   return firstId && isValidSideTab(firstId) ? firstId : undefined;
 };
 
+const resolveActiveSideTab = ({
+  pending,
+  sideButtons,
+  explicit,
+  atomSideTab,
+}: {
+  pending: SideTabId | null;
+  sideButtons: SideTabButton[];
+  explicit?: SideTabId;
+  atomSideTab?: string;
+}): { active: SideTabId | undefined; sync: SideTabId | undefined } => {
+  const pendingShown =
+    pending && sideButtons.some(button => button.id === pending) ? pending : undefined;
+  const sync = pendingShown ?? explicit;
+  const active =
+    sync ??
+    resolveSideTabId(null, sideButtons, isValidSideTab(atomSideTab) ? atomSideTab : undefined);
+  return { active, sync };
+};
+
 const resolveExplicitSideTab = (
   hashParams: URLSearchParams,
   sideButtons: SideTabButton[]
@@ -59,16 +87,8 @@ const resolveExplicitSideTab = (
   return sideButtons.some(button => button.id === sideTabFromHash) ? sideTabFromHash : undefined;
 };
 
-const applyMainTabSearchParam = (
-  params: URLSearchParams,
-  mainTab: MainTabId,
-  options: { hasMainDocument: boolean; retainDocumentTab?: boolean }
-) => {
-  if (mainTab === MAIN_TAB.DOCUMENT && options.hasMainDocument && !options.retainDocumentTab) {
-    params.delete(MAIN_TAB_PARAM);
-  } else {
-    params.set(MAIN_TAB_PARAM, mainTab);
-  }
+const applyMainTabSearchParam = (params: URLSearchParams, mainTab: SideTabId) => {
+  params.set(MAIN_TAB_PARAM, mainTab);
 };
 
 const setEntitySideTabInUrl = (
@@ -108,10 +128,14 @@ const pruneSideTabIfInvalidForMain = ({
 
 export {
   applyMainTabSearchParam,
+  paneChoiceAtom,
+  entityViewTab,
   getMainTabIds,
+  pendingLeftTabAtom,
   pendingSideTabAtom,
   pickMainTab,
   pruneSideTabIfInvalidForMain,
+  resolveActiveSideTab,
   resolveExplicitSideTab,
   resolveMainTabFromUrl,
   resolveSideTabId,

@@ -1,118 +1,54 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
-import { MemoryRouter, useLocation, type Location } from 'react-router';
-import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { focusMetadataFieldAtom } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
-import { EntityUrlSync } from '../../../entityUrlState.js';
+import { MAIN_TAB } from '../../../Tabs/tabIds.js';
 import { useJumpToSearchHit } from '../useJumpToSearchHit.js';
 
-let mockTestStore: ReturnType<typeof createStore> | null = null;
+const mockOpenSearchHit = jest.fn();
 
-jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
-  useEntityLanguage: () => ({
-    mainDocument: { _id: '1', filename: 'file.pdf' },
+jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => ({
+  useEntityTabNavigation: () => ({
+    openSearchHit: mockOpenSearchHit,
   }),
 }));
 
-jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => {
-  /* eslint-disable global-require, node/global-require */
-  const { mergeTabGroup, tabGroupsAtom: groupsAtom } =
-    require('#V2/Components/UI/Tabs/tabsAtoms.js') as typeof import('#V2/Components/UI/Tabs/tabsAtoms.js');
-  /* eslint-enable global-require, node/global-require */
-  return {
-    useEntityTabNavigation: () => ({
-      stageSideTab: (sideTab: string) => {
-        if (!mockTestStore) return;
-        mockTestStore.set(groupsAtom, prev =>
-          mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab })
-        );
-      },
-    }),
-  };
-});
-
 describe('useJumpToSearchHit', () => {
-  let store: ReturnType<typeof createStore>;
-  let location: Location;
-
-  const LocationProbe = () => {
-    location = useLocation();
-    return null;
-  };
-
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <MemoryRouter initialEntries={['/?m=relationships#s=toc']}>
-      <Provider store={store}>
-        <EntityUrlSync>
-          <LocationProbe />
-          {children}
-        </EntityUrlSync>
-      </Provider>
-    </MemoryRouter>
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <Provider store={createStore()}>{children}</Provider>
   );
 
   beforeEach(() => {
-    store = createStore();
-    mockTestStore = store;
+    mockOpenSearchHit.mockClear();
   });
 
-  it('jumpToProperty sets focus atom, main Metadata, and pins side Search', async () => {
-    const { result } = renderHook(() => useJumpToSearchHit(), { wrapper });
+  it('jumpToProperty focuses the field and opens metadata', () => {
+    const store = createStore();
+    const { result } = renderHook(() => useJumpToSearchHit(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <Provider store={store}>{children}</Provider>
+      ),
+    });
 
     act(() => {
       result.current.jumpToProperty('metadata.description.value');
     });
 
-    await act(async () => {
-      await Promise.resolve();
-    });
-
     expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'description' });
-    expect(store.get(tabGroupsAtom)['entity-main']?.activeTabId).toBe('metadata');
-    expect(store.get(tabGroupsAtom)['entity-side']?.activeTabId).toBe('search');
-    expect(location.search).toContain('m=metadata');
-    expect(location.hash).toContain('s=search');
-    expect(location.hash).not.toContain('s=metadata');
+    expect(mockOpenSearchHit).toHaveBeenCalledWith(MAIN_TAB.METADATA);
   });
 
-  it('ensureMainTab(Document) deletes m when a main document exists and pins Search', async () => {
+  it('forwards a document hit and its hash patch', () => {
+    const hash = jest.fn();
     const { result } = renderHook(() => useJumpToSearchHit(), { wrapper });
 
     act(() => {
-      result.current.ensureMainTab('document');
+      result.current.ensureMainTab(MAIN_TAB.DOCUMENT, { hash });
     });
 
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(store.get(tabGroupsAtom)['entity-main']?.activeTabId).toBe('document');
-    expect(store.get(tabGroupsAtom)['entity-side']?.activeTabId).toBe('search');
-    expect(location.search).not.toContain('m=');
-    expect(location.hash).toContain('s=search');
-  });
-
-  it('ensureMainTab(Document) applies optional hash patch in the same navigate', async () => {
-    const { result } = renderHook(() => useJumpToSearchHit(), { wrapper });
-
-    act(() => {
-      result.current.ensureMainTab('document', {
-        hash: next => {
-          next.set('page', '4');
-        },
-      });
-    });
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(location.hash).toContain('page=4');
-    expect(location.hash).toContain('s=search');
-    expect(location.search).not.toContain('m=');
+    expect(mockOpenSearchHit).toHaveBeenCalledWith(MAIN_TAB.DOCUMENT, { hash });
   });
 });
