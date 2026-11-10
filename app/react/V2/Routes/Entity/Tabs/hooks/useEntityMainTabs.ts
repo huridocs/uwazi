@@ -1,23 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSetAtom } from 'jotai';
-import {
-  mergeTabGroup,
-  tabGroupsAtom,
-  type TabGroupsState,
-} from '#V2/Components/UI/Tabs/tabsAtoms.js';
-import { SEARCH_PARAM } from '../../urlParams.js';
-import { useEntitySearchParams, useUpdateEntityUrl } from '../../entityUrlState.js';
-import { useEntityPageView } from '../../Components/EntityPageView/EntityPageViewContext.js';
+import { mergeTabGroup, tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import { pendingSideTabAtom } from '../entityTabState.js';
+import { MAIN_TAB, SIDE_TAB, type MainTabId, type SideTabId } from '../tabIds.js';
 import type { EntityMainTabsState, UseEntityTabsParams } from '../EntityTabsContext.js';
-import {
-  applyMainTabSearchParam,
-  pendingSideTabAtom,
-  pruneSideTabIfInvalidForMain,
-  resolveMainTabFromUrl,
-  setEntitySideTabInUrl,
-} from '../entityTabState.js';
-import { MAIN_TAB, SIDE_TAB, isValidMainTab, type MainTabId, type SideTabId } from '../tabIds.js';
-import { useEntitySideButtonModel } from './useEntitySideButtonModel.js';
+import { useEntityPaneTabs } from './useEntityPaneTabs.js';
 
 const usePaneRequest = (): [{ index: number; id: number } | undefined, (index: number) => void] => {
   const [requestedPane, setRequestedPane] = useState<{ index: number; id: number } | undefined>();
@@ -27,162 +14,102 @@ const usePaneRequest = (): [{ index: number; id: number } | undefined, (index: n
   return [requestedPane, requestPane];
 };
 
-const useMainTabActions = ({
-  activeMainTab,
-  buttonsFor,
-  documentOnMain,
-  hasMainDocument,
-  relationshipsOnMain,
+const openSubjectPane = ({
+  left,
+  subject,
   requestPane,
-  setPendingSideTab,
-  setTabGroups,
-  updateEntityUrl,
+  focusSideTab,
 }: {
-  activeMainTab: MainTabId;
-  buttonsFor: ReturnType<typeof useEntitySideButtonModel>['buttonsFor'];
-  documentOnMain: boolean;
-  hasMainDocument: boolean;
-  relationshipsOnMain: boolean;
+  left: ReturnType<typeof useEntityPaneTabs>['panes']['left'];
+  subject: ReturnType<typeof useEntityPaneTabs>['panes']['left'];
   requestPane: (index: number) => void;
-  setPendingSideTab: (value: SideTabId | null) => void;
-  setTabGroups: (updater: TabGroupsState | ((prev: TabGroupsState) => TabGroupsState)) => void;
-  updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
+  focusSideTab: (sideTab: SideTabId) => void;
 }) => {
-  const { hasEntityPageView } = useEntityPageView();
-  const selectSideTab = useCallback(
-    (sideTab: SideTabId) => {
-      setTabGroups(prev => mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab }));
-    },
-    [setTabGroups]
-  );
+  if (left === subject) {
+    requestPane(0);
+    return;
+  }
+  focusSideTab(subject);
+};
 
+const useMainPaneActions = (
+  pane: ReturnType<typeof useEntityPaneTabs>,
+  requestPane: (index: number) => void
+) => {
+  const setPendingSideTab = useSetAtom(pendingSideTabAtom);
+  const setTabGroups = useSetAtom(tabGroupsAtom);
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
-      if (!isValidMainTab(selectedMainTab)) return;
-      updateEntityUrl({
-        search: next =>
-          applyMainTabSearchParam(next, selectedMainTab, {
-            hasMainDocument,
-            retainDocumentTab: hasEntityPageView,
-          }),
-        hash: next => {
-          const searchDirty = Boolean(next.get(SEARCH_PARAM)?.trim());
-          const available = buttonsFor(selectedMainTab, searchDirty);
-          pruneSideTabIfInvalidForMain({
-            hash: next,
-            selectedMainTab,
-            activeMainTab,
-            isSideTabAvailable: sideTab => available.some(button => button.id === sideTab),
-          });
-        },
-      });
+      pane.commit('left', selectedMainTab);
     },
-    [activeMainTab, buttonsFor, hasEntityPageView, hasMainDocument, updateEntityUrl]
+    [pane]
   );
-
   const stageSideTab = useCallback(
     (sideTab: SideTabId) => {
       setPendingSideTab(sideTab);
-      selectSideTab(sideTab);
+      setTabGroups(prev => mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab }));
     },
-    [selectSideTab, setPendingSideTab]
+    [setPendingSideTab, setTabGroups]
   );
-
   const focusSideTab = useCallback(
     (sideTab: SideTabId) => {
-      setPendingSideTab(sideTab);
-      selectSideTab(sideTab);
-      setEntitySideTabInUrl(updateEntityUrl, activeMainTab, sideTab);
+      pane.commit('right', sideTab);
       requestPane(1);
     },
-    [activeMainTab, requestPane, selectSideTab, setPendingSideTab, updateEntityUrl]
+    [pane, requestPane]
   );
-
   const focusRelationshipsPanel = useCallback(() => {
-    if (relationshipsOnMain) {
-      requestPane(0);
-      return;
-    }
-    focusSideTab(SIDE_TAB.RELATIONSHIPS);
-  }, [focusSideTab, relationshipsOnMain, requestPane]);
-
+    openSubjectPane({
+      left: pane.panes.left,
+      subject: MAIN_TAB.RELATIONSHIPS,
+      requestPane,
+      focusSideTab,
+    });
+  }, [focusSideTab, pane.panes.left, requestPane]);
   const focusDocumentPanel = useCallback(() => {
-    if (documentOnMain) {
-      requestPane(0);
-      return;
-    }
-    focusSideTab(SIDE_TAB.DOCUMENT);
-  }, [documentOnMain, focusSideTab, requestPane]);
-
+    openSubjectPane({
+      left: pane.panes.left,
+      subject: MAIN_TAB.DOCUMENT,
+      requestPane,
+      focusSideTab,
+    });
+  }, [focusSideTab, pane.panes.left, requestPane]);
   const showSidePane = useCallback(() => {
     requestPane(1);
   }, [requestPane]);
-
-  return useMemo(
-    () => ({
-      onMainTabChange,
-      focusSideTab,
-      stageSideTab,
-      focusRelationshipsPanel,
-      focusDocumentPanel,
-      showSidePane,
-    }),
-    [
-      focusDocumentPanel,
-      focusRelationshipsPanel,
-      focusSideTab,
-      onMainTabChange,
-      showSidePane,
-      stageSideTab,
-    ]
+  const openSearchHit = useCallback(
+    (mainTab: MainTabId, options?: { hash?: (params: URLSearchParams) => void }) => {
+      if (pane.panes.left === SIDE_TAB.SEARCH) requestPane(1);
+      pane.openSearchHit(mainTab, options);
+    },
+    [pane, requestPane]
   );
+  return {
+    onMainTabChange,
+    stageSideTab,
+    focusSideTab,
+    focusRelationshipsPanel,
+    focusDocumentPanel,
+    showSidePane,
+    openSearchHit,
+  };
 };
 
-const useEntityMainTabs = ({
-  entity,
-  hasMainDocument,
-  mainDocumentId,
-  filesSideTabs,
-}: UseEntityTabsParams): EntityMainTabsState => {
-  const searchParams = useEntitySearchParams();
-  const updateEntityUrl = useUpdateEntityUrl();
-  const setPendingSideTab = useSetAtom(pendingSideTabAtom);
-  const setTabGroups = useSetAtom(tabGroupsAtom);
-  const { buttonsFor } = useEntitySideButtonModel({
-    entity,
-    hasMainDocument,
-    mainDocumentId,
-    filesSideTabs,
-  });
-  const activeMainTab = useMemo(
-    () => resolveMainTabFromUrl(searchParams, hasMainDocument),
-    [searchParams, hasMainDocument]
-  );
-  const onMain = {
-    relationships: activeMainTab === MAIN_TAB.RELATIONSHIPS,
-    document: activeMainTab === MAIN_TAB.DOCUMENT,
-  };
+const useEntityMainTabs = (params: UseEntityTabsParams): EntityMainTabsState => {
+  const pane = useEntityPaneTabs(params);
   const [requestedPane, requestPane] = usePaneRequest();
-  const actions = useMainTabActions({
-    activeMainTab,
-    buttonsFor,
-    documentOnMain: onMain.document,
-    hasMainDocument,
-    relationshipsOnMain: onMain.relationships,
-    requestPane,
-    setPendingSideTab,
-    setTabGroups,
-    updateEntityUrl,
-  });
+  const actions = useMainPaneActions(pane, requestPane);
+
   return useMemo(
     () => ({
-      activeMainTab,
-      relationshipsOnMain: onMain.relationships,
-      documentOnMain: onMain.document,
-      requestedPane,
+      activeMainTab: pane.panes.left,
+      mainButtons: pane.leftButtons,
+      relationshipsOnMain: pane.panes.left === MAIN_TAB.RELATIONSHIPS,
+      documentOnMain: pane.panes.left === MAIN_TAB.DOCUMENT,
       ...actions,
+      requestedPane,
     }),
-    [actions, activeMainTab, onMain.document, onMain.relationships, requestedPane]
+    [actions, pane.leftButtons, pane.panes.left, requestedPane]
   );
 };
 

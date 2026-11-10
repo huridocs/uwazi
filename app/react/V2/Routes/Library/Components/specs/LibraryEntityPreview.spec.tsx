@@ -145,7 +145,7 @@ describe('LibraryEntityPreview', () => {
     mediaMock = setupMatchMediaMock();
   });
 
-  it('shows Document, Metadata, Relationships and Files tabs and the PDF when the entity has a document', async () => {
+  it('shows the entity viewer left tabs and the PDF when the entity has a document', async () => {
     renderPreview(entityWithDocument.sharedId);
 
     expect(await screen.findByRole('tab', { name: 'Document' })).toHaveAttribute(
@@ -155,10 +155,21 @@ describe('LibraryEntityPreview', () => {
     expect(screen.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /^Relationships/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'File' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Translations' })).not.toBeInTheDocument();
 
     const pdf = await screen.findByTestId('mock-pdf');
     expect(pdf).toHaveTextContent('/api/files/file.pdf');
     expect(screen.getByText('Case 11.481 (Gelman)')).toBeInTheDocument();
+  });
+
+  it('opens ToC in the preview when that tab is selected', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
+    expect(screen.getByRole('tab', { name: 'ToC' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Document' })).toHaveAttribute('aria-selected', 'false');
   });
 
   it('switches to the Metadata tab using the entity viewer tabs', async () => {
@@ -185,6 +196,8 @@ describe('LibraryEntityPreview', () => {
       'true'
     );
     expect(screen.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /^Relationships/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
     expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();

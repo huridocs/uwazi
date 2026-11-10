@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
-import { TabButtons } from '#V2/Components/UI/index.js';
+import { TabButtons, type TabButtonDef } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
@@ -19,14 +19,18 @@ type TabsMainButtonsProps = {
   entity: EntityType;
   mainDocument?: FileType;
   onTabChange: (tabId: string) => void;
+  activeTabId?: string;
   groupId?: string;
+  buttons?: TabButtonDef[];
 };
 
 const TabsMainButtons = ({
   entity,
   mainDocument,
   onTabChange,
+  activeTabId,
   groupId = 'entity-main',
+  buttons: buttonOverride,
 }: TabsMainButtonsProps) => {
   const { isDirty } = useMetadataEditing();
   const { hasEntityPageView } = useEntityPageView();
@@ -92,7 +96,9 @@ const TabsMainButtons = ({
       <div className="min-w-0 flex-1">
         <TabButtons
           groupId={groupId}
-          buttons={buttons}
+          buttons={buttonOverride ?? buttons}
+          activeTabId={activeTabId}
+          syncActiveTabId={activeTabId}
           onTabChange={onTabChange}
           tabListAriaLabel={t('System', 'Entity primary', null, false)}
         />

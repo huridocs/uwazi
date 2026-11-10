@@ -13,7 +13,8 @@ type UseEntityTabsParams = {
 };
 
 type EntityMainTabsState = {
-  activeMainTab: MainTabId;
+  activeMainTab: SideTabId;
+  mainButtons: TabButtonDef[];
   relationshipsOnMain: boolean;
   documentOnMain: boolean;
   onMainTabChange: (selectedMainTab: string) => void;
@@ -22,6 +23,10 @@ type EntityMainTabsState = {
   focusRelationshipsPanel: () => void;
   focusDocumentPanel: () => void;
   showSidePane: () => void;
+  openSearchHit: (
+    mainTab: MainTabId,
+    options?: { hash?: (params: URLSearchParams) => void }
+  ) => void;
   requestedPane?: { index: number; id: number };
 };
 
@@ -54,6 +59,7 @@ const EntityTabsProvider = ({
   const main = useMemo(
     (): EntityMainTabsState => ({
       activeMainTab: value.activeMainTab,
+      mainButtons: value.mainButtons,
       relationshipsOnMain: value.relationshipsOnMain,
       documentOnMain: value.documentOnMain,
       onMainTabChange: value.onMainTabChange,
@@ -62,15 +68,18 @@ const EntityTabsProvider = ({
       focusRelationshipsPanel: value.focusRelationshipsPanel,
       focusDocumentPanel: value.focusDocumentPanel,
       showSidePane: value.showSidePane,
+      openSearchHit: value.openSearchHit,
     }),
     [
       value.activeMainTab,
+      value.mainButtons,
       value.documentOnMain,
       value.focusDocumentPanel,
       value.focusRelationshipsPanel,
       value.focusSideTab,
       value.onMainTabChange,
       value.relationshipsOnMain,
+      value.openSearchHit,
       value.showSidePane,
       value.stageSideTab,
     ]

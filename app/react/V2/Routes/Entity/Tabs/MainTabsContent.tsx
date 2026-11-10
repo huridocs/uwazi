@@ -1,7 +1,7 @@
 import React, { useEffect, type ReactNode } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
-import { MAIN_TAB, type MainTabId } from './tabIds.js';
+import { MAIN_TAB, SIDE_TAB, isValidMainTab, type SideTabId } from './tabIds.js';
 import { MAIN_TAB_PAPER_PADDING, mainTabPanelSurfaceClass } from './tabSurface.js';
 import { keepMetadataTab } from '../Components/context/metadataEditingSession.js';
 import { useResolvedEntityMainTab } from './hooks/useResolvedEntityMainTab.js';
@@ -14,11 +14,15 @@ import {
 } from '../Components/relationships/index.js';
 import { DrawerFilesList } from '../Components/Files/DrawerFilesList.js';
 import { FilesTab } from './tabsContent/FilesTab.js';
+import { ToCTab } from './tabsContent/ToCTab.js';
+import { SearchTab } from './tabsContent/SearchTab.js';
+import { FilesSideTab } from './tabsContent/FilesSideTab.js';
+import { TranslationsTab } from './tabsContent/TranslationsTab.js';
 
 type FilesLayout = 'table' | 'drawer';
 
 type MainTabsContentProps = {
-  activeTabId: MainTabId;
+  activeTabId: SideTabId;
   entity: EntityType;
   mainDocument?: FileType;
   pagePlaintext?: string;
@@ -68,6 +72,21 @@ const mainTabSwitchContent = ({
   }
 };
 
+const companionContent = (activeTabId: SideTabId, mainDocument?: FileType) => {
+  switch (activeTabId) {
+    case SIDE_TAB.TOC:
+      return <ToCTab mainDocument={mainDocument} />;
+    case SIDE_TAB.SEARCH:
+      return <SearchTab />;
+    case SIDE_TAB.FILE:
+      return <FilesSideTab />;
+    case SIDE_TAB.TRANSLATIONS:
+      return <TranslationsTab />;
+    default:
+      return null;
+  }
+};
+
 const useMainTabsPanel = ({
   activeTabId: urlActiveTabId,
   entity,
@@ -76,7 +95,11 @@ const useMainTabsPanel = ({
   groupId,
   filesLayout = 'table',
 }: MainTabsContentProps) => {
-  const activeTabId = useResolvedEntityMainTab(urlActiveTabId, groupId);
+  const resolvedMainTab = useResolvedEntityMainTab(
+    isValidMainTab(urlActiveTabId) ? urlActiveTabId : MAIN_TAB.METADATA,
+    groupId
+  );
+  const activeTabId = isValidMainTab(urlActiveTabId) ? resolvedMainTab : urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
   const metadataActive = activeTabId === MAIN_TAB.METADATA;
@@ -88,21 +111,36 @@ const useMainTabsPanel = ({
     activeTabId,
     metadataActive,
     showMetadataOnMain: keepMetadataTab(metadataActive, isEditing, formMountHost, 'main'),
-    content: mainTabSwitchContent({
-      activeTabId,
-      entity,
-      mainDocument,
-      pagePlaintext,
-      relationshipsOnMain,
-      focusDocumentPanel,
-      filesLayout,
-    }),
+    content: isValidMainTab(activeTabId)
+      ? mainTabSwitchContent({
+          activeTabId,
+          entity,
+          mainDocument,
+          pagePlaintext,
+          relationshipsOnMain,
+          focusDocumentPanel,
+          filesLayout,
+        })
+      : null,
   };
 };
 
 const MainTabsContentComponent = (props: MainTabsContentProps) => {
   const panel = useMainTabsPanel(props);
+  const companion = companionContent(props.activeTabId, props.mainDocument);
   const panelGroupId = props.groupId ?? 'entity-main';
+  if (companion) {
+    return (
+      <div
+        role="tabpanel"
+        id={`${panelGroupId}-panel-${props.activeTabId}`}
+        aria-labelledby={`${panelGroupId}-tab-${props.activeTabId}`}
+        className="flex h-full min-h-0 w-full flex-col"
+      >
+        {companion}
+      </div>
+    );
+  }
   if (!panel.content && !panel.showMetadataOnMain) return null;
   return (
     <div

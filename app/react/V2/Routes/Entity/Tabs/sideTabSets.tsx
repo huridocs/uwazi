@@ -3,7 +3,8 @@ import { Translate } from '#app/I18N/index.js';
 import type { TabButtonDef } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType } from '#V2/api/entities/types.js';
 import { TabLabel } from '../Components/shared/index.js';
-import { MAIN_TAB, SIDE_TAB, type MainTabId } from './tabIds.js';
+import { resolvePaneTabs } from './paneTabSelection.js';
+import { SIDE_TAB, type MainTabId } from './tabIds.js';
 
 type FilesSideTabsOptions = {
   showTranslationsTab: boolean;
@@ -22,110 +23,101 @@ type GetSideTabButtonsParams = {
   relationshipsCount?: number;
 };
 
-const getSideTabButtons = ({
-  activeMainTab,
-  entity,
-  hasMainDocument,
-  filesSideTabs,
-  metadataDirty,
-  searchDirty,
-  filesCount: filesCountOverride,
-  relationshipsCount = 0,
-}: GetSideTabButtonsParams): TabButtonDef[] => {
-  const buttons: TabButtonDef[] = [];
-  const relationshipsTabLabel = <TabLabel text="Relationships" count={relationshipsCount} />;
+const pickTabButtons = (catalog: TabButtonDef[], ids: string[]): TabButtonDef[] =>
+  ids.flatMap(id => {
+    const button = catalog.find(item => item.id === id);
+    return button ? [button] : [];
+  });
+
+type CatalogParams = Omit<GetSideTabButtonsParams, 'activeMainTab'>;
+
+const metadataTab = ({ entity, metadataDirty }: CatalogParams): TabButtonDef[] =>
+  entity
+    ? [
+        {
+          id: SIDE_TAB.METADATA,
+          name: 'Metadata',
+          label: <TabLabel text="Metadata" dirty={metadataDirty} />,
+        },
+      ]
+    : [];
+
+const documentTabs = ({ hasMainDocument }: CatalogParams): TabButtonDef[] =>
+  hasMainDocument
+    ? [
+        { id: SIDE_TAB.DOCUMENT, name: 'Document', label: <TabLabel text="Document" /> },
+        { id: SIDE_TAB.TOC, name: 'ToC', label: <TabLabel text="ToC" /> },
+      ]
+    : [];
+
+const relationshipTab = ({ relationshipsCount = 0 }: CatalogParams): TabButtonDef => ({
+  id: SIDE_TAB.RELATIONSHIPS,
+  name: 'Relationships',
+  label: <TabLabel text="Relationships" count={relationshipsCount} />,
+  menuLabel: <Translate>Relationships</Translate>,
+  accessory: relationshipsCount,
+});
+
+const filesTab = ({ filesCount: filesCountOverride }: CatalogParams): TabButtonDef => {
   const filesCount = filesCountOverride ?? 0;
-
-  const pushMetadata = () => {
-    if (!entity) return;
-    buttons.push({
-      id: SIDE_TAB.METADATA,
-      name: 'Metadata',
-      label: <TabLabel text="Metadata" dirty={metadataDirty} />,
-    });
+  return {
+    id: SIDE_TAB.FILES,
+    name: 'Files',
+    label: <TabLabel text="Files" count={filesCount} />,
+    menuLabel: <Translate>Files</Translate>,
+    accessory: filesCount,
   };
+};
 
-  const pushDocument = () => {
-    if (!hasMainDocument) return;
-    buttons.push({
-      id: SIDE_TAB.DOCUMENT,
-      name: 'Document',
-      label: <TabLabel text="Document" />,
-    });
-  };
+const searchTab = ({ searchDirty }: CatalogParams): TabButtonDef => ({
+  id: SIDE_TAB.SEARCH,
+  name: 'Search',
+  label: <TabLabel text="Search" dirty={searchDirty} />,
+});
 
-  const pushRelationships = () => {
-    buttons.push({
-      id: SIDE_TAB.RELATIONSHIPS,
-      name: 'Relationships',
-      label: relationshipsTabLabel,
-      menuLabel: <Translate>Relationships</Translate>,
-      accessory: relationshipsCount,
-    });
-  };
+const fileTab = (): TabButtonDef => ({
+  id: SIDE_TAB.FILE,
+  name: 'File',
+  label: <Translate>File</Translate>,
+});
 
-  const pushFilesList = () => {
-    buttons.push({
-      id: SIDE_TAB.FILES,
-      name: 'Files',
-      label: <TabLabel text="Files" count={filesCount} />,
-      menuLabel: <Translate>Files</Translate>,
-      accessory: filesCount,
-    });
-  };
-
-  switch (activeMainTab) {
-    case MAIN_TAB.DOCUMENT:
-      pushMetadata();
-      buttons.push({
-        id: SIDE_TAB.TOC,
-        name: 'ToC',
-        label: <TabLabel text="ToC" />,
-      });
-      pushRelationships();
-      pushFilesList();
-      buttons.push({
-        id: SIDE_TAB.SEARCH,
-        name: 'Search',
-        label: <TabLabel text="Search" dirty={searchDirty} />,
-      });
-      break;
-    case MAIN_TAB.METADATA:
-      pushDocument();
-      pushRelationships();
-      pushFilesList();
-      buttons.push({
-        id: SIDE_TAB.SEARCH,
-        name: 'Search',
-        label: <TabLabel text="Search" dirty={searchDirty} />,
-      });
-      break;
-    case MAIN_TAB.RELATIONSHIPS:
-      pushDocument();
-      pushMetadata();
-      pushFilesList();
-      break;
-    case MAIN_TAB.FILES:
-      buttons.push({
-        id: SIDE_TAB.FILE,
-        name: 'File',
-        label: <Translate>File</Translate>,
-      });
-      if (filesSideTabs?.showTranslationsTab) {
-        buttons.push({
+const translationsTab = ({ filesSideTabs }: CatalogParams): TabButtonDef[] =>
+  filesSideTabs?.showTranslationsTab
+    ? [
+        {
           id: SIDE_TAB.TRANSLATIONS,
           name: 'Translations',
           label: <TabLabel text="Translations" count={filesSideTabs.translationsCount} />,
           menuLabel: <Translate>Translations</Translate>,
           accessory: filesSideTabs.translationsCount,
-        });
-      }
-      break;
-    default:
-      break;
-  }
+        },
+      ]
+    : [];
 
-  return buttons;
+const buildEntityTabCatalog = (params: CatalogParams): TabButtonDef[] => [
+  ...metadataTab(params),
+  ...documentTabs(params),
+  relationshipTab(params),
+  filesTab(params),
+  searchTab(params),
+  fileTab(),
+  ...translationsTab(params),
+];
+
+const getSideTabButtons = ({
+  activeMainTab,
+  ...catalogParams
+}: GetSideTabButtonsParams): TabButtonDef[] => {
+  const panes = resolvePaneTabs({
+    left: activeMainTab,
+    rightFromUrl: null,
+    availability: {
+      hasMainDocument: catalogParams.hasMainDocument,
+      showTranslationsTab: Boolean(catalogParams.filesSideTabs?.showTranslationsTab),
+      hasEntity: Boolean(catalogParams.entity),
+    },
+  });
+  return pickTabButtons(buildEntityTabCatalog(catalogParams), panes.rightIds);
 };
 
 const translationsFilesSideTabs = (translationsCount: number): FilesSideTabsOptions => ({
@@ -133,5 +125,5 @@ const translationsFilesSideTabs = (translationsCount: number): FilesSideTabsOpti
   translationsCount,
 });
 
-export { getSideTabButtons, translationsFilesSideTabs };
+export { buildEntityTabCatalog, getSideTabButtons, pickTabButtons, translationsFilesSideTabs };
 export type { FilesSideTabsOptions };
