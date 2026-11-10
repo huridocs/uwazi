@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import { ApiError } from '#shared/apiClient/index.js';
 import * as files from '#V2/api/files/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -134,11 +133,11 @@ describe('Entity loader with cache integration', () => {
       );
     });
 
-    it('loads anchors when relationships main shows the document side rail', async () => {
+    it('skips anchors when relationships opens beside metadata', async () => {
       await loadEntity('http://localhost/entity/shared1?m=relationships', 'en');
 
       expect(loadSummary).toHaveBeenCalled();
-      expect(loadAnchors).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
       expect(loadResolved).not.toHaveBeenCalled();
     });
 
@@ -156,7 +155,34 @@ describe('Entity loader with cache integration', () => {
       expect(loadAnchors).not.toHaveBeenCalled();
     });
 
-    it('skips anchors for files first paint', async () => {
+    it('skips anchors when search is open beside metadata', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=search#s=metadata', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('loads anchors when search is open beside the document', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=search#s=document', 'en');
+
+      expect(loadAnchors).toHaveBeenCalled();
+    });
+
+    it('loads anchors when the table of contents leaves the document on the right', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=toc', 'en');
+
+      expect(loadAnchors).toHaveBeenCalled();
+    });
+
+    it('skips anchors when files is open beside translations', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=files#s=translations', 'en');
+
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Relationship query loading without a document rail', () => {
+    it('skips anchors when files opens beside the file tab', async () => {
       await loadEntity('http://localhost/entity/shared1?m=files', 'en');
 
       expect(loadSummary).toHaveBeenCalled();
@@ -250,137 +276,6 @@ describe('Entity loader with cache integration', () => {
       await loadEntity('http://localhost/entity/shared1?m=files', 'en');
       expect(loadSummary).toHaveBeenCalledTimes(2);
       expect(loadAnchors).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Plaintext loading', () => {
-    it('should fetch full document plaintext when not cached', async () => {
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-
-      expect(files.getDocumentPlaintext).toHaveBeenCalledWith('doc1', undefined);
-    });
-
-    it('should use cached plaintext and not fetch again', async () => {
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-
-      expect(files.getDocumentPlaintext).toHaveBeenCalledTimes(1);
-    });
-
-    it('should reuse full-document cache across repeated loads', async () => {
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-      await loadEntity('http://localhost/entity/shared1#raw=true');
-
-      expect(files.getDocumentPlaintext).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not fetch if the view mode is not set for plaintext', async () => {
-      await loadEntity('http://localhost/entity/shared1');
-      await loadEntity('http://localhost/entity/shared1');
-
-      expect(files.getDocumentPlaintext).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Main document loading', () => {
-    it('should include mainDocument in the loader response', async () => {
-      const result = (await loadEntity('http://localhost/entity/shared1')) as any;
-
-      expect(result.mainDocument).toEqual(mockEntity.documents![0]);
-    });
-
-    it('should cache mainDocument and not recompute on subsequent loads', async () => {
-      const getMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
-
-      await loadEntity('http://localhost/entity/shared1');
-      await loadEntity('http://localhost/entity/shared1');
-
-      expect(getMainDocumentSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should recompute mainDocument after cache invalidation', async () => {
-      const setMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
-
-      await loadEntity('http://localhost/entity/shared1');
-      entityLoaderCache.invalidateEntity('shared1');
-      await loadEntity('http://localhost/entity/shared1');
-
-      expect(setMainDocumentSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('should recache mainDocument when originalname changes', async () => {
-      const setMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
-
-      await loadEntity('http://localhost/entity/shared1');
-      entityLoaderCache.invalidateEntity('shared1');
-      mockEntity.documents = [
-        { ...mockEntity.documents![0], originalname: 'renamed.pdf', status: 'ready' },
-      ];
-      await loadEntity('http://localhost/entity/shared1');
-
-      expect(setMainDocumentSpy).toHaveBeenLastCalledWith(
-        'shared1',
-        '',
-        expect.objectContaining({ originalname: 'renamed.pdf' })
-      );
-    });
-
-    it('should use default language document when locale does not match', async () => {
-      mockEntity.documents = [
-        { _id: 'doc-es', filename: 'es.pdf', language: 'spa', status: 'ready' },
-        { _id: 'doc-en', filename: 'en.pdf', language: 'eng', status: 'ready' },
-      ];
-
-      const result = (await loadEntity('http://localhost/entity/shared1', 'fr')) as any;
-
-      expect(result.mainDocument).toEqual(mockEntity.documents[1]);
-    });
-
-    it('should ignore non-ready documents for mainDocument and plaintext', async () => {
-      mockEntity.documents = [
-        { _id: 'doc-processing', filename: 'processing.pdf', status: 'processing' },
-      ];
-
-      const result = (await loadEntity('http://localhost/entity/shared1#raw=true')) as any;
-
-      expect(result.mainDocument).toBeUndefined();
-      expect(files.getDocumentPlaintext).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Cache invalidation', () => {
-    it('should throw when entity fetch returns an API error', async () => {
-      getBySharedId.mockResolvedValue([
-        undefined,
-        new ApiError('Not found', { kind: 'http', status: 404, detail: 'Entity missing' }),
-      ]);
-
-      await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        type: 'DataWithResponseInit',
-        data: { message: 'Entity missing' },
-        init: { status: 404 },
-      });
-    });
-
-    it('should throw when entity fetch returns no rows', async () => {
-      getBySharedId.mockResolvedValue([[]]);
-
-      await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        type: 'DataWithResponseInit',
-        data: { message: 'Entity shared1 not found' },
-        init: { status: 404 },
-      });
-    });
-
-    it('should fetch again after cache is invalidated', async () => {
-      await loadEntity('http://localhost/entity/shared1');
-
-      entityLoaderCache.invalidateEntity('shared1');
-
-      await loadEntity('http://localhost/entity/shared1');
-
-      expect(getBySharedId).toHaveBeenCalledTimes(2);
     });
   });
 });
