@@ -5,6 +5,7 @@ const noop = () => undefined;
 
 const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): EntityTabsState => ({
   activeMainTab: MAIN_TAB.DOCUMENT,
+  mainButtons: [],
   activeSideTab: SIDE_TAB.RELATIONSHIPS,
   syncSideTabId: SIDE_TAB.RELATIONSHIPS,
   sideButtons: [],
@@ -17,6 +18,7 @@ const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): En
   focusRelationshipsPanel: noop,
   focusDocumentPanel: noop,
   showSidePane: noop,
+  openSearchHit: noop,
   ...overrides,
 });
 

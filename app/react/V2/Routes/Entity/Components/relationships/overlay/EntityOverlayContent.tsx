@@ -27,6 +27,7 @@ const noop = () => undefined;
 
 const overlayTabs = (mainTabId: MainTabId): EntityMainTabsState => ({
   activeMainTab: mainTabId,
+  mainButtons: [],
   relationshipsOnMain: mainTabId === MAIN_TAB.RELATIONSHIPS,
   documentOnMain: mainTabId === MAIN_TAB.DOCUMENT,
   onMainTabChange: noop,
@@ -35,6 +36,7 @@ const overlayTabs = (mainTabId: MainTabId): EntityMainTabsState => ({
   focusRelationshipsPanel: noop,
   focusDocumentPanel: noop,
   showSidePane: noop,
+  openSearchHit: noop,
 });
 
 const EntityOverlayContent = ({ entity }: EntityOverlayContentProps) => {
@@ -65,6 +67,7 @@ const EntityOverlayContent = ({ entity }: EntityOverlayContentProps) => {
                 groupId={groupId}
                 entity={entity}
                 mainDocument={mainDocument}
+                activeTabId={mainTabId}
                 onTabChange={selectTab}
               />
             </div>

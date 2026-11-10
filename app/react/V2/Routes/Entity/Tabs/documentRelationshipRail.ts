@@ -1,6 +1,6 @@
-import { MAIN_TAB, SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
+import { SIDE_TAB, type SideTabId } from './tabIds.js';
 
-const documentRelationshipRailVisible = (mainTab: MainTabId, sideTab?: SideTabId) =>
-  mainTab === MAIN_TAB.DOCUMENT || (sideTab === SIDE_TAB.DOCUMENT && mainTab !== MAIN_TAB.METADATA);
+const documentRelationshipRailVisible = (leftTab: SideTabId, sideTab?: SideTabId) =>
+  leftTab === SIDE_TAB.DOCUMENT || (sideTab === SIDE_TAB.DOCUMENT && leftTab !== SIDE_TAB.METADATA);
 
 export { documentRelationshipRailVisible };

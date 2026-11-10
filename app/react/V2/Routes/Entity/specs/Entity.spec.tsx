@@ -292,21 +292,24 @@ describe('Entity view', () => {
 
       fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
-        expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTablist().queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
-        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
         expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
       });
 
       fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
       await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
         expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-        expect(sideTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
-        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
-        expect(
-          sideTablist().queryByRole('tab', { name: relationshipsSideTab })
-        ).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
       });
 
       fireEvent.click(mainTablist().getByRole('tab', { name: /Files/ }));
@@ -336,7 +339,7 @@ describe('Entity view', () => {
       expect(within(sideDocumentPanel).getByTestId('mock-pdf')).toBeInTheDocument();
     });
 
-    it('preserves supported side tab and resets unsupported side tab across main switches', async () => {
+    it('keeps an explicit side tab when the main tab changes', async () => {
       const user = userEvent.setup();
       fireEvent.click(sideTablist().getByRole('tab', { name: relationshipsSideTab }));
       await waitFor(() => {
@@ -381,8 +384,7 @@ describe('Entity view', () => {
 
       fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
-        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
-        expect(sideTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toHaveAttribute(
           'aria-selected',
           'true'
         );

@@ -29,7 +29,7 @@ import {
   MAIN_TAB,
   MainTabsContent,
   TabsMainButtons,
-  type MainTabId,
+  type SideTabId,
 } from '#V2/Routes/Entity/Tabs/index.js';
 import {
   EntityTabsProvider,
@@ -55,8 +55,9 @@ type LibraryEntityPreviewProps = {
 
 const noop = () => undefined;
 
-const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
+const libraryPreviewTabs = (mainTabId: SideTabId): EntityTabsState => ({
   activeMainTab: mainTabId,
+  mainButtons: [],
   activeSideTab: undefined,
   syncSideTabId: undefined,
   sideButtons: [],
@@ -69,6 +70,7 @@ const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
   focusRelationshipsPanel: noop,
   focusDocumentPanel: noop,
   showSidePane: noop,
+  openSearchHit: noop,
 });
 
 const EntityFilesFromEntity = ({
@@ -105,7 +107,7 @@ const LibraryEntityPreviewView = ({
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
-  const mainTabId = useLibraryPreviewTab();
+  const { tabId: mainTabId, buttons } = useLibraryPreviewTab();
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
   const isMobile = useIsMobile();
   const { requestStopTranslations } = useMetadataEditing();
@@ -139,6 +141,8 @@ const LibraryEntityPreviewView = ({
             <TabsMainButtons
               entity={entity}
               mainDocument={mainDocument}
+              buttons={buttons}
+              activeTabId={mainTabId}
               onTabChange={() => undefined}
             />
           </div>
