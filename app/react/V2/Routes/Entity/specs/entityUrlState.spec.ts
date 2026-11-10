@@ -10,6 +10,7 @@ import {
   parseEntityHash,
   serializeEntityHash,
   useEntityDocumentPage,
+  useEntityHashUiParams,
   useUpdateEntityUrl,
   EntityUrlSync,
 } from '../entityUrlState.js';
@@ -35,6 +36,14 @@ describe('entityUrlState', () => {
 
     it('returns empty string for empty params', () => {
       expect(serializeEntityHash(new URLSearchParams())).toBe('');
+    });
+
+    it('keeps side tab, page, and search term in one hash', () => {
+      const parsed = parseEntityHash('#s=metadata&page=1&searchTerm=Human');
+
+      expect(parsed.get('s')).toBe('metadata');
+      expect(parsed.get('page')).toBe('1');
+      expect(parsed.get('searchTerm')).toBe('Human');
     });
   });
 
@@ -270,6 +279,42 @@ describe('entityUrlState', () => {
       const [[to]] = mockNavigate.mock.calls;
       expect(to.pathname).toBe('/');
       expect(to.search).toContain('m=files');
+    });
+
+    it('keeps page and searchTerm when the side tab is written again', async () => {
+      const initial = '/entity/1#s=metadata&page=1&searchTerm=Human';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(
+        () => ({
+          update: useUpdateEntityUrl(),
+          page: useEntityDocumentPage(),
+          hash: useEntityHashUiParams(),
+        }),
+        { wrapper: wrapper(initial) }
+      );
+
+      expect(result.current.page).toBe(1);
+      expect(result.current.hash.get('s')).toBe('metadata');
+      expect(result.current.hash.get('searchTerm')).toBe('Human');
+      expect(result.current.hash.get('page')).toBeNull();
+
+      act(() => {
+        result.current.update({
+          hash: next => {
+            next.set('s', 'document');
+          },
+        });
+      });
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      const [[to]] = mockNavigate.mock.calls;
+      expect(to.hash).toContain('s=document');
+      expect(to.hash).toContain('page=1');
+      expect(to.hash).toContain('searchTerm=Human');
     });
 
     it('keeps React hash when window hash is stale but pathname matches', async () => {

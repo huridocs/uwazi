@@ -134,11 +134,11 @@ describe('Entity loader with cache integration', () => {
       );
     });
 
-    it('loads anchors when relationships main shows the document side rail', async () => {
+    it('skips anchors when relationships opens beside metadata', async () => {
       await loadEntity('http://localhost/entity/shared1?m=relationships', 'en');
 
       expect(loadSummary).toHaveBeenCalled();
-      expect(loadAnchors).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
       expect(loadResolved).not.toHaveBeenCalled();
     });
 
@@ -156,7 +156,32 @@ describe('Entity loader with cache integration', () => {
       expect(loadAnchors).not.toHaveBeenCalled();
     });
 
-    it('skips anchors for files first paint', async () => {
+    it('skips anchors when search is open beside metadata', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=search#s=metadata', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('loads anchors when search is open beside the document', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=search#s=document', 'en');
+
+      expect(loadAnchors).toHaveBeenCalled();
+    });
+
+    it('loads anchors when the table of contents leaves the document on the right', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=toc', 'en');
+
+      expect(loadAnchors).toHaveBeenCalled();
+    });
+
+    it('skips anchors when files is open beside translations', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=files#s=translations', 'en');
+
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors when files opens beside the file tab', async () => {
       await loadEntity('http://localhost/entity/shared1?m=files', 'en');
 
       expect(loadSummary).toHaveBeenCalled();

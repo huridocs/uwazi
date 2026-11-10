@@ -16,10 +16,8 @@ import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlAtoms.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
-import { MAIN_TAB, isValidMainTab } from './Tabs/tabIds.js';
-import { getSideTabButtons } from './Tabs/sideTabSets.js';
-import { resolveSideTabId } from './Tabs/entityTabState.js';
 import { documentRelationshipRailVisible } from './Tabs/documentRelationshipRail.js';
+import { resolvePaneTabs } from './Tabs/paneTabSelection.js';
 import { loadEntityPageView } from './loadEntityPageView.js';
 import { LoaderResponse } from './types.js';
 
@@ -72,13 +70,16 @@ const isRawFromRequest = (requestUrl: string) =>
 const needAnchorsForRequest = (requestUrl: string, fileId: string | undefined, entity: Entity) => {
   if (!fileId || isRawFromRequest(requestUrl)) return false;
   const url = new URL(requestUrl);
-  const mainFromUrl = url.searchParams.get(MAIN_TAB_PARAM);
-  const mainTab = isValidMainTab(mainFromUrl) ? mainFromUrl : MAIN_TAB.DOCUMENT;
-  const sideTab = resolveSideTabId(
-    parseEntityHash(requestHash(requestUrl)).get(SIDE_TAB_PARAM),
-    getSideTabButtons({ activeMainTab: mainTab, entity, hasMainDocument: true })
-  );
-  return documentRelationshipRailVisible(mainTab, sideTab);
+  const panes = resolvePaneTabs({
+    left: url.searchParams.get(MAIN_TAB_PARAM),
+    rightFromUrl: parseEntityHash(requestHash(requestUrl)).get(SIDE_TAB_PARAM),
+    availability: {
+      hasMainDocument: Boolean(entity.documents?.some(doc => doc._id === fileId && doc.filename)),
+      showTranslationsTab: true,
+      hasEntity: Boolean(entity),
+    },
+  });
+  return documentRelationshipRailVisible(panes.left, panes.right);
 };
 
 const loadSummarySeed = async (
