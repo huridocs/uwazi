@@ -10,8 +10,15 @@ const BlankStateDumpOutputSchema = z.object({ tables: z.array(z.string()) });
 
 const BlankStateRestoreOutputSchema = z.object({ restored: z.literal(true) });
 
+/** The schema versions the dump moved between; equal when it was already current. */
+const BlankStateUpgradeOutputSchema = z.object({
+  fromVersion: z.number().int().nonnegative(),
+  toVersion: z.number().int().nonnegative(),
+});
+
 type BlankStateDumpOutput = z.infer<typeof BlankStateDumpOutputSchema>;
 type BlankStateRestoreOutput = z.infer<typeof BlankStateRestoreOutputSchema>;
+type BlankStateUpgradeOutput = z.infer<typeof BlankStateUpgradeOutputSchema>;
 
-export { BlankStateDumpOutputSchema, BlankStateRestoreOutputSchema };
-export type { BlankStateDumpOutput, BlankStateRestoreOutput };
+export { BlankStateDumpOutputSchema, BlankStateRestoreOutputSchema, BlankStateUpgradeOutputSchema };
+export type { BlankStateDumpOutput, BlankStateRestoreOutput, BlankStateUpgradeOutput };

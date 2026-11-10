@@ -71,5 +71,29 @@ describe('CliConfig', () => {
         )
       ).toEqual([...database, 'POSTGRES_USER', 'POSTGRES_PASSWORD']);
     });
+
+    it('should also require the Postgres superuser credentials when the command creates a scratch database', () => {
+      expect(
+        CliConfig.requiredFor(
+          { redis: false, sessions: false, postgresAdmin: true, scratchDatabase: true },
+          { NODE_ENV: 'production' }
+        )
+      ).toEqual([
+        ...database,
+        'POSTGRES_USER',
+        'POSTGRES_PASSWORD',
+        'POSTGRES_ADMIN_USER',
+        'POSTGRES_ADMIN_PASSWORD',
+      ]);
+    });
+
+    it('should not require the Postgres superuser credentials outside production', () => {
+      expect(
+        CliConfig.requiredFor(
+          { redis: false, sessions: false, postgresAdmin: true, scratchDatabase: true },
+          {}
+        )
+      ).toEqual([]);
+    });
   });
 });
