@@ -67,21 +67,34 @@ const pendingForUrl = (
 const useVisiblePending = (urlLeft: SideTabId, hashParams: URLSearchParams, stored: StoredPane) => {
   const [tracked, setTracked] = useAtom(trackedPaneUrlAtom);
   const side = hashParams.get(SIDE_TAB_PARAM);
-  const left = pendingForUrl(
-    stored.pendingLeft,
-    urlLeft,
-    tracked === null ? undefined : tracked.left
-  );
-  const right = pendingForUrl(
-    stored.pendingSide,
+  const seenLeft = tracked === null ? undefined : tracked.left;
+  const seenSide = tracked === null ? undefined : tracked.side;
+  const left = pendingForUrl(stored.pendingLeft, urlLeft, seenLeft);
+  const right = pendingForUrl(stored.pendingSide, side, seenSide);
+  const { pendingLeft, pendingSide, setPendingLeft, setPendingSide } = stored;
+  useEffect(() => {
+    if (pendingLeft !== left) {
+      setPendingLeft(left);
+      return;
+    }
+    if (pendingSide !== right) {
+      setPendingSide(right);
+      return;
+    }
+    if (seenLeft !== urlLeft || seenSide !== side) setTracked({ left: urlLeft, side });
+  }, [
+    left,
+    pendingLeft,
+    pendingSide,
+    right,
+    seenLeft,
+    seenSide,
+    setPendingLeft,
+    setPendingSide,
+    setTracked,
     side,
-    tracked === null ? undefined : tracked.side
-  );
-  if (stored.pendingLeft !== left) stored.setPendingLeft(left);
-  else if (stored.pendingSide !== right) stored.setPendingSide(right);
-  else if (!tracked || tracked.left !== urlLeft || tracked.side !== side) {
-    setTracked({ left: urlLeft, side });
-  }
+    urlLeft,
+  ]);
   return { left, right };
 };
 

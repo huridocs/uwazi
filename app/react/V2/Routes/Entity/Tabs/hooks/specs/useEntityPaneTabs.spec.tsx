@@ -171,8 +171,16 @@ describe('useEntityPaneTabs updates', () => {
     act(() => {
       store.set(pendingLeftTabAtom, SIDE_TAB.METADATA);
     });
-    renderHook(() => useEntityPaneTabs(tabs), { wrapper });
+    const { result } = renderHook(
+      () => {
+        const first = useEntityPaneTabs(tabs);
+        const second = useEntityPaneTabs(tabs);
+        return { first: first.panes.left, second: second.panes.left };
+      },
+      { wrapper }
+    );
 
     expect(store.get(pendingLeftTabAtom)).toBe(SIDE_TAB.METADATA);
+    expect(result.current).toEqual({ first: SIDE_TAB.METADATA, second: SIDE_TAB.METADATA });
   });
 });
