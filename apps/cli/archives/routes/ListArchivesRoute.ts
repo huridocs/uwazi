@@ -7,7 +7,7 @@ import type { ArchivesOutput } from '../contracts.js';
 class ListArchivesRoute implements Route<Record<string, never>, ArchivesOutput> {
   readonly command = ['archives', 'list'];
 
-  readonly describe = 'List the archived tenants, as stored, newest first';
+  readonly describe = 'Deprecated alias of `tenants list --archived`';
 
   readonly tenancy = 'none';
 

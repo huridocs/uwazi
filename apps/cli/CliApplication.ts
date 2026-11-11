@@ -192,8 +192,9 @@ class CliApplication {
   private async handle(route: Route, argv: CliArgv): Promise<unknown> {
     const tenants = TenantOptions.parse(route.tenancy, argv);
     const request = await RequestInput.read(argv.request, this.stdin);
-    const input = route.request.parse(
-      route.requestFromFlags ? route.requestFromFlags(argv, request) : request
+    const parsedRequest = route.request.parse(request);
+    const input = (route.input ?? route.request).parse(
+      route.requestFromFlags ? route.requestFromFlags(argv, parsedRequest) : parsedRequest
     );
     CliConfig.assertRequired(CliConfig.requiredFor(route.needs, this.env), this.env);
     const { TenantMiddleware } = await this.loadBackend(route);

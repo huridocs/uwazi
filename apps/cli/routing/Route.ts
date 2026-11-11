@@ -19,12 +19,14 @@ interface Route<Input = unknown, Output = unknown> {
   tenancy: Tenancy;
   needs: ConnectionNeeds;
   /** Validates `--request` before any connection opens; `--schema` prints it as JSON schema. */
-  request: z.ZodType<Input, z.ZodTypeDef, unknown>;
+  request: z.ZodTypeAny;
+  /** Validates the command's full input — `--request` merged with route flags. Defaults to `request`. */
+  input?: z.ZodType<Input, z.ZodTypeDef, unknown>;
   /** Domain field → request field, for domain errors whose path is not the request's. */
   fieldMap: FieldMap;
   /** Extra command-line flags, added alongside `--request`, `--tenant` and `--schema`. */
   options?: (y: Argv) => Argv;
-  /** Combines the extra flags with the `--request` JSON into the command's input. */
+  /** Combines the extra flags with the parsed `--request` JSON into the command's input. */
   requestFromFlags?: (argv: CliArgv, request: unknown) => unknown;
   handle(input: Input): Promise<Output>;
 }
