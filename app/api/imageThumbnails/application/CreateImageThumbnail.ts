@@ -64,10 +64,10 @@ class CreateImageThumbnail extends AbstractUseCase<Input, void, Deps, [boolean]>
     if (!imageNeedsThumbnail(filename)) {
       return true;
     }
-    if (await this.deps.fileStorage.locationExists(imageThumbnailLocation(filename))) {
+    if (await this.deps.fileStorage.fileExists(imageThumbnailLocation(filename))) {
       return true;
     }
-    return this.deps.fileStorage.locationExists(imageThumbnailSkipLocation(filename));
+    return this.deps.fileStorage.fileExists(imageThumbnailSkipLocation(filename));
   }
 
   private async giveUpOrRethrow(filename: string, error: unknown, giveUp: boolean): Promise<never> {
@@ -81,7 +81,7 @@ class CreateImageThumbnail extends AbstractUseCase<Input, void, Deps, [boolean]>
 
   private async writeSkip(filename: string) {
     const location = imageThumbnailSkipLocation(filename);
-    if (await this.deps.fileStorage.locationExists(location)) {
+    if (await this.deps.fileStorage.fileExists(location)) {
       return;
     }
     await this.deps.fileStorage.storeContent(skipMarker(), location);

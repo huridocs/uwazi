@@ -24,10 +24,10 @@ class EnqueueImageThumbnails {
     const pending = [...new Set(filenames.filter(imageNeedsThumbnail))];
 
     await ArrayUtils.sequentialFor(pending, async filename => {
-      if (await this.deps.fileStorage.locationExists(imageThumbnailLocation(filename))) {
+      if (await this.deps.fileStorage.fileExists(imageThumbnailLocation(filename))) {
         return;
       }
-      if (await this.deps.fileStorage.locationExists(imageThumbnailSkipLocation(filename))) {
+      if (await this.deps.fileStorage.fileExists(imageThumbnailSkipLocation(filename))) {
         return;
       }
       if ((await this.deps.jobs.countActive(filename)) > 0) {

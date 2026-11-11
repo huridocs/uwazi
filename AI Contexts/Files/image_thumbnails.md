@@ -1,7 +1,7 @@
 # Image thumbnails
 
 Date: 2026-11-06
-Status: the module is `app/api/imageThumbnails`, and the backend behavior in this note is implemented. Library cards and compact metadata already request the thumbnails route. The entity page and the library side panel still request the full asset. Still open: the `<img>` audit, copying the derivative on sync, `locationExists`, and whether the load balancer honors `Cache-Control: no-store`.
+Status: the module is `app/api/imageThumbnails`, and the backend behavior in this note is implemented. Library cards and compact metadata already request the thumbnails route. The entity page and the library side panel still request the full asset. Still open: the `<img>` audit, copying the derivative on sync, and whether the load balancer honors `Cache-Control: no-store`.
 
 ## Module
 
@@ -201,9 +201,9 @@ The event is emitted inside the transaction, before commit. The listener job doe
 
 A PDF delete also emits the event for the `{documentId}.jpg` thumbnail row. That name has an eligible extension, so the listener queues a delete of `thumbnails/640/<that name>` too. Nothing was written there. The delete ignores a missing object.
 
-### `locationExists`
+### `fileExists`
 
-`fileExists` takes a file row and cannot address `thumbnails/640/<filename>`. `locationExists` answers whether that object is already there. `createPath` was not changed. Writing a file already creates the directory. The method is in use. Changing it is still an open question. See Open.
+`FileStorage.fileExists` checks storage only. On disk that is `fs.access`. On S3 it is a head of the object key. It takes a file row or a `FileLocation`, including `customPath` `thumbnails/640/<filename>`, turns that into a path, and answers whether the object is there. It does not query the files table. The caller loads the row first, with `filesDS.getByFilename`, and then calls `fileExists` to see if that row's bytes are in storage. A derivative has no row, so the same method is called with the `thumbnails/640` location. `createPath` was not changed. Writing a file already creates the directory.
 
 ### Front end
 
@@ -219,5 +219,4 @@ The entity page and `LibraryEntityPreview` do not use the helper.
 
 1. The `<img>` audit: every current `/api/files/` image, marked thumb or full. A card and a side panel can share a component, and the two call sites above were switched before that walk. Do not add more call sites until it is done.
 2. Sync of a file does not yet copy `thumbnails/640/<filename>` or `thumbnails/640/<filename>.skip`. The Delete and sync section still stands. A synced image currently goes through file creation, so with the flag on the target enqueues a new thumbnail instead of copying one.
-3. `locationExists` is a second method next to `fileExists`. Not happy with it. Discuss with the team before changing it. Do not remove it in the meantime: the derivative key is not a file row.
-4. The thumbnail URL returns two different bodies over its life. The first request, before the JPEG exists, returns the original file and `Cache-Control: no-store`. A later request returns the small JPEG and may be cached. The app cannot force the load balancer to obey `no-store`. If the balancer stores the first response by URL and ignores that header, every card keeps receiving the full image from the balancer after the JPEG has been written. Question for the team: on `GET /files/thumbnails/*`, will the load balancer store a response that says `Cache-Control: no-store`? If it will, what do we set so the original is not kept and the JPEG, once it exists, still is?
+3. The thumbnail URL returns two different bodies over its life. The first request, before the JPEG exists, returns the original file and `Cache-Control: no-store`. A later request returns the small JPEG and may be cached. The app cannot force the load balancer to obey `no-store`. If the balancer stores the first response by URL and ignores that header, every card keeps receiving the full image from the balancer after the JPEG has been written. Question for the team: on `GET /files/thumbnails/*`, will the load balancer store a response that says `Cache-Control: no-store`? If it will, what do we set so the original is not kept and the JPEG, once it exists, still is?

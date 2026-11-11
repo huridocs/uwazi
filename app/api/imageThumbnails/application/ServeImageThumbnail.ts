@@ -59,7 +59,7 @@ class ServeImageThumbnail extends AbstractUseCase<Input, Output, Deps> {
   }
 
   private async serveImage(file: BaseFile): Promise<Output> {
-    if (await this.deps.fileStorage.locationExists(imageThumbnailLocation(file.filename))) {
+    if (await this.deps.fileStorage.fileExists(imageThumbnailLocation(file.filename))) {
       return {
         status: 'ok',
         file,
@@ -69,7 +69,7 @@ class ServeImageThumbnail extends AbstractUseCase<Input, Output, Deps> {
       };
     }
 
-    if (!(await this.deps.fileStorage.locationExists(imageThumbnailSkipLocation(file.filename)))) {
+    if (!(await this.deps.fileStorage.fileExists(imageThumbnailSkipLocation(file.filename)))) {
       await this.deps.enqueueImageThumbnails.execute([file.filename]);
     }
     return this.original(file);

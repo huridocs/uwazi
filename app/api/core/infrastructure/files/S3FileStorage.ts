@@ -119,12 +119,8 @@ export class S3FileStorage implements FileStorage {
     return Promise.all(promises);
   }
 
-  async fileExists(file: BaseFile) {
-    return this.keyExists(this.pathManager.createPath(file));
-  }
-
-  async locationExists(location: FileLocation) {
-    return this.keyExists(this.pathManager.createPath(location));
+  async fileExists(target: BaseFile | FileLocation) {
+    return this.keyExists(this.pathManager.createPath(target));
   }
 
   private async keyExists(key: string) {

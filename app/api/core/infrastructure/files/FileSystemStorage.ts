@@ -86,12 +86,8 @@ export class FileSystemStorage implements FileStorage {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 
-  async fileExists(file: BaseFile) {
-    return pathExists(this.pathManager.createPath(file));
-  }
-
-  async locationExists(location: FileLocation) {
-    return pathExists(this.pathManager.createPath(location));
+  async fileExists(target: BaseFile | FileLocation) {
+    return pathExists(this.pathManager.createPath(target));
   }
 
   async getFiles(inputs: FileLocation[]): Promise<FileContents[]> {
