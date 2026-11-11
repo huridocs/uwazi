@@ -12,14 +12,13 @@ instances; nothing in Uwazi depends on it. Shared options, output and exit codes
 | --------------- | ------- | --------------------------------------------------- |
 | `archives list` | none    | Lists the archived tenants, as stored, newest first |
 
-Uwazi does not archive tenants and does not write these rows. The archive playbook in
-uwazi-operations does: it copies the tenant's row from the registry into the `archives`
-collection, adding `status`, `dumpLocation` and `archivedAt`, then removes the tenant from the
-registry and drops its database. Unarchiving copies the row back and deletes it from `archives`.
-So the list holds the tenants that are archived now, one row per name.
+`tenants archive` writes these rows: it copies the tenant's row from the registry into the
+archived registry (Mongo `archives` or Postgres `archived_tenants`, as `TENANTS_BACKEND`
+chooses), adding `status`, `dumpLocation` and `archivedAt`, then removes the tenant from the
+active registry. Unarchiving copies the row back and deletes it from the archived registry. So
+the list holds the tenants that are archived now, one row per name.
 
-Rows are always read from the Mongo shared database (`uwazi_shared_db`), whatever
-`TENANTS_BACKEND` is: the archive playbook writes nowhere else.
+Rows are read from the same backend the active registry uses, whatever `TENANTS_BACKEND` is.
 
 ## archives list
 
@@ -32,12 +31,13 @@ No request, and neither `--tenant` nor `--all-tenants`: archived tenants are no 
 registry, so there is no tenant to run in. Any request field fails with `validation.failed`
 (exit 2).
 
-Prints every row exactly as stored, `_id` included, with no field added, removed or converted.
+Prints every row exactly as stored — `_id` included on MongoDB, absent on Postgres — with no field
+added, removed or converted.
 
-Order: newest `archivedAt` first. The playbook writes `archivedAt` as epoch **seconds**, usually as
-a string; it is printed as stored, but sorted by its numeric value, whether a string or a number.
-Rows with no `archivedAt`, or one that is not a number, come last. Rows with the same `archivedAt`
-are sorted by name.
+Order: newest `archivedAt` first. `archivedAt` is epoch **seconds**, written by the CLI as a
+number; on Mongo a row written by an older playbook may store it as a numeric string, which still
+sorts by its numeric value. Rows with no `archivedAt`, or one that is not a number, come last.
+Rows with the same `archivedAt` are sorted by name.
 
 Output, one item per archived tenant, `[]` when there are none:
 
@@ -58,7 +58,7 @@ Output, one item per archived tenant, `[]` when there are none:
       "files": "https://store.greenhost.net/uwazi-production/acme"
     },
     "featureFlags": { "s3Storage": true },
-    "archivedAt": "1759700000"
+    "archivedAt": 1759700000
   }
 ]
 ```
@@ -67,5 +67,5 @@ Output, one item per archived tenant, `[]` when there are none:
 | -------------------- | ------------------------------------------------------------------ |
 | `dumpLocation.db`    | The zipped database dump                                           |
 | `dumpLocation.files` | Where the tenant's files are kept                                  |
-| `archivedAt`         | When it was archived, epoch seconds, as written (string or number) |
+| `archivedAt`         | When it was archived, epoch seconds (a number; a numeric string in older Mongo rows) |
 | the other fields     | The tenant's registry row at the time it was archived              |

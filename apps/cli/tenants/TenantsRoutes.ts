@@ -1,6 +1,8 @@
 import type { Route } from '../routing/Route.js';
 import { ListTenantsRoute } from './routes/ListTenantsRoute.js';
 import { GetTenantRoute } from './routes/GetTenantRoute.js';
+import { ArchiveTenantRoute } from './routes/ArchiveTenantRoute.js';
+import { UnarchiveTenantRoute } from './routes/UnarchiveTenantRoute.js';
 import { RegisterTenantRoute } from './routes/RegisterTenantRoute.js';
 import { UpdateTenantRoute } from './routes/UpdateTenantRoute.js';
 import { DeleteTenantRoute } from './routes/DeleteTenantRoute.js';
@@ -15,6 +17,8 @@ class TenantsRoutes {
     return [
       new ListTenantsRoute(),
       new GetTenantRoute(),
+      new ArchiveTenantRoute(),
+      new UnarchiveTenantRoute(),
       new RegisterTenantRoute(),
       new UpdateTenantRoute(),
       new DeleteTenantRoute(),

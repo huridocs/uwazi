@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
 /**
- * What `uwazi archives list` prints: each `archives` row exactly as the archive playbook stored
- * it, `_id` included. Owned by the CLI, not shared with the HTTP API.
+ * What `uwazi archives list` prints: each archived row exactly as the archived registry stored
+ * it — `_id` included on MongoDB, absent on Postgres. Owned by the CLI, not shared with the HTTP
+ * API.
  */
 const ArchiveOutputSchema = z.record(z.unknown());
 
