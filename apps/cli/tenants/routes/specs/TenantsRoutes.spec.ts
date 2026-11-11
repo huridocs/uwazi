@@ -43,6 +43,17 @@ describe('TenantsRoutes', () => {
       expect(parse('list', {})).toEqual({});
       expect(issuesOf(() => parse('list', { name: 'acme' }))).toEqual(['']);
     });
+
+    it('should switch to the archived registry with --archived, never a request field', () => {
+      const list = route('list');
+
+      expect(issuesOf(() => parse('list', { archived: true }))).toEqual(['']);
+      expect(list.options).toBeDefined();
+      expect(list.input?.parse({ archived: false })).toEqual({ archived: false });
+      expect(list.input?.parse({ archived: true })).toEqual({ archived: true });
+      expect(list.requestFromFlags?.({ archived: false }, {})).toEqual({ archived: false });
+      expect(list.requestFromFlags?.({ archived: true }, {})).toEqual({ archived: true });
+    });
   });
 
   describe('get', () => {

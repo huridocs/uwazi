@@ -19,7 +19,7 @@ in the module's own page:
 | [usage](docs/usage.md)               | `report`                                                                                                 |
 | [sessions](docs/sessions.md)         | `last`                                                                                                   |
 | [activity](docs/activity.md)         | `list`                                                                                                   |
-| [archives](docs/archives.md)         | `list`                                                                                                   |
+| [archives](docs/archives.md)         | `list` — deprecated alias of `tenants list --archived`                                                   |
 
 ## Running it
 
@@ -92,7 +92,11 @@ unknown field.
   above every tenant, so there is no tenant to run _in_; the tenant they act _on_ travels in the
   request as `name`. The `db` commands are the exception: they run in one tenant and take
   `--tenant`.
+- `tenants list --archived` reads the archived registry, where an archived tenant is no longer
+  in the active registry. Archived tenants are still selected with `--archived`, never with
+  `--tenant`.
 - `archives …` takes neither as well: an archived tenant is no longer in the registry.
+  Deprecated — use `tenants list --archived` instead.
 
 ## Output
 
