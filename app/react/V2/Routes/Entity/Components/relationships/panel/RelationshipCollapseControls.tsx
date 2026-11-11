@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ChevronsDownUpIcon, ChevronsUpDownIcon } from '#V2/Components/CustomIcons/index.js';
 import {
   useEnsureResolved,
   useRelationshipsPanelLayout,
@@ -31,26 +32,39 @@ const collapseControlClass = (enabled: boolean) =>
       : 'cursor-not-allowed text-ink-muted'
   }`;
 
+const iconClass = 'inline-block h-3 w-3 @min-[672px]:hidden';
+const labelClass = '@max-[671px]:hidden';
+
 const RelationshipCollapseControls = () => {
   const { groupingEnabled, collapseAll, expandAll } = useRelationshipCollapseActions();
+  const collapseLabel = t('System', 'Collapse all', null, false);
+  const expandLabel = t('System', 'Expand all', null, false);
 
   return (
     <div className="flex items-center gap-1">
       <button
         type="button"
+        aria-label={collapseLabel}
         disabled={!groupingEnabled}
         onClick={collapseAll}
         className={collapseControlClass(groupingEnabled)}
       >
-        <Translate>Collapse all</Translate>
+        <ChevronsDownUpIcon className={iconClass} aria-hidden />
+        <span className={labelClass}>
+          <Translate>Collapse all</Translate>
+        </span>
       </button>
       <button
         type="button"
+        aria-label={expandLabel}
         disabled={!groupingEnabled}
         onClick={expandAll}
         className={collapseControlClass(groupingEnabled)}
       >
-        <Translate>Expand all</Translate>
+        <ChevronsUpDownIcon className={iconClass} aria-hidden />
+        <span className={labelClass}>
+          <Translate>Expand all</Translate>
+        </span>
       </button>
     </div>
   );

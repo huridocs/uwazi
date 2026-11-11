@@ -149,7 +149,7 @@ const activeTabFooter = ({
     );
   }
   if (mainTabId === MAIN_TAB.RELATIONSHIPS && relationshipsEditMode) {
-    return <RelationshipsTabFooter inset="side" />;
+    return <RelationshipsTabFooter />;
   }
   return null;
 };

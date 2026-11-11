@@ -86,9 +86,6 @@ const useExitRelationshipsEdit = (active: boolean) => {
       setRelationshipsEditMode(false);
       setSelectedRelationshipIds(new Set());
     }
-    return () => {
-      syncRelationshipsTab(id, false);
-    };
   }, [
     active,
     id,
@@ -97,6 +94,16 @@ const useExitRelationshipsEdit = (active: boolean) => {
     setSelectedRelationshipIds,
     syncRelationshipsTab,
   ]);
+
+  useEffect(
+    () => () => {
+      if (syncRelationshipsTab(id, false) === 0) {
+        setRelationshipsEditMode(false);
+        setSelectedRelationshipIds(new Set());
+      }
+    },
+    [id, setRelationshipsEditMode, setSelectedRelationshipIds, syncRelationshipsTab]
+  );
 };
 
 export {

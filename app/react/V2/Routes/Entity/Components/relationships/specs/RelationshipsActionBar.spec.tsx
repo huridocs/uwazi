@@ -13,6 +13,11 @@ const expandAll = async (user: UserEvent) => {
   await user.click(screen.getByRole('button', { name: 'Expand all' }));
 };
 
+const expectNarrowIcon = (button: HTMLElement) => {
+  expect(button.querySelector('svg')).toHaveClass('@min-[672px]:hidden');
+  expect(button.querySelector('span')).toHaveClass('@max-[671px]:hidden');
+};
+
 const expectCollapsePairTogether = () => {
   const collapse = screen.getByRole('button', { name: 'Collapse all' });
   const expand = screen.getByRole('button', { name: 'Expand all' });
@@ -20,6 +25,8 @@ const expectCollapsePairTogether = () => {
   expect(collapse.parentElement?.contains(screen.getByRole('button', { name: 'Cancel' }))).toBe(
     false
   );
+  expectNarrowIcon(collapse);
+  expectNarrowIcon(expand);
 };
 
 const expectIconButton = (name: string) => {
@@ -36,6 +43,30 @@ const selectFirstRelationship = async (user: UserEvent) => {
 const expectIdleEdit = () => {
   expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
   expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
+};
+
+const expectCompactIcons = () => {
+  expectCollapsePairTogether();
+  expectIconButton('Create relationship');
+  expectIconButton('Manage types');
+  expectIconButton('Select all');
+  expectIconButton('Deselect all');
+  expect(screen.getByRole('button', { name: 'Deselect all' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Cancel' })).toHaveTextContent('Cancel');
+};
+
+const expectGroupOpen = (open: boolean) => {
+  const icon = screen.getByRole('button', { name: 'Related 2' }).querySelector('svg');
+  if (open) expect(icon).not.toHaveClass('-rotate-90');
+  else expect(icon).toHaveClass('-rotate-90');
+};
+
+const expectSelectionExpanded = (checked: boolean) => {
+  expectGroupOpen(true);
+  screen.getAllByRole('checkbox').forEach(box => {
+    if (checked) expect(box).toBeChecked();
+    else expect(box).not.toBeChecked();
+  });
 };
 
 const expectEditingRelationships = () => {
@@ -69,7 +100,14 @@ const expectActionOrder = async (user: UserEvent) => {
   const create = screen.getByRole('button', { name: 'Create relationship' });
   const cluster = create.parentElement?.parentElement;
   const names = [...(cluster?.querySelectorAll('button') ?? [])].map(buttonLabel);
-  expect(names).toEqual(['Delete', 'Create relationship', 'Manage types', 'Cancel']);
+  expect(names).toEqual([
+    'Create relationship',
+    'Manage types',
+    'Select all',
+    'Deselect all',
+    'Delete',
+    'Cancel',
+  ]);
   await user.hover(create);
   expect(await screen.findByRole('tooltip')).toHaveTextContent('Create relationship');
 };
@@ -86,6 +124,20 @@ describe('Relationships action bar', () => {
 
     await user.click(screen.getByRole('button', { name: /cancel/i }));
     expectIdleEdit();
+  });
+
+  it('expands the list when selecting or clearing every relationship', async () => {
+    const user = userEvent.setup();
+    renderRelationshipsActionBar();
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+    expectGroupOpen(false);
+
+    await user.click(screen.getByRole('button', { name: 'Select all' }));
+    expectSelectionExpanded(true);
+    await user.click(screen.getByRole('button', { name: 'Collapse all' }));
+    expectGroupOpen(false);
+    await user.click(screen.getByRole('button', { name: 'Deselect all' }));
+    expectSelectionExpanded(false);
   });
 
   it('offers to create a relationship while editing', async () => {
@@ -105,10 +157,7 @@ describe('Relationships action bar', () => {
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
 
-    expectCollapsePairTogether();
-    expectIconButton('Create relationship');
-    expectIconButton('Manage types');
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expectCompactIcons();
 
     await selectFirstRelationship(user);
     await expectActionOrder(user);
