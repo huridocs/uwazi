@@ -19,7 +19,7 @@ const RelationshipGroupedCard = ({
   children,
 }: RelationshipGroupedCardProps) => {
   const [expanded, setExpanded] = useState(false);
-  useExpandCollapseSignals(setExpanded, markerIds);
+  useExpandCollapseSignals(setExpanded, markerIds, expanded);
   useEnsureResolvedOnExpand(expanded);
 
   return (
