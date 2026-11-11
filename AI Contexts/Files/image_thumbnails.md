@@ -1,6 +1,6 @@
 # Image thumbnails
 
-Date: 2026-11-06
+Date: 2026-11-11
 Status: the module is `app/api/imageThumbnails`, and the backend behavior in this note is implemented. Library cards and compact metadata already request the thumbnails route. The entity page and the library side panel still request the full asset. Still open: the `<img>` audit, copying the derivative on sync, and whether the load balancer honors `Cache-Control: no-store`.
 
 ## Module
@@ -106,7 +106,7 @@ No second row and no new column. The parent file is unchanged. The route loads t
 - Longest side 640 px. Fits a large portrait card and a 2x display. Do not enlarge an image that is already smaller.
 - JPEG quality is a single constant, `IMAGE_THUMBNAIL_JPEG_QUALITY`, initial value **60**. Inspect real cards and edit that constant. No external configuration. Existing objects stay as they were until they are deleted.
 - EXIF orientation applied before resize.
-- Alpha flattened (white). One frame.
+- Alpha flattened onto white. One frame. A source with no alpha stays that opaque image. Transparency is painted white, not black.
 - A pixel-count ceiling, `IMAGE_THUMBNAIL_MAX_PIXELS` (`268_402_689`, sharp's own input ceiling), so a hostile image fails the job instead of the worker. The original file stays. The job writes the `.skip` marker.
 
 ### Which files
@@ -139,37 +139,38 @@ Sync should copy whichever of those two objects exists, with the parent, as part
 
 ### HEIC
 
-iPhone photos are HEIF with HEVC. Worth supporting. Two limits, both from sharp's maintainer, not from us:
-
-- sharp's published binaries do not include HEVC decode. Patent exposure is why. sharp will use a system libvips that was built with libheif and libde265. ImageMagick has the same requirement. No current Node thumbnail library ships HEVC inside its default binary.
-- `sharp.format.heif.input === true` only means the container loader exists. HEVC is `metadata().compression === 'hevc'` on a real iPhone file. libvips 8.18.3 rejects some ordinary iPhone files (`iref` reference limit); 8.18.4 fixes that. Pin with that in mind, and test a real `.heic` on the image we ship.
+iPhone photos are HEIF with HEVC. Worth supporting. The basic sharp package does not include HEVC decode. Patent exposure is why no current Node thumbnail library ships HEVC inside its default binary. A system `vips` built with libheif and libde265 does, and that is the program the job runs when `vips --version` is 8.18.7 or newer. ImageMagick has the same requirement for BMP.
 
 Safari often transcodes HEIC to JPEG in the file picker, so many browser uploads never arrive as HEIC. API clients, sync, and non-Safari uploads still do.
 
 ### Library
 
-sharp is the Node default for this job (libvips, EXIF orientation, header metadata for frame count, used across the Node image tooling). The runtime image cannot be "npm install sharp" alone: BMP wants ImageMagick linked into libvips, HEIC wants libheif and libde265, and the prebuilt sharp tarball has neither. The dependency we are accepting is a libvips build with those two extras, and sharp pointed at it. ImageMagick by itself can decode the same list, including BMP and HEIC, but it is a shell-out and a larger attack surface, and it does not remove the HEIC library requirement.
+sharp is the Node library installed with Uwazi. `yarn install` is enough for it. That copy decodes the common web images (JPEG, PNG, WebP, GIF, AVIF, TIFF) and does not decode iPhone HEIC or BMP.
+
+When the `vips` program on the machine is version 8.18.7 or newer, the job uses that program instead, the same way PDF thumbnails use `pdftoppm`. The libraries below are what make that program able to decode HEIC and BMP. An older `vips`, including the one packaged by Ubuntu 22.04, is left unused.
+
+The commands run without a shell, so the JPEG quality suffix `[Q=60]` is not globbed. `vipsheader` reads width and height, and a pixel count over the ceiling rejects the file. `vips thumbnail` then writes a temporary PNG: width and `--height` both 640, `--size down`, so the longest side fits inside 640, a smaller image is not enlarged, orientation is applied, and only the first page is taken. The JPEG is a second command. `vips thumbnail` straight to JPEG paints transparency black, so that is not the path. After the PNG, `vipsheader -f bands` decides the write. Two bands (grey plus alpha) are `vips flatten --background 255`. Four bands are `vips flatten --background 255,255,255`. Any other count, including the 3-band image an iPhone HEIC becomes, is `vips copy` to the JPEG. `flatten` on that image fails with `linear: vector must have 1 or 2 elements`, the job writes `.skip`, and the route stops asking.
 
 ### Requirements
 
-These must be on the app servers and on the queue workers before `FEATURE_FLAG_IMAGE_THUMBNAILS` is turned on. The deploy itself does not need them while the flag is off. `npm install sharp` alone is not enough: the published sharp binary does not decode iPhone HEIC (HEVC) or BMP.
+These must be on the app servers and on the queue workers before HEIC and BMP thumbnails are expected. The deploy itself does not need them. Without them, `yarn install` still provides sharp, and JPEG, PNG, WebP, GIF, AVIF, and TIFF thumbnails work. A file the installed decoder cannot read fails that job and writes `.skip`.
 
 | Piece | Version | Why |
 | --- | --- | --- |
 | Node.js | `>= 22.23.2` (already required by Uwazi). sharp itself needs `>= 20.9.0`. | Runtime. |
-| sharp | **0.35.5**, compiled from source against the system libvips below. Set `SHARP_FORCE_GLOBAL_LIBVIPS=1` at install so it does not keep its own binary. | The Node library the job calls. |
-| libvips | **>= 8.18.7** (`pkg-config --modversion vips-cpp`). 8.18.7 is the version sharp 0.35.5 is built against. 8.18.3 rejects some real iPhone HEIC files; 8.18.4 fixed that, and 8.18.6 treats libheif older than 1.23.2 as untrusted. | Decoder and resizer. |
-| libheif | **>= 1.23.2**. 1.23.5 is the version in the current sharp libvips stack. | HEIF container for `.heic` / `.heif`. |
+| sharp | **0.35.5**, installed by `yarn install`. This is the basic decoder. | JPEG, PNG, WebP, GIF, AVIF, and TIFF when no usable system `vips` is installed. |
+| vips | **>= 8.18.7** (`vips --version`). The job uses this program when it is present and new enough. | The robust decoder. HEIC and BMP depend on how this `vips` was built. |
+| libheif | **>= 1.23.2**, linked into the system `vips`. | HEIF container for `.heic` / `.heif`. |
 | libde265 | Current stable, linked into that libheif. | HEVC decode. This is what an iPhone photo actually is. x265 is not required: we encode JPEG, not HEIC. |
-| ImageMagick 7 (or GraphicsMagick) | A build libvips was compiled against, with the BMP delegate. `vips --vips-config` must show `Magick load: YES`. | `.bmp`. libvips does not decode BMP on its own. |
+| ImageMagick 7 (or GraphicsMagick) | Linked into that `vips`, with the BMP delegate. `vips --vips-config` must show `Magick load: YES`. | `.bmp`. libvips does not decode BMP on its own. |
 
 Poppler stays as it is. PDF thumbnails do not move onto this stack.
 
-Check before deploy, on a worker host:
+Check before deploy, on a worker host that should decode HEIC and BMP:
 
-- `pkg-config --modversion vips-cpp` prints 8.18.7 or newer.
+- `vips --version` prints 8.18.7 or newer.
 - `vips --vips-config` shows HEIF support and `Magick load: YES`.
-- One real iPhone `.heic` and one `.bmp` produce a JPEG through sharp. `sharp.format.heif.input === true` only means the container loader is present. HEVC is `metadata().compression === 'hevc'` on that iPhone file.
+- One real iPhone `.heic` decodes with `vips thumbnail` to a PNG, and `vips copy` of that PNG writes a JPEG. `vips flatten` on that PNG fails, because the image has no alpha. One `.bmp` produces a JPEG the same way when Magick load is yes. A PNG that still has an alpha channel needs `vips flatten` onto white, or the JPEG is black. `sharp.format.heif.input === true` only describes the basic sharp package. It does not describe the system `vips`.
 
 ## Implemented
 
@@ -186,6 +187,14 @@ It does not enqueue `type: 'thumbnail'` (a PDF thumbnail is already a JPEG named
 The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because an anonymous library request can enqueue it, lock window 60 seconds, max retries 3. The use case no-ops when the extension is out, or the JPEG or `.skip` already exists. A missing parent returns.
 
 `ImageThumbnailUnavailable` (the renderer could not load) is retried and does not write `.skip`. `ImageThumbnailRejected` (the decoder rejected the file), or the last retry, writes a one-byte `.skip` and then fails as non-retryable. Both errors live in `domain/imageThumbnailErrors.ts`.
+
+### Render
+
+`CreateImageThumbnailFactory` reads `vips --version` once per process. `libvipsVersionIsUsable` accepts a version with three numeric parts at or above 8.18.7. A missing program, a spawn error, or an older version selects `SharpImageThumbnailRenderer`. A usable version selects `VipsImageThumbnailRenderer`. `PreferSystemVipsRenderer` is that choice.
+
+The sharp renderer is the basic path. It rotates, flattens onto white, resizes inside 640 without enlarging, takes one page, and writes JPEG quality 60. A failed import is `ImageThumbnailUnavailable`. A decode failure is `ImageThumbnailRejected`. This package does not decode iPhone HEIC or BMP.
+
+The vips renderer is the path in Library. It copies the source to a temp file, checks the pixel ceiling, thumbnails to a temp PNG, then writes the JPEG with `flatten` or `copy` from the band count. A command failure is `ImageThumbnailRejected`. The temp PNG and the JPEG stay in the OS temp directory, the same way a PDF thumbnail leaves its `pdftoppm` file. The renderer does not import `fs`.
 
 ### Serve
 
