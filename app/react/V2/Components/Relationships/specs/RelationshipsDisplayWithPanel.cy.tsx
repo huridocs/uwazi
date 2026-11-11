@@ -58,13 +58,15 @@ describe('RelationshipsDisplay WithPanel', () => {
       cy.get('[dir="ltr"] svg').should('exist');
     });
 
-    it('groups the list and enables collapse controls', () => {
-      cy.contains('button', 'Collapse all').should('not.be.disabled');
+    it('groups the list and keeps collapse disabled while every group is closed', () => {
+      cy.contains('button', 'Collapse all').should('be.disabled');
+      cy.contains('button', 'Expand all').should('not.be.disabled');
       selectDisplayOption('Group by', 'Target template');
       openDisplayMenu();
       cy.get('[role="menu"]').find('[aria-label="Group by"]').should('contain', 'Target template');
       cy.get('[aria-label="Detail"]').should('not.be.disabled');
-      cy.contains('button', 'Collapse all').should('not.be.disabled');
+      cy.contains('button', 'Collapse all').should('be.disabled');
+      cy.contains('button', 'Expand all').should('not.be.disabled');
     });
   });
 
