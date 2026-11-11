@@ -18,6 +18,7 @@ import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
 import { useSsrOnlyContent } from '../hooks/useSsrOnlyContent.js';
 import { RelationshipsSsrIndex } from './RelationshipsSsrIndex.js';
+import { RelationshipCollapseStateProvider } from './relationshipCollapseState.js';
 
 type RelationshipsPanelProps = {
   focusDocumentOnSelect?: boolean;
@@ -98,7 +99,8 @@ const RelationshipsPanelView = ({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
+    <RelationshipCollapseStateProvider>
+      <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
       <Panel className="overflow-hidden">
         {hasRelationships && (
           <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 pb-2 pt-1">
@@ -136,6 +138,7 @@ const RelationshipsPanelView = ({
         />
       )}
     </div>
+    </RelationshipCollapseStateProvider>
   );
 };
 

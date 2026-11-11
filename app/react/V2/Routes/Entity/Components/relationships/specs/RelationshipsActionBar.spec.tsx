@@ -21,10 +21,10 @@ const expectNarrowIcon = (button: HTMLElement) => {
 const expectCollapsePairTogether = () => {
   const collapse = screen.getByRole('button', { name: 'Collapse all' });
   const expand = screen.getByRole('button', { name: 'Expand all' });
-  expect(collapse.parentElement).toBe(expand.parentElement);
-  expect(collapse.parentElement?.contains(screen.getByRole('button', { name: 'Cancel' }))).toBe(
-    false
-  );
+  expect(collapse.parentElement?.parentElement).toBe(expand.parentElement?.parentElement);
+  expect(
+    collapse.parentElement?.parentElement?.contains(screen.getByRole('button', { name: 'Cancel' }))
+  ).toBe(false);
   expectNarrowIcon(collapse);
   expectNarrowIcon(expand);
 };
