@@ -5,7 +5,7 @@ import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
+import { BlockDirtyNavigation } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import {
@@ -44,8 +44,9 @@ import {
   SideTabsPanel,
   MAIN_TAB,
   isValidMainTab,
+  isValidSideTab,
 } from './Tabs/index.js';
-import { resolveMainTabFromUrl } from './Tabs/entityTabState.js';
+import { entityViewTab, resolveMainTabFromUrl } from './Tabs/entityTabState.js';
 import { EntityMainTabsProvider, useEntityTabNavigation } from './Tabs/EntityTabsContext.js';
 import { useResolvedEntityMainTab } from './Tabs/hooks/useResolvedEntityMainTab.js';
 import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
@@ -66,13 +67,11 @@ const EntityFilesFromEntity = React.memo(({ children }: { children: React.ReactN
 const EntityMainColumn = React.memo(() => {
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext } = useEntityLanguage();
-  const { onMainTabChange, activeMainTab } = useEntityTabNavigation();
-  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
+  const { onMainTabChange, activeMainTab, mainButtons } = useEntityTabNavigation();
   const hasMainDocument = Boolean(mainDocument?.filename);
-  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
   const { isEditing, formMountHost } = useMetadataEditing();
   const showMainPaneHeader = !(
-    mainTabId === MAIN_TAB.METADATA &&
+    activeMainTab === MAIN_TAB.METADATA &&
     isEditing &&
     formMountHost === 'main'
   );
@@ -86,6 +85,8 @@ const EntityMainColumn = React.memo(() => {
         <TabsMainButtons
           entity={entity}
           mainDocument={mainDocument}
+          buttons={mainButtons}
+          activeTabId={activeMainTab}
           onTabChange={onMainTabChange}
         />
       </div>
@@ -93,19 +94,19 @@ const EntityMainColumn = React.memo(() => {
         {showMainPaneHeader ? (
           <EntityMainPaneHeader
             entity={entity}
-            showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
+            showDocumentViewMode={activeMainTab === MAIN_TAB.DOCUMENT && hasMainDocument}
           />
         ) : null}
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <MainTabsContent
-            activeTabId={mainTabId}
+            activeTabId={activeMainTab}
             entity={entity}
             mainDocument={mainDocument}
             pagePlaintext={pagePlaintext}
           />
         </div>
       </div>
-      <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
+      <MainTabsFooters activeTabId={activeMainTab} mainDocument={mainDocument} />
     </div>
   );
 });
@@ -179,7 +180,11 @@ const usePublishedModeForEntity = (sharedId: string | undefined) => {
   useLayoutEffect(() => {
     if (!sharedId) return;
     setModes(current =>
-      writeEntityDisplayMode(current, sharedId, isValidMainTab(mainTab) ? 'entity' : 'published')
+      writeEntityDisplayMode(
+        current,
+        sharedId,
+        isValidMainTab(mainTab) || isValidSideTab(mainTab) ? 'entity' : 'published'
+      )
     );
   }, [sharedId, mainTab, setModes]);
 
@@ -199,9 +204,13 @@ const EntityRouteBody = () => {
   const { hasEntityPageView } = useEntityPageView();
   const mode = usePublishedModeForEntity(entity?.sharedId);
   const showPublished = hasEntityPageView && mode === 'published';
-  const urlTab = resolveMainTabFromUrl(useEntitySearchParams(), Boolean(mainDocument?.filename));
-  const mainTab = useResolvedEntityMainTab(urlTab);
-  const viewId = showPublished ? 'published' : mainTab;
+  const searchParams = useEntitySearchParams();
+  const resolvedMain = useResolvedEntityMainTab(
+    resolveMainTabFromUrl(searchParams, Boolean(mainDocument?.filename))
+  );
+  const viewId = showPublished
+    ? 'published'
+    : entityViewTab(searchParams.get(MAIN_TAB_PARAM), resolvedMain);
 
   return (
     <div

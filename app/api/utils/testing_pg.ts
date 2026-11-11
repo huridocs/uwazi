@@ -28,8 +28,8 @@ const adminClient = () =>
     host: config.postgres.host,
     port: config.postgres.port,
     database: 'postgres',
-    user: 'admin',
-    password: 'admin',
+    user: config.postgres.admin.user,
+    password: config.postgres.admin.password,
   });
 
 let pool: pg.Pool | null = null;
@@ -56,8 +56,8 @@ const testingPG = {
       host: config.postgres.host,
       port: config.postgres.port,
       database: this.dbName,
-      user: config.postgres.admin.user,
-      password: config.postgres.admin.password,
+      user: config.postgres.migrator.user,
+      password: config.postgres.migrator.password,
     };
   },
 
@@ -110,13 +110,13 @@ const testingPG = {
       host: config.postgres.host,
       port: config.postgres.port,
       database: this.dbName,
-      user: 'admin',
-      password: 'admin',
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
     });
     await dbAdmin.connect();
     try {
       await dbAdmin.query(
-        `GRANT USAGE, CREATE ON SCHEMA public TO "${escapeIdentifier(config.postgres.admin.user)}"`
+        `GRANT USAGE, CREATE ON SCHEMA public TO "${escapeIdentifier(config.postgres.migrator.user)}"`
       );
     } finally {
       await dbAdmin.end();
@@ -126,8 +126,8 @@ const testingPG = {
       host: config.postgres.host,
       port: config.postgres.port,
       database: this.dbName,
-      user: config.postgres.admin.user,
-      password: config.postgres.admin.password,
+      user: config.postgres.migrator.user,
+      password: config.postgres.migrator.password,
     });
 
     this.pool = pool;

@@ -14,7 +14,7 @@ import {
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
-import { MAIN_TAB, type MainTabId } from '#V2/Routes/Entity/Tabs/index.js';
+import { MAIN_TAB, type SideTabId } from '#V2/Routes/Entity/Tabs/index.js';
 import { DocumentTabFooter } from '#V2/Routes/Entity/Tabs/footers/DocumentTabFooter.js';
 import { RelationshipsTabFooter } from '#V2/Routes/Entity/Tabs/footers/RelationshipsTabFooter.js';
 import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
@@ -25,7 +25,7 @@ import type { LibraryBulkAction } from './librarySelectionActions.js';
 type LibraryEntityPreviewFooterProps = {
   entityBasePath: string;
   onClose: () => void;
-  mainTabId: MainTabId;
+  mainTabId: SideTabId;
   onAction?: (action: LibraryBulkAction) => void;
 };
 
@@ -100,7 +100,7 @@ const previewShell = ({
   );
 };
 
-const useClearFilesSelection = (mainTabId: MainTabId) => {
+const useClearFilesSelection = (mainTabId: SideTabId) => {
   const { setSelectedRowIds, closeFilePreview } = useEntityFiles();
   const onFilesRef = useRef(mainTabId === MAIN_TAB.FILES);
 
@@ -115,7 +115,7 @@ const useClearFilesSelection = (mainTabId: MainTabId) => {
 };
 
 type ActiveTabFooterInput = {
-  mainTabId: MainTabId;
+  mainTabId: SideTabId;
   mainDocument?: FileType;
   relationshipsEditMode: boolean;
   entityBasePath: string;
@@ -155,7 +155,7 @@ const activeTabFooter = ({
 };
 
 type EditForTabInput = {
-  mainTabId: MainTabId;
+  mainTabId: SideTabId;
   canEdit: boolean;
   startEditing: (host: MetadataEditingHost) => void;
   setRelationshipsEditMode: Dispatch<SetStateAction<boolean>>;
@@ -173,7 +173,7 @@ const editForTab = ({
   return undefined;
 };
 
-const useLibraryPreviewFooterState = (mainTabId: MainTabId) => {
+const useLibraryPreviewFooterState = (mainTabId: SideTabId) => {
   const entity = useEntityScopedEntity();
   const { mainDocument } = useEntityLanguage();
   const { relationshipsEditMode, setRelationshipsEditMode } = useRelationshipsSelection();

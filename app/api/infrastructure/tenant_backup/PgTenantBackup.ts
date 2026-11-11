@@ -12,6 +12,7 @@ import { nullSyncConfig, reconcileJobs } from './importSteps.js';
 import { readSchemaVersion } from './schemaVersion.js';
 import {
   discoverDataTablesWithColumns,
+  discoverPrimaryKeys,
   discoverTenantTables,
   type TableWithColumns,
 } from './tenantTableDiscovery.js';
@@ -22,11 +23,15 @@ function escapeLiteral(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
 }
 
-function copyOutSql(table: TableWithColumns, tenantId: string): string {
-  const columns = table.columns.map(column => `"${escapeIdentifier(column)}"`).join(', ');
+const quoteColumns = (columns: string[]): string =>
+  columns.map(column => `"${escapeIdentifier(column)}"`).join(', ');
+
+/** `orderBy` empty means the plain scan; tenant exports skip the sort, which costs on big tables. */
+function copyOutSql(table: TableWithColumns, tenantId: string, orderBy: string[]): string {
+  const order = orderBy.length ? ` ORDER BY ${quoteColumns(orderBy)}` : '';
   return (
-    `COPY (SELECT ${columns} FROM "${escapeIdentifier(table.name)}" ` +
-    `WHERE "tenant_id" = ${escapeLiteral(tenantId)}) TO STDOUT`
+    `COPY (SELECT ${quoteColumns(table.columns)} FROM "${escapeIdentifier(table.name)}" ` +
+    `WHERE "tenant_id" = ${escapeLiteral(tenantId)}${order}) TO STDOUT`
   );
 }
 
@@ -63,10 +68,10 @@ async function deleteTableRows(
 
 async function copyTableOut(
   client: pg.PoolClient,
-  target: { table: TableWithColumns; tenantId: string; output: Writable },
+  target: { table: TableWithColumns; tenantId: string; output: Writable; orderBy: string[] },
   report: (rows: number, done: boolean) => void
 ): Promise<number> {
-  const stream = client.query(copyTo(copyOutSql(target.table, target.tenantId)));
+  const stream = client.query(copyTo(copyOutSql(target.table, target.tenantId, target.orderBy)));
   let rows = 0;
   stream.on('data', (chunk: Buffer) => {
     rows = countRows(chunk, rows, count => report(count, false));
@@ -113,6 +118,12 @@ async function withDestroyedInput<T>(input: Readable, fn: () => Promise<T>): Pro
  * Tenant backup/restore over the admin/migrator pool (RLS-bypassing): export one tenant to a
  * portable COPY stream, import such a stream into another tenant, or clean a tenant's rows.
  */
+type ExportOptions = {
+  onProgress?: TenantProgress;
+  /** Sort each table by its primary key, for a deterministic stream (e.g. a committed dump). */
+  ordered?: boolean;
+};
+
 type ImportOptions = {
   onProgress?: TenantProgress;
   /** When true, clears settings.sync: a cross-tenant restore must not inherit the source's sync config. */
@@ -154,16 +165,23 @@ export class PgTenantBackup {
   /**
    * Streams a tenant's data tables to `output` as one portable stream: a manifest line, then one
    * COPY text section per table. Snapshot-consistent within a REPEATABLE READ transaction.
+   * `ordered` sorts each table by its primary key (all columns when it has none), so the same
+   * data always produces the same stream.
    */
-  async export(tenantId: string, output: Writable, onProgress?: TenantProgress): Promise<string[]> {
+  async export(tenantId: string, output: Writable, options: ExportOptions = {}): Promise<string[]> {
     const tables = await discoverDataTablesWithColumns(this.pool);
+    const keys = options.ordered ? await discoverPrimaryKeys(this.pool) : new Map();
     const schemaVersion = await this.currentSchemaVersion();
     output.write(`${serializeManifest(tenantId, schemaVersion, tables)}\n`);
     await withTransaction(this.pool, 'BEGIN ISOLATION LEVEL REPEATABLE READ', async client => {
       /* eslint-disable no-await-in-loop */
       for (const table of tables) {
-        const report = progressReporter({ table: table.name, total: tables.length }, onProgress);
-        await copyTableOut(client, { table, tenantId, output }, report);
+        const report = progressReporter(
+          { table: table.name, total: tables.length },
+          options.onProgress
+        );
+        const orderBy = options.ordered ? (keys.get(table.name) ?? table.columns) : [];
+        await copyTableOut(client, { table, tenantId, output, orderBy }, report);
       }
       /* eslint-enable no-await-in-loop */
     });
@@ -233,3 +251,4 @@ export class PgTenantBackup {
 }
 
 export type { TenantProgress, TenantTableProgress } from './progress.js';
+export type { ExportOptions };

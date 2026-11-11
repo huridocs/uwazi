@@ -1,7 +1,13 @@
 import { config } from '#api/config.js';
 
 /** sessions opens nothing: the session store is read through MongoDB or PostgreSQL. */
-type ConnectionNeeds = { redis: boolean; sessions: boolean; postgresAdmin?: boolean };
+type ConnectionNeeds = {
+  redis: boolean;
+  sessions: boolean;
+  postgresAdmin?: boolean;
+  /** Creates and drops a throwaway database, so it needs the Postgres superuser. */
+  scratchDatabase?: boolean;
+};
 
 class CliConnections {
   private static drivers?: ReturnType<typeof CliConnections.loadDrivers>;
