@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { TestRouterContext } from '#V2/testing/index.js';
@@ -64,7 +64,11 @@ const adminUser = {
   email: 'admin@example.com',
 } as const;
 
-const mainTabs = () => within(screen.getAllByTestId('tabs-comp')[0]);
+const mainTab = (id: string) => {
+  const tab = document.getElementById(`entity-main-tab-${id}`);
+  if (!tab) throw new Error(`missing main tab ${id}`);
+  return tab;
+};
 
 const renderEntity = ({
   withPage = true,
@@ -126,10 +130,9 @@ describe('entity display mode', () => {
 
   it('opens the entity viewer when the route already selects a main tab', async () => {
     renderEntity({ entry: '/?m=metadata', mode: 'published' });
-    expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await waitFor(() => {
+      expect(mainTab('metadata')).toHaveAttribute('aria-selected', 'true');
+    });
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Published view' })).toBeInTheDocument();
     expect(document.getElementById('entity-view-metadata')).toHaveClass('template_template1');
@@ -161,10 +164,7 @@ describe('entity display mode', () => {
     renderEntity();
     fireEvent.click(await screen.findByRole('button', { name: 'Entity view' }));
     await waitFor(() => {
-      expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
-        'aria-selected',
-        'true'
-      );
+      expect(mainTab('metadata')).toHaveAttribute('aria-selected', 'true');
     });
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
 
@@ -179,10 +179,12 @@ describe('entity display mode', () => {
   it('stays on the entity viewer when another main tab is selected', async () => {
     renderEntity();
     fireEvent.click(await screen.findByRole('button', { name: 'Entity view' }));
-    const documentTab = await mainTabs().findByRole('tab', { name: 'Document' });
-    fireEvent.click(documentTab);
     await waitFor(() => {
-      expect(documentTab).toHaveAttribute('aria-selected', 'true');
+      expect(mainTab('metadata')).toHaveAttribute('aria-selected', 'true');
+    });
+    fireEvent.click(mainTab('document'));
+    await waitFor(() => {
+      expect(mainTab('document')).toHaveAttribute('aria-selected', 'true');
     });
     expect(await screen.findByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
@@ -202,7 +204,7 @@ describe('entity display mode', () => {
 
     expect(await screen.findByText('Unsaved changes')).toBeInTheDocument();
     expect(screen.queryByTestId('entity-page-markdown')).not.toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute('aria-selected', 'true');
+    expect(mainTab('metadata')).toHaveAttribute('aria-selected', 'true');
   });
 
   it('places the switch on the tab row without reserving space on desktop', async () => {
@@ -217,7 +219,7 @@ describe('entity display mode', () => {
     );
     expect(toggle.querySelector('svg')).toHaveClass('rtl:-scale-x-100');
     fireEvent.click(toggle);
-    const metadata = await screen.findByRole('tab', { name: 'Metadata' });
+    const metadata = await waitFor(() => mainTab('metadata'));
     expect(metadata.closest('.justify-between')?.querySelector('.me-10')).toBeNull();
   });
 
