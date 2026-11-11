@@ -124,11 +124,11 @@ describe('Relationships footer', () => {
     expect(edit).toHaveTextContent('Edit');
   });
 
-  it('hides the wide edit bar until the footer has a width', () => {
+  it('shows the labeled edit bar before the footer is measured', () => {
     const footer = renderFooter(0);
 
     expect(horizontalPadding(footer)).toEqual(['px-3']);
-    expect(within(footer).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Edit' })).toHaveTextContent('Edit');
 
     footerWidth = 800;
     act(() => {

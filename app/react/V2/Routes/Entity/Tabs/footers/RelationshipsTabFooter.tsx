@@ -58,7 +58,7 @@ const RelationshipsTabFooter = () => {
       padding={width >= RELATIONSHIPS_FOOTER_WIDE_AT ? 'px-4' : 'px-3'}
       ref={footerRef}
     >
-      {width > 0 ? <RelationshipsActionBar compact={compact} /> : null}
+      <RelationshipsActionBar compact={compact} />
     </EntityTabFooter>
   );
 };
