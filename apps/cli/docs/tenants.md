@@ -4,17 +4,17 @@ Administer tenants: the registry that says which tenants an installation serves 
 one's data lives. Backup, restore and blank-state commands live under [`db`](db.md). Shared
 options, output and exit codes are in the [README](../README.md).
 
-| Command                 | Does                                                      |
-| ----------------------- | --------------------------------------------------------- |
-| `tenants list`          | Prints every registered tenant, as stored                 |
-| `tenants get`           | Prints one tenant, as stored                              |
-| `tenants register`      | Registers a tenant, or updates the one already registered |
-| `tenants update`        | Changes a tenant's fields                                 |
-| `tenants delete`        | Removes a tenant from the registry                        |
-| `tenants feature-flags` | Sets or removes feature flags                             |
-| `tenants maintenance`   | Puts a tenant under maintenance, or takes it out          |
-| `tenants stats`         | Stores the usage figures another tool computed            |
-| `tenants health-check`  | Stores the latest health check another tool ran           |
+| Command                 | Does                                                               |
+| ----------------------- | ------------------------------------------------------------------ |
+| `tenants list`          | Prints every tenant, active by default, archived with `--archived` |
+| `tenants get`           | Prints one tenant, as stored                                       |
+| `tenants register`      | Registers a tenant, or updates the one already registered          |
+| `tenants update`        | Changes a tenant's fields                                          |
+| `tenants delete`        | Removes a tenant from the registry                                 |
+| `tenants feature-flags` | Sets or removes feature flags                                      |
+| `tenants maintenance`   | Puts a tenant under maintenance, or takes it out                   |
+| `tenants stats`         | Stores the usage figures another tool computed                     |
+| `tenants health-check`  | Stores the latest health check another tool ran                    |
 
 The commands above administer the registry and take no `--tenant` or `--all-tenants` — the
 tenant they act on is the request's `name`.
@@ -70,9 +70,57 @@ before the delete keep serving it until they restart.
 
 ## tenants list
 
-No request. Prints every registered tenant, sorted by name, each row as stored. On a single
-instance with no registry it prints `[]`: the tenant configured from the environment is not in the
-registry.
+```sh
+yarn uwazi tenants list
+yarn uwazi tenants list --archived
+```
+
+No request, and neither `--tenant` nor `--all-tenants`.
+
+**Active (default).** Prints every registered tenant, sorted by name, each row as stored. On a
+single instance with no registry it prints `[]`: the tenant configured from the environment is
+not in the registry.
+
+**`--archived`.** Prints the archived tenants, read from the `archives` collection of the Mongo
+shared database (`uwazi_shared_db`) — the archive playbook writes there, whatever
+`TENANTS_BACKEND` selects. Rows are printed exactly as stored, `_id` included, with no field
+added, removed or converted.
+
+Order: newest `archivedAt` first. The playbook writes `archivedAt` as epoch **seconds**, usually
+as a string; it is printed as stored, but sorted by its numeric value, whether a string or a
+number. Rows with no `archivedAt`, or one that is not a number, come last. Rows with the same
+`archivedAt` are sorted by name.
+
+Output for `--archived`, one item per archived tenant, `[]` when there are none:
+
+```json
+[
+  {
+    "_id": "6ac6807566a491edb123448f",
+    "name": "acme",
+    "dbName": "acme",
+    "indexName": "acme",
+    "uploadedDocuments": "/data/acme/uploaded_documents",
+    "attachments": "/data/acme/attachments",
+    "customUploads": "/data/acme/custom_uploads",
+    "activityLogs": "/data/acme/log",
+    "status": "archived",
+    "dumpLocation": {
+      "db": "https://s3.example.org/uwazi-production-archive/acme_db.zip",
+      "files": "https://store.greenhost.net/uwazi-production/acme"
+    },
+    "featureFlags": { "s3Storage": true },
+    "archivedAt": "1759700000"
+  }
+]
+```
+
+| Field                | Meaning                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `dumpLocation.db`    | The zipped database dump                                           |
+| `dumpLocation.files` | Where the tenant's files are kept                                  |
+| `archivedAt`         | When it was archived, epoch seconds, as written (string or number) |
+| the other fields     | The tenant's registry row at the time it was archived              |
 
 ## tenants get
 
