@@ -38,8 +38,7 @@ const useFooterWidth = (footerRef: React.RefObject<HTMLDivElement | null>) => {
   );
   const getWidth = () => {
     const next = footerRef.current?.clientWidth ?? 0;
-    if (next === 0 && lastWidth.current > 0) return lastWidth.current;
-    lastWidth.current = next;
+    if (next > 0) lastWidth.current = next;
     return lastWidth.current;
   };
   return useSyncExternalStore(subscribe, getWidth, () => 0);
