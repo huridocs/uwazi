@@ -104,7 +104,7 @@ const CollapsibleRelationshipRow = ({
   children,
 }: CollapsibleRelationshipRowProps) => {
   const [expanded, setExpanded] = useState(false);
-  useExpandCollapseSignals(setExpanded, checkboxIds);
+  useExpandCollapseSignals(setExpanded, checkboxIds, expanded);
   useEnsureResolvedOnExpand(expanded);
   const { view, zoom } = useRelationshipsPanelLayout();
   const { hideTargetPill, hideTemplateName } = useRelationshipRowVisibility();
