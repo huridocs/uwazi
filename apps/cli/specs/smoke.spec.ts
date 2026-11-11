@@ -73,6 +73,8 @@ describe('uwazi binary', () => {
     ['recover-password --schema', ['users', 'recover-password', '--schema'], 0],
     ['settings --schema', ['settings', 'update', '--schema'], 0],
     ['tenants --schema', ['tenants', 'update', '--schema'], 0],
+    ['tenants list --schema', ['tenants', 'list', '--schema'], 0],
+    ['tenants list --archived --schema', ['tenants', 'list', '--archived', '--schema'], 0],
     ['tenants help', ['tenants', 'register', '--help'], 0],
     ['usage --schema', ['usage', 'report', '--schema'], 0],
     ['sessions --schema', ['sessions', 'last', '--schema'], 0],

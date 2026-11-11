@@ -103,6 +103,50 @@ describe('CliApplication', () => {
     expect(connections.open).toHaveBeenCalled();
   });
 
+  it('should parse a route flag with an input schema separate from the request', async () => {
+    const handle = jest.fn().mockResolvedValue('ok');
+    const route: Route = {
+      ...listThings(handle),
+      request: z.object({}).strict(),
+      input: z.object({ archived: z.boolean() }).strict(),
+      options: (y: Argv) =>
+        y.option('archived', { type: 'boolean', default: false, describe: 'archived' }),
+      requestFromFlags: (argv: CliArgv, req: unknown) => ({
+        ...(req as Record<string, unknown>),
+        archived: Boolean(argv.archived),
+      }),
+    };
+    const { app, stdout } = setUp(route);
+
+    const exitCode = await app.run(['things', 'list', '--archived']);
+
+    expect(exitCode).toBe(ExitCode.Ok);
+    expect(handle).toHaveBeenCalledWith({ archived: true });
+    expect(JSON.parse(stdout.text)).toBe('ok');
+  });
+
+  it('should keep a route flag out of the --request schema', async () => {
+    const handle = jest.fn();
+    const route: Route = {
+      ...listThings(handle),
+      request: z.object({}).strict(),
+      input: z.object({ archived: z.boolean() }).strict(),
+      options: (y: Argv) =>
+        y.option('archived', { type: 'boolean', default: false, describe: 'archived' }),
+      requestFromFlags: (argv: CliArgv, req: unknown) => ({
+        ...(req as Record<string, unknown>),
+        archived: Boolean(argv.archived),
+      }),
+    };
+    const { app, stderr, connections } = setUp(route);
+
+    const exitCode = await app.run(['things', 'list', '--request', '{"archived":true}']);
+
+    expect(exitCode).toBe(ExitCode.Validation);
+    expect(JSON.parse(stderr.text).error).toMatchObject({ code: 'validation.failed' });
+    expect(connections.open).not.toHaveBeenCalled();
+  });
+
   it('should treat a missing --request as an empty object', async () => {
     const handle = jest.fn().mockResolvedValue([]);
     const { app } = setUp({ ...listThings(handle), request: z.object({}).strict() });
