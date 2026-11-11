@@ -1,5 +1,9 @@
 # archives
 
+> **Deprecated.** `archives list` is an alias of `tenants list --archived` and will be removed
+> once the manager has switched over. Prefer `tenants list --archived`; see
+> [tenants](tenants.md).
+
 Reads the tenants that have been archived. A read for operators and the tools that manage
 instances; nothing in Uwazi depends on it. Shared options, output and exit codes are in the
 [README](../README.md).
