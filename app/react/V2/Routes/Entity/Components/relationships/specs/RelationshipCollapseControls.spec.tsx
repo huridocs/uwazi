@@ -20,8 +20,13 @@ const hoverTip = async (user: UserEvent, button: HTMLElement, label: string) => 
 const readControls = (collapseDisabled: boolean) => {
   const collapse = screen.getByRole('button', { name: 'Collapse all' });
   const expand = screen.getByRole('button', { name: 'Expand all' });
-  expect(collapse.disabled).toBe(collapseDisabled);
-  expect(expand.disabled).toBe(!collapseDisabled);
+  if (collapseDisabled) {
+    expect(collapse).toBeDisabled();
+    expect(expand).toBeEnabled();
+  } else {
+    expect(collapse).toBeEnabled();
+    expect(expand).toBeDisabled();
+  }
   return { collapse, expand };
 };
 

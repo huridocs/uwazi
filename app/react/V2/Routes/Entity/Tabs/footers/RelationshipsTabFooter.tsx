@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useSyncExternalStore } from 'react';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 import { RelationshipsActionBar } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsSelectionState } from '#V2/Routes/Entity/Components/context/index.js';
@@ -23,24 +23,35 @@ const subscribeWidthFallback = (read: () => void) => {
   };
 };
 
+const useFooterWidth = (footerRef: React.RefObject<HTMLDivElement | null>) => {
+  const lastWidth = useRef(0);
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const footer = footerRef.current;
+      if (!footer) return () => undefined;
+      if (typeof ResizeObserver === 'undefined') return subscribeWidthFallback(onChange);
+      const observer = new ResizeObserver(onChange);
+      observer.observe(footer);
+      return () => observer.disconnect();
+    },
+    [footerRef]
+  );
+  const getWidth = () => {
+    const next = footerRef.current?.clientWidth ?? 0;
+    if (next === 0 && lastWidth.current > 0) return lastWidth.current;
+    lastWidth.current = next;
+    return lastWidth.current;
+  };
+  return useSyncExternalStore(subscribe, getWidth, () => 0);
+};
+
 const RelationshipsTabFooter = () => {
   const { relationshipsEditMode: editMode, selectedRelationshipIds: selected } =
     useRelationshipsSelectionState();
   const highlighted = editMode && selected.size > 0;
   const footerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
+  const width = useFooterWidth(footerRef);
   const compact = relationshipsFooterCompact(width);
-
-  useLayoutEffect(() => {
-    const footer = footerRef.current;
-    if (!footer) return undefined;
-    const read = () => setWidth(footer.clientWidth);
-    read();
-    if (typeof ResizeObserver === 'undefined') return subscribeWidthFallback(read);
-    const observer = new ResizeObserver(read);
-    observer.observe(footer);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <EntityTabFooter

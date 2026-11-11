@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { act, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderRelationshipsActionBar } from '#V2/Routes/Entity/Components/relationships/specs/helpers/renderRelationshipsActionBar.js';
 import { relationshipsFooterCompact } from '../RelationshipsTabFooter.js';
@@ -147,9 +147,23 @@ describe('Relationships footer', () => {
     expectLabeledCreate(footer);
 
     footerWidth = 400;
-    await user.click(within(footer).getByRole('button', { name: 'Select all' }));
+    fireEvent.click(within(footer).getByRole('button', { name: 'Select all' }));
 
     expectNarrowIcons(footer);
+  });
+
+  it('keeps the edit bar when a later width read is 0', async () => {
+    const user = userEvent.setup();
+    const footer = renderFooter(800);
+    await user.click(within(footer).getByRole('button', { name: 'Edit' }));
+    expectLabeledCreate(footer);
+
+    footerWidth = 0;
+    act(() => {
+      widthReads.forEach(read => read());
+    });
+
+    expectLabeledCreate(footer);
   });
 
   it('flips padding and the edit bar when the footer resizes from 800 to 400', async () => {
