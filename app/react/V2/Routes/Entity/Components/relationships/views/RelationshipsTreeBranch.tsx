@@ -73,7 +73,7 @@ const RelationshipsTreeBranch = ({
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  useExpandCollapseSignals(setExpanded, markerIds);
+  useExpandCollapseSignals(setExpanded, markerIds, expanded);
   useEnsureResolvedOnExpand(expanded);
 
   const items = Children.toArray(children);
