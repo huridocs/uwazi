@@ -125,7 +125,7 @@ const urlUnchanged = (fallback: LocationFallback, current: LocationFallback, pat
 const commitPageOnlyUrl = (fallback: LocationFallback, patch: UrlPatch) => {
   if (atomStoreRef) setEntityPageAtom(patch.page, atomStoreRef);
   if (!writesRouter) {
-    navigateRef?.(
+    void navigateRef?.(
       { pathname: fallback.pathname, search: patch.search, hash: patch.hash },
       { replace: true, preventScrollReset: true }
     );

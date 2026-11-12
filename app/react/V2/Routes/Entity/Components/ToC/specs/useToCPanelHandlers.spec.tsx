@@ -37,6 +37,8 @@ const pdf = (): PDFControls => ({
   toggleHighlights: jest.fn(),
 });
 
+const revalidate = async () => undefined;
+
 const handlers = (onRevealDocument?: () => void) => {
   const controller = pdf();
   const hook = renderHook(() =>
@@ -50,7 +52,7 @@ const handlers = (onRevealDocument?: () => void) => {
       setTocState: () => undefined,
       mainPdfController: controller,
       onRevealDocument,
-      revalidate: () => Promise.resolve(),
+      revalidate,
       notify: () => undefined,
     })
   );
@@ -77,7 +79,7 @@ describe('useToCPanelHandlers', () => {
         deleteEntry: () => undefined,
         setTocState: () => undefined,
         mainPdfController: controller,
-        revalidate: () => Promise.resolve(),
+        revalidate,
         notify: () => undefined,
         paintHighlight: run => {
           queued = run;
