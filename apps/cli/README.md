@@ -19,7 +19,6 @@ in the module's own page:
 | [usage](docs/usage.md)               | `report`                                                                                                 |
 | [sessions](docs/sessions.md)         | `last`                                                                                                   |
 | [activity](docs/activity.md)         | `list`                                                                                                   |
-| [archives](docs/archives.md)         | `list` — deprecated alias of `tenants list --archived`                                                   |
 
 ## Running it
 
@@ -59,16 +58,16 @@ and written, as it does for the server.
 
 ## Input
 
-| Option                | Meaning                                                                                                                                                                                          |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                                                        |
-| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                                                       |
-| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                                                 |
-| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `archives …`, `db upgrade` and the registry commands under `tenants …` (not `db clear`/`export`/`import`/`blank-state …`). |
-| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                                          |
-| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                                                   |
-| `--verbose`           | Add stack traces to errors.                                                                                                                                                                      |
-| `--help`, `--version` |                                                                                                                                                                                                  |
+| Option                | Meaning                                                                                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--request <json>`    | The command's input as a JSON object. Omitted means `{}`.                                                                                                                          |
+| `--request -`         | Read the JSON from stdin. Prefer it for automation: arguments show up in `ps` and history.                                                                                         |
+| `--schema`            | Print the JSON schema of the command's `--request` and exit, without connecting.                                                                                                   |
+| `--tenant <name>`     | The tenant to run in. Required by tenant-scoped commands; rejected by `db upgrade` and the registry commands under `tenants …` (not `db clear`/`export`/`import`/`blank-state …`). |
+| `--all-tenants`       | Run a query in every registered tenant (queries only; writes always target one tenant).                                                                                            |
+| `--pretty`            | Human-readable output (tables / `key: value`) instead of JSON.                                                                                                                     |
+| `--verbose`           | Add stack traces to errors.                                                                                                                                                        |
+| `--help`, `--version` |                                                                                                                                                                                    |
 
 Unknown request fields are rejected. `--schema` is the reference for each command's input:
 
@@ -95,8 +94,6 @@ unknown field.
 - `tenants list --archived` reads the archived registry, where an archived tenant is no longer
   in the active registry. Archived tenants are still selected with `--archived`, never with
   `--tenant`.
-- `archives …` takes neither as well: an archived tenant is no longer in the registry.
-  Deprecated — use `tenants list --archived` instead.
 
 ## Output
 
