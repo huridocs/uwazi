@@ -8,6 +8,8 @@ options, output and exit codes are in the [README](../README.md).
 | ----------------------- | ------------------------------------------------------------------ |
 | `tenants list`          | Prints every tenant, active by default, archived with `--archived` |
 | `tenants get`           | Prints one tenant, as stored                                       |
+| `tenants archive`       | Moves a tenant to the archived registry                            |
+| `tenants unarchive`     | Moves a tenant back to the active registry                         |
 | `tenants register`      | Registers a tenant, or updates the one already registered          |
 | `tenants update`        | Changes a tenant's fields                                          |
 | `tenants delete`        | Removes a tenant from the registry                                 |
@@ -81,15 +83,15 @@ No request, and neither `--tenant` nor `--all-tenants`.
 single instance with no registry it prints `[]`: the tenant configured from the environment is
 not in the registry.
 
-**`--archived`.** Prints the archived tenants, read from the `archives` collection of the Mongo
-shared database (`uwazi_shared_db`) — the archive playbook writes there, whatever
-`TENANTS_BACKEND` selects. Rows are printed exactly as stored, `_id` included, with no field
-added, removed or converted.
+**`--archived`.** Prints the archived tenants, read from the archived registry, which follows
+`TENANTS_BACKEND` like the active one: the Mongo `archives` collection of the shared database, or
+the Postgres `archived_tenants` table. Rows are printed exactly as stored — `_id` included on
+Mongo, absent on Postgres — with no field added, removed or converted.
 
-Order: newest `archivedAt` first. The playbook writes `archivedAt` as epoch **seconds**, usually
-as a string; it is printed as stored, but sorted by its numeric value, whether a string or a
-number. Rows with no `archivedAt`, or one that is not a number, come last. Rows with the same
-`archivedAt` are sorted by name.
+Order: newest `archivedAt` first. `archivedAt` is epoch **seconds**, written by the CLI as a
+number; on Mongo a row written by an older playbook may store it as a numeric string, which still
+sorts by its numeric value. Rows with no `archivedAt`, or one that is not a number, come last.
+Rows with the same `archivedAt` are sorted by name.
 
 Output for `--archived`, one item per archived tenant, `[]` when there are none:
 
@@ -110,7 +112,7 @@ Output for `--archived`, one item per archived tenant, `[]` when there are none:
       "files": "https://store.greenhost.net/uwazi-production/acme"
     },
     "featureFlags": { "s3Storage": true },
-    "archivedAt": "1759700000"
+    "archivedAt": 1759700000
   }
 ]
 ```
@@ -119,7 +121,7 @@ Output for `--archived`, one item per archived tenant, `[]` when there are none:
 | -------------------- | ------------------------------------------------------------------ |
 | `dumpLocation.db`    | The zipped database dump                                           |
 | `dumpLocation.files` | Where the tenant's files are kept                                  |
-| `archivedAt`         | When it was archived, epoch seconds, as written (string or number) |
+| `archivedAt`         | When it was archived, epoch seconds (a number; a numeric string in older Mongo rows) |
 | the other fields     | The tenant's registry row at the time it was archived              |
 
 ## tenants get
@@ -129,6 +131,59 @@ yarn uwazi tenants get --request '{"name":"acme"}'
 ```
 
 Prints one tenant's row, as stored.
+
+## tenants archive
+
+```sh
+yarn uwazi tenants archive --request '{"name":"acme","dumpLocation":{"db":"<url>","files":"<url>"}}'
+```
+
+Moves a tenant from the active registry into the archived registry — the Mongo `archives`
+collection or the Postgres `archived_tenants` table, whichever `TENANTS_BACKEND` selects. Its
+database, search index and files are left alone: the archive playbook runs the data dump first
+and passes its locations here.
+
+- `name` — the tenant to archive.
+- `dumpLocation.db` — where the zipped database dump was uploaded.
+- `dumpLocation.files` — where the tenant's files are kept.
+
+The archived row is a fixed snapshot: `name`, `dbName`, `indexName`, `uploadedDocuments`,
+`attachments`, `customUploads`, `activityLogs` and the full `featureFlags`, plus
+`status: "archived"`, `dumpLocation` and `archivedAt` (epoch seconds, written by the CLI).
+`domain`, `globalMatomo`, `ciMatomoActive`, `maintenance` and the operational data (`stats`,
+`healthChecks`, `metadata`) are dropped.
+
+It works the same on both registry backends and for a Mongo and a Postgres tenant: the move never
+touches tenant data, and the tenant's `postgresCore` flag travels through the snapshot unchanged.
+
+Prints the archived row as stored (`_id` included on MongoDB).
+
+| Code               | Exit | When                             |
+| ------------------ | ---- | -------------------------------- |
+| `tenant.not_found` | 3    | The active tenant does not exist |
+
+## tenants unarchive
+
+```sh
+yarn uwazi tenants unarchive --request '{"name":"acme"}'
+```
+
+Moves a tenant back from the archived registry into the active registry, rebuilding a clean row
+from the snapshot: the snapshot fields and the full `featureFlags`, without `status`,
+`dumpLocation` or `archivedAt`. The archived row is then removed.
+
+Fails with `tenant.conflict` (exit 4) if a tenant with that name is already active, so a live
+tenant is never overwritten. Fails with `tenant.storage_taken` (exit 4) if another tenant has
+taken the snapshot's `dbName` or `indexName` since archive, so two tenants are never put on the
+same database or index.
+
+Prints the active row as stored (what `tenants get` prints).
+
+| Code                 | Exit | When                                             |
+| -------------------- | ---- | ------------------------------------------------ |
+| `tenant.not_found`   | 3    | The archived tenant does not exist               |
+| `tenant.conflict`    | 4    | A tenant with that name is already active        |
+| `tenant.storage_taken` | 4  | Another tenant now uses the archived `dbName` or `indexName` |
 
 ## tenants register
 
