@@ -24,7 +24,7 @@ type LibraryRightPaneProps = {
   chips: Chip[];
   onFiltersChange: (filters: LibraryFiltersState) => void;
   onAndFiltersChange: (andFilters: string[]) => void;
-  onClosePreview: () => void;
+  onClosePreview: (afterClose?: () => void) => void;
   onCloseSelection: () => void;
   onRemoveSelection: (sharedId: string) => void;
   onPreviewSelection: (sharedId: string) => void;

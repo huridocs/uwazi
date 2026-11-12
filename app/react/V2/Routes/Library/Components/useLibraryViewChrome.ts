@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryClickModifiers } from '../librarySelection.js';
+import { useLibraryLeaveRequest } from './libraryPreviewLeave.js';
 import { useLibraryLongPress } from './useLibraryLongPress.js';
 import { useLibrarySelectionCommands } from './useLibrarySelectionCommands.js';
 
@@ -30,8 +31,9 @@ const useLibraryPreviewFocus = (
 const useLibraryCreateActions = (
   onSelect: (sharedId: string, modifiers?: LibraryClickModifiers) => void,
   onClosePreview: () => void,
-  onEntityCreated?: (sharedId?: string) => void
+  onEntityCreated?: (sharedId?: string, row?: LibrarySearchHit) => void
 ) => {
+  const requestLeave = useLibraryLeaveRequest();
   const [creating, setCreating] = useState(false);
   const preview = useLibraryPreviewFocus(
     (sharedId, modifiers) => {
@@ -44,35 +46,39 @@ const useLibraryCreateActions = (
     }
   );
   return {
-    ...preview,
+    focusFieldKey: preview.focusFieldKey,
     beginSelection: () => {
       setCreating(false);
       preview.clearFocus();
     },
     creating,
-    openCreate: () => {
-      preview.closePreview();
-      setCreating(true);
-    },
-    finishCreated: (sharedId?: string) => {
+    selectRow: (sharedId: string, modifiers?: LibraryClickModifiers) =>
+      requestLeave(() => preview.selectRow(sharedId, modifiers)),
+    selectProperty: (sharedId: string, fieldKey: string) =>
+      requestLeave(() => preview.selectProperty(sharedId, fieldKey)),
+    closePreview: (afterClose?: () => void) =>
+      requestLeave(() => {
+        preview.closePreview();
+        afterClose?.();
+      }),
+    openCreate: () =>
+      requestLeave(() => {
+        preview.closePreview();
+        setCreating(true);
+      }),
+    finishCreated: (sharedId?: string, row?: LibrarySearchHit) => {
       setCreating(false);
-      onEntityCreated?.(sharedId);
-      if (sharedId) {
-        preview.selectRow(sharedId);
-      }
+      onEntityCreated?.(sharedId, row);
+      if (sharedId) preview.selectRow(sharedId);
     },
   };
 };
-
-const useLibrarySelectionPanel = (selectedIds: readonly string[]) => ({
-  selectionPanelOpen: selectedIds.length > 1,
-});
 
 type LibrarySelectionChromeArgs = {
   selectedIds: readonly string[];
   rows: readonly LibrarySearchHit[];
   addEntity: (sharedId: string) => void;
-  onDeleted: () => void;
+  onDeleted: (sharedIds: readonly string[]) => void;
 };
 
 const useLibrarySelectionChrome = ({
@@ -81,10 +87,9 @@ const useLibrarySelectionChrome = ({
   addEntity,
   onDeleted,
 }: LibrarySelectionChromeArgs) => {
-  const panel = useLibrarySelectionPanel(selectedIds);
   useLibraryLongPress(addEntity);
   const commands = useLibrarySelectionCommands(selectedIds, rows, onDeleted);
-  return { ...panel, ...commands };
+  return { selectionPanelOpen: selectedIds.length > 1, ...commands };
 };
 
-export { useLibraryCreateActions, useLibrarySelectionChrome, useLibrarySelectionPanel };
+export { useLibraryCreateActions, useLibrarySelectionChrome };

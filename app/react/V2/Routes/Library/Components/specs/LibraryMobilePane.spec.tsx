@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { LibraryView } from '../LibraryView.js';
+import { requestedIndexes, SwipeProbe } from './librarySwipeProbe.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -151,6 +152,12 @@ const expectStackedOnFilters = (text: string) => {
   expectSnap(text, 'half');
 };
 
+const clickBackdrop = () => {
+  const backdrop = document.querySelector('[data-part="backdrop"]');
+  if (!(backdrop instanceof Element)) throw new Error('backdrop');
+  fireEvent.click(backdrop);
+};
+
 const expectClosed = (onFiltersChange: jest.Mock) => {
   expect(document.querySelector('[data-part="sheet"]')).toBeNull();
   expect(onFiltersChange).not.toHaveBeenCalled();
@@ -221,6 +228,18 @@ describe('LibraryView mobile sheets', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit search' }));
     expect(document.querySelector('[data-part="sheet"]')).toBeNull();
+  });
+
+  it('keeps a swiped preview closed until the next pane request', () => {
+    requestedIndexes.length = 0;
+    render(<SwipeProbe />);
+    fireEvent.click(screen.getByRole('button', { name: 'open preview' }));
+    expect(sheets()).toHaveLength(1);
+    clickBackdrop();
+    expect(requestedIndexes).toEqual([1, 0]);
+    expect(sheets()).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: 'select without request' }));
+    expect(sheets()).toHaveLength(0);
   });
 
   it('opens the results sheet from the footer', () => {
