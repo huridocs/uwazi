@@ -1,164 +1,18 @@
-import http, { IncomingMessage } from 'http';
-import net, { AddressInfo } from 'net';
-import express, { Application } from 'express';
-import { HttpServerGracefulShutdown } from '../HttpServerGracefulShutdown.js';
-
-const sleep = async (ms: number) =>
-  new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-
-async function httpGet(url: string): Promise<{ status: number; body: unknown }> {
-  return new Promise((resolve, reject) => {
-    // Use a fresh non-keep-alive agent to avoid polluting the global pool
-    const req = http.get(url, { agent: false }, (res: IncomingMessage) => {
-      let data = '';
-      res.on('data', (chunk: string) => {
-        data += chunk;
-      });
-      res.on('end', () => {
-        try {
-          resolve({ status: res.statusCode!, body: JSON.parse(data) });
-        } catch {
-          resolve({ status: res.statusCode!, body: data });
-        }
-      });
-    });
-    req.on('error', reject);
-    req.setTimeout(2000, () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
-  });
-}
-
-interface TestContext {
-  app: Application;
-  server: ReturnType<typeof http.createServer>;
-  shutdown: HttpServerGracefulShutdown;
-  exitCalls: number[];
-  loggerCalls: { log: unknown[][]; error: unknown[][] };
-  cleanupCalls: string[];
-  _baseUrl: string | null;
-  url(): string;
-}
-
-function createTestServer({
-  delay = 50,
-  timeout = 500,
-  // eslint-disable-next-line no-empty-function
-  closeSockets = () => {},
-} = {}): TestContext {
-  const app = express();
-  const server = http.createServer(app);
-
-  const exitCalls: number[] = [];
-  const loggerCalls = { log: [] as unknown[][], error: [] as unknown[][] };
-  const cleanupCalls: string[] = [];
-
-  const shutdown = new HttpServerGracefulShutdown({
-    server,
-    app,
-    cleanup: async () => {
-      cleanupCalls.push('cleanup');
-    },
-    closeSockets,
-    timeout,
-    exit: code => {
-      exitCalls.push(code);
-    },
-    logger: {
-      info: (...args: unknown[]) => {
-        loggerCalls.log.push(args);
-      },
-      warning: (...args: unknown[]) => {
-        loggerCalls.log.push(args);
-      },
-      error: (...args: unknown[]) => {
-        loggerCalls.error.push(args);
-      },
-      // eslint-disable-next-line no-empty-function
-      debug: () => {},
-      // eslint-disable-next-line no-empty-function
-      critical: () => {},
-    },
-  });
-
-  app.get('/slow', (_req, res) => {
-    setTimeout(() => {
-      res.json({ ok: true });
-    }, delay);
-  });
-
-  app.get('/fast', (_req, res) => {
-    res.json({ ok: true });
-  });
-
-  const ctx: TestContext = {
-    app,
-    server,
-    shutdown,
-    exitCalls,
-    loggerCalls,
-    cleanupCalls,
-    _baseUrl: null,
-    url() {
-      return this._baseUrl!;
-    },
-  };
-
-  return ctx;
-}
-
-async function startServer(t: TestContext): Promise<string> {
-  return new Promise(resolve => {
-    t.server.listen(0, () => {
-      const url = `http://localhost:${(t.server.address() as AddressInfo).port}`;
-      resolve(url);
-    });
-  });
-}
-
-function stopServer(t: TestContext): void {
-  try {
-    t.server.closeAllConnections?.();
-  } catch {
-    // server may already be closed
-  }
-  t.server.close();
-}
-
-async function openSocket(t: TestContext): Promise<net.Socket> {
-  return new Promise((resolve, reject) => {
-    const socket = new net.Socket();
-    socket.connect((t.server.address() as AddressInfo).port, '127.0.0.1', () => {
-      resolve(socket);
-    });
-    socket.on('error', reject);
-  });
-}
-
-async function sendHttpRequest(socket: net.Socket): Promise<string> {
-  return new Promise((resolve, reject) => {
-    socket.write('GET /fast HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
-    let data = '';
-    const timer = setTimeout(() => {
-      socket.destroy();
-      reject(new Error('timeout'));
-    }, 1000);
-    socket.on('data', (chunk: Buffer) => {
-      data += chunk.toString();
-    });
-    socket.on('end', () => {
-      clearTimeout(timer);
-      resolve(data);
-    });
-    socket.on('error', (err: Error) => {
-      clearTimeout(timer);
-      reject(err);
-    });
-  });
-}
+import {
+  createTestServer,
+  httpGet,
+  listenWithCloser,
+  openSocket,
+  openTrackedSocket,
+  releaseServer,
+  sendHttpRequest,
+  sleep,
+  startServer,
+  stopServer,
+  whenRequestsReceived,
+  type HeldSocket,
+  type TestContext,
+} from './shutdownTestServer.js';
 
 describe('HttpServerGracefulShutdown', () => {
   let t: TestContext;
@@ -197,8 +51,9 @@ describe('HttpServerGracefulShutdown', () => {
     });
 
     it('allows in-flight requests to complete normally', async () => {
+      const received = whenRequestsReceived(t.server, 1);
       const reqPromise = httpGet(`${t.url()}/slow`);
-      await sleep(10);
+      await received;
 
       t.shutdown.shutdown();
 
@@ -238,33 +93,16 @@ describe('HttpServerGracefulShutdown', () => {
     });
 
     it('completes shutdown even with persistent connections', async () => {
-      let persistentSocket: net.Socket | null = null;
-
-      const oldT = t;
-      t = createTestServer({
-        closeSockets: () => {
-          persistentSocket?.destroy();
-        },
-      });
-      t._baseUrl = await startServer(t);
-
-      // Simulate a socket.io-like persistent connection:
-      // open TCP, send partial HTTP (parser becomes active, not idle)
-      persistentSocket = await openSocket(t);
-      persistentSocket.write('GET /slow HTTP/1.1\r\n'); // incomplete request
-
+      const held: HeldSocket = {};
+      const previous = t;
+      t = await listenWithCloser(() => held.socket?.destroy());
+      const socket = await openTrackedSocket(t, held);
+      socket.write('GET /slow HTTP/1.1\r\n');
       t.shutdown.shutdown();
-
-      // With closeSockets() called BEFORE http.close(),
-      // persistent connections are destroyed immediately.
-      // http.close() fires its callback, cleanup runs, exit is 0.
       await sleep(600);
-
       expect(t.cleanupCalls).toContain('cleanup');
       expect(t.exitCalls).toEqual([0]);
-
-      stopServer(t);
-      t = oldT;
+      t = releaseServer(t, previous);
     });
 
     it('logs each step of the shutdown sequence', async () => {
@@ -283,13 +121,13 @@ describe('HttpServerGracefulShutdown', () => {
 
   describe('with active connections', () => {
     it('handles multiple concurrent in-flight requests', async () => {
+      const received = whenRequestsReceived(t.server, 3);
       const requests = Promise.all([
         httpGet(`${t.url()}/slow`),
         httpGet(`${t.url()}/slow`),
         httpGet(`${t.url()}/slow`),
       ]);
-
-      await sleep(10);
+      await received;
       t.shutdown.shutdown();
 
       const results = await requests;
@@ -300,8 +138,9 @@ describe('HttpServerGracefulShutdown', () => {
 
     it('503 on existing connection while another request is in-flight', async () => {
       const socket = await openSocket(t);
+      const received = whenRequestsReceived(t.server, 1);
       const slowPromise = httpGet(`${t.url()}/slow`);
-      await sleep(10);
+      await received;
 
       t.shutdown.shutdown();
 
