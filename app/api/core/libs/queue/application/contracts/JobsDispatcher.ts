@@ -27,6 +27,11 @@ export interface JobsDispatcher {
 
   countByName<T extends Dispatchable>(dispatchable: DispatchableClass<T>): Promise<number>;
 
+  countActiveByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<number>;
+
   dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

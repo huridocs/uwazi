@@ -49,6 +49,13 @@ export class NamespacedDispatcher implements JobsDispatcher {
     return this.adapter.countByName(dispatchable.name, this.namespace);
   }
 
+  async countActiveByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<number> {
+    return this.adapter.countActiveByParams(dispatchable.name, params, this.namespace);
+  }
+
   // eslint-disable-next-line class-methods-use-this
   private resolveOptions<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,

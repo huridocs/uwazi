@@ -35,6 +35,14 @@ export class SyncJobsDispatcher implements JobsDispatcher {
     return 0;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async countActiveByParams<T extends Dispatchable>(
+    _dispatchable: DispatchableClass<T>,
+    _params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<number> {
+    return 0;
+  }
+
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

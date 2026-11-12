@@ -1,3 +1,4 @@
+// oxlint-disable max-statements
 /* eslint-disable no-restricted-imports */
 import * as fs from 'fs/promises';
 
@@ -223,6 +224,20 @@ describe('FileSystemStorage', () => {
       await fileSystemStorage.storeFile(doc);
 
       expect(await fileSystemStorage.fileExists(doc)).toBe(true);
+    });
+
+    it('should check a custom path that is not a file row', async () => {
+      const location = {
+        type: 'customPath' as const,
+        destination: 'thumbnails/640',
+        filename: 'photo.png',
+      };
+
+      expect(await fileSystemStorage.fileExists(location)).toBe(false);
+
+      await fileSystemStorage.storeContent(FileBuilder.content('jpeg'), location);
+
+      expect(await fileSystemStorage.fileExists(location)).toBe(true);
     });
   });
 });
