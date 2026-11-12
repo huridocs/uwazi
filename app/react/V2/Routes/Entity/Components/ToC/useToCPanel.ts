@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import type { FileType } from '#shared/types/fileType.js';
@@ -7,16 +8,32 @@ import {
   useTocActions,
   useTocStateActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { useOptionalEntityFilesRefresh } from '#V2/Routes/Entity/Components/Files/EntityFilesContext.js';
+import { useDocumentHighlightPaint } from '../document/documentHighlightGate.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { useToCPanelHandlers } from './useToCPanelHandlers.js';
 
 type UseToCPanelParams = {
   toc?: TocSchema[];
   file?: FileType;
+  onRevealDocument?: () => void;
 };
 
-const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
+const useTocRevalidate = () => {
   const revalidator = useRevalidator();
+  const refreshEntity = useOptionalEntityFilesRefresh();
+  return useCallback(async () => {
+    if (refreshEntity) {
+      await refreshEntity();
+      return;
+    }
+    await revalidator.revalidate();
+  }, [refreshEntity, revalidator]);
+};
+
+const useToCPanel = ({ toc, file, onRevealDocument }: UseToCPanelParams) => {
+  const paintHighlight = useDocumentHighlightPaint();
+  const revalidate = useTocRevalidate();
   const { notify } = useRequestStatus();
   const tocState = useToc();
   const { setToc, expandAll, collapseAll, setEditMode, updateEntry, deleteEntry, toggleExpand } =
@@ -34,8 +51,10 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     deleteEntry,
     setTocState,
     mainPdfController,
-    revalidate: async () => revalidator.revalidate(),
+    onRevealDocument,
+    revalidate,
     notify,
+    paintHighlight,
   });
 
   return {

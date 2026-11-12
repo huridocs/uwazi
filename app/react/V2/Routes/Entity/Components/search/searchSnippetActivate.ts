@@ -2,6 +2,7 @@ import { MAIN_TAB } from '../../Tabs/tabIds.js';
 import { PAGE_PARAM } from '../../urlParams.js';
 import { scrollToPlaintextPage } from '../document/scrollToPlaintextPage.js';
 import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
+import { paintDocumentHighlightNow } from '../document/documentHighlightGate.js';
 import type { useJumpToSearchHit } from './useJumpToSearchHit.js';
 
 type PendingSnippet = { text: string; page: number };
@@ -31,6 +32,24 @@ const applySnippetTarget = (args: {
   args.pdfController?.goToPage(args.pageText.page);
 };
 
+const paintActiveSnippet = ({
+  isRaw,
+  pdfController,
+  pageText,
+  paintHighlight,
+}: {
+  isRaw: boolean;
+  pdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  pageText: PendingSnippet;
+  paintHighlight?: (run: () => void) => void;
+}) => {
+  if (isRaw || !pdfController) return;
+  const paint = paintHighlight ?? paintDocumentHighlightNow;
+  paint(() => {
+    pdfController.activateSnippet(pageText);
+  });
+};
+
 const activateSearchSnippet = (args: {
   snippetKey: string;
   pageText: PendingSnippet;
@@ -40,6 +59,7 @@ const activateSearchSnippet = (args: {
   setActiveSnippet: (value: string | null) => void;
   setPendingSnippet: (value: PendingSnippet | null) => void;
   pdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  paintHighlight?: (run: () => void) => void;
 }) => {
   const { snippetKey, pageText, activeSnippet, isRaw, ensureMainTab } = args;
   const { setActiveSnippet, setPendingSnippet, pdfController } = args;
@@ -54,6 +74,7 @@ const activateSearchSnippet = (args: {
     },
   });
   applySnippetTarget({ pageText, isRaw, setPendingSnippet, pdfController });
+  paintActiveSnippet({ isRaw, pdfController, pageText, paintHighlight: args.paintHighlight });
 };
 
 export { activateSearchSnippet };

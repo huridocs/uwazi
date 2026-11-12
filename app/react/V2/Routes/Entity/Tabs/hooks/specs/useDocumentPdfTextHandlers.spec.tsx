@@ -1,11 +1,22 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
 import { renderHook } from '@testing-library/react';
-import { settingsAtom } from '#V2/atoms/index.js';
-import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { createStore, Provider } from 'jotai';
+import React, { type ReactNode } from 'react';
+import { SIDE_TAB } from '#V2/Routes/Entity/Tabs/tabIds.js';
 import { useDocumentPdfTextHandlers } from '../useDocumentPdfTextHandlers.js';
+
+const mockFocusSideTab = jest.fn();
+const mockAddEntry = jest.fn();
+const mockSetEditMode = jest.fn();
+
+jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => ({
+  useEntityTabNavigation: () => ({
+    focusSideTab: mockFocusSideTab,
+    focusRelationshipsPanel: jest.fn(),
+  }),
+}));
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
   useDocumentPdf: () => ({
@@ -16,41 +27,33 @@ jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
   }),
   useMetadataEditing: () => ({ isEditing: false }),
   useRelationshipsActions: () => ({ openCreateRelationship: jest.fn() }),
-  useTocActions: () => ({ addEntry: jest.fn() }),
-  useEntityWriteAuthorized: jest.fn(),
+  useTocActions: () => ({ addEntry: mockAddEntry, setEditMode: mockSetEditMode }),
+  useEntityWriteAuthorized: () => true,
 }));
-
-jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => ({
-  useEntityTabNavigation: () => ({
-    focusRelationshipsPanel: jest.fn(),
-    focusSideTab: jest.fn(),
-  }),
-}));
-
-const { useEntityWriteAuthorized } = jest.requireMock(
-  '#V2/Routes/Entity/Components/context/index.js'
-);
-
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TestAtomStoreProvider initialValues={[[settingsAtom, { features: {} }]]}>
-    {children}
-  </TestAtomStoreProvider>
-);
 
 describe('useDocumentPdfTextHandlers', () => {
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <Provider store={createStore()}>{children}</Provider>
+  );
+
   beforeEach(() => {
-    useEntityWriteAuthorized.mockReset();
+    mockFocusSideTab.mockClear();
+    mockAddEntry.mockClear();
+    mockSetEditMode.mockClear();
   });
 
-  it('exposes entity write authorization for PDF selection actions', () => {
-    useEntityWriteAuthorized.mockReturnValue(true);
+  it('opens the table of contents in edit mode when text is added', () => {
     const { result } = renderHook(() => useDocumentPdfTextHandlers(), { wrapper });
-    expect(result.current.canWrite).toBe(true);
-  });
 
-  it('does not authorize PDF selection actions without write', () => {
-    useEntityWriteAuthorized.mockReturnValue(false);
-    const { result } = renderHook(() => useDocumentPdfTextHandlers(), { wrapper });
-    expect(result.current.canWrite).toBe(false);
+    result.current.handleAddToToC({
+      text: 'Chapter',
+      selectionRectangles: [{ top: 0, left: 0, width: 1, height: 1, regionId: '2' }],
+    });
+
+    expect(mockAddEntry).toHaveBeenCalledWith(
+      expect.objectContaining({ label: 'Chapter', indentation: 0 })
+    );
+    expect(mockSetEditMode).toHaveBeenCalledWith(true);
+    expect(mockFocusSideTab).toHaveBeenCalledWith(SIDE_TAB.TOC);
   });
 });

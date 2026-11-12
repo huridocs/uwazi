@@ -48,6 +48,7 @@ const LibraryView = ({
   onPageChange = () => undefined,
   onLimitChange = () => undefined,
   onEntityCreated,
+  onEntitiesDeleted,
 }: LibraryViewProps) => {
   const {
     showThumbnail,
@@ -83,7 +84,10 @@ const LibraryView = ({
       selectedIds,
       rows,
       addEntity,
-      onDeleted: dismissSelection,
+      onDeleted: sharedIds => {
+        dismissSelection();
+        onEntitiesDeleted?.(sharedIds);
+      },
     });
   const {
     focusFieldKey,

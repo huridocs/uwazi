@@ -80,4 +80,17 @@ describe('useLibraryPreviewEntity', () => {
     expect(getBySharedId).toHaveBeenCalledTimes(2);
     expect(screen.queryByText('Loading')).not.toBeInTheDocument();
   });
+
+  it('keeps the loaded entity when a silent reload fails', async () => {
+    renderHookView();
+    expect(await screen.findByTestId('file-count')).toHaveTextContent('0');
+
+    getBySharedId.mockRejectedValue(new Error('offline'));
+    await act(async () => {
+      screen.getByRole('button', { name: 'Reload' }).click();
+    });
+
+    expect(screen.getByTestId('file-count')).toHaveTextContent('0');
+    expect(screen.queryByText('Missing')).not.toBeInTheDocument();
+  });
 });
