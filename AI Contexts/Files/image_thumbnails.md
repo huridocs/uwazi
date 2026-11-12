@@ -184,7 +184,7 @@ It does not enqueue `type: 'thumbnail'` (a PDF thumbnail is already a JPEG named
 
 `EnqueueImageThumbnails` checks `config.imageThumbnails` first. For each eligible filename it skips when the JPEG is already there, when `.skip` is there, or when `ImageThumbnailJobs.countActive` is greater than zero. Otherwise it enqueues one. The count is a `countDocuments` read on the queue, before the insert. It is not a job, and it is not a method on the shared `Dispatcher`. It cannot move inside the creation job: by then the second row already exists, and two workers can both pass the "already settled" check before either writes. Delete-then-dispatch, as thesaurus denormalize does, was rejected: the thumbnail that job would produce does not change, so the delete only delays it. A running job is not deleted by `deleteByParams` anyway.
 
-The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because an anonymous library request can enqueue it, lock window 60 seconds, max retries 3. The use case no-ops when the extension is out, or the JPEG or `.skip` already exists. A missing parent returns.
+The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because an anonymous library request can enqueue it, lock window 60 seconds, and the queue default of 5 retries. The use case no-ops when the extension is out, or the JPEG or `.skip` already exists. A missing parent returns.
 
 `ImageThumbnailUnavailable` (the renderer could not load) is retried and does not write `.skip`. `ImageThumbnailRejected` (the decoder rejected the file), or the last retry, writes a one-byte `.skip` and then fails as non-retryable. Both errors live in `domain/imageThumbnailErrors.ts`.
 

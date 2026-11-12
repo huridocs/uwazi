@@ -18,7 +18,7 @@ type JobDependencies = {
 };
 
 @PrivilegedJob()
-@QueueOptions({ lockWindow: 60_000, maxRetries: 3 })
+@QueueOptions({ lockWindow: 60_000 })
 class CreateImageThumbnailJobHandler extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {
     super();
