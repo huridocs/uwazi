@@ -6,8 +6,12 @@ import { AddLanguagePagesListener } from './pages.v2/infrastructure/listeners/Ad
 import { AddLanguagePagesListenerFactory } from './pages.v2/infrastructure/factories/AddLanguagePagesListenerFactory.js';
 import { BroadcastSettingsChanged } from './core/infrastructure/listeners/BroadcastSettingsChanged.js';
 import { BroadcastSettingsChangedFactory } from './core/infrastructure/factories/BroadcastSettingsChangedFactory.js';
+import { DeleteImageThumbnailOnFileDeleted } from './imageThumbnails/infrastructure/listeners/DeleteImageThumbnailOnFileDeleted.js';
+import { DeleteImageThumbnailOnFileDeletedFactory } from './imageThumbnails/infrastructure/factories/DeleteImageThumbnailOnFileDeletedFactory.js';
 import { DeleteLanguagePagesListener } from './pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { DeleteLanguagePagesListenerFactory } from './pages.v2/infrastructure/factories/DeleteLanguagePagesListenerFactory.js';
+import { EnqueueImageThumbnailOnFileCreated } from './imageThumbnails/infrastructure/listeners/EnqueueImageThumbnailOnFileCreated.js';
+import { EnqueueImageThumbnailOnFileCreatedFactory } from './imageThumbnails/infrastructure/factories/EnqueueImageThumbnailOnFileCreatedFactory.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from './core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListenerFactory } from './core/infrastructure/factories/ProcessRelationshipAfterEntityUpdatedListenerFactory.js';
 
@@ -15,8 +19,16 @@ const listeners: ListenerManifest = [
   { listener: AddLanguagePagesListener, factory: () => AddLanguagePagesListenerFactory.default() },
   { listener: BroadcastSettingsChanged, factory: () => BroadcastSettingsChangedFactory.default() },
   {
+    listener: DeleteImageThumbnailOnFileDeleted,
+    factory: () => DeleteImageThumbnailOnFileDeletedFactory.default(),
+  },
+  {
     listener: DeleteLanguagePagesListener,
     factory: () => DeleteLanguagePagesListenerFactory.default(),
+  },
+  {
+    listener: EnqueueImageThumbnailOnFileCreated,
+    factory: () => EnqueueImageThumbnailOnFileCreatedFactory.default(),
   },
   {
     listener: ProcessRelationshipAfterEntityUpdatedListener,

@@ -143,6 +143,7 @@ describe('Item', () => {
       expect(component.find(FormatMetadata).props().additionalMetadata).toBe(
         props.additionalMetadata
       );
+      expect(component.find(FormatMetadata).props().thumbnails).toBe(true);
     });
   });
 

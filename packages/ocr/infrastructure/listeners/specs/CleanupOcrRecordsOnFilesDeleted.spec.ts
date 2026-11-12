@@ -28,7 +28,7 @@ describe('CleanupOcrRecordsOnFilesDeleted', () => {
     testingEnvironment.runWithContext(async () =>
       CleanupOcrRecordsOnFilesDeletedFactory.default().handle(
         jest.fn().mockResolvedValue(undefined),
-        { fileId }
+        { fileId, filename: 'file.pdf' }
       )
     );
 
