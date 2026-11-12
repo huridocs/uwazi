@@ -200,11 +200,12 @@ Already switched, and not to be extended until the `<img>` audit:
 - `app/react/V2/shared/thumbnailRequestUrl.ts` rewrites an eligible `/api/files/` URL to `/files/thumbnails/`. Audio, video, and any other extension stay on `/api/files/`.
 - `app/react/V2/Routes/Library/Components/cardModel.ts` uses that helper for card thumbnails, including a document preview `.jpg`.
 - `app/react/V2/Components/Metadata/Components/Image.tsx` uses it only when `density` is `compact`. The default density keeps the original URL.
+- Library v1 cards (`Layout/Item`) pass `thumbnails` into `FormatMetadata`. `Metadata` then rewrites an image `src` with the same helper. A v1 card image, including a document preview `.jpg`, requests `/files/thumbnails/`. Audio and any other extension stay on `/api/files/`.
 
-The entity page and `LibraryEntityPreview` do not use the helper.
+The entity page, `ShowMetadata`, and `LibraryEntityPreview` do not use the helper.
 
 ## Open
 
-1. The `<img>` audit: every current `/api/files/` image, marked thumb or full. A card and a side panel can share a component, and the two call sites above were switched before that walk. Do not add more call sites until it is done.
+1. The `<img>` audit: every current `/api/files/` image, marked thumb or full. V2 cards, compact metadata, and v1 cards are switched. A card and a side panel can share a component. Do not add more call sites until the walk is done.
 2. Sync of a file does not yet copy `thumbnails/640/<filename>` or `thumbnails/640/<filename>.skip`. The Delete and sync section still stands. A synced image currently goes through file creation, so with the flag on the target enqueues a new thumbnail instead of copying one.
 3. The thumbnail URL returns two different bodies over its life. The first request, before the JPEG exists, returns the original file and `Cache-Control: no-store`. A later request returns the small JPEG and may be cached. The app cannot force the load balancer to obey `no-store`. If the balancer stores the first response by URL and ignores that header, every card keeps receiving the full image from the balancer after the JPEG has been written. Question for the team: on `GET /files/thumbnails/*`, will the load balancer store a response that says `Cache-Control: no-store`? If it will, what do we set so the original is not kept and the JPEG, once it exists, still is?
