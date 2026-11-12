@@ -81,7 +81,7 @@ describe('uwazi binary', () => {
     ['usage --schema', ['usage', 'report', '--schema'], 0],
     ['sessions --schema', ['sessions', 'last', '--schema'], 0],
     ['activity --schema', ['activity', 'list', '--schema'], 0],
-    ['archives --schema', ['archives', 'list', '--schema'], 0],
+    ['archives command is removed', ['archives', 'list', '--schema'], 2],
     ['db clear --schema', ['db', 'clear', '--schema'], 0],
     ['db import --schema', ['db', 'import', '--schema'], 0],
     ['db blank-state dump --schema', ['db', 'blank-state', 'dump', '--schema'], 0],

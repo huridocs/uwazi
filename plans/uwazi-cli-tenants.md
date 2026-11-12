@@ -4,9 +4,9 @@ PRs: **A** = `tenants list --archived` (keeps `archives list` as a deprecated al
 
 ## Locked decisions (do not re-open)
 
-- **Temporary coexistence**: `archives list` stays as a deprecated alias of
-  `tenants list --archived` so the manager can be switched over without a hard cutover. Once
-  uwazi-manager calls the new command, the alias and the `archives` group are removed.
+- **Temporary coexistence**: `archives list` stayed as a deprecated alias of
+  `tenants list --archived` so the manager could switch over without a hard cutover. Once
+  uwazi-manager calls the new command, the alias and the `archives` group are removed (PR A2).
 
 - **`--archived` is a boolean CLI flag**, not a `--status` value and not a `--request` field.
   `--schema` documents the `--request` only; it must not list `--archived`.
@@ -128,6 +128,29 @@ schema for the combined flags+request), with a spec.
 
 ---
 
+## PR A2 — remove the deprecated `archives` command
+
+Deletes the `archives` group now that uwazi-manager lists archived tenants through
+`tenants list --archived`. The archived query service under `apps/cli/tenants/archived/` is
+unaffected here; PR C later replaces it with the backend-aware `ArchivedTenantsDataSource`.
+
+### Scope
+
+- Delete `apps/cli/archives/**` (`ArchivesRoutes`, `ListArchivesRoute`, `ListArchivesController`,
+  `contracts`, spec) and `apps/cli/docs/archives.md`.
+- Drop `ArchivesRoutes` from `apps/cli/routing/RouteRegistry.ts`.
+- Remove the `archives` row and tenancy mentions from `apps/cli/README.md`.
+- Turn the smoke spec's `archives --schema` case into a negative case: `archives list` now fails
+  with `usage.invalid` (exit 2).
+
+### Test / verify
+
+- `yarn test apps/cli/specs/smoke.spec.ts`.
+- `yarn test apps/cli` (the `committedBlankStateDump` failure is pre-existing and unrelated).
+- `yarn check-types`, `yarn lint --type-aware apps/cli`, `yarn prettier`.
+
+---
+
 ## PR B — `tenants get --archived` — **deferred** (dropped; the archived registry is still reachable via `tenants list --archived`)
 
 - `--archived` on `tenants get`: archived registry lookup by `name` (Mongo `archives`), active
@@ -200,7 +223,7 @@ another tenant has taken since archive (`tenant.storage_taken`). Backend-agnosti
   A crash between the two leaves the row in both registries (the operations playbook had the
   same window). Not required to be atomic; recover by re-running the command, which is
   idempotent per registry.
-- `apps/cli/README.md` currently names `archives …` in the tenancy section; PR A must update that
-  along with the module table.
+- `apps/cli/README.md` no longer names `archives …` (PR A2 removed the row and tenancy mentions);
+  PR C updates the `tenants` row with `archive` / `unarchive`.
 - The dangling `plans/uwazi-cli-tenants.md` reference in
   `app/api/tenants/application/DeregisterTenant.ts` now resolves to this file.
