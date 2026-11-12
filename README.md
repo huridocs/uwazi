@@ -30,6 +30,7 @@ Before anything else you will need to install the application dependencies:
 - **[mongosh](https://www.mongodb.com/docs/mongodb-shell/)** The new mongosh dependency needs to be added.
 - **Yarn 4+** The project uses Yarn 4.13.0 (see `packageManager` in package.json). Run `corepack enable` before your first `yarn install` so Node uses the correct version. Alternatively, npm 10+ is supported if you prefer to switch.
 - **pdftotext (Poppler)** tested to work on version 22.12 but it's recommended to use the [latest available for your platform](https://poppler.freedesktop.org/). Make sure to **install libjpeg-dev** if you build from source.
+- **[thumbnail-generator](https://github.com/huridocs/thumbnail-generator)** For HEIC and BMP thumbnails. `yarn install` provides sharp, which thumbnails JPEG, PNG, WebP, GIF, AVIF, and TIFF. Point the queue worker at the service with `THUMBNAIL_GENERATOR_URL` (for example `http://localhost:6020`).
 
 # Production
 

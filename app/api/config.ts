@@ -99,6 +99,7 @@ const {
   FEATURE_FLAG_EXPERIMENTAL_FEATURES,
   AI_ASSISTANT_SERVICE_URL,
   TRANSLATION_SERVICE_URL,
+  THUMBNAIL_GENERATOR_URL,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
@@ -261,6 +262,7 @@ export const config = {
   tenantsBackend,
   tenantsPollIntervalSeconds,
   imageThumbnails,
+  thumbnailGeneratorUrl: THUMBNAIL_GENERATOR_URL || '',
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,
