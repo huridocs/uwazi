@@ -5,6 +5,7 @@ import type { ApiError } from '#shared/apiClient/index.js';
 import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
 import { localeAtom, templatesAtom } from '#V2/atoms/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import {
   apiValidationsToEditEntityErrors,
   buildEditEntityDefaultValues,
@@ -14,6 +15,7 @@ import {
 } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
+import { libraryHitFromEntity } from './libraryCreatedRows.js';
 import {
   blankLibraryEntity,
   defaultLibraryTemplateId,
@@ -25,7 +27,7 @@ const CREATE_FORM_ID = 'library-create-entity-form';
 type NewEntitySaveResult = {
   saved?: Entity;
   error?: ApiError;
-  onCreated: (sharedId: string) => void;
+  onCreated: (sharedId: string, row?: LibrarySearchHit) => void;
   setEditErrors: (errors: EditEntityErrors | undefined) => void;
   setSaveError: (message: string | undefined) => void;
 };
@@ -44,7 +46,7 @@ const applyNewEntitySaveResult = ({
     if (!fieldErrors) setSaveError(error.detail ?? error.message);
     return;
   }
-  if (saved?.sharedId) onCreated(saved.sharedId);
+  if (saved?.sharedId) onCreated(saved.sharedId, libraryHitFromEntity(saved));
 };
 
 const useLibraryCreateEntityForm = () => {
@@ -61,7 +63,7 @@ const useLibraryCreateEntityForm = () => {
   return { templates, entity, form, mediaUpload };
 };
 
-const useLibraryCreateEntity = (onCreated: (sharedId: string) => void) => {
+const useLibraryCreateEntity = (onCreated: (sharedId: string, row?: LibrarySearchHit) => void) => {
   const { entities } = useServices();
   const { templates, entity, form, mediaUpload } = useLibraryCreateEntityForm();
   const [saving, setSaving] = useState(false);

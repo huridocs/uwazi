@@ -33,6 +33,7 @@ type EntityFilesContextValue = {
   requestDeleteSelected: () => void;
   closeDeleteModal: () => void;
   deleteRows: () => Promise<void>;
+  refreshEntity: () => Promise<void>;
   saveRow: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
   requestAddFile: (mode: AddFileMode) => void;
   openAddFilePicker: () => void;
