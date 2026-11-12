@@ -4,9 +4,9 @@ PRs: **A** = `tenants list --archived` (keeps `archives list` as a deprecated al
 
 ## Locked decisions (do not re-open)
 
-- **Temporary coexistence**: `archives list` stays as a deprecated alias of
-  `tenants list --archived` so the manager can be switched over without a hard cutover. Once
-  uwazi-manager calls the new command, the alias and the `archives` group are removed.
+- **Temporary coexistence**: `archives list` stayed as a deprecated alias of
+  `tenants list --archived` so the manager could switch over without a hard cutover. Once
+  uwazi-manager calls the new command, the alias and the `archives` group are removed (PR A2).
 
 - **`--archived` is a boolean CLI flag**, not a `--status` value and not a `--request` field.
   `--schema` documents the `--request` only; it must not list `--archived`.
@@ -123,6 +123,29 @@ schema for the combined flags+request), with a spec.
 - `yarn test apps/cli/tenants apps/cli/archives`.
 - `yarn test apps/cli/specs/smoke.spec.ts`.
 - `yarn check-types`, `yarn lint --type-aware apps/cli`, `yarn prettier` on touched files.
+
+---
+
+## PR A2 — remove the deprecated `archives` command
+
+Deletes the `archives` group now that uwazi-manager lists archived tenants through
+`tenants list --archived`. The archived query service under `apps/cli/tenants/archived/` is
+unaffected: it stays as the implementation of `tenants list --archived`.
+
+### Scope
+
+- Delete `apps/cli/archives/**` (`ArchivesRoutes`, `ListArchivesRoute`, `ListArchivesController`,
+  `contracts`, spec) and `apps/cli/docs/archives.md`.
+- Drop `ArchivesRoutes` from `apps/cli/routing/RouteRegistry.ts`.
+- Remove the `archives` row and tenancy mentions from `apps/cli/README.md`.
+- Turn the smoke spec's `archives --schema` case into a negative case: `archives list` now fails
+  with `usage.invalid` (exit 2).
+
+### Test / verify
+
+- `yarn test apps/cli/specs/smoke.spec.ts`.
+- `yarn test apps/cli` (the `committedBlankStateDump` failure is pre-existing and unrelated).
+- `yarn check-types`, `yarn lint --type-aware apps/cli`, `yarn prettier`.
 
 ---
 
