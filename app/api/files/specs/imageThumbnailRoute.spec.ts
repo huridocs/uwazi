@@ -160,8 +160,38 @@ describe('GET /files/thumbnails', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toBe('image/png');
-    expect(response.headers['cache-control']).toBe('no-store');
+    expect(response.headers['cache-control']).toBe('private, no-cache');
+    expect(response.headers.etag).toBe('"skip"');
     expect(await thumbnailJobs()).toHaveLength(0);
+  });
+
+  it('revalidates a skipped original and returns the jpeg once the marker is gone', async () => {
+    const uploads = tenants.current().uploadedDocuments;
+    const skip = path.join(uploads, 'thumbnails', '640', 'photo.png.skip');
+    await writeFile(skip, Buffer.from([0]));
+
+    const cached = await request(app)
+      .get('/files/thumbnails/photo.png')
+      .set('If-None-Match', '"skip"');
+
+    expect(cached.status).toBe(304);
+
+    await rm(skip);
+    await writeFile(path.join(uploads, 'thumbnails', '640', 'photo.png'), JPEG);
+    const replaced = await request(app)
+      .get('/files/thumbnails/photo.png')
+      .set('If-None-Match', '"skip"')
+      .buffer(true);
+
+    expect(replaced.status).toBe(200);
+    expect(replaced.headers.etag).toBe('"jpeg"');
+    expect(replaced.body.subarray(0, 2).toString('hex')).toBe('ffd8');
+
+    const current = await request(app)
+      .get('/files/thumbnails/photo.png')
+      .set('If-None-Match', '"jpeg"');
+
+    expect(current.status).toBe(304);
   });
 
   it('streams an ineligible file and does not enqueue', async () => {

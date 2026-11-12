@@ -14,6 +14,22 @@ import { ServeImageThumbnailFactory } from '../factories/ServeImageThumbnailFact
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
+const fileCacheHeadersOn = () => Boolean(tenants.current().featureFlags?.fileCacheHeaders);
+
+const etagMatches = (header: string | string[] | undefined, etag: string) => {
+  const value = Array.isArray(header) ? header.join(',') : header;
+  if (!value) {
+    return false;
+  }
+  return value.split(',').some(part => part.trim().replace(/^W\//, '') === etag);
+};
+
+type CachedThumbnail = {
+  cache: 'default' | 'no-store';
+  etag?: '"skip"' | '"jpeg"';
+  file: BaseFile;
+};
+
 const requestSchema = z.object({
   params: z.object({
     filename: z.string(),
@@ -38,7 +54,7 @@ class DownloadThumbnailController extends AbstractController {
     if (resolved.status === 'not_found' || !(await this.canRead(resolved.file))) {
       throw createError('file not found', 404);
     }
-    if (await this.notModified(resolved)) {
+    if (this.notModified(resolved)) {
       return;
     }
     this.addContentHeaders(resolved, query);
@@ -55,20 +71,59 @@ class DownloadThumbnailController extends AbstractController {
     );
   }
 
-  private async notModified(resolved: { cache: 'default' | 'no-store'; file: BaseFile }) {
+  private notModified(resolved: CachedThumbnail) {
     if (resolved.cache === 'no-store') {
       this.response.setHeader('Cache-Control', 'no-store');
       return false;
     }
-    if (!tenants.current().featureFlags?.fileCacheHeaders) {
+    if (resolved.etag === '"skip"') {
+      return this.notModifiedSkip(resolved.etag);
+    }
+    return this.notModifiedStored(resolved);
+  }
+
+  private notModifiedSkip(etag: '"skip"') {
+    this.response.setHeader('ETag', etag);
+    this.setRevalidationHeaders();
+    if (!etagMatches(this.request.headers['if-none-match'], etag)) {
       return false;
     }
-    this.addCacheHeaders(resolved.file);
-    if (!this.isNotModified(resolved.file)) {
+    return this.unchanged();
+  }
+
+  private notModifiedStored(resolved: CachedThumbnail) {
+    this.writeStoredValidators(resolved);
+    if (resolved.etag && etagMatches(this.request.headers['if-none-match'], resolved.etag)) {
+      return this.unchanged();
+    }
+    if (resolved.etag || !fileCacheHeadersOn() || !this.isNotModified(resolved.file)) {
       return false;
     }
+    return this.unchanged();
+  }
+
+  private writeStoredValidators(resolved: CachedThumbnail) {
+    if (resolved.etag) {
+      this.response.setHeader('ETag', resolved.etag);
+    }
+    if (fileCacheHeadersOn()) {
+      this.addCacheHeaders(resolved.file);
+    }
+  }
+
+  private unchanged() {
     this.response.status(304).end();
     return true;
+  }
+
+  private setRevalidationHeaders() {
+    if (this.request.user) {
+      this.response.setHeader('Cache-Control', 'private, no-cache');
+      this.response.setHeader('X-Cache-Policy', 'no-store');
+      return;
+    }
+    this.response.setHeader('Cache-Control', 'public, no-cache');
+    this.response.setHeader('X-Cache-Policy', 'yes-store');
   }
 
   private addCacheHeaders(file: BaseFile) {

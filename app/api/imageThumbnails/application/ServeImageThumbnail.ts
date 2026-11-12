@@ -15,15 +15,16 @@ type Input = {
   filename: string;
 };
 
-type Output =
-  | { status: 'not_found' }
-  | {
-      status: 'ok';
-      file: BaseFile;
-      contents: FileContents;
-      contentType: string;
-      cache: 'default' | 'no-store';
-    };
+type ReadyThumbnail = {
+  status: 'ok';
+  file: BaseFile;
+  contents: FileContents;
+  contentType: string;
+  cache: 'default' | 'no-store';
+  etag?: '"skip"' | '"jpeg"';
+};
+
+type Output = { status: 'not_found' } | ReadyThumbnail;
 
 type Deps = {
   filesDS: FilesDataSource;
@@ -66,12 +67,14 @@ class ServeImageThumbnail extends AbstractUseCase<Input, Output, Deps> {
         contents: this.deps.fileStorage.getFile(imageThumbnailLocation(file.filename)),
         contentType: 'image/jpeg',
         cache: 'default',
+        etag: '"jpeg"',
       };
     }
 
-    if (!(await this.deps.fileStorage.fileExists(imageThumbnailSkipLocation(file.filename)))) {
-      await this.deps.enqueueImageThumbnails.execute([file.filename]);
+    if (await this.deps.fileStorage.fileExists(imageThumbnailSkipLocation(file.filename))) {
+      return this.skipped(file);
     }
+    await this.deps.enqueueImageThumbnails.execute([file.filename]);
     return this.original(file);
   }
 
@@ -93,7 +96,11 @@ class ServeImageThumbnail extends AbstractUseCase<Input, Output, Deps> {
     };
   }
 
-  private original(file: BaseFile): Output {
+  private skipped(file: BaseFile): ReadyThumbnail {
+    return { ...this.original(file), cache: 'default', etag: '"skip"' };
+  }
+
+  private original(file: BaseFile): ReadyThumbnail {
     return {
       status: 'ok',
       file,

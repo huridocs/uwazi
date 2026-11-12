@@ -49,7 +49,7 @@ The route then does only this:
 1. Extension says no → stream the original. Stop.
 2. Extension says yes → look up `thumbnails/640/<filename>`.
 3. The JPEG is there → stream it.
-4. A give-up marker is there (`thumbnails/640/<filename>.skip`) → stream the original. Stop.
+4. A give-up marker is there (`thumbnails/640/<filename>.skip`) → stream the original. This response is cacheable. Its `ETag` is `"skip"`. Stop.
 5. A job for this file is still queued or running → stream the original. Do not enqueue.
 6. Otherwise, and `FEATURE_FLAG_IMAGE_THUMBNAILS` is on → enqueue one, stream the original. Flag off → stream the original and do not enqueue.
 
@@ -57,7 +57,7 @@ A queued or running job is the only jobs-table fact the route uses. It stops a s
 
 When the job gives up (retries exhausted, or a no-retry failure such as a file the decoder rejects), it writes the `.skip` marker and does not write a JPEG. That marker is an object in the thumbnail prefix, not a file row. Later requests hit step 4. Deleting the failed job does not bring the file back. Deleting the marker does: the next view enqueues again, which is the retry after a decoder fix.
 
-A response that streams the original, because the JPEG is not ready yet, is not cached. The app sends `Cache-Control: no-store`. Whether the load balancer honors that is an ask for the team.
+A response that streams the original because the JPEG is not ready yet, and no `.skip` exists, is not cached. The app sends `Cache-Control: no-store`. A `.skip` response is the original with `Cache-Control: no-cache` and `ETag: "skip"`, so the browser keeps the bytes and revalidates. The JPEG response uses `ETag: "jpeg"`. A request that still has `"skip"` after the marker is removed gets the JPEG, not a 304 of the original. Whether the load balancer honors `no-store` on the not-ready response is an ask for the team.
 
 ### Where the UI uses which bytes
 
@@ -177,7 +177,7 @@ The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because
 
 ### Serve
 
-`ServeImageThumbnail` looks up a `type: 'thumbnail'` row for the requested filename first and streams it when the bytes are on disk. Otherwise it loads a parent of type `document`, `attachment`, or `custom`, then follows the request rule. The JPEG response is `image/jpeg` and may be cached. The fallback is the original, with `cache: 'no-store'`.
+`ServeImageThumbnail` looks up a `type: 'thumbnail'` row for the requested filename first and streams it when the bytes are on disk. Otherwise it loads a parent of type `document`, `attachment`, or `custom`, then follows the request rule. The JPEG response is `image/jpeg`, may be cached, and carries `ETag: "jpeg"`. The fallback before a JPEG or a `.skip` is the original, with `cache: 'no-store'`. A `.skip` streams the original with `ETag: "skip"`.
 
 `DownloadThumbnailController` checks `EntityPermissionChecker` on an entity file (the parent, or the PDF thumbnail row) before streaming. A file that is not an entity file is allowed through, the same as the files route.
 
