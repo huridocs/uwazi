@@ -78,6 +78,7 @@ type ClientFeatureFlags = {
   aiAssistant?: boolean;
   translationService?: boolean;
   experimentalFeatures?: boolean;
+  devflagloginv2?: boolean;
 };
 
 type ClientProperty = Property & {

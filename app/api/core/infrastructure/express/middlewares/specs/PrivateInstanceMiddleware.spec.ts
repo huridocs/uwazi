@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { tenants } from '#api/tenants/index.js';
 import { privateInstanceMiddleware } from '../PrivateInstanceMiddleware.js';
 
 const setSettings = async (settings: { private: boolean }) => {
@@ -109,6 +110,18 @@ describe('privateInstanceMiddleware', () => {
 
       expect(res.redirect).toHaveBeenCalledWith('/login');
       expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should keep the requested url on the login redirect when login v2 is on', async () => {
+      tenants.current().featureFlags!.devflagloginv2 = true;
+      req.originalUrl = '/en/library/?q=some-search';
+
+      await run();
+
+      expect(res.redirect).toHaveBeenCalledWith(
+        '/login?redirect=%2Fen%2Flibrary%2F%3Fq%3Dsome-search'
+      );
+      tenants.current().featureFlags!.devflagloginv2 = false;
     });
   });
 });
