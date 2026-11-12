@@ -115,7 +115,7 @@ The cutout is the extension list in Request rule. A stored mimetype of `applicat
 
 The extension is compared in lowercase. The stored filename, and the object key, keep the uploaded case.
 
-`.heic` / `.heif` and `.bmp` are in the list, so a thumbnail is expected for them. If the binary cannot decode one, the job writes `.skip` and the route stops enqueueing. Shipping libvips with libheif, libde265, and ImageMagick is what makes those extensions succeed instead of skip. See HEIC and Library.
+`.heic` / `.heif` and `.bmp` are in the list, so a thumbnail is expected for them. The sharp package does not decode them. Set `THUMBNAIL_GENERATOR_URL` and the job sends the file to thumbnail-generator. Without that URL, a file sharp cannot decode fails that job, writes `.skip`, and the route stops enqueueing.
 
 ### Feature flag
 
@@ -125,11 +125,11 @@ The flag gates both places that enqueue: file creation (upload, entity save, CSV
 
 It is read once with the other environment values and stored as `config.imageThumbnails`, the same way `queueBackend` is. It is a boolean on the config object. It is not a function.
 
-It is node-wide, not per tenant. Every tenant on that Node instance sees the same value. Turning it off stops enqueueing on that server, which is what you want while the image libraries are not installed there. It does not belong on `config.defaultTenant.featureFlags`.
+It is node-wide, not per tenant. Every tenant on that Node instance sees the same value. Turning it off stops enqueueing on that server. It does not belong on `config.defaultTenant.featureFlags`.
 
-A per-tenant flag is a different mechanism: stored on the tenant and merged over the default tenant, like `fileCacheHeaders` and the rest of `app/api/tenants/featureFlags.ts`. That would limit who enqueues (fewer tenants, fewer jobs at once). It does not come from the environment. The libraries are installed per server, not per tenant, so a tenant flag can be on while that server cannot decode the file. A later option would compose with this one: node off means nobody enqueues; node on and tenant off means that tenant does not. Not built.
+A per-tenant flag is a different mechanism: stored on the tenant and merged over the default tenant, like `fileCacheHeaders` and the rest of `app/api/tenants/featureFlags.ts`. That would limit who enqueues (fewer tenants, fewer jobs at once). It does not come from the environment. A later option would compose with this one: node off means nobody enqueues; node on and tenant off means that tenant does not. Not built.
 
-For a partial install: the flag on means the job is enqueued. The job then does what the installed libraries can do. A JPEG still becomes a thumbnail when the JPEG decoder is present, even if HEIC is not. A file this binary cannot decode fails that job only. It does not turn the flag off, and it does not stop JPEG jobs. A missing library does not crash the process.
+The flag on means the job is enqueued. With no `THUMBNAIL_GENERATOR_URL`, sharp decodes JPEG, PNG, WebP, GIF, AVIF, and TIFF. HEIC and BMP need thumbnail-generator. A file the chosen renderer cannot decode fails that job only. It does not turn the flag off, and it does not stop other jobs. A missing sharp package, or a thumbnail service that cannot be reached, retries that job and does not crash the process.
 
 ### Delete and sync
 
@@ -137,40 +137,23 @@ Delete of an image file also deletes `thumbnails/640/<filename>` and `thumbnails
 
 Sync should copy whichever of those two objects exists, with the parent, as part of the file sync. Prefer that copy over making the target generate on first view. If the source has written neither yet, the target does not have a derivative until a later sync. A copied `.skip` stops the target from enqueueing a file that already failed. That copy is not implemented. See Open.
 
-### HEIC
+### HEIC and BMP
 
-iPhone photos are HEIF with HEVC. Worth supporting. The basic sharp package does not include HEVC decode. Patent exposure is why no current Node thumbnail library ships HEVC inside its default binary. A system `vips` built with libheif and libde265 does, and that is the program the job runs when `vips --version` is 8.18.7 or newer. ImageMagick has the same requirement for BMP.
+iPhone photos are HEIF with HEVC. The sharp package does not decode them, and it does not decode BMP. Safari often transcodes HEIC to JPEG in the file picker, so many browser uploads never arrive as HEIC. API clients, sync, and non-Safari uploads still do.
 
-Safari often transcodes HEIC to JPEG in the file picker, so many browser uploads never arrive as HEIC. API clients, sync, and non-Safari uploads still do.
+Those files are decoded by [thumbnail-generator](https://github.com/huridocs/thumbnail-generator). Set `THUMBNAIL_GENERATOR_URL` (for example `http://localhost:6020`). The job then posts every thumbnail to that service. An empty URL keeps sharp.
 
 ### Library
 
-sharp is the Node library installed with Uwazi. `yarn install` is enough for it. That copy decodes the common web images (JPEG, PNG, WebP, GIF, AVIF, TIFF) and does not decode iPhone HEIC or BMP.
+sharp **0.35.5** is installed by `yarn install`. It decodes JPEG, PNG, WebP, GIF, AVIF, and TIFF. It rotates, flattens onto white, resizes inside 640 without enlarging, takes one page, and writes JPEG quality 60. A failed import is `ImageThumbnailUnavailable`. A decode failure is `ImageThumbnailRejected`.
 
-When the `vips` program on the machine is version 8.18.7 or newer, the job uses that program instead, the same way PDF thumbnails use `pdftoppm`. The libraries below are what make that program able to decode HEIC and BMP. An older `vips`, including the one packaged by Ubuntu 22.04, is left unused.
-
-The commands run without a shell, so the JPEG quality suffix `[Q=60]` is not globbed. `vipsheader` reads width and height, and a pixel count over the ceiling rejects the file. `vips thumbnail` then writes a temporary PNG: width and `--height` both 640, `--size down`, so the longest side fits inside 640, a smaller image is not enlarged, orientation is applied, and only the first page is taken. The JPEG is a second command. `vips thumbnail` straight to JPEG paints transparency black, so that is not the path. After the PNG, `vipsheader -f bands` decides the write. Two bands (grey plus alpha) are `vips flatten --background 255`. Four bands are `vips flatten --background 255,255,255`. Any other count, including the 3-band image an iPhone HEIC becomes, is `vips copy` to the JPEG. `flatten` on that image fails with `linear: vector must have 1 or 2 elements`, the job writes `.skip`, and the route stops asking.
+thumbnail-generator is the other renderer. `POST {THUMBNAIL_GENERATOR_URL}/thumbnails` sends the original bytes and returns the JPEG. `200` is stored. `422` is `ImageThumbnailRejected` and writes `.skip`. Any other status, or a connection failure, is `ImageThumbnailUnavailable`: the job retries and does not write `.skip`.
 
 ### Requirements
 
-These must be on the app servers and on the queue workers before HEIC and BMP thumbnails are expected. The deploy itself does not need them. Without them, `yarn install` still provides sharp, and JPEG, PNG, WebP, GIF, AVIF, and TIFF thumbnails work. A file the installed decoder cannot read fails that job and writes `.skip`.
-
-| Piece | Version | Why |
-| --- | --- | --- |
-| Node.js | `>= 22.23.2` (already required by Uwazi). sharp itself needs `>= 20.9.0`. | Runtime. |
-| sharp | **0.35.5**, installed by `yarn install`. This is the basic decoder. | JPEG, PNG, WebP, GIF, AVIF, and TIFF when no usable system `vips` is installed. |
-| vips | **>= 8.18.7** (`vips --version`). The job uses this program when it is present and new enough. | The robust decoder. HEIC and BMP depend on how this `vips` was built. |
-| libheif | **>= 1.23.2**, linked into the system `vips`. | HEIF container for `.heic` / `.heif`. |
-| libde265 | Current stable, linked into that libheif. | HEVC decode. This is what an iPhone photo actually is. x265 is not required: we encode JPEG, not HEIC. |
-| ImageMagick 7 (or GraphicsMagick) | Linked into that `vips`, with the BMP delegate. `vips --vips-config` must show `Magick load: YES`. | `.bmp`. libvips does not decode BMP on its own. |
+`yarn install` provides sharp. JPEG, PNG, WebP, GIF, AVIF, and TIFF thumbnails need nothing else. HEIC and BMP need thumbnail-generator running, and `THUMBNAIL_GENERATOR_URL` set on the queue worker.
 
 Poppler stays as it is. PDF thumbnails do not move onto this stack.
-
-Check before deploy, on a worker host that should decode HEIC and BMP:
-
-- `vips --version` prints 8.18.7 or newer.
-- `vips --vips-config` shows HEIF support and `Magick load: YES`.
-- One real iPhone `.heic` decodes with `vips thumbnail` to a PNG, and `vips copy` of that PNG writes a JPEG. `vips flatten` on that PNG fails, because the image has no alpha. One `.bmp` produces a JPEG the same way when Magick load is yes. A PNG that still has an alpha channel needs `vips flatten` onto white, or the JPEG is black. `sharp.format.heif.input === true` only describes the basic sharp package. It does not describe the system `vips`.
 
 ## Implemented
 
@@ -190,11 +173,7 @@ The creation job is `CreateImageThumbnailJobHandler`: `@PrivilegedJob()` because
 
 ### Render
 
-`CreateImageThumbnailFactory` reads `vips --version` once per process. `libvipsVersionIsUsable` accepts a version with three numeric parts at or above 8.18.7. A missing program, a spawn error, or an older version selects `SharpImageThumbnailRenderer`. A usable version selects `VipsImageThumbnailRenderer`. `PreferSystemVipsRenderer` is that choice.
-
-The sharp renderer is the basic path. It rotates, flattens onto white, resizes inside 640 without enlarging, takes one page, and writes JPEG quality 60. A failed import is `ImageThumbnailUnavailable`. A decode failure is `ImageThumbnailRejected`. This package does not decode iPhone HEIC or BMP.
-
-The vips renderer is the path in Library. It copies the source to a temp file, checks the pixel ceiling, thumbnails to a temp PNG, then writes the JPEG with `flatten` or `copy` from the band count. A command failure is `ImageThumbnailRejected`. The temp PNG and the JPEG stay in the OS temp directory, the same way a PDF thumbnail leaves its `pdftoppm` file. The renderer does not import `fs`.
+`CreateImageThumbnailFactory` uses `HttpImageThumbnailRenderer` when `config.thumbnailGeneratorUrl` is set, and `SharpImageThumbnailRenderer` otherwise.
 
 ### Serve
 

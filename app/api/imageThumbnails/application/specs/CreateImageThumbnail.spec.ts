@@ -14,6 +14,11 @@ const PNG = Buffer.from(
   'base64'
 );
 
+const BMP = Buffer.from(
+  'Qk06AAAAAAAAADYAAAAoAAAAAQAAAAEAAAABABgAAAAAAAQAAAATCwAAEwsAAAAAAAAAAAAAAAD/AA==',
+  'base64'
+);
+
 describe('CreateImageThumbnail', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({
@@ -34,12 +39,20 @@ describe('CreateImageThumbnail', () => {
           originalname: 'broken.png',
           mimetype: 'image/png',
         },
+        {
+          entity: 'entity',
+          type: 'attachment',
+          filename: 'dot.bmp',
+          originalname: 'dot.bmp',
+          mimetype: 'image/bmp',
+        },
       ],
     });
     await testingEnvironment.setupTenantTmpPaths([]);
     const uploads = tenants.current().uploadedDocuments;
     await writeFile(path.join(uploads, 'photo.png'), PNG);
     await writeFile(path.join(uploads, 'broken.png'), Buffer.from('not an image'));
+    await writeFile(path.join(uploads, 'dot.bmp'), BMP);
     await mkdir(path.join(uploads, 'thumbnails', '640'), { recursive: true });
   });
 
@@ -66,6 +79,16 @@ describe('CreateImageThumbnail', () => {
       ImageThumbnailRejected
     );
     const marker = await readFile(derivative('broken.png.skip'));
+    expect(marker.byteLength).toBeGreaterThan(0);
+  });
+
+  it('rejects a BMP the built-in package cannot decode', async () => {
+    const useCase = testingEnvironment.runWithContext(() => CreateImageThumbnailFactory.default());
+
+    await expect(useCase.execute({ filename: 'dot.bmp' }, false)).rejects.toBeInstanceOf(
+      ImageThumbnailRejected
+    );
+    const marker = await readFile(derivative('dot.bmp.skip'));
     expect(marker.byteLength).toBeGreaterThan(0);
   });
 });
