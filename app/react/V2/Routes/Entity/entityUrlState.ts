@@ -1,11 +1,13 @@
 import {
   createContext,
   createElement,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
-  type ReactNode,
+  useState,
+  type PropsWithChildren,
 } from 'react';
 import { useAtomValue, useStore } from 'jotai';
 import { useLocation, useNavigate } from 'react-router';
@@ -26,6 +28,14 @@ const EntityUrlSearchContext = createContext('');
 const EntityUrlHashUiContext = createContext('');
 const EntityUrlRawContext = createContext(false);
 
+const useIsolatedEntityUrl = (pathname: string) => {
+  const [local, setLocal] = useState({ search: '', hash: '' });
+  const navigate = useCallback((to: { pathname: string; search: string; hash: string }) => {
+    setLocal({ search: to.search, hash: to.hash });
+  }, []);
+  return { location: { pathname, search: local.search, hash: local.hash }, navigate };
+};
+
 const useRouterPageAtom = (page: string, store: ReturnType<typeof useStore>) => {
   const routerPageRef = useRef<string | undefined>(undefined);
   if (routerPageRef.current !== page) {
@@ -34,26 +44,38 @@ const useRouterPageAtom = (page: string, store: ReturnType<typeof useStore>) => 
   }
 };
 
-const EntityUrlSync = ({ children }: { children: ReactNode }) => {
+const useEntityUrlSource = (isolated: boolean) => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const routerNavigate = useNavigate();
+  const isolatedUrl = useIsolatedEntityUrl(location.pathname);
+  const navigate = isolated ? isolatedUrl.navigate : routerNavigate;
+  const source = isolated ? isolatedUrl.location : location;
+  const session = useMemo(
+    () => ({
+      pathname: source.pathname,
+      search: source.search,
+      hash: source.hash,
+      writesRouter: !isolated,
+    }),
+    [isolated, source.hash, source.pathname, source.search]
+  );
+  return { navigate, source, session };
+};
+
+const EntityUrlSync = ({
+  children,
+  isolated = false,
+}: PropsWithChildren<{ isolated?: boolean }>) => {
+  const { navigate, source, session } = useEntityUrlSource(isolated);
   const store = useStore();
-  bindEntityUrlSession(navigate, store, {
-    pathname: location.pathname,
-    search: location.search,
-    hash: location.hash,
-  });
-  const split = useMemo(() => splitEntityHash(location.hash), [location.hash]);
-  const search = stripSearch(location.search);
-  useRouterPageAtom(split.page, store);
+  bindEntityUrlSession(navigate, store, session);
   useEffect(() => {
-    bindEntityUrlSession(navigate, store, {
-      pathname: location.pathname,
-      search: location.search,
-      hash: location.hash,
-    });
-  }, [location.hash, location.pathname, location.search, navigate, store]);
+    bindEntityUrlSession(navigate, store, session);
+  }, [navigate, session, store]);
   useEffect(() => () => unbindEntityUrlSession(), []);
+  const split = useMemo(() => splitEntityHash(source.hash), [source.hash]);
+  const search = stripSearch(source.search);
+  useRouterPageAtom(split.page, store);
   return createElement(
     EntityUrlSearchContext.Provider,
     { value: search },

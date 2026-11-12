@@ -1,5 +1,6 @@
 import { PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import { paintDocumentHighlightNow, type PaintDocumentHighlight } from './documentHighlightGate.js';
 
 type SelectOptions = {
   scrollPanel?: boolean;
@@ -18,6 +19,7 @@ type ActivateSelectionInput = {
   actions: RelationshipHighlightActions;
   colorOf: (marker: RelationshipMarker) => string;
   pdfController: PDFControls | null;
+  paintHighlight?: PaintDocumentHighlight;
 };
 
 type SyncHighlightInput = {
@@ -28,21 +30,35 @@ type SyncHighlightInput = {
   setSelectedMarker: (marker: RelationshipMarker | null) => void;
   colorOf: (marker: RelationshipMarker) => string;
   mainPdfController: PDFControls | null;
+  paintHighlight?: PaintDocumentHighlight;
 };
 
-const clearRelationshipPdfHighlights = (pdfController: PDFControls | null) => {
-  pdfController?.toggleHighlights([]);
+const paintPdfHighlights = (
+  pdfController: PDFControls | null,
+  highlights: Parameters<PDFControls['toggleHighlights']>[0],
+  paintHighlight: PaintDocumentHighlight
+) => {
+  paintHighlight(() => {
+    pdfController?.toggleHighlights(highlights);
+  });
+};
+
+const clearRelationshipPdfHighlights = (
+  pdfController: PDFControls | null,
+  paintHighlight: PaintDocumentHighlight = paintDocumentHighlightNow
+) => {
+  paintPdfHighlights(pdfController, [], paintHighlight);
 };
 
 const syncPdfWithMarker = (
   marker: RelationshipMarker,
   colorOf: (marker: RelationshipMarker) => string,
-  pdfController: PDFControls | null
+  pdf: { controller: PDFControls | null; paintHighlight: PaintDocumentHighlight }
 ) => {
   const page = marker.anchor?.selections?.[0]?.page;
   const highlight = relationshipToHighlight(marker.anchor, colorOf(marker), marker._id);
-  if (page) pdfController?.goToPage(page);
-  pdfController?.toggleHighlights(highlight ? [highlight] : []);
+  if (page) pdf.controller?.goToPage(page);
+  paintPdfHighlights(pdf.controller, highlight ? [highlight] : [], pdf.paintHighlight);
 };
 
 const scrollRelationshipPanel = (
@@ -56,11 +72,12 @@ const scrollRelationshipPanel = (
 
 const deselectActiveRelationship = (
   actions: Pick<RelationshipHighlightActions, 'setActiveRelationshipId' | 'setSelectedMarker'>,
-  pdfController: PDFControls | null
+  pdfController: PDFControls | null,
+  paintHighlight: PaintDocumentHighlight = paintDocumentHighlightNow
 ) => {
   actions.setSelectedMarker(null);
   actions.setActiveRelationshipId(null);
-  clearRelationshipPdfHighlights(pdfController);
+  clearRelationshipPdfHighlights(pdfController, paintHighlight);
 };
 
 const activateRelationshipSelection = ({
@@ -69,6 +86,7 @@ const activateRelationshipSelection = ({
   actions,
   colorOf,
   pdfController,
+  paintHighlight = paintDocumentHighlightNow,
 }: ActivateSelectionInput) => {
   actions.setActiveRelationshipId(marker._id);
   actions.setSelectedMarker(marker);
@@ -79,7 +97,7 @@ const activateRelationshipSelection = ({
       actions.setExpandForRefId
     );
   }
-  syncPdfWithMarker(marker, colorOf, pdfController);
+  syncPdfWithMarker(marker, colorOf, { controller: pdfController, paintHighlight });
 };
 
 const findLiveMarker = (
@@ -102,16 +120,19 @@ const syncActiveRelationshipHighlight = ({
   setSelectedMarker,
   colorOf,
   mainPdfController,
+  paintHighlight = paintDocumentHighlightNow,
 }: SyncHighlightInput) => {
   if (!activeRelationshipId) {
     setSelectedMarker(null);
-    if (!activeClusterRefIds?.length) clearRelationshipPdfHighlights(mainPdfController);
+    if (!activeClusterRefIds?.length) {
+      clearRelationshipPdfHighlights(mainPdfController, paintHighlight);
+    }
     return;
   }
   const marker = findLiveMarker(activeRelationshipId, liveMarkers, getSelectedMarker);
   if (!marker || !mainPdfController) return;
   setSelectedMarker(marker);
-  syncPdfWithMarker(marker, colorOf, mainPdfController);
+  syncPdfWithMarker(marker, colorOf, { controller: mainPdfController, paintHighlight });
 };
 
 export {

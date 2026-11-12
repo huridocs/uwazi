@@ -5,6 +5,7 @@ import { MAIN_TAB, SIDE_TAB, isValidMainTab, type SideTabId } from './tabIds.js'
 import { MAIN_TAB_PAPER_PADDING, mainTabPanelSurfaceClass } from './tabSurface.js';
 import { keepMetadataTab } from '../Components/context/metadataEditingSession.js';
 import { useResolvedEntityMainTab } from './hooks/useResolvedEntityMainTab.js';
+import { useRegisterDocumentHighlight } from '../Components/document/documentHighlightGate.js';
 import { useEntityTabNavigation } from './EntityTabsContext.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
@@ -28,26 +29,23 @@ type MainTabsContentProps = {
   pagePlaintext?: string;
   groupId?: string;
   filesLayout?: FilesLayout;
+  revealTocDocument?: boolean;
 };
 
 const mainTabSwitchContent = ({
   activeTabId,
-  entity,
-  mainDocument,
-  pagePlaintext,
   relationshipsOnMain,
   focusDocumentPanel,
   filesLayout,
-}: MainTabsContentProps & {
+}: {
+  activeTabId: SideTabId;
   relationshipsOnMain: boolean;
   focusDocumentPanel: () => void;
   filesLayout: FilesLayout;
 }): ReactNode => {
   switch (activeTabId) {
     case MAIN_TAB.DOCUMENT:
-      return mainDocument?.filename ? (
-        <DocumentTab entity={entity} mainDocument={mainDocument} pagePlaintext={pagePlaintext} />
-      ) : null;
+      return null;
     case MAIN_TAB.METADATA:
       return null;
     case MAIN_TAB.RELATIONSHIPS:
@@ -72,10 +70,14 @@ const mainTabSwitchContent = ({
   }
 };
 
-const companionContent = (activeTabId: SideTabId, mainDocument?: FileType) => {
+const companionContent = (
+  activeTabId: SideTabId,
+  mainDocument: FileType | undefined,
+  onRevealDocument?: () => void
+) => {
   switch (activeTabId) {
     case SIDE_TAB.TOC:
-      return <ToCTab mainDocument={mainDocument} />;
+      return <ToCTab mainDocument={mainDocument} onRevealDocument={onRevealDocument} />;
     case SIDE_TAB.SEARCH:
       return <SearchTab />;
     case SIDE_TAB.FILE:
@@ -87,11 +89,23 @@ const companionContent = (activeTabId: SideTabId, mainDocument?: FileType) => {
   }
 };
 
+const keepsDocumentMounted = (activeTabId: SideTabId, retainOnRelationships: boolean) =>
+  activeTabId === MAIN_TAB.DOCUMENT ||
+  activeTabId === SIDE_TAB.TOC ||
+  activeTabId === SIDE_TAB.SEARCH ||
+  (retainOnRelationships && activeTabId === MAIN_TAB.RELATIONSHIPS);
+
+const useLibraryDocumentPaint = (activeTabId: SideTabId, revealDocument: boolean) => {
+  const register = useRegisterDocumentHighlight();
+  useEffect(() => {
+    if (!revealDocument || !register) return undefined;
+    register('library-document', activeTabId === MAIN_TAB.DOCUMENT);
+    return () => register('library-document', null);
+  }, [activeTabId, register, revealDocument]);
+};
+
 const useMainTabsPanel = ({
   activeTabId: urlActiveTabId,
-  entity,
-  mainDocument,
-  pagePlaintext,
   groupId,
   filesLayout = 'table',
 }: MainTabsContentProps) => {
@@ -114,9 +128,6 @@ const useMainTabsPanel = ({
     content: isValidMainTab(activeTabId)
       ? mainTabSwitchContent({
           activeTabId,
-          entity,
-          mainDocument,
-          pagePlaintext,
           relationshipsOnMain,
           focusDocumentPanel,
           filesLayout,
@@ -125,37 +136,65 @@ const useMainTabsPanel = ({
   };
 };
 
+const mountedMainPanels = (
+  props: MainTabsContentProps,
+  showMetadata: boolean,
+  metadataActive: boolean
+) => {
+  const documentVisible = props.activeTabId === MAIN_TAB.DOCUMENT;
+  const { mainDocument } = props;
+  const documentNode =
+    mainDocument?.filename &&
+    keepsDocumentMounted(props.activeTabId, Boolean(props.revealTocDocument)) ? (
+      <div className={documentVisible ? 'flex h-full min-h-0 min-w-0 flex-1 flex-col' : 'hidden'}>
+        <DocumentTab
+          entity={props.entity}
+          mainDocument={mainDocument}
+          pagePlaintext={props.pagePlaintext}
+        />
+      </div>
+    ) : null;
+  const metadataNode = showMetadata ? (
+    <div className={metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
+      <MetadataTab entity={props.entity} host="main" />
+    </div>
+  ) : null;
+  return { documentVisible, documentNode, metadataNode };
+};
+
 const MainTabsContentComponent = (props: MainTabsContentProps) => {
   const panel = useMainTabsPanel(props);
-  const companion = companionContent(props.activeTabId, props.mainDocument);
+  useLibraryDocumentPaint(props.activeTabId, Boolean(props.revealTocDocument));
+  const { focusDocumentPanel } = useEntityTabNavigation();
+  const companion = companionContent(
+    props.activeTabId,
+    props.mainDocument,
+    props.revealTocDocument ? focusDocumentPanel : undefined
+  );
   const panelGroupId = props.groupId ?? 'entity-main';
-  if (companion) {
-    return (
-      <div
-        role="tabpanel"
-        id={`${panelGroupId}-panel-${props.activeTabId}`}
-        aria-labelledby={`${panelGroupId}-tab-${props.activeTabId}`}
-        className="flex h-full min-h-0 w-full flex-col"
-      >
-        {companion}
-      </div>
-    );
-  }
-  if (!panel.content && !panel.showMetadataOnMain) return null;
+  const { documentVisible, documentNode, metadataNode } = mountedMainPanels(
+    props,
+    panel.showMetadataOnMain,
+    panel.metadataActive
+  );
+  const tabId = companion ? props.activeTabId : panel.activeTabId;
+  if (!companion && !documentNode && !metadataNode && !panel.content) return null;
   return (
     <div
       role="tabpanel"
-      id={`${panelGroupId}-panel-${panel.activeTabId}`}
-      aria-labelledby={`${panelGroupId}-tab-${panel.activeTabId}`}
-      className={`flex h-full min-h-0 w-full flex-col ${mainTabPanelSurfaceClass(panel.activeTabId, panel.metadataActive)}`}
+      id={`${panelGroupId}-panel-${tabId}`}
+      aria-labelledby={`${panelGroupId}-tab-${tabId}`}
+      className={`flex h-full min-h-0 w-full flex-col ${
+        companion ? '' : mainTabPanelSurfaceClass(panel.activeTabId, panel.metadataActive)
+      }`}
     >
-      {panel.showMetadataOnMain ? (
-        <div className={panel.metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
-          <MetadataTab entity={props.entity} host="main" />
-        </div>
+      {documentNode}
+      {metadataNode}
+      {companion}
+      {!companion && !documentVisible && !panel.metadataActive ? panel.content : null}
+      {!companion && panel.activeTabId === MAIN_TAB.RELATIONSHIPS ? (
+        <RelationshipsFiltersDrawer />
       ) : null}
-      {!panel.metadataActive ? panel.content : null}
-      {panel.activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
   );
 };

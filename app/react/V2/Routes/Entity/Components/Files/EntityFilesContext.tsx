@@ -133,6 +133,7 @@ const EntityFilesProvider = ({
   const { defaultLanguage, primaryRows, supportingRows, mainDocumentId, allRows, focusedRow } =
     useEntityFileRows(entity, focusedRowId);
   const {
+    refreshEntity,
     saveRow,
     navigateToFilesSideTab,
     pendingDeleteRows,
@@ -181,6 +182,7 @@ const EntityFilesProvider = ({
       uploadProgress,
       defaultLanguageKey: defaultLanguage,
       navigateToFilesSideTab,
+      refreshEntity,
       setIsEditing: setEditing,
       setFocusedRowId: setFocusedRow,
       setSelectedRowIds,
@@ -216,6 +218,7 @@ const EntityFilesProvider = ({
       uploadProgress,
       defaultLanguage,
       navigateToFilesSideTab,
+      refreshEntity,
       setEditing,
       setFocusedRow,
       requestDeleteRow,
@@ -260,4 +263,6 @@ const useEntityFiles = () => {
   return context;
 };
 
-export { EntityFilesProvider, useEntityFiles };
+const useOptionalEntityFilesRefresh = () => useContext(EntityFilesContext)?.refreshEntity;
+
+export { EntityFilesProvider, useEntityFiles, useOptionalEntityFilesRefresh };
