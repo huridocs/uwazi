@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable max-statements */
 import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
@@ -152,6 +153,9 @@ const createTestDispatcher = (
   async deleteByParams() {},
   async cancelByParams() {},
   async countByName() {
+    return 0;
+  },
+  async countActiveByParams() {
     return 0;
   },
 });

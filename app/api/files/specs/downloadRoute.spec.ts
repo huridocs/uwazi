@@ -142,17 +142,21 @@ describe('files routes download', () => {
       endpoint: '/files',
       desc: 'when not the type allowed',
     },
-    {
-      file: downloadFixtures.mainDoc,
-      endpoint: '/files/thumbnails',
-      desc: 'when not the type allowed',
-    },
   ])('GET $endpoint $file.filename, $desc', ({ file, endpoint }) => {
     it('should respond with 404', async () => {
       app = setAppWithUser(uploadRoutes, collabUser);
       const response = await request(app).get(path.join(endpoint, file.filename));
       expect(response).toHaveStatus(404);
     });
+  });
+
+  it('should stream a non-image parent from the thumbnails route', async () => {
+    const response = await request(app).get(
+      path.join('/files/thumbnails', downloadFixtures.mainDoc.filename)
+    );
+
+    expect(response).toHaveStatus(200);
+    expect(response.headers['cache-control']).toBe('no-store');
   });
 
   describe.each([

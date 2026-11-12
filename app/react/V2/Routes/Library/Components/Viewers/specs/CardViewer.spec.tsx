@@ -225,7 +225,7 @@ describe('CardViewer hidden thumbnail', () => {
 
   it('does not duplicate the visual property in the body while the thumbnail is shown', () => {
     renderCards({ showThumbnail: true });
-    expect(document.querySelector('img')).toHaveAttribute('src', '/api/files/cover.png');
+    expect(document.querySelector('img')).toHaveAttribute('src', '/files/thumbnails/cover.png');
     expect(screen.queryByText('Cover')).not.toBeInTheDocument();
     expect(screen.getByText('Country')).toBeInTheDocument();
   });

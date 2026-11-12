@@ -12,6 +12,7 @@ import { MediaPlayer } from '#V2/Components/UI/index.js';
 import { GeolocationViewer } from './GeolocationViewer.js';
 import { RelationshipLink } from './RelationshipLink.js';
 import { ValueList } from './ValueList.js';
+import { thumbnailRequestUrl } from '#V2/shared/thumbnailRequestUrl.js';
 import { ImageViewer } from './ImageViewer.js';
 
 const getMediaUrlAndName = fileUrl => {
@@ -52,7 +53,13 @@ const renderLink = (prop, compact) => {
   );
 };
 
-export const showByType = ({ prop, templateId = '', useV2Player = false, compact = false }) => {
+export const showByType = ({
+  prop,
+  templateId = '',
+  useV2Player = false,
+  compact = false,
+  thumbnails = false,
+}) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -78,7 +85,11 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
           <ImageViewer
             key={prop.value}
             className={`multimedia-img ${prop.style}`}
-            src={prop.value}
+            src={
+              thumbnails && typeof prop.value === 'string'
+                ? thumbnailRequestUrl(prop.value)
+                : prop.value
+            }
             alt={prop.label}
           />
         );
@@ -138,7 +149,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
-          const value = showByType({ prop: _value, templateId, compact });
+          const value = showByType({ prop: _value, templateId, compact, thumbnails });
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
@@ -242,6 +253,7 @@ const Metadata = ({
   templateId,
   useV2Player = false,
   attachments,
+  thumbnails = false,
 }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
@@ -276,7 +288,7 @@ const Metadata = ({
           {prop.obsolete ? [' ', <Icon key="spinner" icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType({ prop, templateId, compact, useV2Player })}
+          {showByType({ prop, templateId, compact, useV2Player, thumbnails })}
         </dd>
       </dl>
     );
@@ -308,6 +320,7 @@ Metadata.propTypes = {
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
   useV2Player: PropTypes.bool,
+  thumbnails: PropTypes.bool,
 };
 
 export { Metadata };

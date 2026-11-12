@@ -15,6 +15,18 @@ import { FileContents } from '../../domain/files/FileContents.js';
 import { StoredFile } from './StoredFile.js';
 import { PathManager } from './PathManager.js';
 
+const pathExists = async (filePath: string) => {
+  try {
+    await access(filePath);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return false;
+    }
+    throw e;
+  }
+  return true;
+};
+
 export class FileSystemStorage implements FileStorage {
   private pathManager: PathManager;
 
@@ -74,16 +86,8 @@ export class FileSystemStorage implements FileStorage {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 
-  async fileExists(file: BaseFile) {
-    try {
-      await access(this.pathManager.createPath(file));
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        return false;
-      }
-      throw e;
-    }
-    return true;
+  async fileExists(target: BaseFile | FileLocation) {
+    return pathExists(this.pathManager.createPath(target));
   }
 
   async getFiles(inputs: FileLocation[]): Promise<FileContents[]> {
