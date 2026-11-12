@@ -1,4 +1,5 @@
 import React from 'react';
+import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { EntityProvider } from '#V2/Routes/Entity/Components/context/EntityContext.js';
 import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
 import { LibraryCreateEntityForm } from './LibraryCreateEntityForm.js';
@@ -6,7 +7,7 @@ import { useLibraryCreateEntity } from './useLibraryCreateEntity.js';
 
 type LibraryCreateEntityPanelProps = {
   onClose: () => void;
-  onCreated: (sharedId: string) => void;
+  onCreated: (sharedId: string, row?: LibrarySearchHit) => void;
 };
 
 const LibraryCreateEntityPanel = ({ onClose, onCreated }: LibraryCreateEntityPanelProps) => {

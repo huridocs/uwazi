@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Modal } from '#V2/Components/UI/index.js';
@@ -12,6 +12,7 @@ import {
 import { useServices } from '#V2/services/index.js';
 import { CopyFromSearchView } from './CopyFromSearchView.js';
 import { CopyFromSourceHeader, CopyFromSourcePreview } from './CopyFromSourcePreview.js';
+import type { EditEntityFormValues } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { useCopyFromSearch } from './useCopyFromSearch.js';
 import { useCopyFromSource } from './useCopyFromSource.js';
 
@@ -19,10 +20,16 @@ type CopyFromModalProps = {
   onClose: () => void;
 };
 
+const useCopyFromForm = () => {
+  const form = useFormContext<EditEntityFormValues>();
+  const { setIsDirty } = useMetadataEditing();
+  return { form, setIsDirty };
+};
+
 const CopyFromModal = ({ onClose }: CopyFromModalProps) => {
   const entity = useEntityScopedEntity();
   const templates = useAtomValue(templatesAtom);
-  const { form, setIsDirty } = useMetadataEditing();
+  const { form, setIsDirty } = useCopyFromForm();
   const { entities } = useServices();
   const formTemplateId = useWatch({ control: form.control, name: 'template' });
   const currentTemplateId = formTemplateId || entity.template;

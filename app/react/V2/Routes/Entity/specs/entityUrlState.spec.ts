@@ -10,6 +10,7 @@ import {
   parseEntityHash,
   serializeEntityHash,
   useEntityDocumentPage,
+  useEntitySearchParams,
   useUpdateEntityUrl,
   EntityUrlSync,
 } from '../entityUrlState.js';
@@ -231,6 +232,50 @@ describe('entityUrlState', () => {
       const [[to]] = mockNavigate.mock.calls;
       expect(to.hash).toContain('page=2');
       expect(to.hash).toContain('s=toc');
+    });
+
+    it('keeps an isolated session off the router', async () => {
+      const replaceState = jest.spyOn(History.prototype, 'replaceState');
+      const initial = '/en/library?q=court&m=metadata#s=file&page=4';
+      window.history.replaceState({}, '', initial);
+      replaceState.mockClear();
+      const isolated = ({ children }: { children: React.ReactNode }) =>
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: [initial] },
+          React.createElement(
+            Provider,
+            null,
+            React.createElement(EntityUrlSync, { isolated: true }, children)
+          )
+        );
+      const { result } = renderHook(
+        () => ({
+          update: useUpdateEntityUrl(),
+          search: useEntitySearchParams(),
+          page: useEntityDocumentPage(),
+        }),
+        { wrapper: isolated }
+      );
+
+      expect(result.current.search.get('m')).toBeNull();
+      expect(result.current.search.get('q')).toBeNull();
+
+      act(() => {
+        result.current.update({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(result.current.page).toBe(2);
+      replaceState.mockRestore();
     });
   });
 });

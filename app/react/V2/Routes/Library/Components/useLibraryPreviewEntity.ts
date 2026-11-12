@@ -31,52 +31,50 @@ const toPreviewResult = (
   return { entity: fetched, error: false };
 };
 
+type PreviewState = {
+  entity?: Entity;
+  loading: boolean;
+  error: boolean;
+};
+
+const loadPreviewEntity = async (
+  getBySharedId: ReturnType<typeof useServices>['entities']['getBySharedId'],
+  targetSharedId: string,
+  language: string
+): Promise<PreviewFetchResult> => {
+  try {
+    const [rows, fetchError] = await getBySharedId(targetSharedId, {
+      language,
+      omitRelationships: false,
+    });
+    return toPreviewResult(rows, fetchError, language);
+  } catch {
+    return { error: true };
+  }
+};
+
 const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState => {
   const { entities } = useServices();
   const language = useAtomValue(localeAtom);
   const { getBySharedId } = entities;
-  const [entity, setEntity] = useState<Entity | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [state, setState] = useState<PreviewState>({ loading: true, error: false });
   const requestIdRef = useRef(0);
-
-  const applyResult = useCallback((result: PreviewFetchResult, silent: boolean) => {
-    if (result.error) {
-      if (!silent) {
-        setEntity(undefined);
-        setError(true);
-        setLoading(false);
-      }
-      return;
-    }
-    setEntity(result.entity);
-    setError(false);
-    setLoading(false);
-  }, []);
 
   const fetchEntity = useCallback(
     async (targetSharedId: string, silent: boolean) => {
       const requestId = requestIdRef.current + 1;
       requestIdRef.current = requestId;
-      if (!silent) {
-        setEntity(undefined);
-        setLoading(true);
-        setError(false);
-      }
-
-      try {
-        const [rows, fetchError] = await getBySharedId(targetSharedId, {
-          language,
-          omitRelationships: false,
-        });
-        if (requestId !== requestIdRef.current) return;
-        applyResult(toPreviewResult(rows, fetchError, language), silent);
-      } catch {
-        if (requestId !== requestIdRef.current) return;
-        applyResult({ error: true }, silent);
-      }
+      setState(current => (silent ? current : { loading: true, error: false }));
+      const result = await loadPreviewEntity(getBySharedId, targetSharedId, language);
+      if (requestId !== requestIdRef.current) return;
+      setState(current => {
+        if (!result.error) return { entity: result.entity, loading: false, error: false };
+        if (silent && current.entity)
+          return { entity: current.entity, loading: false, error: false };
+        return { loading: false, error: true };
+      });
     },
-    [applyResult, getBySharedId, language]
+    [getBySharedId, language]
   );
 
   useEffect(() => {
@@ -87,12 +85,12 @@ const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState =>
   }, [fetchEntity, sharedId]);
 
   const reload = useCallback(async () => fetchEntity(sharedId, true), [fetchEntity, sharedId]);
-  const matchesRequest = Boolean(entity && entity.sharedId === sharedId);
+  const matchesRequest = Boolean(state.entity && state.entity.sharedId === sharedId);
 
   return {
-    entity: matchesRequest ? entity : undefined,
-    loading: !matchesRequest && !error && loading,
-    error,
+    entity: matchesRequest ? state.entity : undefined,
+    loading: !matchesRequest && !state.error && state.loading,
+    error: state.error,
     reload,
   };
 };

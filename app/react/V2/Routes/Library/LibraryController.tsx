@@ -15,6 +15,13 @@ import type { Chip } from './Components/ActiveFiltersSheet.js';
 import { resolveFilterChipParts } from './filterChipLabel.js';
 import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
 import { useLibraryUrlState } from './useLibraryUrlState.js';
+import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import {
+  forgetCreatedRows,
+  mergeCreatedLibraryRows,
+  rememberCreatedRow,
+  type CreatedLibraryRows,
+} from './Components/libraryCreatedRows.js';
 import type { LoaderResponse } from './types.js';
 
 const removeFilterValue = (
@@ -33,14 +40,20 @@ const removeFilterValue = (
 const translatedText = (text: string, context?: string) =>
   context ? <Translate context={context}>{text}</Translate> : <Translate>{text}</Translate>;
 
-const chipLabel = (
-  key: string,
-  value: string,
-  templates: Template[],
-  aggregations: LibraryAggregations,
-  thesauri: ClientThesaurus[]
-): ReactNode => {
-  const parts = resolveFilterChipParts(key, value, templates, aggregations, thesauri);
+const chipLabel = (chip: {
+  key: string;
+  value: string;
+  templates: Template[];
+  aggregations: LibraryAggregations;
+  thesauri: ClientThesaurus[];
+}): ReactNode => {
+  const parts = resolveFilterChipParts(
+    chip.key,
+    chip.value,
+    chip.templates,
+    chip.aggregations,
+    chip.thesauri
+  );
   return (
     <>
       {translatedText(parts.propertyLabel, parts.propertyContext)}
@@ -69,15 +82,23 @@ const useLibrarySearchInput = (
   });
 };
 
-const useLibrarySelection = () => {
+const useLibrarySelection = (rows: readonly LibrarySearchHit[], totalRows: number) => {
   const revalidator = useRevalidator();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [created, setCreated] = useState<CreatedLibraryRows>({ hits: [], totalBefore: null });
   return {
     selectedIds,
     setSelectedIds,
+    listed: mergeCreatedLibraryRows(rows, totalRows, created),
     onClosePreview: () => setSelectedIds([]),
-    onEntityCreated: (sharedId?: string) => {
+    onEntitiesDeleted: (sharedIds: readonly string[]) => {
+      setCreated(current => forgetCreatedRows(current, sharedIds));
+    },
+    onEntityCreated: (sharedId?: string, row?: LibrarySearchHit) => {
       void revalidator.revalidate();
+      if (row?.sharedId) {
+        setCreated(current => rememberCreatedRow(current, { row, totalRows, rows }));
+      }
       if (sharedId) setSelectedIds([sharedId]);
     },
   };
@@ -89,7 +110,14 @@ const LibraryController = () => {
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const { selectedIds, setSelectedIds, onClosePreview, onEntityCreated } = useLibrarySelection();
+  const {
+    selectedIds,
+    setSelectedIds,
+    listed,
+    onClosePreview,
+    onEntitiesDeleted,
+    onEntityCreated,
+  } = useLibrarySelection(data.rows, data.totalRows);
   const {
     draft: searchInput,
     setDraft: setSearchInput,
@@ -104,7 +132,13 @@ const LibraryController = () => {
       values.forEach(value => {
         items.push({
           key: `${key}:${value}`,
-          label: chipLabel(key, value, templates, data.aggregations, thesauri),
+          label: chipLabel({
+            key,
+            value,
+            templates,
+            aggregations: data.aggregations,
+            thesauri,
+          }),
           color:
             key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
           onRemove: () => {
@@ -121,8 +155,8 @@ const LibraryController = () => {
 
   return (
     <LibraryView
-      rows={data.rows}
-      totalRows={data.totalRows}
+      rows={listed.rows}
+      totalRows={listed.totalRows}
       aggregations={data.aggregations}
       search={searchInput}
       committedSearch={urlState.search}
@@ -170,6 +204,7 @@ const LibraryController = () => {
         });
       }}
       onEntityCreated={onEntityCreated}
+      onEntitiesDeleted={onEntitiesDeleted}
     />
   );
 };
