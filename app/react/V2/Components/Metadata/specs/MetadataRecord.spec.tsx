@@ -982,7 +982,7 @@ describe('MetadataRecord', () => {
     expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
-  it('shows a link-only relationship as an entity table', () => {
+  it('shows a link-only relationship as entity pills', () => {
     renderRecord();
 
     const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
@@ -991,8 +991,9 @@ describe('MetadataRecord', () => {
     if (!(card instanceof HTMLElement)) {
       return;
     }
-    const table = within(card).getByRole('table');
-    expect(within(table).getByRole('link', { name: /Diana/i })).toBeInTheDocument();
+    expect(within(card).queryByRole('table')).not.toBeInTheDocument();
+    expect(within(card).getByRole('list')).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: /Diana/i })).toBeInTheDocument();
   });
 });
 

@@ -164,9 +164,11 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
             <div className="flex flex-col gap-1.5">
               {leading}
               <div className="flex items-start justify-between gap-2">
-                <Label htmlFor={field} hideLabel={hideLabel} hasErrors={showError}>
-                  {labelContent}
-                </Label>
+                {hideLabel ? null : (
+                  <Label htmlFor={field} hasErrors={showError}>
+                    {labelContent}
+                  </Label>
+                )}
                 {showValueClear && !disabled && selectedIds.length > 0 ? (
                   <button
                     type="button"
