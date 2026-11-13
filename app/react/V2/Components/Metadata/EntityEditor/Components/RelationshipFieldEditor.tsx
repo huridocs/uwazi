@@ -66,6 +66,7 @@ const RelationshipFieldEditor = ({
         label: row.label ?? String(row.value ?? ''),
         templateId: targetTemplateId,
         icon: readRelationshipIcon(row.icon),
+        ...(row.authorized === false ? { authorized: row.authorized } : {}),
       })),
     [targetTemplateId, values]
   );

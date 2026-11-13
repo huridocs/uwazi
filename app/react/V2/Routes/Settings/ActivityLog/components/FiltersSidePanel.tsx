@@ -123,17 +123,17 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     labelToday={t('System', 'Today', null, false)}
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
-                    from={value?.from || undefined}
-                    to={value?.to || undefined}
+                    from={value?.from ?? undefined}
+                    to={value?.to ?? undefined}
                     onFromDateSelected={timestamp => {
                       setValue('dateRange.from', timestamp);
-                      if (!getValues('dateRange.to')) {
+                      if (getValues('dateRange.to') == null) {
                         setValue('dateRange.to', timestamp);
                       }
                     }}
                     onToDateSelected={timestamp => {
                       setValue('dateRange.to', timestamp);
-                      if (!getValues('dateRange.from')) {
+                      if (getValues('dateRange.from') == null) {
                         setValue('dateRange.from', timestamp);
                       }
                     }}

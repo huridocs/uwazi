@@ -77,10 +77,12 @@ const useRelationshipCandidates = ({
   const runSearchRef = useRef<{
     id: number;
     latest: string;
+    selectedIds: string[];
     run: (search: string) => Promise<void>;
   }>({
     id: 0,
     latest: '',
+    selectedIds,
     run: () => Promise.resolve(),
   });
 
@@ -92,7 +94,7 @@ const useRelationshipCandidates = ({
     }
     const result = await started.lookupSearch(search);
     if (started.id === runSearchRef.current.id && search === runSearchRef.current.latest) {
-      setPage(pageFrom(result, selectedIds));
+      setPage(pageFrom(result, runSearchRef.current.selectedIds));
     }
   };
 
@@ -100,8 +102,8 @@ const useRelationshipCandidates = ({
     if (!lookupSearch || page.fetched >= page.total) {
       return;
     }
-    const { id } = runSearchRef.current;
-    lookupSearch(query, page.fetched)
+    const { id, latest } = runSearchRef.current;
+    lookupSearch(latest, page.fetched)
       .then(result => {
         if (id !== runSearchRef.current.id) {
           return;
@@ -109,7 +111,7 @@ const useRelationshipCandidates = ({
         setPage(current => ({
           candidates: uniqueCandidates([
             ...current.candidates,
-            ...unselected(result.options, selectedIds),
+            ...unselected(result.options, runSearchRef.current.selectedIds),
           ]).sort(byLabel),
           total: result.total,
           fetched: current.fetched + result.fetched,
@@ -118,7 +120,8 @@ const useRelationshipCandidates = ({
       .catch(() => undefined);
   };
 
-  runSearchRef.current.run = runSearch;
+  const selectedKey = selectedIds.join('\0');
+  Object.assign(runSearchRef.current, { selectedIds, run: runSearch });
 
   const debouncedSearch = useMemo(
     () =>
@@ -132,20 +135,26 @@ const useRelationshipCandidates = ({
     if (!adding) {
       return;
     }
-    runSearchRef.current.latest = query;
+    const state = runSearchRef.current;
+    state.latest = query;
+    state.id += 1;
     if (!query) {
-      runSearchRef.current.run('').catch(() => undefined);
+      state.run('').catch(() => undefined);
       return;
     }
     debouncedSearch(query);
-  }, [adding, debouncedSearch, query]);
+  }, [adding, debouncedSearch, query, selectedKey]);
 
-  const reset = () => {
-    setShowAll(false);
-    setPage(emptyPage());
+  return {
+    ...page,
+    showAll,
+    setShowAll,
+    reset: () => {
+      setShowAll(false);
+      setPage(emptyPage());
+    },
+    loadMore,
   };
-
-  return { ...page, showAll, setShowAll, reset, loadMore };
 };
 
 const RelationshipCandidateList = ({
@@ -205,12 +214,12 @@ const RelationshipCandidateList = ({
             <Translate>x less</Translate>
           ) : (
             <>
-              {hidden + notLoaded} <Translate>x more</Translate>
+              {hidden} <Translate>x more</Translate>
             </>
           )}
         </button>
       ) : null}
-      {!collapsed && notLoaded > 0 ? (
+      {notLoaded > 0 ? (
         <button
           type="button"
           onClick={onLoadMore}

@@ -24,16 +24,21 @@ jest.mock('#V2/Components/Metadata/Components/EntityOverlayPill.js', () => ({
     sharedId,
     templateId,
     onOpenEntity,
+    authorized = true,
   }: {
     label: string;
     sharedId: string;
     templateId: string;
+    authorized?: boolean;
     onOpenEntity?: (target: { sharedId: string; title: string; templateId: string }) => void;
-  }) => (
-    <button type="button" onClick={() => onOpenEntity?.({ sharedId, title: label, templateId })}>
-      {label}
-    </button>
-  ),
+  }) =>
+    authorized === false ? (
+      <span>{label}</span>
+    ) : (
+      <button type="button" onClick={() => onOpenEntity?.({ sharedId, title: label, templateId })}>
+        {label}
+      </button>
+    ),
 }));
 
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({
@@ -63,7 +68,7 @@ const expandCandidates = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(screen.getByRole('button', { name: 'Add entity' }));
   await waitFor(() => expect(screen.getByText('Entity 1')).toBeInTheDocument());
   expect(screen.queryByText('Entity 6')).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: '325 x more' }));
+  await user.click(screen.getByRole('button', { name: '3 x more' }));
   expect(screen.getByText('Entity 8')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'x less' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /322 more options/ })).toBeInTheDocument();
@@ -162,6 +167,20 @@ describe('RelationshipFieldEditor', () => {
     await user.click(screen.getByRole('button', { name: 'Alpha' }));
     expect(onEditSource).toHaveBeenCalledWith('alpha', 'Alpha');
     expect(screen.queryByRole('button', { name: 'View entity' })).not.toBeInTheDocument();
+  });
+
+  it('does not open an unauthorized connection', () => {
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={[{ value: 'alpha', label: 'Alpha', authorized: false }]}
+        onChange={jest.fn()}
+        onEditSource={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Alpha' })).not.toBeInTheDocument();
   });
 
   it('shows the entity icon on inherited connection pills', () => {

@@ -55,6 +55,13 @@ describe('DateRangeField', () => {
     expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 
+  it('shows an epoch bound in the inputs', () => {
+    render(<Harness value={{ from: 0, to: null }} />);
+
+    expect(screen.getByLabelText('From')).toHaveValue('1970-01-01');
+    expect(screen.getByLabelText('To')).toHaveValue('');
+  });
+
   it('shows no clear control when the range is empty or disabled', () => {
     const { unmount } = render(<Harness />);
 

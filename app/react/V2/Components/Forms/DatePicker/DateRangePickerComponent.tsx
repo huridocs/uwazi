@@ -1,18 +1,12 @@
 import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
-//@ts-ignore
-import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
-//@ts-ignore
-import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import uniqueID from '#shared/uniqueID.js';
 import { Label } from '../Label.js';
 import { InputError } from '../InputError.js';
 import { InputField } from '../InputField.js';
-import {
-  DatePickerProps,
-  datePickerOptionsByLocale,
-  validateLocale,
-} from './DatePickerComponent.js';
+import { DatePickerProps, validateLocale } from './DatePickerComponent.js';
+import { mountDateRange } from './dateRangeMount.js';
+import { dateFromTimestamp, hasBound } from './rangeTimestamp.js';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;
@@ -24,6 +18,7 @@ interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   to?: number;
   onClear?: (field: 'from' | 'to') => void;
 }
+
 const DateRangePickerComponent = React.forwardRef(
   (
     {
@@ -58,71 +53,26 @@ const DateRangePickerComponent = React.forwardRef(
     );
 
     const fieldStyles = inputClassName || '';
-    const instance = useRef<DateRangePicker | null>(null);
+    const instance = useRef<ReturnType<typeof mountDateRange>['picker'] | null>(null);
     const locale = validateLocale(language);
 
     useEffect(() => {
-      // Convert moment format to flowbite format if provided (YYYY -> yyyy, DD -> dd, then lowercase)
-      const flowbiteFormat = dateFormat
-        ? dateFormat.replace(/YYYY/g, 'yyyy').replace(/DD/g, 'dd').toLowerCase()
-        : undefined;
-
-      const localeConfig = {
-        ...datePickerOptionsByLocale(locale, labelToday, labelClear),
-        ...(flowbiteFormat && { format: flowbiteFormat }),
-      };
-      Object.assign(Datepicker.locales, {
-        [locale]: localeConfig,
+      const mounted = mountDateRange({
+        container: divRef.current,
+        fromEl: fromRef.current,
+        toEl: toRef.current,
+        locale,
+        labelToday,
+        labelClear,
+        dateFormat,
+        from,
+        to,
+        onFromDateSelected,
+        onToDateSelected,
       });
-
-      const startEl = fromRef.current;
-      const endEl = toRef.current;
-
-      const dateRangeConfig = {
-        inputs: [startEl, endEl],
-        container: '#tw-container',
-        language: locale,
-        locales: { [locale]: Datepicker.locales[locale] },
-        Mode: 1,
-        todayBtnMode: 1,
-        todayBtn: true,
-        clearBtn: true,
-        autohide: true,
-        ...(flowbiteFormat && { format: flowbiteFormat }),
-      };
-
-      instance.current = new DateRangePicker(divRef.current, dateRangeConfig);
-
-      // Set initial dates from timestamps after a tick to let Flowbite initialize
-      if (from || to) {
-        const fromDate = from ? new Date(from) : undefined;
-        const toDate = to ? new Date(to) : undefined;
-        instance.current?.setDates(fromDate, toDate);
-      }
-
-      // Listen to Flowbite's changeDate events which provide Date objects
-      const fromEl = fromRef.current;
-      const toEl = toRef.current;
-
-      const fromHandler = (e: any) => {
-        const date = e.detail?.date;
-        const timestamp = date ? date.getTime() : null;
-        onFromDateSelected?.(timestamp);
-      };
-
-      const toHandler = (e: any) => {
-        const date = e.detail?.date;
-        const timestamp = date ? date.getTime() : null;
-        onToDateSelected?.(timestamp);
-      };
-
-      fromEl?.addEventListener('changeDate', fromHandler);
-      toEl?.addEventListener('changeDate', toHandler);
-
+      instance.current = mounted.picker;
       return () => {
-        fromEl?.removeEventListener('changeDate', fromHandler);
-        toEl?.removeEventListener('changeDate', toHandler);
-        if (instance?.current?.hide instanceof Function) instance?.current?.hide();
+        mounted.stop();
       };
     }, [
       locale,
@@ -139,13 +89,11 @@ const DateRangePickerComponent = React.forwardRef(
       if (!instance.current) {
         return;
       }
-      if (from || to) {
-        const fromDate = from ? new Date(from) : undefined;
-        const toDate = to ? new Date(to) : undefined;
-        instance.current.setDates(fromDate, toDate);
-      } else {
-        instance.current.setDates({ clear: true }, { clear: true });
+      if (hasBound(from) || hasBound(to)) {
+        instance.current.setDates(dateFromTimestamp(from), dateFromTimestamp(to));
+        return;
       }
+      instance.current.setDates({ clear: true }, { clear: true });
     }, [instance, from, to]);
 
     return (
@@ -192,12 +140,11 @@ const DateRangePickerComponent = React.forwardRef(
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderStart}
                 ref={fromRef}
-                showClear={Boolean(from)}
+                showClear={hasBound(from)}
                 clearFieldAction={
-                  from
+                  hasBound(from)
                     ? () => {
-                        const toDate = to ? new Date(to) : undefined;
-                        instance.current.setDates({ clear: true }, toDate);
+                        instance.current?.setDates({ clear: true }, dateFromTimestamp(to));
                         onClear('from');
                       }
                     : undefined
@@ -228,12 +175,11 @@ const DateRangePickerComponent = React.forwardRef(
                 hasErrors={Boolean(hasErrors || errorMessage)}
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderEnd}
-                showClear={Boolean(to)}
+                showClear={hasBound(to)}
                 clearFieldAction={
-                  to
+                  hasBound(to)
                     ? () => {
-                        const fromDate = from ? new Date(from) : undefined;
-                        instance.current.setDates(fromDate, { clear: true });
+                        instance.current?.setDates(dateFromTimestamp(from), { clear: true });
                         onClear('to');
                       }
                     : undefined

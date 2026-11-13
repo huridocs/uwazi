@@ -12,6 +12,7 @@ import { RelationshipField } from '../RelationshipField.js';
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
+  I18NLinkV2: ({ children }: { children: React.ReactNode }) => <a href="/entity">{children}</a>,
 }));
 
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({

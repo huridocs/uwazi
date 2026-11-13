@@ -46,8 +46,8 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const { from, to } = toRangeValue(value);
           const hasRange = typeof from === 'number' || typeof to === 'number';
-          const fromISODate = from ? secondsToISODate(from) : undefined;
-          const toISODate = to ? secondsToISODate(to) : undefined;
+          const fromISODate = typeof from === 'number' ? secondsToISODate(from) : undefined;
+          const toISODate = typeof to === 'number' ? secondsToISODate(to) : undefined;
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (

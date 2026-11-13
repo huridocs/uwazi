@@ -31,7 +31,7 @@ const SelectedRelationshipValues = ({
   const shown = !overflows || expanded ? sorted : sorted.slice(0, SHOWN_COUNT);
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5" data-testid="relationship-connections">
       <ul className="flex min-w-0 flex-wrap items-center gap-1.5">
         {shown.map(row => (
           <li key={row.id} className="flex min-w-0 max-w-full items-center gap-0.5">
