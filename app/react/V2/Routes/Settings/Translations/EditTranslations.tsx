@@ -337,9 +337,9 @@ const useEditTranslations = () => {
     getFieldState: formState.form.getFieldState,
     liveFormValues: formState.liveFormValues,
     blocker: formState.blocker,
-    formSubmit: (data: { formValues: formValuesType }) =>
+    formSubmit: async (data: { formValues: formValuesType }) =>
       submitTranslationForm(fetcher, data, loaded.translations),
-    importFile: (event: React.ChangeEvent<HTMLInputElement>) =>
+    importFile: async (event: React.ChangeEvent<HTMLInputElement>) =>
       importTranslationFile(fetcher, event),
   };
 };

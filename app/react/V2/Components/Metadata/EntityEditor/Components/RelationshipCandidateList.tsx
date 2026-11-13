@@ -83,7 +83,7 @@ const useRelationshipCandidates = ({
     id: 0,
     latest: '',
     selectedIds,
-    run: () => Promise.resolve(),
+    run: async () => undefined,
   });
 
   const runSearch = async (search: string) => {

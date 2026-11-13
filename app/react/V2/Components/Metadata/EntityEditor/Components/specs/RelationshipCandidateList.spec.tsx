@@ -33,9 +33,9 @@ describe('useRelationshipCandidates', () => {
   it('drops a search that returns after a newer query', async () => {
     jest.useFakeTimers();
     let resolveEmpty: (value: ReturnType<typeof page>) => void = () => undefined;
-    const lookupSearch = jest.fn((search: string) => {
+    const lookupSearch = jest.fn(async (search: string) => {
       if (search === 'MULTI') {
-        return Promise.resolve(page('MULTINATIONAL', 'm'));
+        return page('MULTINATIONAL', 'm');
       }
       return new Promise<ReturnType<typeof page>>(resolve => {
         resolveEmpty = resolve;
@@ -92,25 +92,23 @@ describe('useRelationshipCandidates', () => {
   it('drops a load-more page that finishes after the query changes', async () => {
     jest.useFakeTimers();
     let resolveMore: (value: ReturnType<typeof page>) => void = () => undefined;
-    const lookupSearch = jest.fn((search: string, offset = 0) => {
+    const lookupSearch = jest.fn(async (search: string, offset = 0) => {
       if (offset > 0) {
         return new Promise<ReturnType<typeof page>>(resolve => {
           resolveMore = resolve;
         });
       }
-      return Promise.resolve(
-        search === 'MULTI'
-          ? {
-              options: [{ label: 'MULTINATIONAL', searchLabel: 'multi', value: 'm' }],
-              total: 2,
-              fetched: 1,
-            }
-          : {
-              options: [{ label: 'Alpha', searchLabel: 'alpha', value: 'a' }],
-              total: 3,
-              fetched: 1,
-            }
-      );
+      return search === 'MULTI'
+        ? {
+            options: [{ label: 'MULTINATIONAL', searchLabel: 'multi', value: 'm' }],
+            total: 2,
+            fetched: 1,
+          }
+        : {
+            options: [{ label: 'Alpha', searchLabel: 'alpha', value: 'a' }],
+            total: 3,
+            fetched: 1,
+          };
     });
     const { result, rerender } = renderHook(
       ({ query }: { query: string }) =>
@@ -136,8 +134,8 @@ describe('useRelationshipCandidates', () => {
 
   it('keeps the full list when a typed search is cleared before it runs', async () => {
     jest.useFakeTimers();
-    const lookupSearch = jest.fn((search: string) =>
-      Promise.resolve(search === 'MULTI' ? page('MULTINATIONAL', 'm') : page('Other', 'o'))
+    const lookupSearch = jest.fn(async (search: string) =>
+      search === 'MULTI' ? page('MULTINATIONAL', 'm') : page('Other', 'o')
     );
     const { result, rerender } = renderHook(
       ({ query }: { query: string }) =>
