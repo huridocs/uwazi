@@ -99,7 +99,7 @@ const renderAppFrame = ({
       (Boolean(settings.private) && !userId && isCollectionHome(pathname, settings.languages)));
   if (bareAuth) {
     return (
-      <div id="app" className={appClassName}>
+      <div id="app" className={`${appClassName} app-bare`.trim()}>
         <InstanceSeo />
         <ThemeProvider style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
           <main id="main" style={{ flex: 1, minHeight: 0 }}>

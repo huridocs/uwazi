@@ -56,13 +56,6 @@ const AuthLayout = ({ component, children }: { component: string; children: Reac
         )}
       </div>
       <div data-part="panel" className="flex flex-1 flex-col px-5 md:min-h-0 md:overflow-y-auto">
-        <header data-part="brand" className="flex justify-center pb-6 pt-8">
-          <img
-            src="/public/nu-logo.svg"
-            alt={t('System', 'Uwazi', null, false)}
-            className="h-[0.919rem] w-auto dark:invert"
-          />
-        </header>
         <div data-part="body" className="flex flex-1 items-center justify-center py-6">
           <div className="w-full max-w-[22.5rem]">{children}</div>
         </div>
