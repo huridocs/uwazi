@@ -26,6 +26,7 @@ interface TextareaProps {
   className?: string;
   name?: string;
   clearFieldAction?: () => void;
+  centerClear?: boolean;
   overlay?: React.ReactNode;
   labelAccessory?: React.ReactNode;
   latched?: boolean;
@@ -43,17 +44,17 @@ const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boo
 const textareaBase =
   'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm font-normal text-ink placeholder:text-sm placeholder:font-normal placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
-const textareaClass = (state: FieldState, hasClear: boolean, latched: boolean) =>
+const textareaClass = (state: FieldState, clearPadding: string | false, latched: boolean) =>
   cx(
     textareaBase,
     latched && 'border-carbon/40 ring-2 ring-carbon/20',
     state.hasError && 'border-emphasis bg-seal-tint text-seal',
     state.disabled && 'cursor-not-allowed bg-warm text-ink-muted',
-    hasClear && 'pr-10'
+    clearPadding
   );
 
-const clearButtonClass =
-  'absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-carbon disabled:text-ink-muted';
+const clearButtonClass = (besideOverlay: boolean, centered: boolean) =>
+  `absolute z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50 ${centered ? 'top-1/2 -translate-y-1/2' : 'top-1'} ${besideOverlay ? 'right-36' : 'right-1'}`;
 
 const Textarea = React.forwardRef(
   (
@@ -69,6 +70,7 @@ const Textarea = React.forwardRef(
       className = '',
       name = '',
       clearFieldAction,
+      centerClear = false,
       overlay,
       labelAccessory,
       latched = false,
@@ -83,7 +85,7 @@ const Textarea = React.forwardRef(
     ref: Ref<HTMLTextAreaElement>
   ) => {
     const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
-    const hasClear = Boolean(clearFieldAction);
+    const hasClear = Boolean(clearFieldAction) && typeof value === 'string' && value !== '';
     return (
       <div className={cx('flex flex-col gap-1.5', className)}>
         <FieldLabelRow
@@ -106,7 +108,7 @@ const Textarea = React.forwardRef(
             ref={ref}
             disabled={disabled}
             {...(value !== undefined ? { value } : {})}
-            className={textareaClass(state, hasClear, latched)}
+            className={textareaClass(state, hasClear && (overlay ? 'pr-44' : 'pr-8'), latched)}
             rows={rows}
             placeholder={placeholder}
             style={{ resize }}
@@ -117,9 +119,9 @@ const Textarea = React.forwardRef(
               onClick={clearFieldAction}
               disabled={disabled}
               data-testid="clear-field-button"
-              className={clearButtonClass}
+              className={clearButtonClass(Boolean(overlay), centerClear)}
             >
-              <XMarkIcon className="w-5" />
+              <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}

@@ -10,6 +10,7 @@ import {
   getFieldErrorState,
 } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type MultidateFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -53,17 +54,23 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const entries = toDateEntries(value);
+          const hasDate = entries.some(entry => entry.value !== null);
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <div className="flex flex-col gap-1.5">
-              <EntityFieldLabel
-                htmlFor={`${field}.0.value`}
-                context={context}
-                label={label}
-                required={Boolean(registerOptions?.required)}
-                showError={showError}
-              />
+              <div className="flex items-start justify-between gap-2">
+                <EntityFieldLabel
+                  htmlFor={`${field}.0.value`}
+                  context={context}
+                  label={label}
+                  required={Boolean(registerOptions?.required)}
+                  showError={showError}
+                />
+                {hasDate && !disabled ? (
+                  <FieldClearButton onClick={() => onChange([{ value: null }])} />
+                ) : null}
+              </div>
               <div className="flex flex-col gap-2">
                 {entries.map((entry, currentIndex) => (
                   <div

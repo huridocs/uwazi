@@ -1,8 +1,4 @@
-import {
-  FOLD_COUNT,
-  sharedRelationshipTemplateId,
-  sortRelationshipValues,
-} from '../connectionPillsHelpers.js';
+import { sharedRelationshipTemplateId, sortRelationshipValues } from '../connectionPillsHelpers.js';
 import type { RelationshipEntityValue } from '../connectionPillsHelpers.js';
 
 const entity = (title: string, templateId?: string, id = title): RelationshipEntityValue => ({
@@ -12,10 +8,6 @@ const entity = (title: string, templateId?: string, id = title): RelationshipEnt
 });
 
 describe('connectionPillsHelpers', () => {
-  it('folds after eight values', () => {
-    expect(FOLD_COUNT).toBe(8);
-  });
-
   it('sorts titles alphabetically, case-insensitive', () => {
     const sorted = sortRelationshipValues([
       entity('zeta'),

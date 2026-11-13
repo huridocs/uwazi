@@ -138,7 +138,7 @@ const SearchSelect = ({
   const state: FieldState = { disabled, hasError: hasErrors };
   const allOptions = useMemo(() => flattenOptions(options, groups), [groups, options]);
   const selectedOption = allOptions.find(option => option.value === value);
-  const hasSelection = Boolean(value && selectedOption);
+  const hasSelection = Boolean(value);
   const showClosedSelection = hasSelection && !isOpen;
   const showClearButton = hasSelection && !disabled && showClosedSelection && !hideClear;
   const showTrigger = !hasSelection && !isOpen;
@@ -249,7 +249,7 @@ const SearchSelect = ({
             aria-controls={listboxId}
           >
             <span className="min-w-0 flex-1 truncate">
-              {selectedOption && renderOptionLabel(selectedOption)}
+              {selectedOption ? renderOptionLabel(selectedOption) : value}
             </span>
           </button>
           {showClearButton && (
