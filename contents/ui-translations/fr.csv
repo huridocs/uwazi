@@ -208,6 +208,7 @@ Chart type,Type de graphique
 Chart type uses a custom view,Le type de graphique utilise une vue personnalisée
 Check to make this instance public (non-logged in users can see public documents and entities),Cochez cette case pour rendre cette instance publique (les utilisateurs non connectés peuvent consulter les documents et entités publics)
 Checking which images fit the requirements,Vérification en cours des images correspondant aux exigences...
+Cherrypick,Sélection manuelle
 Choose,Choisissez
 Choose PDF files,Choisir des fichiers PDF
 Choose relation type,Choisissez le type de relation
@@ -225,6 +226,8 @@ Clear selection,Effacer la sélection
 Clear selection filter,Effacer le filtre de sélection
 Clear sort,Effacer le tri
 Click,Cliquez
+"Click records to add them. Cmd + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment."
+"Click records to add them. Ctrl + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment."
 Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
@@ -421,6 +424,7 @@ Deletion success,Suppression réussie
 Density,Densité
 Description,Description
 Deselect all,Tout désélectionner
+Deselect this page,Désélectionner cette page
 Detail,Détail
 Details,Détails
 Direction,Direction
@@ -640,6 +644,7 @@ Hide restricted relationships from public,Masquer les relations restreintes au p
 Hide task,Masquer la tâche
 Hide the matches in,Masquer les correspondances dans
 Hide toolbar,Masquer la barre d'outils
+"Hold Shift and click to select from the last record through this one.","Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci."
 Hours,Heures
 How to combine sources,Comment combiner les sources
 HTML,HTML
@@ -977,6 +982,7 @@ og:title,og:title
 Ok,D'accord
 OK,OK
 On this entity,Sur cette entité
+on this page,sur cette page
 one character,un caractère
 Only essential,Uniquement l'essentiel
 "Only properties with the same name and configuration in every data source are available
@@ -1134,6 +1140,7 @@ QR Code,Code QR
 qr code,Code QR
 Query,Requête
 Queued,En attente
+Range,Plage
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Réexécute la requête sur votre collection actuelle. Utilisez cette fonction après avoir importé
@@ -1300,6 +1307,7 @@ Select text in target document,Sélectionner du texte dans le document cible
 select text or a value,sélectionnez un texte ou une valeur
 Select the template to store the extracted paragraphs.,Sélectionnez le modèle dans lequel vous souhaitez enregistrer les paragraphes extraits.
 Select the template with the source documents.,Sélectionnez le modèle contenant les documents sources.
+Select this page,Sélectionner cette page
 Select values…,Sélectionner des valeurs…
 Select...,Sélectionner...
 Select…,Sélectionner…
@@ -1352,6 +1360,7 @@ Show less,Afficher moins
 Show more,Afficher plus
 Show remaining in panel,Afficher le reste dans le panneau
 Show the matches in,Afficher les correspondances dans
+Show the selected records,Afficher les enregistrements sélectionnés
 Show toolbar,Afficher la barre d'outils
 Showing,Affichage
 Showing the top,Affichage des
@@ -1714,7 +1723,7 @@ Yes,Oui
 You can add one or many items in this form.,Vous pouvez ajouter un ou plusieurs éléments dans ce formulaire.
 You can also enter this secret key into your Authenticator app.,Vous pouvez également saisir cette clé secrète dans votre application Authenticator.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
-"You can delete at most 10,000 entities at once.","Vous pouvez supprimer au maximum 10 000 entités à la fois."
+"You can delete at most 10,000 entities at once.",Vous pouvez supprimer au maximum 10 000 entités à la fois.
 "You can embed advanced components like maps, charts and entity lists in your page.","Vous pouvez intégrer à votre page des composants avancés tels que des cartes, des graphiques et des listes d'entités."
 You do not have write permission on all entities,Vous ne disposez pas des droits d'écriture sur toutes les entités.
 You have unsaved changes. Discard them? This action cannot be undone.,Vous avez des modifications non enregistrées. Voulez-vous les ignorer ? Cette action ne peut pas être annulée.

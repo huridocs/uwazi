@@ -208,6 +208,7 @@ Chart type,Тип діаграми
 Chart type uses a custom view,У цьому типі діаграми використовується користувацький вигляд
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
 Checking which images fit the requirements,"Перевірка, які зображення відповідають вимогам..."
+Cherrypick,Ручний вибір
 Choose,Виберіть
 Choose PDF files,Вибрати файли PDF
 Choose relation type,Виберіть тип зв’язку
@@ -225,6 +226,8 @@ Clear selection,Зняти вибір
 Clear selection filter,Скинути фільтр вибору
 Clear sort,Скинути сортування
 Click,Клац!
+"Click records to add them. Cmd + click works anytime.","Натискайте записи"
+"Click records to add them. Ctrl + click works anytime.","Натискайте записи"
 Click to fill,"Натисніть, щоб заповнити"
 Click to select an image,"Натисніть, щоб вибрати зображення"
 Click to select audio or video,"Натисніть, щоб вибрати аудіо- або відеофайл"
@@ -421,6 +424,7 @@ Deletion success,Успішність видалення
 Density,Щільність
 Description,Опис
 Deselect all,Скасувати вибір усіх
+Deselect this page,Скасувати вибір цієї сторінки
 Detail,Детально
 Details,Деталі
 Direction,Напрямок
@@ -640,6 +644,7 @@ Hide restricted relationships from public,Приховати обмежені з
 Hide task,Приховати завдання
 Hide the matches in,Сховати збіги в
 Hide toolbar,Приховати панель інструментів
+"Hold Shift and click to select from the last record through this one.","Утримуйте Shift і клацніть, щоб вибрати від останнього запису до цього."
 Hours,Години
 How to combine sources,Як поєднати джерела
 HTML,HTML
@@ -977,6 +982,7 @@ og:title,og:title
 Ok,Гаразд
 OK,ГАРАЗД.
 On this entity,На цьому об’єкті
+on this page,на цій сторінці
 one character,один символ
 Only essential,Тільки найнеобхідніше
 "Only properties with the same name and configuration in every data source are available
@@ -1134,6 +1140,7 @@ QR Code,QR-код
 qr code,QR-код
 Query,Запит
 Queued,У черзі
+Range,Діапазон
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Повторно виконує запит щодо вашої поточної колекції. Використовуйте цю функцію після імпорту
@@ -1301,6 +1308,7 @@ Select text in target document,Виділіть текст у цільовому
 select text or a value,вибрати текст або значення
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
+Select this page,Вибрати цю сторінку
 Select values…,Вибрати значення…
 Select...,Вибрати...
 Select…,Вибрати…
@@ -1353,6 +1361,7 @@ Show less,Показати менше
 Show more,Показати більше
 Show remaining in panel,Показати залишок у панелі
 Show the matches in,Показати збіги в
+Show the selected records,Показати вибрані записи
 Show toolbar,Показати панель інструментів
 Showing,Показати
 Showing the top,Показано найпопулярніші
@@ -1715,7 +1724,7 @@ Yes,Так.
 You can add one or many items in this form.,Ви можете додати один або декілька елементів у цій формі.
 You can also enter this secret key into your Authenticator app.,Ви також можете ввести цей секретний ключ у вашому додатку Authenticator.
 You can create metadata templates in,Ви можете створювати шаблони метаданих у
-"You can delete at most 10,000 entities at once.","За один раз можна видалити не більше 10 000 об’єктів."
+"You can delete at most 10,000 entities at once.",За один раз можна видалити не більше 10 000 об’єктів.
 "You can embed advanced components like maps, charts and entity lists in your page.","Ви можете вбудовувати на свою сторінку складні компоненти, такі як карти, діаграми та списки об’єктів."
 You do not have write permission on all entities,У вас немає прав на запис для всіх об’єктів
 You have unsaved changes. Discard them? This action cannot be undone.,У вас є незбережені зміни. Видалити їх? Цю дію неможливо скасувати.

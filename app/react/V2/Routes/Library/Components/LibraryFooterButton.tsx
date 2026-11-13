@@ -14,6 +14,7 @@ type LibraryFooterButtonProps = {
   expanded?: boolean;
   popup?: 'menu';
   controls?: string;
+  name?: string;
 };
 
 const LibraryFooterButton = ({
@@ -26,6 +27,7 @@ const LibraryFooterButton = ({
   expanded,
   popup,
   controls,
+  name,
 }: LibraryFooterButtonProps) => {
   const classes = `${footerButtonClassName} ${className}`.trim();
   const content = (
@@ -49,6 +51,7 @@ const LibraryFooterButton = ({
       onClick={onClick}
       disabled={disabled}
       className={classes}
+      aria-label={name}
       aria-expanded={expanded}
       aria-haspopup={popup}
       aria-controls={controls}

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compile } from '@tailwindcss/node';
 
-const footerPath = join('app/react/V2/Routes/Library/Components', 'LibraryMultiSelectFooter.tsx');
+const footerPath = join('app/react/V2/Routes/Library/Components', 'librarySelectionBarButton.tsx');
 
 const labelClassName = (source: string) => {
   const match = source.match(/<span className="([^"]+)">\s*<Translate>\{label\}/);

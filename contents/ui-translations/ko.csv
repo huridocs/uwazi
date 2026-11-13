@@ -205,6 +205,7 @@ Chart type,차트 유형
 Chart type uses a custom view,차트 유형은 사용자 정의 보기를 사용합니다
 Check to make this instance public (non-logged in users can see public documents and entities),이 인스턴스를 공개로 설정할지 확인하세요(로그인하지 않은 사용자도 공개 문서 및 엔티티를 볼 수 있습니다).
 Checking which images fit the requirements,요건에 맞는 이미지를 확인 중입니다...
+Cherrypick,직접 선택
 Choose,선택하세요
 Choose PDF files,PDF 파일 선택
 Choose relation type,관계 유형 선택
@@ -222,6 +223,8 @@ Clear selection,선택 지우기
 Clear selection filter,선택 필터 지우기
 Clear sort,정렬 지우기
 Click,클릭
+"Click records to add them. Cmd + click works anytime.","레코드를 클릭하여 추가합니다. Cmd + 클릭은 언제든지 동작합니다."
+"Click records to add them. Ctrl + click works anytime.","레코드를 클릭하여 추가합니다. Ctrl + 클릭은 언제든지 동작합니다."
 Click to fill,텍스트 자동 채우기
 Click to select an image,이미지를 선택하려면 클릭하세요
 Click to select audio or video,오디오 또는 동영상을 선택하려면 클릭하세요
@@ -418,6 +421,7 @@ Deletion success,삭제 성공
 Density,밀도
 Description,설명
 Deselect all,모두 선택 해제
+Deselect this page,이 페이지 선택 해제
 Detail,자세히
 Details,상세 정보
 Direction,방향
@@ -637,6 +641,7 @@ Hide restricted relationships from public,일반 대중에게 비공개 관계 �
 Hide task,작업 숨기기
 Hide the matches in,일치 항목 숨기기:
 Hide toolbar,도구 모음 숨기기
+"Hold Shift and click to select from the last record through this one.","Shift를 누른 채 클릭하면 마지막 레코드부터 이 레코드까지 선택됩니다."
 Hours,시간
 How to combine sources,소스 결합 방법
 HTML,HTML
@@ -969,6 +974,7 @@ og:title,og:title
 Ok,확인
 OK,확인
 On this entity,이 엔티티에 관하여
+on this page,이 페이지에서
 one character,한 글자
 Only essential,꼭 필요한 것만
 "Only properties with the same name and configuration in every data source are available
@@ -1126,6 +1132,7 @@ QR Code,QR 코드
 qr code,QR 코드
 Query,검사
 Queued,대기 중
+Range,범위
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","현재 컬렉션을 대상으로 쿼리를 다시 실행합니다. 엔티티를 가져오거나
@@ -1293,6 +1300,7 @@ Select text in target document,대상 문서에서 텍스트 선택
 select text or a value,텍스트 또는 값을 선택하세요
 Select the template to store the extracted paragraphs.,추출된 단락을 저장할 템플릿을 선택하세요.
 Select the template with the source documents.,원본 문서가 포함된 템플릿을 선택하십시오.
+Select this page,이 페이지 선택
 Select values…,값 선택…
 Select...,선택
 Select…,선택…
@@ -1345,6 +1353,7 @@ Show less,더 적게 보기
 Show more,자세히 보기
 Show remaining in panel,패널에 남은 항목 표시
 Show the matches in,일치 항목 표시:
+Show the selected records,선택한 레코드 보기
 Show toolbar,도구 모음 표시
 Showing,표시 중
 Showing the top,상위 결과 표시

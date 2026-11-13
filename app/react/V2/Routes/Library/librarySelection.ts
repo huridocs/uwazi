@@ -138,6 +138,28 @@ const orderedSelectionIds = (rowIds: readonly string[], selectedIds: readonly st
   return [...inView, ...extras];
 };
 
+/** Records that are both selected and on the page the reader can see. */
+const selectionInView = (selectedIds: readonly string[], visibleIds: readonly string[]) => {
+  const visible = new Set(visibleIds);
+  return selectedIds.filter(id => visible.has(id));
+};
+
+/** Drop every selected record that is on this page. */
+const selectionWithoutPage = (selectedIds: readonly string[], pageIds: readonly string[]) => {
+  const page = new Set(pageIds);
+  return selectedIds.filter(id => !page.has(id));
+};
+
+const pageSelectionScope = (selectedIds: readonly string[], pageIds: readonly string[]) => {
+  const page = new Set(pageIds);
+  const selectedOnPage = selectedIds.filter(id => page.has(id)).length;
+  return {
+    selectedOnPage,
+    pageCount: pageIds.length,
+    allOnPage: pageIds.length > 0 && selectedOnPage === pageIds.length,
+  };
+};
+
 export type { LibraryClickModifiers, LibrarySelection };
 export {
   EMPTY_CLICK_MODIFIERS,
@@ -145,4 +167,7 @@ export {
   applyLibraryClusterClick,
   applyLibraryEntityClick,
   orderedSelectionIds,
+  pageSelectionScope,
+  selectionInView,
+  selectionWithoutPage,
 };

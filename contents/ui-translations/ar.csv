@@ -207,6 +207,7 @@ Chart type,نوع المخطط
 Chart type uses a custom view,يستخدم نوع المخطط طريقة عرض مخصصة
 Check to make this instance public (non-logged in users can see public documents and entities),حدد هذا الخيار لجعل هذه الحالة عامة (يمكن للمستخدمين غير المسجلين الاطلاع على المستندات والكيانات العامة)
 Checking which images fit the requirements,التحقق من الصور التي تتوافق مع المتطلبات...
+Cherrypick,اختيار يدوي
 Choose,اختر
 Choose PDF files,اختيار ملفات PDF
 Choose relation type,اختر نوع العلاقة
@@ -224,6 +225,8 @@ Clear selection,مسح التحديد
 Clear selection filter,مسح عامل تصفية التحديد
 Clear sort,إلغاء الترتيب
 Click,انقر
+"Click records to add them. Cmd + click works anytime.","انقر على السجلات لإضافتها. يعمل Cmd + النقر في أي وقت."
+"Click records to add them. Ctrl + click works anytime.","انقر على السجلات لإضافتها. يعمل Ctrl + النقر في أي وقت."
 Click to fill,انقر للتعبئة
 Click to select an image,انقر لاختيار صورة
 Click to select audio or video,انقر لاختيار ملف صوتي أو فيديو
@@ -420,6 +423,7 @@ Deletion success,تم الحذف بنجاح
 Density,الكثافة
 Description,وصف
 Deselect all,إلغاء تحديد الكل
+Deselect this page,إلغاء تحديد هذه الصفحة
 Detail,تفصيل
 Details,التفاصيل
 Direction,الاتجاه
@@ -639,6 +643,7 @@ Hide restricted relationships from public,إخفاء العلاقات المقي
 Hide task,إخفاء المهمة
 Hide the matches in,إخفاء المطابقات في
 Hide toolbar,إخفاء شريط الأدوات
+"Hold Shift and click to select from the last record through this one.","اضغط باستمرار على Shift وانقر لتحديد السجلات من آخر سجل حتى هذا."
 Hours,ساعات
 How to combine sources,كيفية دمج المصادر
 HTML,HTML
@@ -976,6 +981,7 @@ og:title,og:title
 Ok,موافق
 OK,موافق
 On this entity,بشأن هذا الكيان
+on this page,في هذه الصفحة
 one character,حرف واحد
 Only essential,الأمور الضرورية فقط
 "Only properties with the same name and configuration in every data source are available
@@ -1133,6 +1139,7 @@ QR Code,رمز الاستجابة السريعة
 qr code,رمز QR
 Query,استعلام
 Queued,في قائمة الانتظار
+Range,نطاق
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","إعادة تشغيل الاستعلام على المجموعة الحالية. استخدم هذه الميزة بعد استيراد
@@ -1300,6 +1307,7 @@ Select text in target document,حدد نصًا في المستند الهدف
 select text or a value,حدد نصًا أو قيمة
 Select the template to store the extracted paragraphs.,اختر القالب الذي تريد تخزين الفقرات المستخرجة فيه.
 Select the template with the source documents.,اختر القالب الذي يحتوي على المستندات المصدر.
+Select this page,تحديد هذه الصفحة
 Select values…,اختيار قيم…
 Select...,اختار...
 Select…,تحديد…
@@ -1352,6 +1360,7 @@ Show less,إظهار أقل
 Show more,أظهر المزيد
 Show remaining in panel,إظهار ما تبقى في اللوحة
 Show the matches in,إظهار المطابقات في
+Show the selected records,إظهار السجلات المحددة
 Show toolbar,إظهار شريط الأدوات
 Showing,عرض
 Showing the top,عرض الجزء العلوي

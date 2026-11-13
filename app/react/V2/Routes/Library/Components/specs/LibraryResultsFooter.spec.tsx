@@ -29,6 +29,8 @@ type FooterProps = {
   onPageChange?: (page: number) => void;
   onLimitChange?: (limit: number) => void;
   showPagination?: boolean;
+  pageCount?: number;
+  onSelectPage?: () => void;
 };
 
 const renderFooter = (
@@ -63,6 +65,8 @@ const renderFooter = (
           onPageChange={props.onPageChange}
           onLimitChange={props.onLimitChange}
           showPagination={props.showPagination}
+          pageCount={props.pageCount}
+          onSelectPage={props.onSelectPage}
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
