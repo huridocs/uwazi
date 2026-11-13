@@ -13,6 +13,8 @@ import { NotificationsPanel } from '#V2/Components/UI/Notifications/Notification
 import { Header } from '#app/V2/Components/UI/Header/Header.js';
 import { InstanceSeo } from '#app/App/InstanceSeo.js';
 import { BertHost } from '#app/V2/Components/AIAssistant/BertHost.js';
+import { store } from '#app/store.js';
+import { isAuthPath, isLoginV2Enabled } from '#shared/authReturn.js';
 import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
@@ -50,6 +52,14 @@ const useAppShell = (pathname, settings) => {
   };
 };
 
+const isCollectionHome = (pathname, languages) => {
+  const trimmed = pathname.length > 1 ? pathname.replace(/\/$/, '') : pathname;
+  if (trimmed === '/') return true;
+  const segment = trimmed.startsWith('/') ? trimmed.slice(1) : trimmed;
+  if (segment.includes('/')) return false;
+  return (languages || []).some(language => language.key === segment);
+};
+
 const useAppClassName = (pathname, languages, sharedId) => {
   const possibleLanguages = languages?.map(l => l.key) || [];
   const shouldAddAppClassName =
@@ -73,20 +83,35 @@ const renderAppMainTree = (appContext, confirmOptions) => (
   </NuqsAdapter>
 );
 
-const App = ({ customParams }) => {
-  const [inlineEditState] = useAtom(inlineEditAtom);
-  const [confirmOptions, setConfirmOptions] = useState({});
-  const settings = useAtomValue(settingsAtom);
-  const location = useLocation();
-  const params = useParams();
-  const sharedId = params.sharedId || customParams?.sharedId;
-  const appContext = useMemo(() => ({ confirm: setConfirmOptions }), []);
-  const appClassName = useAppClassName(location.pathname, settings.languages, sharedId);
-  const { shouldShowNewHeader, isV2Route, shellSharedTheme, settingsThemePath } = useAppShell(
-    location.pathname,
-    settings
-  );
+const renderAppFrame = ({
+  pathname,
+  settings,
+  appClassName,
+  appContext,
+  confirmOptions,
+  inlineEditState,
+  shell,
+}) => {
+  const userId = store?.getState()?.user?.get?.('_id');
+  const bareAuth =
+    isLoginV2Enabled(settings.features) &&
+    (isAuthPath(pathname) ||
+      (Boolean(settings.private) && !userId && isCollectionHome(pathname, settings.languages)));
+  if (bareAuth) {
+    return (
+      <div id="app" className={`${appClassName} app-bare`.trim()}>
+        <InstanceSeo />
+        <ThemeProvider style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+          <main id="main" style={{ flex: 1, minHeight: 0 }}>
+            {renderAppMainTree(appContext, confirmOptions)}
+          </main>
+        </ThemeProvider>
+        <Cookiepopup />
+      </div>
+    );
+  }
 
+  const { shouldShowNewHeader, isV2Route, shellSharedTheme, settingsThemePath } = shell;
   return (
     <div id="app" className={appClassName}>
       <InstanceSeo />
@@ -140,6 +165,27 @@ const App = ({ customParams }) => {
       </ThemeProvider>
     </div>
   );
+};
+
+const App = ({ customParams }) => {
+  const [inlineEditState] = useAtom(inlineEditAtom);
+  const [confirmOptions, setConfirmOptions] = useState({});
+  const settings = useAtomValue(settingsAtom);
+  const location = useLocation();
+  const sharedId = useParams().sharedId || customParams?.sharedId;
+  const appContext = useMemo(() => ({ confirm: setConfirmOptions }), []);
+  const appClassName = useAppClassName(location.pathname, settings.languages, sharedId);
+  const shell = useAppShell(location.pathname, settings);
+
+  return renderAppFrame({
+    pathname: location.pathname,
+    settings,
+    appClassName,
+    appContext,
+    confirmOptions,
+    inlineEditState,
+    shell,
+  });
 };
 
 App.propTypes = {

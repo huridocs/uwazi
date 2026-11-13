@@ -9,7 +9,11 @@ import { LibraryCards } from './Library/LibraryCards.js';
 import { LibraryTable } from './Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
-import { Login } from './Users/Login.js';
+import { Login, SetPassword, UnlockAccount } from '#V2/Routes/Auth/index.js';
+import { Login as LoginLegacy } from '#app/Users/Login.js';
+import { ResetPassword } from '#app/Users/ResetPassword.js';
+import { UnlockAccount as UnlockAccountLegacy } from '#app/Users/UnlockAccount.js';
+import { isLoginV2Enabled } from '#shared/authReturn.js';
 import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
@@ -91,8 +95,6 @@ import type { IndexDescriptor } from './getIndexElement.js';
 import { getIndexDescriptor } from './getIndexElement.js';
 import { PageView } from './Pages/PageView.js';
 import { PageDraftView } from './Pages/PageDraftView.js';
-import { ResetPassword } from './Users/ResetPassword.js';
-import { UnlockAccount } from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
 import {
   CSVList,
@@ -130,7 +132,8 @@ const buildIndexElement = (
   const Cards = indexComponents?.LibraryCards ?? LibraryCards;
   const Table = indexComponents?.LibraryTable ?? LibraryTable;
   const Map = indexComponents?.LibraryMap ?? LibraryMap;
-  const LoginComp = indexComponents?.Login ?? Login;
+  const LoginComp =
+    indexComponents?.Login ?? (isLoginV2Enabled(settings?.features) ? Login : LoginLegacy);
 
   switch (descriptor.branch) {
     case 'libraryDefault': {
@@ -222,7 +225,10 @@ const getRoutesLayout = (
       element={indexElement}
       {...(defaultToLibrary ? { handle: { library: true } } : {})}
     />
-    <Route path="login" element={<Login />} />
+    <Route
+      path="login"
+      element={isLoginV2Enabled(settings?.features) ? <Login /> : <LoginLegacy />}
+    />
     {isLibraryV2Enabled(settings?.features) ? (
       <>
         <Route
@@ -319,8 +325,14 @@ const getRoutesLayout = (
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="page-draft/:sharedId" element={<PageDraftView />} />
     <Route path="page-draft/:sharedId/:slug" element={<PageDraftView />} />
-    <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
+    <Route
+      path="setpassword/:key"
+      element={isLoginV2Enabled(settings?.features) ? <SetPassword /> : <ResetPassword />}
+    />
+    <Route
+      path="unlockaccount/:username/:code"
+      element={isLoginV2Enabled(settings?.features) ? <UnlockAccount /> : <UnlockAccountLegacy />}
+    />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={createAccountLoader(services)(headers)} />
       <Route

@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { loginRedirect } from '#shared/authReturn.js';
+import { tenants } from '#api/tenants/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/', 'embed/'];
@@ -31,7 +33,7 @@ const privateInstanceMiddleware = async (req: Request, res: Response, next: Next
         return;
       }
 
-      res.redirect('/login');
+      res.redirect(loginRedirect(req.originalUrl || req.url, tenants.current().featureFlags));
       return;
     }
 
