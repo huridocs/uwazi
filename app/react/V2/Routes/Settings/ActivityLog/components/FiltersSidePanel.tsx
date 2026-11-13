@@ -15,6 +15,14 @@ interface FiltersSidePanelProps {
   appliedFilters: ActivityLogSearch;
 }
 
+const clearedDateRange = (
+  live: { from?: number | null; to?: number | null } | undefined,
+  field: 'from' | 'to'
+) => ({
+  from: field === 'from' ? null : (live?.from ?? null),
+  to: field === 'to' ? null : (live?.to ?? null),
+});
+
 const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(method => ({
   label: t('System', method, null, false).toUpperCase(),
   value: method,
@@ -29,6 +37,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     control,
     setValue,
     getValues,
+    watch,
     handleSubmit,
     reset,
     formState: { errors },
@@ -42,6 +51,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     setCurrentFilters(appliedFilters);
     reset(appliedFilters); // Reset form values when appliedFilters change (e.g., from URL)
   }, [appliedFilters, reset]);
+
+  const username = watch('username');
+  const searchValue = watch('search');
 
   const handleInputSubmit =
     (field: 'username' | 'search' | 'method') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,6 +90,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 label={<Translate>User</Translate>}
                 hasErrors={!!errors.username}
                 {...register('username')}
+                value={username ?? ''}
                 clearFieldAction={() => {
                   setValue('username', '');
                 }}
@@ -89,6 +102,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 className="my-4"
                 placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
                 {...register('search')}
+                value={searchValue ?? ''}
                 clearFieldAction={() => {
                   setValue('search', '');
                 }}
@@ -124,16 +138,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                       }
                     }}
                     onClear={(field: 'from' | 'to') => {
-                      setValue(`dateRange.${field}`, null);
-                      const updatedDateRange = {
-                        from: currentFilters.dateRange?.from ?? null,
-                        to: currentFilters.dateRange?.to ?? null,
-                        [field]: null,
-                      };
-                      setCurrentFilters({
-                        ...currentFilters,
-                        dateRange: updatedDateRange,
-                      });
+                      const dateRange = clearedDateRange(getValues('dateRange'), field);
+                      setValue('dateRange', dateRange);
+                      setCurrentFilters(previous => ({ ...previous, dateRange }));
                     }}
                   />
                 )}
@@ -172,4 +179,4 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     </Sidepanel>
   );
 };
-export { FiltersSidePanel };
+export { FiltersSidePanel, clearedDateRange };

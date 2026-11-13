@@ -69,6 +69,23 @@ describe('RelationshipFieldEditor', () => {
     expect(screen.queryByText(/péople/)).not.toBeInTheDocument();
   });
 
+  it('puts the inherited-values note on the icon next to add entity', () => {
+    render(
+      <RelationshipFieldEditor
+        title="Contractors"
+        values={[]}
+        onChange={jest.fn()}
+        columns={[{ label: 'Note' }]}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Inherited values are read-only. Change the connection above, or edit the source entity.',
+      })
+    ).toBeInTheDocument();
+  });
+
   it('loads the remaining candidates when more options is clicked', async () => {
     const user = userEvent.setup();
     const lookupSearch = jest.fn(async (_search: string, offset = 0) => {

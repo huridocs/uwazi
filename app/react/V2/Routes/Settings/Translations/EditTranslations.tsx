@@ -108,6 +108,17 @@ const prepareValuesToSave = (
     };
   });
 
+const readTranslationValue = (formValues: unknown, languageIndex: number, termIndex: number) => {
+  if (!Array.isArray(formValues)) return '';
+  const language: unknown = formValues[languageIndex];
+  if (typeof language !== 'object' || language === null || !('values' in language)) return '';
+  const { values } = language;
+  if (typeof values !== 'object' || values === null) return '';
+  const entry: unknown = Object.entries(values).find(([key]) => key === String(termIndex))?.[1];
+  if (typeof entry !== 'object' || entry === null || !('value' in entry)) return '';
+  return typeof entry.value === 'string' ? entry.value : '';
+};
+
 const composeTableValues = (formValues: formValuesType, termIndex: number) =>
   formValues.map((language, languageIndex) => {
     const languageLabel = availableLanguages.find(
@@ -120,6 +131,8 @@ const composeTableValues = (formValues: formValuesType, termIndex: number) =>
         status: formValues[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
       },
       fieldKey: `formValues.${languageIndex}.values.${termIndex}.value`,
+      languageIndex,
+      termIndex,
     };
   });
 
@@ -208,6 +221,7 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     getFieldState,
     reset,
     formState: { dirtyFields, isSubmitting: formIsSubmitting },
@@ -217,6 +231,7 @@ const EditTranslations = () => {
   });
 
   const isDirty = !!Object.keys(dirtyFields).length;
+  const liveFormValues = watch('formValues');
   const blocker = useBlocker(isDirty && !formIsSubmitting);
 
   useMemo(() => {
@@ -339,6 +354,11 @@ const EditTranslations = () => {
                               const hasErrors = Boolean(
                                 getFieldState(value.fieldKey as any)?.error
                               );
+                              const currentValue = readTranslationValue(
+                                liveFormValues,
+                                value.languageIndex,
+                                value.termIndex
+                              );
                               return (
                                 <tr key={value.fieldKey}>
                                   <td className="px-6 py-2">{value.language}</td>
@@ -353,6 +373,8 @@ const EditTranslations = () => {
                                       id={value.fieldKey}
                                       hideLabel
                                       disabled={isSubmitting}
+                                      {...register(value.fieldKey as any, { required: true })}
+                                      value={currentValue}
                                       clearFieldAction={() =>
                                         setValue(value.fieldKey as any, '', { shouldDirty: true })
                                       }
@@ -364,7 +386,6 @@ const EditTranslations = () => {
                                           ''
                                         )
                                       }
-                                      {...register(value.fieldKey as any, { required: true })}
                                     />
                                   </td>
                                 </tr>

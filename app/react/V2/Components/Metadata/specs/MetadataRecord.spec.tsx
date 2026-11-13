@@ -4,6 +4,7 @@ import React from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
@@ -992,5 +993,122 @@ describe('MetadataRecord', () => {
     }
     const table = within(card).getByRole('table');
     expect(within(table).getByRole('link', { name: /Diana/i })).toBeInTheDocument();
+  });
+});
+
+const renderSingleField = (
+  type: 'text' | 'markdown' | 'numeric' | 'generatedid',
+  value: string
+) => {
+  const singleTemplate = {
+    _id: 'tmpl-clamp',
+    name: 'Clamp',
+    properties: [{ _id: 'p-clamp', name: 'body', type, label: 'Body' }],
+  };
+  const singleEntity: Entity = {
+    ...entity,
+    template: 'tmpl-clamp',
+    metadata: { body: [{ value }] },
+    documents: [],
+    relations: [],
+  };
+  return render(
+    <TestAtomStoreProvider
+      initialValues={[
+        [templatesAtom, [singleTemplate]],
+        [relationshipTypesAtom, []],
+      ]}
+    >
+      <MetadataRecord entity={singleEntity} />
+    </TestAtomStoreProvider>
+  );
+};
+
+const overflowClamp = () => {
+  jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(200);
+  jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);
+};
+
+describe('MetadataRecord preview clamp', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('shows Show more for 101-character text only when the value overflows, then Show less', async () => {
+    const text = 'x'.repeat(101);
+    overflowClamp();
+    const user = userEvent.setup();
+    renderSingleField('text', text);
+
+    const value = screen.getByText(text);
+    expect(value.closest('.max-h-24')).toBeTruthy();
+    expect(sectionForLabel('Body')).toContainElement(
+      screen.getByRole('button', { name: 'Show more' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Show more' }));
+    expect(screen.getByRole('button', { name: 'Show less' })).toBeInTheDocument();
+    expect(screen.getByText(text).closest('.max-h-24')).toBeNull();
+  });
+
+  it('keeps 101-character text expanded when the clamp does not overflow', () => {
+    const text = 'x'.repeat(101);
+    jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(40);
+    jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);
+    renderSingleField('text', text);
+
+    expect(screen.getByText(text)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
+  });
+
+  it('shows Show more for 101-character markdown only when the value overflows, then Show less', async () => {
+    const text = 'y'.repeat(101);
+    overflowClamp();
+    const user = userEvent.setup();
+    renderSingleField('markdown', text);
+
+    expect(screen.getByText(text).closest('.max-h-24')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Show more' }));
+    expect(sectionForLabel('Body')).toContainElement(
+      screen.getByRole('button', { name: 'Show less' })
+    );
+  });
+
+  it('shows 100-character text with no newline in the card', () => {
+    const text = 'z'.repeat(100);
+    overflowClamp();
+    renderSingleField('text', text);
+
+    const value = screen.getByText(text);
+    expect(value.closest('.max-h-24')).toBeNull();
+    expect(sectionForLabel('Body')).toContainElement(value);
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
+  });
+
+  it('shows short markdown in the card', () => {
+    overflowClamp();
+    renderSingleField('markdown', '## Hello');
+
+    const value = screen.getByRole('heading', { name: 'Hello' });
+    expect(value.closest('.max-h-24')).toBeNull();
+    expect(sectionForLabel('Body')).toContainElement(value);
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
+  });
+
+  it('shows a long numeric value without Show more', () => {
+    const text = '9'.repeat(101);
+    overflowClamp();
+    renderSingleField('numeric', text);
+
+    expect(screen.getByText(text)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
+  });
+
+  it('shows a long generated id without Show more', () => {
+    const text = 'g'.repeat(101);
+    overflowClamp();
+    renderSingleField('generatedid', text);
+
+    expect(screen.getByText(text)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
   });
 });

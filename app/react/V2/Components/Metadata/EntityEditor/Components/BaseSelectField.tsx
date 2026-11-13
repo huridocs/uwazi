@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import {
@@ -8,6 +9,7 @@ import {
   type SearchSelectGroup,
   type SearchSelectOption,
 } from '#V2/Components/Forms/index.js';
+import { Label } from '#V2/Components/Forms/Label.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
@@ -50,6 +52,7 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   hideFilters?: boolean;
   hideLabel?: boolean;
   hideClear?: boolean;
+  showValueClear?: boolean;
   placeholder?: string;
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   adornment?: (api: {
@@ -71,6 +74,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
   hideFilters,
   hideLabel,
   hideClear,
+  showValueClear,
   placeholder,
   lookupSearch,
   adornment,
@@ -159,11 +163,27 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
           return (
             <div className="flex flex-col gap-1.5">
               {leading}
+              <div className="flex items-start justify-between gap-2">
+                <Label htmlFor={field} hideLabel={hideLabel} hasErrors={showError}>
+                  {labelContent}
+                </Label>
+                {showValueClear && !disabled && selectedIds.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => apply([])}
+                    data-testid="clear-field-button"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
+                  >
+                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
+                    <Translate className="sr-only">Clear</Translate>
+                  </button>
+                ) : null}
+              </div>
               <MultiselectList
                 id={field}
                 panel
                 checkboxes
-                label={hideLabel ? undefined : labelContent}
+                label={undefined}
                 items={optionsState}
                 onSearch={async search => {
                   if (lookupSearch) {

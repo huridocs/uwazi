@@ -16,13 +16,17 @@ import { mergeConnectionRows } from './mergeConnectionRows.js';
 import { renderPreviewCell } from './PreviewClamp.js';
 import { useTableFitsContainer } from './useTableFitsContainer.js';
 
-const headerClass =
-  'min-w-0 break-words py-1.5 text-start text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
+const columnLabelClass =
+  'py-1.5 text-start text-meta font-semibold uppercase tracking-wider text-ink-tertiary';
+
+const headerClass = `min-w-0 break-words ${columnLabelClass}`;
+
+const inheritedHeaderClass = `whitespace-nowrap px-3 ${columnLabelClass}`;
 
 const inheritedCellClass =
   'min-w-0 overflow-hidden break-words border-s border-t border-border/40 px-3 py-1.5 align-middle';
 
-const entityCellClass = 'min-w-0 break-words border-t border-border/40 px-1 py-1.5 align-middle';
+const entityCellClass = 'w-0 whitespace-nowrap border-t border-border/40 px-1 py-1.5 align-middle';
 
 const connectedEntity = (
   row: RelationshipTableRow,
@@ -68,25 +72,25 @@ const connectionsTable = ({
   emptyLabel,
   preview,
 }: ConnectionsTableProps) => (
-  <table className="w-full table-fixed border-collapse text-sm">
+  <table className="w-full table-auto border-collapse text-sm">
     <caption className="sr-only">
       <Translate>Connected entities</Translate>
       {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
     </caption>
     <thead>
       <tr>
-        <th scope="col" className={`${headerClass} px-1`}>
+        <th scope="col" className={`${headerClass} w-0 whitespace-nowrap px-1`}>
           <Translate>{entityHeader}</Translate>
         </th>
         {columns.map(column => (
-          <th key={columnKey(column)} scope="col" className={`${headerClass} px-3`}>
-            <span className="inline-flex min-w-0 items-center gap-1">
+          <th key={columnKey(column)} scope="col" className={inheritedHeaderClass}>
+            <span className="inline-flex items-center gap-1">
               <LinkIcon className="h-2.5 w-2.5 shrink-0 text-carbon" aria-hidden />
               <Translate context={translationContext}>{column.label}</Translate>
             </span>
           </th>
         ))}
-        {actionCol ? <th scope="col" className="w-0 px-2" aria-hidden /> : null}
+        {actionCol ? <th scope="col" className="w-0 whitespace-nowrap px-2" aria-hidden /> : null}
       </tr>
     </thead>
     <tbody>
@@ -123,7 +127,7 @@ const connectionsTable = ({
               ];
             })}
             {actionCol ? (
-              <td className="border-s border-t border-border/40 px-2 py-1 align-middle">
+              <td className="w-0 whitespace-nowrap border-s border-t border-border/40 px-2 py-1 align-middle">
                 {renderActions?.(row)}
               </td>
             ) : null}

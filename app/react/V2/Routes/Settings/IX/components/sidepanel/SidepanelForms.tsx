@@ -344,6 +344,18 @@ const Relationships = ({
   );
 };
 
+const fieldDisplay = (type: string | undefined, fieldValue: unknown) => {
+  const formatted =
+    type === 'date' && typeof fieldValue === 'number'
+      ? secondsToISODate(fieldValue) || ''
+      : fieldValue;
+  const displayText = formatted === undefined || formatted === null ? '' : String(formatted);
+  return {
+    displayText,
+    unformattedDate: type === 'date' && typeof fieldValue === 'number' && displayText === '',
+  };
+};
+
 const TextInput = ({
   handleClickToFill,
   property,
@@ -392,6 +404,7 @@ const TextInput = ({
   }
 
   const fieldValue = watch('field');
+  const { displayText, unformattedDate } = fieldDisplay(property.type, fieldValue);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dateString = event.target.value;
@@ -403,13 +416,6 @@ const TextInput = ({
     }
   };
 
-  const getDisplayValue = () => {
-    if (property.type === 'date' && typeof fieldValue === 'number') {
-      return secondsToISODate(fieldValue);
-    }
-    return fieldValue;
-  };
-
   return (
     <div className="flex gap-2 grow items-center">
       <div className="grow">
@@ -417,11 +423,12 @@ const TextInput = ({
           clearFieldAction={() => {
             setValue('field', '', { shouldDirty: true });
           }}
+          showClear={unformattedDate}
           id={property.label}
           label={<Translate context={templateId}>{property.label}</Translate>}
           hideLabel
           type={inputType}
-          value={getDisplayValue()}
+          value={displayText}
           onChange={property.type === 'date' ? handleDateChange : fieldRegistration.onChange}
           onBlur={fieldRegistration.onBlur}
           name={fieldRegistration.name || 'field'}

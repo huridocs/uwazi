@@ -351,10 +351,10 @@ describe('Entity edit', () => {
         );
 
         cy.get('[data-testid="metadata.selected_image.0.value"]')
-          .contains('button', 'Unlink')
+          .find('[data-testid="clear-field-button"]')
           .click();
         cy.get('[data-testid="metadata.video_of_event.0.value"]')
-          .contains('button', 'Unlink')
+          .find('[data-testid="clear-field-button"]')
           .click();
         cy.contains('button', 'Save').click();
 

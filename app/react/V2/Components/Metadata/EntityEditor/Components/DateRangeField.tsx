@@ -1,5 +1,7 @@
 import React from 'react';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
+import { Translate } from '#app/I18N/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
   EntityFieldError,
@@ -43,19 +45,33 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const { from, to } = toRangeValue(value);
+          const hasRange = typeof from === 'number' || typeof to === 'number';
           const fromISODate = from ? secondsToISODate(from) : undefined;
           const toISODate = to ? secondsToISODate(to) : undefined;
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <div className="flex flex-col gap-1.5">
-              <EntityFieldLabel
-                htmlFor={`${field}.from`}
-                context={context}
-                label={label}
-                required={Boolean(registerOptions?.required)}
-                showError={showError}
-              />
+              <div className="flex items-start justify-between gap-2">
+                <EntityFieldLabel
+                  htmlFor={`${field}.from`}
+                  context={context}
+                  label={label}
+                  required={Boolean(registerOptions?.required)}
+                  showError={showError}
+                />
+                {hasRange && !disabled ? (
+                  <button
+                    type="button"
+                    onClick={() => onChange({ from: null, to: null })}
+                    data-testid="clear-field-button"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
+                  >
+                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
+                    <Translate className="sr-only">Clear</Translate>
+                  </button>
+                ) : null}
+              </div>
               <div className="flex gap-2">
                 <DateRangeInputs
                   fromId={`${field}.from`}

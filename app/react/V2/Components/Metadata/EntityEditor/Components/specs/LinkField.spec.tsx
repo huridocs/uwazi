@@ -38,15 +38,23 @@ class ResizeObserverMock {
 
 global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 
-const Harness = () => {
+const Harness = ({
+  link = { label: 'Docs', url: 'https://en.example' },
+  disabled,
+  translations = {},
+}: {
+  link?: { label: string; url: string };
+  disabled?: boolean;
+  translations?: EditEntityFormValues['translations'];
+}) => {
   const form = useForm<EditEntityFormValues>({
     defaultValues: {
       title: 'Hearing',
       template: 't1',
       showIcon: false,
       icon: EMPTY_ICON,
-      metadata: { link: [{ value: { label: 'Docs', url: 'https://en.example' } }] },
-      translations: {},
+      metadata: { link: [{ value: link }] },
+      translations,
       touchedTranslations: {},
     },
   });
@@ -67,8 +75,13 @@ const Harness = () => {
           label="Link"
           field="metadata.link.0.value"
           translatableName="link"
+          disabled={disabled}
         />
         <pre data-testid="values">{JSON.stringify(form.watch('translations'))}</pre>
+        <pre data-testid="touched">{JSON.stringify(form.watch('touchedTranslations'))}</pre>
+        <output data-testid="form-value">
+          {JSON.stringify(form.watch('metadata.link.0.value'))}
+        </output>
       </FormProvider>
     </Provider>
   );
@@ -91,5 +104,50 @@ describe('LinkField', () => {
     expect(JSON.parse(screen.getByTestId('values').textContent ?? '{}')).toEqual({
       es: { link: [{ value: { label: 'Docs', url: 'https://es.example' } }] },
     });
+  });
+
+  it('clears the link label and url together', () => {
+    render(<Harness />);
+
+    const clear = screen.getByRole('button', { name: 'Clear' });
+    const labelInput = screen.getByRole('textbox', { name: 'Label' });
+    expect(clear.className).not.toContain('absolute');
+    expect(clear.parentElement?.contains(labelInput)).toBe(false);
+
+    fireEvent.click(clear);
+
+    expect(screen.getByTestId('form-value')).toHaveTextContent(
+      JSON.stringify({ label: '', url: '' })
+    );
+  });
+
+  it('clears translated link values with the field', () => {
+    render(
+      <Harness
+        translations={{
+          es: { link: [{ value: { label: 'Docs', url: 'https://es.example' } }] },
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+
+    expect(JSON.parse(screen.getByTestId('values').textContent ?? '{}')).toEqual({
+      es: { link: [{ value: { label: '', url: '' } }] },
+    });
+    expect(JSON.parse(screen.getByTestId('touched').textContent ?? '{}')).toEqual({
+      es: { link: true },
+    });
+  });
+
+  it('shows no clear control when the link is empty or disabled', () => {
+    const { unmount } = render(<Harness link={{ label: '', url: '' }} />);
+
+    expect(screen.getByLabelText('URL')).toHaveValue('');
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    unmount();
+
+    render(<Harness disabled />);
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 });

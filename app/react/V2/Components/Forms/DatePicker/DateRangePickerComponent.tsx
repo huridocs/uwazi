@@ -192,11 +192,16 @@ const DateRangePickerComponent = React.forwardRef(
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderStart}
                 ref={fromRef}
-                clearFieldAction={() => {
-                  const toDate = to ? new Date(to) : undefined;
-                  instance.current.setDates({ clear: true }, toDate);
-                  onClear('from');
-                }}
+                showClear={Boolean(from)}
+                clearFieldAction={
+                  from
+                    ? () => {
+                        const toDate = to ? new Date(to) : undefined;
+                        instance.current.setDates({ clear: true }, toDate);
+                        onClear('from');
+                      }
+                    : undefined
+                }
               />
             </div>
             <div className="relative">
@@ -223,11 +228,16 @@ const DateRangePickerComponent = React.forwardRef(
                 hasErrors={Boolean(hasErrors || errorMessage)}
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderEnd}
-                clearFieldAction={() => {
-                  const fromDate = from ? new Date(from) : undefined;
-                  instance.current.setDates(fromDate, { clear: true });
-                  onClear('to');
-                }}
+                showClear={Boolean(to)}
+                clearFieldAction={
+                  to
+                    ? () => {
+                        const fromDate = from ? new Date(from) : undefined;
+                        instance.current.setDates(fromDate, { clear: true });
+                        onClear('to');
+                      }
+                    : undefined
+                }
                 ref={toRef}
               />
             </div>

@@ -23,7 +23,10 @@ const PreviewClamp = ({ children }: { children: ReactNode }) => {
     const box = frame.current;
     const inner = content.current;
     if (!box || !inner || expanded) return undefined;
-    const measure = () => setOverflows(inner.scrollHeight > box.clientHeight + 1);
+    const measure = () =>
+      setOverflows(
+        inner.scrollHeight > box.clientHeight + 1 || inner.scrollWidth > box.clientWidth + 1
+      );
     measure();
     if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(measure);
@@ -59,4 +62,4 @@ const renderPreviewCell = (
 ): ReactElement =>
   preview && clampableType(inheritedType) ? <PreviewClamp>{cell}</PreviewClamp> : <>{cell}</>;
 
-export { renderPreviewCell };
+export { PreviewClamp, renderPreviewCell };

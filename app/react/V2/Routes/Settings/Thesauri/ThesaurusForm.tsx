@@ -32,10 +32,12 @@ const ThesaurusForm = ({
   const {
     register,
     setValue,
+    watch,
     handleSubmit,
     formState: { errors },
   } = form;
 
+  const name = watch('name');
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const { thesauri: thesaurusService } = useServices();
@@ -82,12 +84,15 @@ const ThesaurusForm = ({
           enableSelections
           header={
             <InputField
-              clearFieldAction={() => {}}
               id="thesauri-name"
               placeholder={t('System', 'Thesauri name', null, false)}
               hasErrors={!!errors.name}
               className="grow"
               {...register('name', { required: true })}
+              value={name ?? ''}
+              clearFieldAction={() => {
+                setValue('name', '', { shouldDirty: true });
+              }}
             />
           }
           onSelect={({ selectedRows }) => {

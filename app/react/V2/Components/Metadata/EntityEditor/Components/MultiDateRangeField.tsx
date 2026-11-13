@@ -1,6 +1,7 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { XCircleIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
@@ -79,17 +80,33 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const entries = toDateRangeEntries(value);
+          const hasRange = entries.some(
+            entry => entry.value.from !== null || entry.value.to !== null
+          );
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <div className="flex flex-col gap-1.5">
-              <EntityFieldLabel
-                htmlFor={`${field}.0.value.from`}
-                context={context}
-                label={label}
-                required={Boolean(registerOptions?.required)}
-                showError={showError}
-              />
+              <div className="flex items-start justify-between gap-2">
+                <EntityFieldLabel
+                  htmlFor={`${field}.0.value.from`}
+                  context={context}
+                  label={label}
+                  required={Boolean(registerOptions?.required)}
+                  showError={showError}
+                />
+                {hasRange && !disabled ? (
+                  <button
+                    type="button"
+                    onClick={() => onChange([{ value: { from: null, to: null } }])}
+                    data-testid="clear-field-button"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
+                  >
+                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
+                    <Translate className="sr-only">Clear</Translate>
+                  </button>
+                ) : null}
+              </div>
               <div className="flex flex-col gap-2">
                 {entries.map((entry, index) => {
                   const { from, to } = entry.value;

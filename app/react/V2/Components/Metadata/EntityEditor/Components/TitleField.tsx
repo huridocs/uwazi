@@ -1,5 +1,12 @@
 import React, { useCallback } from 'react';
-import { FieldValues, Path, RegisterOptions, useFormContext, useFormState } from 'react-hook-form';
+import {
+  FieldValues,
+  Path,
+  RegisterOptions,
+  useFormContext,
+  useFormState,
+  useWatch,
+} from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState, translationMessageSlot } from '../functions/fieldErrorState.js';
@@ -25,6 +32,8 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
   const formState = useFormState({ control, name: field, exact: true });
   const { showError, message } = getFieldErrorState(getFieldState(field, formState));
   const registration = register(field, registerOptions);
+  const watched = useWatch({ control, name: field });
+  const hasValue = watched !== undefined && watched !== null && String(watched) !== '';
   const onCurrentChange = useCallback(
     (value: string) => applyPdfFillFormValue({ setValue, field, value, shouldValidate: true }),
     [field, setValue]
@@ -58,6 +67,12 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
             onClick={slot?.onClick}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...registration}
+            value={String(watched ?? '')}
+            clearFieldAction={
+              !disabled && hasValue
+                ? () => applyPdfFillFormValue({ setValue, field, value: '', shouldValidate: true })
+                : undefined
+            }
             onFocus={() => slot?.onFocus()}
           />
           <EntityTranslationField

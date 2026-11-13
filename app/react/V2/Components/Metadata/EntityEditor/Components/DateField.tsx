@@ -41,6 +41,8 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
           rules={registerOptions}
           render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
             const { showError, message } = getFieldErrorState(fieldState);
+            const iso = typeof value === 'number' ? secondsToISODate(value) || '' : '';
+            const canClear = !disabled && typeof value === 'number';
 
             return (
               <InputField
@@ -59,8 +61,10 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
                 onBlur={onBlur}
                 onFocus={() => slot?.onFocus()}
                 onClick={slot?.onClick}
-                value={secondsToISODate(value) || ''}
+                value={iso}
                 className="max-w-48"
+                showClear={iso === ''}
+                clearFieldAction={canClear ? () => onChange(null) : undefined}
                 labelAccessory={slot?.labelAccessory}
                 latched={slot?.latched}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

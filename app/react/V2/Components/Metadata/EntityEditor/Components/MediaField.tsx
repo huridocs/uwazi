@@ -1,12 +1,7 @@
 /* eslint-disable react/no-multi-comp, max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ArrowUpTrayIcon,
-  LinkSlashIcon,
-  PlayIcon,
-  PlusIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowUpTrayIcon, PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon as ClearIcon } from '@heroicons/react/20/solid';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
@@ -468,7 +463,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 {registerOptions?.required && '*'}
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   variant="secondary"
@@ -479,17 +474,16 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                   <ArrowUpTrayIcon className="w-4 h-4" />
                   <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
                 </Button>
-                {hasValue ? (
-                  <Button
+                {hasValue && !disabled ? (
+                  <button
                     type="button"
-                    variant="secondary"
-                    disabled={disabled}
-                    className="inline-flex items-center gap-1.5"
                     onClick={handleUnlink}
+                    data-testid="clear-field-button"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
                   >
-                    <LinkSlashIcon className="w-4 h-4" />
-                    <Translate>Unlink</Translate>
-                  </Button>
+                    <ClearIcon className="h-3.5 w-3.5 text-ink-muted" />
+                    <Translate className="sr-only">Clear</Translate>
+                  </button>
                 ) : null}
               </div>
 
