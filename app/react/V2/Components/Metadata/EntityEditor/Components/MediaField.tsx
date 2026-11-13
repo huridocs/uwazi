@@ -1,12 +1,6 @@
 /* eslint-disable react/no-multi-comp, max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ArrowUpTrayIcon,
-  LinkSlashIcon,
-  PlayIcon,
-  PlusIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowUpTrayIcon, PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
@@ -19,6 +13,7 @@ import { MediaPickerModal } from './MediaPickerModal.js';
 import type { MediaPickerMode } from './MediaPickerModal.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T | null> ? T : never;
@@ -468,7 +463,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 {registerOptions?.required && '*'}
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   variant="secondary"
@@ -479,18 +474,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                   <ArrowUpTrayIcon className="w-4 h-4" />
                   <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
                 </Button>
-                {hasValue ? (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={disabled}
-                    className="inline-flex items-center gap-1.5"
-                    onClick={handleUnlink}
-                  >
-                    <LinkSlashIcon className="w-4 h-4" />
-                    <Translate>Unlink</Translate>
-                  </Button>
-                ) : null}
+                {hasValue && !disabled ? <FieldClearButton onClick={handleUnlink} /> : null}
               </div>
 
               {hasValue ? (

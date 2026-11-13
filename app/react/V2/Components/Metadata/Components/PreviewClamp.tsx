@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, type ReactElement, type ReactNode }
 import { Translate } from '#app/I18N/index.js';
 
 const clampableType = (inheritedType?: string) =>
-  inheritedType === 'text' || inheritedType === 'markdown';
+  inheritedType === 'text' || inheritedType === 'markdown' || inheritedType === 'link';
 
 const PreviewClamp = ({ children }: { children: ReactNode }) => {
   const frame = useRef<HTMLDivElement>(null);
@@ -23,7 +23,10 @@ const PreviewClamp = ({ children }: { children: ReactNode }) => {
     const box = frame.current;
     const inner = content.current;
     if (!box || !inner || expanded) return undefined;
-    const measure = () => setOverflows(inner.scrollHeight > box.clientHeight + 1);
+    const measure = () =>
+      setOverflows(
+        inner.scrollHeight > box.clientHeight + 1 || inner.scrollWidth > box.clientWidth + 1
+      );
     measure();
     if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(measure);
@@ -52,11 +55,7 @@ const PreviewClamp = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const renderPreviewCell = (
-  cell: ReactNode,
-  inheritedType: string | undefined,
-  preview: boolean
-): ReactElement =>
-  preview && clampableType(inheritedType) ? <PreviewClamp>{cell}</PreviewClamp> : <>{cell}</>;
+const renderPreviewCell = (cell: ReactNode, inheritedType: string | undefined): ReactElement =>
+  clampableType(inheritedType) ? <PreviewClamp>{cell}</PreviewClamp> : <>{cell}</>;
 
-export { renderPreviewCell };
+export { PreviewClamp, renderPreviewCell };

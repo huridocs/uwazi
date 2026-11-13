@@ -18,8 +18,44 @@ jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
   TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
 }));
 
+jest.mock('#V2/Components/Metadata/Components/EntityOverlayPill.js', () => ({
+  EntityOverlayPill: ({
+    label,
+    sharedId,
+    templateId,
+    onOpenEntity,
+    authorized = true,
+  }: {
+    label: string;
+    sharedId: string;
+    templateId: string;
+    authorized?: boolean;
+    onOpenEntity?: (target: { sharedId: string; title: string; templateId: string }) => void;
+  }) =>
+    authorized === false ? (
+      <span>{label}</span>
+    ) : (
+      <button type="button" onClick={() => onOpenEntity?.({ sharedId, title: label, templateId })}>
+        {label}
+      </button>
+    ),
+}));
+
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({
-  RelationshipConnectionsTable: () => null,
+  RelationshipConnectionsTable: ({
+    rows,
+  }: {
+    rows: { id: string; label: string; icon?: { _id?: string } | null }[];
+  }) => (
+    <ul>
+      {rows.map(row => (
+        <li key={row.id}>
+          {row.label}
+          {row.icon?._id ? <span data-testid="entity-icon">{row.icon._id}</span> : null}
+        </li>
+      ))}
+    </ul>
+  ),
 }));
 
 const options: MultiselectListOption[] = Array.from({ length: 8 }, (_, index) => ({
@@ -69,6 +105,23 @@ describe('RelationshipFieldEditor', () => {
     expect(screen.queryByText(/péople/)).not.toBeInTheDocument();
   });
 
+  it('puts the inherited-values note on the icon next to add entity', () => {
+    render(
+      <RelationshipFieldEditor
+        title="Contractors"
+        values={[]}
+        onChange={jest.fn()}
+        columns={[{ label: 'Note' }]}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Inherited values are read-only. Change the connection above, or edit the source entity.',
+      })
+    ).toBeInTheDocument();
+  });
+
   it('loads the remaining candidates when more options is clicked', async () => {
     const user = userEvent.setup();
     const lookupSearch = jest.fn(async (_search: string, offset = 0) => {
@@ -97,5 +150,86 @@ describe('RelationshipFieldEditor', () => {
     expect(lookupSearch).toHaveBeenLastCalledWith('', 8);
     expect(await screen.findByText('Entity 9')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /more options/ })).not.toBeInTheDocument();
+  });
+
+  it('opens the entity overlay from the pill', async () => {
+    const user = userEvent.setup();
+    const onEditSource = jest.fn();
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={[{ value: 'alpha', label: 'Alpha' }]}
+        onChange={jest.fn()}
+        onEditSource={onEditSource}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Alpha' }));
+    expect(onEditSource).toHaveBeenCalledWith('alpha', 'Alpha');
+    expect(screen.queryByRole('button', { name: 'View entity' })).not.toBeInTheDocument();
+  });
+
+  it('does not open an unauthorized connection', () => {
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={[{ value: 'alpha', label: 'Alpha', authorized: false }]}
+        onChange={jest.fn()}
+        onEditSource={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Alpha' })).not.toBeInTheDocument();
+  });
+
+  it('shows the entity icon on inherited connection pills', () => {
+    render(
+      <RelationshipFieldEditor
+        title="RelationshipMark"
+        values={[
+          {
+            value: 'a2l6t05h309',
+            label: 'Nort',
+            type: 'entity',
+            icon: { _id: 'MKD', label: 'North Macedonia', type: 'Flags' },
+          },
+        ]}
+        columns={[{ label: 'Note' }]}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('entity-icon')).toHaveTextContent('MKD');
+  });
+
+  it('folds selected values the way the read view does', () => {
+    const titles = [
+      'Zeta',
+      'Alpha',
+      'Mike',
+      'Bravo',
+      'Charlie',
+      'Delta',
+      'Echo',
+      'Foxtrot',
+      'Golf',
+      'Hotel',
+      'India',
+    ];
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={titles.map(title => ({ value: title, label: title }))}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
+    expect(screen.queryByText('Zeta')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show all 11' })).toBeInTheDocument();
+    expect(screen.getByText('Alpha').compareDocumentPosition(screen.getByText('Bravo'))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
   });
 });

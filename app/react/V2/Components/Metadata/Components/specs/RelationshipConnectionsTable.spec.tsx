@@ -55,7 +55,6 @@ describe('RelationshipConnectionsTable layout', () => {
     const user = userEvent.setup();
     render(
       <RelationshipConnectionsTable
-        preview
         rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
         columns={[
           {
@@ -88,7 +87,6 @@ describe('RelationshipConnectionsTable layout', () => {
     ];
     const { rerender } = render(
       <RelationshipConnectionsTable
-        preview
         rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
         columns={column('first paragraph')}
       />
@@ -97,7 +95,6 @@ describe('RelationshipConnectionsTable layout', () => {
     expect(screen.getByRole('button', { name: 'Show less' })).toBeInTheDocument();
     rerender(
       <RelationshipConnectionsTable
-        preview
         rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
         columns={column('second paragraph')}
       />
@@ -105,12 +102,11 @@ describe('RelationshipConnectionsTable layout', () => {
     expect(screen.getByRole('button', { name: 'Show more' })).toBeInTheDocument();
   });
 
-  it('shows geolocation and record values in full', () => {
+  it('keeps a map in full and folds long inherited text', () => {
     jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(200);
     jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);
     const { rerender } = render(
       <RelationshipConnectionsTable
-        preview
         rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
         columns={[
           { label: 'Geolocation', inheritedType: 'geolocation', cellsByEntityId: { e1: 'map' } },
@@ -127,7 +123,7 @@ describe('RelationshipConnectionsTable layout', () => {
         ]}
       />
     );
-    expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show more' })).toBeInTheDocument();
   });
 
   it('opens the entity overlay from the entity pill', async () => {
@@ -224,7 +220,6 @@ describe('RelationshipConnectionsTable cells', () => {
     jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(height);
     render(
       <RelationshipConnectionsTable
-        preview
         rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
         columns={[
           { label: 'Markdown', inheritedType: 'markdown', cellsByEntityId: { e1: <p>tall</p> } },

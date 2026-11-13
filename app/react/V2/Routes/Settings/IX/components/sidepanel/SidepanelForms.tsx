@@ -4,7 +4,6 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import get from 'lodash/get.js';
-import isEmpty from 'lodash/isEmpty.js';
 import uniqBy from 'lodash/uniqBy.js';
 import { Translate } from '#app/I18N/index.js';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
@@ -166,6 +165,92 @@ const Selects = ({
   );
 };
 
+type RelatedOption = { sharedId: string; label: string; suggested: boolean };
+
+const listedValues = (value: SuggestionValue | SuggestionValue[] | undefined) =>
+  (Array.isArray(value) ? value : [value]).filter(item => item !== undefined);
+
+const suggestionOptions = (suggestion: TableSuggestion): RelatedOption[] =>
+  uniqBy(
+    listedValues(suggestion.currentValue)
+      .concat(listedValues(suggestion.suggestedValue))
+      .map(value => ({
+        sharedId: get(value, 'id') || (value as string),
+        label: get(value, 'label') || (value as string),
+        suggested: true,
+      })),
+    'sharedId'
+  );
+
+const inheritedSearchClause = (
+  extractor: ClientIXExtractorType | undefined,
+  escapedText: string
+) => {
+  const fieldName = extractor?.inheritedProperty?.name;
+  const searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
+    ? '.label'
+    : '.value';
+  if (!extractor?.inheritedProperty) return `title:(${escapedText}*)`;
+  const exactMatchText = `metadata.${fieldName}${searchField}:("${escapedText}")`;
+  const wildcardMatchText = `metadata.${fieldName}${searchField}:(${escapedText}*)`;
+  return `(${exactMatchText} OR ${wildcardMatchText})`;
+};
+
+const relationshipSearchQuery = ({
+  property,
+  suggestion,
+  extractor,
+  searchText,
+  sharedIds,
+}: {
+  property: ClientPropertySchema;
+  suggestion: TableSuggestion;
+  extractor?: ClientIXExtractorType;
+  searchText: string;
+  sharedIds: string[];
+}) => {
+  let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
+  if (searchText) {
+    const escapedText = escapeLucene(searchText.trim());
+    searchQuery = `${searchQuery} AND ${inheritedSearchClause(extractor, escapedText)}`;
+  }
+  if (sharedIds.length) {
+    searchQuery = `sharedId:(${sharedIds.join(' OR ')}) OR (${searchQuery})`;
+  }
+  return searchQuery;
+};
+
+const optionsFromEntities = (
+  entities: ClientEntitySchema[],
+  allOptions: RelatedOption[],
+  context: { extractor?: ClientIXExtractorType; property: ClientPropertySchema }
+): MultiselectListOption[] => {
+  entities.forEach(entity => {
+    const existingOption = allOptions.find(option => entity.sharedId === option?.sharedId);
+    if (!existingOption) {
+      allOptions.push({
+        sharedId: entity.sharedId as string,
+        label: getEntityLabel(entity, context.extractor),
+        suggested: false,
+      });
+      return;
+    }
+    existingOption.label = getEntityLabel(entity, context.extractor);
+  });
+  return allOptions.map(option => ({
+    label: (
+      <MultiselectItemLabel
+        isSuggested={option.suggested}
+        label={option.label}
+        property={context.property}
+      />
+    ),
+    value: option.sharedId,
+    searchLabel: option.label!,
+    suggested: option.suggested,
+  }));
+};
+
 const Relationships = ({
   property,
   suggestion,
@@ -183,86 +268,29 @@ const Relationships = ({
   const searchTextRef = useRef('');
 
   useEffect(() => {
-    if (suggestion && property?.type === 'relationship') {
-      const currentValues = Array.isArray(suggestion.currentValue)
-        ? suggestion.currentValue
-        : [suggestion.currentValue];
-
-      const suggestedValues = Array.isArray(suggestion.suggestedValue)
-        ? suggestion.suggestedValue
-        : [suggestion.suggestedValue];
-
-      const allOptions: { sharedId: string; label: string; suggested: boolean }[] = uniqBy(
-        currentValues
-          .concat(suggestedValues)
-          .filter(value => value !== undefined)
-          .map((value: SuggestionValue) => ({
-            sharedId: get(value, 'id') || (value as string),
-            label: get(value, 'label') || (value as string),
-            suggested: true,
-          })),
-        'sharedId'
-      );
-      let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
-      if (searchTextRef.current) {
-        const escapedText = escapeLucene(searchTextRef.current.trim());
-        const fieldName = extractor?.inheritedProperty?.name;
-
-        const searchField = ['select', 'multiselect'].includes(
-          extractor?.inheritedProperty?.type || ''
-        )
-          ? '.label'
-          : '.value';
-
-        if (extractor?.inheritedProperty) {
-          const exactMatchText = `metadata.${fieldName}${searchField}:("${escapedText}")`;
-          const wildcardMatchText = `metadata.${fieldName}${searchField}:(${escapedText}*)`;
-          searchQuery = `${searchQuery} AND  (${exactMatchText} OR ${wildcardMatchText})`;
-        } else {
-          searchQuery = `${searchQuery} AND title:(${escapedText}*)`;
-        }
-      }
-      if (!isEmpty(allOptions)) {
-        searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
-      }
-
-      searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
-        .then((searchResult: ClientEntitySchema[]) => {
-          searchResult.forEach(entity => {
-            const existingOption = allOptions.find(option => entity.sharedId === option?.sharedId);
-            if (!existingOption) {
-              allOptions.push({
-                sharedId: entity.sharedId as string,
-                label: getEntityLabel(entity, extractor),
-                suggested: false,
-              });
-            } else {
-              existingOption.label = getEntityLabel(entity, extractor);
-            }
-          });
-
-          const initialOptions: MultiselectListOption[] = allOptions.map(option => ({
-            label: (
-              <MultiselectItemLabel
-                isSuggested={option.suggested}
-                label={option.label}
-                property={property}
-              />
-            ),
-            value: option.sharedId,
-            searchLabel: option.label!,
-            suggested: option.suggested,
-          }));
-
-          initialOptionsRef.current = initialOptions;
-          setOptions(initialOptions);
-        })
-        .catch(e => {
-          initialOptionsRef.current = [];
-          setOptions([]);
-          handleUnexpectedError(e, 'Error looking up search');
+    if (!suggestion || property?.type !== 'relationship') return;
+    const allOptions = suggestionOptions(suggestion);
+    const searchQuery = relationshipSearchQuery({
+      property,
+      suggestion,
+      extractor,
+      searchText: searchTextRef.current,
+      sharedIds: allOptions.map(option => option.sharedId),
+    });
+    searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
+      .then((searchResult: ClientEntitySchema[]) => {
+        const initialOptions = optionsFromEntities(searchResult, allOptions, {
+          extractor,
+          property,
         });
-    }
+        initialOptionsRef.current = initialOptions;
+        setOptions(initialOptions);
+      })
+      .catch(error => {
+        initialOptionsRef.current = [];
+        setOptions([]);
+        handleUnexpectedError(error, 'Error looking up search');
+      });
   }, [property, suggestion, extractor]);
 
   const lookupSearch = async (searchTerm: string) => {
@@ -344,6 +372,18 @@ const Relationships = ({
   );
 };
 
+const fieldDisplay = (type: string | undefined, fieldValue: unknown) => {
+  const formatted =
+    type === 'date' && typeof fieldValue === 'number'
+      ? secondsToISODate(fieldValue) || ''
+      : fieldValue;
+  const displayText = formatted === undefined || formatted === null ? '' : String(formatted);
+  return {
+    displayText,
+    unformattedDate: type === 'date' && typeof fieldValue === 'number' && displayText === '',
+  };
+};
+
 const TextInput = ({
   handleClickToFill,
   property,
@@ -392,6 +432,7 @@ const TextInput = ({
   }
 
   const fieldValue = watch('field');
+  const { displayText, unformattedDate } = fieldDisplay(property.type, fieldValue);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dateString = event.target.value;
@@ -403,13 +444,6 @@ const TextInput = ({
     }
   };
 
-  const getDisplayValue = () => {
-    if (property.type === 'date' && typeof fieldValue === 'number') {
-      return secondsToISODate(fieldValue);
-    }
-    return fieldValue;
-  };
-
   return (
     <div className="flex gap-2 grow items-center">
       <div className="grow">
@@ -417,11 +451,12 @@ const TextInput = ({
           clearFieldAction={() => {
             setValue('field', '', { shouldDirty: true });
           }}
+          showClear={unformattedDate}
           id={property.label}
           label={<Translate context={templateId}>{property.label}</Translate>}
           hideLabel
           type={inputType}
-          value={getDisplayValue()}
+          value={displayText}
           onChange={property.type === 'date' ? handleDateChange : fieldRegistration.onChange}
           onBlur={fieldRegistration.onBlur}
           name={fieldRegistration.name || 'field'}
