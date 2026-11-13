@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   InformationCircleIcon,
-  PencilSquareIcon,
+  EyeIcon,
   PlusIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -22,6 +22,7 @@ import {
   useRelationshipCandidates,
   type RelationshipCandidateSearch,
 } from './RelationshipCandidateList.js';
+import { SelectedRelationshipValues } from './SelectedRelationshipValues.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -130,36 +131,45 @@ const RelationshipFieldEditor = ({
         ) : null}
       </div>
 
-      <RelationshipConnectionsTable
-        rows={rows}
-        columns={columns}
-        translationContext={translationContext}
-        targetTemplateId={targetTemplateId}
-        preview
-        renderActions={row => (
-          <div className="flex items-center justify-end gap-0.5">
-            <button
-              type="button"
-              disabled={disabled || !onEditSource}
-              onClick={() => onEditSource?.(row.id, row.label)}
-              title={t('System', 'Edit at source', null, false)}
-              className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-meta font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <PencilSquareIcon className="h-3 w-3" aria-hidden />
-              <Translate>Source</Translate>
-            </button>
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => removeEntity(row.id)}
-              title={t('System', 'Remove from connection', null, false)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-seal disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
-            </button>
-          </div>
-        )}
-      />
+      {columns.length === 0 && rows.length > 0 ? (
+        <SelectedRelationshipValues
+          rows={rows}
+          targetTemplateId={targetTemplateId}
+          disabled={disabled}
+          onRemove={removeEntity}
+          onEditSource={onEditSource}
+        />
+      ) : (
+        <RelationshipConnectionsTable
+          rows={rows}
+          columns={columns}
+          translationContext={translationContext}
+          targetTemplateId={targetTemplateId}
+          renderActions={row => (
+            <div className="flex items-center justify-end gap-0.5">
+              <button
+                type="button"
+                disabled={disabled || !onEditSource}
+                onClick={() => onEditSource?.(row.id, row.label)}
+                title={t('System', 'View entity', null, false)}
+                className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-meta font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <EyeIcon className="h-3 w-3" aria-hidden />
+                <Translate>Source</Translate>
+              </button>
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => removeEntity(row.id)}
+                title={t('System', 'Remove from connection', null, false)}
+                className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-seal disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            </div>
+          )}
+        />
+      )}
 
       <div className="flex items-center">
         {adding ? (

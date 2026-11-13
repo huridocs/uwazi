@@ -6,11 +6,7 @@ import {
   RelatedRelationshipMetadataProperty,
 } from '#V2/formatters/types.js';
 import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
-import {
-  FOLD_COUNT,
-  sharedRelationshipTemplateId,
-  sortRelationshipValues,
-} from './connectionPillsHelpers.js';
+import { sortRelationshipValues } from './connectionPillsHelpers.js';
 
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
@@ -24,6 +20,8 @@ type ConnectionPillsForFieldOptions = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
+const SHOWN_COUNT = 10;
+
 const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelationshipEntityValue => 'title' in value;
@@ -31,34 +29,33 @@ const isEntityRelationshipValue = (
 const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionPillsProps) => {
   const [expanded, setExpanded] = useState(false);
   const sorted = useMemo(() => sortRelationshipValues(values), [values]);
-  const quiet = Boolean(sharedRelationshipTemplateId(sorted, targetTemplateId));
-  const folds = sorted.length > FOLD_COUNT;
-  const shown = !folds || expanded ? sorted : sorted.slice(0, FOLD_COUNT);
+  const overflows = sorted.length > SHOWN_COUNT;
+  const shown = !overflows || expanded ? sorted : sorted.slice(0, SHOWN_COUNT);
 
   if (!sorted.length) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <ul className="flex min-w-0 flex-wrap items-center gap-1.5">
         {shown.map((value, index) => {
           const itemKey = value._id || `rel-${index}`;
           return (
-            <EntityOverlayPill
-              key={itemKey}
-              sharedId={value._id}
-              templateId={value.templateId || targetTemplateId || ''}
-              label={value.title}
-              icon={value.icon}
-              authorized={value.authorized}
-              quiet={quiet}
-              onOpenEntity={onOpenEntity}
-            />
+            <li key={itemKey} className="min-w-0 max-w-full">
+              <EntityOverlayPill
+                sharedId={value._id}
+                templateId={value.templateId || targetTemplateId || ''}
+                label={value.title}
+                icon={value.icon}
+                authorized={value.authorized}
+                onOpenEntity={onOpenEntity}
+              />
+            </li>
           );
         })}
-      </div>
-      {folds ? (
+      </ul>
+      {overflows ? (
         <button
           type="button"
           aria-expanded={expanded}
@@ -97,10 +94,5 @@ const connectionPillsForField = (
   );
 };
 
-export {
-  ConnectionPills,
-  connectionPillsForField,
-  isEntityRelationshipValue,
-  sharedRelationshipTemplateId,
-};
+export { ConnectionPills, connectionPillsForField, isEntityRelationshipValue };
 export type { ConnectionPillsProps, OpenEntityTarget, RelationshipEntityValue };

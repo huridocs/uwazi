@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, type ReactElement, type ReactNode }
 import { Translate } from '#app/I18N/index.js';
 
 const clampableType = (inheritedType?: string) =>
-  inheritedType === 'text' || inheritedType === 'markdown';
+  inheritedType === 'text' || inheritedType === 'markdown' || inheritedType === 'link';
 
 const PreviewClamp = ({ children }: { children: ReactNode }) => {
   const frame = useRef<HTMLDivElement>(null);
@@ -55,11 +55,7 @@ const PreviewClamp = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const renderPreviewCell = (
-  cell: ReactNode,
-  inheritedType: string | undefined,
-  preview: boolean
-): ReactElement =>
-  preview && clampableType(inheritedType) ? <PreviewClamp>{cell}</PreviewClamp> : <>{cell}</>;
+const renderPreviewCell = (cell: ReactNode, inheritedType: string | undefined): ReactElement =>
+  clampableType(inheritedType) ? <PreviewClamp>{cell}</PreviewClamp> : <>{cell}</>;
 
 export { PreviewClamp, renderPreviewCell };

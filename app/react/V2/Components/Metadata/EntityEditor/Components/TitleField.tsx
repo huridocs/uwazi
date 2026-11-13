@@ -60,6 +60,7 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
             disabled={disabled}
             hasErrors={showError}
             rows={2}
+            centerClear
             resize="none"
             overlay={slot?.overlay}
             labelAccessory={slot?.labelAccessory}

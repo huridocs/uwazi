@@ -77,6 +77,20 @@ describe('Textarea', () => {
     expect(screen.queryByTestId('clear-field-button')).not.toBeInTheDocument();
   });
 
+  it('centers the clear control when asked', () => {
+    render(
+      <Textarea
+        id="title"
+        label="Title"
+        value="child"
+        centerClear
+        clearFieldAction={() => undefined}
+      />
+    );
+
+    expect(screen.getByTestId('clear-field-button')).toHaveClass('top-1/2', '-translate-y-1/2');
+  });
+
   it('handles disabled state', () => {
     defaultProps.disabled = true;
     render(<TestComponent />);

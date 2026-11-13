@@ -46,7 +46,6 @@ type ConnectionCardStackProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel: string;
-  preview?: boolean;
 };
 
 const ConnectionCardStack = ({
@@ -57,7 +56,6 @@ const ConnectionCardStack = ({
   onOpenEntity,
   renderActions,
   emptyLabel,
-  preview = false,
 }: ConnectionCardStackProps) => {
   if (rows.length === 0) {
     return (
@@ -92,8 +90,7 @@ const ConnectionCardStack = ({
                   <span className="max-w-full min-w-0 overflow-hidden [&_.map-container]:z-0">
                     {renderPreviewCell(
                       renderInheritedCell(cellContent(column, row.id)),
-                      column.inheritedType,
-                      preview
+                      column.inheritedType
                     )}
                   </span>
                 </React.Fragment>

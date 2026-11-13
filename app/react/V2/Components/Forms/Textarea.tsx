@@ -26,6 +26,7 @@ interface TextareaProps {
   className?: string;
   name?: string;
   clearFieldAction?: () => void;
+  centerClear?: boolean;
   overlay?: React.ReactNode;
   labelAccessory?: React.ReactNode;
   latched?: boolean;
@@ -52,8 +53,8 @@ const textareaClass = (state: FieldState, clearPadding: string | false, latched:
     clearPadding
   );
 
-const clearButtonClass = (besideOverlay: boolean) =>
-  `absolute top-1 z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50 ${besideOverlay ? 'right-36' : 'right-1'}`;
+const clearButtonClass = (besideOverlay: boolean, centered: boolean) =>
+  `absolute z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50 ${centered ? 'top-1/2 -translate-y-1/2' : 'top-1'} ${besideOverlay ? 'right-36' : 'right-1'}`;
 
 const Textarea = React.forwardRef(
   (
@@ -69,6 +70,7 @@ const Textarea = React.forwardRef(
       className = '',
       name = '',
       clearFieldAction,
+      centerClear = false,
       overlay,
       labelAccessory,
       latched = false,
@@ -117,7 +119,7 @@ const Textarea = React.forwardRef(
               onClick={clearFieldAction}
               disabled={disabled}
               data-testid="clear-field-button"
-              className={clearButtonClass(Boolean(overlay))}
+              className={clearButtonClass(Boolean(overlay), centerClear)}
             >
               <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
               <Translate className="sr-only">Clear</Translate>

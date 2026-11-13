@@ -18,6 +18,24 @@ jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
   TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
 }));
 
+jest.mock('#V2/Components/Metadata/Components/EntityOverlayPill.js', () => ({
+  EntityOverlayPill: ({
+    label,
+    sharedId,
+    templateId,
+    onOpenEntity,
+  }: {
+    label: string;
+    sharedId: string;
+    templateId: string;
+    onOpenEntity?: (target: { sharedId: string; title: string; templateId: string }) => void;
+  }) => (
+    <button type="button" onClick={() => onOpenEntity?.({ sharedId, title: label, templateId })}>
+      {label}
+    </button>
+  ),
+}));
+
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({
   RelationshipConnectionsTable: () => null,
 }));
@@ -32,7 +50,7 @@ const expandCandidates = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(screen.getByRole('button', { name: 'Add entity' }));
   await waitFor(() => expect(screen.getByText('Entity 1')).toBeInTheDocument());
   expect(screen.queryByText('Entity 6')).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: '3 x more' }));
+  await user.click(screen.getByRole('button', { name: '325 x more' }));
   expect(screen.getByText('Entity 8')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'x less' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /322 more options/ })).toBeInTheDocument();
@@ -114,5 +132,52 @@ describe('RelationshipFieldEditor', () => {
     expect(lookupSearch).toHaveBeenLastCalledWith('', 8);
     expect(await screen.findByText('Entity 9')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /more options/ })).not.toBeInTheDocument();
+  });
+
+  it('opens the entity overlay from the pill', async () => {
+    const user = userEvent.setup();
+    const onEditSource = jest.fn();
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={[{ value: 'alpha', label: 'Alpha' }]}
+        onChange={jest.fn()}
+        onEditSource={onEditSource}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Alpha' }));
+    expect(onEditSource).toHaveBeenCalledWith('alpha', 'Alpha');
+    expect(screen.queryByRole('button', { name: 'View entity' })).not.toBeInTheDocument();
+  });
+
+  it('folds selected values the way the read view does', () => {
+    const titles = [
+      'Zeta',
+      'Alpha',
+      'Mike',
+      'Bravo',
+      'Charlie',
+      'Delta',
+      'Echo',
+      'Foxtrot',
+      'Golf',
+      'Hotel',
+      'India',
+    ];
+    render(
+      <RelationshipFieldEditor
+        title="Contractor"
+        values={titles.map(title => ({ value: title, label: title }))}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
+    expect(screen.queryByText('Zeta')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show all 11' })).toBeInTheDocument();
+    expect(screen.getByText('Alpha').compareDocumentPosition(screen.getByText('Bravo'))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
   });
 });

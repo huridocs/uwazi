@@ -55,7 +55,6 @@ type ConnectionsTableProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel: string;
-  preview: boolean;
 };
 
 const connectionsTable = ({
@@ -70,7 +69,6 @@ const connectionsTable = ({
   onOpenEntity,
   renderActions,
   emptyLabel,
-  preview,
 }: ConnectionsTableProps) => (
   <table className="w-full table-auto border-collapse text-sm">
     <caption className="sr-only">
@@ -119,8 +117,7 @@ const connectionsTable = ({
                   <div className="max-w-full overflow-hidden [&_.map-container]:z-0">
                     {renderPreviewCell(
                       renderInheritedCell(cellContent(column, row.id)),
-                      column.inheritedType,
-                      preview
+                      column.inheritedType
                     )}
                   </div>
                 </td>,
@@ -146,7 +143,6 @@ type RelationshipConnectionsTableProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel?: string;
-  preview?: boolean;
 };
 
 const RelationshipConnectionsTableComponent = ({
@@ -157,7 +153,6 @@ const RelationshipConnectionsTableComponent = ({
   onOpenEntity,
   renderActions,
   emptyLabel = 'No connected entities yet.',
-  preview = false,
 }: RelationshipConnectionsTableProps) => {
   const templates = useAtomValue(templatesAtom);
   const entityHeader =
@@ -185,7 +180,6 @@ const RelationshipConnectionsTableComponent = ({
             onOpenEntity={onOpenEntity}
             renderActions={renderActions}
             emptyLabel={emptyLabel}
-            preview={preview}
           />
         </div>
       ) : (
@@ -201,7 +195,6 @@ const RelationshipConnectionsTableComponent = ({
           onOpenEntity,
           renderActions,
           emptyLabel,
-          preview,
         })
       )}
     </div>
