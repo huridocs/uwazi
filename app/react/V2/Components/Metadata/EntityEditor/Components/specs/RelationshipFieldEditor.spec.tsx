@@ -37,7 +37,20 @@ jest.mock('#V2/Components/Metadata/Components/EntityOverlayPill.js', () => ({
 }));
 
 jest.mock('#V2/Components/Metadata/Components/RelationshipConnectionsTable.js', () => ({
-  RelationshipConnectionsTable: () => null,
+  RelationshipConnectionsTable: ({
+    rows,
+  }: {
+    rows: { id: string; label: string; icon?: { _id?: string } | null }[];
+  }) => (
+    <ul>
+      {rows.map(row => (
+        <li key={row.id}>
+          {row.label}
+          {row.icon?._id ? <span data-testid="entity-icon">{row.icon._id}</span> : null}
+        </li>
+      ))}
+    </ul>
+  ),
 }));
 
 const options: MultiselectListOption[] = Array.from({ length: 8 }, (_, index) => ({
@@ -149,6 +162,26 @@ describe('RelationshipFieldEditor', () => {
     await user.click(screen.getByRole('button', { name: 'Alpha' }));
     expect(onEditSource).toHaveBeenCalledWith('alpha', 'Alpha');
     expect(screen.queryByRole('button', { name: 'View entity' })).not.toBeInTheDocument();
+  });
+
+  it('shows the entity icon on inherited connection pills', () => {
+    render(
+      <RelationshipFieldEditor
+        title="RelationshipMark"
+        values={[
+          {
+            value: 'a2l6t05h309',
+            label: 'Nort',
+            type: 'entity',
+            icon: { _id: 'MKD', label: 'North Macedonia', type: 'Flags' },
+          },
+        ]}
+        columns={[{ label: 'Note' }]}
+        onChange={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('entity-icon')).toHaveTextContent('MKD');
   });
 
   it('folds selected values the way the read view does', () => {

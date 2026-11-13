@@ -1,10 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  InformationCircleIcon,
-  EyeIcon,
-  PlusIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { InformationCircleIcon, EyeIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import { CompactSearchInput } from '#V2/Components/Forms/CompactSearchInput.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
@@ -14,6 +9,7 @@ import {
   type RelationshipTableRow,
 } from '#V2/Components/Metadata/Components/RelationshipConnectionsTable.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { readRelationshipIcon } from '#V2/formatters/metadata/relationshipEntityValue.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { InheritColumn } from '../../relationshipInherit.js';
 import { EntityFieldLabel } from '../functions/fieldErrorState.js';
@@ -69,6 +65,7 @@ const RelationshipFieldEditor = ({
         id: String(row.value ?? ''),
         label: row.label ?? String(row.value ?? ''),
         templateId: targetTemplateId,
+        icon: readRelationshipIcon(row.icon),
       })),
     [targetTemplateId, values]
   );
