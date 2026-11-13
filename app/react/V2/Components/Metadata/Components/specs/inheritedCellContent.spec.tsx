@@ -149,7 +149,7 @@ describe('inheritedCellContent', () => {
       )
     );
     const img = screen.getByRole('img');
-    expect(img).toHaveAttribute('src', '/api/files/photo.png');
+    expect(img).toHaveAttribute('src', '/files/thumbnails/photo.png');
     expect(img).toHaveStyle({ objectFit: 'contain' });
     expect(img.className).toContain('max-h-32');
   });
@@ -207,7 +207,7 @@ describe('inheritedCellContent', () => {
         </div>
       </TestAtomStoreProvider>
     );
-    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/files/photo.png');
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/files/thumbnails/photo.png');
     expect(screen.queryByText('IA1')).not.toBeInTheDocument();
     unmount();
 

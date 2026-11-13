@@ -21,5 +21,6 @@ export interface FileStorage {
   getPath(file: BaseFile): string;
   getFiles(inputs: FileLocation[]): Promise<FileContents[]>;
   getFile(input: FileLocation): FileContents;
-  fileExists(filePath: BaseFile): Promise<boolean>;
+  fileExists(file: BaseFile): Promise<boolean>;
+  fileExists(location: FileLocation): Promise<boolean>;
 }

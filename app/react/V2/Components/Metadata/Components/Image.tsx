@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ImageMetadataProperty } from '#V2/formatters/types.js';
+import { thumbnailRequestUrl } from '#V2/shared/thumbnailRequestUrl.js';
 
 type ImageProps = {
   values: ImageMetadataProperty['values'];
@@ -54,7 +55,7 @@ const Image = ({
                 compact ? 'max-h-32' : 'h-full min-h-0'
               }`}
               style={{ objectFit: cover ? 'cover' : 'contain' }}
-              src={image.value}
+              src={compact ? thumbnailRequestUrl(image.value) : image.value}
               alt={image.alt}
               onError={() => setErrorIndices(prevErrors => new Set(prevErrors).add(index))}
             />

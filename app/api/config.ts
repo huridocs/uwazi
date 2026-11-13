@@ -88,6 +88,7 @@ const {
   ELASTICSEARCH_URL,
   ENVIRONMENT,
   FEATURE_FLAG_FILE_CACHE_HEADERS,
+  FEATURE_FLAG_IMAGE_THUMBNAILS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
   FEATURE_FLAG_THEME_CUSTOMIZATION,
   FEATURE_FLAG_AI_ASSISTANT,
@@ -98,6 +99,7 @@ const {
   FEATURE_FLAG_EXPERIMENTAL_FEATURES,
   AI_ASSISTANT_SERVICE_URL,
   TRANSLATION_SERVICE_URL,
+  THUMBNAIL_GENERATOR_URL,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
@@ -110,6 +112,8 @@ const {
   USER_SESSION_SECRET,
   NEW_HEADER,
 } = process.env;
+
+const imageThumbnails = FEATURE_FLAG_IMAGE_THUMBNAILS === 'true';
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 const filesRootPath = FILES_ROOT_PATH || rootPath;
@@ -257,6 +261,8 @@ export const config = {
   sessionsBackend,
   tenantsBackend,
   tenantsPollIntervalSeconds,
+  imageThumbnails,
+  thumbnailGeneratorUrl: THUMBNAIL_GENERATOR_URL || '',
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,
