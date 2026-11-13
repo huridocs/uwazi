@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Translate, t } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
+import { clampItems } from '#V2/Components/Metadata/Components/clampItems.js';
 import { EntityOverlayPill } from '#V2/Components/Metadata/Components/EntityOverlayPill.js';
+import { ShowAllToggle } from '#V2/Components/Metadata/Components/ShowAllToggle.js';
 import type { RelationshipTableRow } from '#V2/Components/Metadata/Components/RelationshipConnectionsTable.js';
 
-const SHOWN_COUNT = 10;
 const titleCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
 type SelectedRelationshipValuesProps = {
@@ -27,8 +28,7 @@ const SelectedRelationshipValues = ({
     () => [...rows].sort((left, right) => titleCollator.compare(left.label, right.label)),
     [rows]
   );
-  const overflows = sorted.length > SHOWN_COUNT;
-  const shown = !overflows || expanded ? sorted : sorted.slice(0, SHOWN_COUNT);
+  const { shown, overflows } = clampItems(sorted, expanded);
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5" data-testid="relationship-connections">
@@ -64,21 +64,11 @@ const SelectedRelationshipValues = ({
         ))}
       </ul>
       {overflows ? (
-        <button
-          type="button"
-          aria-expanded={expanded}
-          className="self-start text-xs font-medium text-ink-secondary underline underline-offset-2 hover:text-ink"
-          onClick={() => setExpanded(current => !current)}
-        >
-          {expanded ? (
-            <Translate>Show less</Translate>
-          ) : (
-            <>
-              <Translate>Show all</Translate>
-              {` ${sorted.length}`}
-            </>
-          )}
-        </button>
+        <ShowAllToggle
+          expanded={expanded}
+          total={sorted.length}
+          onToggle={() => setExpanded(current => !current)}
+        />
       ) : null}
     </div>
   );

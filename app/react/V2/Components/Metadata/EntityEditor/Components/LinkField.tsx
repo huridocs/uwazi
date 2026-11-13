@@ -1,5 +1,4 @@
 import React from 'react';
-import { XMarkIcon } from '@heroicons/react/20/solid';
 import {
   Controller,
   FieldValues,
@@ -19,6 +18,7 @@ import {
 } from '../functions/fieldErrorState.js';
 import type { EditEntityFormValues } from '../functions/buildEditEntityDefaultValues.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 import { EntityTranslationField } from './EntityTranslationField.js';
 
 const clearTranslatedLink = (
@@ -98,19 +98,13 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   {registerOptions?.required && '*'}
                 </Label>
                 {hasLink && !disabled ? (
-                  <button
-                    type="button"
+                  <FieldClearButton
                     onClick={() => {
                       fieldValue.onChange({ label: '', url: '' });
                       if (translatableName)
                         clearTranslatedLink(translatableName, getValues, setValue);
                     }}
-                    data-testid="clear-field-button"
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
-                  >
-                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
-                    <Translate className="sr-only">Clear</Translate>
-                  </button>
+                  />
                 ) : null}
               </div>
               <div className="flex flex-col gap-2 md:flex-row">

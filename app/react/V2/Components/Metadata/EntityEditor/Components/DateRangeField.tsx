@@ -1,7 +1,5 @@
 import React from 'react';
-import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
   EntityFieldError,
@@ -10,6 +8,7 @@ import {
 } from '../functions/fieldErrorState.js';
 import { DateRangeInputs } from './DateRangeInputs.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type DateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -61,15 +60,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                   showError={showError}
                 />
                 {hasRange && !disabled ? (
-                  <button
-                    type="button"
-                    onClick={() => onChange({ from: null, to: null })}
-                    data-testid="clear-field-button"
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
-                  >
-                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
-                    <Translate className="sr-only">Clear</Translate>
-                  </button>
+                  <FieldClearButton onClick={() => onChange({ from: null, to: null })} />
                 ) : null}
               </div>
               <div className="flex gap-2">

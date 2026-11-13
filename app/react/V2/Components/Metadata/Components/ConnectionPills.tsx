@@ -1,5 +1,4 @@
 import React, { type ReactElement, useMemo, useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 import {
   RelationshipMetadataProperty,
@@ -7,6 +6,8 @@ import {
 } from '#V2/formatters/types.js';
 import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
 import { sortRelationshipValues } from './connectionPillsHelpers.js';
+import { clampItems } from './clampItems.js';
+import { ShowAllToggle } from './ShowAllToggle.js';
 
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
@@ -20,8 +21,6 @@ type ConnectionPillsForFieldOptions = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
-const SHOWN_COUNT = 10;
-
 const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelationshipEntityValue => 'title' in value;
@@ -29,8 +28,7 @@ const isEntityRelationshipValue = (
 const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionPillsProps) => {
   const [expanded, setExpanded] = useState(false);
   const sorted = useMemo(() => sortRelationshipValues(values), [values]);
-  const overflows = sorted.length > SHOWN_COUNT;
-  const shown = !overflows || expanded ? sorted : sorted.slice(0, SHOWN_COUNT);
+  const { shown, overflows } = clampItems(sorted, expanded);
 
   if (!sorted.length) {
     return null;
@@ -56,21 +54,11 @@ const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionP
         })}
       </ul>
       {overflows ? (
-        <button
-          type="button"
-          aria-expanded={expanded}
-          className="self-start text-xs font-medium text-ink-secondary underline underline-offset-2 hover:text-ink"
-          onClick={() => setExpanded(current => !current)}
-        >
-          {expanded ? (
-            <Translate>Show less</Translate>
-          ) : (
-            <>
-              <Translate>Show all</Translate>
-              {` ${sorted.length}`}
-            </>
-          )}
-        </button>
+        <ShowAllToggle
+          expanded={expanded}
+          total={sorted.length}
+          onToggle={() => setExpanded(current => !current)}
+        />
       ) : null}
     </div>
   );

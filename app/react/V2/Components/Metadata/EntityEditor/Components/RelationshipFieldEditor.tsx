@@ -13,6 +13,7 @@ import { readRelationshipIcon } from '#V2/formatters/metadata/relationshipEntity
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { InheritColumn } from '../../relationshipInherit.js';
 import { EntityFieldLabel } from '../functions/fieldErrorState.js';
+import { FieldClearButton } from './FieldClearButton.js';
 import {
   RelationshipCandidateList,
   useRelationshipCandidates,
@@ -116,17 +117,7 @@ const RelationshipFieldEditor = ({
             <RelationCaption relationLabel={relationLabel} fieldTitle={title} />
           ) : null}
         </div>
-        {onClear ? (
-          <button
-            type="button"
-            onClick={onClear}
-            data-testid="clear-field-button"
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
-          >
-            <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
-            <Translate className="sr-only">Clear</Translate>
-          </button>
-        ) : null}
+        {onClear ? <FieldClearButton onClick={onClear} /> : null}
       </div>
 
       {columns.length === 0 && rows.length > 0 ? (

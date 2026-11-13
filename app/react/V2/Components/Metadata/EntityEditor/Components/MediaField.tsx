@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp, max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowUpTrayIcon, PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { XMarkIcon as ClearIcon } from '@heroicons/react/20/solid';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
@@ -14,6 +13,7 @@ import { MediaPickerModal } from './MediaPickerModal.js';
 import type { MediaPickerMode } from './MediaPickerModal.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T | null> ? T : never;
@@ -474,17 +474,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                   <ArrowUpTrayIcon className="w-4 h-4" />
                   <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
                 </Button>
-                {hasValue && !disabled ? (
-                  <button
-                    type="button"
-                    onClick={handleUnlink}
-                    data-testid="clear-field-button"
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
-                  >
-                    <ClearIcon className="h-3.5 w-3.5 text-ink-muted" />
-                    <Translate className="sr-only">Clear</Translate>
-                  </button>
-                ) : null}
+                {hasValue && !disabled ? <FieldClearButton onClick={handleUnlink} /> : null}
               </div>
 
               {hasValue ? (

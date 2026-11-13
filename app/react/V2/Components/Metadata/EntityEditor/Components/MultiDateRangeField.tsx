@@ -1,7 +1,6 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { XCircleIcon } from '@heroicons/react/24/outline';
-import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
@@ -11,6 +10,7 @@ import {
 } from '../functions/fieldErrorState.js';
 import { DateRangeInputs } from './DateRangeInputs.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type MultiDateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -96,15 +96,9 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                   showError={showError}
                 />
                 {hasRange && !disabled ? (
-                  <button
-                    type="button"
+                  <FieldClearButton
                     onClick={() => onChange([{ value: { from: null, to: null } }])}
-                    data-testid="clear-field-button"
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50"
-                  >
-                    <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
-                    <Translate className="sr-only">Clear</Translate>
-                  </button>
+                  />
                 ) : null}
               </div>
               <div className="flex flex-col gap-2">
