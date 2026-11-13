@@ -63,7 +63,7 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
                 onClick={slot?.onClick}
                 value={iso}
                 className="max-w-48"
-                showClear={iso === ''}
+                showClear={canClear && iso === ''}
                 clearFieldAction={canClear ? () => onChange(null) : undefined}
                 labelAccessory={slot?.labelAccessory}
                 latched={slot?.latched}
