@@ -32,6 +32,11 @@ jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
   TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
 }));
 
+jest.mock('#V2/Components/CustomIcons/index.js', () => ({
+  EntityIcon: ({ data }: { data?: { _id?: string } }) =>
+    data?._id ? <span data-testid="entity-icon">{data._id}</span> : null,
+}));
+
 const renderCell = (node: React.ReactNode) =>
   render(
     <TestAtomStoreProvider initialValues={[[localeAtom, 'en']]}>
@@ -163,7 +168,11 @@ describe('inheritedCellContent', () => {
             value: 'person-1',
             inheritedType: 'relationship',
             inheritedValue: [
-              { value: 'city-1', label: 'Quito' },
+              {
+                value: 'city-1',
+                label: 'Quito',
+                icon: { _id: 'star', label: 'Star', type: 'Icons' },
+              },
               { value: 'city-2', label: 'Guayaquil' },
             ],
           },
@@ -172,14 +181,15 @@ describe('inheritedCellContent', () => {
         { onOpenEntity, inheritTargetTemplateId: 'city-tmpl' }
       )
     );
-    expect(screen.getByRole('button', { name: 'Quito' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Quito/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Guayaquil' })).toBeInTheDocument();
-    screen.getByRole('button', { name: 'Quito' }).click();
+    screen.getByRole('button', { name: /Quito/ }).click();
     expect(onOpenEntity).toHaveBeenCalledWith({
       sharedId: 'city-1',
       title: 'Quito',
       templateId: 'city-tmpl',
     });
+    expect(screen.getByTestId('entity-icon')).toHaveTextContent('star');
   });
 
   it('renders a second-hop image and geolocation instead of the related title', () => {

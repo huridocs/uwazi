@@ -35,8 +35,31 @@ const uniqueCandidates = (options: MultiselectListOption[]) =>
     (option, index, list) => list.findIndex(other => other.value === option.value) === index
   );
 
+const titleCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
+
+const byLabel = (left: MultiselectListOption, right: MultiselectListOption) =>
+  titleCollator.compare(candidateLabel(left), candidateLabel(right));
+
 const unselected = (options: MultiselectListOption[], selectedIds: string[]) =>
-  options.filter(option => !selectedIds.includes(option.value));
+  options.filter(option => !selectedIds.includes(option.value)).sort(byLabel);
+
+const pageFrom = (result: RelationshipCandidatePage, selectedIds: string[]) => ({
+  candidates: unselected(result.options, selectedIds),
+  total: result.total,
+  fetched: result.fetched,
+});
+
+const claimSearch = (
+  search: string,
+  state: { id: number; latest: string },
+  lookupSearch: RelationshipCandidateSearch | undefined
+) => {
+  if (search !== state.latest || !lookupSearch) {
+    return undefined;
+  }
+  state.id += 1;
+  return { id: state.id, lookupSearch };
+};
 
 const useRelationshipCandidates = ({
   lookupSearch,
@@ -51,31 +74,45 @@ const useRelationshipCandidates = ({
 }) => {
   const [showAll, setShowAll] = useState(false);
   const [page, setPage] = useState(emptyPage());
+  const runSearchRef = useRef<{
+    id: number;
+    latest: string;
+    selectedIds: string[];
+    run: (search: string) => Promise<void>;
+  }>({
+    id: 0,
+    latest: '',
+    selectedIds,
+    run: async () => undefined,
+  });
 
   const runSearch = async (search: string) => {
-    if (!lookupSearch) {
-      setPage(emptyPage());
+    const started = claimSearch(search, runSearchRef.current, lookupSearch);
+    if (!started) {
+      if (search === runSearchRef.current.latest) setPage(emptyPage());
       return;
     }
-    const result = await lookupSearch(search);
-    setPage({
-      candidates: unselected(result.options, selectedIds),
-      total: result.total,
-      fetched: result.fetched,
-    });
+    const result = await started.lookupSearch(search);
+    if (started.id === runSearchRef.current.id && search === runSearchRef.current.latest) {
+      setPage(pageFrom(result, runSearchRef.current.selectedIds));
+    }
   };
 
   const loadMore = () => {
     if (!lookupSearch || page.fetched >= page.total) {
       return;
     }
-    lookupSearch(query, page.fetched)
+    const { id, latest } = runSearchRef.current;
+    lookupSearch(latest, page.fetched)
       .then(result => {
+        if (id !== runSearchRef.current.id) {
+          return;
+        }
         setPage(current => ({
           candidates: uniqueCandidates([
             ...current.candidates,
-            ...unselected(result.options, selectedIds),
-          ]),
+            ...unselected(result.options, runSearchRef.current.selectedIds),
+          ]).sort(byLabel),
           total: result.total,
           fetched: current.fetched + result.fetched,
         }));
@@ -83,13 +120,13 @@ const useRelationshipCandidates = ({
       .catch(() => undefined);
   };
 
-  const runSearchRef = useRef(runSearch);
-  runSearchRef.current = runSearch;
+  const selectedKey = selectedIds.join('\0');
+  Object.assign(runSearchRef.current, { selectedIds, run: runSearch });
 
   const debouncedSearch = useMemo(
     () =>
       debounce((search: string) => {
-        runSearchRef.current(search).catch(() => undefined);
+        runSearchRef.current.run(search).catch(() => undefined);
       }, 300),
     []
   );
@@ -98,19 +135,26 @@ const useRelationshipCandidates = ({
     if (!adding) {
       return;
     }
+    const state = runSearchRef.current;
+    state.latest = query;
+    state.id += 1;
     if (!query) {
-      runSearchRef.current('').catch(() => undefined);
+      state.run('').catch(() => undefined);
       return;
     }
     debouncedSearch(query);
-  }, [adding, debouncedSearch, query]);
+  }, [adding, debouncedSearch, query, selectedKey]);
 
-  const reset = () => {
-    setShowAll(false);
-    setPage(emptyPage());
+  return {
+    ...page,
+    showAll,
+    setShowAll,
+    reset: () => {
+      setShowAll(false);
+      setPage(emptyPage());
+    },
+    loadMore,
   };
-
-  return { ...page, showAll, setShowAll, reset, loadMore };
 };
 
 const RelationshipCandidateList = ({
@@ -137,7 +181,7 @@ const RelationshipCandidateList = ({
   const collapsed = !expanded && candidates.length > OPTIONS_TO_SHOW;
   const visible = collapsed ? candidates.slice(0, OPTIONS_TO_SHOW) : candidates;
   const hidden = candidates.length - visible.length;
-  const remaining = total - fetched;
+  const notLoaded = Math.max(total - fetched, 0);
 
   return (
     <>
@@ -175,13 +219,13 @@ const RelationshipCandidateList = ({
           )}
         </button>
       ) : null}
-      {!collapsed && remaining > 0 ? (
+      {notLoaded > 0 ? (
         <button
           type="button"
           onClick={onLoadMore}
           className="flex w-full cursor-pointer items-center gap-1 border-t border-border px-3 py-1.5 text-start text-xs text-ink-tertiary hover:bg-warm"
         >
-          {remaining} <Translate>more options.</Translate>
+          {notLoaded} <Translate>more options.</Translate>
         </button>
       ) : null}
     </>

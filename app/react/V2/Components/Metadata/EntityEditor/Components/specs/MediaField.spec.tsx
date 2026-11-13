@@ -80,7 +80,15 @@ const expectNumberTimeField = (field: HTMLElement, max?: string) => {
   if (max) expect(field).toHaveAttribute('max', max);
 };
 
-const Harness = ({ defaultValue }: { defaultValue: string }) => {
+const Harness = ({
+  defaultValue,
+  disabled,
+  mode = 'media',
+}: {
+  defaultValue: string;
+  disabled?: boolean;
+  mode?: 'media' | 'image';
+}) => {
   const form = useForm<FormValues>({ defaultValues: { media: defaultValue } });
 
   return (
@@ -89,7 +97,8 @@ const Harness = ({ defaultValue }: { defaultValue: string }) => {
         context="Template"
         label="Video"
         field="media"
-        mode="media"
+        mode={mode}
+        disabled={disabled}
         attachments={[]}
         pendingAttachments={[]}
         entitySharedId="entity1"
@@ -168,5 +177,28 @@ describe('MediaField timelinks', () => {
 
     expect(await screen.findByTestId('form-value')).toHaveTextContent(/^\/api\/files\/other\.mp4$/);
     expect(screen.queryByDisplayValue('intro')).not.toBeInTheDocument();
+  });
+
+  it('clears image and media values', () => {
+    const { unmount } = render(<Harness defaultValue="/api/files/photo.jpg" mode="image" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(screen.getByTestId('form-value')).toHaveTextContent('');
+    unmount();
+
+    render(<Harness defaultValue="/api/files/video.mp4" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(screen.getByTestId('form-value')).toHaveTextContent('');
+  });
+
+  it('shows no clear control when media is empty or disabled', () => {
+    const { unmount } = render(<Harness defaultValue="" />);
+
+    expect(screen.getByRole('button', { name: 'Choose' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+    unmount();
+
+    render(<Harness defaultValue="/api/files/video.mp4" disabled />);
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 });

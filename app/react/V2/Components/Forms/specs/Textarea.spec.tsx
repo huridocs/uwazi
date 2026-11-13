@@ -65,6 +65,32 @@ describe('Textarea', () => {
     expect(textarea).toHaveValue('');
   });
 
+  it('hides clear when the controlled value is empty', () => {
+    render(<Textarea id="empty-note" label="Note" value="" clearFieldAction={() => undefined} />);
+
+    expect(screen.queryByTestId('clear-field-button')).not.toBeInTheDocument();
+  });
+
+  it('hides clear when no value is passed', () => {
+    render(<Textarea id="bare-note" label="Note" clearFieldAction={() => undefined} />);
+
+    expect(screen.queryByTestId('clear-field-button')).not.toBeInTheDocument();
+  });
+
+  it('centers the clear control when asked', () => {
+    render(
+      <Textarea
+        id="title"
+        label="Title"
+        value="child"
+        centerClear
+        clearFieldAction={() => undefined}
+      />
+    );
+
+    expect(screen.getByTestId('clear-field-button')).toHaveClass('top-1/2', '-translate-y-1/2');
+  });
+
   it('handles disabled state', () => {
     defaultProps.disabled = true;
     render(<TestComponent />);

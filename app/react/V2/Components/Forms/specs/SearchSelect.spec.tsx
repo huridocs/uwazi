@@ -40,6 +40,17 @@ describe('SearchSelect', () => {
     expect(screen.queryByTestId('search-select-caret')).not.toBeInTheDocument();
   });
 
+  it('clears a value that is missing from the options', () => {
+    const onChange = jest.fn();
+    render(
+      <SearchSelect id="country" label="Country" groups={groups} value="gone" onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByTestId('clear-field-button'));
+
+    expect(onChange).toHaveBeenCalledWith('');
+  });
+
   it('opens the list in document flow so following titles stay visible', () => {
     render(
       <div>

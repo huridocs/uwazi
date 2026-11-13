@@ -18,11 +18,13 @@ import {
   packPropertyRows,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
+import { PreviewClamp } from './Components/PreviewClamp.js';
 import { useContainerWidth } from '#V2/Components/PDFViewer/hooks/useContainerWidth.js';
 import {
   hasRenderableMetadata,
   renderFieldContent,
   renderScalarContent,
+  shouldClampRecord,
 } from './Components/metadataFieldContent.js';
 import { specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { isEntityRelationshipValue, type OpenEntityTarget } from './Components/ConnectionPills.js';
@@ -74,10 +76,12 @@ const inheritingPropertyCard = ({
 const propertyCardContent = (
   field: MetadataProperty,
   onOpenEntity?: (target: OpenEntityTarget) => void
-) =>
-  isLongField(field)
+) => {
+  const body = isLongField(field)
     ? renderScalarContent(field, true)
     : renderFieldContent(field, { onOpenEntity });
+  return shouldClampRecord(field) && body ? <PreviewClamp>{body}</PreviewClamp> : body;
+};
 
 type StandardPropertyCardArgs = {
   field: MetadataProperty;

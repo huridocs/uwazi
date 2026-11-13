@@ -62,7 +62,7 @@ const ThesaurusValueControls = ({
         label={label}
         required={required}
         showAdd={!disabled}
-        showClear={singleSelect && !disabled && selectedIds.length > 0}
+        showClear={!disabled && selectedIds.length > 0}
         onAdd={open}
         onClear={clear}
       />
