@@ -107,7 +107,7 @@ describe('tenants write controllers', () => {
   });
 
   it('should delete a tenant and report which one', async () => {
-    expect(await DeleteTenantController.handle({ name: 'cli-write-a' })).toEqual({
+    expect(await DeleteTenantController.handle({ name: 'cli-write-a', archived: false })).toEqual({
       name: 'cli-write-a',
     });
     expect(await db.collection('tenants').findOne({ name: 'cli-write-a' })).toBeNull();
@@ -117,8 +117,8 @@ describe('tenants write controllers', () => {
     await expect(
       UpdateTenantController.handle({ name: 'cli-write-new', domain: 'x' })
     ).rejects.toThrow(TenantNotFound);
-    await expect(DeleteTenantController.handle({ name: 'cli-write-new' })).rejects.toThrow(
-      TenantNotFound
-    );
+    await expect(
+      DeleteTenantController.handle({ name: 'cli-write-new', archived: false })
+    ).rejects.toThrow(TenantNotFound);
   });
 });

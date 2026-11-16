@@ -9,16 +9,16 @@ It runs the same use cases as the HTTP API, in-process, as the system actor.
 This page covers what every command shares. What each command does, its rules and its errors are
 in the module's own page:
 
-| Module                               | Commands                                                                                                 |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                        |
-| [settings](docs/settings.md)         | `get`, `update`                                                                                          |
+| Module                               | Commands                                                                                                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                                              |
+| [settings](docs/settings.md)         | `get`, `update`                                                                                                                |
 | [tenants](docs/tenants.md)           | `list`, `get`, `archive`, `unarchive`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
-| [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`, `blank-state upgrade` |
-| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                             |
-| [usage](docs/usage.md)               | `report`                                                                                                 |
-| [sessions](docs/sessions.md)         | `last`                                                                                                   |
-| [activity](docs/activity.md)         | `list`                                                                                                   |
+| [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`, `blank-state upgrade`                       |
+| [segmentation](docs/segmentation.md) | `queue-idle`                                                                                                                   |
+| [usage](docs/usage.md)               | `report`                                                                                                                       |
+| [sessions](docs/sessions.md)         | `last`                                                                                                                         |
+| [activity](docs/activity.md)         | `list`                                                                                                                         |
 
 ## Running it
 
@@ -91,9 +91,9 @@ unknown field.
   above every tenant, so there is no tenant to run _in_; the tenant they act _on_ travels in the
   request as `name`. The `db` commands are the exception: they run in one tenant and take
   `--tenant`.
-- `tenants list --archived` reads the archived registry, where an archived tenant is no longer
-  in the active registry. Archived tenants are still selected with `--archived`, never with
-  `--tenant`.
+- `tenants list --archived` and `tenants delete --archived` read and write the archived
+  registry, where an archived tenant is no longer in the active registry. Archived tenants are
+  still selected with `--archived`, never with `--tenant`.
 
 ## Output
 
