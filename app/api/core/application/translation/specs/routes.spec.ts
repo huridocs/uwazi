@@ -209,6 +209,13 @@ describe('i18n translations routes', () => {
             ]),
           });
         });
+
+        it('should reject a locale that is not a supported language', async () => {
+          const response = await request(app).get('/api/translations?locale=not-a-language');
+
+          expect(response.status).toBe(400);
+          expect(response.body.error).toBeDefined();
+        });
       });
 
       describe('api/languages', () => {

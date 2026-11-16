@@ -20,22 +20,7 @@ type UploadedFileRequest = Request & { file?: Express.Multer.File };
 type DeleteTranslationRequest = Request & { query: { key: LanguageISO6391 } };
 
 const translationsRoutes = (app: Application) => {
-  app.get(
-    '/api/translations',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            context: { type: 'string' },
-            locale: LanguageISO6391Schema,
-          },
-        },
-      },
-    }),
-    GetTranslationsController.createHandler()
-  );
+  app.get('/api/translations', GetTranslationsController.createHandler());
 
   app.get('/api/languages', async (_req, res) => {
     res.json(await AvailableLanguagesQueryServiceFactory.default().execute());
