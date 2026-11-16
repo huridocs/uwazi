@@ -52,6 +52,9 @@ const fakeDispatcher: JobsDispatcher = {
   async countByName() {
     return 0;
   },
+  async countActiveByParams() {
+    return 0;
+  },
 };
 
 describe('MigrationJobFactory', () => {

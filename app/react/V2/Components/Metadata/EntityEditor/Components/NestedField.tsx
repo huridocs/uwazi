@@ -46,9 +46,8 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: fieldController, fieldState }) => {
           const { showError, message } = getFieldErrorState(fieldState);
-          const markdownValue = markdownFromMetadataValues(
-            fieldController.value as MetadataValue[]
-          );
+          const entries = fieldController.value as MetadataValue[] | undefined;
+          const markdownValue = markdownFromMetadataValues(entries);
 
           return (
             <Textarea
@@ -67,6 +66,11 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
               name={fieldController.name}
               ref={fieldController.ref}
               disabled={disabled}
+              clearFieldAction={
+                !disabled && nestedFieldHasValue(entries)
+                  ? () => fieldController.onChange([])
+                  : undefined
+              }
               hasErrors={showError}
               errorMessage={message}
               rows={8}

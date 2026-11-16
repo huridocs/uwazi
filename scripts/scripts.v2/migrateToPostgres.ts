@@ -13,9 +13,11 @@
  * for every tenant. It does not take a tenant and it does not write a tenant column.
  * Re-running leaves rows that are already there.
  *
- * --tenants copies the shared-database `tenants` registry into the `tenants` table once. It does
- * not take a tenant. Run it with TENANTS_BACKEND=mongo: the registry is read from Mongo. Keys
- * uwazi does not declare are kept in the `extras` column. Re-running leaves rows already there.
+ * --tenants copies the shared-database `tenants` registry into the `tenants` table and the
+ * `archives` registry into `archived_tenants`, once, together. It does not take a tenant. Run it
+ * with TENANTS_BACKEND=mongo: the registries are read from Mongo. Keys uwazi does not declare are
+ * kept in the `tenants` `extras` column; the archived snapshot keeps only its declared fields.
+ * Re-running leaves rows already there.
  *
  * By default a collection is skipped when its PostgreSQL table already contains
  * data for the tenant. Pass --force to migrate anyway (non-destructive: existing
@@ -68,6 +70,7 @@ import { DatavizMigrationConfig } from '#api/core/infrastructure/postgresql/migr
 import { DatavizSnapshotsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizSnapshotsMigrationConfig.js';
 import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
 import { copyTenants } from '#api/core/infrastructure/postgresql/migrations/copyTenants.js';
+import { copyArchivedTenants } from '#api/core/infrastructure/postgresql/migrations/copyArchivedTenants.js';
 
 const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
@@ -242,9 +245,14 @@ async function run(): Promise<void> {
   }
 
   if (argv.tenants) {
-    const result = await copyTenants(DB.mongodb_Db(config.SHARED_DB));
+    const sharedDb = DB.mongodb_Db(config.SHARED_DB);
+    const tenantsResult = await copyTenants(sharedDb);
     log(
-      `Copied ${result.copied} tenants from ${config.SHARED_DB} (${result.alreadyPresent} already present).`
+      `Copied ${tenantsResult.copied} tenants from ${config.SHARED_DB} (${tenantsResult.alreadyPresent} already present).`
+    );
+    const archivedResult = await copyArchivedTenants(sharedDb);
+    log(
+      `Copied ${archivedResult.copied} archived tenants from ${config.SHARED_DB} (${archivedResult.alreadyPresent} already present).`
     );
     await cleanup();
     return;

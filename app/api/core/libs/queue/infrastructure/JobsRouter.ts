@@ -41,6 +41,14 @@ export class JobsRouter implements JobsDispatcher {
     return dispatcher.countByName(dispatchable);
   }
 
+  async countActiveByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<number> {
+    const dispatcher = this.routeJob();
+    return dispatcher.countActiveByParams(dispatchable, params);
+  }
+
   private routeJob() {
     const { queueName } = config;
     return this.dispatcherFactory(queueName);

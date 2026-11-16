@@ -2,6 +2,7 @@
 import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { DownloadThumbnailController } from '#api/imageThumbnails/infrastructure/http/DownloadThumbnailController.js';
 import { EntityFileUploadController } from '#api/core/infrastructure/express/files/EntityFileUploadController.js';
 import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
@@ -130,7 +131,7 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
+  app.get('/files/thumbnails/:filename', DownloadThumbnailController.customHandler());
   app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 
   // Deprecated routes, keeping for Backwards compatibility

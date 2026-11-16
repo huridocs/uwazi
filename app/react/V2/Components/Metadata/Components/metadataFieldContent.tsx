@@ -10,6 +10,7 @@ import { Media } from './Media.js';
 import { connectionPillsForField, isEntityRelationshipValue } from './ConnectionPills.js';
 import type { OpenEntityTarget } from './ConnectionPills.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
+import { isLongField, LONG_FIELD_CHAR_THRESHOLD } from '../metadataPropertyLayout.js';
 
 type FieldContentOptions = {
   density?: 'default' | 'compact';
@@ -93,6 +94,13 @@ const renderSpecializedContent = (
   return renderMediaOrImage(data, compact, options.density);
 };
 
+const shouldClampRecord = (data: MetadataProperty) => {
+  if (data.type === 'text') return isLongField(data);
+  if (data.type !== 'markdown') return false;
+  const source = data.values.map(value => value.value).join('\n');
+  return source.length > LONG_FIELD_CHAR_THRESHOLD || source.includes('\n');
+};
+
 const renderFieldContent = (
   data: MetadataProperty,
   options: FieldContentOptions = {}
@@ -130,4 +138,10 @@ const hasRenderableMetadata = (data: MetadataProperty): boolean => {
 };
 
 export type { FieldContentOptions };
-export { hasRenderableMetadata, renderScalarContent, renderSpecializedContent, renderFieldContent };
+export {
+  hasRenderableMetadata,
+  renderScalarContent,
+  renderSpecializedContent,
+  renderFieldContent,
+  shouldClampRecord,
+};

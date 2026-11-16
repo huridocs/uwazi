@@ -5,7 +5,7 @@ type PaneProps = React.PropsWithChildren & {
   className?: string;
   mobileSnap?: PaneSnap;
   mobileTitle?: string;
-  onMobileClose?: () => void;
+  onMobileClose?: (collapse: () => void) => void;
 };
 
 type PaneLayoutProps = {

@@ -24,6 +24,8 @@ describe('TenantsRoutes', () => {
     expect(TenantsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
       ['tenants list', 'none'],
       ['tenants get', 'none'],
+      ['tenants archive', 'none'],
+      ['tenants unarchive', 'none'],
       ['tenants register', 'none'],
       ['tenants update', 'none'],
       ['tenants delete', 'none'],
@@ -60,6 +62,55 @@ describe('TenantsRoutes', () => {
     it('should take the tenant name in the request, not a flag', () => {
       expect(parse('get', { name: 'acme' })).toEqual({ name: 'acme' });
       expect(issuesOf(() => parse('get', {}))).toEqual(['name']);
+    });
+  });
+
+  describe('archive', () => {
+    it('should take a name and the dump location', () => {
+      expect(
+        parse('archive', {
+          name: 'acme',
+          dumpLocation: { db: 'https://s3/db.zip', files: 'https://store/acme' },
+        })
+      ).toEqual({
+        name: 'acme',
+        dumpLocation: { db: 'https://s3/db.zip', files: 'https://store/acme' },
+      });
+    });
+
+    it('should require the name and both dump location fields', () => {
+      expect(issuesOf(() => parse('archive', {}))).toEqual(['name', 'dumpLocation']);
+      expect(issuesOf(() => parse('archive', { name: 'acme' }))).toEqual(['dumpLocation']);
+      expect(issuesOf(() => parse('archive', { name: 'acme', dumpLocation: { db: 'x' } }))).toEqual(
+        ['dumpLocation.files']
+      );
+      expect(
+        issuesOf(() => parse('archive', { name: 'acme', dumpLocation: { files: 'y' } }))
+      ).toEqual(['dumpLocation.db']);
+    });
+
+    it('should reject the archived flag and unknown fields', () => {
+      expect(
+        issuesOf(() =>
+          parse('archive', { name: 'acme', dumpLocation: { db: 'x', files: 'y' }, archived: true })
+        )
+      ).toEqual(['']);
+      expect(
+        issuesOf(() =>
+          parse('archive', { name: 'acme', dumpLocation: { db: 'x', files: 'y', extra: 'z' } })
+        )
+      ).toEqual(['dumpLocation']);
+    });
+  });
+
+  describe('unarchive', () => {
+    it('should take the tenant name in the request', () => {
+      expect(parse('unarchive', { name: 'acme' })).toEqual({ name: 'acme' });
+      expect(issuesOf(() => parse('unarchive', {}))).toEqual(['name']);
+    });
+
+    it('should reject the archived flag', () => {
+      expect(issuesOf(() => parse('unarchive', { name: 'acme', archived: true }))).toEqual(['']);
     });
   });
 

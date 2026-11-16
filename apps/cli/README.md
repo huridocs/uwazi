@@ -13,7 +13,7 @@ in the module's own page:
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | [users](docs/users.md)               | `create`, `update`, `delete`, `list`, `stats`, `recover-password`                                        |
 | [settings](docs/settings.md)         | `get`, `update`                                                                                          |
-| [tenants](docs/tenants.md)           | `list`, `get`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check`   |
+| [tenants](docs/tenants.md)           | `list`, `get`, `archive`, `unarchive`, `register`, `update`, `delete`, `feature-flags`, `maintenance`, `stats`, `health-check` |
 | [db](docs/db.md)                     | `clear`, `export`, `import`, `upgrade`, `blank-state dump`, `blank-state restore`, `blank-state upgrade` |
 | [segmentation](docs/segmentation.md) | `queue-idle`                                                                                             |
 | [usage](docs/usage.md)               | `report`                                                                                                 |

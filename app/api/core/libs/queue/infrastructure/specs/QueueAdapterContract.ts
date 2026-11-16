@@ -454,6 +454,42 @@ function describeQueueAdapterContract(name: string, setUp: () => Promise<QueueAd
       });
     });
 
+    describe('countActiveByParams', () => {
+      it('should count queued and running jobs that match, and ignore failed ones', async () => {
+        await harness.insert([
+          storedJob({
+            namespace: 'tenant1',
+            name: 'jobA',
+            params: { filename: 'a.png' },
+          }),
+          storedJob({
+            namespace: 'tenant1',
+            name: 'jobA',
+            params: { filename: 'a.png' },
+            failed: true,
+          }),
+          storedJob({
+            namespace: 'tenant1',
+            name: 'jobA',
+            params: { filename: 'b.png' },
+            lockedUntil: 9_000,
+          }),
+          storedJob({
+            namespace: 'tenant2',
+            name: 'jobA',
+            params: { filename: 'a.png' },
+          }),
+        ]);
+
+        expect(await adapter.countActiveByParams('jobA', { filename: 'a.png' }, 'tenant1')).toBe(1);
+        expect(await adapter.countActiveByParams('jobA', { filename: 'b.png' }, 'tenant1')).toBe(1);
+        expect(await adapter.countActiveByParams('jobA', { filename: 'a.png' }, 'tenant2')).toBe(1);
+        expect(await adapter.countActiveByParams('jobA', { filename: 'missing' }, 'tenant1')).toBe(
+          0
+        );
+      });
+    });
+
     describe('round robin', () => {
       let roundRobin: QueueAdapter;
 

@@ -1,20 +1,16 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
-import { useMetadataEditing } from './MetadataEditingContext.js';
 import {
   clearDraftSelection,
   upsertDraftSelection,
 } from '#V2/Components/Metadata/EntityEditor/functions/propertySelectionHelpers.js';
+import { ResetPdfFillStateOnEditEnd } from './ResetPdfFillStateOnEditEnd.js';
+import {
+  DocumentHighlightGateContext,
+  useDocumentHighlightGate,
+} from '../document/documentHighlightGate.js';
 
 type ArmedPdfFill = {
   name: string;
@@ -65,40 +61,7 @@ const DocumentRelationshipNavActionsContext = createContext<DocumentRelationship
   null
 );
 
-const ResetPdfFillStateOnEditEnd = ({
-  resetDraftPropertySelections,
-  setDocumentPdfSelection,
-  setPdfSelectionMenuOpen,
-  disarmPdfFill,
-}: {
-  resetDraftPropertySelections: () => void;
-  setDocumentPdfSelection: React.Dispatch<React.SetStateAction<TextSelection | undefined>>;
-  setPdfSelectionMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  disarmPdfFill: () => void;
-}) => {
-  const { isEditing } = useMetadataEditing();
-  const wasEditing = useRef(false);
-
-  useEffect(() => {
-    if (wasEditing.current && !isEditing) {
-      resetDraftPropertySelections();
-      setDocumentPdfSelection(undefined);
-      setPdfSelectionMenuOpen(false);
-      disarmPdfFill();
-    }
-    wasEditing.current = isEditing;
-  }, [
-    isEditing,
-    resetDraftPropertySelections,
-    setDocumentPdfSelection,
-    setPdfSelectionMenuOpen,
-    disarmPdfFill,
-  ]);
-
-  return null;
-};
-
-const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }) => {
+const usePdfInteractionState = () => {
   const [pdfController, setPdfController] = useState<PDFControls | null>(null);
   const [documentPdfSelection, setDocumentPdfSelection] = useState<TextSelection>();
   const [pdfSelectionMenuOpen, setPdfSelectionMenuOpen] = useState(false);
@@ -109,36 +72,71 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
   const [pdfFillCommitNonce, setPdfFillCommitNonce] = useState(0);
   const [activeRelationshipId, setActiveRelationshipId] = useState<string | null>(null);
   const [scrollToRelationshipPanel, setScrollToRelationshipPanel] = useState<string | null>(null);
+  return {
+    pdfController,
+    setPdfController,
+    documentPdfSelection,
+    setDocumentPdfSelection,
+    pdfSelectionMenuOpen,
+    setPdfSelectionMenuOpen,
+    draftPropertySelections,
+    setDraftPropertySelections,
+    armedPdfFill,
+    setArmedPdfFill,
+    pdfFillCommitNonce,
+    setPdfFillCommitNonce,
+    activeRelationshipId,
+    setActiveRelationshipId,
+    scrollToRelationshipPanel,
+    setScrollToRelationshipPanel,
+  };
+};
 
+const usePdfDraftActions = (
+  setDraftPropertySelections: React.Dispatch<React.SetStateAction<PropertySelectionSchema[]>>,
+  setArmedPdfFill: React.Dispatch<React.SetStateAction<ArmedPdfFill | null>>,
+  setPdfFillCommitNonce: React.Dispatch<React.SetStateAction<number>>
+) => {
   const resetDraftPropertySelections = useCallback(() => {
     setDraftPropertySelections([]);
-  }, []);
-
+  }, [setDraftPropertySelections]);
   const upsertPropertySelection = useCallback(
     (property: { name: string; id?: string }, selection: TextSelection) => {
       setDraftPropertySelections(prev => upsertDraftSelection(prev, property, selection));
     },
-    []
+    [setDraftPropertySelections]
   );
-
-  const clearPropertySelection = useCallback((property: { name: string; id?: string }) => {
-    setDraftPropertySelections(prev => clearDraftSelection(prev, property));
-  }, []);
-
-  const armPdfFill = useCallback((target: ArmedPdfFill) => {
-    setArmedPdfFill(prev =>
-      prev?.name === target.name && prev.propertyId === target.propertyId ? prev : target
-    );
-  }, []);
-
+  const clearPropertySelection = useCallback(
+    (property: { name: string; id?: string }) => {
+      setDraftPropertySelections(prev => clearDraftSelection(prev, property));
+    },
+    [setDraftPropertySelections]
+  );
+  const armPdfFill = useCallback(
+    (target: ArmedPdfFill) => {
+      setArmedPdfFill(prev =>
+        prev?.name === target.name && prev.propertyId === target.propertyId ? prev : target
+      );
+    },
+    [setArmedPdfFill]
+  );
   const disarmPdfFill = useCallback(() => {
     setArmedPdfFill(null);
-  }, []);
-
+  }, [setArmedPdfFill]);
   const requestPdfFillCommit = useCallback(() => {
     setPdfFillCommitNonce(n => n + 1);
-  }, []);
+  }, [setPdfFillCommitNonce]);
+  return {
+    resetDraftPropertySelections,
+    upsertPropertySelection,
+    clearPropertySelection,
+    armPdfFill,
+    disarmPdfFill,
+    requestPdfFillCommit,
+  };
+};
 
+const useDisarmPdfFillOnEscape = (armedPdfFill: ArmedPdfFill | null, disarmPdfFill: () => void) => {
   const pdfFillArmed = armedPdfFill !== null;
   useEffect(() => {
     if (!pdfFillArmed) return undefined;
@@ -151,71 +149,100 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [pdfFillArmed, disarmPdfFill]);
+};
 
+const usePdfContextValues = (
+  state: ReturnType<typeof usePdfInteractionState>,
+  actions: ReturnType<typeof usePdfDraftActions>
+) => {
   const pdfState = useMemo(
     () => ({
-      pdfController,
-      documentPdfSelection,
-      pdfSelectionMenuOpen,
-      draftPropertySelections,
-      armedPdfFill,
-      pdfFillCommitNonce,
+      pdfController: state.pdfController,
+      documentPdfSelection: state.documentPdfSelection,
+      pdfSelectionMenuOpen: state.pdfSelectionMenuOpen,
+      draftPropertySelections: state.draftPropertySelections,
+      armedPdfFill: state.armedPdfFill,
+      pdfFillCommitNonce: state.pdfFillCommitNonce,
     }),
     [
-      pdfController,
-      documentPdfSelection,
-      pdfSelectionMenuOpen,
-      draftPropertySelections,
-      armedPdfFill,
-      pdfFillCommitNonce,
+      state.armedPdfFill,
+      state.documentPdfSelection,
+      state.draftPropertySelections,
+      state.pdfController,
+      state.pdfFillCommitNonce,
+      state.pdfSelectionMenuOpen,
     ]
   );
   const pdfActions = useMemo(
     () => ({
-      setPdfController,
-      setDocumentPdfSelection,
-      setPdfSelectionMenuOpen,
-      upsertPropertySelection,
-      clearPropertySelection,
-      resetDraftPropertySelections,
-      armPdfFill,
-      disarmPdfFill,
-      requestPdfFillCommit,
+      setPdfController: state.setPdfController,
+      setDocumentPdfSelection: state.setDocumentPdfSelection,
+      setPdfSelectionMenuOpen: state.setPdfSelectionMenuOpen,
+      upsertPropertySelection: actions.upsertPropertySelection,
+      clearPropertySelection: actions.clearPropertySelection,
+      resetDraftPropertySelections: actions.resetDraftPropertySelections,
+      armPdfFill: actions.armPdfFill,
+      disarmPdfFill: actions.disarmPdfFill,
+      requestPdfFillCommit: actions.requestPdfFillCommit,
     }),
     [
-      upsertPropertySelection,
-      clearPropertySelection,
-      resetDraftPropertySelections,
-      armPdfFill,
-      disarmPdfFill,
-      requestPdfFillCommit,
+      actions.armPdfFill,
+      actions.clearPropertySelection,
+      actions.disarmPdfFill,
+      actions.requestPdfFillCommit,
+      actions.resetDraftPropertySelections,
+      actions.upsertPropertySelection,
+      state.setDocumentPdfSelection,
+      state.setPdfController,
+      state.setPdfSelectionMenuOpen,
     ]
   );
   const navState = useMemo(
-    () => ({ activeRelationshipId, scrollToRelationshipPanel }),
-    [activeRelationshipId, scrollToRelationshipPanel]
+    () => ({
+      activeRelationshipId: state.activeRelationshipId,
+      scrollToRelationshipPanel: state.scrollToRelationshipPanel,
+    }),
+    [state.activeRelationshipId, state.scrollToRelationshipPanel]
   );
   const navActions = useMemo(
-    () => ({ setActiveRelationshipId, setScrollToRelationshipPanel }),
-    [setActiveRelationshipId, setScrollToRelationshipPanel]
+    () => ({
+      setActiveRelationshipId: state.setActiveRelationshipId,
+      setScrollToRelationshipPanel: state.setScrollToRelationshipPanel,
+    }),
+    [state.setActiveRelationshipId, state.setScrollToRelationshipPanel]
   );
+  return { pdfState, pdfActions, navState, navActions };
+};
+
+const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }) => {
+  const highlightGate = useDocumentHighlightGate();
+  const state = usePdfInteractionState();
+  const actions = usePdfDraftActions(
+    state.setDraftPropertySelections,
+    state.setArmedPdfFill,
+    state.setPdfFillCommitNonce
+  );
+  useDisarmPdfFillOnEscape(state.armedPdfFill, actions.disarmPdfFill);
+  const { pdfState, pdfActions, navState, navActions } = usePdfContextValues(state, actions);
 
   return (
-    <DocumentPdfActionsContext.Provider value={pdfActions}>
-      <DocumentPdfStateContext.Provider value={pdfState}>
-        <DocumentRelationshipNavActionsContext.Provider value={navActions}>
-          <DocumentRelationshipNavStateContext.Provider value={navState}>
-            <ResetPdfFillStateOnEditEnd
-              resetDraftPropertySelections={resetDraftPropertySelections}
-              setDocumentPdfSelection={setDocumentPdfSelection}
-              setPdfSelectionMenuOpen={setPdfSelectionMenuOpen}
-              disarmPdfFill={disarmPdfFill}
-            />
-            {children}
-          </DocumentRelationshipNavStateContext.Provider>
-        </DocumentRelationshipNavActionsContext.Provider>
-      </DocumentPdfStateContext.Provider>
-    </DocumentPdfActionsContext.Provider>
+    <DocumentHighlightGateContext.Provider value={highlightGate}>
+      <DocumentPdfActionsContext.Provider value={pdfActions}>
+        <DocumentPdfStateContext.Provider value={pdfState}>
+          <DocumentRelationshipNavActionsContext.Provider value={navActions}>
+            <DocumentRelationshipNavStateContext.Provider value={navState}>
+              <ResetPdfFillStateOnEditEnd
+                resetDraftPropertySelections={actions.resetDraftPropertySelections}
+                setDocumentPdfSelection={state.setDocumentPdfSelection}
+                setPdfSelectionMenuOpen={state.setPdfSelectionMenuOpen}
+                disarmPdfFill={actions.disarmPdfFill}
+              />
+              {children}
+            </DocumentRelationshipNavStateContext.Provider>
+          </DocumentRelationshipNavActionsContext.Provider>
+        </DocumentPdfStateContext.Provider>
+      </DocumentPdfActionsContext.Provider>
+    </DocumentHighlightGateContext.Provider>
   );
 };
 

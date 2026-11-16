@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { Pane } from '../Pane.js';
 import { PaneLayoutMobile } from '../PaneLayoutMobile.js';
 
 const panes = (request?: { index: number; id: number }, extra?: React.ReactElement) =>
@@ -94,6 +95,41 @@ describe('PaneLayoutMobile', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close all' }));
     expect(dialogs()).toHaveLength(0);
     expect(document.body.style.overflow).toBe('');
+  });
+
+  it('closes the side sheet from the backdrop and from Escape', () => {
+    const view = panes({ index: 1, id: 1 });
+    const backdrop = document.querySelector('[data-part="backdrop"]');
+    if (!(backdrop instanceof Element)) throw new Error('backdrop');
+    fireEvent.click(backdrop);
+    expect(dialogs()).toHaveLength(0);
+    view.rerender(layout({ index: 1, id: 1 }));
+    expect(dialogs()).toHaveLength(0);
+    view.rerender(layout({ index: 1, id: 2 }));
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(dialogs()).toHaveLength(0);
+  });
+
+  it('keeps a held sheet open until the handler lets it close', () => {
+    let release: (() => void) | undefined;
+    render(
+      <PaneLayoutMobile requestedPane={{ index: 1, id: 1 }}>
+        <Pane key="main">Main</Pane>
+        <Pane
+          key="side"
+          onMobileClose={collapse => {
+            release = collapse;
+          }}
+        >
+          Side
+        </Pane>
+      </PaneLayoutMobile>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(dialogs()).toHaveLength(1);
+    expect(dialogs()[0]).toHaveTextContent('Side');
+    act(() => release?.());
+    expect(dialogs()).toHaveLength(0);
   });
 
   it('pops one level when the top sheet is dragged down past 120px', () => {

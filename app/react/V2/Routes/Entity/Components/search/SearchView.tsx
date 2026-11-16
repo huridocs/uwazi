@@ -17,6 +17,7 @@ import { SEARCH_PARAM } from '../../urlParams.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
 import { useJumpToSearchHit } from './useJumpToSearchHit.js';
+import { useDocumentHighlightPaint } from '../document/documentHighlightGate.js';
 import { activateSearchSnippet, type PendingSnippet } from './searchSnippetActivate.js';
 
 const URL_SYNC_MS = 250;
@@ -45,6 +46,8 @@ const useSearchViewEffects = ({
   pendingSnippet,
   mainPdfController,
   setDraft,
+  paintHighlight,
+  paintedRef,
 }: {
   urlTerm: string;
   searchTerm: string;
@@ -56,6 +59,11 @@ const useSearchViewEffects = ({
   pendingSnippet: PendingSnippet | null;
   mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
   setDraft: (value: string) => void;
+  paintHighlight: (run: () => void) => void;
+  paintedRef: React.MutableRefObject<{
+    snippet: PendingSnippet | null;
+    controller: ReturnType<typeof useDocumentPdf>['pdfController'];
+  }>;
 }) => {
   useEffect(() => {
     setDraft(urlTerm);
@@ -70,8 +78,17 @@ const useSearchViewEffects = ({
   }, [mainDocumentId, searchTerm, clearSnippetSelection]);
   useEffect(() => {
     if (isRaw || !pendingSnippet || !mainPdfController) return;
-    mainPdfController.activateSnippet(pendingSnippet);
-  }, [isRaw, pendingSnippet, mainPdfController]);
+    if (
+      paintedRef.current.snippet === pendingSnippet &&
+      paintedRef.current.controller === mainPdfController
+    ) {
+      return;
+    }
+    paintedRef.current = { snippet: pendingSnippet, controller: mainPdfController };
+    paintHighlight(() => {
+      mainPdfController.activateSnippet(pendingSnippet);
+    });
+  }, [isRaw, mainPdfController, paintHighlight, paintedRef, pendingSnippet]);
 };
 
 const useSearchViewQuery = () => {
@@ -114,6 +131,11 @@ const useSearchSnippetControls = (args: {
   const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
   const [pendingSnippet, setPendingSnippet] = useState<PendingSnippet | null>(null);
   const [draft, setDraft] = useState(urlTerm);
+  const paintHighlight = useDocumentHighlightPaint();
+  const paintedRef = useRef<{
+    snippet: PendingSnippet | null;
+    controller: ReturnType<typeof useDocumentPdf>['pdfController'];
+  }>({ snippet: null, controller: null });
   const writeSearchTerm = useCallback(
     (value: string) => writeSearchHash(updateEntityUrl, value),
     [updateEntityUrl]
@@ -124,7 +146,11 @@ const useSearchSnippetControls = (args: {
     mainPdfControllerRef.current?.deactivateSnippet();
   }, [mainPdfControllerRef]);
   const activateSnippet = useCallback(
-    (snippetKey: string, pageText: PendingSnippet) =>
+    (snippetKey: string, pageText: PendingSnippet) => {
+      const controller = mainPdfControllerRef.current;
+      if (!isRaw && controller) {
+        paintedRef.current = { snippet: pageText, controller };
+      }
       activateSearchSnippet({
         snippetKey,
         pageText,
@@ -133,9 +159,11 @@ const useSearchSnippetControls = (args: {
         ensureMainTab,
         setActiveSnippet,
         setPendingSnippet,
-        pdfController: mainPdfControllerRef.current,
-      }),
-    [activeSnippet, ensureMainTab, isRaw, mainPdfControllerRef]
+        pdfController: controller,
+        paintHighlight,
+      });
+    },
+    [activeSnippet, ensureMainTab, isRaw, mainPdfControllerRef, paintHighlight]
   );
   return {
     activeSnippet,
@@ -145,6 +173,8 @@ const useSearchSnippetControls = (args: {
     writeSearchTerm,
     clearSnippetSelection,
     activateSnippet,
+    paintHighlight,
+    paintedRef,
   };
 };
 
@@ -183,6 +213,8 @@ const useSearchViewControls = ({
     pendingSnippet: snippets.pendingSnippet,
     mainPdfController,
     setDraft: snippets.setDraft,
+    paintHighlight: snippets.paintHighlight,
+    paintedRef: snippets.paintedRef,
   });
   return {
     draft: snippets.draft,

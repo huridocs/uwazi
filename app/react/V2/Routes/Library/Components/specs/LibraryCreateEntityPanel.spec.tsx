@@ -9,6 +9,7 @@ import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { localeAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
+import { TestRouterContext } from '#V2/testing/index.js';
 import { LibraryCreateEntityPanel } from '../LibraryCreateEntityPanel.js';
 
 jest.mock('#shared/IDGenerator', () => ({
@@ -77,7 +78,9 @@ const renderCreatePanel = ({
           [translationsAtom, translations],
         ]}
       >
-        <LibraryCreateEntityPanel onClose={onClose} onCreated={onCreated} />
+        <TestRouterContext>
+          <LibraryCreateEntityPanel onClose={onClose} onCreated={onCreated} />
+        </TestRouterContext>
       </TestAtomStoreProvider>
     </ServicesProvider>
   );
@@ -85,8 +88,8 @@ const renderCreatePanel = ({
 const renderPanel = (upsert: jest.Mock, onCreated = jest.fn(), onClose = jest.fn()) =>
   renderCreatePanel({ upsert, onCreated, onClose });
 
-const expectEmptyCreateForm = () => {
-  expect(screen.getByTestId('library-create-entity')).toBeInTheDocument();
+const expectEmptyCreateForm = async () => {
+  expect(await screen.findByTestId('library-create-entity')).toBeInTheDocument();
   expect(screen.getByText('New entity')).toBeInTheDocument();
   expect(screen.getByLabelText(/Title/)).toHaveValue('');
 };
@@ -105,15 +108,24 @@ const expectCreatedPayload = (upsert: jest.Mock, onCreated: jest.Mock) => {
   expect(payload._id).toBeUndefined();
   expect(payload.sharedId).toBeUndefined();
   expect(payload.title).toBe('Paella');
-  expect(onCreated).toHaveBeenCalledWith('created-1');
+  expect(onCreated).toHaveBeenCalledWith(
+    'created-1',
+    expect.objectContaining({ sharedId: 'created-1', title: 'Paella' })
+  );
 };
 
 describe('LibraryCreateEntityPanel', () => {
+  it('offers copy from inside the new entity form', async () => {
+    renderPanel(jest.fn());
+    expect(await screen.findByRole('button', { name: /Copy from/ })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Title/)).toBeInTheDocument();
+  });
+
   it('saves a new entity without an existing id and selects it', async () => {
     const upsert = jest.fn().mockResolvedValue([savedEntity('Paella'), undefined]);
     const onCreated = jest.fn();
     renderPanel(upsert, onCreated);
-    expectEmptyCreateForm();
+    await expectEmptyCreateForm();
     fireEvent.change(screen.getByLabelText(/Title/), { target: { value: 'Paella' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => {
@@ -125,7 +137,7 @@ describe('LibraryCreateEntityPanel', () => {
   it('shows a generated title and saves that same string', async () => {
     const upsert = jest.fn().mockResolvedValue([savedEntity('GEN-ID'), undefined]);
     renderCreatePanel({ upsert, templateList: withGeneratedTitle() });
-    const title = screen.getByLabelText(/Title/);
+    const title = await screen.findByLabelText(/Title/);
     expect(title).toHaveValue('GEN-ID');
     expect(title).toBeEnabled();
     const payload = await readSavedPayload(upsert);
@@ -135,7 +147,7 @@ describe('LibraryCreateEntityPanel', () => {
   it('shows a generated id property and saves that same string', async () => {
     const upsert = jest.fn().mockResolvedValue([savedEntity(''), undefined]);
     renderCreatePanel({ upsert, templateList: withGeneratedIdProperty() });
-    expect(screen.getByLabelText(/Title/)).toHaveValue('');
+    expect(await screen.findByLabelText(/Title/)).toHaveValue('');
     const generatedId = screen.getByLabelText(/Generatedid/);
     expect(generatedId).toHaveValue('GEN-ID');
     expect(generatedId).toBeEnabled();

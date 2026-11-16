@@ -28,7 +28,8 @@ type LibraryViewProps = {
   limit?: number;
   onPageChange?: (page: number) => void;
   onLimitChange?: (limit: number) => void;
-  onEntityCreated?: (sharedId?: string) => void;
+  onEntityCreated?: (sharedId?: string, row?: LibrarySearchHit) => void;
+  onEntitiesDeleted?: (sharedIds: readonly string[]) => void;
 };
 
 export type { LibraryViewProps };

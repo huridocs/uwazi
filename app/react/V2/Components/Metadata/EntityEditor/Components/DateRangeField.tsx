@@ -8,6 +8,7 @@ import {
 } from '../functions/fieldErrorState.js';
 import { DateRangeInputs } from './DateRangeInputs.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type DateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -43,19 +44,25 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const { from, to } = toRangeValue(value);
-          const fromISODate = from ? secondsToISODate(from) : undefined;
-          const toISODate = to ? secondsToISODate(to) : undefined;
+          const hasRange = typeof from === 'number' || typeof to === 'number';
+          const fromISODate = typeof from === 'number' ? secondsToISODate(from) : undefined;
+          const toISODate = typeof to === 'number' ? secondsToISODate(to) : undefined;
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <div className="flex flex-col gap-1.5">
-              <EntityFieldLabel
-                htmlFor={`${field}.from`}
-                context={context}
-                label={label}
-                required={Boolean(registerOptions?.required)}
-                showError={showError}
-              />
+              <div className="flex items-start justify-between gap-2">
+                <EntityFieldLabel
+                  htmlFor={`${field}.from`}
+                  context={context}
+                  label={label}
+                  required={Boolean(registerOptions?.required)}
+                  showError={showError}
+                />
+                {hasRange && !disabled ? (
+                  <FieldClearButton onClick={() => onChange({ from: null, to: null })} />
+                ) : null}
+              </div>
               <div className="flex gap-2">
                 <DateRangeInputs
                   fromId={`${field}.from`}

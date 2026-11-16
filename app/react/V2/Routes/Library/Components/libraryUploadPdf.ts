@@ -1,6 +1,8 @@
 import { UploadService } from '#V2/api/files/UploadService.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { notify } from '#V2/utils/notifyBridge.js';
+import { libraryHitFromEntity } from './libraryCreatedRows.js';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object';
@@ -48,7 +50,10 @@ const uploadPdfsAndCreateEntities = async (
     .filter((entity): entity is Entity => Boolean(entity));
 };
 
-const uploadChosenLibraryPdfs = (files: File[], onCreated: (sharedId?: string) => void) => {
+const uploadChosenLibraryPdfs = (
+  files: File[],
+  onCreated: (sharedId?: string, row?: LibrarySearchHit) => void
+) => {
   const pdfs = pdfFilesFromList(files);
   if (!pdfs.length) return;
   void uploadPdfsAndCreateEntities(
@@ -57,7 +62,8 @@ const uploadChosenLibraryPdfs = (files: File[], onCreated: (sharedId?: string) =
     () => undefined
   )
     .then(created => {
-      onCreated(created.at(-1)?.sharedId);
+      created.forEach(entity => onCreated(entity.sharedId, libraryHitFromEntity(entity)));
+      if (created.length === 0) onCreated();
     })
     .catch((caught: unknown) => {
       notify(caught instanceof Error ? caught.message : String(caught), 'error');

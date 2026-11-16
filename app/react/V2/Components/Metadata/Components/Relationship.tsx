@@ -5,7 +5,11 @@ import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataCard } from './MetadataCard.js';
 import { RelationCaption } from './RelationCaption.js';
-import { isEntityRelationshipValue, type OpenEntityTarget } from './ConnectionPills.js';
+import {
+  ConnectionPills,
+  isEntityRelationshipValue,
+  type OpenEntityTarget,
+} from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
 import type { InheritColumn } from '../relationshipInherit.js';
 
@@ -63,13 +67,21 @@ const Relationship = ({
       }
     >
       <RelationCaption relationLabel={relationLabel} fieldTitle={label} />
-      <RelationshipConnectionsTable
-        rows={rows}
-        columns={columns}
-        translationContext={translationContext}
-        targetTemplateId={targetTemplateId}
-        onOpenEntity={onOpenEntity}
-      />
+      {columns.length === 0 ? (
+        <ConnectionPills
+          values={entities}
+          targetTemplateId={targetTemplateId}
+          onOpenEntity={onOpenEntity}
+        />
+      ) : (
+        <RelationshipConnectionsTable
+          rows={rows}
+          columns={columns}
+          translationContext={translationContext}
+          targetTemplateId={targetTemplateId}
+          onOpenEntity={onOpenEntity}
+        />
+      )}
     </MetadataCard>
   );
 };

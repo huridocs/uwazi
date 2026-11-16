@@ -2,7 +2,6 @@ import React, { useEffect, useRef, type Dispatch, type SetStateAction } from 're
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { Button } from '#V2/Components/UI/index.js';
 import {
   useEntityLanguage,
   useEntityFiles,
@@ -14,10 +13,11 @@ import {
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
-import { MAIN_TAB, type SideTabId } from '#V2/Routes/Entity/Tabs/index.js';
+import { MAIN_TAB, SIDE_TAB, type SideTabId } from '#V2/Routes/Entity/Tabs/index.js';
 import { DocumentTabFooter } from '#V2/Routes/Entity/Tabs/footers/DocumentTabFooter.js';
+import { MetadataTabFooter } from '#V2/Routes/Entity/Tabs/footers/MetadataTabFooter.js';
 import { RelationshipsTabFooter } from '#V2/Routes/Entity/Tabs/footers/RelationshipsTabFooter.js';
-import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
+import { ToCTabFooter } from '#V2/Routes/Entity/Tabs/footers/ToCTabFooter.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
@@ -30,10 +30,6 @@ type LibraryEntityPreviewFooterProps = {
 };
 
 type PreviewShellProps = {
-  editingMetadata: boolean;
-  isSaving: boolean;
-  formId: string;
-  onDiscard: () => void;
   entityBasePath: string;
   sharedId: string;
   onAction?: (action: LibraryBulkAction) => void;
@@ -44,10 +40,6 @@ type PreviewShellProps = {
 };
 
 const previewShell = ({
-  editingMetadata,
-  isSaving,
-  formId,
-  onDiscard,
   entityBasePath,
   sharedId,
   onAction,
@@ -56,21 +48,6 @@ const previewShell = ({
   href,
   includeActions = true,
 }: PreviewShellProps) => {
-  if (editingMetadata) {
-    return (
-      <>
-        <CopyFromTrigger disabled={isSaving} />
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="warm" onClick={onDiscard} disabled={isSaving}>
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button type="submit" variant="success" form={formId} disabled={isSaving}>
-            <Translate>Save</Translate>
-          </Button>
-        </div>
-      </>
-    );
-  }
   if (onAction) {
     return (
       <LibrarySingleSelectActions
@@ -131,6 +108,9 @@ const activeTabFooter = ({
   sharedId,
   onClose,
 }: ActiveTabFooterInput) => {
+  if (mainTabId === SIDE_TAB.TOC) {
+    return <ToCTabFooter mainDocument={mainDocument} />;
+  }
   if (mainTabId === MAIN_TAB.DOCUMENT && mainDocument?.filename) {
     return (
       <DocumentTabFooter
@@ -202,6 +182,12 @@ const LibraryEntityPreviewFooter = ({
   const state = useLibraryPreviewFooterState(mainTabId);
   const viewingFile = mainTabId === MAIN_TAB.FILES && state.filePanelMode === 'preview';
   const close = () => state.editing.requestStopTranslations(onClose);
+  const editingMetadata =
+    mainTabId === MAIN_TAB.METADATA &&
+    state.editing.isEditing &&
+    state.editing.formMountHost === 'main';
+  if (editingMetadata) return <MetadataTabFooter host="main" />;
+
   const switched = activeTabFooter({
     mainTabId,
     mainDocument: state.mainDocument,
@@ -219,14 +205,6 @@ const LibraryEntityPreviewFooter = ({
         data-testid="library-entity-preview-footer"
       >
         {previewShell({
-          editingMetadata:
-            mainTabId === MAIN_TAB.METADATA &&
-            state.editing.isEditing &&
-            state.editing.formMountHost === 'main',
-          isSaving: state.editing.isSaving,
-          formId: state.editing.formId,
-          onDiscard: () =>
-            state.editing.requestStopTranslations(() => state.editing.requestDiscard('discard')),
           entityBasePath,
           sharedId: state.entity.sharedId,
           onAction,

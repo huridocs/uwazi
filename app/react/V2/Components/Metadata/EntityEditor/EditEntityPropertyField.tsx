@@ -190,9 +190,7 @@ const EditEntityPropertyField = ({
             options: await relationshipLookupSearch({
               property,
               selectedValues,
-              lookedUpOptions: relationshipListOptions(lookedUp).filter(
-                option => !term || option.searchLabel.toLowerCase().includes(term)
-              ),
+              lookedUpOptions: relationshipListOptions(lookedUp),
               includeCachedOptions: !term,
             }),
             total: lookedUp.total,

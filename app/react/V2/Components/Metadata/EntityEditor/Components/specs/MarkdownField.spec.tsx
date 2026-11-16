@@ -12,31 +12,44 @@ jest.mock('#app/I18N/index.js', () => ({
   t: (_context: string, key: string) => key,
 }));
 
-jest.mock('../EntityPdfFillField', () => ({
-  EntityPdfFillField: ({
-    children,
-  }: {
-    children: (slot?: {
-      overlay: React.ReactNode;
-      onFocus: () => void;
-      onClick: () => void;
-    }) => React.ReactNode;
-  }) => (
-    <>
-      {children({
-        overlay: <div data-testid="pdf-fill-overlay" />,
-        onFocus: jest.fn(),
-        onClick: jest.fn(),
-      })}
-    </>
-  ),
-}));
+jest.mock('../EntityPdfFillField', () => {
+  const actual =
+    jest.requireActual<typeof import('../EntityPdfFillField.js')>('../EntityPdfFillField');
+  return {
+    ...actual,
+    EntityPdfFillField: ({
+      children,
+    }: {
+      children: (slot?: {
+        overlay: React.ReactNode;
+        onFocus: () => void;
+        onClick: () => void;
+      }) => React.ReactNode;
+    }) => (
+      <>
+        {children({
+          overlay: <div data-testid="pdf-fill-overlay" />,
+          onFocus: jest.fn(),
+          onClick: jest.fn(),
+        })}
+      </>
+    ),
+  };
+});
 
 type FormValues = {
   metadata: { markdown: { value: string }[] };
 };
 
-const Harness = ({ value = '', required }: { value?: string; required?: boolean }) => {
+const Harness = ({
+  value = '',
+  required,
+  disabled,
+}: {
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+}) => {
   const form = useForm<FormValues>({
     defaultValues: { metadata: { markdown: [{ value }] } },
   });
@@ -49,6 +62,7 @@ const Harness = ({ value = '', required }: { value?: string; required?: boolean 
           label="Markdown"
           field="metadata.markdown.0.value"
           registerOptions={required ? { required: true } : undefined}
+          disabled={disabled}
           pdfFill={{ name: 'markdown', propertyId: 'p1', coerceType: 'text' }}
         />
         <button type="submit">save</button>
@@ -127,5 +141,28 @@ describe('MarkdownField', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Edit' }));
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByText(/required/i)).toBeInTheDocument();
+  });
+
+  it('clears markdown to an empty value', () => {
+    render(<Harness value="**hello**" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+  });
+
+  it('shows no clear control for empty markdown', () => {
+    render(<Harness value="" />);
+
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+  });
+
+  it('shows no clear control when markdown is disabled', () => {
+    render(<Harness value="**hello**" disabled />);
+
+    expect(screen.getByRole('textbox')).toHaveValue('**hello**');
+    expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
   });
 });

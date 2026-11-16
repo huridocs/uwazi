@@ -1,11 +1,12 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { BlockDirtyNavigation } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -25,17 +26,11 @@ import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overla
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
 import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
-import {
-  MAIN_TAB,
-  MainTabsContent,
-  TabsMainButtons,
-  type SideTabId,
-} from '#V2/Routes/Entity/Tabs/index.js';
-import {
-  EntityTabsProvider,
-  type EntityTabsState,
-} from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
+import { MainTabsContent, TabsMainButtons } from '#V2/Routes/Entity/Tabs/index.js';
+import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
+import { useLibraryPreviewTabs } from './useLibraryPreviewTabs.js';
+import { useRegisterLibraryLeave } from './libraryPreviewLeave.js';
 import { LibrarySingleSelectActions } from './LibrarySingleSelectActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
@@ -52,26 +47,6 @@ type LibraryEntityPreviewProps = {
   onAction?: (action: LibraryBulkAction) => void;
   focusFieldKey?: string;
 };
-
-const noop = () => undefined;
-
-const libraryPreviewTabs = (mainTabId: SideTabId): EntityTabsState => ({
-  activeMainTab: mainTabId,
-  mainButtons: [],
-  activeSideTab: undefined,
-  syncSideTabId: undefined,
-  sideButtons: [],
-  relationshipsOnMain: mainTabId === MAIN_TAB.RELATIONSHIPS,
-  documentOnMain: mainTabId === MAIN_TAB.DOCUMENT,
-  onMainTabChange: noop,
-  onSideTabChange: noop,
-  focusSideTab: noop,
-  stageSideTab: noop,
-  focusRelationshipsPanel: noop,
-  focusDocumentPanel: noop,
-  showSidePane: noop,
-  openSearchHit: noop,
-});
 
 const EntityFilesFromEntity = ({
   onRefreshEntity,
@@ -93,6 +68,11 @@ const EntityCreateRelationshipModal = () => {
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
+const usePreviewEntityTabs = () => {
+  const { tabId: mainTabId, buttons } = useLibraryPreviewTab();
+  return { mainTabId, buttons, entityTabs: useLibraryPreviewTabs(mainTabId) };
+};
+
 const LibraryEntityPreviewView = ({
   entityBasePath,
   onClose,
@@ -107,15 +87,24 @@ const LibraryEntityPreviewView = ({
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
-  const { tabId: mainTabId, buttons } = useLibraryPreviewTab();
-  const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
+  const { mainTabId, buttons, entityTabs } = usePreviewEntityTabs();
   const isMobile = useIsMobile();
-  const { requestStopTranslations } = useMetadataEditing();
+  const editing = useMetadataEditing();
+  useRegisterLibraryLeave();
   usePreviewFieldFocus(entity.sharedId, focusFieldKey);
-  usePreviewEscape(() => requestStopTranslations(onClose));
+  usePreviewEscape(() => editing.requestStopTranslations(onClose));
 
   return (
     <EntityTabsProvider value={entityTabs}>
+      <BlockDirtyNavigation
+        when={
+          editing.isEditing && (editing.isDirty || editing.isSaving || editing.translationsPending)
+        }
+        onDiscard={editing.cancelEdit}
+        translationsPending={editing.translationsPending}
+        onStopTranslations={editing.cancelTranslations}
+        dirty={editing.isDirty || editing.isSaving}
+      />
       <div
         className="relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
         dir={isRtl ? 'rtl' : 'ltr'}
@@ -129,7 +118,7 @@ const LibraryEntityPreviewView = ({
             {isMobile ? null : (
               <button
                 type="button"
-                onClick={() => requestStopTranslations(onClose)}
+                onClick={() => editing.requestStopTranslations(onClose)}
                 className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
                 aria-label={t('System', 'Close', null, false)}
               >
@@ -143,7 +132,7 @@ const LibraryEntityPreviewView = ({
               mainDocument={mainDocument}
               buttons={buttons}
               activeTabId={mainTabId}
-              onTabChange={() => undefined}
+              onTabChange={entityTabs.onMainTabChange}
             />
           </div>
         </div>
@@ -155,6 +144,7 @@ const LibraryEntityPreviewView = ({
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
               filesLayout="drawer"
+              revealTocDocument
             />
           </div>
           <LibraryEntityPreviewFooter
@@ -217,7 +207,7 @@ const LibraryPreviewReady = ({
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
   return (
     <ErrorBoundary>
-      <EntityUrlSync>
+      <EntityUrlSync isolated>
         <EntityScopedProvider
           key={entity.sharedId}
           entity={entity}

@@ -25,6 +25,7 @@ import {
   syncActiveRelationshipHighlight,
   type RelationshipHighlightActions,
 } from './relationshipHighlightUtils.js';
+import { useDocumentHighlightPaint } from './documentHighlightGate.js';
 
 const usePdfControllerRef = (mainPdfController: PDFControls | null) => {
   const pdfControllerRef = useRef(mainPdfController);
@@ -97,6 +98,7 @@ const useRelationshipHighlightContext = (mainPdfController: PDFControls | null) 
 
 const useActiveRelationshipHighlight = () => {
   const { pdfController: mainPdfController } = useDocumentPdf();
+  const paintHighlight = useDocumentHighlightPaint();
   const { liveMarkers, colorOf } = useRelationshipLiveMarkers();
   const {
     actions,
@@ -113,7 +115,7 @@ const useActiveRelationshipHighlight = () => {
   const selectRelationship = useCallback(
     async (marker: RelationshipMarker, options?: { scrollPanel?: boolean }) => {
       if (marker._id === activeRelationshipId) {
-        deselectActiveRelationship(actions, pdfControllerRef.current);
+        deselectActiveRelationship(actions, pdfControllerRef.current, paintHighlight);
         return;
       }
       activateRelationshipSelection({
@@ -122,17 +124,18 @@ const useActiveRelationshipHighlight = () => {
         actions,
         colorOf,
         pdfController: pdfControllerRef.current,
+        paintHighlight,
       });
       await ensureResolved();
     },
-    [actions, activeRelationshipId, colorOf, ensureResolved, pdfControllerRef]
+    [actions, activeRelationshipId, colorOf, ensureResolved, paintHighlight, pdfControllerRef]
   );
 
   const clearRelationshipSelection = useCallback(() => {
     setSelectedMarker(null);
     actions.setActiveRelationshipId(null);
-    clearRelationshipPdfHighlights(pdfControllerRef.current);
-  }, [actions, pdfControllerRef, setSelectedMarker]);
+    clearRelationshipPdfHighlights(pdfControllerRef.current, paintHighlight);
+  }, [actions, paintHighlight, pdfControllerRef, setSelectedMarker]);
 
   useEffect(() => {
     syncActiveRelationshipHighlight({
@@ -143,6 +146,7 @@ const useActiveRelationshipHighlight = () => {
       setSelectedMarker,
       colorOf,
       mainPdfController: pdfController,
+      paintHighlight,
     });
   }, [
     activeClusterRefIds,
@@ -150,6 +154,7 @@ const useActiveRelationshipHighlight = () => {
     colorOf,
     getSelectedMarker,
     liveMarkers,
+    paintHighlight,
     pdfController,
     resolved,
     setSelectedMarker,

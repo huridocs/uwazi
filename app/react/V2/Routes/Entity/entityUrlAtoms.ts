@@ -53,6 +53,7 @@ type NavigateFn = (
   opts: { replace: boolean; preventScrollReset: boolean }
 ) => void | Promise<void>;
 
+let writesRouter = true;
 let pendingBatch: PendingBatch | null = null;
 let flushScheduled = false;
 let pathnameAtEnqueue: string | null = null;
@@ -122,13 +123,20 @@ const urlUnchanged = (fallback: LocationFallback, current: LocationFallback, pat
   patch.hash === current.hash;
 
 const commitPageOnlyUrl = (fallback: LocationFallback, patch: UrlPatch) => {
+  if (atomStoreRef) setEntityPageAtom(patch.page, atomStoreRef);
+  if (!writesRouter) {
+    void navigateRef?.(
+      { pathname: fallback.pathname, search: patch.search, hash: patch.hash },
+      { replace: true, preventScrollReset: true }
+    );
+    return;
+  }
   History.prototype.replaceState.call(
     window.history,
     window.history.state,
     '',
     `${fallback.pathname}${patch.search}${patch.hash}`
   );
-  if (atomStoreRef) setEntityPageAtom(patch.page, atomStoreRef);
 };
 
 const commitNavigateUrl = ({
@@ -236,11 +244,12 @@ const updateEntityUrl = (options: UpdateEntityUrlOptions) => {
 const bindEntityUrlSession = (
   navigate: NavigateFn,
   store: EntityUrlAtomStore,
-  location: LocationFallback
+  location: LocationFallback & { writesRouter?: boolean }
 ) => {
   navigateRef = navigate;
   atomStoreRef = store;
   locationRef = location;
+  writesRouter = location.writesRouter ?? true;
 };
 
 const unbindEntityUrlSession = () => {
@@ -251,6 +260,7 @@ const unbindEntityUrlSession = () => {
   pendingBatch = null;
   flushScheduled = false;
   pathnameAtEnqueue = null;
+  writesRouter = true;
 };
 
 export {

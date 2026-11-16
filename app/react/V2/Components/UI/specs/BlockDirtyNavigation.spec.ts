@@ -22,4 +22,9 @@ describe('shouldBlockDirtyLeave', () => {
     expect(shouldBlockDirtyLeave(true, '/en/entity/abc', '/en/library')).toBe(true);
     expect(shouldBlockDirtyLeave(false, '/en/entity/abc', '/en/library')).toBe(false);
   });
+
+  it('blocks leaving the library for settings when the form is dirty', () => {
+    expect(shouldBlockDirtyLeave(true, '/en/library', '/en/settings')).toBe(true);
+    expect(shouldBlockDirtyLeave(false, '/en/library', '/en/settings')).toBe(false);
+  });
 });

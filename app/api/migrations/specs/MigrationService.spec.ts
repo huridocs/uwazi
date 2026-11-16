@@ -20,6 +20,7 @@ const createFakeDispatcher = (calls: any[], existingJobCount: number = 0): JobsD
   deleteByParams: async () => {},
   cancelByParams: async () => {},
   countByName: async () => existingJobCount,
+  countActiveByParams: async () => 0,
 });
 
 const createFakeLogger = (): Logger => ({

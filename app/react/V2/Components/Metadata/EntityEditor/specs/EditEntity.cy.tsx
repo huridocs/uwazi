@@ -351,10 +351,10 @@ describe('Entity edit', () => {
         );
 
         cy.get('[data-testid="metadata.selected_image.0.value"]')
-          .contains('button', 'Unlink')
+          .find('[data-testid="clear-field-button"]')
           .click();
         cy.get('[data-testid="metadata.video_of_event.0.value"]')
-          .contains('button', 'Unlink')
+          .find('[data-testid="clear-field-button"]')
           .click();
         cy.contains('button', 'Save').click();
 
@@ -387,10 +387,7 @@ describe('Entity edit', () => {
         .closest('div.space-y-1\\.5')
         .find('[data-testid="relationship-connections"]')
         .should('exist');
-      cy.contains('Owner')
-        .closest('div.space-y-1\\.5')
-        .find('table:not([aria-hidden])')
-        .should('have.class', 'w-full');
+      cy.contains('Maria Rodriguez - Witness').should('exist');
     });
 
     it('should render Witnesses as a separate relationship field', () => {
@@ -407,13 +404,14 @@ describe('Entity edit', () => {
 
     it('should select and deselect relationship entities', () => {
       openRelationshipSearch('Owner', 'metadata.related_people');
+      cy.get('input[id="metadata.related_people"]').type('Lucia Torres');
       cy.contains('button', 'Lucia Torres - Resident').click();
       cy.contains('Owner')
         .closest('div.space-y-1\\.5')
         .within(() => {
           cy.contains('Lucia Torres - Resident').should('exist');
           cy.contains('Maria Rodriguez - Witness')
-            .closest('tr')
+            .closest('li')
             .find('button[title="Remove from connection"]')
             .click();
           cy.contains('Maria Rodriguez - Witness').should('not.exist');
@@ -431,6 +429,7 @@ describe('Entity edit', () => {
       cy.contains('Owner').should('exist');
 
       openRelationshipSearch('Owner', 'metadata.related_people');
+      cy.get('input[id="metadata.related_people"]').type('Lucia Torres');
       cy.contains('button', 'Lucia Torres - Resident').click();
       cy.contains('button', 'Save').click();
 
@@ -555,7 +554,7 @@ describe('Entity edit', () => {
       cy.contains('label', 'Multiple selector')
         .parent()
         .contains('button', 'Clear')
-        .should('not.exist');
+        .should('exist');
       addValueButton('Multiple selector').click();
       cy.get('[role="dialog"][aria-label="Add thesaurus value"]').within(() => {
         cy.get('#add-thesaurus-value-group').select('Grouped verbs');
@@ -572,7 +571,7 @@ describe('Entity edit', () => {
       cy.contains('label', 'Multiple selector')
         .parent()
         .contains('button', 'Clear')
-        .should('not.exist');
+        .should('exist');
       cy.should(() => {
         const group = upserts[0]?.values.find(value => value.id === 'thes.g');
         expect(group?.values?.at(-1)).to.deep.equal({ label: 'verb3' });

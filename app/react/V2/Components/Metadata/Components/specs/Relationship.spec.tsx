@@ -2,67 +2,58 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
-import { Relationship } from '../Relationship.js';
+import type { ClientProperty } from '#V2/shared/types.js';
+import { RelationshipCards } from '../RelationshipCards.js';
 
 jest.mock('#app/I18N/index.js', () => ({
-  Translate: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <span className={className}>{children}</span>
-  ),
+  Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  t: (_context: string, key: string) => key,
   I18NLinkV2: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a href={props.to}>{children}</a>
   ),
 }));
 
-jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
-  TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
-}));
+const contractor: ClientProperty = {
+  _id: 'contractor',
+  name: 'contractor',
+  type: 'relationship',
+  label: 'Contractor',
+  content: 'org',
+  relationType: 'rel-people',
+};
 
-const renderRelationship = (
-  label: string,
-  relationName: string,
-  columns: { label: string; cellsByEntityId: Record<string, string> }[] = [
-    { label: 'Country', cellsByEntityId: { e1: 'Kenya' } },
-  ]
-) =>
-  render(
-    <TestAtomStoreProvider
-      initialValues={[[relationshipTypesAtom, [{ _id: 'rel-1', name: relationName }]]]}
-    >
-      <Relationship
-        label={label}
-        translationContext="case-tmpl"
-        values={[{ _id: 'e1', title: 'Ada', templateId: 'person-tmpl' }]}
-        relationTypeId="rel-1"
-        columns={columns}
-      />
-    </TestAtomStoreProvider>
-  );
+describe('link-only relationships', () => {
+  it('wraps values as chips instead of a card per value', () => {
+    render(
+      <TestAtomStoreProvider
+        initialValues={[[relationshipTypesAtom, [{ _id: 'rel-people', name: 'People' }]]]}
+      >
+        <RelationshipCards
+          fields={[
+            {
+              _id: 'contractor',
+              name: 'contractor',
+              label: 'Contractor',
+              type: 'relationship',
+              mode: 'related',
+              values: [
+                { _id: 'a', title: 'Ada', templateId: 'org' },
+                { _id: 'b', title: 'Bea', templateId: 'org' },
+              ],
+            },
+          ]}
+          translationContext="case"
+          templatePropertyById={new Map([['contractor', contractor]])}
+        />
+      </TestAtomStoreProvider>
+    );
 
-describe('Relationship caption', () => {
-  it('shows the field title and the relationship type under it', () => {
-    renderRelationship('People involved', 'People');
-
-    expect(screen.getByRole('heading', { name: 'People involved' })).toBeInTheDocument();
-    expect(screen.getByText('People')).toBeInTheDocument();
-    expect(screen.getByText('Relationship').parentElement).toHaveClass('sr-only');
-  });
-
-  it('shows the connected entity when there are no inherited properties', () => {
-    renderRelationship('People involved', 'People', []);
-
-    const table = screen.getByRole('table');
-    expect(within(table).getByText('Ada')).toBeInTheDocument();
-    expect(within(table).getAllByRole('columnheader')).toHaveLength(1);
-  });
-
-  it('shows only the title when the relationship type matches it aside from case, accents, and spaces', () => {
-    renderRelationship('  Relación  ', 'relacion');
-
-    expect(screen.getByRole('heading', { name: 'Relación' })).toBeInTheDocument();
-    expect(screen.queryByText('Relationship')).not.toBeInTheDocument();
-    expect(screen.queryByText('relacion')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('connection-card-stack')).not.toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.getByRole('list')).toHaveClass('gap-1.5');
+    expect(screen.getByText('Ada')).toBeInTheDocument();
   });
 });

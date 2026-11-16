@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
+import { BlockDirtyNavigation, Button } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { EditEntity, submitEditEntityForm } from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
@@ -13,6 +14,7 @@ import { DocumentInteractionProvider } from '#V2/Routes/Entity/Components/contex
 import { useMetadataEditing } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
+import { useRegisterLibraryLeave } from './libraryPreviewLeave.js';
 import { useLibraryCreateEntity } from './useLibraryCreateEntity.js';
 
 type LibraryCreateEntityFormProps = {
@@ -28,13 +30,43 @@ const createPdfFill = (language: string) => ({
 
 const LibraryCreateEntityForm = ({ onClose, create }: LibraryCreateEntityFormProps) => {
   const { entity, form, formId, mediaUpload, saving, saveError, editErrors, onSave } = create;
-  const { setTranslationsPending, registerCancelTranslations, requestStopTranslations } =
-    useMetadataEditing();
+  const {
+    isEditing,
+    isDirty,
+    isSaving,
+    translationsPending,
+    setIsDirty,
+    setIsSaving,
+    startEditing,
+    cancelEdit,
+    cancelTranslations,
+    setTranslationsPending,
+    registerCancelTranslations,
+    requestStopTranslations,
+  } = useMetadataEditing();
+  const { isDirty: formDirty } = form.formState;
+  useRegisterLibraryLeave();
+  useEffect(() => {
+    startEditing('main');
+  }, [startEditing]);
+  useEffect(() => {
+    setIsDirty(formDirty);
+  }, [formDirty, setIsDirty]);
+  useEffect(() => {
+    setIsSaving(saving);
+  }, [saving, setIsSaving]);
   const isMobile = useIsMobile();
   const requestClose = () => requestStopTranslations(onClose);
 
   return (
     <DocumentInteractionProvider>
+      <BlockDirtyNavigation
+        when={isEditing && (isDirty || isSaving || translationsPending)}
+        onDiscard={cancelEdit}
+        translationsPending={translationsPending}
+        onStopTranslations={cancelTranslations}
+        dirty={isDirty || isSaving}
+      />
       <div
         className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
         data-testid="library-create-entity"
@@ -55,15 +87,15 @@ const LibraryCreateEntityForm = ({ onClose, create }: LibraryCreateEntityFormPro
             </button>
           )}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-          {saveError ? (
-            <p className="mb-3 text-sm text-red-600" role="alert">
-              {saveError}
-            </p>
-          ) : null}
-          <PdfFillProvider value={createPdfFill(entity.language)}>
-            {/* oxlint-disable-next-line react/jsx-props-no-spreading */}
-            <FormProvider {...form}>
+        <PdfFillProvider value={createPdfFill(entity.language)}>
+          {/* oxlint-disable-next-line react/jsx-props-no-spreading */}
+          <FormProvider {...form}>
+            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+              {saveError ? (
+                <p className="mb-3 text-sm text-red-600" role="alert">
+                  {saveError}
+                </p>
+              ) : null}
               <EditEntity
                 formId={formId}
                 form={form}
@@ -78,19 +110,22 @@ const LibraryCreateEntityForm = ({ onClose, create }: LibraryCreateEntityFormPro
                   requestStopTranslations(() => submitEditEntityForm(formId));
                 }}
               />
-            </FormProvider>
-          </PdfFillProvider>
-        </div>
-        <EntityTabFooter inset="side">
-          <div className="flex w-full items-center justify-end gap-2">
-            <LibraryFooterButton onClick={requestClose} disabled={saving}>
-              <Translate>Cancel</Translate>
-            </LibraryFooterButton>
-            <Button type="submit" variant="success" form={formId} disabled={saving}>
-              <Translate>Save</Translate>
-            </Button>
-          </div>
-        </EntityTabFooter>
+            </div>
+            <EntityTabFooter inset="side">
+              <div className="flex w-full items-center justify-between gap-2">
+                <CopyFromTrigger disabled={saving} />
+                <div className="flex items-center gap-2">
+                  <LibraryFooterButton onClick={requestClose} disabled={saving}>
+                    <Translate>Cancel</Translate>
+                  </LibraryFooterButton>
+                  <Button type="submit" variant="success" form={formId} disabled={saving}>
+                    <Translate>Save</Translate>
+                  </Button>
+                </div>
+              </div>
+            </EntityTabFooter>
+          </FormProvider>
+        </PdfFillProvider>
       </div>
     </DocumentInteractionProvider>
   );

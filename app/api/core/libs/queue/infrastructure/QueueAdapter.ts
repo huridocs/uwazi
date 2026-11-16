@@ -32,4 +32,10 @@ export interface QueueAdapter {
   deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
   cancelByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
   countByName(jobName: string, tenantName: string): Promise<number>;
+  /** Queued or running jobs whose params match. Failed rows are not counted. */
+  countActiveByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<number>;
 }

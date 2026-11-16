@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { RelationshipConnectionsTable } from '../RelationshipConnectionsTable.js';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -58,6 +59,28 @@ describe('RelationshipConnectionsTable cards', () => {
     expect(within(stack).getByText('Judge')).toBeInTheDocument();
     expect(within(stack).queryByText('Clerk')).not.toBeInTheDocument();
     expect(within(stack).getAllByText('Kenya')[0]).toHaveClass('wrap-break-word');
+  });
+
+  it('folds a long inherited value on the card', async () => {
+    jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(200);
+    jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(40);
+    const user = userEvent.setup();
+    render(
+      <RelationshipConnectionsTable
+        rows={[{ id: 'e1', label: 'Second', templateId: 't1' }]}
+        columns={[
+          {
+            label: 'Markdown',
+            inheritedType: 'markdown',
+            cellsByEntityId: { e1: 't is a long established fact' },
+          },
+        ]}
+      />
+    );
+
+    expect(within(cardStack()).getByRole('button', { name: 'Show more' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Show more' }));
+    expect(within(cardStack()).getByRole('button', { name: 'Show less' })).toBeInTheDocument();
   });
 
   it('orders cards the same way as the table', () => {

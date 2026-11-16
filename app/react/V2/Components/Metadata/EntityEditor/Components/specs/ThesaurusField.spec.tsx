@@ -185,10 +185,18 @@ describe('thesaurus fields', () => {
     expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
   });
 
-  it('appends a multiselect value and does not show Clear', async () => {
+  it('clears a multiselect from the label row', async () => {
     renderField(multiProperty, { topics: [{ value: 'idle', label: 'Idle' }] });
 
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    await waitFor(() => expect(metadata().topics).toEqual([]));
     expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+  });
+
+  it('appends a multiselect value', async () => {
+    renderField(multiProperty, { topics: [{ value: 'idle', label: 'Idle' }] });
+
+    expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
     await saveFresh();
     await waitFor(() =>
       expect(metadata().topics).toEqual([

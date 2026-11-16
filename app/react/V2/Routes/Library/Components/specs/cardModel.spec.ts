@@ -49,7 +49,7 @@ describe('thumbnailFromEntity', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/cover.png',
+      src: '/files/thumbnails/cover.png',
       propertyName: 'cover',
       kind: 'image',
       fit: 'cover',
@@ -63,7 +63,7 @@ describe('thumbnailFromEntity', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/doc-preview.jpg',
+      src: '/files/thumbnails/doc-preview.jpg',
       propertyName: 'preview',
       kind: 'document',
       fit: 'cover',
@@ -100,7 +100,7 @@ describe('thumbnailFromEntity', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/doc-preview.jpg',
+      src: '/files/thumbnails/doc-preview.jpg',
       kind: 'document',
       fit: 'cover',
     });
@@ -157,7 +157,7 @@ describe('thumbnailFromEntity', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/doc-preview.jpg',
+      src: '/files/thumbnails/doc-preview.jpg',
       kind: 'document',
       fit: 'cover',
     });
@@ -168,7 +168,7 @@ describe('thumbnailFromEntity', () => {
     const tmpl = template([]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/doc-1.jpg',
+      src: '/files/thumbnails/doc-1.jpg',
       kind: 'document',
       fit: 'cover',
     });
@@ -221,7 +221,7 @@ describe('thumbnail kind for image files', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/17900782341876n5ao2986x.png',
+      src: '/files/thumbnails/17900782341876n5ao2986x.png',
       propertyName: 'cover',
       kind: 'image',
       fit: 'cover',
@@ -237,7 +237,7 @@ describe('thumbnail kind for image files', () => {
     ]);
 
     expect(thumbnailFromEntity(hearing, tmpl)).toEqual({
-      src: '/api/files/17900782341876n5ao2986x.png',
+      src: '/files/thumbnails/17900782341876n5ao2986x.png',
       propertyName: 'cover',
       kind: 'image',
       fit: 'cover',

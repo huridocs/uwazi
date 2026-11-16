@@ -12,6 +12,7 @@ import {
   getFieldErrorState,
 } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
+import { FieldClearButton } from './FieldClearButton.js';
 
 type GeolocationFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -67,20 +68,30 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
         render={({ field: geolocationField, fieldState }) => {
           const entries = (geolocationField.value as MetadataValue[] | undefined) ?? [];
           const { lat, lon, label: pointLabel } = coordsFromEntries(entries);
+          const hasPoint = entries.some(entry => {
+            const point = coordsFromValue(entry.value);
+            return isFiniteNumber(point.lat) || isFiniteNumber(point.lon);
+          });
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <>
-              <EntityFieldLabel
-                htmlFor={geolocationField.name}
-                context={context}
-                label={label}
-                required={required}
-                showError={showError}
-              />
+              <div className="flex items-start justify-between gap-2">
+                <EntityFieldLabel
+                  htmlFor={geolocationField.name}
+                  context={context}
+                  label={label}
+                  required={required}
+                  showError={showError}
+                />
+                {hasPoint && !disabled ? (
+                  <FieldClearButton onClick={() => geolocationField.onChange([])} />
+                ) : null}
+              </div>
               <Geolocation
                 name={geolocationField.name}
                 disabled={disabled}
+                hideClear
                 value={{ lat, lon }}
                 hasErrors={showError}
                 onChange={({ lat: nextLat, lon: nextLon }) => {

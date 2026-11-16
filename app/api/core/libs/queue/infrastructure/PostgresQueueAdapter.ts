@@ -169,6 +169,20 @@ export class PostgresQueueAdapter implements QueueAdapter {
     return Number(rows[0].count);
   }
 
+  async countActiveByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<number> {
+    const [{ rows }] = await this.dispatch([
+      PostgresQueueAdapter.whereParams(
+        Statements.builder('jobs').where({ name: jobName, namespace: tenantName, failed: false }),
+        params
+      ).count({ count: '*' }),
+    ]);
+    return Number(rows[0].count);
+  }
+
   async pickJob(queueName: string): Promise<Job | null> {
     return this.pick(queueName);
   }
