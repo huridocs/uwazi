@@ -77,6 +77,8 @@ describe('uwazi binary', () => {
     ['tenants list --archived --schema', ['tenants', 'list', '--archived', '--schema'], 0],
     ['tenants archive --schema', ['tenants', 'archive', '--schema'], 0],
     ['tenants unarchive --schema', ['tenants', 'unarchive', '--schema'], 0],
+    ['tenants delete --schema', ['tenants', 'delete', '--schema'], 0],
+    ['tenants delete --archived --schema', ['tenants', 'delete', '--archived', '--schema'], 0],
     ['tenants help', ['tenants', 'register', '--help'], 0],
     ['usage --schema', ['usage', 'report', '--schema'], 0],
     ['sessions --schema', ['sessions', 'last', '--schema'], 0],

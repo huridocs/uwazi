@@ -20,24 +20,26 @@ const issuesOf = (fn: () => unknown) => {
 };
 
 describe('TenantsRoutes', () => {
-  it('should register every tenants command with its tenancy', () => {
-    expect(TenantsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
-      ['tenants list', 'none'],
-      ['tenants get', 'none'],
-      ['tenants archive', 'none'],
-      ['tenants unarchive', 'none'],
-      ['tenants register', 'none'],
-      ['tenants update', 'none'],
-      ['tenants delete', 'none'],
-      ['tenants feature-flags', 'none'],
-      ['tenants maintenance', 'none'],
-      ['tenants stats', 'none'],
-      ['tenants health-check', 'none'],
-    ]);
-  });
+  describe('registration', () => {
+    it('should register every tenants command with its tenancy', () => {
+      expect(TenantsRoutes.all().map(r => [r.command.join(' '), r.tenancy])).toEqual([
+        ['tenants list', 'none'],
+        ['tenants get', 'none'],
+        ['tenants archive', 'none'],
+        ['tenants unarchive', 'none'],
+        ['tenants register', 'none'],
+        ['tenants update', 'none'],
+        ['tenants delete', 'none'],
+        ['tenants feature-flags', 'none'],
+        ['tenants maintenance', 'none'],
+        ['tenants stats', 'none'],
+        ['tenants health-check', 'none'],
+      ]);
+    });
 
-  it('should never need Redis, the session store or the admin pool', () => {
-    TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
+    it('should never need Redis, the session store or the admin pool', () => {
+      TenantsRoutes.all().forEach(r => expect(r.needs).toEqual({ redis: false, sessions: false }));
+    });
   });
 
   describe('list', () => {
@@ -62,6 +64,36 @@ describe('TenantsRoutes', () => {
     it('should take the tenant name in the request, not a flag', () => {
       expect(parse('get', { name: 'acme' })).toEqual({ name: 'acme' });
       expect(issuesOf(() => parse('get', {}))).toEqual(['name']);
+    });
+  });
+
+  describe('delete', () => {
+    it('should take the tenant name in the request, not a flag', () => {
+      expect(parse('delete', { name: 'acme' })).toEqual({ name: 'acme' });
+      expect(issuesOf(() => parse('delete', {}))).toEqual(['name']);
+    });
+
+    it('should switch to the archived registry with --archived, never a request field', () => {
+      const remove = route('delete');
+
+      expect(issuesOf(() => parse('delete', { name: 'acme', archived: true }))).toEqual(['']);
+      expect(remove.options).toBeDefined();
+      expect(remove.input?.parse({ name: 'acme', archived: false })).toEqual({
+        name: 'acme',
+        archived: false,
+      });
+      expect(remove.input?.parse({ name: 'acme', archived: true })).toEqual({
+        name: 'acme',
+        archived: true,
+      });
+      expect(remove.requestFromFlags?.({ archived: false }, { name: 'acme' })).toEqual({
+        name: 'acme',
+        archived: false,
+      });
+      expect(remove.requestFromFlags?.({ archived: true }, { name: 'acme' })).toEqual({
+        name: 'acme',
+        archived: true,
+      });
     });
   });
 
