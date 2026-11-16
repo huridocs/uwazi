@@ -1586,3 +1586,42 @@ Save theme,Button label,Settings > Collection,Saves theme and branding from the 
 Show all,Button label,Shared (used across 2 views),"Expands the folded file list on the entity metadata tab and the library entity preview when more than six files are present. The count and the word files sit beside this label.",false
 "You can delete at most 10,000 entities at once.",Tooltip,Library,"Tooltip on the disabled Delete button when 10,000 or more entities are selected.",false
 Back to files,Button label,Library,Returns from an open file to the file list in the side panel.,false
+Enter your username and password.,UI text,Login,Error when the username and password are both empty.,false
+Enter your username.,UI text,Login,Error when the username is empty.,false
+Enter your password.,UI text,Login,Error when the password is empty.,false
+Login failed. Check your username and password.,UI text,Login,"Shown for an unknown user, a wrong password, or a locked account.",false
+Enter the code from your authenticator app.,UI text,Login,Error when the two-factor code is empty.,false
+Two-factor verification failed. Check the code and try again.,UI text,Login,Shown when the two-factor code is wrong and the account is not locked yet.,false
+Enter a valid email address.,UI text,Login,Error when the recovery address is empty or not an email.,false
+"If the email address supplied is correct, we will send instructions to reset the password.",UI text,Login,Confirmation after a recovery request. Shown whether or not the address exists.,false
+Your password is saved. Log in with it.,UI text,Login,Notice on the login screen after a password reset. The person is not signed in.,false
+Your account is ready. Log in with your new password.,UI text,Login,Notice on the login screen after an invited person sets a password.,false
+Account unlocked. You can log in.,UI text,Login,Notice after an unlock link succeeds. The person is not signed in.,false
+This unlock link is not valid. Ask an administrator to unlock the account.,UI text,Login,Notice when an unlock link is invalid or already used.,false
+Passwords don’t match.,UI text,Set password,Error when the two password fields differ.,false
+Enter a password.,UI text,Set password,Error when the new password is empty.,false
+Website,UI text,Login,Footer link to uwazi.io.,false
+Contribute,UI text,Login,Footer link to the Uwazi GitHub repository.,false
+About Uwazi,Accessible label,Login,Name of the footer navigation.,false
+Hide password,Accessible label,Login,Hides the password that is currently visible.,false
+Show password,Accessible label,Login,Reveals the password in the field.,false
+Log in,Button label,Login,Heading and submit button for the username and password.,false
+With your Uwazi username.,UI text,Login,Line under the log-in heading.,false
+e.g. admin,Placeholder,Login,Example shown in the empty username field.,false
+Remember me,UI text,Login,Checkbox that stores only the username in this browser.,false
+Forgot password or username?,Button label,Login,Opens the password recovery form.,false
+Logging in…,Button label,Login,Submit label while the login request is in progress.,false
+Open the authenticator app on your device to see your code.,UI text,Login,Line under the two-factor heading.,false
+Verifying…,Button label,Login,Shown on the two-factor button and on the unlock screen while the link is checked.,false
+Forgot your password?,UI text,Login,Heading of the recovery form.,false
+"If an account exists with the email you provide, you will receive an email with your username and a link to reset your password.",UI text,Login,Explanation under the recovery heading.,false
+Sending…,Button label,Login,Submit label while the recovery email is being requested.,false
+This link no longer works,UI text,Set password,Heading when a password or invite link is expired or already used.,false
+Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,UI text,Set password,Explanation under the expired-link heading.,false
+Request a new link,Button label,Set password,Opens the recovery form from an expired password link.,false
+Back to log in,Button label,Set password,Leaves the set-password screen for the login screen.,false
+Create your password,UI text,Set password,Heading when the link is an invitation to create an account.,false
+Set a new password,UI text,Set password,Heading when the link resets an existing password.,false
+"To complete the account creation process, please create a password for your account.",UI text,Set password,Note shown only on an invitation link.,false
+Repeat password,Field label,Set password,"Second password field, used to confirm the first.",false
+Saving…,Button label,Set password,Submit label while the new password is being saved.,false

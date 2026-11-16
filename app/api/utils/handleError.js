@@ -156,7 +156,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   }
 
   // The frontend login form branches on this exact status to switch to the 2FA prompt
-  // (see app/react/Users/Login.jsx), matching the legacy `createError(..., 409)` behavior.
+  // (see app/react/V2/Routes/Auth/Login.tsx), matching the legacy `createError(..., 409)` behavior.
   if (error instanceof TwoFactorTokenRequired) {
     result = { code: 409, message: error.message, logLevel: 'debug' };
   }
