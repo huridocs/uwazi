@@ -5,6 +5,8 @@ import { store } from '#app/store.js';
 import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 import { t } from '#app/I18N/index.js';
 
+import { isAuthPath, loginUrl, rememberReturnPath } from '#shared/authReturn.js';
+import { loginV2Enabled } from '#app/utils/loginV2.js';
 import { APIURL } from '../config.js';
 import request from '../../shared/JSONRequest.js';
 
@@ -78,9 +80,18 @@ const handleErrorStatus = error => {
       break;
     }
 
-    case 401:
-      redirect('/login');
+    case 401: {
+      if (!isClient || !loginV2Enabled() || isAuthPath(window.location.pathname)) {
+        redirect('/login');
+        break;
+      }
+      const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      rememberReturnPath(current);
+      const destination = loginUrl(current);
+      redirect(destination);
+      window.location.assign(destination);
       break;
+    }
 
     case 404:
       redirect('/404');

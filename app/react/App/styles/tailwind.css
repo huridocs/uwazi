@@ -1051,3 +1051,19 @@ header button svg:not([class*='notification-kind-icon']),
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/* Login fields under browser autofill. The text colour is set back; the
+   background change is held off, because an inset shadow would hide the ring. */
+.tw-content input.login-field:-webkit-autofill,
+.tw-content input.login-field:-webkit-autofill:hover,
+.tw-content input.login-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-primary, var(--color-theme-text-primary));
+  caret-color: var(--text-primary, var(--color-theme-text-primary));
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+
+.tw-content.dark .login-art {
+  filter: brightness(0.82) saturate(0.95);
+}
