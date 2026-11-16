@@ -68,13 +68,11 @@ const loginUrl = (returnPath: string | null | undefined): string => {
   return `/login?redirect=${encodeURIComponent(safe)}`;
 };
 
-const isLoginV2Enabled = (features?: { devflagloginv2?: boolean } | null): boolean =>
+const isLoginV2Enabled = (features?: { [key: string]: unknown } | null): boolean =>
   Boolean(features?.devflagloginv2);
 
-const loginRedirect = (
-  returnPath: string,
-  features?: { devflagloginv2?: boolean } | null
-): string => (isLoginV2Enabled(features) ? loginUrl(returnPath) : '/login');
+const loginRedirect = (returnPath: string, features?: { [key: string]: unknown } | null): string =>
+  isLoginV2Enabled(features) ? loginUrl(returnPath) : '/login';
 
 const isAuthPath = (pathname: string): boolean =>
   isAuthPathname(pathname.split('?')[0].split('#')[0]);
