@@ -4,19 +4,19 @@ Administer tenants: the registry that says which tenants an installation serves 
 one's data lives. Backup, restore and blank-state commands live under [`db`](db.md). Shared
 options, output and exit codes are in the [README](../README.md).
 
-| Command                 | Does                                                               |
-| ----------------------- | ------------------------------------------------------------------ |
-| `tenants list`          | Prints every tenant, active by default, archived with `--archived` |
-| `tenants get`           | Prints one tenant, as stored                                       |
-| `tenants archive`       | Moves a tenant to the archived registry                            |
-| `tenants unarchive`     | Moves a tenant back to the active registry                         |
-| `tenants register`      | Registers a tenant, or updates the one already registered          |
-| `tenants update`        | Changes a tenant's fields                                          |
-| `tenants delete`        | Removes a tenant from the registry                                 |
-| `tenants feature-flags` | Sets or removes feature flags                                      |
-| `tenants maintenance`   | Puts a tenant under maintenance, or takes it out                   |
-| `tenants stats`         | Stores the usage figures another tool computed                     |
-| `tenants health-check`  | Stores the latest health check another tool ran                    |
+| Command                 | Does                                                                  |
+| ----------------------- | --------------------------------------------------------------------- |
+| `tenants list`          | Prints every tenant, active by default, archived with `--archived`    |
+| `tenants get`           | Prints one tenant, as stored                                          |
+| `tenants archive`       | Moves a tenant to the archived registry                               |
+| `tenants unarchive`     | Moves a tenant back to the active registry                            |
+| `tenants register`      | Registers a tenant, or updates the one already registered             |
+| `tenants update`        | Changes a tenant's fields                                             |
+| `tenants delete`        | Removes a tenant from the active registry, archived with `--archived` |
+| `tenants feature-flags` | Sets or removes feature flags                                         |
+| `tenants maintenance`   | Puts a tenant under maintenance, or takes it out                      |
+| `tenants stats`         | Stores the usage figures another tool computed                        |
+| `tenants health-check`  | Stores the latest health check another tool ran                       |
 
 The commands above administer the registry and take no `--tenant` or `--all-tenants` — the
 tenant they act on is the request's `name`.
@@ -117,12 +117,12 @@ Output for `--archived`, one item per archived tenant, `[]` when there are none:
 ]
 ```
 
-| Field                | Meaning                                                            |
-| -------------------- | ------------------------------------------------------------------ |
-| `dumpLocation.db`    | The zipped database dump                                           |
-| `dumpLocation.files` | Where the tenant's files are kept                                  |
+| Field                | Meaning                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `dumpLocation.db`    | The zipped database dump                                                             |
+| `dumpLocation.files` | Where the tenant's files are kept                                                    |
 | `archivedAt`         | When it was archived, epoch seconds (a number; a numeric string in older Mongo rows) |
-| the other fields     | The tenant's registry row at the time it was archived              |
+| the other fields     | The tenant's registry row at the time it was archived                                |
 
 ## tenants get
 
@@ -179,11 +179,11 @@ same database or index.
 
 Prints the active row as stored (what `tenants get` prints).
 
-| Code                 | Exit | When                                             |
-| -------------------- | ---- | ------------------------------------------------ |
-| `tenant.not_found`   | 3    | The archived tenant does not exist               |
-| `tenant.conflict`    | 4    | A tenant with that name is already active        |
-| `tenant.storage_taken` | 4  | Another tenant now uses the archived `dbName` or `indexName` |
+| Code                   | Exit | When                                                         |
+| ---------------------- | ---- | ------------------------------------------------------------ |
+| `tenant.not_found`     | 3    | The archived tenant does not exist                           |
+| `tenant.conflict`      | 4    | A tenant with that name is already active                    |
+| `tenant.storage_taken` | 4    | Another tenant now uses the archived `dbName` or `indexName` |
 
 ## tenants register
 
@@ -250,11 +250,19 @@ Prints the tenant's row after saving.
 
 ```sh
 yarn uwazi tenants delete --request '{"name":"acme"}'
+yarn uwazi tenants delete --archived --request '{"name":"acme"}'
 ```
 
 Removes the registry row only. The tenant's database, search index and files are left as they
 are. Processes already running keep serving the tenant until they restart (see
 [How running servers see changes](#how-running-servers-see-changes)).
+
+**Active (default).** Removes the tenant from the active registry.
+
+**`--archived`.** Removes the tenant from the archived registry instead, leaving the dump and
+files its `dumpLocation` points at as they are.
+
+Fails with `tenant.not_found` (exit 3) when there is no such tenant in the selected registry.
 
 Prints `{"name":"acme"}`.
 
