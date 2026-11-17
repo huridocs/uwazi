@@ -163,6 +163,21 @@ describe('DrawerFileRow', () => {
     expect(screen.queryByRole('button', { name: /Download/ })).not.toBeInTheDocument();
   });
 
+  it('names the rename pencil in a tooltip', () => {
+    render(
+      <DrawerFileRow
+        row={buildRow()}
+        editing={false}
+        onView={jest.fn()}
+        onEdit={jest.fn()}
+        onCancelEdit={jest.fn()}
+        onCommit={jest.fn()}
+      />
+    );
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'Edit' }));
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Edit');
+  });
+
   it('opens the file from the row and leaves rename alone', () => {
     const onView = jest.fn();
     const file = buildRow();
@@ -177,7 +192,7 @@ describe('DrawerFileRow', () => {
       />
     );
     fireEvent.click(screen.getByText('doc.pdf'));
-    fireEvent.click(screen.getByRole('button', { name: 'Rename' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
     expect(onView).toHaveBeenCalledTimes(1);
     expect(onView).toHaveBeenCalledWith(file);
     expect(screen.queryByRole('button', { name: 'View' })).not.toBeInTheDocument();

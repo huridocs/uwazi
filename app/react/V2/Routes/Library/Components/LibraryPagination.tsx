@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from '@heroicons/rea
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
+import { PortalTooltip } from '#V2/Components/UI/index.js';
 import { LibraryFooterMenu } from './LibraryFooterMenu.js';
 
 const LIBRARY_PAGE_SIZES = [50, 250, 500];
@@ -97,27 +98,31 @@ const LibraryPagination = ({
         aria-label={t('System', 'Pagination', null, false)}
         className="flex items-center gap-0.5"
       >
-        <button
-          type="button"
-          className={stepClassName}
-          aria-label={t('System', 'Previous', null, false)}
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
-          <ChevronLeftIcon className="h-4 w-4" aria-hidden />
-        </button>
+        <PortalTooltip content={t('System', 'Previous', null, false)} placement="top">
+          <button
+            type="button"
+            className={stepClassName}
+            aria-label={t('System', 'Previous', null, false)}
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
+            <ChevronLeftIcon className="h-4 w-4" aria-hidden />
+          </button>
+        </PortalTooltip>
         <span className="min-w-14 px-1 text-center tabular-nums text-ink">
           {page} / {pages}
         </span>
-        <button
-          type="button"
-          className={stepClassName}
-          aria-label={t('System', 'Next', null, false)}
-          disabled={page >= pages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          <ChevronRightIcon className="h-4 w-4" aria-hidden />
-        </button>
+        <PortalTooltip content={t('System', 'Next', null, false)} placement="top">
+          <button
+            type="button"
+            className={stepClassName}
+            aria-label={t('System', 'Next', null, false)}
+            disabled={page >= pages}
+            onClick={() => onPageChange(page + 1)}
+          >
+            <ChevronRightIcon className="h-4 w-4" aria-hidden />
+          </button>
+        </PortalTooltip>
       </nav>
     </div>
   );
