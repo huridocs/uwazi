@@ -196,7 +196,19 @@ jobs:
           SKIP_MIGRATION_CHECK: true
         run: |
           docker pull "$BACKEND_IMAGE"
+
+          # Share the runner's writable dirs with the backend container so the
+          # restored fixture PDFs (uploaded_documents) and uploads written by the
+          # server are visible on both sides. World-writable so the non-root
+          # `uwazi` user inside the image can read/write them.
+          mkdir -p uploaded_documents custom_uploads temporal_files log
+          chmod -R a+rwX uploaded_documents custom_uploads temporal_files log
+
           docker run -d --name uwazi-backend --network host \
+            -v "$PWD/uploaded_documents:/app/uploaded_documents" \
+            -v "$PWD/custom_uploads:/app/custom_uploads" \
+            -v "$PWD/temporal_files:/app/temporal_files" \
+            -v "$PWD/log:/app/log" \
             -e DBHOST="$DBHOST" \
             -e ELASTICSEARCH_URL="$ELASTICSEARCH_URL" \
             -e REDIS_HOST="$REDIS_HOST" \
