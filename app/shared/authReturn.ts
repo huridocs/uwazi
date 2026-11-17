@@ -71,6 +71,11 @@ const loginUrl = (returnPath: string | null | undefined): string => {
 const isLoginV2Enabled = (features?: { [key: string]: unknown } | null): boolean =>
   Boolean(features?.devflagloginv2);
 
+const anonymousClientFeatures = (features?: { [key: string]: unknown } | null) => ({
+  newHeader: features?.newHeader,
+  devflagloginv2: features?.devflagloginv2,
+});
+
 const loginRedirect = (returnPath: string, features?: { [key: string]: unknown } | null): string =>
   isLoginV2Enabled(features) ? loginUrl(returnPath) : '/login';
 
@@ -137,6 +142,7 @@ const consumeReturnPath = (storages: ReturnStorage[] = browserStorages()): strin
 export {
   STORAGE_KEY,
   consumeReturnPath,
+  anonymousClientFeatures,
   isAuthPath,
   isLoginV2Enabled,
   loginRedirect,
