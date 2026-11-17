@@ -243,6 +243,10 @@ jobs:
         run: |
           nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
 
+      - name: Forward localhost:9000 to minio:9000
+        run: |
+          nohup socat TCP-LISTEN:9000,fork,reuseaddr TCP:minio:9000 &
+
       - name: Provision PostgreSQL
         env:
           POSTGRES_HOST: postgres
