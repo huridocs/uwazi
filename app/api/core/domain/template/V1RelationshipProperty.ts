@@ -11,6 +11,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
 import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
 
 type Inherit = {
@@ -25,9 +26,18 @@ type Props = {
   type?: PropertyTypeEnum.Relationship;
 } & Omit<FilterablePropertyProps, 'type'>;
 
+const RelationshipValueSchema = z
+  .object({
+    value: z.string(),
+    attributes: attributesSchema,
+  })
+  .passthrough();
+
 const createSchema = (isRequired: boolean) =>
   z.object({
-    value: z.array(z.any()).min(isRequired ? 1 : 0, 'Relationship Property is required'),
+    value: z
+      .array(RelationshipValueSchema)
+      .min(isRequired ? 1 : 0, 'Relationship Property is required'),
     language: z
       .string({ required_error: 'Language is required.' })
       .min(1, 'Language must be provided.'),
@@ -127,7 +137,13 @@ class V1RelationshipProperty extends FilterableProperty {
     { value, language }: CreatePropertyAssignmentInput<RelationshipEntry>,
     shouldValidateForRequired = false
   ): RelationshipPropertyAssignment {
-    const deduplicated = ArrayUtils.deduplicate(value, item => item.value.trim());
+    const deduplicated = ArrayUtils.deduplicate(value, item => {
+      const trimmed = item.value.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+      return entryCarriesAttributes(item) ? `${trimmed}\0` : trimmed;
+    });
 
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse({
       value: deduplicated,
@@ -137,7 +153,7 @@ class V1RelationshipProperty extends FilterableProperty {
     return {
       name: this.name,
       type: this.type,
-      value: parsed.value,
+      value: parsed.value as RelationshipEntry[],
       language: parsed.language as LanguageISO6391,
       isTranslatable: this.isTranslatable,
     };

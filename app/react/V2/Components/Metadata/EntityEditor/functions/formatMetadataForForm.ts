@@ -38,6 +38,7 @@ const isInheritedType = (value: unknown): value is NonNullable<MetadataValue['in
 
 const toFormMetadataValue = (entry: MetadataObjectSchema): MetadataValue => ({
   value: entry.value,
+  ...(Array.isArray(entry.attributes) ? { attributes: entry.attributes } : {}),
   ...(typeof entry.label === 'string' ? { label: entry.label } : {}),
   ...(entry.parent ? { parent: entry.parent } : {}),
   ...(typeof entry.type === 'string' ? { type: entry.type } : {}),

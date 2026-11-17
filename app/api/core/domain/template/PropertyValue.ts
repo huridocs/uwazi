@@ -10,14 +10,21 @@ type Icon = {
 type BaseMetadataValue = {
   value: any;
   label?: string;
+  attributes?: string[];
 };
 
-export type TextPropertyValue = { value: string };
-export type NumericPropertyValue = { value: number };
-export type MarkdownEntry = { value: string };
-export type DateEntry = { value: number };
-export type DateRangeEntry = { value: { from: number | null; to: number | null } };
-export type GeolocationEntry = { value: { lat: number; lon: number; label?: string } };
+type EntryAttributes = { attributes?: string[] };
+
+export type TextPropertyValue = { value: string } & EntryAttributes;
+export type NumericPropertyValue = { value: number } & EntryAttributes;
+export type MarkdownEntry = { value: string } & EntryAttributes;
+export type DateEntry = { value: number } & EntryAttributes;
+export type DateRangeEntry = {
+  value: { from: number | null; to: number | null };
+} & EntryAttributes;
+export type GeolocationEntry = {
+  value: { lat: number; lon: number; label?: string };
+} & EntryAttributes;
 export type SelectionEntry = {
   value: string;
   label: string;
@@ -25,9 +32,9 @@ export type SelectionEntry = {
     value: string;
     label: string;
   };
-};
+} & EntryAttributes;
 
-export type LinkEntry = { value: { url: string; label?: string } };
+export type LinkEntry = { value: { url: string; label?: string } } & EntryAttributes;
 
 export type InheritedValue =
   | TextPropertyValue
@@ -51,14 +58,16 @@ export type RelationshipEntry = {
   icon?: Icon;
   inheritedType?: PropertyType;
   inheritedValue?: InheritedValue[];
-};
+} & EntryAttributes;
 
-export type NestedEntry = { value: { [childName: string]: BaseMetadataValue[] } };
+export type NestedEntry = {
+  value: { [childName: string]: BaseMetadataValue[] };
+} & EntryAttributes;
 
-export type ImageEntry = { value: string };
-export type MediaEntry = { value: string };
-export type PreviewEntry = { value: string };
-export type GeneratedIdEntry = { value: string };
+export type ImageEntry = { value: string } & EntryAttributes;
+export type MediaEntry = { value: string } & EntryAttributes;
+export type PreviewEntry = { value: string } & EntryAttributes;
+export type GeneratedIdEntry = { value: string } & EntryAttributes;
 
 export type PropertyValue =
   | TextPropertyValue

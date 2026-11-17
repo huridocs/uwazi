@@ -4,6 +4,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors.js';
 import { FilterableProperty, FilterablePropertyProps } from '../FilterableProperty.js';
 import { SelectionEntry, SelectPropertyAssignment } from '../PropertyValue.js';
+import { entryCarriesAttributes } from '../attributesSchema.js';
 import { createSchema } from './Schema.js';
 
 type Props = {
@@ -52,9 +53,14 @@ class AbstractSelectProperty extends FilterableProperty {
     input: CreatePropertyAssignmentInput<SelectionEntry>,
     shouldValidateForRequired = false
   ): SelectPropertyAssignment {
-    const filtered = input.value.filter(v => v?.value?.trim()?.length);
+    const filtered = input.value.filter(v => v?.value?.trim()?.length || entryCarriesAttributes(v));
 
-    const deduplicated = ArrayUtils.deduplicate(filtered, v => v.value);
+    const deduplicated = ArrayUtils.deduplicate(filtered, v => {
+      if (v.value) {
+        return v.value;
+      }
+      return entryCarriesAttributes(v) ? '\u0000' : v.value;
+    });
 
     const { language, value } = createSchema(
       shouldValidateForRequired ? this.required : false,

@@ -12,7 +12,7 @@ describe('CreateEntitySchema', () => {
       title: 'Test Entity',
       template: '6925f7567e817ee96cd2efa6',
       metadata: {
-        text_property: [{ value: 'Some text value' }],
+        text_property: [{ value: 'Some text value', attributes: ['ai_generated', 'sync_off'] }],
         numeric_property: [{ value: 42 }],
         boolean_property: [{ value: true }],
         null_property: [{ value: null }],
@@ -36,6 +36,7 @@ describe('CreateEntitySchema', () => {
 
     // Assert text property
     expect(result.metadata?.text_property[0].value).toBe('Some text value');
+    expect(result.metadata?.text_property[0].attributes).toEqual(['ai_generated', 'sync_off']);
 
     // Assert numeric property
     expect(result.metadata?.numeric_property[0].value).toBe(42);

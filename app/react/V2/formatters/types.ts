@@ -200,6 +200,7 @@ type MetadataProperty =
 type MetadataValue = {
   value?: unknown;
   label?: string;
+  attributes?: string[];
   parent?: { value?: unknown; label?: string };
   type?: string;
   icon?: unknown;

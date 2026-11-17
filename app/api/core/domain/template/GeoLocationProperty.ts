@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { PropertyName } from './PropertyName.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema } from './attributesSchema.js';
 import { GeolocationEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -19,6 +20,7 @@ const EntrySchema = z.object({
     lon: z.number({ required_error: 'Geolocation Property longitude must be provided.' }),
     label: z.string().optional(),
   }),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean) =>

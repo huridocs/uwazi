@@ -41,6 +41,7 @@ const MetadataValueSchema = z.object({
   value: PropertyValueSchema,
   attachment: z.number().optional(),
   label: z.string().optional(),
+  attributes: z.array(z.string()).optional(),
   suggestion_model: z.string().optional(),
   provenance: z.string().optional(),
   inheritedValue: z.array(InheritedValueSchema).optional(),

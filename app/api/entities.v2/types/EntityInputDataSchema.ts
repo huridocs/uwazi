@@ -56,6 +56,7 @@ const metadataObjectSchema = {
   required: ['value'],
   properties: {
     value: propertyValueSchema,
+    attributes: { type: 'array', items: { type: 'string' } },
   },
 };
 
