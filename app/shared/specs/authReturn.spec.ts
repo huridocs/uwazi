@@ -1,4 +1,5 @@
 import {
+  anonymousClientFeatures,
   consumeReturnPath,
   loginRedirect,
   loginUrl,
@@ -62,6 +63,22 @@ describe('loginUrl', () => {
   it('sends an unsafe destination to the login screen alone', () => {
     expect(loginUrl('https://evil.example')).toBe('/login');
     expect(loginUrl(null)).toBe('/login');
+  });
+});
+
+describe('anonymousClientFeatures', () => {
+  it('keeps the login v2 flag and drops the other client flags', () => {
+    expect(
+      anonymousClientFeatures({
+        newHeader: true,
+        devflagloginv2: true,
+        featureFlagLibraryV2: true,
+      })
+    ).toEqual({ newHeader: true, devflagloginv2: true });
+    expect(anonymousClientFeatures({ newHeader: false })).toEqual({
+      newHeader: false,
+      devflagloginv2: undefined,
+    });
   });
 });
 
