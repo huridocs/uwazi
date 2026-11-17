@@ -44,8 +44,12 @@ const PaneLayoutMobile = ({ children, className = '', requestedPane }: PaneLayou
             title={child.props.mobileTitle}
             defaultSnap={child.props.mobileSnap ?? 'half'}
             onClose={() => {
-              child.props.onMobileClose?.();
-              setOpenCount(current => Math.min(current, index - 1));
+              const collapse = () => setOpenCount(current => Math.min(current, index - 1));
+              if (!child.props.onMobileClose) {
+                collapse();
+                return;
+              }
+              child.props.onMobileClose(collapse);
             }}
           >
             {child}

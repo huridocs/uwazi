@@ -87,9 +87,11 @@ const librarySidePanes = ({
     ];
   }
 
-  const popPreview = () => {
-    pane.onClosePreview();
-    requestPane(filtersOpen || resultsOpen ? 1 : 0);
+  const closePreviewPane = (collapse?: () => void) => {
+    pane.onClosePreview(() => {
+      requestPane(filtersOpen || resultsOpen ? 1 : 0);
+      collapse?.();
+    });
   };
   const panes: React.ReactElement<PaneProps>[] = [];
   if (resultsOpen) {
@@ -129,9 +131,9 @@ const librarySidePanes = ({
         key="preview"
         background="transparent"
         mobileSnap={pane.creating ? 'full' : 'half'}
-        onMobileClose={pane.onClosePreview}
+        onMobileClose={closePreviewPane}
       >
-        {libraryRightPaneElement(pane, popPreview, isMobile)}
+        {libraryRightPaneElement(pane, () => closePreviewPane(), isMobile)}
       </PaneLayout.Pane>
     );
   }

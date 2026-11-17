@@ -40,7 +40,7 @@ const usePdfTextSelection = () => {
 };
 
 const usePdfTextNavigation = () => {
-  const { addEntry } = useTocActions();
+  const { addEntry, setEditMode } = useTocActions();
   const { openCreateRelationship } = useRelationshipsActions();
   const { focusRelationshipsPanel, focusSideTab } = useEntityTabNavigation();
 
@@ -55,9 +55,10 @@ const usePdfTextNavigation = () => {
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
       addEntry(convertTextSelectionToTocEntry(selection));
+      setEditMode(true);
       focusSideTab(SIDE_TAB.TOC);
     },
-    [addEntry, focusSideTab]
+    [addEntry, focusSideTab, setEditMode]
   );
 
   return { handleCreateRelationship, handleAddToToC };

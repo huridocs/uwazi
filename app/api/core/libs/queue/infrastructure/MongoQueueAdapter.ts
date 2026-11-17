@@ -75,6 +75,23 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     });
   }
 
+  async countActiveByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<number> {
+    const query = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [`params.${key}`, value])
+    );
+
+    return this.getCollection().countDocuments({
+      ...query,
+      name: jobName,
+      namespace: tenantName,
+      failed: { $ne: true },
+    });
+  }
+
   async renewJobLock(job: Job) {
     await this.getCollection().findOneAndUpdate(
       {

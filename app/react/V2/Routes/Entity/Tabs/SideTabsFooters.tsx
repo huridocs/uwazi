@@ -57,7 +57,7 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
     case SIDE_TAB.TOC:
       return <ToCTabFooter mainDocument={mainDocument} />;
     case SIDE_TAB.RELATIONSHIPS:
-      return <RelationshipsTabFooter inset="side" />;
+      return <RelationshipsTabFooter />;
     case SIDE_TAB.SEARCH:
       return <SearchTabFooter />;
     case SIDE_TAB.FILE:

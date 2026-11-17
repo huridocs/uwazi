@@ -60,25 +60,29 @@ class DownloadFileController extends AbstractController {
     } = requestSchema.parse(this.request);
 
     const file = await this.getFile(filename);
-
-    if (tenants.current().featureFlags?.fileCacheHeaders) {
-      await this.addFileCacheHeaders(file);
-
-      if (this.checkNotModified(file)) {
-        this.response.status(304).end();
-        return;
-      }
+    if (await this.notModified(file)) {
+      return;
     }
 
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
+    await this.stream(this.fileStorage.getFile({ filename: file.filename, type: file.type }));
+  }
 
-    const fileContents = this.fileStorage.getFile({
-      filename: file.filename,
-      type: file.type,
-    });
+  private async notModified(file: BaseFile) {
+    if (!tenants.current().featureFlags?.fileCacheHeaders) {
+      return false;
+    }
+    await this.addFileCacheHeaders(file);
+    if (!this.checkNotModified(file)) {
+      return false;
+    }
+    this.response.status(304).end();
+    return true;
+  }
 
+  private async stream(contents: { read: () => AsyncIterable<Uint8Array> }) {
     try {
-      await pipeline(fileContents.read(), this.response);
+      await pipeline(contents.read(), this.response);
     } catch (e) {
       if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
         throw new ClientAbortedRequestError('Client aborted file download', { cause: e });

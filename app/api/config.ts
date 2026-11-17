@@ -88,6 +88,7 @@ const {
   ELASTICSEARCH_URL,
   ENVIRONMENT,
   FEATURE_FLAG_FILE_CACHE_HEADERS,
+  FEATURE_FLAG_IMAGE_THUMBNAILS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
   FEATURE_FLAG_THEME_CUSTOMIZATION,
   FEATURE_FLAG_AI_ASSISTANT,
@@ -98,7 +99,9 @@ const {
   FEATURE_FLAG_EXPERIMENTAL_FEATURES,
   AI_ASSISTANT_SERVICE_URL,
   TRANSLATION_SERVICE_URL,
+  THUMBNAIL_GENERATOR_URL,
   DEV_FLAG_TESTING,
+  DEV_FLAG_LOGIN_V2,
   FILES_ROOT_PATH,
   JSON_LOGS,
   MONGO_CONNECTION_POOL_SIZE,
@@ -110,6 +113,8 @@ const {
   USER_SESSION_SECRET,
   NEW_HEADER,
 } = process.env;
+
+const imageThumbnails = FEATURE_FLAG_IMAGE_THUMBNAILS === 'true';
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 const filesRootPath = FILES_ROOT_PATH || rootPath;
@@ -203,6 +208,7 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
+      devflagloginv2: DEV_FLAG_LOGIN_V2 === 'true' || false,
       postgresCore: FEATURE_FLAG_POSTGRES_CORE === 'true' || false,
       newHeader: NEW_HEADER !== 'false',
       featureFlagEntityViewerv2: FEATURE_FLAG_ENTITY_VIEWER_V2 === 'true' || false,
@@ -257,6 +263,8 @@ export const config = {
   sessionsBackend,
   tenantsBackend,
   tenantsPollIntervalSeconds,
+  imageThumbnails,
+  thumbnailGeneratorUrl: THUMBNAIL_GENERATOR_URL || '',
 
   postgres: {
     host: pgEnv.POSTGRES_HOST,

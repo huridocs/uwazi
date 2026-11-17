@@ -16,6 +16,11 @@ import { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
 import type { RelationshipCandidateSearch } from './RelationshipCandidateList.js';
 import { EntityField } from './EntityField.js';
 
+const metadataValues = (value: unknown): MetadataValue[] =>
+  Array.isArray(value)
+    ? value.filter((item): item is MetadataValue => typeof item === 'object' && item !== null)
+    : [];
+
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context?: string;
   label: string;
@@ -58,25 +63,31 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
         control={control}
         name={field}
         rules={registerOptions}
-        render={({ field: fieldController }) => (
-          <>
-            <RelationshipFieldEditor
-              title={label}
-              translationContext={context}
-              relationLabel={relationLabel}
-              targetTemplateId={targetTemplateId}
-              values={(fieldController.value as MetadataValue[] | undefined) ?? []}
-              onChange={fieldController.onChange}
-              columns={inheritColumns}
-              lookupSearch={lookupSearch}
-              onEditSource={onEditSource}
-              disabled={disabled}
-              searchId={String(field)}
-              showError={showError}
-            />
-            <EntityFieldError showError={showError} message={message} />
-          </>
-        )}
+        render={({ field: fieldController }) => {
+          const values = metadataValues(fieldController.value);
+          return (
+            <>
+              <RelationshipFieldEditor
+                title={label}
+                translationContext={context}
+                relationLabel={relationLabel}
+                targetTemplateId={targetTemplateId}
+                values={values}
+                onChange={fieldController.onChange}
+                columns={inheritColumns}
+                lookupSearch={lookupSearch}
+                onEditSource={onEditSource}
+                onClear={
+                  values.length > 0 && !disabled ? () => fieldController.onChange([]) : undefined
+                }
+                disabled={disabled}
+                searchId={String(field)}
+                showError={showError}
+              />
+              <EntityFieldError showError={showError} message={message} />
+            </>
+          );
+        }}
       />
     </EntityField>
   );

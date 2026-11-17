@@ -10,7 +10,7 @@ describe('Private instance', () => {
 
   it('should be redirected to the login screen by default', () => {
     cy.visit('http://localhost:3000');
-    cy.contains('Login');
+    cy.contains('Log in');
     cy.location('pathname').should('eq', '/login');
   });
 

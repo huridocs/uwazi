@@ -7,6 +7,7 @@ import {
 } from '#V2/Components/Metadata/display/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
+import { thumbnailRequestUrl } from '#V2/shared/thumbnailRequestUrl.js';
 import type { EntityCardField } from './EntityCard.js';
 import {
   DEFAULT_THUMB_FIT,
@@ -52,10 +53,9 @@ const metadataStringValue = (values?: { value?: unknown }[]): string | undefined
 };
 
 const fileUrl = (value: string): string => {
-  if (value.startsWith('/') || /^https?:\/\//i.test(value)) {
-    return value;
-  }
-  return `/api/files/${value}`;
+  const absolute =
+    value.startsWith('/') || /^https?:\/\//i.test(value) ? value : `/api/files/${value}`;
+  return thumbnailRequestUrl(absolute);
 };
 
 const unwrapMediaValue = (value: string): string | undefined => {
@@ -147,7 +147,7 @@ const documentThumbnailSrc = (
   const document =
     getMainDocument(readyDocuments(entity.documents), locale, options?.defaultLanguage) ??
     entity.documents?.[0];
-  return document?._id ? `/api/files/${String(document._id)}.jpg` : undefined;
+  return document?._id ? fileUrl(`${String(document._id)}.jpg`) : undefined;
 };
 
 const showInCardVisualThumbnail = (

@@ -69,7 +69,7 @@ const useSelectionEdit = (selectedIds: readonly string[]) => {
 type SelectionDialogsArgs = {
   selectedIds: readonly string[];
   rows: readonly LibrarySearchHit[];
-  onDeleted: () => void;
+  onDeleted: (sharedIds: readonly string[]) => void;
   stopEdit: () => void;
 };
 
@@ -96,7 +96,7 @@ const useSelectionDialogs = ({ selectedIds, rows, onDeleted, stopEdit }: Selecti
       if (deleted) {
         setDialog(null);
         stopEdit();
-        onDeleted();
+        onDeleted(frozenIds);
         void revalidator.revalidate();
       }
     } finally {
@@ -126,7 +126,7 @@ const useSelectionDialogs = ({ selectedIds, rows, onDeleted, stopEdit }: Selecti
 const useLibrarySelectionCommands = (
   selectedIds: readonly string[],
   rows: readonly LibrarySearchHit[],
-  onDeleted: () => void
+  onDeleted: (sharedIds: readonly string[]) => void
 ) => {
   const edit = useSelectionEdit(selectedIds);
   const { open, dialogs } = useSelectionDialogs({

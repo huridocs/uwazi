@@ -10,13 +10,12 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from '#api/config.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContent } from '../../application/contracts/FileStorage.js';
+import { FileWithContent,FileStorage,FileLocation } from '../../application/contracts/FileStorage.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, FileLocation } from '../../application/contracts/FileStorage.js';
 import { FileAttachment } from '../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../domain/files/CustomUpload.js';
 import { FileContents } from '../../domain/files/FileContents.js';
@@ -119,12 +118,16 @@ export class S3FileStorage implements FileStorage {
     return Promise.all(promises);
   }
 
-  async fileExists(file: BaseFile) {
+  async fileExists(target: BaseFile | FileLocation) {
+    return this.keyExists(this.pathManager.createPath(target));
+  }
+
+  private async keyExists(key: string) {
     try {
       await this.s3Client.send(
         new HeadObjectCommand({
           Bucket: this.bucket,
-          Key: this.pathManager.createPath(file),
+          Key: key,
         })
       );
     } catch (e) {

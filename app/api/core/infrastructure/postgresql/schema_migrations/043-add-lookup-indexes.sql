@@ -14,7 +14,10 @@
 CREATE INDEX IF NOT EXISTS entities_sharedid ON entities ("sharedId");
 CREATE INDEX IF NOT EXISTS entities_language ON entities ("language");
 CREATE INDEX IF NOT EXISTS entities_template ON entities ("template");
-CREATE INDEX IF NOT EXISTS entities_title ON entities ("title");
+-- hash, not btree: title is equality-only (title = / title IN (...)), has no length limit, and
+-- matches the Mongo `title: 'hashed'` index. A btree on the full title cannot index values over
+-- ~1/3 of a buffer page (2704 bytes on 8 KB pages).
+CREATE INDEX IF NOT EXISTS entities_title ON entities USING hash ("title");
 
 -- files (003) — entity/type/filename lookups.
 CREATE INDEX IF NOT EXISTS files_entity ON files ("entity");

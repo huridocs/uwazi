@@ -30,11 +30,13 @@ const PdfControllerSetup = () => {
 type RenderRelationshipsActionBarOptions = {
   role?: ClientUserSchema['role'];
   compact?: boolean;
+  footer?: boolean;
 };
 
 const renderRelationshipsActionBar = ({
   role = 'admin',
   compact = false,
+  footer = false,
 }: RenderRelationshipsActionBarOptions = {}) => {
   const store = createStore();
   store.set(userAtom, { _id: '1', role, username: role, email: `${role}@example.com` });
@@ -62,7 +64,7 @@ const renderRelationshipsActionBar = ({
             >
               <EntityTabsProvider value={createStubEntityTabsState()}>
                 <PdfControllerSetup />
-                <RelationshipsActionBarHarness compact={compact} />
+                <RelationshipsActionBarHarness compact={compact} footer={footer} />
               </EntityTabsProvider>
             </EntityScopedProvider>
           </ServicesProvider>

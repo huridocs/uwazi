@@ -24,7 +24,7 @@ describe('DeleteSegmentationsOnFileDeleted', () => {
     await testingEnvironment.runWithContext(async () =>
       DeleteSegmentationsOnFileDeletedFactory.default().handle(
         jest.fn().mockResolvedValue(undefined),
-        { fileId: f.idString('file-a') }
+        { fileId: f.idString('file-a'), filename: 'a.pdf' }
       )
     );
 

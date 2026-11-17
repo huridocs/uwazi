@@ -66,6 +66,7 @@ class Item extends Component {
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
             useV2Player
+            thumbnails
           />
         </div>
         {this.props.markAsDeleted ? (

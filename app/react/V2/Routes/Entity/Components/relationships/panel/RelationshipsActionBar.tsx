@@ -13,14 +13,15 @@ import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/doc
 import {
   EntityWriteAuthorization,
   useDocumentPdf,
+  useEnsureResolved,
   useRelationshipsActions,
+  useRelationshipsPanelUi,
   useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
 import { CompactRelationshipsEditBar } from './CompactRelationshipsEditBar.js';
-import { useRetainCompactCollapseBar } from './compactCollapseBarScope.js';
 
 const iconClass = 'h-3 w-3 shrink-0';
 
@@ -148,19 +149,28 @@ const RelationshipsActionBar = ({ compact = false }: RelationshipsActionBarProps
     handleConfirmDelete,
     handleCreate,
   } = useRelationshipsActionModel();
+  const { setExpandAllSignal } = useRelationshipsPanelUi();
+  const ensureResolved = useEnsureResolved();
   const compactEditBar = compact && editMode;
-  useRetainCompactCollapseBar(compactEditBar);
+  const applySelection = (ids: string[]) => {
+    setSelected(new Set(ids));
+    setExpandAllSignal(signal => signal + 1);
+    ensureResolved().catch(() => undefined);
+  };
 
   return (
     <EntityWriteAuthorization>
       {compactEditBar ? (
         <CompactRelationshipsEditBar
           hasSelection={hasSelection}
+          allSelected={allSelected}
           selectedCount={selectedCount}
           totalCount={totalCount}
           isDeleting={isDeleting}
           onCreate={handleCreate}
           onManageTypes={openManageRelationTypes}
+          onSelectAll={() => applySelection(allIds)}
+          onDeselectAll={() => applySelection([])}
           onDelete={() => setConfirmDelete(true)}
           onCancel={cancelEdit}
         />
@@ -198,8 +208,8 @@ const RelationshipsActionBar = ({ compact = false }: RelationshipsActionBarProps
                 allSelected={allSelected}
                 hasSelection={hasSelection}
                 totalCount={totalCount}
-                onSelectAll={() => setSelected(new Set(allIds))}
-                onDeselectAll={() => setSelected(new Set())}
+                onSelectAll={() => applySelection(allIds)}
+                onDeselectAll={() => applySelection([])}
               />
             </div>
           )}

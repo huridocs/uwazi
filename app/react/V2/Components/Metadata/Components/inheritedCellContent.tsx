@@ -12,6 +12,7 @@ type InheritedRow = {
   value?: unknown;
   label?: string;
   parent?: MetadataValue['parent'];
+  icon?: unknown;
   inheritedType?: unknown;
   inheritedValue?: InheritedRow[];
 };
@@ -37,6 +38,7 @@ const readInheritedRows = (input: unknown): InheritedRow[] => {
         value: 'value' in item ? item.value : undefined,
         label,
         parent,
+        icon: 'icon' in item ? item.icon : undefined,
         inheritedType,
         inheritedValue:
           'inheritedValue' in item ? readInheritedRows(item.inheritedValue) : undefined,
@@ -50,6 +52,7 @@ const toMetadataValues = (rows: InheritedRow[]): MetadataValue[] =>
     value: row.value,
     label: row.label,
     parent: row.parent,
+    ...(row.icon !== undefined ? { icon: row.icon } : {}),
     inheritedType:
       typeof row.inheritedType === 'string' && isPropertyType(row.inheritedType)
         ? row.inheritedType

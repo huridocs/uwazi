@@ -22,4 +22,10 @@ describe('Image', () => {
     expect(screen.queryByText('Error loading your image')).not.toBeInTheDocument();
     expect(screen.getByRole('img')).toHaveAttribute('src', '/api/files/es.png');
   });
+
+  it('requests a thumbnail when the image is compact', () => {
+    render(<Image values={[{ value: '/api/files/photo.png', alt: 'photo' }]} density="compact" />);
+
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/files/thumbnails/photo.png');
+  });
 });

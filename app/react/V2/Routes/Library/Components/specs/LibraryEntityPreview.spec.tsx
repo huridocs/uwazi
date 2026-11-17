@@ -6,6 +6,8 @@
 // oxlint-disable react/jsx-props-no-spreading
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { useLocation } from 'react-router';
+import * as filesApi from '#V2/api/files/index.js';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import {
   TestAtomStoreProvider,
@@ -22,6 +24,8 @@ import {
   translationsAtom,
   userAtom,
 } from '#V2/atoms/index.js';
+import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import { MAIN_TAB } from '#V2/Routes/Entity/Tabs/tabIds.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import { LibraryEntityPreview } from '../LibraryEntityPreview.js';
@@ -68,6 +72,25 @@ const entityWithDocument: EntityType = {
   ],
 };
 
+const entityWithToc: EntityType = {
+  ...entityWithDocument,
+  sharedId: 'shared-toc',
+  documents: [
+    {
+      filename: 'file.pdf',
+      _id: 'doc-toc',
+      language: 'eng',
+      toc: [
+        {
+          label: 'Introduction',
+          indentation: 0,
+          selectionRectangles: [{ top: 0, left: 0, width: 1, height: 1, page: '2' }],
+        },
+      ],
+    },
+  ],
+};
+
 const entityWithoutDocument: EntityType = {
   _id: 'ent2',
   sharedId: 'shared-meta',
@@ -99,13 +122,20 @@ type PreviewRenderOptions = {
   focusFieldKey?: string;
   mobile?: boolean;
   onAction?: () => void;
+  initialEntries?: string[];
+  seedTab?: string;
+};
+
+const LocationProbe = () => {
+  const location = useLocation();
+  return <div data-testid="router-location">{`${location.search}${location.hash}`}</div>;
 };
 
 const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => {
   const onClose = options.onClose ?? jest.fn();
-  const { user, focusFieldKey, mobile, onAction } = options;
+  const { user, focusFieldKey, mobile, onAction, initialEntries, seedTab } = options;
   return render(
-    <TestRouterContext>
+    <TestRouterContext initialEntries={initialEntries}>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
         <TestAtomStoreProvider
           initialValues={[
@@ -115,8 +145,24 @@ const renderPreview = (sharedId: string, options: PreviewRenderOptions = {}) => 
             [settingsAtom, { languages: [{ key: 'en', label: 'English', default: true }] }],
             ...(user ? [[userAtom, user] as const] : []),
             ...(mobile ? [[isMobileOverrideAtom, true] as const] : []),
+            ...(seedTab
+              ? [
+                  [
+                    tabGroupsAtom,
+                    {
+                      'entity-main': {
+                        activeTabId: seedTab,
+                        buttons: [],
+                        panels: [],
+                        unmountInactive: true,
+                      },
+                    },
+                  ] as const,
+                ]
+              : []),
           ]}
         >
+          <LocationProbe />
           <LibraryEntityPreview
             sharedId={sharedId}
             entityBasePath="/entityv2"
@@ -134,6 +180,7 @@ describe('LibraryEntityPreview', () => {
   beforeEach(() => {
     getBySharedId.mockImplementation(async (sharedId: string) => {
       if (sharedId === entityWithDocument.sharedId) return [[entityWithDocument]];
+      if (sharedId === entityWithToc.sharedId) return [[entityWithToc]];
       if (sharedId === entityWithoutDocument.sharedId) return [[entityWithoutDocument]];
       return [undefined];
     });
@@ -143,6 +190,28 @@ describe('LibraryEntityPreview', () => {
     jest.clearAllMocks();
     mediaMock.restore();
     mediaMock = setupMatchMediaMock();
+  });
+
+  it('opens the document tab when the entity has a main document', async () => {
+    renderPreview(entityWithDocument.sharedId, {
+      initialEntries: ['/?q=court&m=metadata#s=file'],
+      seedTab: MAIN_TAB.RELATIONSHIPS,
+    });
+    expect(await screen.findByRole('tab', { name: 'Document' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
+
+  it('opens the metadata tab when the entity has no main document', async () => {
+    renderPreview(entityWithoutDocument.sharedId, {
+      initialEntries: ['/?m=document'],
+      seedTab: MAIN_TAB.FILES,
+    });
+    expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
   });
 
   it('shows the entity viewer left tabs and the PDF when the entity has a document', async () => {
@@ -163,6 +232,71 @@ describe('LibraryEntityPreview', () => {
     const pdf = await screen.findByTestId('mock-pdf');
     expect(pdf).toHaveTextContent('/api/files/file.pdf');
     expect(screen.getByText('Case 11.481 (Gelman)')).toBeInTheDocument();
+  });
+
+  it('keeps the PDF on the page while the table of contents or search is open', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    const pdf = await screen.findByTestId('mock-pdf');
+    fireEvent.click(screen.getByRole('tab', { name: 'ToC' }));
+    expect(pdf.closest('.hidden')).not.toBeNull();
+    expect(screen.getByText('No Table of contents')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('tab', { name: 'Search' }));
+    expect(pdf.closest('.hidden')).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: 'Document' }));
+    expect(pdf.closest('.hidden')).toBeNull();
+  });
+
+  it('keeps the metadata form while the table of contents is open', async () => {
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
+    fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    const title = await screen.findByLabelText(/Title/);
+    fireEvent.click(screen.getByRole('tab', { name: 'ToC' }));
+    expect(title.closest('.hidden')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+  });
+
+  it('keeps the saved table of contents entry in the tab', async () => {
+    const update = jest.spyOn(filesApi, 'update').mockImplementation(async file => {
+      getBySharedId.mockImplementation(async (sharedId: string) => {
+        if (sharedId !== entityWithToc.sharedId) return [undefined];
+        const documents = entityWithToc.documents?.map(document =>
+          document._id === file._id ? { ...document, toc: file.toc } : document
+        );
+        return [[{ ...entityWithToc, documents }]];
+      });
+      return file;
+    });
+    renderPreview(entityWithToc.sharedId, { user: adminUser });
+    fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Introduction' }));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Updated introduction' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save label' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await screen.findByRole('button', { name: 'Edit' });
+    expect(screen.getByText('Updated introduction')).toBeInTheDocument();
+    update.mockRestore();
+  });
+
+  it('keeps the PDF mounted while relationships are open', async () => {
+    renderPreview(entityWithDocument.sharedId);
+    const pdf = await screen.findByTestId('mock-pdf');
+    fireEvent.click(screen.getByRole('tab', { name: /^Relationships/ }));
+    expect(pdf).toBeInTheDocument();
+    expect(pdf.closest('.hidden')).not.toBeNull();
+    expect(screen.getByRole('tab', { name: /^Relationships/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
+
+  it('opens the document when a table of contents title is clicked', async () => {
+    renderPreview(entityWithToc.sharedId);
+    fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
+    fireEvent.click(await screen.findByText('Introduction'));
+    expect(screen.getByRole('tab', { name: 'Document' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
   });
 
   it('opens ToC in the preview when that tab is selected', async () => {
@@ -251,7 +385,11 @@ describe('LibraryEntityPreview', () => {
     expect(screen.queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(within(footer).getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    expect(
+      within(screen.getByTestId('library-entity-preview-footer')).getAllByRole('button', {
+        name: 'Edit',
+      })
+    ).toHaveLength(1);
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
@@ -387,6 +525,7 @@ describe('LibraryEntityPreview', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'View file.pdf' }));
+    expect(screen.getByTestId('router-location').textContent).toBe('');
     const footer = await screen.findByTestId('library-entity-preview-footer');
     expect(await screen.findByRole('button', { name: 'Back to files' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument();

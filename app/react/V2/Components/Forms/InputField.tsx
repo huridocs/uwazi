@@ -28,6 +28,7 @@ interface InputFieldProps {
   preText?: string | React.ReactNode;
   name?: string;
   clearFieldAction?: () => void;
+  showClear?: boolean;
   icon?: React.ReactNode;
   overlay?: React.ReactNode;
   labelAccessory?: React.ReactNode;
@@ -63,8 +64,8 @@ const inputClass = (
     ...extra
   );
 
-const clearButtonClass =
-  'absolute right-0 top-px w-fit rounded-r-lg p-2.5 text-sm font-medium hover:cursor-pointer focus:outline-hidden enabled:hover:text-carbon disabled:text-ink-muted';
+const clearButtonClass = (besideOverlay: boolean) =>
+  `absolute top-1/2 z-10 flex h-6 w-6 shrink-0 -translate-y-1/2 items-center justify-center rounded-md hover:cursor-pointer focus:outline-hidden enabled:hover:text-ink-secondary disabled:opacity-50 ${besideOverlay ? 'right-36' : 'right-1'}`;
 
 const preTextClass =
   'inline-flex items-center rounded-e-0 rounded-s-md border border-r-0 border-border bg-vellum px-3 text-sm text-ink';
@@ -89,6 +90,7 @@ const InputField = React.forwardRef(
       autoComplete = 'on',
       name = '',
       clearFieldAction,
+      showClear = false,
       icon,
       overlay,
       labelAccessory,
@@ -105,10 +107,15 @@ const InputField = React.forwardRef(
     ref: Ref<HTMLInputElement>
   ) => {
     const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
-    const hasValue = value !== undefined && value !== null && value !== '';
-    const hasClearOrIcon = Boolean(clearFieldAction || icon);
-    const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
-    const showIcon = icon && (!clearFieldAction || !hasValue);
+    const filled = value !== undefined && value !== null && value !== '';
+    const showClearButton = Boolean(clearFieldAction) && (showClear || filled);
+    const showIcon = icon && !showClearButton;
+    let inputPadding: string | false = false;
+    if (showClearButton) {
+      inputPadding = overlay ? 'pr-44' : 'pr-8';
+    } else if (showIcon) {
+      inputPadding = 'pr-10';
+    }
     return (
       <div className={cx('flex flex-col gap-1.5', className)}>
         <FieldLabelRow
@@ -142,7 +149,7 @@ const InputField = React.forwardRef(
             className={inputClass(
               state,
               latched,
-              hasClearOrIcon && 'pr-10',
+              inputPadding,
               Boolean(preText) && 'rounded-none rounded-e-md',
               type === 'search' && searchReset
             )}
@@ -157,9 +164,9 @@ const InputField = React.forwardRef(
               onClick={clearFieldAction}
               disabled={disabled}
               data-testid="clear-field-button"
-              className={clearButtonClass}
+              className={clearButtonClass(Boolean(overlay))}
             >
-              <XMarkIcon className="w-5" />
+              <XMarkIcon className="h-3.5 w-3.5 text-ink-muted" />
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}

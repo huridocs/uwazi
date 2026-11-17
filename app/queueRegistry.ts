@@ -23,6 +23,8 @@ import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityP
 import { CloneLanguageEntitiesJob } from '#api/core/infrastructure/jobs/CloneLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJob } from '#api/core/infrastructure/jobs/DeleteLanguageEntitiesJob.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { CreateImageThumbnailFactory } from '#api/imageThumbnails/infrastructure/factories/CreateImageThumbnailFactory.js';
+import { CreateImageThumbnailJobHandler } from '#api/imageThumbnails/infrastructure/jobs/CreateImageThumbnailJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -196,6 +198,14 @@ export function registerJobs(register: Register) {
       }),
     });
   });
+
+  register(
+    CreateImageThumbnailJobHandler,
+    async () =>
+      new CreateImageThumbnailJobHandler({
+        useCase: CreateImageThumbnailFactory.default(),
+      })
+  );
 
   register(
     PDFPostProcessJobHandler,

@@ -60,6 +60,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   const formState = useFormState({ control, name: field, exact: true });
   const { showError, message } = getFieldErrorState(getFieldState(field, formState));
   const registration = register(field, registerOptions);
+  const markdownValue = useWatch({ control, name: field });
   const [mode, setMode] = useState<MarkdownFieldMode>('write');
   const onCurrentChange = useCallback(
     (value: string) => applyPdfFillFormValue({ setValue, field, value, shouldValidate: true }),
@@ -145,8 +146,20 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
                   onClick={slot?.onClick}
                   onFocus={() => slot?.onFocus()}
                   className="gap-0 [&_textarea]:rounded-none [&_textarea]:border-0 [&_textarea]:focus:border-transparent [&_textarea]:focus:ring-0"
+                  clearFieldAction={
+                    !disabled && typeof markdownValue === 'string' && markdownValue !== ''
+                      ? () =>
+                          applyPdfFillFormValue({
+                            setValue,
+                            field,
+                            value: '',
+                            shouldValidate: true,
+                          })
+                      : undefined
+                  }
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   {...registration}
+                  value={typeof markdownValue === 'string' ? markdownValue : ''}
                 />
               </div>
             ) : (

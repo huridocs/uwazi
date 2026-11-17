@@ -24,6 +24,8 @@ export { CloudUploadStrokeIcon } from './CloudUploadStrokeIcon.js';
 export { Settings2StrokeIcon } from './Settings2StrokeIcon.js';
 export { RotateCwStrokeIcon } from './RotateCwStrokeIcon.js';
 export { TextCursorInputStrokeIcon } from './TextCursorInputStrokeIcon.js';
+export { ChevronsDownUpIcon } from './ChevronsDownUpIcon.js';
+export { ChevronsUpDownIcon } from './ChevronsUpDownIcon.js';
 export {
   CircleDotIcon,
   LayoutListIcon,

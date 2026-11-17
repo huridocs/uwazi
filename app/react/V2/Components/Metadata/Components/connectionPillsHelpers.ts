@@ -4,8 +4,6 @@ type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][num
 
 const titleCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
-const FOLD_COUNT = 8;
-
 const sortRelationshipValues = (values: RelationshipEntityValue[]): RelationshipEntityValue[] =>
   [...values].sort((left, right) => titleCollator.compare(left.title, right.title));
 
@@ -29,5 +27,5 @@ const sharedRelationshipTemplateId = (
     : undefined;
 };
 
-export { FOLD_COUNT, resolvedTemplateId, sharedRelationshipTemplateId, sortRelationshipValues };
+export { resolvedTemplateId, sharedRelationshipTemplateId, sortRelationshipValues };
 export type { RelationshipEntityValue };

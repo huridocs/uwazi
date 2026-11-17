@@ -18,6 +18,7 @@ import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
 import { useSsrOnlyContent } from '../hooks/useSsrOnlyContent.js';
 import { RelationshipsSsrIndex } from './RelationshipsSsrIndex.js';
+import { RelationshipCollapseStateProvider } from './relationshipCollapseState.js';
 
 type RelationshipsPanelProps = {
   focusDocumentOnSelect?: boolean;
@@ -98,44 +99,48 @@ const RelationshipsPanelView = ({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
-      <Panel className="overflow-hidden">
-        {hasRelationships && (
-          <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 pb-2 pt-1">
-            <RelationshipsSearchBar />
-            {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
-          </div>
-        )}
-        <Panel.Body
-          className={view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'}
-        >
-          <RelationshipsPanelBodyState
-            hasRelationships={hasRelationships}
-            markers={markers}
-            groupContext={groupContext}
-            activeRelationshipId={activeRelationshipId ?? undefined}
-            onClick={handleRelationshipClick}
-            onDelete={canWrite ? handleDeleteClick : undefined}
+    <RelationshipCollapseStateProvider>
+      <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
+        <Panel className="overflow-hidden">
+          {hasRelationships && (
+            <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 pb-2 pt-1">
+              <RelationshipsSearchBar />
+              {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
+            </div>
+          )}
+          <Panel.Body
+            className={
+              view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'
+            }
+          >
+            <RelationshipsPanelBodyState
+              hasRelationships={hasRelationships}
+              markers={markers}
+              groupContext={groupContext}
+              activeRelationshipId={activeRelationshipId ?? undefined}
+              onClick={handleRelationshipClick}
+              onDelete={canWrite ? handleDeleteClick : undefined}
+            />
+          </Panel.Body>
+        </Panel>
+        {relationshipToDelete && (
+          <ConfirmationModal
+            header={<Translate>Delete relationship</Translate>}
+            body={
+              <Translate>
+                Are you sure you want to delete this relationship? This action cannot be undone.
+              </Translate>
+            }
+            acceptButton={<Translate>Delete</Translate>}
+            cancelButton={<Translate>Cancel</Translate>}
+            dangerStyle
+            disabled={isDeleting}
+            onAcceptClick={handleConfirmDelete}
+            onCancelClick={handleCancelDelete}
           />
-        </Panel.Body>
-      </Panel>
-      {relationshipToDelete && (
-        <ConfirmationModal
-          header={<Translate>Delete relationship</Translate>}
-          body={
-            <Translate>
-              Are you sure you want to delete this relationship? This action cannot be undone.
-            </Translate>
-          }
-          acceptButton={<Translate>Delete</Translate>}
-          cancelButton={<Translate>Cancel</Translate>}
-          dangerStyle
-          disabled={isDeleting}
-          onAcceptClick={handleConfirmDelete}
-          onCancelClick={handleCancelDelete}
-        />
-      )}
-    </div>
+        )}
+      </div>
+    </RelationshipCollapseStateProvider>
   );
 };
 

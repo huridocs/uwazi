@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable @typescript-eslint/no-shadow */
 // eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
@@ -396,8 +397,13 @@ describe('FilesService', () => {
         });
 
         expect(jest.mocked(eventEmitter.emit).mock.calls).toEqual([
-          [new FileDeletedEvent({ fileId: f.idString('del-doc1') })],
-          [new FileDeletedEvent({ fileId: f.idString('del-doc1-thumb') })],
+          [new FileDeletedEvent({ fileId: f.idString('del-doc1'), filename: 'del-doc1' })],
+          [
+            new FileDeletedEvent({
+              fileId: f.idString('del-doc1-thumb'),
+              filename: `${f.idString('del-doc1')}.jpg`,
+            }),
+          ],
         ]);
         expect(emittedWhileRunning).toEqual([true, true]);
       });

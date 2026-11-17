@@ -32,6 +32,13 @@ const searchResultTotal = (
   return Math.max(rowCount, offsetNumber + limitNumber);
 };
 
+const LUCENE_SPECIAL = /([+!(){}[\]^"~*?:\\/-]|&&|\|\|)/g;
+
+const titlePrefixSearch = (entityTitle: string): string | undefined => {
+  const escaped = entityTitle.trim().toLowerCase().replace(LUCENE_SPECIAL, '\\$1');
+  return escaped ? `title:(${escaped}*)` : undefined;
+};
+
 const lookup = async (
   {
     entityTitle,
@@ -47,10 +54,12 @@ const lookup = async (
   headers?: IncomingHttpHeaders
 ): Promise<EntityResponse> => {
   try {
+    const searchString = titlePrefixSearch(entityTitle);
     const searchQuery: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
+      sort: 'title',
       filter: {
-        ...(entityTitle && { searchString: `title:${entityTitle}~2` }),
+        ...(searchString ? { searchString } : {}),
         ...(template && { template }),
       },
       page: { limit, ...(offset ? { offset } : {}) },
@@ -130,4 +139,4 @@ const snippets = async (
   }
 };
 
-export { lookup, search, searchResultTotal, snippets };
+export { lookup, search, searchResultTotal, snippets, titlePrefixSearch };

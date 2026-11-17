@@ -6,7 +6,6 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ConnectionPills } from '../ConnectionPills.js';
 import type { RelationshipEntityValue } from '../connectionPillsHelpers.js';
-import { FOLD_COUNT } from '../connectionPillsHelpers.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -44,40 +43,29 @@ const entity = (title: string, templateId = 'tmpl-a', id = title): RelationshipE
   templateId,
 });
 
-const manyValues = (count: number, templateId = 'tmpl-a'): RelationshipEntityValue[] =>
+const titled = (count: number) =>
   Array.from({ length: count }, (_, index) =>
-    entity(`Item ${String(index + 1).padStart(2, '0')}`, templateId, `id-${index + 1}`)
+    entity(String.fromCharCode(65 + index), 'tmpl-a', `id-${index}`)
   );
 
 describe('ConnectionPills', () => {
-  it('sorts alphabetically and folds past FOLD_COUNT with Show all', () => {
-    const values = [
-      entity('Zulu'),
-      entity('Alpha'),
-      ...manyValues(FOLD_COUNT).map((value, index) => ({
-        ...value,
-        title: `Mid ${index}`,
-        _id: `mid-${index}`,
-      })),
-    ];
-    render(<ConnectionPills values={values} />);
+  it('shows ten chips and folds the rest', () => {
+    render(<ConnectionPills values={titled(11)} />);
 
-    expect(screen.getByTestId('pill-Alpha')).toBeInTheDocument();
-    expect(screen.queryByTestId('pill-Zulu')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Show all/ })).toHaveTextContent(
-      String(values.length)
-    );
-
+    expect(screen.getByTestId('pill-id-0')).toBeInTheDocument();
+    expect(screen.queryByTestId('pill-id-10')).not.toBeInTheDocument();
+    expect(screen.getByRole('list')).toHaveClass('gap-1.5');
+    expect(screen.getByRole('button', { name: /Show all 11/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Show all/ }));
-    expect(screen.getByTestId('pill-Zulu')).toBeInTheDocument();
+    expect(screen.getByTestId('pill-id-10')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Show less' }));
-    expect(screen.queryByTestId('pill-Zulu')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pill-id-10')).not.toBeInTheDocument();
   });
 
-  it('uses quiet chips when every value shares a template', () => {
+  it('keeps the template color when every value shares a template', () => {
     render(<ConnectionPills values={[entity('A'), entity('B')]} targetTemplateId="tmpl-a" />);
-    expect(screen.getByTestId('pill-A')).toHaveAttribute('data-quiet', 'true');
-    expect(screen.getByTestId('pill-B')).toHaveAttribute('data-quiet', 'true');
+    expect(screen.getByTestId('pill-A')).toHaveAttribute('data-quiet', 'false');
+    expect(screen.getByTestId('pill-B')).toHaveAttribute('data-quiet', 'false');
   });
 
   it('keeps tinted pills when templates mix', () => {

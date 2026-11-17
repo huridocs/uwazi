@@ -1,16 +1,26 @@
-import { useEffect, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useId, useLayoutEffect, type Dispatch, type SetStateAction } from 'react';
 import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipCollapseRegistry } from '../panel/relationshipCollapseState.js';
 
 const useExpandCollapseSignals = (
   setExpanded: Dispatch<SetStateAction<boolean>>,
-  markerIds: string[] = []
+  markerIds: string[],
+  expanded: boolean
 ) => {
+  const registry = useRelationshipCollapseRegistry();
+  const id = useId();
   const {
     expandAllSignal: expandSignal,
     collapseAllSignal: collapseSignal,
     expandForRefId,
     setExpandForRefId,
   } = useRelationshipsPanelUi();
+
+  useLayoutEffect(() => {
+    registry?.report(id, expanded);
+    if (!registry) return undefined;
+    return () => registry.remove(id);
+  }, [expanded, id, registry]);
 
   useEffect(() => {
     if (expandSignal > 0) setExpanded(true);

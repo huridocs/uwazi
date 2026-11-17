@@ -1,3 +1,4 @@
+// oxlint-disable max-statements
 import {
   CreateBucketCommand,
   DeleteBucketCommand,
@@ -392,6 +393,20 @@ describe('S3FileStorage', () => {
       await s3fileStorage.storeFile(doc);
 
       expect(await s3fileStorage.fileExists(doc)).toBe(true);
+    });
+
+    it('should check a custom path that is not a file row', async () => {
+      const location = {
+        type: 'customPath' as const,
+        destination: 'thumbnails/640',
+        filename: 'photo.png',
+      };
+
+      expect(await s3fileStorage.fileExists(location)).toBe(false);
+
+      await s3fileStorage.storeContent(FileBuilder.content('jpeg'), location);
+
+      expect(await s3fileStorage.fileExists(location)).toBe(true);
     });
   });
 

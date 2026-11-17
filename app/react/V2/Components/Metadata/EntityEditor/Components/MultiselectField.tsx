@@ -51,6 +51,7 @@ const MultiselectField = <TFormValues extends FieldValues = FieldValues>({
       disabled={disabled}
       hideFilters={hideFilters}
       hideLabel={hideLabel || bound.bound}
+      showValueClear={!bound.bound}
       adornment={bound.adornment}
       getSelectedValues={getMetadataSelectedValues}
       onSelectedValuesChange={(selectedValues, availableOptions) =>

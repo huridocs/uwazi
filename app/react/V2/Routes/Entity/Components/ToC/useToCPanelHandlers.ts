@@ -12,6 +12,9 @@ import {
   useTocActions,
   useTocStateActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { relationshipToHighlight } from '#V2/Components/PDFViewer/functions/RelationshipToHighlight.js';
+import type { TextReferencePointer } from '#V2/formatters/relationships/types.js';
+import { paintDocumentHighlightNow } from '../document/documentHighlightGate.js';
 import { getPageNumber } from './utils.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
@@ -33,8 +36,29 @@ type ToCPanelHandlersParams = {
   deleteEntry: ReturnType<typeof useTocActions>['deleteEntry'];
   setTocState: ReturnType<typeof useTocStateActions>['setTocState'];
   mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  onRevealDocument?: () => void;
   revalidate: () => Promise<void>;
   notify: ReturnType<typeof useRequestStatus>['notify'];
+  paintHighlight?: (run: () => void) => void;
+};
+
+const tocEntryHighlight = (processed: ProcessedTocEntry) => {
+  const selections = (processed.entry.selectionRectangles ?? []).flatMap(rect => {
+    const page = Number.parseInt(rect.page ?? '', 10);
+    if (!Number.isInteger(page) || page < 1) return [];
+    return [{ page, top: rect.top, left: rect.left, width: rect.width, height: rect.height }];
+  });
+  if (!selections.length) return undefined;
+  const anchor: TextReferencePointer = {
+    type: 'textReference',
+    entity: '',
+    entityTitle: '',
+    entityTemplateId: '',
+    file: '',
+    text: processed.entry.label ?? '',
+    selections,
+  };
+  return relationshipToHighlight(anchor, undefined, `toc-${processed.index}`);
 };
 
 const saveToc = async ({ file, toc, revalidate, onError, onSuccess }: SaveTocParams) => {
@@ -129,8 +153,10 @@ const useToCPanelHandlers = ({
   deleteEntry,
   setTocState,
   mainPdfController,
+  onRevealDocument,
   revalidate,
   notify,
+  paintHighlight = paintDocumentHighlightNow,
 }: ToCPanelHandlersParams) => {
   const handleStateChange = useCallback(
     (expanded: boolean, collapsed: boolean) => {
@@ -147,11 +173,16 @@ const useToCPanelHandlers = ({
   const handleToCEntryClick = useCallback(
     (entry: ProcessedTocEntry) => {
       const pageNumber = getPageNumber(entry.entry);
+      const highlight = tocEntryHighlight(entry);
       if (pageNumber !== null) {
         mainPdfController?.goToPage(pageNumber);
       }
+      onRevealDocument?.();
+      paintHighlight(() => {
+        if (highlight) mainPdfController?.toggleHighlights([highlight]);
+      });
     },
-    [mainPdfController]
+    [mainPdfController, onRevealDocument, paintHighlight]
   );
 
   const handleEdit = () => {
