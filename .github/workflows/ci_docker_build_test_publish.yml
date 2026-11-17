@@ -71,7 +71,7 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache,mode=max
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache,mode=max,ignore-error=true
 
       - name: Build and push backend image
         uses: docker/build-push-action@v6
@@ -82,7 +82,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:sha-${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache,mode=max
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache,mode=max,ignore-error=true
 
       - name: Build and push queue-worker image
         uses: docker/build-push-action@v6
@@ -93,7 +93,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:sha-${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache,mode=max
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache,mode=max,ignore-error=true
 
       - name: Build and push Mongo service image
         uses: docker/build-push-action@v6
