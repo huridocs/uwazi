@@ -1,0 +1,498 @@
+name: Dockerized CI (build, test, publish)
+
+permissions:
+  contents: read
+  pull-requests: read
+  packages: write
+
+on:
+  push:
+    branches:
+      - production
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  CI_IMAGE: ${{ github.repository }}-ci
+  BACKEND_IMAGE: ${{ github.repository }}-backend
+  QUEUE_WORKER_IMAGE: ${{ github.repository }}-queue-worker
+  MONGO_IMAGE: ${{ github.repository }}-mongo-ci
+  MINIO_IMAGE: ${{ github.repository }}-minio-ci
+
+jobs:
+  precheck:
+    uses: ./.github/workflows/precheck.yml
+    secrets: inherit
+    with:
+      is_pr: ${{ github.event_name == 'pull_request' }}
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_body: ${{ github.event.pull_request.body }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      ref: ${{ github.ref }}
+      branch: ${{ github.ref_name }}
+      event_name: ${{ github.event_name }}
+      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' || github.ref_name == 'testing' }}
+      sha: ${{ github.sha }}
+
+  build_images:
+    name: build_images
+    needs: precheck
+    if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push CI test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: ci
+          push: true
+          tags: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache,mode=max
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:sha-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache,mode=max
+
+      - name: Build and push queue-worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: queue-worker
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:sha-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache,mode=max
+
+      - name: Build and push Mongo service image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/mongo-service.Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+
+      - name: Build and push MinIO service image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/minio-service.Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+
+  api_unit_tests_shards:
+    name: api_unit_tests (shard ${{ matrix.shard }}/4)
+    needs: [precheck, build_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_images.result == 'success' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+      options: --ipc=host
+    defaults:
+      run:
+        working-directory: /app
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
+        ports:
+          - 9200/tcp
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
+      redis:
+        image: redis:6.0-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: uwazi_testing
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      mongo:
+        image: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+        ports:
+          - 27017:27017
+      minio:
+        image: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        ports:
+          - 9000:9000
+          - 9001:9001
+    steps:
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..60}; do
+            if mongosh --host mongo --port 27017 --quiet --eval 'db.runCommand({ ping: 1 }).ok' 2>/dev/null | grep -q '1'; then
+              echo "MongoDB is up"; break
+            fi
+            echo "Waiting for MongoDB... (attempt $i/60)"
+            sleep 2
+          done
+
+      - name: Initialize MongoDB replica set
+        run: |
+          mongosh --host mongo --port 27017 --quiet --eval 'try { rs.status() } catch(e) { rs.initiate({_id:"uwazi_replica_set", members:[{_id:0, host:"mongo:27017"}]}) }'
+          for i in {1..60}; do
+            if mongosh --host mongo --port 27017 --quiet --eval 'try { rs.status().myState } catch(e) { print(0) }' | tail -n 1 | grep -q '1'; then
+              echo "Mongo replica set is PRIMARY and ready"; break
+            fi
+            echo "Waiting for Mongo replica set... (attempt $i/60)"
+            sleep 2
+          done
+
+      - name: Wait for MinIO
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://minio:9000/minio/health/live >/dev/null; then
+              echo "MinIO is up"; break
+            fi
+            echo "Waiting for MinIO... (attempt $i/30)"
+            sleep 2
+          done
+
+      - name: Forward localhost:6379 to redis:6379
+        run: |
+          nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
+
+      - name: Provision PostgreSQL
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: uwazi_testing
+          PGPASSWORD: admin
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends postgresql-client
+          yarn provision-postgres
+
+      - name: Run tests (shard ${{ matrix.shard }}/4)
+        env:
+          ELASTICSEARCH_URL: http://elasticsearch:9200
+          DBHOST: mongo:27017
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: migrator_user
+          POSTGRES_PASSWORD: migrator_user
+          POSTGRES_APP_USER: app_user
+          POSTGRES_APP_PASSWORD: app_user
+          S3_ENDPOINT: http://minio:9000
+          S3_ACCESS_KEY_ID: minioadmin
+          S3_SECRET_ACCESS_KEY: minioadmin
+        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared apps/cli --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
+
+  api_unit_tests_aggregate:
+    name: api_unit_tests
+    needs: [precheck, build_images, api_unit_tests_shards]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Aggregate shards result
+        if: ${{ needs.precheck.outputs.should_run == 'true' && needs.build_images.result == 'success' }}
+        run: |
+          if [ "${{ needs.api_unit_tests_shards.result }}" != "success" ]; then
+            echo "One or more shards failed"
+            exit 1
+          fi
+          echo "All api_unit_tests shards succeeded"
+      - name: Mark skipped
+        if: ${{ needs.precheck.outputs.should_run != 'true' || needs.build_images.result != 'success' }}
+        run: echo "api_unit_tests skipped"
+
+  app_unit_tests:
+    name: app_unit_tests
+    needs: [precheck, build_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_images.result == 'success' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+      options: --ipc=host
+    defaults:
+      run:
+        working-directory: /app
+    steps:
+      - name: Run app unit tests
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
+
+  smoke_tests:
+    name: smoke_tests
+    needs: [precheck, build_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_images.result == 'success' }}
+    runs-on: ubuntu-24.04
+    env:
+      CI_IMAGE_REF: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+      BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}-backend:sha-${{ github.sha }}
+      QUEUE_WORKER_IMAGE_REF: ghcr.io/${{ github.repository }}-queue-worker:sha-${{ github.sha }}
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
+        ports:
+          - 9200:9200
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
+      redis:
+        image: redis:6.0-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: uwazi_testing
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mongo:
+        image: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+        ports:
+          - 27017:27017
+      minio:
+        image: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        ports:
+          - 9000:9000
+          - 9001:9001
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull images
+        run: |
+          docker pull "$CI_IMAGE_REF"
+          docker pull "$BACKEND_IMAGE_REF"
+          docker pull "$QUEUE_WORKER_IMAGE_REF"
+
+      - name: Initialize MongoDB replica set
+        run: |
+          docker run --rm --network host "$CI_IMAGE_REF" bash -lc '
+            for i in {1..60}; do
+              if mongosh --host localhost --port 27017 --quiet --eval "db.runCommand({ ping: 1 }).ok" 2>/dev/null | grep -q 1; then
+                echo "MongoDB is up"; break
+              fi
+              echo "Waiting for MongoDB... (attempt $i/60)"
+              sleep 2
+            done
+            mongosh --host localhost --port 27017 --quiet --eval "try { rs.status() } catch(e) { rs.initiate({_id:\"uwazi_replica_set\", members:[{_id:0, host:\"localhost:27017\"}]}) }"
+            for i in {1..60}; do
+              if mongosh --host localhost --port 27017 --quiet --eval "try { rs.status().myState } catch(e) { print(0) }" | tail -n 1 | grep -q "1"; then
+                echo "Mongo replica set is PRIMARY and ready"; exit 0
+              fi
+              echo "Waiting for Mongo replica set... (attempt $i/60)"
+              sleep 2
+            done
+            exit 1
+          '
+
+      - name: Provision PostgreSQL
+        run: |
+          docker run --rm --network host \
+            -e POSTGRES_HOST=localhost \
+            -e POSTGRES_PORT=5432 \
+            -e POSTGRES_USER=admin \
+            -e POSTGRES_PASSWORD=admin \
+            -e POSTGRES_DB=uwazi_testing \
+            -e PGPASSWORD=admin \
+            "$CI_IMAGE_REF" bash -lc '
+              apt-get update -qq
+              DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends postgresql-client
+              yarn provision-postgres
+            '
+
+      - name: Wait for MinIO
+        run: |
+          docker run --rm --network host "$CI_IMAGE_REF" bash -lc '
+            for i in {1..30}; do
+              if curl -sf http://localhost:9000/minio/health/live >/dev/null; then
+                echo "MinIO is up"; exit 0
+              fi
+              echo "Waiting for MinIO... (attempt $i/30)"
+              sleep 2
+            done
+            exit 1
+          '
+
+      - name: Start backend
+        run: |
+          docker run -d --name uwazi-backend --network host \
+            -e ELASTICSEARCH_URL=http://localhost:9200 \
+            -e DBHOST=localhost:27017 \
+            -e REDIS_HOST=localhost \
+            -e REDIS_PORT=6379 \
+            -e POSTGRES_HOST=localhost \
+            -e POSTGRES_PORT=5432 \
+            -e POSTGRES_USER=migrator_user \
+            -e POSTGRES_PASSWORD=migrator_user \
+            -e POSTGRES_APP_USER=app_user \
+            -e POSTGRES_APP_PASSWORD=app_user \
+            -e S3_ENDPOINT=http://localhost:9000 \
+            -e S3_ACCESS_KEY_ID=minioadmin \
+            -e S3_SECRET_ACCESS_KEY=minioadmin \
+            -e DATABASE_NAME=uwazi_testing \
+            -e INDEX_NAME=uwazi_testing \
+            -e SKIP_MIGRATION_CHECK=true \
+            "$BACKEND_IMAGE_REF"
+
+      - name: Start queue-worker
+        run: |
+          docker run -d --name uwazi-queue-worker --network host \
+            -e DBHOST=localhost:27017 \
+            -e REDIS_HOST=localhost \
+            -e REDIS_PORT=6379 \
+            -e POSTGRES_HOST=localhost \
+            -e POSTGRES_PORT=5432 \
+            -e POSTGRES_USER=migrator_user \
+            -e POSTGRES_PASSWORD=migrator_user \
+            -e POSTGRES_APP_USER=app_user \
+            -e POSTGRES_APP_PASSWORD=app_user \
+            -e QUEUE_NAME=uwazi_jobs \
+            "$QUEUE_WORKER_IMAGE_REF"
+
+      - name: Wait for backend
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://localhost:3000/api/version >/dev/null; then
+              echo "Backend is up"; break
+            fi
+            echo "Waiting for backend... (attempt $i/60)"
+            sleep 2
+          done
+          curl -sf http://localhost:3000/api/version
+          echo
+
+      - name: Verify queue-worker stays up
+        run: |
+          sleep 10
+          state="$(docker inspect -f '{{.State.Running}}' uwazi-queue-worker)"
+          echo "queue-worker running: $state"
+          docker logs uwazi-queue-worker --tail 50
+          [ "$state" = "true" ]
+
+      - name: Cleanup
+        if: ${{ always() }}
+        run: |
+          docker rm -f uwazi-backend uwazi-queue-worker >/dev/null 2>&1 || true
+
+  publish:
+    name: publish_known_good
+    needs: [precheck, build_images, api_unit_tests_aggregate, app_unit_tests, smoke_tests]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_images.result == 'success' && needs.api_unit_tests_aggregate.result == 'success' && needs.app_unit_tests.result == 'success' && needs.smoke_tests.result == 'success' && github.ref == 'refs/heads/production' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Publish known-good tags
+        env:
+          BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
+          QUEUE_WORKER_IMAGE: ${{ env.QUEUE_WORKER_IMAGE }}
+          REGISTRY: ${{ env.REGISTRY }}
+        run: |
+          set -euo pipefail
+
+          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
+            source="$REGISTRY/$image:sha-$GITHUB_SHA"
+            echo "Promoting $source -> production, latest"
+            docker buildx imagetools create \
+              --tag "$REGISTRY/$image:production" \
+              --tag "$REGISTRY/$image:latest" \
+              "$source"
+          done
