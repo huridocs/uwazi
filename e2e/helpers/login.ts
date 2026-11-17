@@ -9,7 +9,7 @@ export async function login(username: string, password: string) {
   await expect(page).toClick('a[aria-label="Sign in"]');
   await expect(page).toFill('input[name=username]', username);
   await expect(page).toFill('input[name=password]', password);
-  await expect(page).toClick('button', { text: 'Login' });
+  await expect(page).toClick('button', { text: 'Log in' });
   await page.waitForNavigation();
   await disableTransitions();
 }
