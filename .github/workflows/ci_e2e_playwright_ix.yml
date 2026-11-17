@@ -167,7 +167,6 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-          TRANSPILED: true
         run: yarn e2e-fixtures
 
       - name: Configure IX settings
@@ -230,7 +229,6 @@ jobs:
           REDIS_PORT: 6379
           EXTERNAL_SERVICES: true
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
-          TRANSPILED: true
 
       - name: Capture Uwazi logs
         if: always()

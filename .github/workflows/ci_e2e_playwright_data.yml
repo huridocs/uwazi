@@ -163,7 +163,6 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:9200
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-          TRANSPILED: true
 
       - name: Capture Uwazi logs
         if: always()
