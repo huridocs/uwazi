@@ -20,9 +20,6 @@ const collectSecondaryColumns = (points: DataPoint[]): SecondaryColumn[] => {
   return Array.from(columns.values());
 };
 
-export const hasBreakdownMatrix = (points: DataPoint[]): boolean =>
-  collectSecondaryColumns(points).length > 0;
-
 export const fillBreakdownMatrix = (points: DataPoint[]): DataPoint[] => {
   const columns = collectSecondaryColumns(points);
   if (!columns.length) {
