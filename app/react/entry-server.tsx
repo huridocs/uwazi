@@ -33,7 +33,7 @@ import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factor
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { shapeSettingsForSSR } from '#api/core/application/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
-import { isLoginV2Enabled, loginRedirect } from '#shared/authReturn.js';
+import { anonymousClientFeatures, isLoginV2Enabled, loginRedirect } from '#shared/authReturn.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
 import { Root } from './App/Root.js';
@@ -192,7 +192,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       languages: settings.languages,
       private: settings.private,
       site_name: settings.site_name,
-      features: { newHeader: settings.features?.newHeader },
+      features: anonymousClientFeatures(settings.features),
     },
     templatesApiResponse = [],
     thesaurisApiResponse = [],
