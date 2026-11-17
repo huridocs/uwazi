@@ -33,7 +33,7 @@ const encode = (query: object, encoding: Encoding) =>
         )
   );
 
-/** The correlation id differs per call by design; nothing else may. */
+/** The HTTP call and the SSR call belong to different requests, so only their correlation ids may differ. */
 const withoutRequestId = (body: unknown) => {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return body;
   const { requestId, ...rest } = body as Record<string, unknown>;

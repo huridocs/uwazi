@@ -268,7 +268,7 @@ describe('ControllerInvoker', () => {
     expect(error).toMatchObject({ status: 401, message: 'Unauthorized' });
   });
 
-  it('should run each call in its own context with a fresh correlation id', async () => {
+  it('should run each call in its own context sharing the page correlation id', async () => {
     const pageContext = await run(async () => {
       await Promise.all([invoke(ContextRecordingController), invoke(ContextRecordingController)]);
       return {
@@ -280,9 +280,8 @@ describe('ControllerInvoker', () => {
     expect(transactionManagers).toHaveLength(2);
     expect(transactionManagers[0]).not.toBe(transactionManagers[1]);
     expect(transactionManagers).not.toContain(pageContext.transactionManager);
-    expect(correlationIds[0]).toBeDefined();
-    expect(correlationIds[0]).not.toBe(correlationIds[1]);
-    expect(correlationIds).not.toContain(pageContext.correlationId);
+    expect(pageContext.correlationId).toBeDefined();
+    expect(correlationIds).toEqual([pageContext.correlationId, pageContext.correlationId]);
   });
 
   it('should keep the page tenant, actor and session', async () => {
@@ -323,7 +322,9 @@ describe('ControllerInvoker', () => {
   });
 
   it('should require a page execution context', async () => {
-    await expect(invoke(EchoController)).rejects.toThrow('ExecutionContext');
+    await expect(invoke(EchoController)).rejects.toThrow(
+      'ControllerInvoker requires an active ExecutionContext'
+    );
   });
 
   describe('on a private instance', () => {

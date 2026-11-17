@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import type { Request, Response } from 'express';
 
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -31,20 +30,22 @@ class ControllerInvoker {
   constructor(private readonly pageRequest: Request) {}
 
   async invoke<T>(controller: ControllerClass, invocation: Invocation): Promise<T> {
-    const page = ExecutionContext.getStore();
-    if (!page) {
-      throw new Error('ControllerInvoker must run inside the page request ExecutionContext');
+    const pageContext = ExecutionContext.getStore();
+    if (!pageContext) {
+      throw new Error(
+        'ControllerInvoker requires an active ExecutionContext (the server side render page request)'
+      );
     }
 
     const collector = ExecutionContext.telemetryCollector;
 
     return ExecutionContext.run(
       {
-        factories: { ...page.factories, telemetryCollector: () => collector },
-        tenant: page.tenant,
-        actor: page.actor,
-        sessionId: page.sessionId,
-        correlationId: randomUUID(),
+        factories: { ...pageContext.factories, telemetryCollector: () => collector },
+        tenant: pageContext.tenant,
+        actor: pageContext.actor,
+        sessionId: pageContext.sessionId,
+        correlationId: pageContext.correlationId,
       },
       async () =>
         collector.runSpan(`ssr_client ${invocation.method} ${invocation.path}`, async () =>
