@@ -31,6 +31,21 @@ type SemanticVarKey = (typeof SEMANTIC_VAR_KEYS)[number];
 
 const ACCENT_PRIMARY_KEY = '--color-theme-accent-primary' as const;
 
+const SEMANTIC_VAR_HINTS: Record<SemanticVarKey, string> = {
+  '--color-theme-accent-primary': 'Primary buttons and links',
+  '--color-theme-accent-supporting': 'Supporting accent on smaller controls',
+  '--color-theme-accent-emphasis': 'Danger and emphasis backgrounds',
+  '--color-theme-bg-primary': 'Page background',
+  '--color-theme-bg-surface': 'Cards and panels',
+  '--color-theme-bg-muted': 'Muted backgrounds',
+  '--color-theme-success': 'Success messages',
+  '--color-theme-warning': 'Warning messages',
+  '--color-theme-text-primary': 'Main text',
+  '--color-theme-text-secondary': 'Secondary text',
+  '--color-theme-text-tertiary': 'Tertiary text',
+  '--color-theme-text-muted': 'Muted text',
+  '--color-theme-border-primary': 'Borders and dividers',
+};
 const SEMANTIC_VAR_LABELS: Record<SemanticVarKey, string> = {
   '--color-theme-accent-primary': 'Primary action',
   '--color-theme-accent-supporting': 'Supporting accent',
@@ -411,6 +426,7 @@ export {
   SEMANTIC_VAR_KEYS,
   ACCENT_PRIMARY_KEY,
   SEMANTIC_VAR_LABELS,
+  SEMANTIC_VAR_HINTS,
   PRESET_DEFINITIONS,
   NAMED_THEMES,
   resolveThemeVars,

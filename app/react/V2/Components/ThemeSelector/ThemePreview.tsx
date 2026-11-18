@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { UwaziLoader } from '#V2/Components/UI/UwaziLoader.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import {
@@ -8,12 +9,15 @@ import {
   getChromeStyleOverrides,
   getPresetId,
   mergeScopedThemeAndChrome,
-  SEMANTIC_VAR_LABELS,
-  THEME_PALETTE,
   type ResolvedThemeVars,
   type ThemeMode,
 } from '#V2/theme/themes.js';
 import { ThemePreviewLogo } from './ThemePreviewLogo.js';
+import {
+  elementFromEventTarget,
+  tokenForPaintedColor,
+  tokenFromPreviewClick,
+} from './themeTokenFocus.js';
 
 type ThemeVars = Record<string, string | undefined>;
 
@@ -21,6 +25,7 @@ type ThemePreviewProps = {
   mode: ThemeMode;
   themeVars: ThemeVars;
   siteLogo?: string | undefined;
+  siteName?: string;
   favicon?: string | undefined;
 };
 
@@ -35,25 +40,53 @@ const previewTextColors = (resolved: ResolvedThemeVars) => {
     resolved['--color-theme-text-primary'],
     getContrastTextColor(surfaceBg)
   );
-  const secondaryText = resolveAccessibleText(
-    surfaceBg,
-    resolved['--color-theme-text-secondary'],
-    primaryText
-  );
   return {
     accent,
     surfaceBg,
     primaryText,
-    secondaryText,
     accentText: getContrastTextColor(accent),
     outlineColor: resolveAccessibleText(surfaceBg, accent, primaryText),
   };
 };
 
-const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps) => {
+const previewMenu = ['Home', 'About', 'Contact'] as const;
+const previewTools = ['English', 'Library', 'Settings'] as const;
+
+type PaintToken = {
+  color: string;
+  resolved: ResolvedThemeVars;
+  keys: (keyof ResolvedThemeVars)[];
+  fallback: string;
+};
+
+const paintToken = ({ color, resolved, keys, fallback }: PaintToken) =>
+  tokenForPaintedColor(
+    color,
+    keys.flatMap(token => {
+      const value = resolved[token];
+      return value ? [{ token, color: value }] : [];
+    })
+  ) ?? fallback;
+
+const previewToolClass =
+  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium';
+
+const ThemePreview = ({ mode, themeVars, siteLogo, siteName }: ThemePreviewProps) => {
   const resolved = appliedTheme(themeVars, mode, true);
   const presetId = getPresetId(themeVars, true);
   const colors = previewTextColors(resolved);
+  const secondaryTextToken = paintToken({
+    color: colors.outlineColor,
+    resolved,
+    keys: [
+      '--color-theme-text-primary',
+      '--color-theme-text-secondary',
+      '--color-theme-text-tertiary',
+      '--color-theme-text-muted',
+      '--color-theme-accent-primary',
+    ],
+    fallback: '--color-theme-accent-primary',
+  });
   const chromeStyle = getChromeStyleOverrides(themeVars, mode);
   const style: React.CSSProperties & Record<string, string> = {
     colorScheme: mode,
@@ -70,81 +103,99 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
         .filter(Boolean)
         .join(' ')}
       data-theme-custom
+      onClick={event => {
+        const node = elementFromEventTarget(event.target);
+        if (!node) return;
+        const token = tokenFromPreviewClick(node, event.clientX, event.clientY);
+        if (!token) return;
+        document.dispatchEvent(new CustomEvent('uwazi-theme-token', { detail: token }));
+      }}
       style={{
         ...style,
         borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
       }}
     >
       <div
-        className="flex min-h-13 items-center justify-between gap-3 border-b px-3"
-        style={{
-          backgroundColor: 'var(--color-theme-chrome-app-bar)',
-          borderColor: 'var(--color-theme-chrome-app-bar-separator)',
-        }}
+        className="header-bar relative flex min-h-13 w-full flex-col"
+        data-uwazi-header
+        data-theme-token="--color-theme-chrome-app-bar"
       >
-        <div className="flex min-w-0 items-center gap-3">
-          {siteLogo ? (
-            <ThemePreviewLogo siteLogo={siteLogo} />
-          ) : (
-            <div
-              className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold"
-              style={{
-                backgroundColor: 'var(--color-theme-chrome-app-bar-active)',
-                color: headerFg,
-              }}
-            >
-              <Translate>Uwazi</Translate>
+        <div className="relative flex h-full min-h-13 flex-1 items-center justify-between gap-3 px-3">
+          <div className="flex min-w-0 shrink items-center gap-3">
+            {siteLogo ? (
+              <ThemePreviewLogo siteLogo={siteLogo} />
+            ) : (
+              <div className="min-w-0" data-theme-token="--color-theme-chrome-app-bar-fg">
+                <p className="header-bar-brand truncate text-xs font-semibold">{siteName}</p>
+                <p className="truncate text-[0.6875rem]" style={{ color: headerFg }}>
+                  <Translate>Header and button preview</Translate>
+                </p>
+              </div>
+            )}
+            <div className="flex min-w-0 items-center gap-1.5">
+              {previewMenu.map(label => (
+                <span
+                  key={label}
+                  data-theme-token={
+                    label === 'Home'
+                      ? '--color-theme-chrome-app-bar-active'
+                      : '--color-theme-chrome-app-bar-hover'
+                  }
+                  className={`${previewToolClass} ${label === 'Home' ? 'header-bar-button-active' : ''}`}
+                >
+                  <Translate>{label}</Translate>
+                </span>
+              ))}
             </div>
-          )}
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold" style={{ color: headerFg }}>
-              <Translate>Uwazi</Translate>
-            </p>
-            <p className="truncate text-xs" style={{ color: headerFg }}>
-              <Translate>Header and button preview</Translate>
-            </p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {favicon ? <img src={favicon} alt="" className="h-5 w-5 rounded object-contain" /> : null}
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-tab font-medium"
-            style={{
-              borderColor: 'var(--color-theme-chrome-app-bar-separator)',
-              color: headerFg,
-            }}
-          >
-            <Translate>Library</Translate>
-          </button>
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-tab font-medium"
-            style={{
-              borderColor: 'var(--color-theme-chrome-app-bar-separator)',
-              color: headerFg,
-            }}
-          >
-            <Translate>Settings</Translate>
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <span
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-warm"
+              data-theme-token="--color-theme-bg-surface"
+            >
+              <span data-theme-token="--color-theme-accent-supporting">
+                <UwaziLoader size="xs" color="carbon" />
+              </span>
+            </span>
+            {previewTools.map(label => (
+              <span
+                key={label}
+                className={previewToolClass}
+                data-theme-token="--color-theme-chrome-app-bar-hover"
+              >
+                <Translate>{label}</Translate>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4 p-4" style={{ backgroundColor: 'var(--color-theme-bg-primary)' }}>
+      <div
+        className="p-4"
+        data-theme-token="--color-theme-bg-primary"
+        style={{ backgroundColor: 'var(--color-theme-bg-primary)' }}
+      >
         <div
           className="rounded-xl border p-4"
+          data-theme-token="--color-theme-bg-surface"
+          data-theme-edge="--color-theme-border-primary"
           style={{
             backgroundColor: 'var(--color-theme-bg-surface)',
             borderColor: 'var(--color-theme-border-primary)',
           }}
         >
-          <p className="text-sm font-semibold" style={{ color: colors.primaryText }}>
+          <p
+            className="text-xs font-semibold"
+            data-theme-token="--color-theme-text-primary"
+            style={{ color: colors.primaryText }}
+          >
             <Translate>Theme preview</Translate>
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
-              className="rounded-lg border px-3 py-2 text-xs font-medium"
+              className="rounded-lg border px-2.5 py-1.5 text-[0.6875rem] font-medium"
+              data-theme-token="--color-theme-accent-primary"
               style={{
                 backgroundColor: colors.accent,
                 borderColor: colors.accent,
@@ -155,7 +206,9 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
             </button>
             <button
               type="button"
-              className="rounded-lg border px-3 py-2 text-xs font-medium"
+              className="rounded-lg border px-2.5 py-1.5 text-[0.6875rem] font-medium"
+              data-theme-token="--color-theme-bg-surface"
+              data-theme-text={secondaryTextToken}
               style={{
                 backgroundColor: colors.surfaceBg,
                 borderColor: colors.outlineColor,
@@ -165,37 +218,6 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
               <Translate>Secondary button</Translate>
             </button>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {THEME_PALETTE.filter(entry => entry.id.startsWith('accent-')).map(entry => (
-            <div
-              key={entry.id}
-              className="rounded-lg border p-2"
-              style={{
-                borderColor:
-                  'color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
-              }}
-            >
-              <div
-                className="h-10 rounded-md"
-                style={{ backgroundColor: `var(${entry.semanticKey})` }}
-              />
-              <p
-                className="mt-2 truncate text-xs font-medium"
-                style={{ color: colors.primaryText }}
-              >
-                {SEMANTIC_VAR_LABELS[entry.semanticKey]}
-              </p>
-              <p
-                className="truncate text-[0.6875rem]"
-                style={{ color: colors.secondaryText }}
-                title={entry.semanticKey}
-              >
-                {entry.semanticKey}
-              </p>
-            </div>
-          ))}
         </div>
       </div>
     </div>

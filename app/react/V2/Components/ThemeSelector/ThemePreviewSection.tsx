@@ -2,7 +2,16 @@ import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { SectionHeading, SegmentedControl, SurfacePanel } from '#V2/Components/UI/index.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
-import { ACCENT_PRIMARY_KEY, appliedTheme, THEME_MODES } from '#V2/theme/themes.js';
+import { headerContrastChecks } from '#V2/theme/headerContrast.js';
+import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
+import {
+  ACCENT_PRIMARY_KEY,
+  appliedTheme,
+  getChromeStyleOverrides,
+  getPresetId,
+  mergeScopedThemeAndChrome,
+  THEME_MODES,
+} from '#V2/theme/themes.js';
 import type { ThemeMode } from '#V2/theme/themes.js';
 import { ThemePreview } from './ThemePreview.js';
 
@@ -13,16 +22,26 @@ type ThemePreviewSectionProps = {
   setPreviewMode: (mode: ThemeMode) => void;
   themeVars: ThemeVars;
   siteLogo?: string | undefined;
+  siteName?: string;
   favicon?: string | undefined;
 };
 
 const contrastChecks = (themeVars: ThemeVars, mode: ThemeMode) => {
   const resolved = appliedTheme(themeVars, mode, true);
+  const merged = mergeScopedThemeAndChrome(
+    getScopedThemeVars(getPresetId(themeVars, true), resolved),
+    getChromeStyleOverrides(themeVars, mode),
+    resolved
+  );
   const accent = resolved[ACCENT_PRIMARY_KEY];
   const surface = resolved['--color-theme-bg-surface'];
   const primaryText = resolved['--color-theme-text-primary'];
 
   return [
+    ...headerContrastChecks(merged).map(check => ({
+      ...check,
+      label: t('System', check.label, null, false),
+    })),
     {
       id: 'surface-primary',
       label: t('System', 'Surface text', null, false),
@@ -66,6 +85,7 @@ const ThemePreviewSection = ({
   setPreviewMode,
   themeVars,
   siteLogo,
+  siteName,
   favicon,
 }: ThemePreviewSectionProps) => {
   const failedChecks = contrastChecks(themeVars, previewMode).filter(
@@ -98,11 +118,11 @@ const ThemePreviewSection = ({
           <p className="text-xs font-medium text-amber-800">
             <Translate>Accessibility checks need attention</Translate>
           </p>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {failedChecks.map(check => (
               <span
                 key={check.id}
-                className="rounded-full px-2.5 py-1 text-xs font-medium ring-1"
+                className="whitespace-nowrap rounded-full px-2 py-0.5 text-[0.6875rem] font-medium ring-1"
                 style={{
                   backgroundColor: 'var(--color-theme-surface-raised)',
                   color: 'var(--color-theme-warning)',
@@ -120,6 +140,7 @@ const ThemePreviewSection = ({
         mode={previewMode}
         themeVars={themeVars}
         siteLogo={siteLogo}
+        siteName={siteName}
         favicon={favicon}
       />
     </section>

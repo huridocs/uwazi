@@ -1,4 +1,7 @@
-import { parseThemeInstanceImportJson } from '../themeInstanceImport.js';
+import {
+  parseThemeInstanceImportJson,
+  themeVarsFromInstanceImport,
+} from '../themeInstanceImport.js';
 import { stripChromeStorageKeysAbsentFromImport, THEME_PRESET_KEY } from '../themes.js';
 
 describe('parseThemeInstanceImportJson', () => {
@@ -58,5 +61,68 @@ describe('parseThemeInstanceImportJson', () => {
       expect(result.flat['light:--color-theme-chrome-app-bar']).toBe('#222222');
       expect(result.flat['light:--color-theme-chrome-app-bar-fg']?.startsWith('#')).toBe(true);
     }
+  });
+
+  it('reads editor mode', () => {
+    const result = parseThemeInstanceImportJson({
+      editorMode: 'simple',
+      light: { '--color-theme-accent-primary': '#112233' },
+    });
+    expect('flat' in result && result.editorMode).toBe('simple');
+  });
+
+  it('replaces the palette and keeps simple mode', () => {
+    const next = themeVarsFromInstanceImport(
+      {
+        'light:--color-theme-accent-primary': '#112233',
+        'light:--color-theme-text-secondary': '#ABCDEF',
+      },
+      'simple'
+    );
+    expect(next.__preset).toBe('custom');
+    expect(next.__themeEditorMode).toBe('simple');
+    expect(next['light:--color-theme-accent-primary']).toBe('#112233');
+    expect(next['light:--color-theme-text-secondary']).toBe('#ABCDEF');
+  });
+
+  it('rederives a simple legacy file from the legacy preset', () => {
+    const next = themeVarsFromInstanceImport(
+      { 'light:--color-theme-accent-primary': '#112233' },
+      'simple',
+      'legacy'
+    );
+    expect(next['light:--color-theme-bg-primary']).toBe('#FFFFFF');
+    expect(next.__themeSimpleBase).toBe('legacy');
+  });
+});
+
+describe('themeVarsFromInstanceImport', () => {
+  it('keeps file colors and fills a missing simple token', () => {
+    const next = themeVarsFromInstanceImport(
+      {
+        'light:--color-theme-accent-primary': '#112233',
+        'light:--color-theme-success': '#ABCDEF',
+      },
+      'simple'
+    );
+    expect(next['light:--color-theme-success']).toBe('#ABCDEF');
+    expect(next['light:--color-theme-text-secondary']?.startsWith('#')).toBe(true);
+  });
+
+  it('treats a missing editor mode as simple', () => {
+    const result = parseThemeInstanceImportJson({
+      light: { '--color-theme-accent-primary': '#112233' },
+    });
+    expect('editorMode' in result && result.editorMode).toBe('simple');
+  });
+
+  it('stores the default derivation base when the file is not legacy', () => {
+    const next = themeVarsFromInstanceImport(
+      { 'light:--color-theme-accent-primary': '#112233' },
+      'advanced',
+      'default'
+    );
+    expect(next.__themeSimpleBase).toBe('default');
+    expect(next.__themeEditorMode).toBe('advanced');
   });
 });

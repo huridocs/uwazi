@@ -16,6 +16,7 @@ import { UnlockAccount as UnlockAccountLegacy } from '#app/Users/UnlockAccount.j
 import { isLoginV2Enabled } from '#shared/authReturn.js';
 import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
+import { Theming, themingLoader } from '#V2/Routes/Settings/Theming/Theming.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
@@ -349,6 +350,11 @@ const getRoutesLayout = (
         path="collection"
         element={adminsOnlyRoute(<Collection />)}
         loader={collectionLoader(headers)}
+      />
+      <Route
+        path="theming"
+        element={adminsOnlyRoute(<Theming />)}
+        loader={themingLoader(headers)}
       />
       <Route
         path="users"

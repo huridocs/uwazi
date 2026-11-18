@@ -8,7 +8,7 @@ type Bounds = { width: number; height: number };
 
 const logoFrameClass = (variant: 'header' | 'preview' = 'header') =>
   `logo-img h-auto max-h-12 w-auto shrink-0 object-contain ${
-    variant === 'preview' ? 'max-w-[12.5rem]' : 'max-w-[8rem] sm:max-w-[10rem] lg:max-w-[12.5rem]'
+    variant === 'preview' ? 'max-w-50' : 'max-w-[8rem] sm:max-w-[10rem] lg:max-w-50'
   }`;
 
 const logoDisplaySize = (width: number, height: number) => {

@@ -6,6 +6,7 @@ import {
   resolveThemeVars,
   SEMANTIC_VAR_KEYS,
   SEMANTIC_VAR_LABELS,
+  SEMANTIC_VAR_HINTS,
   THEME_MODES,
 } from './tokens.js';
 import type {
@@ -208,6 +209,14 @@ const getThemeAssetPresetId = (
   return currentPreset === 'legacy' ? 'legacy' : 'default';
 };
 
+const themeAssetPresetFromImport = (
+  themeAssets: ThemeAssets | undefined,
+  presetId: ThemePresetId | undefined
+): ThemeAssetPresetId =>
+  presetId === 'legacy' || presetId === 'default'
+    ? presetId
+    : getThemeAssetPresetId(themeAssets, undefined, true);
+
 /* eslint-disable max-params -- theme asset lookup mirrors preset API surface */
 const getThemeAsset = (
   themeAssets: ThemeAssets | undefined,
@@ -233,8 +242,22 @@ const getThemeAsset = (
     return (normalizedFallback?.trim() ? normalizedFallback : preset) ?? '';
   }
 
+  if (asset === 'siteLogo') return '';
+
   return preset ?? normalizedFallback ?? '';
 };
+
+const themeAssetsForPreset = (
+  themeAssets: ThemeAssets | undefined,
+  presetId: ThemeAssetPresetId
+): ThemeAssets => ({
+  ...themeAssets,
+  preset: presetId,
+  siteLogo: {
+    light: THEME_ASSET_PRESETS[presetId].light.siteLogo,
+    dark: THEME_ASSET_PRESETS[presetId].dark.siteLogo,
+  },
+});
 /* eslint-enable max-params */
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
@@ -416,6 +439,7 @@ export {
   SEMANTIC_VAR_KEYS,
   ACCENT_PRIMARY_KEY,
   SEMANTIC_VAR_LABELS,
+  SEMANTIC_VAR_HINTS,
   THEME_PALETTE,
   isValidHex,
   normalizeHex,
@@ -431,7 +455,9 @@ export {
   stripChromeStorageKeysAbsentFromImport,
   getPresetId,
   getThemeAssetPresetId,
+  themeAssetPresetFromImport,
   getThemeAsset,
+  themeAssetsForPreset,
   themeStorageKey,
   toCanonicalThemeVars,
   toCompatibilityVars,
@@ -445,5 +471,12 @@ export type {
   ThemeAssetPresetId,
   ThemeAssets,
 };
-export { CHROME_OVERRIDE_VAR_KEYS, CHROME_VAR_LABELS } from './themeChromeOverrides.js';
+export {
+  CHROME_OVERRIDE_VAR_KEYS,
+  HEADER_CHROME_VAR_KEYS,
+  SETTINGS_CHROME_VAR_KEYS,
+  CHROME_VAR_LABELS,
+  CHROME_VAR_HINTS,
+  fillChromeImportDefaults,
+} from './themeChromeOverrides.js';
 export type { ChromeOverrideVarKey } from './themeChromeOverrides.js';

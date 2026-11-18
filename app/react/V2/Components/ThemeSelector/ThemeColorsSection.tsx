@@ -2,9 +2,18 @@ import React from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Button, SurfacePanel } from '#V2/Components/UI/index.js';
-import { THEME_EDITOR_MODE_KEY, recomputeSimpleThemeVarsFromAnchors } from '#V2/theme/index.js';
+import {
+  THEME_EDITOR_MODE_KEY,
+  THEME_PRESET_KEY,
+  appliedTheme,
+  buildThemeInstanceExport,
+  downloadThemeInstance,
+  recomputeSimpleThemeVarsFromAnchors,
+  simpleBasePreset,
+  THEME_SIMPLE_BASE_KEY,
+} from '#V2/theme/index.js';
 import type {
-  ResolvedThemeVars,
+  ThemeAssetPresetId,
   ThemeMode,
   ThemePresetId,
   ChromeOverrideVarKey,
@@ -12,17 +21,19 @@ import type {
 } from '#V2/theme/index.js';
 import { ThemeAdvancedColorsSection } from './ThemeAdvancedColorsSection.js';
 import { ThemeSimpleColorsSection } from './ThemeSimpleColorsSection.js';
+import { themeColorsStartOpen } from './themeColorsLayout.js';
+import { useRevealThemeToken } from './themeTokenFocus.js';
 
 type ThemeVars = Record<string, string | undefined>;
 
 type ThemeColorsSectionProps = {
   previewMode: ThemeMode;
   selectedPreset: ThemePresetId;
+  assetPreset?: ThemeAssetPresetId;
   themeVars: ThemeVars;
   resolvedPreviewTheme: ThemeVars;
   resolvedMergedPreview: Record<string, string>;
   colorOptions: string[];
-  getResolved: (mode: ThemeMode) => ResolvedThemeVars;
   updateModeVar: (mode: ThemeMode, key: SemanticVarKey, nextValue: string | undefined) => void;
   updateChromeModeVar: (
     mode: ThemeMode,
@@ -37,11 +48,11 @@ type ThemeColorsSectionProps = {
 const ThemeColorsSection = ({
   previewMode,
   selectedPreset,
+  assetPreset,
   themeVars,
   resolvedPreviewTheme,
   resolvedMergedPreview,
   colorOptions,
-  getResolved,
   updateModeVar,
   updateChromeModeVar,
   onImportThemeInstanceText,
@@ -49,9 +60,20 @@ const ThemeColorsSection = ({
   setSimpleChromeBar,
 }: ThemeColorsSectionProps) => {
   const editorMode = themeVars[THEME_EDITOR_MODE_KEY] === 'advanced' ? 'advanced' : 'simple';
-  const basePreset = selectedPreset === 'custom' ? 'default' : selectedPreset;
+  const basePreset = simpleBasePreset(
+    selectedPreset,
+    assetPreset,
+    themeVars[THEME_SIMPLE_BASE_KEY]
+  );
+  const resolveBase = (mode: ThemeMode) =>
+    appliedTheme({ ...themeVars, [THEME_PRESET_KEY]: basePreset }, mode, true);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
+  useRevealThemeToken({ editorMode, open, setOpen, previewMode, themeVars, onChange });
+
+  React.useEffect(() => {
+    if (!themeColorsStartOpen(window.innerWidth)) setOpen(false);
+  }, []);
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -98,6 +120,16 @@ const ThemeColorsSection = ({
               >
                 <Translate>Import theme instance file</Translate>
               </Button>
+              <Button
+                type="button"
+                size="small"
+                variant="secondary"
+                onClick={() =>
+                  downloadThemeInstance(buildThemeInstanceExport(themeVars, assetPreset))
+                }
+              >
+                <Translate>Export theme instance file</Translate>
+              </Button>
               <div className="flex flex-wrap gap-1 sm:ml-auto">
                 <Button
                   type="button"
@@ -105,9 +137,7 @@ const ThemeColorsSection = ({
                   variant={editorMode === 'simple' ? 'primary' : 'secondary'}
                   onClick={() =>
                     onChange(
-                      recomputeSimpleThemeVarsFromAnchors(themeVars, basePreset, m =>
-                        getResolved(m)
-                      )
+                      recomputeSimpleThemeVarsFromAnchors(themeVars, basePreset, resolveBase)
                     )
                   }
                 >
@@ -133,9 +163,11 @@ const ThemeColorsSection = ({
               resolvedPreviewTheme={resolvedPreviewTheme}
               resolvedMergedPreview={resolvedMergedPreview}
               colorOptions={colorOptions}
-              getResolved={getResolved}
+              getResolved={resolveBase}
               onChange={onChange}
               setSimpleChromeBar={setSimpleChromeBar}
+              updateChromeModeVar={updateChromeModeVar}
+              updateModeVar={updateModeVar}
             />
           ) : (
             <ThemeAdvancedColorsSection

@@ -106,7 +106,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   );
 
   return (
-    <header className="header-bar flex flex-col" data-uwazi-header>
+    <header className="header-bar flex min-h-13 flex-col" data-uwazi-header>
       <a
         href="#main"
         className="header-bar-skip sr-only focus:not-sr-only absolute top-2 left-2 z-50 rounded-md p-2 ring-2"
@@ -115,11 +115,11 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       </a>
       <div
         ref={barRef}
-        className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3"
+        className="relative flex h-full min-h-13 flex-1 items-center justify-between gap-4 overflow-visible px-3"
       >
         <div data-testid="header-leading" className="flex min-w-0 flex-1 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={settings.links ?? []} /> : null}
-          <div className="min-w-0 overflow-hidden">
+          <div className="max-w-[12.5rem] shrink-0 overflow-hidden">
             <SiteName
               className="header-bar-brand min-w-0 px-0 py-0 text-base font-semibold"
               textClassName="truncate"
