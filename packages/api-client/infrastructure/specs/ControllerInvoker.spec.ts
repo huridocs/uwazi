@@ -1,3 +1,4 @@
+import { ValidationError as AJVValidationError } from 'ajv';
 import type { Request } from 'express';
 import { ObjectId } from 'mongodb';
 
@@ -22,8 +23,6 @@ class EchoController extends AbstractController {
       query: this.request.query,
       params: this.request.params,
       language: this.language,
-      method: this.request.method,
-      path: this.request.path,
       user: this.request.user?.username,
       header: this.request.get('x-page-header'),
     });
@@ -131,14 +130,9 @@ const pageRequest = (overrides: Partial<Request> = {}) =>
 
 const invoke = async <T = unknown>(
   controller: typeof AbstractController,
-  invocation: Partial<Parameters<ControllerInvoker['invoke']>[1]> = {},
+  { query, params }: { query?: Record<string, unknown>; params?: Record<string, string> } = {},
   request: Request = pageRequest({ user: admin as Request['user'] })
-) =>
-  new ControllerInvoker(request).invoke<T>(controller, {
-    method: 'GET',
-    path: '/api/test',
-    ...invocation,
-  });
+) => new ControllerInvoker(request).invoke<T>(controller, query, params);
 
 const rejectionOf = async (promise: Promise<unknown>): Promise<ServerApiError> =>
   promise.then(
@@ -170,17 +164,15 @@ describe('ControllerInvoker', () => {
 
   const run = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
 
-  it('should hand the controller a GET request with the invocation and the page identity', async () => {
+  it('should hand the controller the query, params and the page identity', async () => {
     const body = await run(async () =>
-      invoke(EchoController, { path: '/api/echo', query: { a: '1' }, params: { id: 'x' } })
+      invoke(EchoController, { query: { a: '1' }, params: { id: 'x' } })
     );
 
     expect(body).toEqual({
       query: { a: '1' },
       params: { id: 'x' },
       language: 'en',
-      method: 'GET',
-      path: '/api/echo',
       user: 'admin',
       header: 'from the page',
     });
@@ -193,24 +185,15 @@ describe('ControllerInvoker', () => {
     expect(body.params).toEqual({});
   });
 
-  it('should let the invocation override the language', async () => {
-    const body = await run(async () =>
-      invoke<{ language: string }>(EchoController, { language: 'es' })
-    );
-
-    expect(body.language).toBe('es');
-  });
-
   it('should not alter the page request', async () => {
     const request = pageRequest({ user: admin as Request['user'] });
 
     await run(async () =>
-      invoke(EchoController, { path: '/api/echo', query: { a: '1' }, language: 'es' }, request)
+      invoke(EchoController, { query: { a: '1' }, params: { id: 'x' } }, request)
     );
 
     expect(request.query).toEqual({ page: 'query' });
-    expect(request.path).toBe('/en/library');
-    expect(request.language).toBe('en');
+    expect(request.params).toEqual({});
   });
 
   it('should return the body as it would travel over HTTP', async () => {
@@ -230,28 +213,26 @@ describe('ControllerInvoker', () => {
     });
   });
 
-  it('should map a failed request validation to 400', async () => {
+  it('should let a failed request validation propagate as the controller threw it', async () => {
     const error = await rejectionOf(
       run(async () => invoke(ValidatedController, { query: { unknown: 'x' } }))
     );
 
-    expect(error).toBeInstanceOf(ServerApiError);
-    expect(error.status).toBe(400);
+    expect(error).not.toBeInstanceOf(ServerApiError);
+    expect(error).toMatchObject({ code: 400 });
   });
 
-  it('should map a thrown domain validation error the way the error middleware does', async () => {
+  it('should let a thrown domain validation error propagate as the controller threw it', async () => {
     const error = await rejectionOf(run(async () => invoke(DomainValidationController)));
 
-    expect(error).toBeInstanceOf(ServerApiError);
-    expect(error.status).toBe(422);
+    expect(error).toBeInstanceOf(AJVValidationError);
   });
 
-  it('should map an unknown error to a 500 without leaking its message', async () => {
+  it('should let an unknown error propagate as the controller threw it', async () => {
     const error = await rejectionOf(run(async () => invoke(CrashingController)));
 
-    expect(error).toBeInstanceOf(ServerApiError);
-    expect(error.status).toBe(500);
-    expect(error.message).toBe('A server side error has occurred');
+    expect(error).not.toBeInstanceOf(ServerApiError);
+    expect(error.message).toBe('secret internals');
   });
 
   it('should refuse response methods it cannot capture', async () => {
@@ -269,19 +250,41 @@ describe('ControllerInvoker', () => {
   });
 
   it('should run each call in its own context sharing the page correlation id', async () => {
-    const pageContext = await run(async () => {
-      await Promise.all([invoke(ContextRecordingController), invoke(ContextRecordingController)]);
-      return {
-        transactionManager: ExecutionContext.transactionManager,
-        correlationId: ExecutionContext.correlationId,
-      };
-    });
+    const pageContext = await testingEnvironment.runWithContext(
+      async () => {
+        await Promise.all([invoke(ContextRecordingController), invoke(ContextRecordingController)]);
+        return {
+          transactionManager: ExecutionContext.transactionManager,
+          correlationId: ExecutionContext.correlationId,
+        };
+      },
+      { correlationId: 'page-correlation-id' }
+    );
 
     expect(transactionManagers).toHaveLength(2);
     expect(transactionManagers[0]).not.toBe(transactionManagers[1]);
     expect(transactionManagers).not.toContain(pageContext.transactionManager);
     expect(pageContext.correlationId).toBeDefined();
     expect(correlationIds).toEqual([pageContext.correlationId, pageContext.correlationId]);
+  });
+
+  it('should build its own dependencies instead of the page ones', async () => {
+    const pageIdGenerator = { generate: () => 'from the page' };
+    let seen: unknown;
+
+    class DependencyReadingController extends AbstractController {
+      protected async handle() {
+        seen = ExecutionContext.idGenerator;
+        this.ok();
+      }
+    }
+
+    await testingEnvironment.runWithContext(async () => invoke(DependencyReadingController), {
+      factories: { idGenerator: () => pageIdGenerator },
+    });
+
+    expect(seen).toBeDefined();
+    expect(seen).not.toBe(pageIdGenerator);
   });
 
   it('should keep the page tenant, actor and session', async () => {
@@ -308,17 +311,6 @@ describe('ControllerInvoker', () => {
 
     expect(expected.actor).toBeDefined();
     expect(seen).toEqual({ ...expected, sessionId: 'page-session' });
-  });
-
-  it('should record a span on the page telemetry', async () => {
-    const telemetry = await run(async () => {
-      await invoke(EchoController, { path: '/api/echo' });
-      return ExecutionContext.telemetryCollector.build();
-    });
-
-    expect(telemetry.timings).toEqual([
-      expect.objectContaining({ operation: 'ssr_client GET /api/echo' }),
-    ]);
   });
 
   it('should require a page execution context', async () => {

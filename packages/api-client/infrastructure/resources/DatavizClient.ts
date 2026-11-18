@@ -12,18 +12,15 @@ class DatavizClient implements DatavizResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async list() {
-    return this.invoker.invoke<DatavizListResponse>(ListDatavizController, {
-      method: 'GET',
-      path: '/api/dataviz',
-    });
+    return this.invoker.invoke<DatavizListResponse>(ListDatavizController);
   }
 
   async getById(id: string) {
-    return this.invoker.invoke<DatavizDefinitionResponse>(GetDatavizDefinitionController, {
-      method: 'GET',
-      path: `/api/dataviz/${encodeURIComponent(id)}`,
-      params: { id },
-    });
+    return this.invoker.invoke<DatavizDefinitionResponse>(
+      GetDatavizDefinitionController,
+      {},
+      { id }
+    );
   }
 }
 

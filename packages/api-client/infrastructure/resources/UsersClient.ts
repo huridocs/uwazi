@@ -9,17 +9,11 @@ class UsersClient implements UsersResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getAll() {
-    return this.invoker.invoke<UsersResponse>(GetUsersController, {
-      method: 'GET',
-      path: '/api/users',
-    });
+    return this.invoker.invoke<UsersResponse>(GetUsersController);
   }
 
   async getCurrent() {
-    return this.invoker.invoke<CurrentUserResponse>(GetCurrentUserController, {
-      method: 'GET',
-      path: '/api/user',
-    });
+    return this.invoker.invoke<CurrentUserResponse>(GetCurrentUserController);
   }
 }
 

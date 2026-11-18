@@ -11,11 +11,7 @@ class ActivityLogClient implements ActivityLogResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async list(query: ActivityLogQuery = {}) {
-    return this.invoker.invoke<ActivityLogResponse>(ListActivityLogController, {
-      method: 'GET',
-      path: '/api/activitylog',
-      query,
-    });
+    return this.invoker.invoke<ActivityLogResponse>(ListActivityLogController, query);
   }
 }
 

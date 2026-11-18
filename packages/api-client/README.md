@@ -70,7 +70,9 @@ come back as strings, exactly as over HTTP.
 
 ## Errors
 
-A method either resolves with the response body or rejects with a `ServerApiError`:
+A method resolves with the response body, or rejects in one of two ways.
+
+**The route answered with an error status** → `ServerApiError`:
 
 ```ts
 try {
@@ -83,21 +85,24 @@ try {
 }
 ```
 
-| Field     | What it holds                                                                     |
-| --------- | --------------------------------------------------------------------------------- |
-| `status`  | The HTTP status the route would have answered (400, 401, 403, 404, 422, 500…)     |
-| `message` | The route's `error` or `message` text; for 500s, the generic server-error message |
-| `body`    | The error body the route would have sent, when there is one                       |
+| Field     | What it holds                                            |
+| --------- | -------------------------------------------------------- |
+| `status`  | The HTTP status the route answered with (401, 403, 404…) |
+| `message` | The route's `error` or `message` text                    |
+| `body`    | The error body the route sent, when there is one         |
 
 Statuses to expect:
 
 - **401** — the user may not call this resource, or the instance is private and nobody is logged
   in (the same rule `PrivateInstanceMiddleware` applies to `/api/*`).
 - **403** — the feature behind the resource is off for this tenant (paragraph extraction).
-- **400 / 422** — the query is invalid.
 - **404** — the thing asked for does not exist. `entities.get` rejects with 404 (body
   `{ rows: [] }`) for an entity that is missing or not readable by the user.
-- **500** — something failed on the server; it is logged as it would be for an HTTP request.
+
+**The controller threw** → the thrown error, untouched. This covers an invalid query (the
+validation error the error middleware would answer 400 or 422 for) and anything that failed on
+the server. It is not logged here: let it propagate and the server side render error handling
+logs it and answers with its status, as `errorHandlingMiddleware` does for `/api/*`.
 
 A controller that tried to redirect, stream or set a cookie rejects with
 `UnsupportedInSsrClientError` instead. That is a bug in how the resource was wired, not something

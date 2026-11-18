@@ -8,10 +8,7 @@ class TemplatesClient implements TemplatesResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getAll() {
-    return this.invoker.invoke<TemplatesResponse>(GetTemplatesController, {
-      method: 'GET',
-      path: '/api/templates',
-    });
+    return this.invoker.invoke<TemplatesResponse>(GetTemplatesController);
   }
 }
 

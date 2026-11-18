@@ -8,11 +8,7 @@ class EntitiesClient implements EntitiesResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async get(query: EntityQuery) {
-    return this.invoker.invoke<EntitiesResponse>(GetEntityController, {
-      method: 'GET',
-      path: '/api/entities',
-      query,
-    });
+    return this.invoker.invoke<EntitiesResponse>(GetEntityController, query);
   }
 }
 

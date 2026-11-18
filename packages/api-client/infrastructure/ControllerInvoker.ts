@@ -1,13 +1,12 @@
 import type { Request, Response } from 'express';
 
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { handleError } from '#api/utils/handleError.js';
 
 import { ServerApiError } from '../application/ServerApiError.js';
 import { CapturingResponse } from './CapturingResponse.js';
-import { UnsupportedInSsrClientError } from './UnsupportedInSsrClientError.js';
-import { type Invocation, SyntheticRequest } from './SyntheticRequest.js';
+import { type Params, type Query, SyntheticRequest } from './SyntheticRequest.js';
 
 type ControllerClass = {
   createHandler(): (request: Request, response: Response) => Promise<void>;
@@ -25,11 +24,14 @@ const messageOf = (status: number, body: unknown) => {
 /**
  * Calls an AbstractController in-process on behalf of a server-rendered page, as if the page had
  * made the HTTP request itself, and returns the JSON body it would have sent.
+ *
+ * An error status the controller answers with becomes a ServerApiError. Anything the controller
+ * throws propagates untouched, for the server side render error handling to deal with.
  */
 class ControllerInvoker {
   constructor(private readonly pageRequest: Request) {}
 
-  async invoke<T>(controller: ControllerClass, invocation: Invocation): Promise<T> {
+  async invoke<T>(controller: ControllerClass, query?: Query, params?: Params): Promise<T> {
     const pageContext = ExecutionContext.getStore();
     if (!pageContext) {
       throw new Error(
@@ -39,32 +41,26 @@ class ControllerInvoker {
 
     const collector = ExecutionContext.telemetryCollector;
 
-    return ExecutionContext.run(
+    return ExecutionContextFactory.run(
       {
-        factories: { ...pageContext.factories, telemetryCollector: () => collector },
         tenant: pageContext.tenant,
         actor: pageContext.actor,
         sessionId: pageContext.sessionId,
         correlationId: pageContext.correlationId,
+        telemetry: { kind: 'http_request' },
+        overrides: { telemetryCollector: () => collector },
       },
-      async () =>
-        collector.runSpan(`ssr_client ${invocation.method} ${invocation.path}`, async () =>
-          this.call<T>(controller, invocation)
-        )
+      async () => this.call<T>(controller, query, params)
     );
   }
 
-  private async call<T>(controller: ControllerClass, invocation: Invocation): Promise<T> {
+  private async call<T>(controller: ControllerClass, query?: Query, params?: Params): Promise<T> {
     await this.ensureInstanceAccess();
 
-    const request = SyntheticRequest.from(this.pageRequest, invocation);
+    const request = SyntheticRequest.from(this.pageRequest, query, params);
     const response = new CapturingResponse();
 
-    try {
-      await controller.createHandler()(request, response.asExpressResponse());
-    } catch (error) {
-      throw ControllerInvoker.toServerApiError(error, request);
-    }
+    await controller.createHandler()(request, response.asExpressResponse());
 
     if (response.statusCode >= 400) {
       throw new ServerApiError(
@@ -88,16 +84,7 @@ class ControllerInvoker {
       throw new ServerApiError(401, 'Unauthorized', { error: 'Unauthorized' });
     }
   }
-
-  /** Maps a thrown error the way errorHandlingMiddleware would, logging included. */
-  private static toServerApiError(error: unknown, request: Request) {
-    if (error instanceof UnsupportedInSsrClientError) return error;
-
-    const { message, code, ...rest } = handleError(error, { req: request });
-    const body = { error: message, ...rest };
-    return new ServerApiError(code, messageOf(code, body), body);
-  }
 }
 
 export { ControllerInvoker };
-export type { ControllerClass, Invocation };
+export type { ControllerClass };

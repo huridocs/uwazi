@@ -16,26 +16,18 @@ class ParagraphExtractionClient implements ParagraphExtractionResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getExtractors() {
-    return this.invoker.invoke<PXExtractorsResponse>(PXGetExtractorsController, {
-      method: 'GET',
-      path: '/api/paragraphExtraction/extractors',
-    });
+    return this.invoker.invoke<PXExtractorsResponse>(PXGetExtractorsController);
   }
 
   async getExtractorStatuses(query: PXExtractorStatusesQuery) {
-    return this.invoker.invoke<PXExtractorStatusesResponse>(PXGetExtractorStatusesController, {
-      method: 'GET',
-      path: '/api/paragraphExtraction/extractorStatuses',
-      query,
-    });
+    return this.invoker.invoke<PXExtractorStatusesResponse>(
+      PXGetExtractorStatusesController,
+      query
+    );
   }
 
   async getEntityParagraphs(query: PXEntityParagraphsQuery) {
-    return this.invoker.invoke<PXEntityParagraphsResponse>(PXGetEntityParagraphsController, {
-      method: 'GET',
-      path: '/api/paragraphExtraction/entityParagraphs',
-      query,
-    });
+    return this.invoker.invoke<PXEntityParagraphsResponse>(PXGetEntityParagraphsController, query);
   }
 }
 

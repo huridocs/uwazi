@@ -12,17 +12,11 @@ class SettingsClient implements SettingsResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async get() {
-    return this.invoker.invoke<SettingsResponse>(GetSettingsController, {
-      method: 'GET',
-      path: '/api/settings',
-    });
+    return this.invoker.invoke<SettingsResponse>(GetSettingsController);
   }
 
   async getLinks() {
-    return this.invoker.invoke<SettingsLinksResponse>(GetSettingsLinksController, {
-      method: 'GET',
-      path: '/api/settings/links',
-    });
+    return this.invoker.invoke<SettingsLinksResponse>(GetSettingsLinksController);
   }
 }
 

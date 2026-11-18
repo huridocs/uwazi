@@ -57,7 +57,7 @@ describe('translations client', () => {
     expect(client.rows).toMatchObject([{ locale: 'es', contexts: [{ id: 'System' }] }]);
   });
 
-  it('getLegacy should reject an unsupported locale with 400', async () => {
+  it('getLegacy should throw the validation error the route answers 400 for', async () => {
     const http = await harness.as(callers.anonymous).http('/api/translations', { locale: 'xx' });
     const failure = harness
       .as(callers.anonymous)
@@ -65,7 +65,7 @@ describe('translations client', () => {
       .client(async c => c.translations.getLegacy({ locale: 'xx' }));
 
     expect(http.status).toBe(400);
-    await expect(failure).rejects.toMatchObject({ status: 400 });
+    await expect(failure).rejects.toMatchObject({ code: 400 });
   });
 
   it('getEntries should match GET /api/v2/translations', async () => {

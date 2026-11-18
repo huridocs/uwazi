@@ -8,10 +8,7 @@ class UserGroupsClient implements UserGroupsResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getAll() {
-    return this.invoker.invoke<UserGroupsResponse>(GetUserGroupsController, {
-      method: 'GET',
-      path: '/api/usergroups',
-    });
+    return this.invoker.invoke<UserGroupsResponse>(GetUserGroupsController);
   }
 }
 

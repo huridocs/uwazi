@@ -42,16 +42,15 @@ describe('entities client', () => {
     expect(body.rows).toMatchObject([{ sharedId: 'source', title: 'Source EN' }]);
   });
 
-  it('get should reject an invalid query with 400, like the route', async () => {
+  it('get should throw the validation error the route answers 400 for', async () => {
     const query = { sharedId: 'source', include: ['unknown'] };
-    const { http, client } = await harness.as(callers.admin).outcomes(
-      '/api/entities',
+    const http = await harness.as(callers.admin).http('/api/entities', query, 'json');
+    const failure = harness
+      .as(callers.admin)
       // @ts-expect-error an invalid include is what is being tested
-      async c => c.entities.get(query),
-      { query, encoding: 'json' }
-    );
+      .client(async c => c.entities.get(query));
 
     expect(http.status).toBe(400);
-    expect(client).toEqual(http);
+    await expect(failure).rejects.toMatchObject({ code: 400 });
   });
 });

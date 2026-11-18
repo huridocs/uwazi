@@ -13,18 +13,11 @@ class TranslationsClient implements TranslationsResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getLegacy(query: LegacyTranslationsQuery = {}) {
-    return this.invoker.invoke<LegacyTranslationsResponse>(GetTranslationsController, {
-      method: 'GET',
-      path: '/api/translations',
-      query,
-    });
+    return this.invoker.invoke<LegacyTranslationsResponse>(GetTranslationsController, query);
   }
 
   async getEntries() {
-    return this.invoker.invoke<TranslationEntriesResponse>(GetTranslationEntriesController, {
-      method: 'GET',
-      path: '/api/v2/translations',
-    });
+    return this.invoker.invoke<TranslationEntriesResponse>(GetTranslationEntriesController);
   }
 }
 

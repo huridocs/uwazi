@@ -14,19 +14,17 @@ class RelationshipsClient implements RelationshipsResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getSummary(query: RelationshipsSummaryQuery) {
-    return this.invoker.invoke<RelationshipsSummaryResponse>(GetRelationshipsSummaryController, {
-      method: 'GET',
-      path: '/api/relationships/summary',
-      query,
-    });
+    return this.invoker.invoke<RelationshipsSummaryResponse>(
+      GetRelationshipsSummaryController,
+      query
+    );
   }
 
   async getAnchors(query: RelationshipsAnchorsQuery) {
-    return this.invoker.invoke<RelationshipsAnchorsResponse>(GetRelationshipsAnchorsController, {
-      method: 'GET',
-      path: '/api/relationships/anchors',
-      query,
-    });
+    return this.invoker.invoke<RelationshipsAnchorsResponse>(
+      GetRelationshipsAnchorsController,
+      query
+    );
   }
 }
 

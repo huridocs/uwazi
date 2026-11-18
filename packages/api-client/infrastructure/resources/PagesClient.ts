@@ -14,19 +14,11 @@ class PagesClient implements PagesResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async list(query: PagesQuery = {}) {
-    return this.invoker.invoke<PagesResponse>(ListPagesController, {
-      method: 'GET',
-      path: '/api/pages',
-      query,
-    });
+    return this.invoker.invoke<PagesResponse>(ListPagesController, query);
   }
 
   async get(query: PageQuery) {
-    return this.invoker.invoke<PageResponse>(GetPageController, {
-      method: 'GET',
-      path: '/api/page',
-      query,
-    });
+    return this.invoker.invoke<PageResponse>(GetPageController, query);
   }
 }
 

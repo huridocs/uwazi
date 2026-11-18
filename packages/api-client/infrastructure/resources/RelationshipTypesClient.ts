@@ -8,10 +8,7 @@ class RelationshipTypesClient implements RelationshipTypesResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getAll() {
-    return this.invoker.invoke<RelationshipTypesResponse>(GetRelationshipTypesController, {
-      method: 'GET',
-      path: '/api/relationtypes',
-    });
+    return this.invoker.invoke<RelationshipTypesResponse>(GetRelationshipTypesController);
   }
 }
 

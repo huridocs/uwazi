@@ -8,11 +8,7 @@ class ThesauriClient implements ThesauriResource {
   constructor(private readonly invoker: ControllerInvoker) {}
 
   async getAll(query: ThesauriQuery = {}) {
-    return this.invoker.invoke<ThesauriResponse>(GetThesauriController, {
-      method: 'GET',
-      path: '/api/dictionaries',
-      query,
-    });
+    return this.invoker.invoke<ThesauriResponse>(GetThesauriController, query);
   }
 }
 

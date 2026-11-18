@@ -56,16 +56,15 @@ describe('activity log client', () => {
     expect(client).toEqual(http);
   });
 
-  it('list should reject an invalid query with 400 like the route', async () => {
+  it('list should throw the validation error the route answers 400 for', async () => {
     const query = { limit: 'many' };
-    const { http, client } = await harness.as(callers.admin).outcomes(
-      '/api/activitylog',
+    const http = await harness.as(callers.admin).http('/api/activitylog', query, 'json');
+    const failure = harness
+      .as(callers.admin)
       // @ts-expect-error an invalid limit is what is being tested
-      async c => c.activityLog.list(query),
-      { query, encoding: 'json' }
-    );
+      .client(async c => c.activityLog.list(query));
 
     expect(http.status).toBe(400);
-    expect(client).toEqual(http);
+    await expect(failure).rejects.toMatchObject({ code: 400 });
   });
 });
