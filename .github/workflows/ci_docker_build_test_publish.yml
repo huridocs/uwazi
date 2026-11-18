@@ -92,7 +92,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
 
   # Runtime images: compiled backend/frontend (the slow webpack production
-  # build). Runs in parallel with unit tests, like the old ci_build.yml flow.
+  # build). Runs in parallel with unit tests.
   build_runtime_images:
     name: build_runtime_images
     needs: precheck
