@@ -86,6 +86,7 @@ const UpdateTemplateSchema = BaseTemplateSchema.extend({
 }).strict();
 
 export {
+  CorePropertyTypeSchema,
   BaseTemplateSchema as CreateTemplateDTOSchema,
   UpdateTemplateSchema as UpdateTemplateDTOSchema,
 };

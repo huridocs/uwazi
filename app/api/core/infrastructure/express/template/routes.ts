@@ -4,11 +4,13 @@ import { SetTemplateAsDefaultController } from '#api/core/infrastructure/express
 import { GetTemplatesController } from '#api/core/infrastructure/express/template/GetTemplatesController.js';
 import { DeleteTemplateController } from '#api/core/infrastructure/express/template/DeleteTemplateController/DeleteTemplateController.js';
 import { CountTemplatesByThesaurusController } from '#api/core/infrastructure/express/template/CountTemplatesByThesaurusController.js';
+import { GetPropertyMatchesController } from '#api/core/infrastructure/express/template/GetPropertyMatchesController.js';
 import needsAuthorization from '../../../../auth/authMiddleware.js';
 
 export default (app: Application) => {
   app.get('/api/templates', GetTemplatesController.createHandler());
   app.get('/api/templates/count_by_thesauri', CountTemplatesByThesaurusController.createHandler());
+  app.get('/api/templates/properties/matches', GetPropertyMatchesController.createHandler());
 
   app.post('/api/templates', needsAuthorization(), TemplateMutationController.createHandler());
   app.post(
