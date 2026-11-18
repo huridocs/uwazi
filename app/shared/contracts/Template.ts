@@ -1,4 +1,4 @@
-import type { PropertySchema } from '#shared/types/commonTypes.js';
+import type { PropertySchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
 type TemplateProcessing = {
   active?: boolean;
@@ -23,4 +23,30 @@ type TemplateInput = Omit<Template, '_id'> & {
   reindex?: boolean;
 };
 
-export type { Template, TemplateInput, TemplateProcessing };
+type PropertyMatchConflict = 'type' | 'content' | 'relationType' | 'inheritType';
+
+type PropertyMatch = {
+  templateId: string;
+  templateName: string;
+  propertyId: string;
+  label: string;
+  type: PropertyTypeSchema;
+  content?: string;
+  relationType?: string;
+  inherit?: { property: string; type: PropertyTypeSchema };
+  conflicts: PropertyMatchConflict[];
+};
+
+type GetPropertyMatchesResponse = {
+  name: string;
+  matches: PropertyMatch[];
+};
+
+export type {
+  Template,
+  TemplateInput,
+  TemplateProcessing,
+  PropertyMatch,
+  PropertyMatchConflict,
+  GetPropertyMatchesResponse,
+};
