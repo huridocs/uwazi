@@ -305,7 +305,7 @@ export class MongoTemplatesDataSource
   async getTemplatesByPropertyName(property: Property): Promise<Template[]> {
     const schemas = await this.getCollection()
       .find({
-        _id: { $not: { $eq: new ObjectId(property.template) } },
+        ...(property.template && { _id: { $not: { $eq: new ObjectId(property.template) } } }),
         properties: {
           $elemMatch: {
             name: property.name,

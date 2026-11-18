@@ -307,7 +307,7 @@ export class PostgresTemplatesDataSource
     return rows
       .filter(
         row =>
-          row._id !== property.template &&
+          (!property.template || row._id !== property.template) &&
           (row.properties || []).some(p => p.name === property.name)
       )
       .map(PostgresTemplateMapper.toDomain);
