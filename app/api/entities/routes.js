@@ -105,29 +105,7 @@ export default app => {
     }
   );
 
-  app.get(
-    '/api/entities',
-    parseQuery,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            sharedId: { type: 'string' },
-            _id: { type: 'string' },
-            omitRelationships: { type: 'boolean' },
-            includeMetadataRelationships: { type: 'boolean' },
-            include: {
-              type: 'array',
-              items: { type: 'string', enum: ['permissions', 'translations'] },
-            },
-          },
-        },
-      },
-    }),
-    GetEntityController.createHandler()
-  );
+  app.get('/api/entities', parseQuery, GetEntityController.createHandler());
 
   app.delete(
     '/api/entities',

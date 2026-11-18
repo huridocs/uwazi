@@ -40,24 +40,15 @@ const paragraphExtractionRoutes = (app: Application) => {
     PXExtractParagraphsByEntityStatusController.createHandler()
   );
 
-  app.get(
-    '/api/paragraphExtraction/extractors',
-    needsAuthorization(['admin', 'editor']),
-    featureFlagEnabled('paragraphExtraction'),
-    PXGetExtractorsController.createHandler()
-  );
+  app.get('/api/paragraphExtraction/extractors', PXGetExtractorsController.createHandler());
 
   app.get(
     '/api/paragraphExtraction/extractorStatuses',
-    needsAuthorization(['admin', 'editor']),
-    featureFlagEnabled('paragraphExtraction'),
     PXGetExtractorStatusesController.createHandler()
   );
 
   app.get(
     '/api/paragraphExtraction/entityParagraphs',
-    needsAuthorization(['admin', 'editor']),
-    featureFlagEnabled('paragraphExtraction'),
     PXGetEntityParagraphsController.createHandler()
   );
 };
