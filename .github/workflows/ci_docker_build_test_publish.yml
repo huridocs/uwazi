@@ -8,6 +8,7 @@ permissions:
 on:
   push:
     branches:
+      - development
       - production
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
@@ -19,11 +20,8 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  CI_IMAGE: ${{ github.repository }}-ci
   BACKEND_IMAGE: ${{ github.repository }}-backend
   QUEUE_WORKER_IMAGE: ${{ github.repository }}-queue-worker
-  MONGO_IMAGE: ${{ github.repository }}-mongo-ci
-  MINIO_IMAGE: ${{ github.repository }}-minio-ci
 
 jobs:
   precheck:
@@ -62,101 +60,25 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
   # Test images only: source + dev deps + client tooling. No production build,
-  # so unit tests can start without waiting on webpack.
+  # so unit tests can start without waiting on webpack. Defined in a reusable
+  # workflow so it runs alongside the runtime-image build as a separate job.
   build_test_images:
-    name: build_test_images
     needs: [precheck, image_tag]
     if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push CI test image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: ci
-          push: true
-          tags: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache,mode=max,ignore-error=true
-
-      - name: Build and push Mongo service image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/mongo-service.Dockerfile
-          push: true
-          tags: ghcr.io/${{ github.repository }}-mongo-ci:tree-${{ needs.image_tag.outputs.tree }}
-
-      - name: Build and push MinIO service image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/minio-service.Dockerfile
-          push: true
-          tags: ghcr.io/${{ github.repository }}-minio-ci:tree-${{ needs.image_tag.outputs.tree }}
+    uses: ./.github/workflows/build_test_images.yml
+    secrets: inherit
+    with:
+      tree: ${{ needs.image_tag.outputs.tree }}
 
   # Runtime images: compiled backend/frontend (the slow webpack production
-  # build). Runs in parallel with unit tests.
+  # build). Runs in parallel with unit tests. Defined in a reusable workflow.
   build_runtime_images:
-    name: build_runtime_images
     needs: [precheck, image_tag]
     if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: backend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:tree-${{ needs.image_tag.outputs.tree }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache,mode=max,ignore-error=true
-
-      - name: Build and push queue-worker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: queue-worker
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:tree-${{ needs.image_tag.outputs.tree }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache,mode=max,ignore-error=true
+    uses: ./.github/workflows/build_runtime_images.yml
+    secrets: inherit
+    with:
+      tree: ${{ needs.image_tag.outputs.tree }}
 
   api_unit_tests_shards:
     name: api_unit_tests (shard ${{ matrix.shard }}/4)
@@ -514,6 +436,30 @@ jobs:
         if: ${{ always() }}
         run: |
           docker rm -f uwazi-backend uwazi-queue-worker >/dev/null 2>&1 || true
+
+  # e2e runs the actual backend image that gets promoted on production, so the
+  # deployed image is exactly the image the e2e suite tested. It waits for
+  # build_runtime_images via `needs` — no polling.
+  e2e_playwright_core:
+    needs: [precheck, image_tag, build_runtime_images]
+    if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
+    uses: ./.github/workflows/ci_e2e_playwright_core.yml
+    with:
+      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+
+  e2e_playwright_data:
+    needs: [precheck, image_tag, build_runtime_images]
+    if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
+    uses: ./.github/workflows/ci_e2e_playwright_data.yml
+    with:
+      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+
+  e2e_playwright_ix:
+    needs: [precheck, image_tag, build_runtime_images]
+    if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
+    uses: ./.github/workflows/ci_e2e_playwright_ix.yml
+    with:
+      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
 
   publish:
     name: publish

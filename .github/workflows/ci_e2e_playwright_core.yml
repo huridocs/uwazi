@@ -126,6 +126,8 @@ jobs:
           EXTERNAL_SERVICES: true
           SKIP_MIGRATION_CHECK: true
         run: |
+          # Built by Dockerized CI (build_runtime_images); guaranteed present by
+          # the `needs` dependency before this job starts.
           docker pull "$BACKEND_IMAGE"
           docker run -d --name uwazi-backend --network host \
             -e DBHOST="$DBHOST" \
