@@ -46,6 +46,8 @@
     "^#activitylog/composition$": "<rootDir>/../packages/activitylog/composition",
     "^#usage$": "<rootDir>/../packages/usage/index",
     "^#usage/composition$": "<rootDir>/../packages/usage/composition",
+    "^#api-client$": "<rootDir>/../packages/api-client/index",
+    "^#api-client/server$": "<rootDir>/../packages/api-client/server",
     "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
     "^#shared/(.*)": "<rootDir>/shared/$1",
     "^#app/(.*)\\.js$": "<rootDir>/react/$1",

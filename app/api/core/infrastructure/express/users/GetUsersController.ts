@@ -1,8 +1,10 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { Authorize } from '#api/core/infrastructure/express/decorators/Authorize.js';
 import { GetUsersResponse } from '#shared/contracts/Users.js';
 import { UsersQueryServiceFactory } from '../../factories/UsersQueryServiceFactory.js';
 
 class GetUsersController extends AbstractController {
+  @Authorize(['admin'])
   protected async handle(): Promise<void> {
     const queryService = UsersQueryServiceFactory.default();
     const users = await queryService.listUsers();
