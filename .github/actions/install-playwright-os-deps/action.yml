@@ -1,14 +1,15 @@
-name: Install Playwright OS deps
+name: Install Playwright browsers and OS deps
 description: >-
-  Installs Chromium's OS dependencies with a fallback Ubuntu mirror and one
-  retry. GitHub's default in-region EC2 apt mirror is occasionally throttled
-  to ~100 kB/s, which turns this normally ~8s step into 5-8 minutes.
+  Installs Chromium's browser binaries and OS dependencies with a fallback
+  Ubuntu mirror and one retry. GitHub's default in-region EC2 apt mirror is
+  occasionally throttled to ~100 kB/s, which turns the normally ~8s OS-dep
+  install into 5-8 minutes.
 
 inputs:
   command:
-    description: Command that installs the OS dependencies
+    description: Command that installs the browsers and dependencies
     required: false
-    default: npx playwright install-deps chromium
+    default: npx playwright install --with-deps chromium
 
 runs:
   using: 'composite'
