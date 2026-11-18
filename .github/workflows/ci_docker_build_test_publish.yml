@@ -3,6 +3,7 @@ name: Dockerized CI (build, test, publish)
 permissions:
   contents: read
   pull-requests: read
+  actions: read
   packages: write
 
 on:
