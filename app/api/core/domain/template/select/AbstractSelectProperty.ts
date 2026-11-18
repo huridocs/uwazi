@@ -1,4 +1,5 @@
-import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { CreatePropertyAssignmentInput, Property } from '#api/core/domain/template/Property.js';
+import type { PropertyConflict } from '../PropertyConflict.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors.js';
@@ -30,10 +31,20 @@ class AbstractSelectProperty extends FilterableProperty {
     return false;
   }
 
+  conflictsWith(property: Property): PropertyConflict[] {
+    const conflicts = super.conflictsWith(property);
+
+    if (property instanceof AbstractSelectProperty && this.content !== property.content) {
+      conflicts.push('content');
+    }
+
+    return conflicts;
+  }
+
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
     super.ensurePropertyIsConsistent(property);
 
-    if (this.content !== property.content) {
+    if (this.conflictsWith(property).includes('content')) {
       throw new PropertyThesaurusMismatchError(this, property);
     }
   }

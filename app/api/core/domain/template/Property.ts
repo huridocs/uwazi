@@ -7,6 +7,7 @@ import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyType } from './PropertyType.js';
 import { PropertyValue, PropertyAssignment } from './PropertyValue.js';
+import type { PropertyConflict } from './PropertyConflict.js';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -89,8 +90,15 @@ class Property {
     return this.name === name;
   }
 
-  ensurePropertyIsConsistent(property: Property) {
+  conflictsWith(property: Property): PropertyConflict[] {
     if (this.isNameEqual(property.name) && !this.isTypeEqual(property.type)) {
+      return ['type'];
+    }
+    return [];
+  }
+
+  ensurePropertyIsConsistent(property: Property) {
+    if (this.conflictsWith(property).includes('type')) {
       throw new PropertyTypeMismatchError(this, property);
     }
   }

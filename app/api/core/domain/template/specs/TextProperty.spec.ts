@@ -45,6 +45,14 @@ describe('TextProperty', () => {
     expect(() => text.ensurePropertyIsConsistent(markdown)).not.toThrow();
   });
 
+  it('should report no conflicts with a same-name MarkdownProperty', () => {
+    const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+    const markdown = new MarkdownProperty({ id: 'any_id_2', label: 'A Title', template: 'any' });
+
+    expect(text.conflictsWith(markdown)).toEqual([]);
+    expect(markdown.conflictsWith(text)).toEqual([]);
+  });
+
   describe('createPropertyAssignment()', () => {
     it('should create assignment with a single trimmed value', () => {
       const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
