@@ -22,7 +22,7 @@ import type {
 import { ThemeAdvancedColorsSection } from './ThemeAdvancedColorsSection.js';
 import { ThemeSimpleColorsSection } from './ThemeSimpleColorsSection.js';
 import { themeColorsStartOpen } from './themeColorsLayout.js';
-import { useRevealThemeToken } from './themeTokenFocus.js';
+import { useRevealThemeToken, type ThemeVarsChange } from './themeTokenFocus.js';
 
 type ThemeVars = Record<string, string | undefined>;
 
@@ -41,7 +41,7 @@ type ThemeColorsSectionProps = {
     nextValue: string | undefined
   ) => void;
   onImportThemeInstanceText: (text: string) => void;
-  onChange: (value: ThemeVars) => void;
+  onChange: ThemeVarsChange;
   setSimpleChromeBar: (mode: ThemeMode, hex: string | undefined) => void;
 };
 
@@ -69,7 +69,7 @@ const ThemeColorsSection = ({
     appliedTheme({ ...themeVars, [THEME_PRESET_KEY]: basePreset }, mode, true);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(true);
-  useRevealThemeToken({ editorMode, open, setOpen, previewMode, themeVars, onChange });
+  useRevealThemeToken({ editorMode, open, setOpen, previewMode, onChange });
 
   React.useEffect(() => {
     if (!themeColorsStartOpen(window.innerWidth)) setOpen(false);
@@ -136,9 +136,16 @@ const ThemeColorsSection = ({
                   size="small"
                   variant={editorMode === 'simple' ? 'primary' : 'secondary'}
                   onClick={() =>
-                    onChange(
-                      recomputeSimpleThemeVarsFromAnchors(themeVars, basePreset, resolveBase)
-                    )
+                    onChange(current => {
+                      const base = simpleBasePreset(
+                        selectedPreset,
+                        assetPreset,
+                        current[THEME_SIMPLE_BASE_KEY]
+                      );
+                      return recomputeSimpleThemeVarsFromAnchors(current, base, mode =>
+                        appliedTheme({ ...current, [THEME_PRESET_KEY]: base }, mode, true)
+                      );
+                    })
                   }
                 >
                   <Translate>Simple mode</Translate>
@@ -147,7 +154,9 @@ const ThemeColorsSection = ({
                   type="button"
                   size="small"
                   variant={editorMode === 'advanced' ? 'primary' : 'secondary'}
-                  onClick={() => onChange({ ...themeVars, [THEME_EDITOR_MODE_KEY]: 'advanced' })}
+                  onClick={() =>
+                    onChange(current => ({ ...current, [THEME_EDITOR_MODE_KEY]: 'advanced' }))
+                  }
                 >
                   <Translate>Full mode</Translate>
                 </Button>

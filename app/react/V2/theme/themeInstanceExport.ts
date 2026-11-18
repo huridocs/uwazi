@@ -95,16 +95,19 @@ const groupBlock = (colors: Record<string, string>) =>
 const editorModeOf = (themeVars: ThemeVars) =>
   themeVars.__themeEditorMode === 'advanced' ? 'advanced' : 'simple';
 
+const colorPreset = (value: string | undefined) =>
+  value === 'legacy' || value === 'default' ? value : undefined;
+
 const buildThemeInstanceExport = (themeVars: ThemeVars, assetPreset?: ThemeAssetPresetId) => {
   const source = themeVarsForInstanceExport(themeVars);
-  const base = source[THEME_SIMPLE_BASE_KEY];
-  const named =
-    source.__preset === 'legacy' || source.__preset === 'default' ? source.__preset : undefined;
-  const assetId = assetPreset === 'legacy' || assetPreset === 'default' ? assetPreset : undefined;
-  const id = base === 'legacy' || base === 'default' ? base : (assetId ?? named ?? 'custom');
+  const id =
+    colorPreset(source[THEME_SIMPLE_BASE_KEY]) ??
+    colorPreset(source.__preset) ??
+    (assetPreset === 'legacy' ? 'legacy' : 'custom');
+  const assetLine = assetPreset ? `,\n  "assetPreset": "${assetPreset}"` : '';
   return `{
   "id": "${id}",
-  "editorMode": "${editorModeOf(source)}",
+  "editorMode": "${editorModeOf(source)}"${assetLine},
   "light": {
 ${groupBlock(resolvedColors(source, 'light'))}
   },

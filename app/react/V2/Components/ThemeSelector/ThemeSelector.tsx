@@ -10,8 +10,8 @@ import {
   getChromeStyleOverrides,
   getThemeAsset,
   getThemeAssetPresetId,
-  themeAssetPresetFromImport,
   themeAssetsForPreset,
+  themeAssetsFromImport,
   getPresetId,
   isValidHex,
   mergeScopedThemeAndChrome,
@@ -27,6 +27,7 @@ import {
   themeStorageKey,
   toCanonicalThemeVars,
   themeVarsFromInstanceImport,
+  simpleBaseFromFile,
   type ChromeOverrideVarKey,
   type SemanticVarKey,
   type ThemeAssets,
@@ -34,12 +35,22 @@ import {
 } from '#V2/theme/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { ThemeColorsSection } from './ThemeColorsSection.js';
+import type { ThemeVarsChange } from './themeTokenFocus.js';
 import { ThemePresetSection } from './ThemePresetSection.js';
 import { ThemePreviewSection } from './ThemePreviewSection.js';
 
+type ThemeVars = Record<string, string | undefined>;
+
+const storedVar = (current: ThemeVars, key: string, nextValue: string | undefined): ThemeVars => {
+  const next = { ...current };
+  if (nextValue === undefined || nextValue === '') delete next[key];
+  else next[key] = nextValue;
+  return next;
+};
+
 type ThemeSelectorProps = {
   value: Record<string, string | undefined>;
-  onChange: (value: Record<string, string | undefined>) => void;
+  onChange: ThemeVarsChange;
   themeAssets?: ThemeAssets;
   onThemeAssetsChange?: (value: ThemeAssets) => void;
   siteLogo?: string | undefined;
@@ -99,40 +110,27 @@ const ThemeSelector = ({
     [themeVars, resolvedMergedPreview]
   );
 
-  const update = (key: string, nextValue: string | undefined) => {
-    const next = { ...themeVars };
-
-    if (nextValue === undefined || nextValue === '') {
-      delete next[key];
-    } else {
-      next[key] = nextValue;
-    }
-
-    onChange(next);
-  };
-
   const updateModeVar = (mode: ThemeMode, key: SemanticVarKey, nextValue: string | undefined) => {
-    const resolved = appliedTheme(themeVars, mode, true);
-    const related =
-      nextValue &&
-      semanticColorsFromEdit(
-        {
-          themeVars,
-          mode,
-          hex: nextValue,
-          context: {
-            page: resolved['--color-theme-bg-primary'],
-            surface: resolved['--color-theme-bg-surface'],
-            text: resolved['--color-theme-text-primary'],
+    onChange(current => {
+      const resolved = appliedTheme(current, mode, true);
+      const related =
+        nextValue &&
+        semanticColorsFromEdit(
+          {
+            themeVars: current,
+            mode,
+            hex: nextValue,
+            context: {
+              page: resolved['--color-theme-bg-primary'],
+              surface: resolved['--color-theme-bg-surface'],
+              text: resolved['--color-theme-text-primary'],
+            },
           },
-        },
-        key
-      );
-    if (related) {
-      onChange(related);
-      return;
-    }
-    update(themeStorageKey(mode, key), nextValue);
+          key
+        );
+      if (!related) return storedVar(current, themeStorageKey(mode, key), nextValue);
+      return related;
+    });
   };
 
   const updateChromeModeVar = (
@@ -140,19 +138,19 @@ const ThemeSelector = ({
     key: ChromeOverrideVarKey,
     nextValue: string | undefined
   ) => {
-    if (key === '--color-theme-chrome-app-bar') {
-      onChange(headerColorsFromBar(themeVars, mode, nextValue));
-      return;
-    }
-    if (key === '--color-theme-chrome-settings-rail-bg' && nextValue) {
-      onChange(settingsColorsFromRail(themeVars, mode, nextValue));
-      return;
-    }
-    update(themeStorageKey(mode, key), nextValue);
+    onChange(current => {
+      if (key === '--color-theme-chrome-app-bar') {
+        return headerColorsFromBar(current, mode, nextValue);
+      }
+      if (key === '--color-theme-chrome-settings-rail-bg' && nextValue) {
+        return settingsColorsFromRail(current, mode, nextValue);
+      }
+      return storedVar(current, themeStorageKey(mode, key), nextValue);
+    });
   };
 
   const setSimpleChromeBar = (mode: ThemeMode, hex: string | undefined) => {
-    onChange(simpleChromeFromBar(themeVars, mode, hex));
+    onChange(current => simpleChromeFromBar(current, mode, hex));
   };
 
   const handleImportThemeInstanceText = (text: string) => {
@@ -161,17 +159,18 @@ const ThemeSelector = ({
       notify(t('System', 'Theme instance file invalid', null, false), 'error', parsed.error);
       return;
     }
-    const next = themeVarsFromInstanceImport(parsed.flat, parsed.editorMode, parsed.presetId);
+    const next = themeVarsFromInstanceImport(
+      parsed.flat,
+      parsed.editorMode,
+      simpleBaseFromFile(parsed.presetId, parsed.assetPreset)
+    );
     onChange(next);
-    onThemeAssetsChange?.({
-      ...themeAssets,
-      preset: themeAssetPresetFromImport(themeAssets, parsed.presetId),
-    });
+    onThemeAssetsChange?.(themeAssetsFromImport(themeAssets, parsed.presetId, parsed.assetPreset));
     notify(t('System', 'Theme colors imported', null, false), 'success');
   };
 
   const handleSelectPreset = (presetId: (typeof NAMED_THEMES)[number]['id']) => {
-    onChange(selectThemePreset(themeVars, presetId));
+    onChange(current => selectThemePreset(current, presetId));
 
     if (presetId === 'default' || presetId === 'legacy') {
       onThemeAssetsChange?.(themeAssetsForPreset(themeAssets, presetId));

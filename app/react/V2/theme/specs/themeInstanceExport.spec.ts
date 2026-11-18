@@ -111,9 +111,20 @@ describe('buildThemeInstanceExport', () => {
 });
 
 describe('theme instance id', () => {
-  it('uses the legacy logo preset when the active colors are Uwazi Design', () => {
-    const file = buildThemeInstanceExport({ __preset: 'default' }, 'legacy');
-    expect(file).toContain('"id": "legacy"');
+  it('keeps the color preset when the logos belong to the other preset', () => {
+    expect(buildThemeInstanceExport({ __preset: 'legacy' }, 'default')).toContain('"id": "legacy"');
+    expect(buildThemeInstanceExport({ __preset: 'custom' }, 'default')).toContain('"id": "custom"');
+  });
+
+  it('records a legacy logo preset next to a default color base', () => {
+    const file = buildThemeInstanceExport(
+      { __preset: 'custom', __themeSimpleBase: 'default' },
+      'legacy'
+    );
+    expect(file).toContain('"id": "default"');
+    expect(file).toContain('"assetPreset": "legacy"');
+    const parsed = parseThemeInstanceImportText(file);
+    expect('assetPreset' in parsed && parsed.assetPreset).toBe('legacy');
   });
 });
 

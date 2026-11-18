@@ -63,23 +63,19 @@ const elementFromEventTarget = (target: EventTarget) => {
   return null;
 };
 
+type ThemeVars = Record<string, string | undefined>;
+
+type ThemeVarsChange = (value: ThemeVars | ((current: ThemeVars) => ThemeVars)) => void;
+
 type RevealArgs = {
   editorMode: 'simple' | 'advanced';
   open: boolean;
   setOpen: (open: boolean) => void;
   previewMode: string;
-  themeVars: Record<string, string | undefined>;
-  onChange: (value: Record<string, string | undefined>) => void;
+  onChange: ThemeVarsChange;
 };
 
-const useRevealThemeToken = ({
-  editorMode,
-  open,
-  setOpen,
-  previewMode,
-  themeVars,
-  onChange,
-}: RevealArgs) => {
+const useRevealThemeToken = ({ editorMode, open, setOpen, previewMode, onChange }: RevealArgs) => {
   const [focusToken, setFocusToken] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -89,13 +85,13 @@ const useRevealThemeToken = ({
       if (typeof token !== 'string') return;
       setOpen(true);
       if (tokenNeedsFullMode(token) && editorMode === 'simple') {
-        onChange({ ...themeVars, [THEME_EDITOR_MODE_KEY]: 'advanced' });
+        onChange(current => ({ ...current, [THEME_EDITOR_MODE_KEY]: 'advanced' }));
       }
       setFocusToken(token);
     };
     document.addEventListener('uwazi-theme-token', onToken);
     return () => document.removeEventListener('uwazi-theme-token', onToken);
-  }, [editorMode, onChange, setOpen, themeVars]);
+  }, [editorMode, onChange, setOpen]);
 
   React.useLayoutEffect(() => {
     if (!focusToken || !open) return;
@@ -113,3 +109,4 @@ export {
   tokenNeedsFullMode,
   useRevealThemeToken,
 };
+export type { ThemeVarsChange };

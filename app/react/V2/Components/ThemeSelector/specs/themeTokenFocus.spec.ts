@@ -1,12 +1,15 @@
 /**
  * @jest-environment jsdom
  */
+import { act, renderHook } from '@testing-library/react';
 import {
   focusThemeTokenRow,
   tokenForPaintedColor,
   tokenFromHit,
   tokenFromPreviewClick,
   tokenNeedsFullMode,
+  useRevealThemeToken,
+  type ThemeVarsChange,
 } from '../themeTokenFocus.js';
 
 describe('themeTokenFocus', () => {
@@ -62,5 +65,34 @@ describe('themeTokenFocus', () => {
     if (row) row.scrollIntoView = () => undefined;
     expect(focusThemeTokenRow('--color-theme-bg-muted')).toBe(true);
     expect(document.activeElement).toBe(button);
+  });
+});
+
+describe('useRevealThemeToken', () => {
+  it('adds full mode on top of the latest theme vars', () => {
+    let current: Record<string, string | undefined> = {
+      __preset: 'custom',
+      'light:--color-theme-accent-primary': '#111111',
+    };
+    const onChange: ThemeVarsChange = value => {
+      current = typeof value === 'function' ? value(current) : value;
+    };
+    renderHook(() =>
+      useRevealThemeToken({
+        editorMode: 'simple',
+        open: true,
+        setOpen: () => undefined,
+        previewMode: 'light',
+        onChange,
+      })
+    );
+    current = { ...current, 'light:--color-theme-bg-primary': '#ABCDEF' };
+    act(() => {
+      document.dispatchEvent(
+        new CustomEvent('uwazi-theme-token', { detail: '--color-theme-success' })
+      );
+    });
+    expect(current['light:--color-theme-bg-primary']).toBe('#ABCDEF');
+    expect(current.__themeEditorMode).toBe('advanced');
   });
 });

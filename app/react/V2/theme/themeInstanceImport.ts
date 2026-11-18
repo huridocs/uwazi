@@ -1,7 +1,8 @@
 import { SEMANTIC_VAR_KEYS } from './tokens.js';
 import type { SemanticVarKey, ThemeMode, ThemePresetId } from './tokens.js';
 import { isValidHex, normalizeHex } from './themePaletteSort.js';
-import { appliedTheme, THEME_PRESET_KEY } from './themes.js';
+import { settingsColorsFromRail } from './relatedColorSuggestions.js';
+import { appliedTheme, THEME_PRESET_KEY, type ThemeAssetPresetId } from './themes.js';
 import {
   recomputeSimpleThemeVarsFromAnchors,
   THEME_EDITOR_MODE_KEY,
@@ -14,6 +15,15 @@ import {
 } from './themeChromeOverrides.js';
 
 const storageKey = (mode: ThemeMode, key: string) => `${mode}:${key}`;
+
+const SETTINGS_RAIL = '--color-theme-chrome-settings-rail-bg';
+const SETTINGS_ACTIVE = '--color-theme-chrome-settings-nav-item-active-bg';
+const SIMPLE_DERIVED_KEYS = [
+  '--color-theme-bg-muted',
+  '--color-theme-text-secondary',
+  '--color-theme-text-tertiary',
+  '--color-theme-text-muted',
+];
 
 type ThemeInstanceFile = {
   id?: string;
@@ -78,7 +88,13 @@ const flattenChromeMode = (
   mode: ThemeMode,
   vars: Partial<Record<ChromeOverrideVarKey, string>>
 ) => {
-  const filled = fillChromeImportDefaults(vars);
+  const filled = { ...fillChromeImportDefaults(vars) };
+  const rail = filled[SETTINGS_RAIL];
+  if (rail && !filled[SETTINGS_ACTIVE]) {
+    filled[SETTINGS_ACTIVE] = settingsColorsFromRail({}, mode, rail)[
+      storageKey(mode, SETTINGS_ACTIVE)
+    ];
+  }
   const out: Record<string, string> = {};
   CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
     const value = filled[key];
@@ -116,10 +132,18 @@ const editorModeOf = (value: unknown): 'simple' | 'advanced' =>
 const presetIdOf = (value: unknown): ThemePresetId | undefined =>
   value === 'legacy' || value === 'default' || value === 'custom' ? value : undefined;
 
+const assetPresetOf = (value: unknown): ThemeAssetPresetId | undefined =>
+  value === 'legacy' || value === 'default' ? value : undefined;
+
 const parseThemeInstanceImportJson = (
   raw: unknown
 ):
-  | { flat: Record<string, string>; editorMode: 'simple' | 'advanced'; presetId?: ThemePresetId }
+  | {
+      flat: Record<string, string>;
+      editorMode: 'simple' | 'advanced';
+      presetId?: ThemePresetId;
+      assetPreset?: ThemeAssetPresetId;
+    }
   | { error: string } => {
   if (!isRecord(raw)) return { error: 'invalid file' };
   const flat: Record<string, string> = {};
@@ -129,7 +153,12 @@ const parseThemeInstanceImportJson = (
   const chromeError = absorbPair(chrome?.light, chrome?.dark, flat);
   if (chromeError) return { error: chromeError };
   if (Object.keys(flat).length === 0) return { error: 'empty theme' };
-  return { flat, editorMode: editorModeOf(raw.editorMode), presetId: presetIdOf(raw.id) };
+  return {
+    flat,
+    editorMode: editorModeOf(raw.editorMode),
+    presetId: presetIdOf(raw.id),
+    assetPreset: assetPresetOf(raw.assetPreset),
+  };
 };
 
 const stripHashComments = (text: string) =>
@@ -142,6 +171,14 @@ const parseThemeInstanceImportText = (text: string) => {
   } catch {
     return { error: 'invalid file' };
   }
+};
+
+const simpleBaseFromFile = (
+  presetId: ThemePresetId | undefined,
+  assetPreset?: ThemeAssetPresetId
+) => {
+  if (presetId === 'legacy' || presetId === 'default') return presetId;
+  return assetPreset === 'legacy' ? 'legacy' : 'default';
 };
 
 const themeVarsFromInstanceImport = (
@@ -157,13 +194,23 @@ const themeVarsFromInstanceImport = (
     [THEME_SIMPLE_BASE_KEY]: basePreset,
   };
   if (editorMode !== 'simple') return base;
+  const kept = Object.fromEntries(
+    Object.entries(flat).filter(
+      ([key]) => !SIMPLE_DERIVED_KEYS.some(derived => key.endsWith(derived))
+    )
+  );
   return {
     ...recomputeSimpleThemeVarsFromAnchors(base, basePreset, themeMode =>
       appliedTheme({ ...base, [THEME_PRESET_KEY]: basePreset }, themeMode, true)
     ),
-    ...flat,
+    ...kept,
   };
 };
 
-export { parseThemeInstanceImportJson, parseThemeInstanceImportText, themeVarsFromInstanceImport };
+export {
+  parseThemeInstanceImportJson,
+  parseThemeInstanceImportText,
+  themeVarsFromInstanceImport,
+  simpleBaseFromFile,
+};
 export type { ThemeInstanceFile };

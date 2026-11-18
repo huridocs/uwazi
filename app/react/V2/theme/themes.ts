@@ -211,11 +211,14 @@ const getThemeAssetPresetId = (
 
 const themeAssetPresetFromImport = (
   themeAssets: ThemeAssets | undefined,
-  presetId: ThemePresetId | undefined
-): ThemeAssetPresetId =>
-  presetId === 'legacy' || presetId === 'default'
+  presetId: ThemePresetId | undefined,
+  fileAssetPreset?: ThemeAssetPresetId
+): ThemeAssetPresetId => {
+  if (fileAssetPreset === 'legacy' || fileAssetPreset === 'default') return fileAssetPreset;
+  return presetId === 'legacy' || presetId === 'default'
     ? presetId
     : getThemeAssetPresetId(themeAssets, undefined, true);
+};
 
 /* eslint-disable max-params -- theme asset lookup mirrors preset API surface */
 const getThemeAsset = (
@@ -259,6 +262,18 @@ const themeAssetsForPreset = (
   },
 });
 /* eslint-enable max-params */
+
+const themeAssetsFromImport = (
+  themeAssets: ThemeAssets | undefined,
+  presetId: ThemePresetId | undefined,
+  fileAssetPreset?: ThemeAssetPresetId
+): ThemeAssets => {
+  const preset = themeAssetPresetFromImport(themeAssets, presetId, fileAssetPreset);
+  if (getThemeAssetPresetId(themeAssets, undefined, true) === preset) {
+    return { ...themeAssets, preset };
+  }
+  return { ...themeAssetsForPreset(themeAssets, preset), favicon: {} };
+};
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
   light: { ...PRESET_DEFINITIONS[presetId].sourceModes.light },
@@ -456,6 +471,7 @@ export {
   getPresetId,
   getThemeAssetPresetId,
   themeAssetPresetFromImport,
+  themeAssetsFromImport,
   getThemeAsset,
   themeAssetsForPreset,
   themeStorageKey,
