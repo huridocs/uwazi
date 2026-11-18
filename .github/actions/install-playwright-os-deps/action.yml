@@ -19,6 +19,19 @@ runs:
       run: |
         set -uo pipefail
 
+        clear_apt_locks() {
+          # A timed-out install can leave an orphaned apt-get/dpkg (spawned via
+          # sudo) still holding the lock; kill it and drop stale locks before
+          # retrying, otherwise the retry fails with "Could not get lock".
+          sudo pkill -9 -x apt-get 2>/dev/null || true
+          sudo pkill -9 -x apt 2>/dev/null || true
+          sudo pkill -9 -x dpkg 2>/dev/null || true
+          sleep 2
+          sudo rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock \
+            /var/cache/apt/archives/lock 2>/dev/null || true
+          sudo dpkg --configure -a 2>/dev/null || true
+        }
+
         switch_mirror() {
           local mirror="$1"
           echo "Switching Ubuntu apt mirror to ${mirror}"
@@ -27,15 +40,14 @@ runs:
             /etc/apt/sources.list \
             /etc/apt/sources.list.d/*.list \
             /etc/apt/sources.list.d/*.sources 2>/dev/null || true
-          # Recover from a possibly interrupted dpkg before re-installing.
-          sudo dpkg --configure -a 2>/dev/null || true
           sudo apt-get update -qq
         }
 
         # The fast path takes ~8s. A 3-minute budget means the mirror is
         # throttled, so fall back to the global archive mirror and retry.
         if ! timeout --signal=TERM --kill-after=20 180 ${{ inputs.command }}; then
-          echo "install-deps failed or timed out; retrying with fallback mirror"
+          echo "install failed or timed out; retrying with fallback mirror"
+          clear_apt_locks
           switch_mirror 'http://archive.ubuntu.com/ubuntu'
           timeout --signal=TERM --kill-after=20 300 ${{ inputs.command }}
         fi
