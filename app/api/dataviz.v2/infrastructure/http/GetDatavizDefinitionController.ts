@@ -1,7 +1,9 @@
+import { Authorize } from '#api/core/infrastructure/express/decorators/Authorize.js';
 import { DatavizController } from './DatavizController.js';
 import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 
 class GetDatavizDefinitionController extends DatavizController {
+  @Authorize(['admin'])
   protected async handle(): Promise<void> {
     const useCase = DatavizFactory.getDefinitionUseCase();
     const dataviz = await useCase.execute({ id: this.request.params.id! });

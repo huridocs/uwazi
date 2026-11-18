@@ -15,10 +15,15 @@ const fixtures: DBFixture = {
   usergroups: [factory.usergroup('Existing', [{ refId: factory.idString('existing1') }])],
 };
 
+const admin = { _id: 'admin', role: UserRole.ADMIN, username: 'admin' };
+let currentUser: Request['user'] | undefined = admin;
+
 const app: Application = setUpApp(
   userGroupsRoutes,
   (req: Request, _res: Response, next: NextFunction) => {
-    req.user = { _id: 'admin', role: 'admin', username: 'admin' };
+    if (currentUser) {
+      req.user = currentUser;
+    }
     next();
   }
 );
@@ -29,6 +34,7 @@ describe('userGroupsRoutes', () => {
   });
 
   afterEach(async () => {
+    currentUser = admin;
     await testingEnvironment.setFixtures(fixtures);
   });
 
@@ -46,6 +52,18 @@ describe('userGroupsRoutes', () => {
         members: [{ refId: factory.idString('existing1'), username: 'existing1' }],
       },
     ]);
+  });
+
+  it.each([
+    { role: 'anonymous', user: undefined },
+    { role: 'editor', user: { _id: 'editor', role: UserRole.EDITOR, username: 'editor' } },
+  ])('GET should reject $role users', async ({ user }) => {
+    currentUser = user;
+
+    const response = await request(app).get('/api/usergroups');
+
+    expect(response).toHaveStatus(401);
+    expect(response.body).toEqual({ error: 'Unauthorized', message: 'Unauthorized' });
   });
 
   it('POST without _id should create via CreateUserGroupController', async () => {
