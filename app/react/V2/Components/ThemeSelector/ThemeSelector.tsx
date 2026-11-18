@@ -48,34 +48,19 @@ const storedVar = (current: ThemeVars, key: string, nextValue: string | undefine
   return next;
 };
 
-type ThemeSelectorProps = {
-  value: Record<string, string | undefined>;
-  onChange: ThemeVarsChange;
-  themeAssets?: ThemeAssets;
-  onThemeAssetsChange?: (value: ThemeAssets) => void;
-  siteLogo?: string | undefined;
-  siteName?: string;
-  favicon?: string | undefined;
-  panelOpen?: boolean;
-  children?: React.ReactNode;
-};
-
-const ThemeSelector = ({
-  value,
-  onChange,
+const useThemePreview = ({
+  themeVars,
+  previewMode,
   themeAssets,
-  onThemeAssetsChange,
   siteLogo,
-  siteName,
   favicon,
-  panelOpen,
-  children,
-}: ThemeSelectorProps) => {
-  const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
-  const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
-  const selectedPreset = getPresetId(themeVars, true);
-  const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
-  const wasPanelOpen = React.useRef(false);
+}: {
+  themeVars: ThemeVars;
+  previewMode: ThemeMode;
+  themeAssets?: ThemeAssets;
+  siteLogo?: string;
+  favicon?: string;
+}) => {
   const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
   const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
   const resolvedPreviewTheme = React.useMemo(
@@ -109,7 +94,20 @@ const ThemeSelector = ({
       ),
     [themeVars, resolvedMergedPreview]
   );
+  return { previewLogo, previewFavicon, resolvedPreviewTheme, resolvedMergedPreview, colorOptions };
+};
 
+const useThemeEdits = ({
+  onChange,
+  themeAssets,
+  onThemeAssetsChange,
+  themeVars,
+}: {
+  onChange: ThemeVarsChange;
+  themeAssets?: ThemeAssets;
+  onThemeAssetsChange?: (value: ThemeAssets) => void;
+  themeVars: ThemeVars;
+}) => {
   const updateModeVar = (mode: ThemeMode, key: SemanticVarKey, nextValue: string | undefined) => {
     onChange(current => {
       const resolved = appliedTheme(current, mode, true);
@@ -183,6 +181,53 @@ const ThemeSelector = ({
       });
     }
   };
+
+  return {
+    updateModeVar,
+    updateChromeModeVar,
+    setSimpleChromeBar,
+    handleImportThemeInstanceText,
+    handleSelectPreset,
+  };
+};
+
+type ThemeSelectorProps = {
+  value: Record<string, string | undefined>;
+  onChange: ThemeVarsChange;
+  themeAssets?: ThemeAssets;
+  onThemeAssetsChange?: (value: ThemeAssets) => void;
+  siteLogo?: string | undefined;
+  siteName?: string;
+  favicon?: string | undefined;
+  panelOpen?: boolean;
+  children?: React.ReactNode;
+};
+
+const ThemeSelector = ({
+  value,
+  onChange,
+  themeAssets,
+  onThemeAssetsChange,
+  siteLogo,
+  siteName,
+  favicon,
+  panelOpen,
+  children,
+}: ThemeSelectorProps) => {
+  const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
+  const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
+  const selectedPreset = getPresetId(themeVars, true);
+  const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
+  const wasPanelOpen = React.useRef(false);
+  const { previewLogo, previewFavicon, resolvedPreviewTheme, resolvedMergedPreview, colorOptions } =
+    useThemePreview({ themeVars, previewMode, themeAssets, siteLogo, favicon });
+  const {
+    updateModeVar,
+    updateChromeModeVar,
+    setSimpleChromeBar,
+    handleImportThemeInstanceText,
+    handleSelectPreset,
+  } = useThemeEdits({ onChange, themeAssets, onThemeAssetsChange, themeVars });
 
   React.useEffect(() => {
     setPreviewMode(activeThemeMode);
