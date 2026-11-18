@@ -1,0 +1,40 @@
+name: Install Playwright OS deps
+description: >-
+  Installs Chromium's OS dependencies with a fallback Ubuntu mirror and one
+  retry. GitHub's default in-region EC2 apt mirror is occasionally throttled
+  to ~100 kB/s, which turns this normally ~8s step into 5-8 minutes.
+
+inputs:
+  command:
+    description: Command that installs the OS dependencies
+    required: false
+    default: npx playwright install-deps chromium
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install with mirror fallback
+      shell: bash
+      run: |
+        set -uo pipefail
+
+        switch_mirror() {
+          local mirror="$1"
+          echo "Switching Ubuntu apt mirror to ${mirror}"
+          sudo sed -i -E "s#https?://[a-z0-9.-]*\.archive\.ubuntu\.com/ubuntu#${mirror}#g" \
+            /etc/apt/apt-mirrors.txt \
+            /etc/apt/sources.list \
+            /etc/apt/sources.list.d/*.list \
+            /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          # Recover from a possibly interrupted dpkg before re-installing.
+          sudo dpkg --configure -a 2>/dev/null || true
+          sudo apt-get update -qq
+        }
+
+        # The fast path takes ~8s. A 3-minute budget means the mirror is
+        # throttled, so fall back to the global archive mirror and retry.
+        if ! timeout --signal=TERM --kill-after=20 180 ${{ inputs.command }}; then
+          echo "install-deps failed or timed out; retrying with fallback mirror"
+          switch_mirror 'http://archive.ubuntu.com/ubuntu'
+          timeout --signal=TERM --kill-after=20 300 ${{ inputs.command }}
+        fi
