@@ -10,7 +10,11 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from '#api/config.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContent,FileStorage,FileLocation } from '../../application/contracts/FileStorage.js';
+import {
+  FileWithContent,
+  FileStorage,
+  FileLocation,
+} from '../../application/contracts/FileStorage.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
