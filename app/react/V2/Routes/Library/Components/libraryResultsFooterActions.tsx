@@ -1,4 +1,4 @@
-import React, { type ReactNode, type RefObject } from 'react';
+import React, { type RefObject } from 'react';
 import {
   PlusIcon,
   ArrowDownTrayIcon,
@@ -50,7 +50,7 @@ const renderMenuActionItems = ({
   onExportCsv,
   pdfInputRef,
   onItemChosen,
-}: Omit<ActionItemsProps, 'variant'>): ReactNode => {
+}: Omit<ActionItemsProps, 'variant'>) => {
   const run = (action?: () => void) => {
     onItemChosen?.();
     action?.();
@@ -109,7 +109,7 @@ const renderBarActionItems = ({
   onCreateEntity,
   onExportCsv,
   pdfInputRef,
-}: Omit<ActionItemsProps, 'variant' | 'onItemChosen'>): ReactNode => (
+}: Omit<ActionItemsProps, 'variant' | 'onItemChosen'>) => (
   <>
     <NeedAuthorization roles={editorRoles}>
       <LibraryFooterButton icon={<PlusIcon className={iconClassName} />} onClick={onCreateEntity}>
@@ -136,7 +136,7 @@ const renderBarActionItems = ({
   </>
 );
 
-const renderActionItems = ({ variant, ...props }: ActionItemsProps): ReactNode =>
+const renderActionItems = ({ variant, ...props }: ActionItemsProps) =>
   variant === 'menu' ? renderMenuActionItems(props) : renderBarActionItems(props);
 
 export type { ActionItemsProps, PdfInputProps };

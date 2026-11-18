@@ -5,6 +5,7 @@ import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterMenu } from './LibraryFooterMenu.js';
+import { LibraryFooterTrail } from './LibraryFooterTrail.js';
 import {
   editorRoles,
   iconClassName,
@@ -13,7 +14,6 @@ import {
   renderPdfFileInput,
 } from './libraryResultsFooterActions.js';
 import { DEFAULT_LIBRARY_URL_STATE } from '../libraryUrlState.js';
-import { LibraryPagination } from './LibraryPagination.js';
 import { useLibraryResultsFooterMenus } from './useLibraryResultsFooterMenus.js';
 
 type LibraryResultsFooterProps = {
@@ -28,6 +28,8 @@ type LibraryResultsFooterProps = {
   onPageChange?: (page: number) => void;
   onLimitChange?: (limit: number) => void;
   showPagination?: boolean;
+  pageCount?: number;
+  onSelectPage?: () => void;
 };
 
 const LibraryResultsFooter = ({
@@ -42,27 +44,36 @@ const LibraryResultsFooter = ({
   onPageChange = () => undefined,
   onLimitChange = () => undefined,
   showPagination = true,
+  pageCount = 0,
+  onSelectPage,
 }: LibraryResultsFooterProps) => {
   const isMobile = useIsMobile() === true;
   const menus = useLibraryResultsFooterMenus();
-  const pagination = showPagination ? (
-    <LibraryPagination
+  const trail = (
+    <LibraryFooterTrail
+      pin
       compact={isMobile}
       page={page}
       limit={limit}
       total={total}
       onPageChange={onPageChange}
       onLimitChange={onLimitChange}
+      showPagination={showPagination}
+      pageCount={pageCount}
+      onSelectPage={onSelectPage}
     />
-  ) : null;
+  );
 
   if (!isMobile) {
     return (
       <div
-        className="flex h-12 shrink-0 items-center justify-between gap-2 border-t border-border bg-paper px-3"
+        className="flex h-12 shrink-0 items-center gap-2 overflow-hidden border-t border-border bg-paper px-3"
         data-testid="library-results-footer"
       >
-        <div data-testid="library-results-actions" className="flex min-w-0 items-center gap-2">
+        <div
+          data-testid="library-results-actions"
+          className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto"
+        >
           {renderActionItems({
             variant: 'bar',
             onCreateEntity,
@@ -73,14 +84,14 @@ const LibraryResultsFooter = ({
             {renderPdfFileInput({ inputRef: menus.pdfInputRef, onUploadPdf })}
           </NeedAuthorization>
         </div>
-        {pagination}
+        {trail}
       </div>
     );
   }
 
   return (
     <div
-      className="flex h-12 shrink-0 items-center justify-between gap-2 border-t border-border bg-paper px-3"
+      className="flex h-12 shrink-0 items-center gap-2 border-t border-border bg-paper px-3"
       data-testid="library-results-footer"
     >
       <NeedAuthorization roles={editorRoles}>
@@ -117,7 +128,6 @@ const LibraryResultsFooter = ({
           })}
         </LibraryFooterMenu>
       </div>
-      {pagination}
       <button
         ref={menus.panesRef}
         type="button"
@@ -161,6 +171,7 @@ const LibraryResultsFooter = ({
           <Translate>Results</Translate>
         </button>
       </LibraryFooterMenu>
+      {trail}
     </div>
   );
 };

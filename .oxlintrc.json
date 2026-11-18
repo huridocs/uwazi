@@ -297,6 +297,66 @@
               {
                 "group": ["**/packages/activitylog/**", "#activitylog/**"],
                 "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client'; '#api-client/server' is only for the SSR entry points (app/react/server.ts, app/react/entry-server.tsx, app/react/V2/services/server/**)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "app/react/server.ts",
+        "app/react/entry-server.tsx",
+        "app/react/V2/services/server/**/*.{ts,tsx,js,jsx}"
+      ],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "fs",
+                "message": "Please use { storage } from api/files"
+              },
+              {
+                "name": "fs/promises",
+                "message": "Please use { storage } from api/files"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              },
+              {
+                "group": ["**/packages/segmentation/**", "#segmentation/**"],
+                "message": "The segmentation package is private. Import its public contract from '#segmentation'."
+              },
+              {
+                "group": ["**/packages/ocr/**", "#ocr/**"],
+                "message": "The OCR package is private. Import its public contract from '#ocr'."
+              },
+              {
+                "group": ["**/packages/usage/**", "#usage/**"],
+                "message": "The usage package is private. Import its public contract from '#usage'."
+              },
+              {
+                "group": ["**/packages/activitylog/**", "#activitylog/**"],
+                "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**", "!#api-client/server"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client', or the server client from '#api-client/server'."
               }
             ]
           }
@@ -357,6 +417,11 @@
                   "!#activitylog/composition"
                 ],
                 "message": "The activitylog package is private. Import its public contract from '#activitylog', or its host wiring from '#activitylog/composition'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client'."
               }
             ]
           }
@@ -469,6 +534,11 @@
               {
                 "group": ["**/packages/activitylog/**", "#activitylog/**"],
                 "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client'; '#api-client/server' is only for the SSR entry points (app/react/server.ts, app/react/entry-server.tsx, app/react/V2/services/server/**)."
               }
             ]
           }
@@ -501,6 +571,11 @@
               {
                 "group": ["**/packages/activitylog/**", "#activitylog/**"],
                 "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client'; '#api-client/server' is only for the SSR entry points (app/react/server.ts, app/react/entry-server.tsx, app/react/V2/services/server/**)."
               }
             ]
           }
@@ -595,6 +670,11 @@
               {
                 "group": ["**/packages/activitylog/**", "#activitylog/**"],
                 "message": "The activitylog package is private. Import its public contract from '#activitylog'."
+              },
+              {
+                "group": ["**/packages/api-client/**", "#api-client/**"],
+                "allowTypeImports": true,
+                "message": "The api-client package is private. Import its public contract from '#api-client'; '#api-client/server' is only for the SSR entry points (app/react/server.ts, app/react/entry-server.tsx, app/react/V2/services/server/**)."
               }
             ]
           }

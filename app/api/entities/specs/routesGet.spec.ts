@@ -110,6 +110,15 @@ describe('GET /api/entities', () => {
 
       expect(response.body).toMatchObject({ rows: [] });
     });
+
+    it('should reject an invalid query with a 400', async () => {
+      const response = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'shared', include: JSON.stringify(['unknown']) });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBeDefined();
+    });
   });
 
   describe('Translations inclusion', () => {

@@ -63,6 +63,16 @@ const checkFlagEnabledForRoute = async (
   tenants.current().featureFlags!.paragraphExtraction = true;
 };
 
+let currentUser: typeof user | undefined = user;
+
+const checkAuthorizationForRoute = async (app: Application, route: string) => {
+  currentUser = undefined;
+  const response = await request(app).get(route);
+  expect(response.statusCode).toBe(401);
+  expect(response.body).toEqual({ error: 'Unauthorized', message: 'Unauthorized' });
+  currentUser = user;
+};
+
 const checkValidationForRoute = async (
   app: Application,
   method: 'get' | 'post' | 'delete',
@@ -81,7 +91,7 @@ const checkValidationForRoute = async (
 
 describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)', () => {
   const app: Application = setUpApp(paragraphExtractionRoutes, (req, _res, next) => {
-    (req as any).user = user;
+    (req as any).user = currentUser;
     next();
   });
 
@@ -223,6 +233,10 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
   });
 
   describe('GET /api/paragraphExtraction/extractors', () => {
+    it('should require an admin or editor', async () => {
+      await checkAuthorizationForRoute(app, '/api/paragraphExtraction/extractors');
+    });
+
     it('should require the feature flag enabled', async () => {
       await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractors');
     });
@@ -239,6 +253,10 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
   });
 
   describe('GET /api/paragraphExtraction/extractorStatuses', () => {
+    it('should require an admin or editor', async () => {
+      await checkAuthorizationForRoute(app, '/api/paragraphExtraction/extractorStatuses');
+    });
+
     it('should require the feature flag enabled', async () => {
       await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractorStatuses');
     });
@@ -284,6 +302,10 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
   });
 
   describe('GET /api/paragraphExtraction/entityParagraphs', () => {
+    it('should require an admin or editor', async () => {
+      await checkAuthorizationForRoute(app, '/api/paragraphExtraction/entityParagraphs');
+    });
+
     it('should require the feature flag enabled', async () => {
       await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/entityParagraphs');
     });
