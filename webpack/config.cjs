@@ -111,9 +111,25 @@ module.exports = production => {
           exclude: /node_modules/,
           use: [
             {
-              loader: 'babel-loader?cacheDirectory',
+              loader: 'swc-loader',
               options: {
-                sourceMap: process.env.BABEL_ENV === 'debug',
+                sourceMaps: process.env.BABEL_ENV === 'debug',
+                jsc: {
+                  parser: {
+                    syntax: 'typescript',
+                    tsx: true,
+                    decorators: true,
+                    dynamicImport: true,
+                  },
+                  transform: {
+                    react: {
+                      runtime: 'classic',
+                    },
+                    legacyDecorator: true,
+                  },
+                  target: 'es2022',
+                  loose: true,
+                },
               },
             },
           ],

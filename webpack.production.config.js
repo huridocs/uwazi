@@ -1,7 +1,7 @@
 /* eslint-disable */
 import webpack from 'webpack';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import TerserWebpackPlugin from 'terser-webpack-plugin';
+import { SwcMinifyWebpackPlugin } from 'swc-minify-webpack-plugin';
 import configFactory from './webpack/config.cjs';
 
 const production = true;
@@ -22,10 +22,10 @@ config.plugins = config.plugins.filter(Boolean).concat([
 
 config.optimization.minimize = true;
 config.optimization.minimizer = [
-  new CssMinimizerPlugin(),
-  new TerserWebpackPlugin({
-    parallel: true,
+  new CssMinimizerPlugin({
+    minify: CssMinimizerPlugin.lightningCssMinify,
   }),
+  new SwcMinifyWebpackPlugin({ module: true }),
 ];
 
 config.performance = {
