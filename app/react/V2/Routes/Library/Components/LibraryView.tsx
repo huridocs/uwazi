@@ -200,17 +200,19 @@ const LibraryView = ({
             {selectedIds.length > 1 ? (
               <LibraryMultiSelectFooter
                 count={selectedIds.length}
-                loadedIds={orderedIds}
-                selectedIds={selectedIds}
                 onClear={dismissSelection}
-                onSelectLoaded={() =>
-                  onSelectedIdsChange([...new Set([...selectedIds, ...orderedIds])])
-                }
-                onDeselectLoaded={() => {
-                  const loaded = new Set(orderedIds);
-                  onSelectedIdsChange(selectedIds.filter(id => !loaded.has(id)));
-                }}
                 onAction={onAction}
+                page={page}
+                limit={limit}
+                total={totalRows}
+                showPagination={view !== 'map'}
+                onPageChange={onPageChange}
+                onLimitChange={onLimitChange}
+                pageCount={orderedIds.length}
+                onSelectPage={() => {
+                  beginSelection();
+                  onSelectedIdsChange([...orderedIds]);
+                }}
               />
             ) : (
               <LibraryResultsFooter
@@ -228,6 +230,11 @@ const LibraryView = ({
                 showPagination={view !== 'map'}
                 onPageChange={onPageChange}
                 onLimitChange={onLimitChange}
+                pageCount={orderedIds.length}
+                onSelectPage={() => {
+                  beginSelection();
+                  onSelectedIdsChange([...orderedIds]);
+                }}
               />
             )}
           </div>

@@ -15,6 +15,8 @@ module.exports = {
   },
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy',
+    '^#api-client$': '<rootDir>/../packages/api-client/index',
+    '^#api-client/server$': '<rootDir>/../packages/api-client/server.browser',
     '^#app/(.*)\\.js$': '<rootDir>/react/$1',
     '^#app/(.*)': '<rootDir>/react/$1',
     '^#V2/(.*)\\.js$': '<rootDir>/react/V2/$1',

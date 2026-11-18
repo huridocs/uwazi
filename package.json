@@ -29,6 +29,11 @@
     "#activitylog/composition": "./packages/activitylog/composition.js",
     "#usage": "./packages/usage/index.js",
     "#usage/composition": "./packages/usage/composition.js",
+    "#api-client": "./packages/api-client/index.js",
+    "#api-client/server": {
+      "browser": "./packages/api-client/server.browser.js",
+      "default": "./packages/api-client/server.js"
+    },
     "#shared": "./app/shared/index.js",
     "#shared/*": "./app/shared/*",
     "#app": "./app/react/index.js",

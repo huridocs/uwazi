@@ -14,9 +14,9 @@ import { PreviewDatavizController } from './PreviewDatavizController.js';
 export default (app: Application) => {
   app.get('/embed/dataviz/:id', DatavizEmbedHtmlController.createHandler());
 
-  app.get('/api/dataviz', needsAuthorization(), ListDatavizController.createHandler());
+  app.get('/api/dataviz', ListDatavizController.createHandler());
   app.post('/api/dataviz', needsAuthorization(['admin']), CreateDatavizController.createHandler());
-  app.get('/api/dataviz/:id', needsAuthorization(), GetDatavizDefinitionController.createHandler());
+  app.get('/api/dataviz/:id', GetDatavizDefinitionController.createHandler());
   app.put(
     '/api/dataviz/:id',
     needsAuthorization(['admin']),

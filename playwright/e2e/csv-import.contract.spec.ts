@@ -34,7 +34,9 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
   await test.step('Login and open CSV import page', async () => {
     await loginAsAdmin(page);
     await gotoWithRetry('/settings/csv', page);
-    await expect(page.getByText('Import CSV or ZIP files to create entities in bulk.')).toBeVisible();
+    await expect(
+      page.getByText('Import CSV or ZIP files to create entities in bulk.')
+    ).toBeVisible();
   });
 
   const importedTitles = [
@@ -54,6 +56,10 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
       buffer: Buffer.from(csvContent, 'utf8'),
     });
     await expect(modal.getByText('contract-import.csv')).toBeVisible();
+    const templateSelect = modal.getByRole('combobox', { name: 'Template' });
+    await expect(templateSelect).toHaveValue('');
+    await expect(modal.getByRole('button', { name: 'Accept' })).toBeDisabled();
+    await templateSelect.selectOption({ label: 'Document' });
     const importResponsePromise = page.waitForResponse(
       response =>
         response.url().includes('/api/csvImportEntities') &&
@@ -68,7 +74,13 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
   let matchedStatus: string | undefined;
   for (let attempt = 0; attempt < 30; attempt += 1) {
     for (const status of terminalStatuses) {
-      if (await page.getByRole('cell', { name: status }).first().isVisible().catch(() => false)) {
+      if (
+        await page
+          .getByRole('cell', { name: status })
+          .first()
+          .isVisible()
+          .catch(() => false)
+      ) {
         matchedStatus = status;
         break;
       }
@@ -83,7 +95,7 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
     expect(matchedStatus).toBe('Done creating entities');
     await expect(page.getByRole('cell', { name: 'View' }).first()).toBeVisible();
     await gotoWithRetry(
-      "/library/?q=(allAggregations:!f,includeUnpublished:!t,order:desc,sort:creationDate,treatAs:number,unpublished:!f)",
+      '/library/?q=(allAggregations:!f,includeUnpublished:!t,order:desc,sort:creationDate,treatAs:number,unpublished:!f)',
       page
     );
     const searchInput = page.locator(
@@ -109,7 +121,10 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
         }
         await page.waitForTimeout(500);
       }
-      expect(found, `Expected imported entity with title "${title}" to be searchable in library`).toBeTruthy();
+      expect(
+        found,
+        `Expected imported entity with title "${title}" to be searchable in library`
+      ).toBeTruthy();
     }
   });
 });
