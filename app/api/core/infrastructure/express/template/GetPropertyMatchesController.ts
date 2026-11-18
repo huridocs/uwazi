@@ -3,10 +3,7 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { CorePropertyTypeSchema } from '#api/core/application/TemplateDTOs.js';
 import { Authorize } from '#api/core/infrastructure/express/decorators/Authorize.js';
 import { TemplatesQueryServiceFactory } from '#api/core/infrastructure/factories/TemplatesQueryServiceFactory.js';
-import type {
-  PropertyCandidate,
-  PropertyMatchesReadModel,
-} from '#api/core/infrastructure/template/TemplatesQueryService.js';
+import type { PropertyCandidate } from '#api/core/infrastructure/template/TemplatesQueryService.js';
 import type { GetPropertyMatchesResponse } from '#shared/contracts/Template.js';
 
 const RequestSchema = z
@@ -31,11 +28,12 @@ class GetPropertyMatchesController extends AbstractController {
   protected async handle(): Promise<void> {
     const query = RequestSchema.parse(this.request.query);
 
-    const result = await TemplatesQueryServiceFactory.default().getPropertyMatches(
-      GetPropertyMatchesController.toCandidate(query)
-    );
+    const response: GetPropertyMatchesResponse =
+      await TemplatesQueryServiceFactory.default().getPropertyMatches(
+        GetPropertyMatchesController.toCandidate(query)
+      );
 
-    this.response.json(GetPropertyMatchesController.toResponse(result));
+    this.response.json(response);
   }
 
   private static toCandidate({
@@ -47,13 +45,6 @@ class GetPropertyMatchesController extends AbstractController {
       ...candidate,
       ...(inheritProperty &&
         inheritType && { inherit: { property: inheritProperty, type: inheritType } }),
-    };
-  }
-
-  private static toResponse(result: PropertyMatchesReadModel): GetPropertyMatchesResponse {
-    return {
-      name: result.name,
-      matches: result.matches.map(match => ({ ...match })),
     };
   }
 }
