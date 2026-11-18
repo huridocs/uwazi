@@ -29,7 +29,7 @@ export const userRoutes = (app: Application) => {
     validatePasswordMiddleWare,
     DeleteUserController.createHandler()
   );
-  app.get('/api/users', needsAuthorization(), GetUsersController.createHandler());
+  app.get('/api/users', GetUsersController.createHandler());
 
   app.post(
     '/api/users/unlock',

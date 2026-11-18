@@ -1,10 +1,30 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { ValidateRequest } from '#api/core/infrastructure/express/decorators/ValidateRequest.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { z } from 'zod';
 import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
+
+const GetEntityRequestSchema = {
+  type: 'object',
+  properties: {
+    query: {
+      type: 'object',
+      properties: {
+        sharedId: { type: 'string' },
+        _id: { type: 'string' },
+        omitRelationships: { type: 'boolean' },
+        includeMetadataRelationships: { type: 'boolean' },
+        include: {
+          type: 'array',
+          items: { type: 'string', enum: ['permissions', 'translations'] },
+        },
+      },
+    },
+  },
+};
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -23,6 +43,7 @@ const GetEntityQuerySchema = z.object({
 type GetEntityQuery = z.infer<typeof GetEntityQuerySchema>;
 
 class GetEntityController extends AbstractController<any> {
+  @ValidateRequest(GetEntityRequestSchema)
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     const logger = LoggerFactory.default();

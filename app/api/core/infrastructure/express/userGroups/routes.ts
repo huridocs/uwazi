@@ -18,11 +18,7 @@ const userGroupsRoutes = (app: Application) => {
     }
   );
 
-  app.get(
-    '/api/usergroups',
-    needsAuthorization(['admin']),
-    GetUserGroupsController.createHandler()
-  );
+  app.get('/api/usergroups', GetUserGroupsController.createHandler());
 
   app.delete(
     '/api/usergroups',

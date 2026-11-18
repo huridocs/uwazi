@@ -1,12 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
+import { sortAvailableTemplates } from '#V2/Components/Metadata/EntityEditor/functions/sortAvailableTemplates.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { create, CsvImportStatus } from '#V2/api/csv/index.js';
 import { buildTaskLabel } from '../csvImportTaskProgress.js';
 import { statusMessages } from './statusMessages.js';
-import { templatesAtom } from '#V2/atoms/index.js';
+import { localeAtom, templatesAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 
@@ -15,12 +16,30 @@ type DropzoneModalProps = {
   onClose: () => void;
 };
 
+const templateOptions = (templates: { _id: string; name: string }[], locale: string) => [
+  { value: '', label: t('System', 'Select template…', null, false), disabled: true },
+  ...sortAvailableTemplates(
+    templates.map(template => ({
+      searchLabel: t(template._id, template.name, null, false),
+      value: template._id,
+    })),
+    locale
+  ).map(option => ({ value: option.value, label: option.searchLabel })),
+];
+
+const useTemplateOptions = () => {
+  const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom) || 'en';
+
+  return useMemo(() => templateOptions(templates, locale), [locale, templates]);
+};
+
 const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const [fileToUpload, setFileToUpload] = useState<File | undefined>();
   const [progress, setProgress] = useState<number>(0);
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [uploading, setIsUploading] = useState(false);
-  const templates = useAtomValue(templatesAtom);
+  const options = useTemplateOptions();
   const { notify, registerTask } = useRequestStatus();
 
   const onProgress = (completed: number) => {
@@ -30,6 +49,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const handleClose = () => {
     setIsUploading(false);
     setFileToUpload(undefined);
+    setTemplateId(undefined);
     onClose();
   };
 
@@ -52,21 +72,6 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       handleClose();
     }
   };
-
-  const options = useMemo(
-    () =>
-      templates.map(template => ({
-        value: template._id,
-        label: t(template._id, template.name, null, false),
-      })),
-    [templates]
-  );
-
-  useEffect(() => {
-    if (options.length) {
-      setTemplateId(options[0].value);
-    }
-  }, [options]);
 
   return isOpen ? (
     <Modal size="xl">
@@ -98,7 +103,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
             label={<Translate>Template</Translate>}
             options={options}
             onChange={event => setTemplateId(event.target.value)}
-            value={templateId}
+            value={templateId ?? ''}
           />
         </div>
       </Modal.Body>
@@ -117,7 +122,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
           <Button
             className="w-1/2"
             onClick={async () => handleUpload()}
-            disabled={!fileToUpload || uploading}
+            disabled={!fileToUpload || !templateId || uploading}
           >
             {!uploading && <Translate>Accept</Translate>}
             {uploading && (

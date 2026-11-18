@@ -3,6 +3,7 @@ import type { Register } from '../../app/queueRegistry.js';
 import { ScheduleActivityLogArchivesJobFactory } from './infrastructure/factories/ScheduleActivityLogArchivesJobFactory.js';
 import { ActivityLogMiddleware } from './infrastructure/http/ActivityLogMiddleware.js';
 import { ActivityLogRoutes } from './infrastructure/http/ActivityLogRoutes.js';
+import { ListActivityLogController } from './infrastructure/http/ListActivityLogController.js';
 import { ArchiveActivityOverflowJobHandler } from './infrastructure/jobs/ArchiveActivityOverflowJobHandler.js';
 import { ScheduleActivityLogArchivesJob } from './infrastructure/jobs/ScheduleActivityLogArchivesJob.js';
 import { ScheduleActivityLogArchivesJobScheduler } from './infrastructure/jobs/ScheduleActivityLogArchivesJobScheduler.js';
@@ -32,3 +33,5 @@ class ActivityLogComposition {
 }
 
 export { ActivityLogComposition };
+/** For in-process callers (the SSR API client); mount it with the routes' parseQuery semantics. */
+export { ListActivityLogController };
