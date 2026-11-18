@@ -42,12 +42,31 @@ jobs:
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' || github.ref_name == 'testing' }}
       sha: ${{ github.sha }}
 
+  # Stable content address for images: the git tree SHA of the checked-out
+  # commit. It is identical between a PR's merge ref and the merged production
+  # commit (branch protection requires PRs to be up to date), so production can
+  # promote the image the PR already built and tested — no rebuild, no API call.
+  image_tag:
+    name: image_tag
+    runs-on: ubuntu-24.04
+    outputs:
+      tree: ${{ steps.tag.outputs.tree }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compute tree SHA
+        id: tag
+        run: echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: Read package version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
   # Test images only: source + dev deps + client tooling. No production build,
   # so unit tests can start without waiting on webpack.
   build_test_images:
     name: build_test_images
-    needs: precheck
-    if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') }}
+    needs: [precheck, image_tag]
+    if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +90,7 @@ jobs:
           file: Dockerfile
           target: ci
           push: true
-          tags: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache,mode=max,ignore-error=true
 
@@ -81,7 +100,7 @@ jobs:
           context: .
           file: docker/mongo-service.Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}-mongo-ci:tree-${{ needs.image_tag.outputs.tree }}
 
       - name: Build and push MinIO service image
         uses: docker/build-push-action@v6
@@ -89,14 +108,14 @@ jobs:
           context: .
           file: docker/minio-service.Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}-minio-ci:tree-${{ needs.image_tag.outputs.tree }}
 
   # Runtime images: compiled backend/frontend (the slow webpack production
   # build). Runs in parallel with unit tests.
   build_runtime_images:
     name: build_runtime_images
-    needs: precheck
-    if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') }}
+    needs: [precheck, image_tag]
+    if: ${{ needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository || github.actor == 'dependabot[bot]') && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -120,7 +139,7 @@ jobs:
           file: Dockerfile
           target: backend
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:sha-${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:tree-${{ needs.image_tag.outputs.tree }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
             type=registry,ref=${{ env.REGISTRY }}/${{ env.CI_IMAGE }}:cache
@@ -133,7 +152,7 @@ jobs:
           file: Dockerfile
           target: queue-worker
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:sha-${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:tree-${{ needs.image_tag.outputs.tree }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY }}/${{ env.QUEUE_WORKER_IMAGE }}:cache
             type=registry,ref=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:cache
@@ -141,11 +160,11 @@ jobs:
 
   api_unit_tests_shards:
     name: api_unit_tests (shard ${{ matrix.shard }}/4)
-    needs: [precheck, build_test_images]
-    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' }}
+    needs: [precheck, image_tag, build_test_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+      image: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
       options: --ipc=host
     defaults:
       run:
@@ -196,11 +215,11 @@ jobs:
         ports:
           - 5432:5432
       mongo:
-        image: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+        image: ghcr.io/${{ github.repository }}-mongo-ci:tree-${{ needs.image_tag.outputs.tree }}
         ports:
           - 27017:27017
       minio:
-        image: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+        image: ghcr.io/${{ github.repository }}-minio-ci:tree-${{ needs.image_tag.outputs.tree }}
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
@@ -297,11 +316,11 @@ jobs:
 
   app_unit_tests:
     name: app_unit_tests
-    needs: [precheck, build_test_images]
-    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' }}
+    needs: [precheck, image_tag, build_test_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
+      image: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
       options: --ipc=host
     defaults:
       run:
@@ -312,13 +331,13 @@ jobs:
 
   smoke_tests:
     name: smoke_tests
-    needs: [precheck, build_test_images, build_runtime_images]
-    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' && needs.build_runtime_images.result == 'success' }}
+    needs: [precheck, image_tag, build_test_images, build_runtime_images]
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_test_images.result == 'success' && needs.build_runtime_images.result == 'success' && (github.event_name != 'push' || github.ref != 'refs/heads/production') }}
     runs-on: ubuntu-24.04
     env:
-      CI_IMAGE_REF: ghcr.io/${{ github.repository }}-ci:sha-${{ github.sha }}
-      BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}-backend:sha-${{ github.sha }}
-      QUEUE_WORKER_IMAGE_REF: ghcr.io/${{ github.repository }}-queue-worker:sha-${{ github.sha }}
+      CI_IMAGE_REF: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
+      BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+      QUEUE_WORKER_IMAGE_REF: ghcr.io/${{ github.repository }}-queue-worker:tree-${{ needs.image_tag.outputs.tree }}
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -361,11 +380,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       mongo:
-        image: ghcr.io/${{ github.repository }}-mongo-ci:sha-${{ github.sha }}
+        image: ghcr.io/${{ github.repository }}-mongo-ci:tree-${{ needs.image_tag.outputs.tree }}
         ports:
           - 27017:27017
       minio:
-        image: ghcr.io/${{ github.repository }}-minio-ci:sha-${{ github.sha }}
+        image: ghcr.io/${{ github.repository }}-minio-ci:tree-${{ needs.image_tag.outputs.tree }}
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
@@ -497,9 +516,9 @@ jobs:
           docker rm -f uwazi-backend uwazi-queue-worker >/dev/null 2>&1 || true
 
   publish:
-    name: publish_known_good
-    needs: [precheck, build_runtime_images, api_unit_tests_aggregate, app_unit_tests, smoke_tests]
-    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_runtime_images.result == 'success' && needs.api_unit_tests_aggregate.result == 'success' && needs.app_unit_tests.result == 'success' && needs.smoke_tests.result == 'success' && github.ref == 'refs/heads/production' }}
+    name: publish
+    needs: [image_tag]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/production' }}
     runs-on: ubuntu-24.04
     steps:
       - name: Log in to GHCR
@@ -514,17 +533,40 @@ jobs:
 
       - name: Publish known-good tags
         env:
+          TREE: ${{ needs.image_tag.outputs.tree }}
+          VERSION: ${{ needs.image_tag.outputs.version }}
           BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
           QUEUE_WORKER_IMAGE: ${{ env.QUEUE_WORKER_IMAGE }}
           REGISTRY: ${{ env.REGISTRY }}
         run: |
           set -euo pipefail
 
+          # The tree SHA is identical between the PR's merge ref (what PR CI
+          # built and tested) and the merged production commit (branch protection
+          # requires PRs to be up to date). Promote the image the PR already
+          # built instead of rebuilding on production.
+          echo "Promoting images for tree $TREE"
+
+          # Fail before mutating anything:
+          # 1) Both source images must exist.
           for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
-            source="$REGISTRY/$image:sha-$GITHUB_SHA"
-            echo "Promoting $source -> production, latest"
+            docker buildx imagetools inspect "$REGISTRY/$image:tree-$TREE" >/dev/null
+          done
+          # 2) The version tag must not already exist. Version tags are
+          #    immutable: this enforces that package.json was bumped before
+          #    merging (release.sh also fails on duplicate releases).
+          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
+            if docker buildx imagetools inspect "$REGISTRY/$image:$VERSION" >/dev/null 2>&1; then
+              echo "Refusing to publish: $REGISTRY/$image:$VERSION already exists (version not bumped)."
+              exit 1
+            fi
+          done
+
+          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
+            source="$REGISTRY/$image:tree-$TREE"
+            echo "Promoting $source -> latest, $VERSION"
             docker buildx imagetools create \
-              --tag "$REGISTRY/$image:production" \
               --tag "$REGISTRY/$image:latest" \
+              --tag "$REGISTRY/$image:$VERSION" \
               "$source"
           done

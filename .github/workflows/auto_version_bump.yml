@@ -1,0 +1,84 @@
+name: Auto version bump
+
+# Keeps the version committed in the repo: when a PR targeting production still
+# carries the latest released version, bump package.json to the next patch
+# version and push that commit to the PR branch. The merged tree then already
+# has a unique, unreleased version, so production is a pure retag and no build
+# or manual bump is needed.
+#
+# IMPORTANT: the bump is pushed with GH_TOKEN (a PAT), not GITHUB_TOKEN. Pushes
+# made with GITHUB_TOKEN do not trigger new workflow runs, so CI would not
+# rebuild the bumped tree. GH_TOKEN must have `contents: write` on the repo.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [production]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-version-bump-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.draft == false }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Bump version if already released
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          current="$(node -p "require('./package.json').version")"
+          latest="$(gh release list --limit 100 --json tagName,isLatest --jq '[.[] | select(.isLatest == true)][0].tagName // empty')"
+          echo "current=$current latest=${latest:-<none>}"
+
+          # Decide whether to bump. Pure Node, no dependencies needed.
+          next="$(node - "$current" "${latest:-}" <<'EOF'
+          const [current, latest] = process.argv.slice(2);
+          const parts = v => v.split('.').slice(0, 3).map(n => parseInt(n, 10) || 0);
+          if (latest) {
+            const a = parts(current), b = parts(latest);
+            const ahead = a[0] !== b[0] ? a[0] > b[0] : a[1] !== b[1] ? a[1] > b[1] : a[2] > b[2];
+            if (ahead) process.exit(0);
+            console.log(`${b[0]}.${b[1]}.${b[2] + 1}`);
+          }
+          EOF
+          )"
+
+          if [ -z "$next" ]; then
+            echo "Version is ahead of the latest release; nothing to do."
+            exit 0
+          fi
+
+          echo "Bumping $current -> $next"
+          node - "$next" <<'EOF'
+          const fs = require('fs');
+          const next = process.argv[2];
+          const p = fs.readFileSync('package.json', 'utf8');
+          const out = p.replace(/"version"\s*:\s*"[^"]*"/, `"version": "${next}"`);
+          if (out === p) {
+            console.error('version field not found');
+            process.exit(1);
+          }
+          fs.writeFileSync('package.json', out);
+          EOF
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json
+          if git diff --cached --quiet; then
+            echo 'No change to commit.'
+            exit 0
+          fi
+          git commit -m "Bump version to $next"
+          git push origin "HEAD:refs/heads/${{ github.event.pull_request.head.ref }}"
