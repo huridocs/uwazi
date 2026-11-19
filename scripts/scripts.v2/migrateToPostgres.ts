@@ -7,7 +7,13 @@
  *   TENANTS_BACKEND=mongo node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenants
  *
  * --tenant migrates the collections gated by the tenant's active Postgres feature flag
- * (postgresCore).
+ * (postgresCore). The tenant must already be in maintenance, or the run exits 1 without copying.
+ * Backends only see maintenance on their next registry poll, and requests already running keep
+ * writing, so before copying the run watches the tenant's Mongo database and waits until it has
+ * seen no write for --settle-seconds (default: twice TENANTS_POLL_INTERVAL_SECONDS plus 10). If
+ * that does not happen within --settle-timeout seconds (default 300) the run fails. Mongo must be a
+ * replica set: without a change stream the run cannot prove the tenant is quiet and fails. Any
+ * write to the tenant's Mongo database during the copy also fails the run, with exit code 1.
  *
  * --sessions copies the shared-database `sessions` collection into `http_sessions` once,
  * for every tenant. It does not take a tenant and it does not write a tenant column.
@@ -31,123 +37,11 @@ import { config } from '#api/config.js';
 import { AnyMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
 import { runMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/runMigrationConfig.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
-import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
-import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
-import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/RelationshipTypesMigrationConfig.js';
-import { ConnectionsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ConnectionsMigrationConfig.js';
-import { UsersMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UsersMigrationConfig.js';
-import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UserGroupsMigrationConfig.js';
-import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
-import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
-import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
-import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
-import { UpdateLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UpdateLogsMigrationConfig.js';
-import { SyncsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SyncsMigrationConfig.js';
-import { PreserveSyncMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PreserveSyncMigrationConfig.js';
-import { ActivityLogsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ActivityLogsMigrationConfig.js';
-import {
-  PageLocalesMigrationConfig,
-  PageMigrationConfig,
-} from '#api/core/infrastructure/postgresql/migrations/configs/PageMigrationConfig.js';
-import { PageReleaseMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PageReleaseMigrationConfig.js';
-import {
-  IXExtractorsMigrationConfig,
-  IXModelsMigrationConfig,
-  IXSuggestionsMigrationConfig,
-  SegmentationsMigrationConfig,
-  OcrRecordsMigrationConfig,
-} from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
-import { CsvImportsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportsMigrationConfig.js';
-import { CsvImportRowsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRowsMigrationConfig.js';
-import { CsvImportRowErrorsMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRowErrorsMigrationConfig.js';
-import { CsvImportThesauriValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportThesauriValuesMigrationConfig.js';
-import { CsvImportRelationshipPendingValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipPendingValuesMigrationConfig.js';
-import { CsvImportRelationshipValuesMigrationConfig } from '#api/csv.v2/infrastructure/postgresql/migrations/CsvImportRelationshipValuesMigrationConfig.js';
-import { PXExtractorsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXExtractorsMigrationConfig.js';
-import { PXEntitiesStatusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PXEntitiesStatusMigrationConfig.js';
-import { DatavizMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizMigrationConfig.js';
-import { DatavizSnapshotsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/DatavizSnapshotsMigrationConfig.js';
 import { copyHttpSessions } from '#api/core/infrastructure/postgresql/migrations/copyHttpSessions.js';
 import { copyTenants } from '#api/core/infrastructure/postgresql/migrations/copyTenants.js';
 import { copyArchivedTenants } from '#api/core/infrastructure/postgresql/migrations/copyArchivedTenants.js';
-
-const COLLECTIONS: Record<string, AnyMigrationConfig> = {
-  thesauri: ThesaurusMigrationConfig,
-  templates: TemplateMigrationConfig,
-  files: FilesMigrationConfig,
-  relationship_types: RelationshipTypesMigrationConfig,
-  connections: ConnectionsMigrationConfig,
-  users: UsersMigrationConfig,
-  usergroups: UserGroupsMigrationConfig,
-  password_recoveries: PasswordRecoveryMigrationConfig,
-  translations: TranslationsMigrationConfig,
-  entities: EntitiesMigrationConfig,
-  ix_extractors: IXExtractorsMigrationConfig,
-  ix_models: IXModelsMigrationConfig,
-  ix_suggestions: IXSuggestionsMigrationConfig,
-  segmentations: SegmentationsMigrationConfig,
-  ocr_records: OcrRecordsMigrationConfig,
-  settings: SettingsMigrationConfig,
-  updatelogs: UpdateLogsMigrationConfig,
-  syncs: SyncsMigrationConfig,
-  preserve_sync: PreserveSyncMigrationConfig,
-  activitylogs: ActivityLogsMigrationConfig,
-  pages: PageMigrationConfig,
-  // A page's locales are nested in the mongo document, so they are their own pass.
-  page_locales: PageLocalesMigrationConfig,
-  page_releases: PageReleaseMigrationConfig,
-  csv_imports: CsvImportsMigrationConfig,
-  csv_import_rows: CsvImportRowsMigrationConfig,
-  csv_import_row_errors: CsvImportRowErrorsMigrationConfig,
-  csv_import_thesauri_values: CsvImportThesauriValuesMigrationConfig,
-  csv_import_relationships_pending_values: CsvImportRelationshipPendingValuesMigrationConfig,
-  csv_import_relationships_values: CsvImportRelationshipValuesMigrationConfig,
-  px_extractors: PXExtractorsMigrationConfig,
-  px_entities_status: PXEntitiesStatusMigrationConfig,
-  dataviz: DatavizMigrationConfig,
-  dataviz_snapshots: DatavizSnapshotsMigrationConfig,
-};
-
-// Collections migrated when the postgresCore feature flag is active on the tenant, in the
-// order listed: a table comes after the tables its foreign keys reference.
-const FLAG_GROUPS: Record<'postgresCore', string[]> = {
-  postgresCore: [
-    'thesauri',
-    'templates',
-    'files',
-    'relationship_types',
-    'users',
-    'usergroups',
-    'password_recoveries',
-    'translations',
-    'entities',
-    'connections',
-    'px_extractors',
-    'px_entities_status',
-    'ix_extractors',
-    'ix_models',
-    'ix_suggestions',
-    'segmentations',
-    'ocr_records',
-    'settings',
-    'dataviz',
-    'dataviz_snapshots',
-    'updatelogs',
-    'syncs',
-    'preserve_sync',
-    'activitylogs',
-    'pages',
-    'page_locales',
-    'page_releases',
-    'csv_imports',
-    'csv_import_rows',
-    'csv_import_row_errors',
-    'csv_import_thesauri_values',
-    'csv_import_relationships_pending_values',
-    'csv_import_relationships_values',
-  ],
-};
+import { TenantWriteFence } from '#api/core/infrastructure/postgresql/migrations/TenantWriteFence.js';
+import { COLLECTIONS, FLAG_GROUPS } from './migrateToPostgresCollections.js';
 
 function log(message: string) {
   process.stdout.write(`${message}\n`);
@@ -179,6 +73,16 @@ const argv = yargs(hideBin(process.argv))
     describe:
       'Migrate collections even if the PostgreSQL table already contains data (non-destructive)',
     default: false,
+  })
+  .option('settle-seconds', {
+    type: 'number',
+    describe:
+      'With --tenant: seconds without a Mongo write before copying starts. Defaults to twice TENANTS_POLL_INTERVAL_SECONDS plus 10',
+  })
+  .option('settle-timeout', {
+    type: 'number',
+    describe: 'With --tenant: seconds to wait for the tenant to become quiet before failing',
+    default: 300,
   })
   .check(args => {
     if (!args.sessions && !args.tenants && !args.tenant) {
@@ -215,7 +119,10 @@ async function migrateCollection(
   }, tenantName);
 }
 
+let fence: TenantWriteFence | undefined;
+
 async function cleanup(): Promise<void> {
+  await fence?.stop();
   await tenants.model?.closeChangeStream();
   await DB.disconnect();
   await PostgresDB.disconnect();
@@ -228,6 +135,18 @@ function assertKnownTenant(tenantName: string): void {
   logError(`Unknown tenant: ${tenantName}`);
   logError(`Available tenants: ${Object.keys(tenants.tenants).join(', ')}`);
   process.exit(1);
+}
+
+function assertInMaintenance(tenantName: string): void {
+  if (tenants.tenants[tenantName].maintenance) {
+    return;
+  }
+  logError(`[${tenantName}] Tenant is not in maintenance: set maintenance before migrating`);
+  process.exit(1);
+}
+
+function settleSeconds(): number {
+  return argv['settle-seconds'] ?? config.tenantsPollIntervalSeconds * 2 + 10;
 }
 
 // oxlint-disable-next-line max-statements
@@ -263,6 +182,7 @@ async function run(): Promise<void> {
     throw new Error('Missing required argument: tenant');
   }
   assertKnownTenant(tenantName);
+  assertInMaintenance(tenantName);
 
   const tenant = tenants.tenants[tenantName];
   const flags = Object.keys(FLAG_GROUPS) as (keyof typeof FLAG_GROUPS)[];
@@ -283,11 +203,22 @@ async function run(): Promise<void> {
     return;
   }
 
+  fence = new TenantWriteFence(DB.mongodb_Db(tenant.dbName));
+  await fence.start();
+  log(
+    `[${tenantName}] Waiting for ${settleSeconds()}s without Mongo writes (timeout ${argv['settle-timeout']}s)`
+  );
+  await fence.waitUntilQuiet({
+    quietMs: settleSeconds() * 1000,
+    timeoutMs: argv['settle-timeout'] * 1000,
+  });
+
   for (const collectionName of collectionsToMigrate) {
     // eslint-disable-next-line no-await-in-loop
     await migrateCollection(tenantName, collectionName, COLLECTIONS[collectionName]);
   }
 
+  fence.assertNoWrites();
   log('Migration completed successfully.');
   await cleanup();
 }
