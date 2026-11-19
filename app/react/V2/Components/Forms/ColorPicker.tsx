@@ -12,6 +12,7 @@ type ColorPickerProps = {
   className?: string;
   hasErrors?: boolean;
   options?: string[];
+  suggested?: string;
 };
 
 const defaultColors = [
@@ -43,6 +44,7 @@ const ColorPicker = ({
   hasErrors,
   value = defaultColors[0],
   options = defaultColors,
+  suggested,
 }: ColorPickerProps) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -109,24 +111,28 @@ const ColorPicker = ({
                 className="grid max-h-44 grid-cols-5 gap-2 overflow-y-auto p-2"
                 data-testid="colorpicker-popover"
               >
-                {options.map((color: string) => (
-                  <li key={color}>
-                    <button
-                      type="button"
-                      className="flex h-8 w-8 items-center justify-center rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
-                      onClick={() => {
-                        changeColor(color);
-                      }}
-                    >
-                      <span className="sr-only">{color}</span>
-                      <div
-                        data-testid="colorpicker-button"
-                        className="rounded-md w-8 h-8"
-                        style={{ backgroundColor: color }}
-                      />
-                    </button>
-                  </li>
-                ))}
+                {options.map((color: string) => {
+                  const suggestedMatch =
+                    suggested !== undefined && color.toUpperCase() === suggested.toUpperCase();
+                  return (
+                    <li key={color}>
+                      <button
+                        type="button"
+                        className={`flex h-8 w-8 items-center justify-center rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] ${suggestedMatch ? 'outline-2 outline-offset-2' : ''}`}
+                        onClick={() => {
+                          changeColor(color);
+                        }}
+                      >
+                        <span className="sr-only">{color}</span>
+                        <div
+                          data-testid="colorpicker-button"
+                          className="rounded-md w-8 h-8"
+                          style={{ backgroundColor: color }}
+                        />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
               <label className="flex w-fit cursor-pointer flex-row items-center gap-2 text-ink-secondary">
                 <Translate>Pick a color</Translate>
