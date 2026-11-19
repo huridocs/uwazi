@@ -96,10 +96,10 @@ RUN groupadd -r uwazi \
 
 WORKDIR /app
 
-COPY --from=builder /app/prod /app
+COPY --from=builder --chown=uwazi:uwazi /app/prod /app
 
 RUN mkdir -p uploaded_documents temporal_files custom_uploads log \
-    && chown -R uwazi:uwazi /app
+    && chown -R uwazi:uwazi uploaded_documents temporal_files custom_uploads log
 
 USER uwazi
 
