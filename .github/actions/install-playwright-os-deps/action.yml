@@ -43,9 +43,9 @@ runs:
           sudo apt-get update -qq
         }
 
-        # The fast path takes ~8s. A 3-minute budget means the mirror is
-        # throttled, so fall back to the global archive mirror and retry.
-        if ! timeout --signal=TERM --kill-after=20 180 ${{ inputs.command }}; then
+        # The fast path takes ~15s; the only slow case is the ~5 min throttle.
+        # A 60s budget catches the throttled mirror without wasting 3 min.
+        if ! timeout --signal=TERM --kill-after=20 60 ${{ inputs.command }}; then
           echo "install failed or timed out; retrying with fallback mirror"
           clear_apt_locks
           switch_mirror 'http://archive.ubuntu.com/ubuntu'
