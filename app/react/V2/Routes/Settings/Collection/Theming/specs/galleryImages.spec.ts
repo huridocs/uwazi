@@ -11,6 +11,8 @@ describe('galleryImages', () => {
     ];
     expect(galleryImages(UWAZI_DEFAULT_LOGOS, uploaded).map(file => file.url)).toEqual([
       '/public/uwazi-design-logo.svg',
+      '/public/uwazi-theme-logo-light.svg',
+      '/public/uwazi-theme-logo-dark.svg',
       '/assets/mine.png',
     ]);
   });
@@ -18,6 +20,7 @@ describe('galleryImages', () => {
   it('offers the Uwazi Design favicon', () => {
     expect(UWAZI_DEFAULT_FAVICONS.map(file => file.url)).toEqual([
       '/public/uwazi-design-icon-light.png',
+      '/public/favicon.ico',
     ]);
   });
 });
