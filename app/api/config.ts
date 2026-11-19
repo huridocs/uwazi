@@ -10,6 +10,8 @@ import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
 
+// Temporary CI timing probe: force a full production webpack rebuild.
+
 const PostgresEnvSchema = z
   .object({
     POSTGRES_HOST: z.string().default('127.0.0.1'),
