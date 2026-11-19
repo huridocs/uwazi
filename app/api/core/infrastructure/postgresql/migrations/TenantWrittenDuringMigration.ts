@@ -1,3 +1,5 @@
-class TenantWrittenDuringMigration extends Error {}
+class TenantWrittenDuringMigration extends Error {
+  name = 'TenantWrittenDuringMigration';
+}
 
 export { TenantWrittenDuringMigration };
