@@ -31,6 +31,16 @@ describe('getScopedThemeVars merge contract', () => {
     );
   });
 
+  it('follows an edited legacy page color', () => {
+    const legacyResolved = appliedTheme(
+      { __preset: 'legacy', 'light:--color-theme-bg-primary': '#112233' },
+      'light',
+      true
+    );
+    const legacy = getScopedThemeVars('legacy', legacyResolved);
+    expect(legacy['--color-theme-surface-parchment']).toBe('#112233');
+  });
+
   it('does not expose legacy main/status button tokens', () => {
     const resolved = {
       ...baseResolved(),

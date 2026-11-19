@@ -8,8 +8,8 @@ import {
 describe('logoFrame', () => {
   it('fits a wide wordmark to the header box', () => {
     expect(logoDisplaySize(2555, 580)).toEqual({
-      width: 200,
-      height: 200 * (580 / 2555),
+      width: 128,
+      height: 580 * (128 / 2555),
     });
   });
 
