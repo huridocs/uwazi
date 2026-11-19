@@ -35,7 +35,6 @@ module.exports = production => {
       buildDependencies: {
         config: [__filename],
         tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
-        babel: [path.resolve(rootPath, 'babel.config.json')],
         postcss: [path.resolve(rootPath, 'postcss.config.cjs')],
       },
     },
