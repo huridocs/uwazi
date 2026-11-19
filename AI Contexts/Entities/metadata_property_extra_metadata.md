@@ -2,7 +2,7 @@
 
 Design for [huridocs/uwazi#9902](https://github.com/huridocs/uwazi/issues/9902). The issue is the problem statement. Where this file disagrees with the issue, this file wins.
 
-Status: design. Working name is `attributes`. `extra_data` is the alternative still open with the team.
+Status: design, with the property stored and returned. Working name is `attributes`. `extra_data` is the alternative still open with the team. A save stores the `attributes` still sitting on each form entry. It does not look up the previously loaded entity to put the key back.
 
 ## The problem
 
@@ -116,3 +116,26 @@ The field appears the first time a document contains values Elasticsearch can ty
 An object in this slot does not take that path. `object_fields` matches `metadata.*` objects and maps them as enabled objects, and their children are then mapped one by one. That is the 2021 table-of-contents failure (`selectionRectangles.height` inferred as `long`, then as `float`), which is why unknown objects outside that path use `unmapped_objects` with `enabled: false`. A string array never enters it. The schema rejects anything that is not `string[]` so this slot cannot become that object.
 
 `dynamic: false` is not the tool. Nothing in the mapping uses it. The explicit fields are what we search, and the dynamic templates are how every other key on a metadata value is absorbed: strings land on `index: false`, unknown objects are disabled. Setting `dynamic: false` on the metadata property objects would stop those templates for every sibling, on every property, on every template. `provenance`, `suggestion_model`, `attachment`, and `timeLinks` are siblings of that kind today. A later searchable subfield that was not added to `propertyMappings` would silently never be indexed. `attributes` does not need that switch. The template that already keeps a plain string out of search keeps this array out of search.
+
+## What is implemented
+
+The domain, the HTTP schema, and the shared types accept an optional `string[]`. Each property entry schema declares it, so Zod no longer strips it. Empty values that those properties used to drop are kept when `attributes` is present, including `[]`. Numeric, date, and geolocation still drop an empty value. Relationship denormalize copies the key when it rebuilds an element. The Mongo-to-Postgres migration spec asserts that an element with the array arrives intact and an element without the key does not gain one. No Elasticsearch mapping was added.
+
+Save writes the entries the form still has. It does not read the loaded entity to put `attributes` back. If the form entry no longer has the key, the saved element does not have it.
+
+V2 holds the entry for text, markdown, date, numeric, generated id, link, image, and media. Those controls write `metadata.<name>.0.value`. The entry object stays in the form, and `attributes` stays on it. Geolocation and multi-date-range spread the current entry when they edit it. Nested keeps `attributes` only while the row count is unchanged, because those are the same slots. Image and media save must build a new object, because an upload id becomes `{ value: '', attachment }`. That rewrite copies `attributes` off the entry it is rewriting. It does not search the array. The server assignment for image and media also builds a new entry when it turns an upload into a file path. It copies `attributes` off that same input entry. Text does not take that path.
+
+Select and multiselect build the next selection from the current form entries. A value that is still selected, and that appears once, keeps the `attributes` of that current entry. A different selected value is a new object and has no `attributes`. Two current entries with the same value are not matched: the new object does not receive either entry's key.
+
+V1 cannot bind a text input to `{ value, attributes }`. Load unwraps to the raw value and stores a sidecar, `metadataAttributes`. Save wraps the raw values back into `{ value }` and copies the sidecar by position only when the wrapped list is the same length. A shorter or longer list is left as the form sent it. The sidecar is removed before the request.
+
+## Translations
+
+Attributes belong to one language's element. They are not copied from one language to another as their own operation. The current language is `metadata`. Every other installed language is `translations.<lang>.<property>`. Only text, markdown, link, image, media, and preview are translatable. Title is not a metadata element and never has this key.
+
+- Load copies each language's elements as stored, including `attributes` when the stored value is an array.
+- Switching language writes the language being left through `toMetadataObjectSchema` and reads the language being opened through `toFormMetadataValue`. Both keep `attributes` that are already on those entries. English attributes do not move onto Spanish.
+- Saving the current language saves the form entries. A key the form dropped stays dropped.
+- An existing untouched translation keeps its own elements, including its own `attributes`.
+- A translation that has no elements, or a required translation that is blank and untouched, is filled from the current language. That copy is a new instance, so `attributes` are removed from it. Title uses the same fallback and has no `attributes`.
+- Editing a translation string keeps `attributes` from the entry being edited, including `[]`. It does not read another language. The write is still one element, so later elements of that property are not preserved.
