@@ -143,31 +143,26 @@ const indexParts = (
   LoginComp: indexComponents?.Login ?? (isLoginV2Enabled(settings?.features) ? Login : LoginLegacy),
 });
 
-const defaultLibraryViewElement = (
-  parts: IndexParts,
-  view: string | undefined,
-  params: { q: string }
-) => {
-  switch (view) {
-    case 'table':
-      return (
-        <parts.Root>
-          <parts.Table params={params} />
-        </parts.Root>
-      );
-    case 'map':
-      return (
-        <parts.Root>
-          <parts.Map params={params} />
-        </parts.Root>
-      );
-    default:
-      return (
-        <parts.Root>
-          <parts.Cards params={params} />
-        </parts.Root>
-      );
+const libraryShell = (parts: IndexParts, view: string | undefined, params: { q?: string }) => {
+  if (view === 'table') {
+    return (
+      <parts.Root>
+        <parts.Table params={params} />
+      </parts.Root>
+    );
   }
+  if (view === 'map') {
+    return (
+      <parts.Root>
+        <parts.Map params={params} />
+      </parts.Root>
+    );
+  }
+  return (
+    <parts.Root>
+      <parts.Cards params={params} />
+    </parts.Root>
+  );
 };
 
 const libraryDefaultElement = (
@@ -178,39 +173,19 @@ const libraryDefaultElement = (
   const { userId, defaultLibraryView, private: privateInstance } = home;
   if (privateInstance && !userId) return <parts.LoginComp />;
   if (isLibraryV2Enabled(settings?.features)) return <Navigate to="library" replace />;
-  return defaultLibraryViewElement(parts, defaultLibraryView, { q: '(includeUnpublished:!t)' });
+  return libraryShell(parts, defaultLibraryView, { q: '(includeUnpublished:!t)' });
 };
 
-const libraryV2Home = (customHomePage: string[], querySuffix: string) => {
-  if (customHomePage.includes('map')) {
-    return <Navigate to={`legacy-library/map${querySuffix}`} replace />;
-  }
-  if (customHomePage.includes('table')) {
-    return <Navigate to={`legacy-library/table${querySuffix}`} replace />;
-  }
-  return <Navigate to={`library${querySuffix}`} replace />;
+const libraryV2Path = (customHomePage: string[]) => {
+  if (customHomePage.includes('map')) return 'legacy-library/map';
+  if (customHomePage.includes('table')) return 'legacy-library/table';
+  return 'library';
 };
 
 const legacyLibraryHome = (parts: IndexParts, customHomePage: string[], queryString: string) => {
-  if (customHomePage.includes('map')) {
-    return (
-      <parts.Root>
-        <parts.Map params={{ q: queryString }} />
-      </parts.Root>
-    );
-  }
-  if (customHomePage.includes('table')) {
-    return (
-      <parts.Root>
-        <parts.Table params={{ q: queryString }} />
-      </parts.Root>
-    );
-  }
-  return (
-    <parts.Root>
-      <parts.Cards params={{ q: queryString }} />
-    </parts.Root>
-  );
+  if (customHomePage.includes('map')) return libraryShell(parts, 'map', { q: queryString });
+  if (customHomePage.includes('table')) return libraryShell(parts, 'table', { q: queryString });
+  return libraryShell(parts, undefined, { q: queryString });
 };
 
 const libraryCustomElement = (
@@ -222,18 +197,10 @@ const libraryCustomElement = (
   const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
   const queryString = query ? deconstructSearchQuery(query) : '';
   const querySuffix = queryString ? `?q=${queryString}` : '';
-  if (isLibraryV2Enabled(settings?.features)) return libraryV2Home(customHomePage, querySuffix);
-  return legacyLibraryHome(parts, customHomePage, queryString);
-};
-
-const entityIndexElement = (
-  entityId: string,
-  settings: ClientSettings | undefined
-): React.ReactNode => {
-  if (isEntityViewerV2Enabled(settings?.features)) {
-    return <Navigate to={`entity/${entityId}`} replace />;
+  if (isLibraryV2Enabled(settings?.features)) {
+    return <Navigate to={`${libraryV2Path(customHomePage)}${querySuffix}`} replace />;
   }
-  return <ViewerRoute params={{ sharedId: entityId }} />;
+  return legacyLibraryHome(parts, customHomePage, queryString);
 };
 
 const buildIndexElement = (
@@ -250,7 +217,11 @@ const buildIndexElement = (
     case 'page':
       return <PageView params={{ sharedId: descriptor.pageId }} />;
     case 'entity':
-      return entityIndexElement(descriptor.entityId, settings);
+      return isEntityViewerV2Enabled(settings?.features) ? (
+        <Navigate to={`entity/${descriptor.entityId}`} replace />
+      ) : (
+        <ViewerRoute params={{ sharedId: descriptor.entityId }} />
+      );
     case 'navigate':
       return <Navigate to={descriptor.navigateTo} />;
     default:
@@ -606,8 +577,7 @@ const getRoutes = ({
 }) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents, settings);
-  const { parameters } = descriptor;
-  const { defaultToLibrary } = descriptor;
+  const { parameters, defaultToLibrary } = descriptor;
   const layout = getRoutesLayout({
     settings,
     indexElement,
