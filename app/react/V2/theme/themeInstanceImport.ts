@@ -1,7 +1,13 @@
-import { z } from 'zod';
 import { SEMANTIC_VAR_KEYS } from './tokens.js';
-import type { SemanticVarKey, ThemeMode } from './tokens.js';
+import type { SemanticVarKey, ThemeMode, ThemePresetId } from './tokens.js';
 import { isValidHex, normalizeHex } from './themePaletteSort.js';
+import { settingsColorsFromRail } from './relatedColorSuggestions.js';
+import { appliedTheme, THEME_PRESET_KEY, type ThemeAssetPresetId } from './themes.js';
+import {
+  recomputeSimpleThemeVarsFromAnchors,
+  THEME_EDITOR_MODE_KEY,
+  THEME_SIMPLE_BASE_KEY,
+} from './themeSimpleDerivation.js';
 import {
   CHROME_OVERRIDE_VAR_KEYS,
   fillChromeImportDefaults,
@@ -10,47 +16,70 @@ import {
 
 const storageKey = (mode: ThemeMode, key: string) => `${mode}:${key}`;
 
-const semanticKeySchema = z.enum(SEMANTIC_VAR_KEYS);
+const SETTINGS_RAIL = '--color-theme-chrome-settings-rail-bg';
+const SETTINGS_ACTIVE = '--color-theme-chrome-settings-nav-item-active-bg';
+const SIMPLE_DERIVED_KEYS = [
+  '--color-theme-bg-muted',
+  '--color-theme-text-secondary',
+  '--color-theme-text-tertiary',
+  '--color-theme-text-muted',
+];
 
-const hexField = z
-  .string()
-  .transform(s => normalizeHex(s.trim()))
-  .pipe(z.string().refine(isValidHex, { message: 'invalid hex color' }));
+type ThemeInstanceFile = {
+  id?: string;
+  light?: Record<string, unknown>;
+  dark?: Record<string, unknown>;
+  chrome?: { light?: Record<string, unknown>; dark?: Record<string, unknown> };
+};
 
-const modeVarsSchema = z.record(semanticKeySchema, hexField);
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
-const chromeKeySchema = z.enum(CHROME_OVERRIDE_VAR_KEYS);
+const semanticKey = (key: string) => SEMANTIC_VAR_KEYS.find(item => item === key);
 
-const modeChromeSchema = z.record(chromeKeySchema, hexField);
+const chromeKeyOf = (key: string) => CHROME_OVERRIDE_VAR_KEYS.find(item => item === key);
 
-const themeInstanceFileSchema = z
-  .object({
-    id: z.string().optional(),
-    light: modeVarsSchema.optional(),
-    dark: modeVarsSchema.optional(),
-    chrome: z
-      .object({
-        light: modeChromeSchema.optional(),
-        dark: modeChromeSchema.optional(),
-      })
-      .optional(),
-  })
-  .refine(
-    data =>
-      Object.keys(data.light ?? {}).length +
-        Object.keys(data.dark ?? {}).length +
-        Object.keys(data.chrome?.light ?? {}).length +
-        Object.keys(data.chrome?.dark ?? {}).length >
-      0,
-    { message: 'empty theme' }
-  );
+const hexEntries = (node: Record<string, unknown>) =>
+  Object.entries(node).flatMap(([key, value]) => (typeof value === 'string' ? [[key, value]] : []));
 
-type ThemeInstanceFile = z.infer<typeof themeInstanceFileSchema>;
+const colorError = (node: Record<string, unknown>) => {
+  const entries = Object.entries(node);
+  if (entries.some(([, value]) => typeof value !== 'string' && !isRecord(value))) {
+    return 'invalid file';
+  }
+  const hexes = hexEntries(node);
+  if (hexes.some(([, value]) => !isValidHex(normalizeHex(value.trim()))))
+    return 'invalid hex color';
+  if (hexes.some(([key]) => !semanticKey(key) && !chromeKeyOf(key))) return 'unknown semantic key';
+  return undefined;
+};
+
+const readColors = (
+  node: unknown,
+  semantic: Partial<Record<SemanticVarKey, string>>,
+  chrome: Partial<Record<ChromeOverrideVarKey, string>>
+): string | undefined => {
+  if (!isRecord(node)) return 'invalid file';
+  const error = colorError(node);
+  if (error) return error;
+  hexEntries(node).forEach(([key, value]) => {
+    const hex = normalizeHex(value.trim());
+    const semanticMatch = semanticKey(key);
+    const chromeMatch = chromeKeyOf(key);
+    if (semanticMatch) semantic[semanticMatch] = hex;
+    if (chromeMatch) chrome[chromeMatch] = hex;
+  });
+  return Object.values(node).reduce<string | undefined>((nestedError, value) => {
+    if (nestedError || !isRecord(value)) return nestedError;
+    return readColors(value, semantic, chrome);
+  }, undefined);
+};
 
 const flattenModeVars = (mode: ThemeMode, vars: Partial<Record<SemanticVarKey, string>>) => {
   const out: Record<string, string> = {};
-  (Object.entries(vars) as [SemanticVarKey, string][]).forEach(([key, value]) => {
-    out[storageKey(mode, key)] = value;
+  SEMANTIC_VAR_KEYS.forEach(key => {
+    const value = vars[key];
+    if (value) out[storageKey(mode, key)] = value;
   });
   return out;
 };
@@ -59,29 +88,129 @@ const flattenChromeMode = (
   mode: ThemeMode,
   vars: Partial<Record<ChromeOverrideVarKey, string>>
 ) => {
-  const filled = fillChromeImportDefaults(vars);
+  const filled = { ...fillChromeImportDefaults(vars) };
+  const rail = filled[SETTINGS_RAIL];
+  if (rail && !filled[SETTINGS_ACTIVE]) {
+    filled[SETTINGS_ACTIVE] = settingsColorsFromRail({}, mode, rail)[
+      storageKey(mode, SETTINGS_ACTIVE)
+    ];
+  }
   const out: Record<string, string> = {};
-  (Object.entries(filled) as [ChromeOverrideVarKey, string][]).forEach(([key, value]) => {
-    out[storageKey(mode, key)] = value;
+  CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
+    const value = filled[key];
+    if (value) out[storageKey(mode, key)] = value;
   });
   return out;
 };
 
-const parseThemeInstanceImportJson = (
-  raw: unknown
-): { flat: Record<string, string> } | { error: string } => {
-  const parsed = themeInstanceFileSchema.safeParse(raw);
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'invalid file' };
-  }
-  const data: ThemeInstanceFile = parsed.data;
-  const flat: Record<string, string> = {};
-  if (data.light) Object.assign(flat, flattenModeVars('light', data.light));
-  if (data.dark) Object.assign(flat, flattenModeVars('dark', data.dark));
-  if (data.chrome?.light) Object.assign(flat, flattenChromeMode('light', data.chrome.light));
-  if (data.chrome?.dark) Object.assign(flat, flattenChromeMode('dark', data.chrome.dark));
-  return { flat };
+const absorbMode = (node: unknown, mode: ThemeMode, flat: Record<string, string>) => {
+  const semantic: Partial<Record<SemanticVarKey, string>> = {};
+  const chrome: Partial<Record<ChromeOverrideVarKey, string>> = {};
+  const error = readColors(node, semantic, chrome);
+  if (error) return error;
+  Object.assign(flat, flattenModeVars(mode, semantic));
+  Object.assign(flat, flattenChromeMode(mode, chrome));
+  return undefined;
 };
 
-export { parseThemeInstanceImportJson };
+const absorbPair = (
+  light: unknown,
+  dark: unknown,
+  flat: Record<string, string>
+): string | undefined => {
+  if (light !== undefined) {
+    const error = absorbMode(light, 'light', flat);
+    if (error) return error;
+  }
+  if (dark !== undefined) return absorbMode(dark, 'dark', flat);
+  return undefined;
+};
+
+const editorModeOf = (value: unknown): 'simple' | 'advanced' =>
+  value === 'advanced' ? 'advanced' : 'simple';
+
+const presetIdOf = (value: unknown): ThemePresetId | undefined =>
+  value === 'legacy' || value === 'default' || value === 'custom' ? value : undefined;
+
+const assetPresetOf = (value: unknown): ThemeAssetPresetId | undefined =>
+  value === 'legacy' || value === 'default' ? value : undefined;
+
+const parseThemeInstanceImportJson = (
+  raw: unknown
+):
+  | {
+      flat: Record<string, string>;
+      editorMode: 'simple' | 'advanced';
+      presetId?: ThemePresetId;
+      assetPreset?: ThemeAssetPresetId;
+    }
+  | { error: string } => {
+  if (!isRecord(raw)) return { error: 'invalid file' };
+  const flat: Record<string, string> = {};
+  const modeError = absorbPair(raw.light, raw.dark, flat);
+  if (modeError) return { error: modeError };
+  const chrome = isRecord(raw.chrome) ? raw.chrome : undefined;
+  const chromeError = absorbPair(chrome?.light, chrome?.dark, flat);
+  if (chromeError) return { error: chromeError };
+  if (Object.keys(flat).length === 0) return { error: 'empty theme' };
+  return {
+    flat,
+    editorMode: editorModeOf(raw.editorMode),
+    presetId: presetIdOf(raw.id),
+    assetPreset: assetPresetOf(raw.assetPreset),
+  };
+};
+
+const stripHashComments = (text: string) =>
+  text.replace(/("(?:\\.|[^"\\])*")|#[^\n]*/g, (match, quoted: string | undefined) => quoted ?? '');
+
+const parseThemeInstanceImportText = (text: string) => {
+  try {
+    const raw: unknown = JSON.parse(stripHashComments(text));
+    return parseThemeInstanceImportJson(raw);
+  } catch {
+    return { error: 'invalid file' };
+  }
+};
+
+const simpleBaseFromFile = (
+  presetId: ThemePresetId | undefined,
+  assetPreset?: ThemeAssetPresetId
+) => {
+  if (presetId === 'legacy' || presetId === 'default') return presetId;
+  return assetPreset === 'legacy' ? 'legacy' : 'default';
+};
+
+const themeVarsFromInstanceImport = (
+  flat: Record<string, string>,
+  editorMode: 'simple' | 'advanced',
+  presetId?: ThemePresetId
+) => {
+  const basePreset = presetId === 'legacy' ? 'legacy' : 'default';
+  const base: Record<string, string | undefined> = {
+    [THEME_PRESET_KEY]: 'custom',
+    ...flat,
+    [THEME_EDITOR_MODE_KEY]: editorMode,
+    [THEME_SIMPLE_BASE_KEY]: basePreset,
+  };
+  if (editorMode !== 'simple') return base;
+  const kept = Object.fromEntries(
+    Object.entries(flat).filter(
+      ([key]) => !SIMPLE_DERIVED_KEYS.some(derived => key.endsWith(derived))
+    )
+  );
+  return {
+    ...recomputeSimpleThemeVarsFromAnchors(base, basePreset, themeMode =>
+      appliedTheme({ ...base, [THEME_PRESET_KEY]: basePreset }, themeMode, true)
+    ),
+    ...kept,
+  };
+};
+
+export {
+  parseThemeInstanceImportJson,
+  parseThemeInstanceImportText,
+  themeVarsFromInstanceImport,
+  simpleBaseFromFile,
+};
 export type { ThemeInstanceFile };

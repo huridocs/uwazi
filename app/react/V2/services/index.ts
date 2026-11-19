@@ -18,7 +18,7 @@
  * // entry-server.tsx (SSR in-process adapters):
  * import { createServerServices } from '#V2/services/server/index.js';
  * const services = createServerServices(req);
- * const routes = getRoutes(settings, userId, headers, indexComponents, services);
+ * const routes = getRoutes({ settings, userId, headers, indexComponents, services });
  *
  * // Loader factory — no default; services always injected by wiring above:
  * export const thesauriLoader = createThesauriLoader(services);

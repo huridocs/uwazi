@@ -108,7 +108,12 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   return headers;
 };
 
-const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
+const logSSRAborted = (
+  req: ExpressRequest,
+  step: string,
+  timing: { ssrStart: bigint; routeName?: string }
+) => {
+  const { ssrStart, routeName } = timing;
   const now = process.hrtime.bigint();
   const elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
 
@@ -447,13 +452,13 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   };
 
   const serverServices = createServerServices(req);
-  const routes = getRoutes(
-    settingsWithFeatureFlags,
-    req.user && req.user._id,
+  const routes = getRoutes({
+    settings: settingsWithFeatureFlags,
+    userId: req.user && req.user._id,
     headers,
     indexComponents,
-    serverServices
-  );
+    services: serverServices,
+  });
 
   const matched = matchRoutes(routes, req.path);
 
@@ -470,7 +475,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
       .join('/') || 'home';
 
   if (req.aborted) {
-    logSSRAborted(req, 'Matching routes', ssrStart);
+    logSSRAborted(req, 'Matching routes', { ssrStart });
     return;
   }
 
@@ -500,7 +505,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   if (req.aborted) {
-    logSSRAborted(req, 'Store data', ssrStart, routeName);
+    logSSRAborted(req, 'Store data', { ssrStart, routeName });
     return;
   }
 
@@ -509,7 +514,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   );
 
   if (req.aborted) {
-    logSSRAborted(req, 'Route data', ssrStart, routeName);
+    logSSRAborted(req, 'Route data', { ssrStart, routeName });
     return;
   }
 
@@ -525,7 +530,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   const { staticHandleContext, router, ssrError } = preparedRoute;
 
   if (req.aborted) {
-    logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
+    logSSRAborted(req, 'Before requestStates', { ssrStart, routeName });
     return;
   }
   const { initialStore, initialState, loadingError } = await withSpan('set_redux_state', async () =>
@@ -540,7 +545,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
     (typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined);
 
   if (req.aborted) {
-    logSSRAborted(req, 'Component HTML', ssrStart, routeName);
+    logSSRAborted(req, 'Component HTML', { ssrStart, routeName });
     return;
   }
 
@@ -565,7 +570,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   );
 
   if (req.aborted) {
-    logSSRAborted(req, 'Root HTML', ssrStart, routeName);
+    logSSRAborted(req, 'Root HTML', { ssrStart, routeName });
     return;
   }
   const html = withSpan('render_root_html', () =>
@@ -584,7 +589,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
   );
 
   if (req.aborted) {
-    logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
+    logSSRAborted(req, 'Aborted before response', { ssrStart, routeName });
     return;
   }
   const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);
@@ -598,7 +603,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     await renderSSR(req, res, ssrStart);
   } catch (error) {
     if (isAbortError(error)) {
-      logSSRAborted(req, 'During SSR', ssrStart, req.ssrRoutePattern);
+      logSSRAborted(req, 'During SSR', { ssrStart, routeName: req.ssrRoutePattern });
       return;
     }
     throw error;

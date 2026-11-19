@@ -97,6 +97,7 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
         value={selected.key}
         options={options}
         align="end"
+        appearance="header"
         aria-label={t('System', 'Language', null, false)}
         onChange={languageKey => switchLanguage(location, selected.key, languageKey)}
         footer={liveTranslateItem(() => setInlineEditState(startedEdit))}

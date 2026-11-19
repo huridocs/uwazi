@@ -1535,7 +1535,7 @@ Geolocation,UI text,Settings > Templates,UI text shown on Settings > Templates.,
 Violated articles,UI text,Settings > Templates,UI text shown on Settings > Templates.,false
 Uwazi Design,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
 Legacy Uwazi,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
-Custom pair,Option label,Settings > Theme and branding,Option label in Settings > Theme and branding.,false
+Custom,Option label,Settings > Theme and branding,Preset name for a theme with colors the user edits.,false
 Chart palette,Option label,Settings > Dataviz > Appearance tab,Dropdown option that assigns chart series colors in order from a fixed palette and repeats when there are more values than colors.,false
 Template colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that uses each template brand color when comparing data sources or when the dimension is entity type.,false
 Custom colors,Option label,Settings > Dataviz > Appearance tab,Dropdown option that lets the user override colors for specific chart values.,false
@@ -1634,3 +1634,24 @@ Set a new password,UI text,Set password,Heading when the link resets an existing
 "To complete the account creation process, please create a password for your account.",UI text,Set password,Note shown only on an invitation link.,false
 Repeat password,Field label,Set password,"Second password field, used to confirm the first.",false
 Saving…,Button label,Set password,Submit label while the new password is being saved.,false
+Export theme instance file,Button label,Settings > Theme and branding,Button in the theme editor's advanced section that downloads the current palette as a theme JSON file.,false
+English,Button label,Settings > Theme and branding,Sample language control in the theme preview header.,false
+Header bar,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Header title, language, library and settings,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Resting fill of language, library and settings,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Current link and header button hover,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Line under the header,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Primary buttons and links,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Supporting accent on smaller controls,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Danger and emphasis backgrounds,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Cards and panels,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Muted backgrounds,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Success messages,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Warning messages,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Main text,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Tertiary text,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Muted text,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Borders and dividers,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Settings sidebar,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Active settings navigation item,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
+Changes stay temporary until you save the theme.,UI text,Settings > Theme and branding,Note beside Save theme: live edits stay temporary until the theme is saved.,false

@@ -25,7 +25,7 @@ const renderSelect = ({
   value = 'en',
 }: {
   isMobile?: boolean;
-  appearance?: 'default' | 'compact';
+  appearance?: 'default' | 'compact' | 'header';
   value?: (typeof options)[number]['value'];
 } = {}) => {
   const store = createStore();
@@ -61,6 +61,13 @@ const expectActiveOption = (value: string) => {
 };
 
 describe('LanguageSelect', () => {
+  it('uses header chrome classes instead of the page warm fill', () => {
+    renderSelect({ appearance: 'header' });
+    const trigger = screen.getByRole('button', { name: 'Language' });
+    expect(trigger.className).toContain('header-bar-button');
+    expect(trigger.className).not.toContain('bg-warm');
+  });
+
   it('shows the translated name on the desktop trigger and in option rows', async () => {
     renderSelect({ isMobile: false });
 
