@@ -12,6 +12,7 @@ import { Settings } from '#V2/Routes/Settings/Settings.js';
 import { Login, SetPassword, UnlockAccount } from '#V2/Routes/Auth/index.js';
 import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
+import { Theming, themingLoader } from '#V2/Routes/Settings/Theming/Theming.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
@@ -119,87 +120,101 @@ type IndexComponents = {
   Login: React.ComponentType<Record<string, never>>;
 };
 
+type IndexParts = {
+  Root: IndexComponents['LibraryRoot'];
+  Cards: IndexComponents['LibraryCards'];
+  Table: IndexComponents['LibraryTable'];
+  Map: IndexComponents['LibraryMap'];
+  LoginComp: React.ComponentType;
+};
+
+const indexParts = (indexComponents: IndexComponents | undefined): IndexParts => ({
+  Root: indexComponents?.LibraryRoot ?? LibraryRoot,
+  Cards: indexComponents?.LibraryCards ?? LibraryCards,
+  Table: indexComponents?.LibraryTable ?? LibraryTable,
+  Map: indexComponents?.LibraryMap ?? LibraryMap,
+  LoginComp: indexComponents?.Login ?? Login,
+});
+
+const libraryShell = (parts: IndexParts, view: string | undefined, params: { q?: string }) => {
+  if (view === 'table') {
+    return (
+      <parts.Root>
+        <parts.Table params={params} />
+      </parts.Root>
+    );
+  }
+  if (view === 'map') {
+    return (
+      <parts.Root>
+        <parts.Map params={params} />
+      </parts.Root>
+    );
+  }
+  return (
+    <parts.Root>
+      <parts.Cards params={params} />
+    </parts.Root>
+  );
+};
+
+const libraryDefaultElement = (
+  home: Extract<IndexDescriptor, { branch: 'libraryDefault' }>['libraryDefault'],
+  parts: IndexParts,
+  settings: ClientSettings | undefined
+) => {
+  const { userId, defaultLibraryView, private: privateInstance } = home;
+  if (privateInstance && !userId) return <parts.LoginComp />;
+  if (isLibraryV2Enabled(settings?.features)) return <Navigate to="library" replace />;
+  return libraryShell(parts, defaultLibraryView, { q: '(includeUnpublished:!t)' });
+};
+
+const libraryV2Path = (customHomePage: string[]) => {
+  if (customHomePage.includes('map')) return 'legacy-library/map';
+  if (customHomePage.includes('table')) return 'legacy-library/table';
+  return 'library';
+};
+
+const legacyLibraryHome = (parts: IndexParts, customHomePage: string[], queryString: string) => {
+  if (customHomePage.includes('map')) return libraryShell(parts, 'map', { q: queryString });
+  if (customHomePage.includes('table')) return libraryShell(parts, 'table', { q: queryString });
+  return libraryShell(parts, undefined, { q: queryString });
+};
+
+const libraryCustomElement = (
+  home: Extract<IndexDescriptor, { branch: 'libraryCustom' }>['libraryCustom'],
+  parts: IndexParts,
+  settings: ClientSettings | undefined
+) => {
+  const { customHomePage } = home;
+  const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
+  const queryString = query ? deconstructSearchQuery(query) : '';
+  const querySuffix = queryString ? `?q=${queryString}` : '';
+  if (isLibraryV2Enabled(settings?.features)) {
+    return <Navigate to={`${libraryV2Path(customHomePage)}${querySuffix}`} replace />;
+  }
+  return legacyLibraryHome(parts, customHomePage, queryString);
+};
+
 const buildIndexElement = (
   descriptor: IndexDescriptor,
   indexComponents?: IndexComponents,
   settings?: ClientSettings
 ): React.ReactNode => {
-  const Root = indexComponents?.LibraryRoot ?? LibraryRoot;
-  const Cards = indexComponents?.LibraryCards ?? LibraryCards;
-  const Table = indexComponents?.LibraryTable ?? LibraryTable;
-  const Map = indexComponents?.LibraryMap ?? LibraryMap;
-  const LoginComp = indexComponents?.Login ?? Login;
-
+  const parts = indexParts(indexComponents);
   switch (descriptor.branch) {
-    case 'libraryDefault': {
-      const { userId, defaultLibraryView, private: privateInstance } = descriptor.libraryDefault;
-      if (privateInstance && !userId) return <LoginComp />;
-      if (isLibraryV2Enabled(settings?.features)) {
-        return <Navigate to="library" replace />;
-      }
-      const params = { q: '(includeUnpublished:!t)' };
-      switch (defaultLibraryView) {
-        case 'table':
-          return (
-            <Root>
-              <Table params={params} />
-            </Root>
-          );
-        case 'map':
-          return (
-            <Root>
-              <Map params={params} />
-            </Root>
-          );
-        default:
-          return (
-            <Root>
-              <Cards params={params} />
-            </Root>
-          );
-      }
-    }
-    case 'libraryCustom': {
-      const { customHomePage } = descriptor.libraryCustom;
-      const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
-      const queryString = query ? deconstructSearchQuery(query) : '';
-      const querySuffix = queryString ? `?q=${queryString}` : '';
-      if (isLibraryV2Enabled(settings?.features)) {
-        if (customHomePage.includes('map')) {
-          return <Navigate to={`legacy-library/map${querySuffix}`} replace />;
-        }
-        if (customHomePage.includes('table')) {
-          return <Navigate to={`legacy-library/table${querySuffix}`} replace />;
-        }
-        return <Navigate to={`library${querySuffix}`} replace />;
-      }
-      if (customHomePage.includes('map')) {
-        return (
-          <Root>
-            <Map params={{ q: queryString }} />
-          </Root>
-        );
-      }
-      if (customHomePage.includes('table')) {
-        return (
-          <Root>
-            <Table params={{ q: queryString }} />
-          </Root>
-        );
-      }
-      return (
-        <Root>
-          <Cards params={{ q: queryString }} />
-        </Root>
-      );
-    }
+    case 'libraryDefault':
+      return libraryDefaultElement(descriptor.libraryDefault, parts, settings);
+    case 'libraryCustom':
+      return libraryCustomElement(descriptor.libraryCustom, parts, settings);
     case 'page':
       return <PageView params={{ sharedId: descriptor.pageId }} />;
     case 'entity':
-      if (isEntityViewerV2Enabled(settings?.features)) {
-        return <Navigate to={`entity/${descriptor.entityId}`} replace />;
-      }
-      return <ViewerRoute params={{ sharedId: descriptor.entityId }} />;
+      return isEntityViewerV2Enabled(settings?.features) ? (
+        <Navigate to={`entity/${descriptor.entityId}`} replace />
+      ) : (
+        <ViewerRoute params={{ sharedId: descriptor.entityId }} />
+      );
     case 'navigate':
       return <Navigate to={descriptor.navigateTo} />;
     default:
@@ -207,19 +222,23 @@ const buildIndexElement = (
   }
 };
 
-const getRoutesLayout = (
-  settings: ClientSettings | undefined,
-  indexElement: React.ReactNode,
-  headers?: IncomingHttpHeaders,
-  defaultToLibrary?: boolean,
-  services: V2Services = httpServices
-) => (
+type RoutesLayoutInput = {
+  settings: ClientSettings | undefined;
+  indexElement: React.ReactNode;
+  headers?: IncomingHttpHeaders;
+  defaultToLibrary?: boolean;
+  services?: V2Services;
+};
+
+const getRoutesLayout = ({
+  settings,
+  indexElement,
+  headers,
+  defaultToLibrary,
+  services = httpServices,
+}: RoutesLayoutInput) => (
   <Route errorElement={<RouteErrorBoundary />}>
-    <Route
-      index
-      element={indexElement}
-      {...(defaultToLibrary ? { handle: { library: true } } : {})}
-    />
+    <Route index element={indexElement} handle={defaultToLibrary ? { library: true } : undefined} />
     <Route path="login" element={<Login />} />
     {isLibraryV2Enabled(settings?.features) ? (
       <>
@@ -335,6 +354,11 @@ const getRoutesLayout = (
         path="collection"
         element={adminsOnlyRoute(<Collection />)}
         loader={collectionLoader(headers)}
+      />
+      <Route
+        path="theming"
+        element={adminsOnlyRoute(<Theming />)}
+        loader={themingLoader(headers)}
       />
       <Route
         path="users"
@@ -522,18 +546,29 @@ const languageLayout = (langKey: string, layout: React.JSX.Element) => (
   </Route>
 );
 
-const getRoutes = (
-  settings: ClientSettings | undefined,
-  userId: string | undefined,
-  headers?: IncomingHttpHeaders,
-  indexComponents?: IndexComponents,
-  services: V2Services = httpServices
-) => {
+const getRoutes = ({
+  settings,
+  userId,
+  headers,
+  indexComponents,
+  services = httpServices,
+}: {
+  settings: ClientSettings | undefined;
+  userId: string | undefined;
+  headers?: IncomingHttpHeaders;
+  indexComponents?: IndexComponents;
+  services?: V2Services;
+}) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents, settings);
-  const { parameters } = descriptor;
-  const { defaultToLibrary } = descriptor;
-  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary, services);
+  const { parameters, defaultToLibrary } = descriptor;
+  const layout = getRoutesLayout({
+    settings,
+    indexElement,
+    headers,
+    defaultToLibrary,
+    services,
+  });
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route
