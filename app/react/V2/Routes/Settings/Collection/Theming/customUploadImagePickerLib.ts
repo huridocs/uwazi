@@ -107,9 +107,19 @@ const sizeRuleKey = (sizeRule: ImageSizeRule | undefined): string =>
       ].join(':')
     : '';
 
+const galleryImages = (builtinFiles: FileType[], files: FileType[]) => {
+  const builtinUrls = new Set(builtinFiles.map(assetUrl).filter(Boolean));
+  const uploaded = files.filter(file => {
+    const url = assetUrl(file);
+    return isImageFile(file) && !builtinUrls.has(url);
+  });
+  return [...builtinFiles, ...uploaded];
+};
+
 export type { ImageSizeRule, ImageFeedback, ImageDimensions };
 export {
   assetUrl,
+  galleryImages,
   isImageFile,
   loadImageDimensions,
   loadFileDimensions,

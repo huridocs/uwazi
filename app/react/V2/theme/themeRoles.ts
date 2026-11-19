@@ -1,5 +1,14 @@
 import { getAccessibleForegroundOnBackground, mixHex } from '#shared/utils/contrast.js';
+import { normalizeHex } from '#V2/theme/themePaletteSort.js';
+import { PRESET_DEFINITIONS } from '#V2/theme/tokens.js';
 import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
+
+const legacyStockPage = (page: string) =>
+  (['light', 'dark'] as const).some(
+    mode =>
+      normalizeHex(PRESET_DEFINITIONS.legacy.modes[mode]['--color-theme-bg-primary']) ===
+      normalizeHex(page)
+  );
 
 type ThemeRoles = {
   surface: {
@@ -76,7 +85,7 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       overlay: resolved['--color-theme-bg-overlay'],
       selected: resolved['--color-theme-bg-selected'],
       parchment:
-        presetId === 'legacy'
+        presetId === 'legacy' && legacyStockPage(resolved['--color-theme-bg-primary'])
           ? resolved['--color-theme-bg-selected']
           : resolved['--color-theme-bg-primary'],
     },

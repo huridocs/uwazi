@@ -10,7 +10,7 @@ type LanguageSelectOption<T extends string = string> = {
   iso6391?: string;
 };
 
-type LanguageSelectAppearance = 'default' | 'compact';
+type LanguageSelectAppearance = 'default' | 'compact' | 'header';
 
 type LanguageSelectProps<T extends string = string> = {
   value: T;
@@ -26,11 +26,19 @@ type LanguageSelectProps<T extends string = string> = {
   footer?: React.ReactNode;
 };
 
+const chevronClass = (appearance: LanguageSelectAppearance) => {
+  if (appearance === 'header') return 'size-3.5 shrink-0';
+  if (appearance === 'compact') return 'size-2.5 shrink-0 text-ink-tertiary';
+  return 'size-3.5 shrink-0 text-ink-tertiary';
+};
+
 const triggerClassByAppearance: Record<LanguageSelectAppearance, string> = {
   default:
     'inline-flex h-8 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
   compact:
     'inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden rounded border border-border bg-paper py-0.5 ps-2 pe-1.5 text-tiny font-semibold text-ink-secondary transition-colors hover:bg-warm focus:outline-none focus-visible:ring-1 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
+  header:
+    'header-bar-button inline-flex h-8 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md border ps-2.5 pe-2 text-tab font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
 };
 
 const optionClassName = (isHighlighted: boolean, isSelected: boolean) => {
@@ -104,14 +112,7 @@ const LanguageSelect = <T extends string>({
         className={triggerClassByAppearance[appearance]}
       >
         <span className="truncate">{triggerLabel}</span>
-        <ChevronDownIcon
-          className={
-            appearance === 'compact'
-              ? 'size-2.5 shrink-0 text-ink-tertiary'
-              : 'size-3.5 shrink-0 text-ink-tertiary'
-          }
-          aria-hidden
-        />
+        <ChevronDownIcon className={chevronClass(appearance)} aria-hidden />
       </button>
       <AnchoredPortal
         open={open && !disabled}

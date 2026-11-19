@@ -2,27 +2,32 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
+import { useThemeScope } from '#V2/theme/themeScopeContext.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
+import { selectThemePreset } from '#V2/theme/themePresetBackup.js';
 import {
   appliedTheme,
   CHROME_OVERRIDE_VAR_KEYS,
   getChromeStyleOverrides,
-  getCustomThemeVars,
-  getThemeAsset,
   getThemeAssetPresetId,
+  themeAssetsForPreset,
+  themeAssetsFromImport,
   getPresetId,
-  getPresetVars,
   isValidHex,
   mergeScopedThemeAndChrome,
   NAMED_THEMES,
-  parseThemeInstanceImportJson,
+  parseThemeInstanceImportText,
   SEMANTIC_VAR_KEYS,
-  THEME_EDITOR_MODE_KEY,
+  headerColorsFromBar,
+  semanticColorsFromEdit,
+  settingsColorsFromRail,
+  simpleChromeFromBar,
   THEME_PALETTE,
   THEME_MODES,
-  stripChromeStorageKeysAbsentFromImport,
   themeStorageKey,
   toCanonicalThemeVars,
+  themeVarsFromInstanceImport,
+  simpleBaseFromFile,
   type ChromeOverrideVarKey,
   type SemanticVarKey,
   type ThemeAssets,
@@ -30,35 +35,26 @@ import {
 } from '#V2/theme/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { ThemeColorsSection } from './ThemeColorsSection.js';
+import type { ThemeVarsChange } from './themeTokenFocus.js';
 import { ThemePresetSection } from './ThemePresetSection.js';
 import { ThemePreviewSection } from './ThemePreviewSection.js';
 
-type ThemeSelectorProps = {
-  value: Record<string, string | undefined>;
-  onChange: (value: Record<string, string | undefined>) => void;
-  themeAssets?: ThemeAssets;
-  onThemeAssetsChange?: (value: ThemeAssets) => void;
-  siteLogo?: string | undefined;
-  favicon?: string | undefined;
-  panelOpen?: boolean;
+type ThemeVars = Record<string, string | undefined>;
+
+const storedVar = (current: ThemeVars, key: string, nextValue: string | undefined): ThemeVars => {
+  const next = { ...current };
+  if (nextValue === undefined || nextValue === '') delete next[key];
+  else next[key] = nextValue;
+  return next;
 };
 
-const ThemeSelector = ({
-  value,
-  onChange,
-  themeAssets,
-  onThemeAssetsChange,
-  siteLogo,
-  favicon,
-  panelOpen,
-}: ThemeSelectorProps) => {
-  const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
-  const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
-  const selectedPreset = getPresetId(themeVars, true);
-  const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
-  const wasPanelOpen = React.useRef(false);
-  const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
-  const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
+const useThemePreview = ({
+  themeVars,
+  previewMode,
+}: {
+  themeVars: ThemeVars;
+  previewMode: ThemeMode;
+}) => {
   const resolvedPreviewTheme = React.useMemo(
     () => appliedTheme(themeVars, previewMode, true),
     [themeVars, previewMode]
@@ -90,21 +86,41 @@ const ThemeSelector = ({
       ),
     [themeVars, resolvedMergedPreview]
   );
+  return { resolvedPreviewTheme, resolvedMergedPreview, colorOptions };
+};
 
-  const update = (key: string, nextValue: string | undefined) => {
-    const next = { ...themeVars };
-
-    if (nextValue === undefined || nextValue === '') {
-      delete next[key];
-    } else {
-      next[key] = nextValue;
-    }
-
-    onChange(next);
-  };
-
+const useThemeEdits = ({
+  onChange,
+  themeAssets,
+  onThemeAssetsChange,
+  themeVars,
+}: {
+  onChange: ThemeVarsChange;
+  themeAssets?: ThemeAssets;
+  onThemeAssetsChange?: (value: ThemeAssets) => void;
+  themeVars: ThemeVars;
+}) => {
   const updateModeVar = (mode: ThemeMode, key: SemanticVarKey, nextValue: string | undefined) => {
-    update(themeStorageKey(mode, key), nextValue);
+    onChange(current => {
+      const resolved = appliedTheme(current, mode, true);
+      const related =
+        nextValue &&
+        semanticColorsFromEdit(
+          {
+            themeVars: current,
+            mode,
+            hex: nextValue,
+            context: {
+              page: resolved['--color-theme-bg-primary'],
+              surface: resolved['--color-theme-bg-surface'],
+              text: resolved['--color-theme-text-primary'],
+            },
+          },
+          key
+        );
+      if (!related) return storedVar(current, themeStorageKey(mode, key), nextValue);
+      return related;
+    });
   };
 
   const updateChromeModeVar = (
@@ -112,55 +128,42 @@ const ThemeSelector = ({
     key: ChromeOverrideVarKey,
     nextValue: string | undefined
   ) => {
-    update(themeStorageKey(mode, key), nextValue);
+    onChange(current => {
+      if (key === '--color-theme-chrome-app-bar') {
+        return headerColorsFromBar(current, mode, nextValue);
+      }
+      if (key === '--color-theme-chrome-settings-rail-bg' && nextValue) {
+        return settingsColorsFromRail(current, mode, nextValue);
+      }
+      return storedVar(current, themeStorageKey(mode, key), nextValue);
+    });
   };
 
   const setSimpleChromeBar = (mode: ThemeMode, hex: string | undefined) => {
-    const next: Record<string, string | undefined> = {
-      ...themeVars,
-      [THEME_EDITOR_MODE_KEY]: 'simple',
-    };
-    CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
-      delete next[themeStorageKey(mode, key)];
-    });
-    if (hex) {
-      next[themeStorageKey(mode, '--color-theme-chrome-app-bar')] = hex;
-    }
-    onChange(next);
+    onChange(current => simpleChromeFromBar(current, mode, hex));
   };
 
   const handleImportThemeInstanceText = (text: string) => {
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(text);
-    } catch {
-      notify(t('System', 'Theme instance file invalid', null, false), 'error');
-      return;
-    }
-    const parsed = parseThemeInstanceImportJson(parsedJson);
+    const parsed = parseThemeInstanceImportText(text);
     if ('error' in parsed) {
       notify(t('System', 'Theme instance file invalid', null, false), 'error', parsed.error);
       return;
     }
-    const materialized = getCustomThemeVars(themeVars, true);
-    const withoutStaleChrome = stripChromeStorageKeysAbsentFromImport(materialized, parsed.flat);
-    const next = { ...withoutStaleChrome, ...parsed.flat, [THEME_EDITOR_MODE_KEY]: 'advanced' };
+    const next = themeVarsFromInstanceImport(
+      parsed.flat,
+      parsed.editorMode,
+      simpleBaseFromFile(parsed.presetId, parsed.assetPreset)
+    );
     onChange(next);
-    onThemeAssetsChange?.({
-      ...themeAssets,
-      preset: getThemeAssetPresetId(themeAssets, next, true),
-    });
+    onThemeAssetsChange?.(themeAssetsFromImport(themeAssets, parsed.presetId, parsed.assetPreset));
     notify(t('System', 'Theme colors imported', null, false), 'success');
   };
 
   const handleSelectPreset = (presetId: (typeof NAMED_THEMES)[number]['id']) => {
-    onChange(presetId === 'custom' ? getCustomThemeVars(themeVars, true) : getPresetVars(presetId));
+    onChange(current => selectThemePreset(current, presetId));
 
     if (presetId === 'default' || presetId === 'legacy') {
-      onThemeAssetsChange?.({
-        ...themeAssets,
-        preset: presetId,
-      });
+      onThemeAssetsChange?.(themeAssetsForPreset(themeAssets, presetId));
     }
 
     if (presetId === 'custom') {
@@ -170,6 +173,55 @@ const ThemeSelector = ({
       });
     }
   };
+
+  return {
+    updateModeVar,
+    updateChromeModeVar,
+    setSimpleChromeBar,
+    handleImportThemeInstanceText,
+    handleSelectPreset,
+  };
+};
+
+type ThemeSelectorProps = {
+  value: Record<string, string | undefined>;
+  onChange: ThemeVarsChange;
+  themeAssets?: ThemeAssets;
+  onThemeAssetsChange?: (value: ThemeAssets) => void;
+  panelOpen?: boolean;
+  children?: React.ReactNode;
+};
+
+const paintedOrStoredMode = (painted: ThemeMode | undefined, stored: ThemeMode) =>
+  painted ?? stored;
+
+const ThemeSelector = ({
+  value,
+  onChange,
+  themeAssets,
+  onThemeAssetsChange,
+  panelOpen,
+  children,
+}: ThemeSelectorProps) => {
+  const activeThemeMode = paintedOrStoredMode(
+    useThemeScope()?.mode,
+    useAtomValue(effectiveThemeModeAtom)
+  );
+  const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
+  const selectedPreset = getPresetId(themeVars, true);
+  const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
+  const wasPanelOpen = React.useRef(false);
+  const { resolvedPreviewTheme, resolvedMergedPreview, colorOptions } = useThemePreview({
+    themeVars,
+    previewMode,
+  });
+  const {
+    updateModeVar,
+    updateChromeModeVar,
+    setSimpleChromeBar,
+    handleImportThemeInstanceText,
+    handleSelectPreset,
+  } = useThemeEdits({ onChange, themeAssets, onThemeAssetsChange, themeVars });
 
   React.useEffect(() => {
     setPreviewMode(activeThemeMode);
@@ -185,28 +237,21 @@ const ThemeSelector = ({
 
   return (
     <div className="flex flex-col gap-6">
+      <ThemePreviewSection previewMode={previewMode} themeVars={themeVars} />
       <ThemePresetSection
         themeVars={themeVars}
         selectedPreset={selectedPreset}
         onSelectPreset={handleSelectPreset}
       />
-
-      <ThemePreviewSection
-        previewMode={previewMode}
-        setPreviewMode={setPreviewMode}
-        themeVars={themeVars}
-        siteLogo={previewLogo}
-        favicon={previewFavicon}
-      />
-
+      {children}
       <ThemeColorsSection
         previewMode={previewMode}
         selectedPreset={selectedPreset}
+        assetPreset={themeAssets?.preset}
         themeVars={themeVars}
         resolvedPreviewTheme={resolvedPreviewTheme}
         resolvedMergedPreview={resolvedMergedPreview}
         colorOptions={colorOptions}
-        getResolved={mode => appliedTheme(themeVars, mode, true)}
         updateModeVar={updateModeVar}
         updateChromeModeVar={updateChromeModeVar}
         onImportThemeInstanceText={handleImportThemeInstanceText}

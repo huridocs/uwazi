@@ -1,15 +1,13 @@
 const MIN_CROP = 8;
 const MAX_CROP_SCALE = 2;
-const HEADER_LOGO_MAX_WIDTH = 200;
+const HEADER_LOGO_MAX_WIDTH = 128;
 const HEADER_LOGO_MAX_HEIGHT = 48;
 
 type Crop = { x: number; y: number; width: number; height: number };
 type Bounds = { width: number; height: number };
 
-const logoFrameClass = (variant: 'header' | 'preview' = 'header') =>
-  `logo-img h-auto max-h-12 w-auto shrink-0 object-contain ${
-    variant === 'preview' ? 'max-w-[12.5rem]' : 'max-w-[8rem] sm:max-w-[10rem] lg:max-w-[12.5rem]'
-  }`;
+const logoFrameClass = (_variant: 'header' | 'preview' = 'header') =>
+  'logo-img h-auto max-h-12 w-auto max-w-32 shrink-0 object-contain';
 
 const logoDisplaySize = (width: number, height: number) => {
   if (width === 0 || height === 0) return { width: 0, height: 0 };
