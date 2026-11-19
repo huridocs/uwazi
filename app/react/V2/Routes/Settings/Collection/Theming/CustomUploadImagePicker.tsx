@@ -11,6 +11,7 @@ import { CustomUploadImagePickerModal } from './CustomUploadImagePickerModal.js'
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
 import { LogoAdjustModal } from './LogoAdjustModal.js';
 import { useCustomUploadImagePickerLogic } from './useCustomUploadImagePickerLogic.js';
+import { themeAssetUploadName, type ThemeUploadSlot } from './themeLogoUpload.js';
 
 const defaultPreviewClass =
   'max-h-full max-w-full rounded object-contain [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--color-theme-text-primary)_45%,transparent),0_0_0_2px_color-mix(in_srgb,var(--color-theme-surface-raised,var(--color-theme-bg-surface))_92%,transparent)]';
@@ -32,6 +33,7 @@ type CustomUploadImagePickerProps = {
   sizeRule?: ImageSizeRule;
   emptyGalleryHint?: React.ReactNode;
   adjustable?: boolean;
+  uploadSlot?: ThemeUploadSlot;
   projectHeaderLogo?: boolean;
   builtinFiles?: FileType[];
 };
@@ -50,6 +52,7 @@ const CustomUploadImagePicker = ({
   sizeRule,
   emptyGalleryHint,
   adjustable = false,
+  uploadSlot,
   projectHeaderLogo = false,
   builtinFiles = [],
 }: CustomUploadImagePickerProps) => {
@@ -60,6 +63,7 @@ const CustomUploadImagePicker = ({
     value,
     onChange,
     adjustable,
+    uploadSlot,
   });
   const urlValidationControl =
     logic.validationFeedback === null ? null : (
@@ -166,6 +170,9 @@ const CustomUploadImagePicker = ({
       {logic.adjustSrc ? (
         <LogoAdjustModal
           src={logic.adjustSrc}
+          uploadName={
+            uploadSlot ? themeAssetUploadName(uploadSlot, 'png') : 'uwazi-theme-logo-light.png'
+          }
           onClose={() => logic.setAdjustSrc(null)}
           onApply={async (file, dimensions) => {
             await logic.submitAdjusted(file, dimensions);

@@ -19,6 +19,7 @@ import {
   type PendingConfirm,
   type UploadController,
 } from './customUploadPickerUpload.js';
+import { namedThemeUpload, type ThemeUploadSlot } from './themeLogoUpload.js';
 
 const localFileKey = (file: File) => `${file.name}:${file.size}:${file.lastModified}`;
 
@@ -29,6 +30,7 @@ type Args = {
   value: string | undefined;
   onChange: (url: string) => void;
   adjustable?: boolean;
+  uploadSlot?: ThemeUploadSlot;
 };
 
 type PickerBasics = ReturnType<typeof useCustomUploadPickerBasics>;
@@ -38,6 +40,7 @@ type PickerController = UploadController & {
   sizeRule: ImageSizeRule | undefined;
   validateFiles: Validators['validateFiles'];
   uploadService: PickerBasics['uploadService'];
+  uploadSlot?: ThemeUploadSlot;
 };
 
 const useUploadDraft = (open: boolean) => {
@@ -115,7 +118,9 @@ const usePickerActions = (controller: PickerController) => {
     controller.uploadService.onProgress((filename, progress) => {
       controller.setUploadProgress({ filename, progress });
     });
-    const responses = await controller.uploadService.upload([...pendingFiles]);
+    const responses = await controller.uploadService.upload(
+      pendingFiles.map(file => namedThemeUpload(file, controller.uploadSlot))
+    );
     await publishUpload(controller, responses, async () => {
       await revalidator.revalidate();
     });
@@ -192,6 +197,7 @@ export const useCustomUploadImagePickerLogic = ({
   value,
   onChange,
   adjustable = false,
+  uploadSlot,
 }: Args) => {
   const [open, setOpen] = useState(false);
   const draft = useUploadDraft(open);
@@ -222,6 +228,7 @@ export const useCustomUploadImagePickerLogic = ({
     validateAssetUrl,
     validateFiles,
     uploadService,
+    uploadSlot,
   });
 
   return {

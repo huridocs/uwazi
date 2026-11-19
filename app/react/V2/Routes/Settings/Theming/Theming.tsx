@@ -27,6 +27,7 @@ import {
   themeLogotypeImageSizeRule,
 } from '../Collection/Theming/brandImageUploadRules.js';
 import { buildThemeSavePayload, savedThemeFields } from '../Collection/Theming/themeSavePayload.js';
+import { removeReplacedThemeAssets } from '../Collection/Theming/themeLogoUpload.js';
 import { themeDraftChanged, useLiveThemeDraft } from './useLiveThemeDraft.js';
 import type { SavedTheme } from './useLiveThemeDraft.js';
 
@@ -122,6 +123,7 @@ const persistTheme = async ({
     return;
   }
   applyThemeResponse({ response, setSettings, setThemeVars, setThemeAssets, commitSavedTheme });
+  await removeReplacedThemeAssets(themeAssets);
   notify('success', t('System', 'Settings updated', null, false));
   await revalidate();
 };
@@ -196,6 +198,7 @@ const Theming = () => {
                       builtinFiles={UWAZI_DEFAULT_LOGOS}
                       previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-fit max-w-full`}
                       adjustable
+                      uploadSlot={{ kind: 'logo', mode }}
                       projectHeaderLogo
                     />
                   </SurfacePanel>
@@ -221,6 +224,7 @@ const Theming = () => {
                       sizeRule={faviconImageSizeRule}
                       emptyGalleryHint={<Translate>Favicon no images hint</Translate>}
                       builtinFiles={UWAZI_DEFAULT_FAVICONS}
+                      uploadSlot={{ kind: 'favicon', mode }}
                       previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-14`}
                     />
                   </SurfacePanel>

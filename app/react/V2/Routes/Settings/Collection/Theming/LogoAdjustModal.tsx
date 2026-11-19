@@ -24,6 +24,7 @@ type Drag = { mode: string; startX: number; startY: number; origin: Crop };
 
 type LogoAdjustModalProps = {
   src: string;
+  uploadName: string;
   onClose: () => void;
   onApply: (file: File, dimensions: ImageDimensions) => void | Promise<void>;
 };
@@ -115,7 +116,7 @@ const useLogoCrop = () => {
   };
 };
 
-const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
+const LogoAdjustModal = ({ src, uploadName, onClose, onApply }: LogoAdjustModalProps) => {
   const session = useLogoCrop();
   const applyingRef = useRef(false);
   const [applying, setApplying] = useState(false);
@@ -140,7 +141,7 @@ const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
         releaseApply();
         return;
       }
-      void Promise.resolve(onApply(new File([blob], 'logo.png', { type: 'image/png' }), size))
+      void Promise.resolve(onApply(new File([blob], uploadName, { type: 'image/png' }), size))
         .catch(() => undefined)
         .finally(releaseApply);
     }, 'image/png');

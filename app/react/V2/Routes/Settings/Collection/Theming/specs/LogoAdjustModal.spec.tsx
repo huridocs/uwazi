@@ -15,6 +15,16 @@ const loadSource = () => {
   });
 };
 
+const pendingApply = () => {
+  let finish: () => void = () => undefined;
+  const onApply = jest.fn(async () => {
+    await new Promise<void>(resolve => {
+      finish = () => resolve();
+    });
+  });
+  return { onApply, finish: () => finish() };
+};
+
 describe('LogoAdjustModal', () => {
   beforeEach(() => {
     const getContext: HTMLCanvasElement['getContext'] = () => null;
@@ -26,18 +36,13 @@ describe('LogoAdjustModal', () => {
   });
 
   it('keeps Apply disabled until the upload finishes', async () => {
-    let finish: () => void = () => undefined;
-    let calls = 0;
+    const pending = pendingApply();
     render(
       <LogoAdjustModal
         src="/logo.png"
+        uploadName="uwazi-theme-logo-light.png"
         onClose={() => undefined}
-        onApply={async () => {
-          calls += 1;
-          await new Promise<void>(resolve => {
-            finish = () => resolve();
-          });
-        }}
+        onApply={pending.onApply}
       />
     );
     loadSource();
@@ -46,10 +51,14 @@ describe('LogoAdjustModal', () => {
       apply.click();
       apply.click();
     });
-    expect(calls).toBe(1);
+    expect(pending.onApply).toHaveBeenCalledTimes(1);
+    expect(pending.onApply).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'uwazi-theme-logo-light.png' }),
+      expect.anything()
+    );
     expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled();
     await act(async () => {
-      finish();
+      pending.finish();
     });
     expect(screen.getByRole('button', { name: 'Apply' })).toBeEnabled();
   });
