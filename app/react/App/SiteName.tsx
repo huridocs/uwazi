@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { I18NLink } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { logoFrameClass } from '#V2/theme/logoFrame.js';
+import { useThemeScope } from '#V2/theme/themeScopeContext.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
 interface SiteNameProps {
@@ -14,7 +15,8 @@ interface SiteNameProps {
 
 const useCollectionMarks = () => {
   const settings = useAtomValue(settingsAtom);
-  const themeMode = useAtomValue(effectiveThemeModeAtom);
+  const storedMode = useAtomValue(effectiveThemeModeAtom);
+  const themeMode = useThemeScope()?.mode ?? storedMode;
   const enabled = Boolean(settings.themeCustomization);
   return { settings, themeMode, enabled };
 };

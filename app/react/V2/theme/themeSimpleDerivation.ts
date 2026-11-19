@@ -1,6 +1,7 @@
 import { mixHex } from '#shared/utils/contrast.js';
 import { PRESET_DEFINITIONS, SEMANTIC_VAR_KEYS, THEME_MODES } from './tokens.js';
 import { normalizeHex } from './themePaletteSort.js';
+import { headerColorsFromBar } from './headerColorSuggestions.js';
 import type {
   EditableThemeVars,
   SemanticVarKey,
@@ -10,6 +11,17 @@ import type {
 } from './tokens.js';
 
 const THEME_EDITOR_MODE_KEY = '__themeEditorMode' as const;
+const THEME_SIMPLE_BASE_KEY = '__themeSimpleBase' as const;
+
+const simpleBasePreset = (
+  selectedPreset: ThemePresetId,
+  assetPreset: 'default' | 'legacy' | undefined,
+  storedBase?: string
+): 'default' | 'legacy' => {
+  if (selectedPreset === 'legacy' || selectedPreset === 'default') return selectedPreset;
+  if (storedBase === 'legacy' || storedBase === 'default') return storedBase;
+  return assetPreset === 'legacy' ? 'legacy' : 'default';
+};
 
 const SIMPLE_SEMANTIC_ANCHOR_KEYS = [
   '--color-theme-accent-primary',
@@ -60,6 +72,7 @@ const recomputeSimpleThemeVarsFromAnchors = (
   const next: Record<string, string | undefined> = {
     ...themeVars,
     [THEME_EDITOR_MODE_KEY]: 'simple',
+    [THEME_SIMPLE_BASE_KEY]: basePreset,
   };
   for (const mode of THEME_MODES) {
     const resolved = getResolved(mode);
@@ -74,13 +87,19 @@ const recomputeSimpleThemeVarsFromAnchors = (
   return next;
 };
 
-const applySimpleModeSemanticsForMode = (
-  themeVars: Record<string, string | undefined>,
-  mode: ThemeMode,
-  basePreset: ThemePresetId,
-  anchorPatch: Partial<Record<SimpleSemanticAnchorKey, string>>,
-  getResolved: (mode: ThemeMode) => ResolvedThemeVars
-): Record<string, string | undefined> => {
+const applySimpleModeSemanticsForMode = ({
+  themeVars,
+  mode,
+  basePreset,
+  anchorPatch,
+  getResolved,
+}: {
+  themeVars: Record<string, string | undefined>;
+  mode: ThemeMode;
+  basePreset: ThemePresetId;
+  anchorPatch: Partial<Record<SimpleSemanticAnchorKey, string>>;
+  getResolved: (mode: ThemeMode) => ResolvedThemeVars;
+}): Record<string, string | undefined> => {
   const resolved = getResolved(mode);
   const anchors = Object.fromEntries(
     SIMPLE_SEMANTIC_ANCHOR_KEYS.map(k => [
@@ -92,6 +111,7 @@ const applySimpleModeSemanticsForMode = (
   const next: Record<string, string | undefined> = {
     ...themeVars,
     [THEME_EDITOR_MODE_KEY]: 'simple',
+    [THEME_SIMPLE_BASE_KEY]: basePreset,
   };
   for (const sk of SEMANTIC_VAR_KEYS) {
     next[themeStorageKey(mode, sk)] = semantics[sk];
@@ -99,11 +119,25 @@ const applySimpleModeSemanticsForMode = (
   return next;
 };
 
+const simpleChromeFromBar = (
+  themeVars: Record<string, string | undefined>,
+  mode: ThemeMode,
+  hex: string | undefined
+): Record<string, string | undefined> => ({
+  ...headerColorsFromBar(themeVars, mode, hex),
+  [THEME_EDITOR_MODE_KEY]: 'simple',
+});
+
 export {
   THEME_EDITOR_MODE_KEY,
+  THEME_SIMPLE_BASE_KEY,
+  simpleBasePreset,
   SIMPLE_SEMANTIC_ANCHOR_KEYS,
   buildSimpleModeSemantics,
   recomputeSimpleThemeVarsFromAnchors,
   applySimpleModeSemanticsForMode,
+  simpleChromeFromBar,
+  deriveBgMuted,
+  deriveTextMutedStep,
 };
 export type { SimpleSemanticAnchorKey };

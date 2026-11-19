@@ -3,7 +3,7 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { useForm, UseFormSetValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { useSetAtom } from 'jotai';
 import * as FilesAPI from '#V2/api/files/index.js';
@@ -25,11 +25,8 @@ import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { SeoSettingsCard } from './SeoSettingsCard.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
-import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-import { NotifyArgs } from '#V2/atoms/requestStatusTypes.js';
 import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
-import { applySavedTheme, buildThemeSavePayload } from './Theming/themeSavePayload.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -103,38 +100,18 @@ const dateOptions = () => {
   ];
 };
 
-const saveCollectionTheme = async (
-  themeVars: ClientSettings['themeVars'],
-  themeAssets: ClientSettings['themeAssets'],
-  {
-    notify,
-    setSettings,
-    setValue,
-    revalidate,
-  }: {
-    notify: (...args: NotifyArgs) => void;
-    setSettings: (update: (prev: ClientSettings) => ClientSettings) => void;
-    setValue: UseFormSetValue<ClientSettings>;
-    revalidate: () => Promise<void>;
-  }
-) => {
-  const payload = buildThemeSavePayload(themeVars ?? {}, themeAssets ?? {});
-  const [response, error] = await SettingsAPI.save(payload);
-  if (error) {
-    notify(
-      'error',
-      t('System', 'An error occurred', null, false),
-      undefined,
-      error.message || undefined
-    );
-    return false;
-  }
-  setSettings(prev => mergeClientSettings(prev, response));
-  if (response) applySavedTheme(response, setValue);
-  notify('success', t('System', 'Settings updated', null, false));
-  await revalidate();
-  return true;
-};
+const templateChoices = (templates: Template[]) =>
+  templates.map(template => ({
+    label: template.name,
+    value: template._id,
+  }));
+
+const mapLayerChoices = () => [
+  { label: t('System', 'Dark', null, false), value: 'Dark' },
+  { label: t('System', 'Streets', null, false), value: 'Streets' },
+  { label: t('System', 'Satellite', null, false), value: 'Satellite' },
+  { label: t('System', 'Hybrid', null, false), value: 'Hybrid' },
+];
 
 const Collection = () => {
   const { settings, templates, themeCustomization, customUploadFiles } = useLoaderData() as {
@@ -148,7 +125,6 @@ const Collection = () => {
   const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
-  formData.private = !formData.private;
   const {
     register,
     setValue,
@@ -160,6 +136,7 @@ const Collection = () => {
   } = useForm<ClientSettings>({
     defaultValues: {
       ...formData,
+      private: !formData.private,
       themeAssets: formData.themeAssets ?? {},
       themeVars: formData.themeVars ?? {},
       seo: formData.seo ?? {},
@@ -168,13 +145,14 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    const payload = { ...data };
-    if (themeCustomization) {
-      const lightLogo = payload.themeAssets?.siteLogo?.light?.trim();
-      const lightFavicon = payload.themeAssets?.favicon?.light?.trim();
-      if (lightLogo) payload.site_logo = lightLogo;
-      if (lightFavicon) payload.favicon = lightFavicon;
-    }
+    const {
+      themeVars: _themeVars,
+      themeAssets: _themeAssets,
+      site_logo: _siteLogo,
+      favicon: _favicon,
+      ...withoutTheme
+    } = data;
+    const payload = themeCustomization ? { ...withoutTheme } : { ...data };
     payload.private = !payload.private;
     const { themeCustomization: _, ...rest } = payload as SettingsWithThemeFlag;
     const [response, error] = await SettingsAPI.save(rest);
@@ -200,32 +178,6 @@ const Collection = () => {
       </Tooltip>
     </span>
   );
-
-  const templateOptions = templates.map(template => ({
-    label: template.name,
-    value: template._id,
-  }));
-
-  const mapLayersOptions = [
-    { label: t('System', 'Dark', null, false), value: 'Dark' },
-    {
-      label: t('System', 'Streets', null, false),
-      value: 'Streets',
-    },
-    {
-      label: t('System', 'Satellite', null, false),
-      value: 'Satellite',
-    },
-    {
-      label: t('System', 'Hybrid', null, false),
-      value: 'Hybrid',
-    },
-  ];
-
-  const watchedThemeVars = watch('themeVars') ?? {};
-  const watchedThemeAssets = watch('themeAssets') ?? {};
-  const watchedSiteLogo = watch('site_logo');
-  const watchedFavicon = watch('favicon');
 
   return (
     <div className="w-full h-full" data-testid="settings-collection">
@@ -257,25 +209,6 @@ const Collection = () => {
                     previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 bg-[color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] border-[color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]"
                   />
                 ) : null}
-                {themeCustomization && (
-                  <ThemeSelectionCard
-                    themeVars={watchedThemeVars}
-                    onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
-                    themeAssets={watchedThemeAssets}
-                    onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
-                    siteLogo={watchedSiteLogo}
-                    favicon={watchedFavicon}
-                    customUploadFiles={customUploadFiles}
-                    onSaveTheme={async () =>
-                      saveCollectionTheme(watch('themeVars'), watch('themeAssets'), {
-                        notify,
-                        setSettings,
-                        setValue,
-                        revalidate: async () => revalidator.revalidate(),
-                      })
-                    }
-                  />
-                )}
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default View</Translate>}
@@ -442,7 +375,7 @@ const Collection = () => {
                       <Translate>Whitelisted templates</Translate>,
                       tips.publicForm[2]
                     )}
-                    options={templateOptions}
+                    options={templateChoices(templates)}
                     onChange={(newValues: any) => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
@@ -474,7 +407,7 @@ const Collection = () => {
                 <div className="sm:col-span-2">
                   <MultiSelect
                     label={labelWithTip(<Translate>Map Layers</Translate>, tips.mapLayers)}
-                    options={mapLayersOptions}
+                    options={mapLayerChoices()}
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
