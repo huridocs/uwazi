@@ -220,10 +220,7 @@ const getRoutesLayout = (
       element={indexElement}
       {...(defaultToLibrary ? { handle: { library: true } } : {})}
     />
-    <Route
-      path="login"
-      element={<Login />}
-    />
+    <Route path="login" element={<Login />} />
     {isLibraryV2Enabled(settings?.features) ? (
       <>
         <Route
@@ -320,10 +317,7 @@ const getRoutesLayout = (
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="page-draft/:sharedId" element={<PageDraftView />} />
     <Route path="page-draft/:sharedId/:slug" element={<PageDraftView />} />
-    <Route
-      path="setpassword/:key"
-      element={<SetPassword />}
-    />
+    <Route path="setpassword/:key" element={<SetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={createAccountLoader(services)(headers)} />
