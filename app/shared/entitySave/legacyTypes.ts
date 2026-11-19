@@ -1,3 +1,4 @@
+import type { MetadataAttributesSidecar } from './metadataAttributes.js';
 import type { TemplateProperty } from './types.js';
 
 type MediaProperty = TemplateProperty & { type: 'image' | 'media' };
@@ -33,6 +34,7 @@ type WrapableEntity = {
   template?: unknown;
   metadata?: Record<string, unknown> | null;
   attachments?: ReadonlyArray<WrapableAttachment> | null;
+  metadataAttributes?: MetadataAttributesSidecar;
 };
 
 type LegacyEntity = WrapableEntity & {

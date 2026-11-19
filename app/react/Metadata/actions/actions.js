@@ -10,6 +10,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { generateID } from '#shared/IDGenerator.js';
+import { collectMetadataAttributes } from '#shared/entitySave/metadataAttributes.js';
 import emptyTemplate from '../helpers/defaultTemplate.js';
 
 function resetReduxForm(form) {
@@ -102,6 +103,18 @@ function checkGeneratedTitle(entity, template) {
   return entity.title;
 }
 
+const loadedFormEntity = (entity, formState) => {
+  const metadataAttributes = collectMetadataAttributes(entity.metadata);
+  const { metadataAttributes: _storedAttributes, ...entityWithoutAttributes } = entity;
+  return {
+    ...entityWithoutAttributes,
+    metadata: formState.metadata,
+    ...(metadataAttributes ? { metadataAttributes } : {}),
+    template: formState.templateId,
+    title: formState.title,
+  };
+};
+
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });
   const defaultTemplate =
@@ -126,7 +139,7 @@ export function loadFetchedInReduxForm(form, entity, templates) {
   // suggestedMetadata remains in metadata-object form (all components consuming it are new).
   return [
     formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, template: templateId, title }),
+    formActions.load(form, loadedFormEntity(entity, { metadata, templateId, title })),
     formActions.setPristine(form),
     actions.set('entityThesauris', entitySelectedOptions),
   ];

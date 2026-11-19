@@ -12,6 +12,7 @@ export default {
       'type',
       'attachments',
       'documents',
+      'metadataAttributes',
     ];
     return Object.assign({}, ...properties.map(p => ({ [p]: data[p] })));
   },
