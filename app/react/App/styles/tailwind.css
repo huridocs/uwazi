@@ -50,6 +50,20 @@
   margin-bottom: 0;
 }
 
+/* Bootstrap gives checkboxes margin-top: 4px, which drops them below the label. */
+.tw-content .login-checkbox {
+  margin: 0;
+}
+
+/* The login header sits in the form column. The global header rule is position:fixed. */
+.tw-content .login-panel-header > header {
+  position: relative;
+  top: auto;
+  width: 100%;
+  min-height: 0;
+  z-index: 20;
+}
+
 .tw-content:not([data-path='settings']) {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

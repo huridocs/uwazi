@@ -6,7 +6,6 @@ import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js
 import { t } from '#app/I18N/index.js';
 
 import { isAuthPath, loginUrl, rememberReturnPath } from '#shared/authReturn.js';
-import { loginV2Enabled } from '#app/utils/loginV2.js';
 import { APIURL } from '../config.js';
 import request from '../../shared/JSONRequest.js';
 
@@ -81,7 +80,7 @@ const handleErrorStatus = error => {
     }
 
     case 401: {
-      if (!isClient || !loginV2Enabled() || isAuthPath(window.location.pathname)) {
+      if (!isClient || isAuthPath(window.location.pathname)) {
         redirect('/login');
         break;
       }

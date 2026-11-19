@@ -18,7 +18,8 @@ body {
   padding-top: 3.25rem;
 }
 
-#app.app-bare {
+#app.app-bare,
+#app.app-bare:has(.header-bar[data-uwazi-header]) {
   padding-top: 0;
 }
 

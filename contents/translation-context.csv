@@ -1634,3 +1634,5 @@ Set a new password,UI text,Set password,Heading when the link resets an existing
 "To complete the account creation process, please create a password for your account.",UI text,Set password,Note shown only on an invitation link.,false
 Repeat password,Field label,Set password,"Second password field, used to confirm the first.",false
 Saving…,Button label,Set password,Submit label while the new password is being saved.,false
+uwazi.io,UI text,Login,Footer link to the Uwazi site. The label is the address itself.,true
+Remember username,Field label,Login,Checkbox that stores only the username in this browser.,false

@@ -229,8 +229,8 @@ Clear selection,Снять выделение
 Clear selection filter,Сбросить фильтр выбора
 Clear sort,Сбросить сортировку
 Click,Нажмите
-"Click records to add them. Cmd + click works anytime.","Нажимайте на записи"
-"Click records to add them. Ctrl + click works anytime.","Нажимайте на записи"
+Click records to add them. Cmd + click works anytime.,Нажимайте на записи
+Click records to add them. Ctrl + click works anytime.,Нажимайте на записи
 Click to fill,"Нажмите, чтобы заполнить"
 Click to select an image,"Нажмите, чтобы выбрать изображение"
 Click to select audio or video,"Нажмите, чтобы выбрать аудио или видео"
@@ -659,7 +659,7 @@ Hide restricted relationships from public,Скрыть связи с огран�
 Hide task,Скрыть задачу
 Hide the matches in,Скрыть совпадения в
 Hide toolbar,Скрыть панель инструментов
-"Hold Shift and click to select from the last record through this one.","Удерживайте Shift и нажмите, чтобы выбрать от последней записи до этой."
+Hold Shift and click to select from the last record through this one.,"Удерживайте Shift и нажмите, чтобы выбрать от последней записи до этой."
 Hours,Часы
 How to combine sources,Как объединить источники
 HTML,HTML
@@ -1199,6 +1199,7 @@ Relevance,Релевантность
 remaining,оставшиеся
 remaining files,оставшиеся файлы
 Remember me,Запомнить меня
+Remember username,Запомнить имя пользователя
 Remote Server Unreachable,Не удается установить соединение с удаленным сервером
 Remove,Удалить
 Remove data source,Удалить источник данных
@@ -1703,6 +1704,7 @@ Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi разработан
 Uwazi label,Подпись Uwazi
 Uwazi UI,Интерфейс Uwazi
+uwazi.io,uwazi.io
 Validating,Проверка
 Validating file structure and headers.,Проверка структуры файла и заголовков.
 Value,Значение

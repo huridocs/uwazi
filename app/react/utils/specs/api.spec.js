@@ -21,8 +21,6 @@ jest.mock('#app/I18N', () => {
 
 import { api } from '#app/utils/api.js';
 import * as I18N from '#app/I18N/index.js';
-import { getStore } from '#shared/atomStore/index.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -211,15 +209,14 @@ describe('api', () => {
         window.location = originalLocation;
       });
 
-      it('should redirect to login', async () => {
+      it('should redirect the site root to login', async () => {
         await testErrorHandling('unauthorized', () => {
           expect(mockRedirect).toHaveBeenCalledWith('/login');
-          expect(assign).not.toHaveBeenCalled();
+          expect(assign).toHaveBeenCalledWith('/login');
         });
       });
 
-      it('should keep the page the reader was on when login v2 is on', async () => {
-        getStore().set(settingsAtom, { features: { devflagloginv2: true } });
+      it('should keep the page the reader was on', async () => {
         window.location.pathname = '/en/library/';
         window.location.search = '?q=some-search';
         await testErrorHandling('unauthorized', () => {
@@ -227,7 +224,6 @@ describe('api', () => {
             '/login?redirect=%2Fen%2Flibrary%2F%3Fq%3Dsome-search'
           );
         });
-        getStore().set(settingsAtom, {});
       });
     });
 
