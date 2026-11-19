@@ -62,5 +62,5 @@ const formatMetadataForForm = (
     return acc;
   }, {});
 
-export { formatMetadataForForm, metadataFormKey, metadataFormPath };
+export { formatMetadataForForm, metadataFormKey, metadataFormPath, toFormMetadataValue };
 export type { FormMetadataProperty };

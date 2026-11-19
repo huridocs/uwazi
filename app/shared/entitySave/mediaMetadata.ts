@@ -134,6 +134,17 @@ type MediaMapContext = {
   types: ReadonlyMap<string, MediaPropertyType>;
 };
 
+const copyMediaAttributes = (
+  mapped: MetadataObjectSchema,
+  existing: MetadataObjectSchema | undefined
+): MetadataObjectSchema => {
+  const { attributes } = existing ?? {};
+  if (attributes === undefined) {
+    return mapped;
+  }
+  return { ...mapped, attributes };
+};
+
 const mapMediaField = (
   name: string,
   values: MetadataObjectSchema[] | undefined,
@@ -150,7 +161,7 @@ const mapMediaField = (
   ) {
     return values;
   }
-  return [mapMediaValue(rawValue, ctx.attachments, propertyType)];
+  return [copyMediaAttributes(mapMediaValue(rawValue, ctx.attachments, propertyType), existing)];
 };
 
 const mapMediaBag = (bag: EntitySaveMetadata, ctx: MediaMapContext): EntitySaveMetadata =>

@@ -21,7 +21,7 @@ jest.mock('../TranslationServiceAvailability', () => ({
   useTranslationServiceAvailability: () => ({ markUnavailable: mockMarkUnavailable }),
 }));
 
-const defaultValues = (): EditEntityFormValues => ({
+const defaultValues = (titleAttributes?: string[]): EditEntityFormValues => ({
   title: 'Hearing',
   template: 't1',
   showIcon: false,
@@ -29,7 +29,12 @@ const defaultValues = (): EditEntityFormValues => ({
   metadata: { description: [{ value: 'Summary' }] },
   translations: {
     es: {
-      title: [{ value: 'Audiencia' }],
+      title: [
+        {
+          value: 'Audiencia',
+          ...(titleAttributes ? { attributes: titleAttributes } : {}),
+        },
+      ],
       description: [{ value: 'Resumen' }],
     },
   },
@@ -60,7 +65,7 @@ const Buttons = () => {
 };
 
 const Harness = () => {
-  const form = useForm<EditEntityFormValues>({ defaultValues: defaultValues() });
+  const form = useForm<EditEntityFormValues>({ defaultValues: defaultValues(['ai_generated']) });
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <FormProvider {...form}>
@@ -168,7 +173,7 @@ describe('useTranslationFieldHandlers', () => {
     fireEvent.click(screen.getByRole('button', { name: 'second' }));
     const values = JSON.parse(screen.getByTestId('values').textContent ?? '{}');
     expect(values.translations.es).toEqual({
-      title: [{ value: 'Hola!' }],
+      title: [{ value: 'Hola!', attributes: ['ai_generated'] }],
       description: [{ value: 'Resumen' }],
     });
     expect(values.touchedTranslations).toEqual({ es: { title: true } });

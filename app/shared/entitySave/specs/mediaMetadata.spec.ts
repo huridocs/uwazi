@@ -35,8 +35,8 @@ describe('mapMediaMetadataForSave', () => {
         template: 'template1',
         title: 'Entity',
         metadata: {
-          image: [{ value: 'localImageId' }],
-          text: [{ value: 'hello' }],
+          image: [{ value: 'localImageId', attributes: ['ai_generated'] }],
+          text: [{ value: 'hello', attributes: ['sync_off'] }],
         },
         attachments: [
           {
@@ -58,8 +58,10 @@ describe('mapMediaMetadataForSave', () => {
 
       const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
-      expect(metadata(prepared).image).toEqual([{ value: '', attachment: 0 }]);
-      expect(metadata(prepared).text).toEqual([{ value: 'hello' }]);
+      expect(metadata(prepared).image).toEqual([
+        { value: '', attachment: 0, attributes: ['ai_generated'] },
+      ]);
+      expect(metadata(prepared).text).toEqual([{ value: 'hello', attributes: ['sync_off'] }]);
     });
 
     it('maps media timelinks with upload ids to attachment indices', () => {

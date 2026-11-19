@@ -97,7 +97,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                 />
                 {hasRange && !disabled ? (
                   <FieldClearButton
-                    onClick={() => onChange([{ value: { from: null, to: null } }])}
+                    onClick={() => onChange([{ ...entries[0], value: { from: null, to: null } }])}
                   />
                 ) : null}
               </div>
@@ -129,7 +129,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                             : null;
                           const nextEntries = entries.map((current, currentIndex) =>
                             currentIndex === index
-                              ? { value: { from: nextFrom, to: current.value.to } }
+                              ? { ...current, value: { from: nextFrom, to: current.value.to } }
                               : current
                           );
                           onChange(nextEntries);
@@ -138,7 +138,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           const nextTo = e.target.value ? parseLocalizedDate(e.target.value) : null;
                           const nextEntries = entries.map((current, currentIndex) =>
                             currentIndex === index
-                              ? { value: { from: current.value.from, to: nextTo } }
+                              ? { ...current, value: { from: current.value.from, to: nextTo } }
                               : current
                           );
                           onChange(nextEntries);
@@ -150,7 +150,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                         disabled={disabled}
                         onClick={() => {
                           if (entries.length === 1) {
-                            onChange([{ value: { from: null, to: null } }]);
+                            onChange([{ ...entry, value: { from: null, to: null } }]);
                             return;
                           }
                           onChange(entries.filter((_, currentIndex) => currentIndex !== index));
