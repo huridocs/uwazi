@@ -33,6 +33,9 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/dashboard', <Translate>Dashboard</Translate>)}</li>
               <li>{renderLink('settings/users', <Translate>Users & Groups</Translate>)}</li>
               <li>{renderLink('settings/collection', <Translate>Collection</Translate>)}</li>
+              {settings.themeCustomization ? (
+                <li>{renderLink('settings/theming', <Translate>Theme and branding</Translate>)}</li>
+              ) : null}
               <li>{renderLink('settings/navlinks', <Translate>Menu</Translate>)}</li>
               <li>{renderLink('settings/pages', <Translate>Pages</Translate>)}</li>
               <li>{renderLink('settings/dataviz', <Translate>Data visualizations</Translate>)}</li>

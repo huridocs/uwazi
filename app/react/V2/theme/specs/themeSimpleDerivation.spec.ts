@@ -1,7 +1,10 @@
+import { checkContrast } from '#shared/utils/contrast.js';
 import {
   buildSimpleModeSemantics,
   recomputeSimpleThemeVarsFromAnchors,
+  simpleBasePreset,
   SIMPLE_SEMANTIC_ANCHOR_KEYS,
+  simpleChromeFromBar,
   type SimpleSemanticAnchorKey,
 } from '#V2/theme/themeSimpleDerivation.js';
 import { appliedTheme } from '#V2/theme/themes.js';
@@ -29,5 +32,38 @@ describe('themeSimpleDerivation', () => {
     expect(next.__themeEditorMode).toBe('simple');
     expect(next['light:--color-theme-text-secondary']).toBeDefined();
     expect(next['dark:--color-theme-text-secondary']).toBeDefined();
+  });
+
+  it('uses the legacy preset for a custom theme whose assets are legacy', () => {
+    const themeVars = { __preset: 'custom' as const };
+    const base = simpleBasePreset('custom', 'legacy');
+    const next = recomputeSimpleThemeVarsFromAnchors(themeVars, base, mode =>
+      appliedTheme({ ...themeVars, __preset: base }, mode, true)
+    );
+    expect(base).toBe('legacy');
+    expect(next['light:--color-theme-bg-primary']).toBe(
+      PRESET_DEFINITIONS.legacy.sourceModes.light['--color-theme-bg-primary']
+    );
+    expect(simpleBasePreset('custom', 'default')).toBe('default');
+    expect(simpleBasePreset('custom', undefined)).toBe('default');
+    expect(simpleBasePreset('custom', 'default', 'legacy')).toBe('legacy');
+    expect(simpleBasePreset('custom', 'legacy', 'default')).toBe('default');
+  });
+
+  it('derives header text and button fill when the simple bar changes', () => {
+    const next = simpleChromeFromBar(
+      { 'light:--color-theme-chrome-settings-rail-bg': '#111111' },
+      'light',
+      '#FFFFFF'
+    );
+    const bar = next['light:--color-theme-chrome-app-bar'];
+    const text = next['light:--color-theme-chrome-app-bar-fg'];
+    const buttons = next['light:--color-theme-chrome-app-bar-hover'];
+    expect(bar).toBe('#FFFFFF');
+    expect(text).toBeDefined();
+    expect(buttons).toBeDefined();
+    expect(checkContrast(bar ?? '#000000', text ?? '#000000').passesAA).toBe(true);
+    expect(checkContrast(buttons ?? '#000000', text ?? '#000000').passesAA).toBe(true);
+    expect(next['light:--color-theme-chrome-settings-rail-bg']).toBe('#111111');
   });
 });

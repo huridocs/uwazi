@@ -3,6 +3,8 @@ import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
+import { Authorize } from '#api/core/infrastructure/express/decorators/Authorize.js';
+import { RequireFeatureFlag } from '#api/core/infrastructure/express/decorators/RequireFeatureFlag.js';
 
 import { PXEntityParagraphsFactory } from '../infrastructure/PXEntityParagraphsFactory.js';
 
@@ -26,6 +28,8 @@ class PXGetEntityParagraphsController extends AbstractController {
     super(dependencies);
   }
 
+  @Authorize(['admin', 'editor'])
+  @RequireFeatureFlag('paragraphExtraction')
   async handle(): Promise<void> {
     const dto = RequestSchema.parse(this.request.query);
 

@@ -35,6 +35,7 @@ Activated,ဖွင့်ထားသည်
 Active filters,လက်ရှိ အသုံးပြုနေသော စစ်ထုတ်မှုများ
 Active languages,အသုံးပြုနေသော ဘာသာစကားများ
 Active primary,လက်ရှိ အဓိက
+Active settings navigation item,အသက်ဝင်သော ဆက်တင်လမ်းညွှန်ချက်
 Activity,လုပ်ဆောင်မှု
 Activity log,လုပ်ဆောင်မှု မှတ်တမ်း
 Activity Log,လုပ်ဆောင်မှု မှတ်တမ်း
@@ -172,6 +173,7 @@ Bert,Bert
 Bidirectional,နှစ်ဖက်ဆိုင်သော
 Body,စာကိုယ်
 boolean,ဘူလီယန်
+Borders and dividers,ဘောင်နှင့် ပိုင်းခြားချက်
 Browse files to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်များကို ရှာဖွေပါ
 "by ids, methods, keywords, etc.",identifier များ၊ နည်းလမ်းများ၊ သော့ချက်စာလုံးများ စသည်ဖြင့်
 By logging in you accept the essential session cookie required to stay signed in.,ဝင်ရောက်ခြင်းဖြင့် သင်သည် လော့ဂ်အင်အခြေအနေကို ထိန်းသိမ်းရန် လိုအပ်သော အရေးကြီးသော စက်ဆက်ကွတ်ကီးကို သဘောတူလက်ခံပါသည်။
@@ -189,11 +191,13 @@ Captcha,ကက်ပ်ချာ
 Captcha bypass,"ဤရွေးချယ်မှုကို ဖွင့်ထားခြင်းဖြင့် CAPTCHA ဖြည့်ရန် မလိုဘဲ အသုံးပြုသူများအား သင့်အဖြူစာရင်းဝင် ပုံစံများသို့ တင်သွင်းခွင့် ပြုနိုင်ပါသည်။
 ဖောင်သည် နောက်ဆုံးအသုံးပြုသူများအား captcha ကို ဆက်လက် ပြသနေမည်ဖြစ်သော်လည်း၊ ""Bypass-Captcha: true"" ဟူသော header ကို ပေးပို့ပါက API end-point သည် CAPTCHA အတည်ပြုချက် မပါဘဲ တင်သွင်းမှုများကို ခွင့်ပြုပါမည်။ ဤရွေးချယ်မှုသည် လုံခြုံမှု မရှိသဖြင့် သင့် instance ကို spam သို့မဟုတ် အန္တရာယ်ရှိသော အကြောင်းအရာများဖြင့် ဖြိုခွင်းရန် အသုံးချနိုင်ပါသည်။"
 Cards,ကတ်များ
+Cards and panels,ကတ်နှင့် ပန်နယ်
 Cards view,ကတ်မြင်ကွင်း
 Category,အမျိုးအစား
 Change,ပြောင်းပါ
 Change Password,စကားဝှက်ပြောင်းပါ
 Changes in the thesaurus will impact all the entities using these values.,အဓိပ္ပာယ်တူစာရင်းတွင် ပြုလုပ်သော ပြောင်းလဲမှုများသည် ဤတန်ဖိုးများကို အသုံးပြုနေသော အဖွဲ့အစည်းအားလုံးကို ထိခိုက်သက်ရောက်စေမည်။
+Changes stay temporary until you save the theme.,အသွင်အပြင်ကို မသိမ်းဆည်းမီ ပြောင်းလဲမှုများသည် ယာယီသာ ဖြစ်သည်။
 Changing the type will erase all relationships to this entity.,အမျိုးအစားကို ပြောင်းလဲခြင်းဖြင့် ဤအရာနှင့် ဆက်စပ်နေသည့် ဆက်နွယ်မှုအားလုံးကို ဖျက်ပစ်မည်။
 Character support description,"ဤရွေးချယ်မှုသည် သင့်စုစည်းမှု၏ မူလဘာသာစကားများအဖြစ် လက်တင်မဟုတ်သော ဘာသာစကားများအတွက် ထောက်ပံ့မှုကို မြှင့်တင်ပေးပါသည်။
 ဤရွေးချယ်မှုကို ရွေးချယ်ခြင်းဖြင့် ပုံစံ ပိုင်ဆိုင်မှုများ အားလုံးကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါမည်။ ဤလုပ်ငန်းစဉ်သည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။ ဤရွေးချယ်မှုကို ရွေးချယ်ခြင်းသည် စာကြည့်တိုက် စစ်ထုတ်မှုများ၏ URL များကို ပြောင်းလဲစေနိုင်ပါသည်။ ထို့ကြောင့် ထို URL များကို အသုံးပြုထားသည့် မီနူးများ သို့မဟုတ် လင့်ခ်များ ရှိပါက ၎င်းတို့သည် အလုပ်မလုပ်တော့နိုင်ပါ။
@@ -208,6 +212,7 @@ Chart type,ဂရပ်ဇယားအမျိုးအစား
 Chart type uses a custom view,ဂရပ်ဇယားအမျိုးအစားသည် စိတ်ကြိုက်မြင်ကွင်းကို အသုံးပြုသည်။
 Check to make this instance public (non-logged in users can see public documents and entities),ဤအင်စတန့်ကို အများပြည်သူကြည့်ရှုနိုင်အောင် သတ်မှတ်ထားသည်ကို စစ်ဆေးပါ (ဝင်ရောက်ထားခြင်းမရှိသော အသုံးပြုသူများသည် အများပြည်သူစာရွက်စာတမ်းများနှင့် အဖွဲ့အစည်းများကို ကြည့်ရှုနိုင်ပါသည်)
 Checking which images fit the requirements,လိုအပ်ချက်များနှင့် ကိုက်ညီသည့် ပုံများကို စစ်ဆေးနေပါသည်။
+Cherrypick,ကိုယ်တိုင်ရွေးချယ်ခြင်း
 Choose,ရွေးပါ
 Choose PDF files,PDF ဖိုင်များ ရွေးရန်
 Choose relation type,ဆက်နွယ်မှုအမျိုးအစားကိုရွေးပါ
@@ -225,6 +230,8 @@ Clear selection,ရွေးချယ်မှု ရှင်းရန်
 Clear selection filter,ရွေးချယ်မှု စစ်ထုတ်မှု ရှင်းရန်
 Clear sort,စီရန် ရှင်းရန်
 Click,နှိပ်ပါ
+"Click records to add them. Cmd + click works anytime.","မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Cmd + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။"
+"Click records to add them. Ctrl + click works anytime.","မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Ctrl + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။"
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Click to select an image,ပုံတစ်ပုံရွေးရန် နှိပ်ပါ
 Click to select audio or video,အသံ သို့မဟုတ် ဗီဒီယိုကို ရွေးရန် နှိပ်ပါ
@@ -346,7 +353,9 @@ CSV import completed,CSV တင်သွင်းမှု ပြီးစီး
 CSV import failed,CSV တင်သွင်းမှု မအောင်မြင်ပါ။
 CSV or ZIP,CSV သို့မဟုတ် ZIP
 Ctrl K,Ctrl K
+Current link and header button hover,လက်ရှိလင့်ခ်နှင့် ခေါင်းစီးခလုတ် hover
 Current Value/Suggestion,လက်ရှိတန်ဖိုး/အကြံပြုချက်
+Custom,စိတ်ကြိုက်
 Custom colors,စိတ်ကြိုက် အရောင်များ
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.",ဒီဂရပ်ဇယားအမျိုးအစားအတွက် စိတ်ကြိုက်အရောင်များ မရနိုင်ပါ။ ဂရပ်ဇယားအရောင်ပလက်တေး သို့မဟုတ် ပုံစံအရောင်များကို အသုံးပြုပါ။
@@ -356,11 +365,11 @@ Custom Favicon,စိတ်ကြိုက် ဖာဗစ်ကွန်
 Custom JS,စိတ်ကြိုက် JavaScript
 Custom landing page,စိတ်ကြိုက် လန်ဒင်း စာမျက်နှာ
 custom page error warning,ဤ စိတ်ကြိုက် စာမျက်နှာတွင် မမျှော်လင့်ထားသော အမှားတစ်ခု ဖြစ်နေပါသည်။ မှန်ကန်စွာ အလုပ်မလုပ်နိုင်ပါက ဖြစ်နိုင်ပါသည်။ အသေးစိတ်အတွက် အုပ်ချုပ်သူထံ ဆက်သွယ်ပါ။
-Custom pair,စိတ်ကြိုက်အတွဲ
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Customize,စိတ်ကြိုက်ပြင်ဆင်
 Customized,စိတ်ကြိုက်ပြင်ဆင်ထားသော
 Daily,နေ့စဉ်
+Danger and emphasis backgrounds,အန္တရာယ်နှင့် အလေးပေးနောက်ခံ
 Dark,မှောင်
 Dark Theme,အမှောင် အသွင်အပြင်
 Dashboard,ဒက်ရှ်ဘုတ်
@@ -419,6 +428,7 @@ Deletion success,ဖျက်ခြင်းအောင်မြင်ပါပ
 Density,သိပ်သည်းမှု
 Description,ဖော်ပြချက်
 Deselect all,အားလုံးကိုရွေးချယ်ခြင်းဖျက်ရန်
+Deselect this page,ဤစာမျက်နှာကို ရွေးချယ်မှုဖျက်ရန်
 Detail,အသေးစိတ်
 Details,အသေးစိတ်အချက်အလက်များ
 Direction,ဦးတည်ချက်
@@ -497,6 +507,7 @@ Empty value label,တန်ဖိုးမရှိ အညွှန်း
 Enable,ဖွင့်ရန်
 Enable public embedding to use this chart in external sites on private instances.,ပုဂ္ဂလိက အင်စတန်စ်များတွင် ပြင်ပဆိုဒ်များ၌ ဤဂရပ်ဇယားကို ထည့်သွင်းအသုံးပြုနိုင်ရန် အများပြည်သူ ထည့်သွင်းခွင့်ကို ဖွင့်ပါ။
 Enable this page to be used as an entity view page:,ဖြည့်သွင်းချက် ကြည့်ရန်အတွက် စာမျက်နှာအဖြစ် သုံးရန် ဤစာမျက်နှာကို ဖွင့်ထားပါ-
+English,အင်္ဂလိပ်
 Enter a password.,စကားဝှက် ထည့်ပါ။
 Enter a valid email address.,မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ။
 Enter the 6-digit verification code generated by your Authenticator app,သင့် Authenticator အက်ပ်မှ ထုတ်ပေးထားသော ၆ လုံးပါ အတည်ပြုကုဒ်ကို ထည့်ပါ။
@@ -536,6 +547,7 @@ exact phrase,တိကျသော စကားစု
 Expand all,အားလုံးကို တိုးချဲ့ပြရန်
 Expand All,အားလုံးကို တိုးချဲ့ပြရန်
 Export CSV,CSV တင်ပို့ရန်
+Export theme instance file,အသွင်အပြင် instance ဖိုင်ကို ထုတ်ယူပါ။
 Exporting entities to CSV,ဖြည့်သွင်းချက်များကို CSV သို့ တင်ပို့နေသည်
 Extension Token,တိုးချဲ့တိုကင်
 External embed,ပြင်ပထည့်သွင်းခြင်း
@@ -631,11 +643,13 @@ Grouped,အုပ်စုဖွဲ့
 Grouped geolocation properties,အုပ်စုခွဲထားသော တည်နေရာသတ်မှတ်ခြင်းဆိုင်ရာ အင်္ဂါရပ်များ
 Groups,အုပ်စုများ
 Header and button preview,ခေါင်းစီးနှင့် ခလုတ် ကြိုကြည့်
+Header bar,ခေါင်းစီးဘား
 Header bar active background,ခေါင်းစီးဘား လှုပ်ရှားနေသော နောက်ခံ
 Header bar background,ခေါင်းစီးဘား နောက်ခံ
 Header bar divider,ခေါင်းစီးဘား ခွဲခြားတံ
 Header bar hover background,ခေါင်းစီးဘား hover နောက်ခံ
 Header bar text,ခေါင်းစီးဘား စာသား
+"Header title, language, library and settings",ခေါင်းစီးခေါင်းစဉ်၊ ဘာသာစကား၊ စာကြည့်တိုက်နှင့် ဆက်တင်
 help,အကူအညီ
 here,ဒီမှာ
 "Hi, I'm Bert.",ဟိုင်း၊ ကျွန်တော် Bert ပါ။
@@ -648,6 +662,7 @@ Hide restricted relationships from public,ကန့်သတ်ထားသေ�
 Hide task,တာဝန် ဖုံးရန်
 Hide the matches in,ကိုက်ညီမှုများကို ဖျောက်ရန်
 Hide toolbar,ကိရိယာတန်းကို ဖျောက်ရန်
+"Hold Shift and click to select from the last record through this one.","Shift ကိုဖိထားပြီး နှိပ်ပါ။ နောက်ဆုံးမှတ်တမ်းမှ ဤမှတ်တမ်းအထိ ရွေးသည်။"
 Hours,နာရီ
 How to combine sources,ရင်းမြစ်များ ပေါင်းစည်းပုံ
 HTML,HTML
@@ -759,6 +774,7 @@ Library side panel,စာကြည့်တိုက် ဘေးဘောင်
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
 Light,အလင်းရောင်
 Light Theme,အလင်းရောင် အသွင်အပြင်
+Line under the header,ခေါင်းစီးအောက်လိုင်း
 Link,လင့်ခ်
 linked,ချိတ်ဆက်ထားသော
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,စကားဝှက်သတ်မှတ်သည့် လင့်ခ်များသည် ၂၄ နာရီခံပြီး တစ်ကြိမ်သာ အလုပ်လုပ်သည်။ အကောင့်အီးမေးလ်ဖြင့် အသစ်တောင်းပါ။
@@ -785,6 +801,7 @@ Lookup help,ရှာဖွေရေးအကူအညီ
 Lost connection to the server. Your changes may be lost,ဆာဗာနှင့် ချိတ်ဆက်မှု ပြတ်သွားပါသည်။ သင့်ပြင်ဆင်ချက်များ ပျောက်ဆုံးနိုင်ပါသည်။
 low,နိမ့်သော
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,အဓိကစာသား
 Manage relationship types,ဆက်နွယ်မှုအမျိုးအစားများကို စီမံခန့်ခွဲပါ။
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်
 Manage types,အမျိုးအစားများကို စီမံခန့်ခွဲပါ
@@ -864,6 +881,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),အက
 Multiple matches found,ထပ်တူများစွာတွေ့ရှိခဲ့သည်
 Multiple relationships edit description,ဤပိုင်ဆိုင်မှုကို ပြောင်းလဲခြင်းသည် ဤပုံစံရှိ အခြားပိုင်ဆိုင်မှုများအား ထိခိုက်စေမည်၊ အကြောင်းမှာ အားလုံးသည် တူညီသော ဖွဲ့စည်းမှုနှင့် ဆက်နွယ်နေကြသည်။
 Multiple select,အများရွေးချယ်ခြင်း
+Muted backgrounds,မှိန်သောနောက်ခံ
+Muted text,မှိန်သောစာသား
 Name,အမည်
 Name is required,အမည် လိုအပ်သည်
 Name is too long,အမည် ရှည်လွန်းသည်
@@ -986,6 +1005,7 @@ og:title,og:title
 Ok,အိုကေ
 OK,အိုကေ
 On this entity,ဤအဖွဲ့အစည်းအပေါ်
+on this page,ဤစာမျက်နှာတွင်
 one character,အက္ခရာတစ်လုံး
 Only essential,မရှိမဖြစ် လိုအပ်သည်များသာ
 "Only properties with the same name and configuration in every data source are available
@@ -1084,6 +1104,7 @@ Previous,ယခင်
 Primary,အဓိက
 Primary action,အဓိက လုပ်ဆောင်ချက်
 Primary button,အဓိက ခလုတ်
+Primary buttons and links,အဓိကခလုတ်နှင့် လင့်ခ်များ
 Primary dimension (X-axis / categories),အဓိက မျက်နှာစာ (X ဝင်ရိုး / အမျိုးအစားများ)
 Primary document,အဓိကစာရွက်စာတမ်း
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
@@ -1141,6 +1162,7 @@ QR Code,QR ကုဒ်
 qr code,QR ကုဒ်
 Query,မေးခွန်း
 Queued,စောင့်နေသည်
+Range,အပိုင်းအခြား
 RAW,မပြင်ဆင်ထားသော
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).",သင့်လက်ရှိ စုစည်းမှုပေါ်တွင် မေးခွန်းကို ထပ်မံ ပြေးသည်။ အဖွဲ့အစည်းများကို တင်သွင်းခြင်း သို့မဟုတ် တည်းဖြတ်ပြီးနောက်တွင်သာ အသုံးပြုပါ—ဂရပ်ဇယားဆက်တင်များကို ပြောင်းလဲသည့်အခါ မဟုတ်ပါ (ထိုဆက်တင်များကို သိမ်းဆည်းရန် လက်ကိုင်များကိုသာ သိမ်းဆည်းပါ)။
@@ -1208,6 +1230,7 @@ Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ�
 Reset passwords,စကားဝှက်များ ပြန်လည်သတ်မှတ်ရန်
 Reset Search input,ရှာဖွေမှု ပြန်သတ်မှတ်ရန်
 Resize panels,ပန်နယ်များ၏ အရွယ်အစား ပြောင်းရန်
+"Resting fill of language, library and settings",ဘာသာစကား၊ စာကြည့်တိုက်နှင့် ဆက်တင်ခလုတ် နောက်ခံ
 Restore,ပြန်လည်ထူထောင်
 Restore previous version,ယခင်ဗားရှင်းကို ပြန်လည်ထူထောင်ပါ။
 Restricted,ကန့်သတ်ထားသည်
@@ -1310,6 +1333,7 @@ Select text in target document,ပစ်မှတ်စာရွက်တွင�
 select text or a value,စာသား သို့မဟုတ် တန်ဖိုးကို ရွေးပါ။
 Select the template to store the extracted paragraphs.,ထုတ်ယူထားသော ပိုဒ်များကို သိမ်းဆည်းရန် ပုံစံကို ရွေးပါ။
 Select the template with the source documents.,မူလစာရွက်စာတမ်းများပါဝင်သည့် ပုံစံကို ရွေးပါ။
+Select this page,ဤစာမျက်နှာကို ရွေးရန်
 Select values…,တန်ဖိုးများ ရွေးရန်…
 Select...,ရွေးချယ်ရန်...
 Select…,ရွေးရန်…
@@ -1345,6 +1369,7 @@ Settings,ဆက်တင်များ
 settings,ဆက်တင်များ
 Settings navigation,ဆက်တင်များ လမ်းညွှန်
 Settings navigation active background,ဆက်တင်များ မီနူး လှုပ်ရှားနေသော နောက်ခံ
+Settings sidebar,ဆက်တင်ဘေးဘား
 Settings sidebar background,ဆက်တင်များ ဘက်ဘား နောက်ခံ
 Settings updated,ဆက်တင်များ အပ်ဒိတ်လုပ်ပြီးပါပြီ။
 Share,မျှဝေရန်
@@ -1365,6 +1390,7 @@ Show more,ပိုမိုပြသရန်
 Show password,စကားဝှက် ပြရန်
 Show remaining in panel,ပန်နယ်တွင် ကျန်ရှိနေသည့် ပြသရန်
 Show the matches in,ကိုက်ညီမှုများကို ပြရန်
+Show the selected records,ရွေးထားသော မှတ်တမ်းများကို ပြရန်
 Show toolbar,ကိရိယာတန်းပြရန်
 Showing,ပြသနေသည်
 Showing the top,ထိပ်ဆုံးကို ပြနေသည်
@@ -1414,6 +1440,7 @@ Submit,တင်သွင်းရန်
 Submitted entity to a remote instance,အဖွဲ့အစည်းတစ်ခုကို ဝေးလံသော အင်စတန်စ်သို့ တင်သွင်းခဲ့သည်။
 Submitting,တင်သွင်းနေသည်
 Success,အောင်မြင်မှု
+Success messages,အောင်မြင်မှုမက်ဆေ့ချ်
 "Success, Upload another?",အောင်မြင်ပါပြီ၊ နောက်တစ်ခု တင်မလား?
 Suggestion,အကြံပြုချက်
 Suggestion:,အကြံပြုချက်:
@@ -1425,6 +1452,7 @@ Sum,ပေါင်းလဒ်
 Supported chart types for manual data,လက်ဖြင့် ထည့်သွင်းသော ဒေတာအတွက် ထောက်ပံ့ထားသည့် ဂရပ်ဇယားအမျိုးအစားများ
 Supported chart types for this configuration,ဤပြင်ဆင်မှုအတွက် ထောက်ပံ့ထားသော ဂရပ်ဇယားအမျိုးအစားများ
 Supporting,ထောက်ပံ့ခြင်း
+Supporting accent on smaller controls,ထိန်းချုပ်မှုငယ်များ၏ အထောက်အကူအရောင်
 Supporting file,ထောက်ပံ့ဖိုင်
 Supporting files,အထောက်အကူပြုဖိုင်များ
 Surface text,မျက်နှာပြင် စာသား
@@ -1461,6 +1489,7 @@ Template(s),ပုံစံ(များ)
 Template(s) deleted successfully.,ပုံစံများကို အောင်မြင်စွာ ဖျက်ပစ်ခဲ့သည်။
 Templates,ပုံစံပြားများ
 Templates:,ပုံစံများ:
+Tertiary text,တတိယစာသား
 Text,စာသား
 Text references limit warning,စာသားရည်ညွှန်းချက်များကို ယာယီအနေဖြင့် အများဆုံး ၃၀၀ အထိသာ ကန့်သတ်ထားပါသည်။ ကျွန်ုပ်တို့သည် ဤပြဿနာအတွက် ပြင်ဆင်မှုကို လက်ရှိတွင် ဆောင်ရွက်နေပါသည်။
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1693,6 +1722,7 @@ Violated articles,ချိုးဖောက်သော ပုဒ်မမျ�
 Visibility,မြင်သာမှု
 Visualization data updated from your collection.,သင့်စုဆောင်းမှုမှ ဒေတာကို မြင်ကွင်းဖော်ပြချက်အဖြစ် အပ်ဒိတ်လုပ်ထားသည်။
 WARNING,သတိပေးချက်
+Warning messages,သတိပေးမက်ဆေ့ချ်
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ အကွက်တိုင်း၏ တန်ဖိုးကို အားလုံးတွင် အသုံးပြုမည်။
 We can't find the page you're looking for.,သင်ရှာဖွေနေသည့် စာမျက်နှာကို မတွေ့နိုင်ပါ။

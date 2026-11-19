@@ -35,6 +35,7 @@ Activated,Активировано
 Active filters,Активные фильтры
 Active languages,Активные языки
 Active primary,Активная первичная
+Active settings navigation item,Активный пункт навигации настроек
 Activity,активности
 Activity log,Журнал активности
 Activity Log,Журнал активности
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,Двунаправленный
 Body,Основная часть
 boolean,логический поиск
+Borders and dividers,Границы и разделители
 Browse files to upload,Просмотрите файлы для загрузки
 "by ids, methods, keywords, etc.","по идентификаторам, методам, ключевым словам и т. д."
 By logging in you accept the essential session cookie required to stay signed in.,"Войдя в систему, вы соглашаетесь на использование необходимого сессионного файла cookie, который требуется для сохранения авторизации."
@@ -192,11 +194,13 @@ Captcha bypass,"Включив эту опцию, вы разрешаете по
 заголовок ""Bypass-Captcha: true"". Эта опция небезопасна и может использоваться для того, чтобы наводнить ваш экземпляр спамом или
 вредоносным содержимым."
 Cards,Карточки
+Cards and panels,Карточки и панели
 Cards view,Просмотр в виде карточек
 Category,Категория
 Change,Изменить
 Change Password,Изменить пароль
 Changes in the thesaurus will impact all the entities using these values.,"Изменения в тезаурусе повлияют на все объекты, в которых используются эти значения."
+Changes stay temporary until you save the theme.,"Изменения остаются временными, пока вы не сохраните тему."
 Changing the type will erase all relationships to this entity.,Изменение типа приведёт к удалению всех связей с этим объектом.
 Character support description,"Эта опция улучшает поддержку языков, не использующих латиницу, в качестве языков по умолчанию для вашей коллекции.
 Выбор этой опции автоматически обновит все свойства шаблонов. Этот процесс может занять несколько минут и, вероятно, изменит URL-адреса фильтров библиотеки. Если у вас есть меню или ссылки, использующие такие URL-адреса, они, скорее всего, перестанут работать.
@@ -211,6 +215,7 @@ Chart type,Тип диаграммы
 Chart type uses a custom view,В этом типе диаграммы используется настраиваемый вид
 Check to make this instance public (non-logged in users can see public documents and entities),"Установите флажок, чтобы сделать этот экземпляр общедоступным (пользователи, не вошедшие в систему, смогут просматривать общедоступные документы и объекты)"
 Checking which images fit the requirements,"Проверка того, какие изображения соответствуют требованиям..."
+Cherrypick,Ручной выбор
 Choose,Выберите
 Choose PDF files,Выбрать файлы PDF
 Choose relation type,Выберите тип связи
@@ -228,6 +233,8 @@ Clear selection,Снять выделение
 Clear selection filter,Сбросить фильтр выбора
 Clear sort,Сбросить сортировку
 Click,Нажмите
+"Click records to add them. Cmd + click works anytime.","Нажимайте на записи"
+"Click records to add them. Ctrl + click works anytime.","Нажимайте на записи"
 Click to fill,"Нажмите, чтобы заполнить"
 Click to select an image,"Нажмите, чтобы выбрать изображение"
 Click to select audio or video,"Нажмите, чтобы выбрать аудио или видео"
@@ -349,7 +356,9 @@ CSV import completed,Импорт из CSV завершён
 CSV import failed,Импорт из CSV не выполнен
 CSV or ZIP,CSV или ZIP
 Ctrl K,Ctrl+K
+Current link and header button hover,Текущая ссылка и наведение на кнопки заголовка
 Current Value/Suggestion,Текущее значение/предложение
+Custom,Свой
 Custom colors,Пользовательские цвета
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Для этого типа диаграммы пользовательские цвета недоступны. Вместо этого используйте цвета из палитры диаграммы или цвета шаблона
@@ -360,11 +369,11 @@ Custom Favicon,Пользовательский фавикон
 Custom JS,Пользовательский JS
 Custom landing page,Пользовательская целевая страница
 custom page error warning,"На этой пользовательской странице произошла непредвиденная ошибка, она может работать некорректно. Обратитесь к администратору за подробностями."
-Custom pair,Своя пара
 Custom Uploads,Пользовательские загрузки
 Customize,Настроить
 Customized,Настроено
 Daily,Ежедневно
+Danger and emphasis backgrounds,Фон опасности и акцента
 Dark,Тёмный
 Dark Theme,Тёмная тема
 Dashboard,Панель управления
@@ -426,6 +435,7 @@ Deletion success,Удаление выполнено успешно
 Density,Плотность
 Description,Описание
 Deselect all,Отменить выбор всех
+Deselect this page,Снять выбор с этой страницы
 Detail,Подробно
 Details,Подробности
 Direction,Направление
@@ -504,6 +514,7 @@ Empty value label,Подпись пустого значения
 Enable,Включить
 Enable public embedding to use this chart in external sites on private instances.,"Включите публичное встраивание, чтобы использовать эту диаграмму на внешних сайтах в частных экземплярах."
 Enable this page to be used as an entity view page:,Сделайте эту страницу доступной для использования в качестве страницы для просмотра объекта:
+English,Английский
 Enter a password.,Введите пароль.
 Enter a valid email address.,Введите действительный адрес электронной почты.
 Enter the 6-digit verification code generated by your Authenticator app,"Введите 6-значный код подтверждения, сгенерированный приложением Authenticator"
@@ -543,6 +554,7 @@ exact phrase,точная фраза
 Expand all,Развернуть всё
 Expand All,Развернуть всё
 Export CSV,Экспортировать CSV
+Export theme instance file,Экспорт файла экземпляра темы
 Exporting entities to CSV,Экспортировать объекты в CSV
 Extension Token,Токен расширения
 External embed,Внешнее встраивание
@@ -638,11 +650,13 @@ Grouped,Сгруппировано
 Grouped geolocation properties,Сгруппированные свойства геолокации
 Groups,Группы
 Header and button preview,Предварительный просмотр заголовка и кнопки
+Header bar,Полоса заголовка
 Header bar active background,Активный фон верхней панели
 Header bar background,Фон верхней панели
 Header bar divider,Разделитель верхней панели
 Header bar hover background,Фон верхней панели при наведении курсора
 Header bar text,Текст в верхней панели
+"Header title, language, library and settings","Заголовок, язык, библиотека и настройки"
 help,помощь
 here,здесь
 "Hi, I'm Bert.","Привет, я Bert."
@@ -655,6 +669,7 @@ Hide restricted relationships from public,Скрыть связи с огран�
 Hide task,Скрыть задачу
 Hide the matches in,Скрыть совпадения в
 Hide toolbar,Скрыть панель инструментов
+"Hold Shift and click to select from the last record through this one.","Удерживайте Shift и нажмите, чтобы выбрать от последней записи до этой."
 Hours,Часы
 How to combine sources,Как объединить источники
 HTML,HTML
@@ -767,6 +782,7 @@ Library side panel,Боковая панель библиотеки
 library table view,просмотр библиотеки в табличном виде
 Light,Светлый
 Light Theme,Светлая тема
+Line under the header,Линия под заголовком
 Link,Ссылка
 linked,связанный
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,"Ссылки для задания пароля действуют 24 часа и срабатывают один раз. Запросите новую, указав почту аккаунта."
@@ -793,6 +809,7 @@ Lookup help,Справка по поиску
 Lost connection to the server. Your changes may be lost,Связь с сервером прервана. Ваши изменения могут быть утеряны
 low,низкий
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,Основной текст
 Manage relationship types,Управление типами связей
 Manage site settings and configuration,Управление сайтом и конфигурация
 Manage types,Управление типами
@@ -874,6 +891,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),вли
 Multiple matches found,Найдено несколько совпадений
 Multiple relationships edit description,"Изменение этого свойства повлияет на другие свойства этого шаблона, так как все они используют связи с одинаковой конфигурацией."
 Multiple select,Выбор нескольких элементов
+Muted backgrounds,Приглушённый фон
+Muted text,Приглушённый текст
 Name,Имя
 Name is required,Требуется имя
 Name is too long,Имя слишком длинное
@@ -998,6 +1017,7 @@ og:title,og:title
 Ok,Окей
 OK,Окей
 On this entity,У этого объекта
+on this page,на этой странице
 one character,один символ
 Only essential,Только самое необходимое
 "Only properties with the same name and configuration in every data source are available
@@ -1097,6 +1117,7 @@ Previous,Предыдущий
 Primary,Первичный
 Primary action,Основное действие
 Primary button,Основная кнопка
+Primary buttons and links,Основные кнопки и ссылки
 Primary dimension (X-axis / categories),Основное измерение (ось X / категории)
 Primary document,Первоисточник
 Primary Documents,ОСНОВНЫЕ ДОКУМЕНТЫ
@@ -1155,6 +1176,7 @@ QR Code,QR-код
 qr code,QR-код
 Query,Запрос
 Queued,В очереди
+Range,Диапазон
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).",Повторно запускает запрос по текущей коллекции. Используйте эту функцию после импорта или редактирования объектов — но не при изменении настроек диаграммы (это уже учитывается при сохранении).
@@ -1222,6 +1244,7 @@ Reset Password,Сбросить пароль
 Reset passwords,Сброс паролей
 Reset Search input,Сбросить поиск
 Resize panels,Изменение размера панелей
+"Resting fill of language, library and settings","Фон кнопок языка, библиотеки и настроек"
 Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
@@ -1324,6 +1347,7 @@ Select text in target document,Выделите текст в целевом д�
 select text or a value,выберите текст или значение
 Select the template to store the extracted paragraphs.,Выберите шаблон для сохранения извлеченных абзацев.
 Select the template with the source documents.,Выберите шаблон с исходными документами.
+Select this page,Выбрать эту страницу
 Select values…,Выбрать значения…
 Select...,Выбрать...
 Select…,Выбрать…
@@ -1359,6 +1383,7 @@ Settings,Настройки
 settings,Настройки
 Settings navigation,Навигация настроек
 Settings navigation active background,Настройки: активный фон навигации
+Settings sidebar,Боковая панель настроек
 Settings sidebar background,Фон боковой панели настроек
 Settings updated,Настройки обновлены
 Share,Поделиться
@@ -1379,6 +1404,7 @@ Show more,Показать больше
 Show password,Показать пароль
 Show remaining in panel,Показать оставшуюся часть в панели
 Show the matches in,Показать совпадения в
+Show the selected records,Показать выбранные записи
 Show toolbar,Показать панель инструментов
 Showing,Показано
 Showing the top,Отображаются первые
@@ -1428,6 +1454,7 @@ Submit,Отправить
 Submitted entity to a remote instance,Объект отправлен в удаленный экземпляр
 Submitting,Отправка
 Success,Успех
+Success messages,Сообщения об успехе
 "Success, Upload another?",Удалось! Загрузить ещё один?
 Suggestion,Предложение
 Suggestion:,Предложение:
@@ -1439,6 +1466,7 @@ Sum,Сумма
 Supported chart types for manual data,"Поддерживаемые типы диаграмм для данных, вводимых вручную"
 Supported chart types for this configuration,"Типы диаграмм, поддерживаемые в данной конфигурации"
 Supporting,Вспомогательный
+Supporting accent on smaller controls,Дополнительный акцент на мелких элементах
 Supporting file,Вспомогательный файл
 Supporting files,Сопроводительные файлы
 Surface text,Текст поверхности
@@ -1476,6 +1504,7 @@ Template(s),Шаблон(ы)
 Template(s) deleted successfully.,Шаблон(ы) успешно удален(ы).
 Templates,Шаблоны
 Templates:,Шаблоны:
+Tertiary text,Третичный текст
 Text,Текст
 Text references limit warning,Текстовые ссылки временно ограничены до 300. Мы уже работаем над исправлением этой проблемы.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1717,6 +1746,7 @@ Violated articles,Нарушенные статьи
 Visibility,Видимость
 Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
 WARNING,ПРЕДУПРЕЖДЕНИЕ
+Warning messages,Предупреждения
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Предупреждение: вы редактируете несколько объектов. Значение каждого поля будет применено ко всем.
 We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
@@ -1747,7 +1777,7 @@ Yes,Да
 You can add one or many items in this form.,В этой форме вы можете добавить один или несколько элементов.
 You can also enter this secret key into your Authenticator app.,Вы также можете ввести этот секретный ключ в приложение Authenticator.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
-"You can delete at most 10,000 entities at once.","За один раз можно удалить не более 10 000 объектов."
+"You can delete at most 10,000 entities at once.",За один раз можно удалить не более 10 000 объектов.
 "You can embed advanced components like maps, charts and entity lists in your page.","Вы можете встраивать в свою страницу сложные компоненты, такие как карты, диаграммы и списки объектов."
 You do not have write permission on all entities,У вас нет прав на запись во все объекты
 You have unsaved changes. Discard them? This action cannot be undone.,У вас есть несохраненные изменения. Отклонить их? Это действие нельзя отменить.

@@ -35,6 +35,7 @@ Activated,Activé
 Active filters,Filtres actifs
 Active languages,Langues actives
 Active primary,Primaire active
+Active settings navigation item,Élément actif de la navigation des paramètres
 Activity,Activité
 Activity log,Journal d'activité
 Activity Log,Journal d'activité
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,Bidirectionnel
 Body,Corps
 boolean,booléen
+Borders and dividers,Bordures et séparateurs
 Browse files to upload,Parcourir les fichiers à télécharger
 "by ids, methods, keywords, etc.","par identifiants, méthodes, mots-clés, etc."
 By logging in you accept the essential session cookie required to stay signed in.,"En vous connectant, vous acceptez le cookie de session indispensable pour rester connecté."
@@ -192,11 +194,13 @@ Le formulaire continuera d'afficher le captcha aux utilisateurs finaux, mais le 
 en-tête ""Bypass-Captcha: true"" est envoyé. Cette option n'est pas sécurisée et peut être exploitée pour inonder votre instance de spam ou de 
 contenu malveillant."
 Cards,Cartes
+Cards and panels,Cartes et panneaux
 Cards view,Vue en cartes
 Category,Catégorie
 Change,Modifier
 Change Password,Modifier le mot de passe
 Changes in the thesaurus will impact all the entities using these values.,Les modifications apportées au thésaurus auront des répercussions sur toutes les entités utilisant ces valeurs.
+Changes stay temporary until you save the theme.,Les modifications restent temporaires tant que vous n'enregistrez pas le thème.
 Changing the type will erase all relationships to this entity.,La modification du type entraînera la suppression de toutes les relations associées à cette entité.
 Character support description,"Cette option améliore la prise en charge des langues non latines en tant que langues par défaut de votre collection.
 Si vous sélectionnez cette option, toutes les propriétés des modèles seront mises à jour automatiquement. Ce processus peut prendre plusieurs minutes. Cette option est susceptible de modifier les URL des filtres de la bibliothèque. Par conséquent, si vous avez des menus ou des liens utilisant ces URL, ils risquent de ne plus fonctionner.
@@ -211,6 +215,7 @@ Chart type,Type de graphique
 Chart type uses a custom view,Le type de graphique utilise une vue personnalisée
 Check to make this instance public (non-logged in users can see public documents and entities),Cochez cette case pour rendre cette instance publique (les utilisateurs non connectés peuvent consulter les documents et entités publics)
 Checking which images fit the requirements,Vérification en cours des images correspondant aux exigences...
+Cherrypick,Sélection manuelle
 Choose,Choisissez
 Choose PDF files,Choisir des fichiers PDF
 Choose relation type,Choisissez le type de relation
@@ -228,6 +233,8 @@ Clear selection,Effacer la sélection
 Clear selection filter,Effacer le filtre de sélection
 Clear sort,Effacer le tri
 Click,Cliquez
+"Click records to add them. Cmd + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment."
+"Click records to add them. Ctrl + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment."
 Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
@@ -349,7 +356,9 @@ CSV import completed,Importation du fichier CSV terminée
 CSV import failed,Échec de l'importation du fichier CSV
 CSV or ZIP,Fichier CSV ou ZIP
 Ctrl K,Ctrl+K
+Current link and header button hover,Lien actif et survol des boutons de l'en-tête
 Current Value/Suggestion,Valeur actuelle / Suggestion
+Custom,Personnalisé
 Custom colors,Couleurs personnalisées
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Les couleurs personnalisées ne sont pas disponibles pour ce type de graphique. Utilisez plutôt la palette de couleurs du graphique ou les
@@ -360,11 +369,11 @@ Custom Favicon,Favicon personnalisée
 Custom JS,JS personnalisé
 Custom landing page,Page d'accueil personnalisée
 custom page error warning,"Une erreur inattendue s'est produite sur cette page personnalisée, il se peut qu'elle ne fonctionne pas correctement. Veuillez contacter un administrateur pour plus de détails."
-Custom pair,Paire personnalisée
 Custom Uploads,Téléchargements personnalisés
 Customize,Personnaliser
 Customized,Personnalisé
 Daily,Quotidien
+Danger and emphasis backgrounds,Fonds de danger et d'emphase
 Dark,Sombre
 Dark Theme,Thème sombre
 Dashboard,Tableau de bord
@@ -426,6 +435,7 @@ Deletion success,Suppression réussie
 Density,Densité
 Description,Description
 Deselect all,Tout désélectionner
+Deselect this page,Désélectionner cette page
 Detail,Détail
 Details,Détails
 Direction,Direction
@@ -504,6 +514,7 @@ Empty value label,Libellé de valeur vide
 Enable,Activer
 Enable public embedding to use this chart in external sites on private instances.,Activez l'intégration publique pour pouvoir utiliser ce graphique sur des sites externes au sein d'instances privées.
 Enable this page to be used as an entity view page:,Activez cette page pour qu'elle soit utilisée comme page de visualisation des entités :
+English,Anglais
 Enter a password.,Saisissez un mot de passe.
 Enter a valid email address.,Saisissez une adresse e-mail valide.
 Enter the 6-digit verification code generated by your Authenticator app,Saisissez le code de vérification à 6 chiffres généré par votre application Authenticator
@@ -543,6 +554,7 @@ exact phrase,expression exacte
 Expand all,Tout développer
 Expand All,Tout développer
 Export CSV,Exporter CSV
+Export theme instance file,Exporter le fichier d'instance du thème
 Exporting entities to CSV,Exporter des entités vers CSV
 Extension Token,Jeton d'extension
 External embed,Intégration externe
@@ -638,11 +650,13 @@ Grouped,Groupés
 Grouped geolocation properties,Propriétés de géolocalisation regroupées
 Groups,Groupes
 Header and button preview,Aperçu de l'en-tête et du bouton
+Header bar,Barre d'en-tête
 Header bar active background,Arrière-plan actif de la barre d'en-tête
 Header bar background,Arrière-plan de la barre d'en-tête
 Header bar divider,Séparateur de barre d'en-tête
 Header bar hover background,Arrière-plan de la barre d'en-tête au survol
 Header bar text,Texte de la barre d'en-tête
+"Header title, language, library and settings","Titre de l'en-tête, langue, bibliothèque et paramètres"
 help,Aide
 here,ici
 "Hi, I'm Bert.","Salut, je m'appelle Bert."
@@ -655,6 +669,7 @@ Hide restricted relationships from public,Masquer les relations restreintes au p
 Hide task,Masquer la tâche
 Hide the matches in,Masquer les correspondances dans
 Hide toolbar,Masquer la barre d'outils
+"Hold Shift and click to select from the last record through this one.","Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci."
 Hours,Heures
 How to combine sources,Comment combiner les sources
 HTML,HTML
@@ -767,6 +782,7 @@ Library side panel,Panneau latéral de la bibliothèque
 library table view,Bilbliothèque en vue tabulaire
 Light,Clair
 Light Theme,Thème clair
+Line under the header,Ligne sous l'en-tête
 Link,Lien
 linked,Lié
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,Les liens pour définir un mot de passe sont valables 24 heures et ne fonctionnent qu'une fois. Demandez-en un nouveau avec l'e-mail de votre compte.
@@ -793,6 +809,7 @@ Lookup help,Aide à la recherche
 Lost connection to the server. Your changes may be lost,La connexion au serveur a été interrompue. Vos modifications risquent d'être perdues.
 low,Bas
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,Texte principal
 Manage relationship types,Gérer les types de relations
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
 Manage types,Gérer les types
@@ -874,6 +891,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),affect
 Multiple matches found,Plusieurs résultats trouvés
 Multiple relationships edit description,"Toute modification apportée à cette propriété affectera les autres propriétés de ce modèle, car elles partagent toutes des relations avec la même configuration."
 Multiple select,Sélection multiple
+Muted backgrounds,Fonds atténués
+Muted text,Texte atténué
 Name,Nom
 Name is required,Le nom est obligatoire
 Name is too long,Le nom est trop long
@@ -998,6 +1017,7 @@ og:title,og:title
 Ok,D'accord
 OK,OK
 On this entity,Sur cette entité
+on this page,sur cette page
 one character,un caractère
 Only essential,Uniquement l'essentiel
 "Only properties with the same name and configuration in every data source are available
@@ -1099,6 +1119,7 @@ Previous,Précédent
 Primary,Primaire
 Primary action,Action principale
 Primary button,Bouton principal
+Primary buttons and links,Boutons et liens principaux
 Primary dimension (X-axis / categories),Dimension principale (axe X / catégories)
 Primary document,Document source
 Primary Documents,Documents principaux
@@ -1157,6 +1178,7 @@ QR Code,Code QR
 qr code,Code QR
 Query,Requête
 Queued,En attente
+Range,Plage
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Réexécute la requête sur votre collection actuelle. Utilisez cette fonction après avoir importé
@@ -1225,6 +1247,7 @@ Reset Password,Réinitialiser le mot de passe
 Reset passwords,Réinitialiser les mots de passe
 Reset Search input,Réinitialiser la recherche
 Resize panels,Redimensionner les panneaux
+"Resting fill of language, library and settings","Fond au repos de la langue, de la bibliothèque et des paramètres"
 Restore,Restaurer
 Restore previous version,Restaurer la version précédente
 Restricted,Limité
@@ -1327,6 +1350,7 @@ Select text in target document,Sélectionner du texte dans le document cible
 select text or a value,sélectionnez un texte ou une valeur
 Select the template to store the extracted paragraphs.,Sélectionnez le modèle dans lequel vous souhaitez enregistrer les paragraphes extraits.
 Select the template with the source documents.,Sélectionnez le modèle contenant les documents sources.
+Select this page,Sélectionner cette page
 Select values…,Sélectionner des valeurs…
 Select...,Sélectionner...
 Select…,Sélectionner…
@@ -1362,6 +1386,7 @@ Settings,Paramètres
 settings,Paramètres
 Settings navigation,Navigation des paramètres
 Settings navigation active background,Arrière-plan actif de la navigation dans les paramètres
+Settings sidebar,Barre latérale des paramètres
 Settings sidebar background,Arrière-plan de la barre latérale des paramètres
 Settings updated,Paramètres mis à jour
 Share,Partager
@@ -1382,6 +1407,7 @@ Show more,Afficher plus
 Show password,Afficher le mot de passe
 Show remaining in panel,Afficher le reste dans le panneau
 Show the matches in,Afficher les correspondances dans
+Show the selected records,Afficher les enregistrements sélectionnés
 Show toolbar,Afficher la barre d'outils
 Showing,Affichage
 Showing the top,Affichage des
@@ -1431,6 +1457,7 @@ Submit,Soumettre
 Submitted entity to a remote instance,Entité soumise à une instance distante
 Submitting,Envoi en cours
 Success,Succès
+Success messages,Messages de succès
 "Success, Upload another?",Envoi réussi. Importer un autre fichier ?
 Suggestion,Suggestion
 Suggestion:,Suggestion :
@@ -1442,6 +1469,7 @@ Sum,Somme
 Supported chart types for manual data,Types de graphiques pris en charge pour les données saisies manuellement
 Supported chart types for this configuration,Types de graphiques pris en charge pour cette configuration
 Supporting,Accompagnement
+Supporting accent on smaller controls,Accent d'appui sur les petits contrôles
 Supporting file,Fichier d'accompagnement
 Supporting files,Fichiers de support
 Surface text,Texte de surface
@@ -1480,6 +1508,7 @@ Template(s),Modèle(s)
 Template(s) deleted successfully.,Le(s) modèle(s) a (ont) été supprimé(s) avec succès.
 Templates,Modèles
 Templates:,Modèles :
+Tertiary text,Texte tertiaire
 Text,Texte
 Text references limit warning,Les références textuelles sont temporairement limitées à 300 maximum. Nous travaillons actuellement à résoudre ce problème.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1721,6 +1750,7 @@ Violated articles,Articles violés
 Visibility,Visibilité
 Visualization data updated from your collection.,Données de visualisation mises à jour à partir de votre collection.
 WARNING,AVERTISSEMENT
+Warning messages,Messages d'avertissement
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Attention : vous modifiez plusieurs entités. La valeur de chaque champ sera appliquée à toutes.
 We can't find the page you're looking for.,Nous ne trouvons pas la page que vous recherchez.
@@ -1751,7 +1781,7 @@ Yes,Oui
 You can add one or many items in this form.,Vous pouvez ajouter un ou plusieurs éléments dans ce formulaire.
 You can also enter this secret key into your Authenticator app.,Vous pouvez également saisir cette clé secrète dans votre application Authenticator.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
-"You can delete at most 10,000 entities at once.","Vous pouvez supprimer au maximum 10 000 entités à la fois."
+"You can delete at most 10,000 entities at once.",Vous pouvez supprimer au maximum 10 000 entités à la fois.
 "You can embed advanced components like maps, charts and entity lists in your page.","Vous pouvez intégrer à votre page des composants avancés tels que des cartes, des graphiques et des listes d'entités."
 You do not have write permission on all entities,Vous ne disposez pas des droits d'écriture sur toutes les entités.
 You have unsaved changes. Discard them? This action cannot be undone.,Vous avez des modifications non enregistrées. Voulez-vous les ignorer ? Cette action ne peut pas être annulée.

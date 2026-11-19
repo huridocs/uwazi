@@ -35,6 +35,7 @@ Activated,Etkinleştirildi
 Active filters,Etkin filtreler
 Active languages,Etkin diller
 Active primary,Etkin birincil
+Active settings navigation item,Etkin ayarlar gezinme öğesi
 Activity,Etkinlik
 Activity log,Sistem Günlüğü
 Activity Log,Sistem Günlüğü
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,İki yönlü
 Body,Gövde
 boolean,boolean
+Borders and dividers,Kenarlıklar ve ayırıcılar
 Browse files to upload,Yüklenecek dosyalara göz atın
 "by ids, methods, keywords, etc.","kimliklere, yöntemlere, anahtar kelimelere vb. göre"
 By logging in you accept the essential session cookie required to stay signed in.,"Giriş yaparak, oturumunuzu açık tutmak için gerekli olan temel oturum çerezini kabul etmiş olursunuz."
@@ -192,11 +194,13 @@ Form, son kullanıcılara güvenlik kodunu göstermeye devam edecektir; ancak AP
 ""Bypass-Captcha: true"" başlığı gönderildiğinde güvenlik kodu doğrulaması olmadan gönderimlere izin verecektir. Bu seçenek güvensizdir ve örneğinizi spam veya
 kötü amaçlı içerikle doldurmak için kullanılabilir."
 Cards,Fişler
+Cards and panels,Kartlar ve paneller
 Cards view,Fiş görünümü
 Category,Kategori
 Change,Değiştir
 Change Password,Şifreyi Değiştir
 Changes in the thesaurus will impact all the entities using these values.,"Thesaurus'ta yapılacak değişiklikler, bu değerleri kullanan tüm varlıkları etkileyecektir."
+Changes stay temporary until you save the theme.,Değişiklikler temayı kaydedene kadar geçici kalır.
 Changing the type will erase all relationships to this entity.,"Türü değiştirmek, bu varlıkla olan tüm ilişkileri silecektir."
 Character support description,"Bu seçenek, koleksiyonunuzun varsayılan dilleri olarak Latin alfabesi dışındaki dillere yönelik desteği artırır.
 Bu seçeneği işaretlemek tüm şablon özelliklerini otomatik olarak güncelleyecektir. Bu işlem birkaç dakika sürebilir. Bu seçeneği işaretlemek, kütüphane filtrelerinin URL'lerini büyük olasılıkla değiştirecektir. Bunun sonucunda, bu tür URL'leri kullanan menüleriniz veya bağlantılarınız varsa, muhtemelen çalışmayı durduracaklardır.
@@ -211,6 +215,7 @@ Chart type,Grafik türü
 Chart type uses a custom view,"Grafik türü, özel bir görünüm kullanır"
 Check to make this instance public (non-logged in users can see public documents and entities),"Bu örneğin herkese açık olmasını sağlamak için işaretleyin (giriş yapmamış kullanıcılar, herkese açık belgeleri ve varlıkları görebilir)"
 Checking which images fit the requirements,Hangi resimlerin gereksinimlere uygun olduğu kontrol ediliyor...
+Cherrypick,Tek tek seç
 Choose,Seç
 Choose PDF files,PDF dosyaları seç
 Choose relation type,İlişki türünü seçin
@@ -228,6 +233,8 @@ Clear selection,Seçimi temizle
 Clear selection filter,Seçim filtresini temizle
 Clear sort,Sıralamayı temizle
 Click,Tıkla
+"Click records to add them. Cmd + click works anytime.","Kayıtları eklemek için tıklayın. Cmd + tıklama her zaman çalışır."
+"Click records to add them. Ctrl + click works anytime.","Kayıtları eklemek için tıklayın. Ctrl + tıklama her zaman çalışır."
 Click to fill,Doldurmak için tıklayın
 Click to select an image,Bir resim seçmek için tıklayın
 Click to select audio or video,Ses veya videoyu seçmek için tıklayın
@@ -349,7 +356,9 @@ CSV import completed,CSV içe aktarma işlemi tamamlandı
 CSV import failed,CSV içe aktarma işlemi başarısız oldu
 CSV or ZIP,CSV veya ZIP dosyası
 Ctrl K,Ctrl K
+Current link and header button hover,Geçerli bağlantı ve üst düğme vurgusu
 Current Value/Suggestion,Mevcut Değer/Öneri
+Custom,Özel
 Custom colors,Özel renkler
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Bu grafik türü için özel renkler kullanılamaz. Bunun yerine grafik paletini veya şablon
@@ -360,11 +369,11 @@ Custom Favicon,Özel Favicon
 Custom JS,Özel JS
 Custom landing page,Özel açılış sayfası
 custom page error warning,Bu özel sayfada beklenmedik bir hata oluştu; sayfa düzgün çalışmayabilir. Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
-Custom pair,Özel çift
 Custom Uploads,Özel Yüklemeler
 Customize,Kişiselleştir
 Customized,Kişiye özel
 Daily,Günlük
+Danger and emphasis backgrounds,Tehlike ve vurgu arka planları
 Dark,Koyu
 Dark Theme,Koyu Tema
 Dashboard,Kontrol Paneli
@@ -426,6 +435,7 @@ Deletion success,Silme işlemi başarıyla tamamlandı
 Density,Yoğunluk
 Description,Tanım
 Deselect all,Tüm seçimi kaldır
+Deselect this page,Bu sayfanın seçimini kaldır
 Detail,Ayrıntı
 Details,Ayrıntılar
 Direction,Yön
@@ -504,6 +514,7 @@ Empty value label,Boş değer etiketi
 Enable,Etkinleştir
 Enable public embedding to use this chart in external sites on private instances.,Özel örneklerdeki bu grafiği harici sitelerde kullanmak için genel gömme özelliğini etkinleştirin.
 Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
+English,İngilizce
 Enter a password.,Bir parola girin.
 Enter a valid email address.,Geçerli bir e-posta adresi girin.
 Enter the 6-digit verification code generated by your Authenticator app,Authenticator uygulamanız tarafından oluşturulan 6 haneli doğrulama kodunu girin
@@ -543,6 +554,7 @@ exact phrase,tam ifade
 Expand all,Tümünü genişlet
 Expand All,Tümünü Genişlet
 Export CSV,CSV'yi dışa aktar
+Export theme instance file,Tema örneği dosyasını dışa aktar
 Exporting entities to CSV,Varlıkları CSV'ye dışa aktarma
 Extension Token,Uzantı Jetonu
 External embed,Dış kaynaklı gömme
@@ -638,11 +650,13 @@ Grouped,Gruplanmış
 Grouped geolocation properties,Gruplandırılmış coğrafi konum özellikleri
 Groups,Gruplar
 Header and button preview,Başlık ve düğme önizlemesi
+Header bar,Üst çubuk
 Header bar active background,Başlık çubuğunun etkin arka planı
 Header bar background,Başlık çubuğunun arka planı
 Header bar divider,Başlık çubuğu ayırıcısı
 Header bar hover background,Başlık çubuğunun fareyle üzerine gelindiğinde görünen arka plan
 Header bar text,Başlık çubuğu metni
+"Header title, language, library and settings","Üst başlık, dil, kitaplık ve ayarlar"
 help,yardım
 here,burada
 "Hi, I'm Bert.","Merhaba, ben Bert."
@@ -655,6 +669,7 @@ Hide restricted relationships from public,Kısıtlı ilişkileri herkesten gizle
 Hide task,Görevi gizle
 Hide the matches in,Eşleşmeleri gizle:
 Hide toolbar,Araç çubuğunu gizle
+"Hold Shift and click to select from the last record through this one.","Son kayıttan buna kadar seçmek için Shift'e basılı tutup tıklayın."
 Hours,Saat
 How to combine sources,Kaynaklar nasıl birleştirilir
 HTML,HTML
@@ -767,6 +782,7 @@ Library side panel,Kitaplık yan paneli
 library table view,kütüphane tablo görünümü
 Light,Açık
 Light Theme,Açık Tema
+Line under the header,Üst çubuğun altındaki çizgi
 Link,Bağlantı
 linked,bağlantılı
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,Parola belirleme bağlantıları 24 saat geçerlidir ve bir kez çalışır. Hesabınızın e-postasıyla yeni bir tane isteyin.
@@ -793,6 +809,7 @@ Lookup help,Arama yardımı
 Lost connection to the server. Your changes may be lost,Sunucuyla bağlantı kesildi. Yaptığınız değişiklikler kaybolabilir.
 low,düşük
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,Ana metin
 Manage relationship types,İlişki türlerini yönetme
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
 Manage types,Türleri yönet
@@ -873,6 +890,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),etkile
 Multiple matches found,Birden fazla eşleşme bulundu
 Multiple relationships edit description,"Bu özelliğe yapılacak değişiklikler, bu şablondaki diğer özellikleri de etkileyecektir; zira hepsi aynı yapılandırma ile ilişkili durumdadır."
 Multiple select,Çoklu seçim
+Muted backgrounds,Soluk arka planlar
+Muted text,Soluk metin
 Name,Ad
 Name is required,Ad gerekli
 Name is too long,Ad çok uzun
@@ -997,6 +1016,7 @@ og:title,og:title
 Ok,Tamam
 OK,TAMAM
 On this entity,Bu varlıkta
+on this page,bu sayfada
 one character,bir karakter
 Only essential,Sadece zorunlu olanlar
 "Only properties with the same name and configuration in every data source are available
@@ -1098,6 +1118,7 @@ Previous,Önceki
 Primary,Birincil
 Primary action,Birincil eylem
 Primary button,Ana düğme
+Primary buttons and links,Birincil düğmeler ve bağlantılar
 Primary dimension (X-axis / categories),Birincil boyut (X ekseni / kategoriler)
 Primary document,Birincil belge
 Primary Documents,BİRİNCİL BELGELER
@@ -1156,6 +1177,7 @@ QR Code,QR Kodu
 qr code,QR kodu
 Query,Sorgulama
 Queued,Sırada
+Range,Aralık
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that).","Sorguyu mevcut koleksiyonunuzda yeniden çalıştırır. Bunu, varlıkları içe aktardıktan
@@ -1225,6 +1247,7 @@ Reset Password,Parolayı sıfırla
 Reset passwords,Şifreleri sıfırla
 Reset Search input,Aramayı sıfırla
 Resize panels,Panellerin boyutunu değiştir
+"Resting fill of language, library and settings","Dil, kitaplık ve ayar düğmelerinin dolgusu"
 Restore,Geri Yükle
 Restore previous version,Önceki sürümü geri yükle
 Restricted,Kısıtlanmış
@@ -1327,6 +1350,7 @@ Select text in target document,Hedef belgedeki metni seçin
 select text or a value,metin veya bir değer seçin
 Select the template to store the extracted paragraphs.,Çıkarılan paragrafları kaydetmek için şablonu seçin.
 Select the template with the source documents.,Kaynak belgelerin bulunduğu şablonu seçin.
+Select this page,Bu sayfayı seç
 Select values…,Değerleri seçin…
 Select...,Seç...
 Select…,Seçin…
@@ -1362,6 +1386,7 @@ Settings,Ayarlar
 settings,Ayarlar
 Settings navigation,Ayarlar gezintisi
 Settings navigation active background,Ayarlar menüsünde etkin arka plan
+Settings sidebar,Ayarlar kenar çubuğu
 Settings sidebar background,Ayarlar kenar çubuğunun arka planı
 Settings updated,Ayarlar güncellendi.
 Share,Paylaş
@@ -1382,6 +1407,7 @@ Show more,Daha fazla göster
 Show password,Parolayı göster
 Show remaining in panel,Panelde kalanları göster
 Show the matches in,Eşleşmeleri göster:
+Show the selected records,Seçili kayıtları göster
 Show toolbar,Araç çubuğunu göster
 Showing,Gösteriliyor
 Showing the top,Gösterilen ilk
@@ -1431,6 +1457,7 @@ Submit,Gönder
 Submitted entity to a remote instance,Varlık uzak bir örneğe aktarıldı
 Submitting,Gönderiliyor
 Success,Başarı
+Success messages,Başarı iletileri
 "Success, Upload another?","Başarılı, bir tane daha yüklemek ister misiniz?"
 Suggestion,Öneri
 Suggestion:,Öneri:
@@ -1442,6 +1469,7 @@ Sum,Toplam
 Supported chart types for manual data,Manuel veri girişi için desteklenen grafik türleri
 Supported chart types for this configuration,Bu yapılandırma için desteklenen grafik türleri
 Supporting,Destekleyici
+Supporting accent on smaller controls,Küçük denetimlerde destek vurgusu
 Supporting file,Destekleyici dosya
 Supporting files,Destekleyici belgeler
 Surface text,Yüzey metni
@@ -1480,6 +1508,7 @@ Template(s),Şablon(lar)
 Template(s) deleted successfully.,Şablon(lar) başarıyla silindi.
 Templates,Şablonlar
 Templates:,Şablonlar:
+Tertiary text,Üçüncül metin
 Text,Metin
 Text references limit warning,Metin referansları geçici olarak en fazla 300 ile sınırlandırılmıştır. Şu anda bu sorunun çözümü için çalışıyoruz.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1721,6 +1750,7 @@ Violated articles,İhlal edilen maddeler
 Visibility,Görünürlük
 Visualization data updated from your collection.,Koleksiyonunuzdan alınan görselleştirme verileri güncellendi.
 WARNING,UYARI
+Warning messages,Uyarı iletileri
 Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Uyarı: birden çok varlığı düzenliyorsunuz. Her alanın değeri tümüne uygulanacak.
 We can't find the page you're looking for.,Aradığınız sayfayı bulamıyoruz.
@@ -1751,7 +1781,7 @@ Yes,Evet
 You can add one or many items in this form.,Bu forma bir veya birden fazla öğe ekleyebilirsiniz.
 You can also enter this secret key into your Authenticator app.,Bu gizli anahtarı Authenticator uygulamanıza da girebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
-"You can delete at most 10,000 entities at once.","Aynı anda en fazla 10.000 varlık silebilirsiniz."
+"You can delete at most 10,000 entities at once.",Aynı anda en fazla 10.000 varlık silebilirsiniz.
 "You can embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, grafikler ve varlık listeleri gibi gelişmiş bileşenleri ekleyebilirsiniz."
 You do not have write permission on all entities,Tüm varlıklar üzerinde yazma izniniz yok
 You have unsaved changes. Discard them? This action cannot be undone.,Kaydedilmemiş değişiklikleriniz var. Bunlardan vazgeçmek istiyor musunuz? Bu işlem geri alınamaz.

@@ -10,7 +10,7 @@ coercedAjv.addVocabulary(['tsType']);
 
 addFormats(ajv);
 
-const ajvValidation = async (ajvInstance, schema, req, next) => {
+const validateWith = async (ajvInstance, schema, req) => {
   try {
     // do not create a new schema based of this one, this creates a memory leak
     // https://ajv.js.org/guide/managing-schemas.html#using-ajv-instance-cache
@@ -19,16 +19,22 @@ const ajvValidation = async (ajvInstance, schema, req, next) => {
     //
     const validator = wrapValidator(ajvInstance.compile(schema));
     await validator(req);
-    next();
   } catch (e) {
-    next(createError(e, 400));
+    throw createError(e, 400);
   }
 };
 
 const createRequestValidator = ajvInstance => schema => async (req, _res, next) => {
-  await ajvValidation(ajvInstance, schema, req, next);
+  try {
+    await validateWith(ajvInstance, schema, req);
+    next();
+  } catch (e) {
+    next(e);
+  }
 };
 
 export const validateAndCoerceRequest = createRequestValidator(coercedAjv);
+
+export { ajv, coercedAjv, validateWith };
 
 export default createRequestValidator(ajv);

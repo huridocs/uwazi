@@ -717,7 +717,7 @@
 
 /* Header bar: uses header-scoped appearance vars rather than the tenant accent pipeline. */
 .tw-content .header-bar[data-uwazi-header] {
-  background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
+  background: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
   border-bottom: 1px solid
     var(--color-theme-chrome-app-bar-separator, var(--color-theme-border-primary, #e5e7eb));
