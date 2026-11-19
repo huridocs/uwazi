@@ -35,6 +35,7 @@ Activated,Activado
 Active filters,Filtros activos
 Active languages,Idiomas activos
 Active primary,Primario activo
+Active settings navigation item,Elemento activo de la navegación de configuración
 Activity,Actividad
 Activity log,Registro de actividad
 Activity Log,Registro de Actividad
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,Bidireccional
 Body,Cuerpo
 boolean,booleano
+Borders and dividers,Bordes y divisores
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
 By logging in you accept the essential session cookie required to stay signed in.,"Al iniciar sesión, aceptas la cookie de sesión imprescindible necesaria para mantenerte conectado."
@@ -190,11 +192,13 @@ Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera ""Bypass-Captcha: true"". Esta opción no es segura y puede ser aprovechada para inundar su instancia con spam o contenido malicioso."
 Cards,Tarjetas
+Cards and panels,Tarjetas y paneles
 Cards view,Vista de tarjetas
 Category,Categoría
 Change,Cambiar
 Change Password,Cambiar contraseña
 Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
+Changes stay temporary until you save the theme.,Los cambios son temporales hasta que guardes el tema.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
 Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección.
 Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar.
@@ -350,7 +354,9 @@ CSV import completed,Importación de CSV completada
 CSV import failed,Importación de CSV fallida
 CSV or ZIP,CSV o ZIP
 Ctrl K,Ctrl+K
+Current link and header button hover,Enlace actual y hover de los botones del encabezado
 Current Value/Suggestion,Valor actual/Sugerencia
+Custom,Personalizado
 Custom colors,Colores personalizados
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","No se pueden utilizar colores personalizados en este tipo de gráfico. Utiliza, en su lugar, la paleta de colores del gráfico o los
@@ -361,11 +367,11 @@ Custom Favicon,Favicon personalizado
 Custom JS,JS Personalizado
 Custom landing page,Página de destino personalizada
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
-Custom pair,Par personalizado
 Custom Uploads,Subidas personalizadas
 Customize,Personalizar
 Customized,Personalizado
 Daily,Diario
+Danger and emphasis backgrounds,Fondos de peligro y énfasis
 Dark,Oscuro
 Dark Theme,Tema oscuro
 Dashboard,Tablero
@@ -642,11 +648,13 @@ Grouped,Agrupados
 Grouped geolocation properties,Propiedades de geolocalización agrupadas
 Groups,Grupos
 Header and button preview,Vista previa del encabezado y del botón
+Header bar,Barra de encabezado
 Header bar active background,Fondo activo de la barra de encabezado
 Header bar background,Fondo de la barra de encabezado
 Header bar divider,Separador de la barra de encabezado
 Header bar hover background,Fondo de la barra de encabezado al pasar el cursor por encima
 Header bar text,Texto de la barra de encabezado
+"Header title, language, library and settings","Título del encabezado, idioma, biblioteca y configuración"
 help,ayuda
 here,aquí
 "Hi, I'm Bert.","Hola, soy Bert."
@@ -772,6 +780,7 @@ Library side panel,Panel lateral de la biblioteca
 library table view,vista de tabla de la colección
 Light,Claro
 Light Theme,Tema claro
+Line under the header,Línea bajo el encabezado
 Link,Enlace
 linked,vinculado
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,Los enlaces para definir una contraseña son válidos durante 24 horas y funcionan una sola vez. Pide uno nuevo con el correo de tu cuenta.
@@ -798,6 +807,7 @@ Lookup help,Ayuda para la búsqueda
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
 Machine translated — editing this row clears the marker,Traducción automática — editar esta fila borra el marcador
+Main text,Texto principal
 Manage relationship types,Administrar tipos de relación
 Manage site settings and configuration,Administrar la configuración del sitio
 Manage types,Administrar tipos
@@ -879,6 +889,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),afecta
 Multiple matches found,Se han encontrado varias coincidencias
 Multiple relationships edit description,Hacer cambios a esta propiedad afectará a otras propiedades en esta plantilla porque todos ellas comparten relaciones con la misma configuración
 Multiple select,Selección múltiple
+Muted backgrounds,Fondos atenuados
+Muted text,Texto atenuado
 Name,Nombre
 Name is required,Se requiere el nombre
 Name is too long,El nombre es demasiado largo
@@ -1104,6 +1116,7 @@ Previous,Anterior
 Primary,Primario
 Primary action,Acción principal
 Primary button,Botón primario
+Primary buttons and links,Botones y enlaces principales
 Primary dimension (X-axis / categories),Dimensión principal (eje X / categorías)
 Primary document,Documento primario
 Primary Documents,Documentos primarios
@@ -1231,6 +1244,7 @@ Reset Password,Restablecer contraseña
 Reset passwords,Restablecer contraseñas
 Reset Search input,Restablecer búsqueda
 Resize panels,Cambiar el tamaño de los paneles
+"Resting fill of language, library and settings","Fondo en reposo de idioma, biblioteca y configuración"
 Restore,Restaurar
 Restore previous version,Restaurar la versión anterior
 Restricted,Restringido
@@ -1369,6 +1383,7 @@ Settings,Configuración
 settings,Configuración
 Settings navigation,Navegación de ajustes
 Settings navigation active background,Fondo activo de la navegación por los ajustes
+Settings sidebar,Barra lateral de configuración
 Settings sidebar background,Fondo de la barra lateral de configuración
 Settings updated,Configuración actualizada
 Share,Compartir
@@ -1439,6 +1454,7 @@ Submit,Enviar
 Submitted entity to a remote instance,Entidad enviada a una instancia remota
 Submitting,Enviando
 Success,Exito
+Success messages,Mensajes de éxito
 "Success, Upload another?","Exito, cargar otro?"
 Suggestion,Sugerencia
 Suggestion:,Sugerencia:
@@ -1450,6 +1466,7 @@ Sum,Suma
 Supported chart types for manual data,Tipos de gráficos compatibles con datos introducidos manualmente
 Supported chart types for this configuration,Tipos de gráficos compatibles con esta configuración
 Supporting,Soporte
+Supporting accent on smaller controls,Acento de apoyo en controles pequeños
 Supporting file,Archivo de soporte
 Supporting files,Archivos de soporte
 Surface text,Texto de superficie
@@ -1487,6 +1504,7 @@ Template(s),Plantilla(s)
 Template(s) deleted successfully.,Las plantillas se han eliminado correctamente.
 Templates,Plantillas
 Templates:,Plantillas:
+Tertiary text,Texto terciario
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1727,6 +1745,7 @@ Violated articles,Artículos violados
 Visibility,Visibilidad
 Visualization data updated from your collection.,Datos de visualización actualizados a partir de tu colección.
 WARNING,ADVERTENCIA
+Warning messages,Mensajes de advertencia
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Aviso: estás editando varias entidades. El valor de cada campo se aplicará a todas ellas.
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
@@ -1775,21 +1794,3 @@ Zoom in,Aumentar zoom
 Zoom in library view,Aumentar zoom en la colección
 Zoom out,Reducir zoom
 Zoom out library view,Reducir zoom en la colección
-Header bar,Barra de encabezado
-"Header title, language, library and settings","Título del encabezado, idioma, biblioteca y configuración"
-"Resting fill of language, library and settings","Fondo en reposo de idioma, biblioteca y configuración"
-Current link and header button hover,Enlace actual y hover de los botones del encabezado
-Line under the header,Línea bajo el encabezado
-Primary buttons and links,Botones y enlaces principales
-Supporting accent on smaller controls,Acento de apoyo en controles pequeños
-Danger and emphasis backgrounds,Fondos de peligro y énfasis
-Cards and panels,Tarjetas y paneles
-Muted backgrounds,Fondos atenuados
-Success messages,Mensajes de éxito
-Warning messages,Mensajes de advertencia
-Main text,Texto principal
-Tertiary text,Texto terciario
-Muted text,Texto atenuado
-Borders and dividers,Bordes y divisores
-Settings sidebar,Barra lateral de configuración
-Active settings navigation item,Elemento activo de la navegación de configuración

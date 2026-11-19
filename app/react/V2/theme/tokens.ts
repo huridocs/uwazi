@@ -409,7 +409,7 @@ const PRESET_DEFINITIONS: Record<ThemePresetId, ThemePresetDefinition> = {
   },
   custom: {
     id: 'custom',
-    label: 'Custom pair',
+    label: 'Custom',
     description: 'Stores explicit light and dark values using the semantic theme token contract.',
     sourceModes: PRESET_SOURCE_MODES.custom,
     modes: {

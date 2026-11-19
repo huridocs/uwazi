@@ -20,7 +20,6 @@ import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.js';
 import { MobileOptionsMenu } from './MobileOptionsMenu.js';
-import { ThemeToggle } from './ThemeToggle.js';
 import { useRememberedLibraryUrl } from '#V2/Routes/Library/useRememberedLibraryUrl.js';
 
 const mapStateToProps = (state: IStore) => ({
@@ -101,7 +100,6 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   const optionsMenu = (
     <MobileOptionsMenu actions={menuActions}>
       <LanguageDropdown />
-      <ThemeToggle labeled />
     </MobileOptionsMenu>
   );
 
@@ -186,7 +184,6 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
                   <Translate>Sign in</Translate>
                 </I18NLink>
               )}
-              <ThemeToggle />
             </div>
           )}
         </div>

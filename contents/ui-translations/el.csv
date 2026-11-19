@@ -35,6 +35,7 @@ Activated,Ενεργοποιημένο
 Active filters,Ενεργά φίλτρα
 Active languages,Ενεργές γλώσσες
 Active primary,Ενεργό κύριο
+Active settings navigation item,Ενεργό στοιχείο πλοήγησης ρυθμίσεων
 Activity,Δραστηριότητα
 Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,Αμφίδρομος
 Body,Σώμα
 boolean,boolean
+Borders and dividers,Περιγράμματα και διαχωριστικά
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
 By logging in you accept the essential session cookie required to stay signed in.,Με τη σύνδεσή σας αποδέχεστε το απαραίτητο cookie περιόδου λειτουργίας που απαιτείται για να παραμείνετε συνδεδεμένοι.
@@ -191,11 +193,13 @@ Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μ
 Η φόρμα θα εξακολουθεί να εμφανίζει το CAPTCHA στους τελικούς χρήστες, αλλά το API endpoint θα επιτρέπει υποβολές χωρίς επικύρωση CAPTCHA εάν συμπεριληφθεί η
 κεφαλίδα ""Bypass-Captcha: true"". Αυτή η επιλογή είναι ανασφαλής και μπορεί να χρησιμοποιηθεί για να κατακλύσει την εγκατάστασή σας με ανεπιθύμητο ή επιβλαβές περιεχόμενο."
 Cards,Κάρτες
+Cards and panels,Κάρτες και πάνελ
 Cards view,Προβολή καρτών
 Category,Κατηγορία
 Change,Αλλαγή
 Change Password,Αλλαγή κωδικού πρόσβασης
 Changes in the thesaurus will impact all the entities using these values.,Οι αλλαγές στο θησαυρό θα επηρεάσουν όλες τις οντότητες που χρησιμοποιούν αυτές τις τιμές.
+Changes stay temporary until you save the theme.,Οι αλλαγές μένουν προσωρινές μέχρι να αποθηκεύσετε το θέμα.
 Changing the type will erase all relationships to this entity.,Η αλλαγή του τύπου θα διαγράψει όλες τις σχέσεις με αυτή την οντότητα.
 Character support description,"Αυτή η επιλογή βελτιώνει την υποστήριξη για γλώσσες που δεν χρησιμοποιούν λατινικούς χαρακτήρες ως προεπιλεγμένες γλώσσες της συλλογής σας.
 Η ενεργοποίηση θα ενημερώσει αυτόματα όλες τις ιδιότητες των προτύπων. Η διαδικασία μπορεί να διαρκέσει αρκετά λεπτά. Η ενεργοποίηση ενδέχεται να αλλάξει τα URL των φίλτρων της βιβλιοθήκης. Ως αποτέλεσμα, εάν έχετε μενού ή συνδέσμους που χρησιμοποιούν τέτοια URL, πιθανώς θα σταματήσουν να λειτουργούν.
@@ -351,7 +355,9 @@ CSV import completed,Η εισαγωγή CSV ολοκληρώθηκε
 CSV import failed,Η εισαγωγή CSV απέτυχε
 CSV or ZIP,CSV ή ZIP
 Ctrl K,Ctrl K
+Current link and header button hover,Τρέχων σύνδεσμος και αιώρηση κουμπιών κεφαλίδας
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
+Custom,Προσαρμοσμένο
 Custom colors,Προσαρμοσμένα χρώματα
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Τα προσαρμοσμένα χρώματα δεν είναι διαθέσιμα για αυτόν τον τύπο γραφήματος. Χρησιμοποιήστε αντ’ αυτού την παλέτα χρωμάτων του γραφήματος ή τα
@@ -362,11 +368,11 @@ Custom Favicon,Προσαρμοσμένο Favicon
 Custom JS,Προσαρμοσμένο JS
 Custom landing page,Προσαρμοσμένη αρχική σελίδα
 custom page error warning,Παρουσιάστηκε απροσδόκητο σφάλμα σε αυτήν την προσαρμοσμένη σελίδα και ενδέχεται να μην λειτουργεί σωστά. Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
-Custom pair,Προσαρμοσμένο ζεύγος
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
 Customize,Προσαρμογή
 Customized,Προσαρμοσμένο
 Daily,Ημερήσια
+Danger and emphasis backgrounds,Φόντα κινδύνου και έμφασης
 Dark,Σκουρόχρωμο
 Dark Theme,Σκουρόχρωμο θέμα
 Dashboard,Πίνακας ελέγχου
@@ -643,11 +649,13 @@ Grouped,Ομαδοποιημένα
 Grouped geolocation properties,Ομαδοποιημένες ιδιότητες γεωγραφικής θέσης
 Groups,Ομάδες
 Header and button preview,Προεπισκόπηση επικεφαλίδας και κουμπιού
+Header bar,Μπάρα κεφαλίδας
 Header bar active background,Ενεργό φόντο της γραμμής κεφαλίδας
 Header bar background,Φόντο της γραμμής κεφαλίδας
 Header bar divider,Διαχωριστικό γραμμής κεφαλίδας
 Header bar hover background,Φόντο της γραμμής κεφαλίδας κατά την τοποθέτηση του ποντικιού πάνω της
 Header bar text,Κείμενο της γραμμής κεφαλίδας
+"Header title, language, library and settings","Τίτλος κεφαλίδας, γλώσσα, βιβλιοθήκη και ρυθμίσεις"
 help,βοήθεια
 here,εδώ
 "Hi, I'm Bert.","Γεια, είμαι ο Bert."
@@ -773,6 +781,7 @@ Library side panel,Πλευρικός πίνακας βιβλιοθήκης
 library table view,προβολή πίνακα βιβλιοθήκης
 Light,Ανοιχτόχρωμο
 Light Theme,Ανοιχτόχρωμο θέμα
+Line under the header,Γραμμή κάτω από την κεφαλίδα
 Link,Σύνδεσμος
 linked,συνδεδεμένο
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,Οι σύνδεσμοι ορισμού κωδικού πρόσβασης ισχύουν για 24 ώρες και λειτουργούν μία φορά. Ζητήστε έναν νέο με το email του λογαριασμού σας.
@@ -799,6 +808,7 @@ Lookup help,Βοήθεια αναζήτησης
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,Κύριο κείμενο
 Manage relationship types,Διαχείριση τύπων σχέσεων
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Manage types,Διαχείριση τύπων
@@ -880,6 +890,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),επη
 Multiple matches found,Βρέθηκαν πολλά αποτελέσματα
 Multiple relationships edit description,Οι αλλαγές σε αυτήν την ιδιότητα θα επηρεάσουν άλλες ιδιότητες σε αυτό το πρότυπο επειδή όλες μοιράζονται σχέσεις με την ίδια διαμόρφωση.
 Multiple select,Πολλαπλή επιλογή
+Muted backgrounds,Απαλά φόντα
+Muted text,Απαλό κείμενο
 Name,Όνομα
 Name is required,Το όνομα είναι υποχρεωτικό
 Name is too long,Το όνομα είναι πολύ μεγάλο
@@ -1106,6 +1118,7 @@ Previous,Προηγούμενο
 Primary,Κύριο
 Primary action,Κύρια ενέργεια
 Primary button,Κύριο κουμπί
+Primary buttons and links,Κύρια κουμπιά και σύνδεσμοι
 Primary dimension (X-axis / categories),Κύρια διάσταση (άξονας Χ / κατηγορίες)
 Primary document,Κύριο έγγραφο
 Primary Documents,Κύρια έγγραφα
@@ -1234,6 +1247,7 @@ Reset Password,Επαναφορά κωδικού πρόσβασης
 Reset passwords,Επαναφορά κωδικών πρόσβασης
 Reset Search input,Επαναφορά αναζήτησης
 Resize panels,Αλλαγή μεγέθους πλαισίων
+"Resting fill of language, library and settings","Γέμισμα κουμπιών γλώσσας, βιβλιοθήκης και ρυθμίσεων"
 Restore,Επαναφορά
 Restore previous version,Επαναφορά προηγούμενης έκδοσης
 Restricted,Περιορισμένα
@@ -1372,6 +1386,7 @@ Settings,Ρυθμίσεις
 settings,ρυθμίσεις
 Settings navigation,Πλοήγηση ρυθμίσεων
 Settings navigation active background,Πλοήγηση στις ρυθμίσεις – ενεργό φόντο
+Settings sidebar,Πλευρική στήλη ρυθμίσεων
 Settings sidebar background,Φόντο της πλευρικής γραμμής ρυθμίσεων
 Settings updated,Οι ρυθμίσεις ενημερώθηκαν
 Share,Κοινοποίηση
@@ -1442,6 +1457,7 @@ Submit,Υποβολή
 Submitted entity to a remote instance,Υποβληθείσα οντότητα σε απομακρυσμένη εγκατάσταση
 Submitting,Υποβολή
 Success,Επιτυχία
+Success messages,Μηνύματα επιτυχίας
 "Success, Upload another?","Επιτυχία, μεταφόρτωση άλλου;"
 Suggestion,Πρόταση
 Suggestion:,Πρόταση:
@@ -1453,6 +1469,7 @@ Sum,Άθροισμα
 Supported chart types for manual data,Υποστηριζόμενοι τύποι γραφημάτων για χειροκίνητα δεδομένα
 Supported chart types for this configuration,Υποστηριζόμενοι τύποι γραφημάτων για αυτή τη διαμόρφωση
 Supporting,Υποστηρικτικό
+Supporting accent on smaller controls,Υποστηρικτική έμφαση σε μικρά στοιχεία
 Supporting file,Υποστηρικτικό αρχείο
 Supporting files,Υποστηρικτικά αρχεία
 Surface text,Κείμενο επιφάνειας
@@ -1491,6 +1508,7 @@ Template(s),Πρότυπο(α)
 Template(s) deleted successfully.,Πρότυπο(α) διαγράφηκαν επιτυχώς.
 Templates,Πρότυπα
 Templates:,Πρότυπα:
+Tertiary text,Τριτεύον κείμενο
 Text,Κείμενο
 Text references limit warning,Οι αναφορές κειμένου περιορίζονται προσωρινά σε μέγιστο 300. Εργαζόμαστε αυτή τη στιγμή για την επίλυση του ζητήματος.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1732,6 +1750,7 @@ Violated articles,Παραβιασθέντα άρθρα
 Visibility,Ορατότητα
 Visualization data updated from your collection.,Τα δεδομένα οπτικοποίησης ενημερώθηκαν από τη συλλογή σας.
 WARNING,ΠΡΟΕΙΔΟΠΟΙΗΣΗ
+Warning messages,Μηνύματα προειδοποίησης
 Warning: you are editing multiple entities. Fields marked with a,Προειδοποίηση: επεξεργάζεστε πολλαπλές οντότητες. Τα πεδία που σημειώνονται με
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Προειδοποίηση: επεξεργάζεστε πολλές οντότητες. Η τιμή κάθε πεδίου θα εφαρμοστεί σε όλες.
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
@@ -1780,21 +1799,3 @@ Zoom in,Μεγέθυνση
 Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση
 Zoom out library view,Σμίκρυνση προβολής βιβλιοθήκης
-Header bar,Μπάρα κεφαλίδας
-"Header title, language, library and settings","Τίτλος κεφαλίδας, γλώσσα, βιβλιοθήκη και ρυθμίσεις"
-"Resting fill of language, library and settings","Γέμισμα κουμπιών γλώσσας, βιβλιοθήκης και ρυθμίσεων"
-Current link and header button hover,Τρέχων σύνδεσμος και αιώρηση κουμπιών κεφαλίδας
-Line under the header,Γραμμή κάτω από την κεφαλίδα
-Primary buttons and links,Κύρια κουμπιά και σύνδεσμοι
-Supporting accent on smaller controls,Υποστηρικτική έμφαση σε μικρά στοιχεία
-Danger and emphasis backgrounds,Φόντα κινδύνου και έμφασης
-Cards and panels,Κάρτες και πάνελ
-Muted backgrounds,Απαλά φόντα
-Success messages,Μηνύματα επιτυχίας
-Warning messages,Μηνύματα προειδοποίησης
-Main text,Κύριο κείμενο
-Tertiary text,Τριτεύον κείμενο
-Muted text,Απαλό κείμενο
-Borders and dividers,Περιγράμματα και διαχωριστικά
-Settings sidebar,Πλευρική στήλη ρυθμίσεων
-Active settings navigation item,Ενεργό στοιχείο πλοήγησης ρυθμίσεων

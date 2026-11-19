@@ -16,12 +16,14 @@ import {
   colorPaletteFromHex,
   sortPaletteHexColors,
   normalizeHex,
+  appliedTheme,
+  THEME_PRESET_KEY,
 } from '#V2/theme/index.js';
+import type { ThemeVarsChange } from './themeTokenFocus.js';
 import type { SimpleSemanticAnchorKey } from '#V2/theme/themeSimpleDerivation.js';
 import { PRESET_DEFINITIONS } from '#V2/theme/tokens.js';
 import type {
   ChromeOverrideVarKey,
-  ResolvedThemeVars,
   SemanticVarKey,
   ThemeMode,
   ThemePresetId,
@@ -47,8 +49,7 @@ type ThemeSimpleColorsSectionProps = {
   resolvedPreviewTheme: ThemeVars;
   resolvedMergedPreview: Record<string, string>;
   colorOptions: string[];
-  getResolved: (mode: ThemeMode) => ResolvedThemeVars;
-  onChange: (value: ThemeVars) => void;
+  onChange: ThemeVarsChange;
   setSimpleChromeBar: (mode: ThemeMode, hex: string | undefined) => void;
   updateChromeModeVar: (
     mode: ThemeMode,
@@ -73,7 +74,6 @@ const ThemeSimpleColorsSection = ({
   resolvedPreviewTheme,
   resolvedMergedPreview,
   colorOptions,
-  getResolved,
   onChange,
   setSimpleChromeBar,
   updateChromeModeVar,
@@ -82,8 +82,10 @@ const ThemeSimpleColorsSection = ({
   const presetSource = PRESET_DEFINITIONS[basePreset].sourceModes[previewMode];
 
   const patchAnchors = (patch: Partial<Record<SimpleSemanticAnchorKey, string>>) => {
-    onChange(
-      applySimpleModeSemanticsForMode(themeVars, previewMode, basePreset, patch, getResolved)
+    onChange(current =>
+      applySimpleModeSemanticsForMode(current, previewMode, basePreset, patch, mode =>
+        appliedTheme({ ...current, [THEME_PRESET_KEY]: basePreset }, mode, true)
+      )
     );
   };
 

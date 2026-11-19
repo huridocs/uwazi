@@ -25,7 +25,7 @@ type Drag = { mode: string; startX: number; startY: number; origin: Crop };
 type LogoAdjustModalProps = {
   src: string;
   onClose: () => void;
-  onApply: (file: File, dimensions: ImageDimensions) => void;
+  onApply: (file: File, dimensions: ImageDimensions) => void | Promise<void>;
 };
 
 const drawCrop = (image: HTMLImageElement, crop: Crop, scale: number) => {
@@ -117,9 +117,34 @@ const useLogoCrop = () => {
 
 const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
   const session = useLogoCrop();
+  const applyingRef = useRef(false);
+  const [applying, setApplying] = useState(false);
   const shown = logoDisplaySize(session.crop.width, session.crop.height);
   const saved = scaledCropSize(session.crop, session.scale);
   const { bounds, crop, scale } = session;
+
+  const releaseApply = () => {
+    applyingRef.current = false;
+    setApplying(false);
+  };
+
+  const applyCrop = () => {
+    if (applyingRef.current) return;
+    const image = session.imgRef.current;
+    if (!image || crop.width === 0) return;
+    applyingRef.current = true;
+    setApplying(true);
+    const { canvas, size } = drawCrop(image, crop, scale);
+    canvas.toBlob(blob => {
+      if (!blob) {
+        releaseApply();
+        return;
+      }
+      void Promise.resolve(onApply(new File([blob], 'logo.png', { type: 'image/png' }), size))
+        .catch(() => undefined)
+        .finally(releaseApply);
+    }, 'image/png');
+  };
 
   const startDrag = (mode: string) => (event: React.PointerEvent) => {
     event.preventDefault();
@@ -212,19 +237,7 @@ const LogoAdjustModal = ({ src, onClose, onApply }: LogoAdjustModalProps) => {
         <Button type="button" variant="secondary" onClick={onClose}>
           <Translate>Cancel</Translate>
         </Button>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={() => {
-            const image = session.imgRef.current;
-            if (!image || crop.width === 0) return;
-            const { canvas, size } = drawCrop(image, crop, scale);
-            canvas.toBlob(blob => {
-              if (!blob) return;
-              onApply(new File([blob], 'logo.png', { type: 'image/png' }), size);
-            }, 'image/png');
-          }}
-        >
+        <Button type="button" variant="primary" disabled={applying} onClick={applyCrop}>
           <Translate>Apply</Translate>
         </Button>
       </Modal.Footer>

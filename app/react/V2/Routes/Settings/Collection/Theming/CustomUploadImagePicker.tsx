@@ -33,6 +33,7 @@ type CustomUploadImagePickerProps = {
   emptyGalleryHint?: React.ReactNode;
   adjustable?: boolean;
   projectHeaderLogo?: boolean;
+  builtinFiles?: FileType[];
 };
 
 const CustomUploadImagePicker = ({
@@ -50,10 +51,12 @@ const CustomUploadImagePicker = ({
   emptyGalleryHint,
   adjustable = false,
   projectHeaderLogo = false,
+  builtinFiles = [],
 }: CustomUploadImagePickerProps) => {
   const logic = useCustomUploadImagePickerLogic({
     sizeRule,
     files,
+    builtinFiles,
     value,
     onChange,
     adjustable,
@@ -95,8 +98,8 @@ const CustomUploadImagePicker = ({
       ) : null}
       <div className="mt-2 flex flex-col gap-3">
         {logic.trimmed ? (
-          <div className="flex min-w-0 w-full flex-col items-center justify-center gap-4 min-[1400px]:flex-row min-[1400px]:flex-wrap min-[1400px]:items-center">
-            <div className="flex min-w-0 items-center justify-center gap-2 min-[1400px]:justify-start">
+          <div className="@container flex min-w-0 w-full flex-col items-center justify-center gap-4">
+            <div className="flex min-w-0 items-center justify-center gap-2">
               <div className={previewWrapperClassName}>
                 <img
                   src={logic.trimmed}
@@ -106,7 +109,7 @@ const CustomUploadImagePicker = ({
               </div>
               {!logic.open && urlValidationControl ? urlValidationControl : null}
             </div>
-            <div className="flex shrink-0 flex-col items-center gap-2 min-[1400px]:ml-auto min-[1400px]:items-end">
+            <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 @max-[18rem]:flex-col">
               {actionButton}
               {adjustable ? (
                 <Button
@@ -164,8 +167,8 @@ const CustomUploadImagePicker = ({
         <LogoAdjustModal
           src={logic.adjustSrc}
           onClose={() => logic.setAdjustSrc(null)}
-          onApply={(file, dimensions) => {
-            logic.submitAdjusted(file, dimensions).catch(() => undefined);
+          onApply={async (file, dimensions) => {
+            await logic.submitAdjusted(file, dimensions);
           }}
         />
       ) : null}

@@ -2,13 +2,13 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
+import { useThemeScope } from '#V2/theme/themeScopeContext.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { selectThemePreset } from '#V2/theme/themePresetBackup.js';
 import {
   appliedTheme,
   CHROME_OVERRIDE_VAR_KEYS,
   getChromeStyleOverrides,
-  getThemeAsset,
   getThemeAssetPresetId,
   themeAssetsForPreset,
   themeAssetsFromImport,
@@ -51,18 +51,10 @@ const storedVar = (current: ThemeVars, key: string, nextValue: string | undefine
 const useThemePreview = ({
   themeVars,
   previewMode,
-  themeAssets,
-  siteLogo,
-  favicon,
 }: {
   themeVars: ThemeVars;
   previewMode: ThemeMode;
-  themeAssets?: ThemeAssets;
-  siteLogo?: string;
-  favicon?: string;
 }) => {
-  const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
-  const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
   const resolvedPreviewTheme = React.useMemo(
     () => appliedTheme(themeVars, previewMode, true),
     [themeVars, previewMode]
@@ -94,7 +86,7 @@ const useThemePreview = ({
       ),
     [themeVars, resolvedMergedPreview]
   );
-  return { previewLogo, previewFavicon, resolvedPreviewTheme, resolvedMergedPreview, colorOptions };
+  return { resolvedPreviewTheme, resolvedMergedPreview, colorOptions };
 };
 
 const useThemeEdits = ({
@@ -196,31 +188,33 @@ type ThemeSelectorProps = {
   onChange: ThemeVarsChange;
   themeAssets?: ThemeAssets;
   onThemeAssetsChange?: (value: ThemeAssets) => void;
-  siteLogo?: string | undefined;
-  siteName?: string;
-  favicon?: string | undefined;
   panelOpen?: boolean;
   children?: React.ReactNode;
 };
+
+const paintedOrStoredMode = (painted: ThemeMode | undefined, stored: ThemeMode) =>
+  painted ?? stored;
 
 const ThemeSelector = ({
   value,
   onChange,
   themeAssets,
   onThemeAssetsChange,
-  siteLogo,
-  siteName,
-  favicon,
   panelOpen,
   children,
 }: ThemeSelectorProps) => {
-  const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
+  const activeThemeMode = paintedOrStoredMode(
+    useThemeScope()?.mode,
+    useAtomValue(effectiveThemeModeAtom)
+  );
   const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
   const selectedPreset = getPresetId(themeVars, true);
   const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
   const wasPanelOpen = React.useRef(false);
-  const { previewLogo, previewFavicon, resolvedPreviewTheme, resolvedMergedPreview, colorOptions } =
-    useThemePreview({ themeVars, previewMode, themeAssets, siteLogo, favicon });
+  const { resolvedPreviewTheme, resolvedMergedPreview, colorOptions } = useThemePreview({
+    themeVars,
+    previewMode,
+  });
   const {
     updateModeVar,
     updateChromeModeVar,
@@ -242,25 +236,14 @@ const ThemeSelector = ({
   }, [panelOpen, activeThemeMode]);
 
   return (
-    <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(18rem,28rem)_minmax(0,1fr)] xl:gap-8">
-      <div className="contents xl:flex xl:min-w-0 xl:flex-col xl:gap-6">
-        <div className="sticky top-0 z-20 bg-parchment pb-3">
-          <ThemePreviewSection
-            previewMode={previewMode}
-            setPreviewMode={setPreviewMode}
-            themeVars={themeVars}
-            siteLogo={previewLogo}
-            siteName={siteName}
-            favicon={previewFavicon}
-          />
-        </div>
-        <ThemePresetSection
-          themeVars={themeVars}
-          selectedPreset={selectedPreset}
-          onSelectPreset={handleSelectPreset}
-        />
-        {children}
-      </div>
+    <div className="flex flex-col gap-6">
+      <ThemePreviewSection previewMode={previewMode} themeVars={themeVars} />
+      <ThemePresetSection
+        themeVars={themeVars}
+        selectedPreset={selectedPreset}
+        onSelectPreset={handleSelectPreset}
+      />
+      {children}
       <ThemeColorsSection
         previewMode={previewMode}
         selectedPreset={selectedPreset}

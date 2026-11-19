@@ -65,8 +65,6 @@ const ThemeColorsSection = ({
     assetPreset,
     themeVars[THEME_SIMPLE_BASE_KEY]
   );
-  const resolveBase = (mode: ThemeMode) =>
-    appliedTheme({ ...themeVars, [THEME_PRESET_KEY]: basePreset }, mode, true);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(true);
   useRevealThemeToken({ editorMode, open, setOpen, previewMode, onChange });
@@ -85,7 +83,7 @@ const ThemeColorsSection = ({
   };
 
   return (
-    <SurfacePanel padding="none" className="mb-6 rounded-xl">
+    <SurfacePanel padding="none" className="rounded-xl">
       <div className="flex w-full flex-wrap items-center justify-end px-4 py-3">
         <button
           type="button"
@@ -172,7 +170,6 @@ const ThemeColorsSection = ({
               resolvedPreviewTheme={resolvedPreviewTheme}
               resolvedMergedPreview={resolvedMergedPreview}
               colorOptions={colorOptions}
-              getResolved={resolveBase}
               onChange={onChange}
               setSimpleChromeBar={setSimpleChromeBar}
               updateChromeModeVar={updateChromeModeVar}

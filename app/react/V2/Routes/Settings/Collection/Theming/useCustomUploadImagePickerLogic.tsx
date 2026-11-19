@@ -25,6 +25,7 @@ const localFileKey = (file: File) => `${file.name}:${file.size}:${file.lastModif
 type Args = {
   sizeRule: ImageSizeRule | undefined;
   files: FileType[];
+  builtinFiles?: FileType[];
   value: string | undefined;
   onChange: (url: string) => void;
   adjustable?: boolean;
@@ -187,13 +188,14 @@ const usePickerActions = (controller: PickerController) => {
 export const useCustomUploadImagePickerLogic = ({
   sizeRule,
   files,
+  builtinFiles = [],
   value,
   onChange,
   adjustable = false,
 }: Args) => {
   const [open, setOpen] = useState(false);
   const draft = useUploadDraft(open);
-  const { uploadService, images, imagesKey } = useCustomUploadPickerBasics(files);
+  const { uploadService, images, imagesKey } = useCustomUploadPickerBasics(files, builtinFiles);
   const { validateAssetUrl, validateFiles } = useImageValidators(sizeRule);
   const trimmed = value?.trim() ?? '';
   const ruleKey = sizeRuleKey(sizeRule);

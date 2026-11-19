@@ -35,6 +35,7 @@ Activated,Активировано
 Active filters,Активные фильтры
 Active languages,Активные языки
 Active primary,Активная первичная
+Active settings navigation item,Активный пункт навигации настроек
 Activity,активности
 Activity log,Журнал активности
 Activity Log,Журнал активности
@@ -173,6 +174,7 @@ Bert,Bert
 Bidirectional,Двунаправленный
 Body,Основная часть
 boolean,логический поиск
+Borders and dividers,Границы и разделители
 Browse files to upload,Просмотрите файлы для загрузки
 "by ids, methods, keywords, etc.","по идентификаторам, методам, ключевым словам и т. д."
 By logging in you accept the essential session cookie required to stay signed in.,"Войдя в систему, вы соглашаетесь на использование необходимого сессионного файла cookie, который требуется для сохранения авторизации."
@@ -192,11 +194,13 @@ Captcha bypass,"Включив эту опцию, вы разрешаете по
 заголовок ""Bypass-Captcha: true"". Эта опция небезопасна и может использоваться для того, чтобы наводнить ваш экземпляр спамом или
 вредоносным содержимым."
 Cards,Карточки
+Cards and panels,Карточки и панели
 Cards view,Просмотр в виде карточек
 Category,Категория
 Change,Изменить
 Change Password,Изменить пароль
 Changes in the thesaurus will impact all the entities using these values.,"Изменения в тезаурусе повлияют на все объекты, в которых используются эти значения."
+Changes stay temporary until you save the theme.,"Изменения остаются временными, пока вы не сохраните тему."
 Changing the type will erase all relationships to this entity.,Изменение типа приведёт к удалению всех связей с этим объектом.
 Character support description,"Эта опция улучшает поддержку языков, не использующих латиницу, в качестве языков по умолчанию для вашей коллекции.
 Выбор этой опции автоматически обновит все свойства шаблонов. Этот процесс может занять несколько минут и, вероятно, изменит URL-адреса фильтров библиотеки. Если у вас есть меню или ссылки, использующие такие URL-адреса, они, скорее всего, перестанут работать.
@@ -352,7 +356,9 @@ CSV import completed,Импорт из CSV завершён
 CSV import failed,Импорт из CSV не выполнен
 CSV or ZIP,CSV или ZIP
 Ctrl K,Ctrl+K
+Current link and header button hover,Текущая ссылка и наведение на кнопки заголовка
 Current Value/Suggestion,Текущее значение/предложение
+Custom,Свой
 Custom colors,Пользовательские цвета
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Для этого типа диаграммы пользовательские цвета недоступны. Вместо этого используйте цвета из палитры диаграммы или цвета шаблона
@@ -363,11 +369,11 @@ Custom Favicon,Пользовательский фавикон
 Custom JS,Пользовательский JS
 Custom landing page,Пользовательская целевая страница
 custom page error warning,"На этой пользовательской странице произошла непредвиденная ошибка, она может работать некорректно. Обратитесь к администратору за подробностями."
-Custom pair,Своя пара
 Custom Uploads,Пользовательские загрузки
 Customize,Настроить
 Customized,Настроено
 Daily,Ежедневно
+Danger and emphasis backgrounds,Фон опасности и акцента
 Dark,Тёмный
 Dark Theme,Тёмная тема
 Dashboard,Панель управления
@@ -644,11 +650,13 @@ Grouped,Сгруппировано
 Grouped geolocation properties,Сгруппированные свойства геолокации
 Groups,Группы
 Header and button preview,Предварительный просмотр заголовка и кнопки
+Header bar,Полоса заголовка
 Header bar active background,Активный фон верхней панели
 Header bar background,Фон верхней панели
 Header bar divider,Разделитель верхней панели
 Header bar hover background,Фон верхней панели при наведении курсора
 Header bar text,Текст в верхней панели
+"Header title, language, library and settings","Заголовок, язык, библиотека и настройки"
 help,помощь
 here,здесь
 "Hi, I'm Bert.","Привет, я Bert."
@@ -774,6 +782,7 @@ Library side panel,Боковая панель библиотеки
 library table view,просмотр библиотеки в табличном виде
 Light,Светлый
 Light Theme,Светлая тема
+Line under the header,Линия под заголовком
 Link,Ссылка
 linked,связанный
 Links to set a password are valid for 24 hours and work once. Ask for a new one with the email of your account.,"Ссылки для задания пароля действуют 24 часа и срабатывают один раз. Запросите новую, указав почту аккаунта."
@@ -800,6 +809,7 @@ Lookup help,Справка по поиску
 Lost connection to the server. Your changes may be lost,Связь с сервером прервана. Ваши изменения могут быть утеряны
 low,низкий
 Machine translated — editing this row clears the marker,Machine translated — editing this row clears the marker
+Main text,Основной текст
 Manage relationship types,Управление типами связей
 Manage site settings and configuration,Управление сайтом и конфигурация
 Manage types,Управление типами
@@ -881,6 +891,8 @@ Multiple inherited properties warning ([property 1] affects [property 2]),вли
 Multiple matches found,Найдено несколько совпадений
 Multiple relationships edit description,"Изменение этого свойства повлияет на другие свойства этого шаблона, так как все они используют связи с одинаковой конфигурацией."
 Multiple select,Выбор нескольких элементов
+Muted backgrounds,Приглушённый фон
+Muted text,Приглушённый текст
 Name,Имя
 Name is required,Требуется имя
 Name is too long,Имя слишком длинное
@@ -1105,6 +1117,7 @@ Previous,Предыдущий
 Primary,Первичный
 Primary action,Основное действие
 Primary button,Основная кнопка
+Primary buttons and links,Основные кнопки и ссылки
 Primary dimension (X-axis / categories),Основное измерение (ось X / категории)
 Primary document,Первоисточник
 Primary Documents,ОСНОВНЫЕ ДОКУМЕНТЫ
@@ -1231,6 +1244,7 @@ Reset Password,Сбросить пароль
 Reset passwords,Сброс паролей
 Reset Search input,Сбросить поиск
 Resize panels,Изменение размера панелей
+"Resting fill of language, library and settings","Фон кнопок языка, библиотеки и настроек"
 Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
@@ -1369,6 +1383,7 @@ Settings,Настройки
 settings,Настройки
 Settings navigation,Навигация настроек
 Settings navigation active background,Настройки: активный фон навигации
+Settings sidebar,Боковая панель настроек
 Settings sidebar background,Фон боковой панели настроек
 Settings updated,Настройки обновлены
 Share,Поделиться
@@ -1439,6 +1454,7 @@ Submit,Отправить
 Submitted entity to a remote instance,Объект отправлен в удаленный экземпляр
 Submitting,Отправка
 Success,Успех
+Success messages,Сообщения об успехе
 "Success, Upload another?",Удалось! Загрузить ещё один?
 Suggestion,Предложение
 Suggestion:,Предложение:
@@ -1450,6 +1466,7 @@ Sum,Сумма
 Supported chart types for manual data,"Поддерживаемые типы диаграмм для данных, вводимых вручную"
 Supported chart types for this configuration,"Типы диаграмм, поддерживаемые в данной конфигурации"
 Supporting,Вспомогательный
+Supporting accent on smaller controls,Дополнительный акцент на мелких элементах
 Supporting file,Вспомогательный файл
 Supporting files,Сопроводительные файлы
 Surface text,Текст поверхности
@@ -1487,6 +1504,7 @@ Template(s),Шаблон(ы)
 Template(s) deleted successfully.,Шаблон(ы) успешно удален(ы).
 Templates,Шаблоны
 Templates:,Шаблоны:
+Tertiary text,Третичный текст
 Text,Текст
 Text references limit warning,Текстовые ссылки временно ограничены до 300. Мы уже работаем над исправлением этой проблемы.
 "The process of extracting the paragraphs has successfully started. Check the Status
@@ -1728,6 +1746,7 @@ Violated articles,Нарушенные статьи
 Visibility,Видимость
 Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
 WARNING,ПРЕДУПРЕЖДЕНИЕ
+Warning messages,Предупреждения
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
 Warning: you are editing multiple entities. The value of each field will be applied to all of them.,Предупреждение: вы редактируете несколько объектов. Значение каждого поля будет применено ко всем.
 We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
@@ -1776,21 +1795,3 @@ Zoom in,Увеличить масштаб
 Zoom in library view,Увеличить масштаб просмотра библиотеки
 Zoom out,Уменьшить масштаб
 Zoom out library view,Уменьшить масштаб просмотра библиотеки
-Header bar,Полоса заголовка
-"Header title, language, library and settings","Заголовок, язык, библиотека и настройки"
-"Resting fill of language, library and settings","Фон кнопок языка, библиотеки и настроек"
-Current link and header button hover,Текущая ссылка и наведение на кнопки заголовка
-Line under the header,Линия под заголовком
-Primary buttons and links,Основные кнопки и ссылки
-Supporting accent on smaller controls,Дополнительный акцент на мелких элементах
-Danger and emphasis backgrounds,Фон опасности и акцента
-Cards and panels,Карточки и панели
-Muted backgrounds,Приглушённый фон
-Success messages,Сообщения об успехе
-Warning messages,Предупреждения
-Main text,Основной текст
-Tertiary text,Третичный текст
-Muted text,Приглушённый текст
-Borders and dividers,Границы и разделители
-Settings sidebar,Боковая панель настроек
-Active settings navigation item,Активный пункт навигации настроек

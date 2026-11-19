@@ -31,7 +31,7 @@ const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: Prese
     type="button"
     title={t('System', title, null, false)}
     aria-label={t('System', title, null, false)}
-    className={`flex min-w-36 flex-1 basis-36 shrink-0 snap-start flex-col gap-2 rounded-lg border p-2 text-left transition-all xl:w-full xl:min-w-0 xl:flex-none xl:basis-auto ${
+    className={`flex w-full min-w-0 flex-col gap-2 rounded-lg border p-2 text-left transition-all ${
       selected ? 'border-primary-600 ring-1 ring-primary-500/25' : 'hover:border-gray-300'
     }`}
     style={{
@@ -83,7 +83,7 @@ const ThemePresetSection = ({
     <label className="mb-2 block text-sm font-medium text-ink-secondary">
       <Translate>Theme presets</Translate>
     </label>
-    <div className="-mx-1 flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 xl:mx-0 xl:grid xl:grid-cols-3 xl:gap-3 xl:overflow-visible xl:px-0 xl:pb-0">
+    <div className="grid grid-cols-3 gap-3">
       {NAMED_THEMES.map(theme => {
         const lightAccent =
           theme.id === 'custom'
