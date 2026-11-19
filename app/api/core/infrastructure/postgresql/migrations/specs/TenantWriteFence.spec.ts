@@ -4,6 +4,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { TenantWriteFence } from '../TenantWriteFence.js';
 import { TenantWriteFenceUnavailable } from '../TenantWriteFenceUnavailable.js';
+import { TenantNotQuiet } from '../TenantNotQuiet.js';
+import { TenantWrittenDuringMigration } from '../TenantWrittenDuringMigration.js';
 
 const TENANT_DB = 'tenant_write_fence_spec';
 const OTHER_DB = 'tenant_write_fence_spec_other';
@@ -147,5 +149,122 @@ describe('TenantWriteFence', () => {
 
     expect(() => fence.writesSince(epoch)).toThrow(TenantWriteFenceUnavailable);
     expect(() => fence.writesSince(epoch)).toThrow(/connection lost/);
+  });
+
+  describe('waitUntilQuiet', () => {
+    const quiet = { quietMs: 200, timeoutMs: 2000 };
+    // Node timers may fire a millisecond or two early compared to Date.now()
+    const timerSlackMs = 5;
+
+    it('should resolve once the quiet window passes with no writes', async () => {
+      await fence.start();
+      const startedAt = Date.now();
+
+      await fence.waitUntilQuiet(quiet);
+
+      expect(Date.now() - startedAt).toBeGreaterThanOrEqual(quiet.quietMs - timerSlackMs);
+    });
+
+    it('should restart the window when a write arrives', async () => {
+      await fence.start();
+      const startedAt = Date.now();
+
+      const waiting = fence.waitUntilQuiet(quiet);
+      await new Promise(resolve => {
+        setTimeout(resolve, 100);
+      });
+      await db.collection('entities').insertOne({ title: 'midway' });
+      await waiting;
+
+      expect(Date.now() - startedAt).toBeGreaterThanOrEqual(100 + quiet.quietMs - timerSlackMs);
+    });
+
+    it('should reject with TenantNotQuiet listing the last writes when writes never stop', async () => {
+      await fence.start();
+      const writing = setInterval(() => {
+        db.collection('entities')
+          .insertOne({ title: 'busy' })
+          .catch(() => {});
+      }, 50);
+
+      try {
+        const waiting = fence.waitUntilQuiet({ quietMs: 200, timeoutMs: 600 });
+        await expect(waiting).rejects.toBeInstanceOf(TenantNotQuiet);
+        await expect(waiting).rejects.toThrow(/entities/);
+      } finally {
+        clearInterval(writing);
+      }
+    });
+
+    it('should reject when the stream errors while waiting', async () => {
+      const { emit } = stubWatch();
+      const starting = fence.start();
+      await waitForExpect(() => {
+        expect(Db.prototype.watch).toHaveBeenCalled();
+      });
+      emit('resumeTokenChanged');
+      await starting;
+
+      const waiting = fence.waitUntilQuiet(quiet);
+      emit('error', { message: 'connection lost' });
+
+      await expect(waiting).rejects.toBeInstanceOf(TenantWriteFenceUnavailable);
+    });
+
+    it('should reject a pending wait when stopped', async () => {
+      await fence.start();
+
+      const waiting = expect(fence.waitUntilQuiet(quiet)).rejects.toBeInstanceOf(
+        TenantWriteFenceUnavailable
+      );
+      await fence.stop();
+
+      await waiting;
+    });
+  });
+
+  describe('assertNoWrites', () => {
+    const quiet = { quietMs: 200, timeoutMs: 2000 };
+
+    it('should pass when nothing was written after the quiet point', async () => {
+      await fence.start();
+      await fence.waitUntilQuiet(quiet);
+
+      expect(() => fence.assertNoWrites()).not.toThrow();
+    });
+
+    it('should throw naming the collections written after the quiet point', async () => {
+      await fence.start();
+      await fence.waitUntilQuiet(quiet);
+
+      await db.collection('files').insertOne({ title: 'late' });
+      await db.collection('files').insertOne({ title: 'later' });
+
+      await waitForExpect(() => {
+        expect(() => fence.assertNoWrites()).toThrow(TenantWrittenDuringMigration);
+      });
+      expect(() => fence.assertNoWrites()).toThrow(/files: 2/);
+    });
+
+    it('should throw when the stream errored after the quiet point', async () => {
+      const { emit } = stubWatch();
+      const starting = fence.start();
+      await waitForExpect(() => {
+        expect(Db.prototype.watch).toHaveBeenCalled();
+      });
+      emit('resumeTokenChanged');
+      await starting;
+      await fence.waitUntilQuiet(quiet);
+
+      emit('error', { message: 'connection lost' });
+
+      expect(() => fence.assertNoWrites()).toThrow(TenantWriteFenceUnavailable);
+    });
+
+    it('should throw when called before the tenant was quiet', async () => {
+      await fence.start();
+
+      expect(() => fence.assertNoWrites()).toThrow(/waitUntilQuiet/);
+    });
   });
 });
