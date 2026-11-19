@@ -100,6 +100,19 @@ const dateOptions = () => {
   ];
 };
 
+const templateChoices = (templates: Template[]) =>
+  templates.map(template => ({
+    label: template.name,
+    value: template._id,
+  }));
+
+const mapLayerChoices = () => [
+  { label: t('System', 'Dark', null, false), value: 'Dark' },
+  { label: t('System', 'Streets', null, false), value: 'Streets' },
+  { label: t('System', 'Satellite', null, false), value: 'Satellite' },
+  { label: t('System', 'Hybrid', null, false), value: 'Hybrid' },
+];
+
 const Collection = () => {
   const { settings, templates, themeCustomization, customUploadFiles } = useLoaderData() as {
     settings: ClientSettings;
@@ -112,7 +125,6 @@ const Collection = () => {
   const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
-  formData.private = !formData.private;
   const {
     register,
     setValue,
@@ -124,6 +136,7 @@ const Collection = () => {
   } = useForm<ClientSettings>({
     defaultValues: {
       ...formData,
+      private: !formData.private,
       themeAssets: formData.themeAssets ?? {},
       themeVars: formData.themeVars ?? {},
       seo: formData.seo ?? {},
@@ -165,27 +178,6 @@ const Collection = () => {
       </Tooltip>
     </span>
   );
-
-  const templateOptions = templates.map(template => ({
-    label: template.name,
-    value: template._id,
-  }));
-
-  const mapLayersOptions = [
-    { label: t('System', 'Dark', null, false), value: 'Dark' },
-    {
-      label: t('System', 'Streets', null, false),
-      value: 'Streets',
-    },
-    {
-      label: t('System', 'Satellite', null, false),
-      value: 'Satellite',
-    },
-    {
-      label: t('System', 'Hybrid', null, false),
-      value: 'Hybrid',
-    },
-  ];
 
   return (
     <div className="w-full h-full" data-testid="settings-collection">
@@ -383,7 +375,7 @@ const Collection = () => {
                       <Translate>Whitelisted templates</Translate>,
                       tips.publicForm[2]
                     )}
-                    options={templateOptions}
+                    options={templateChoices(templates)}
                     onChange={(newValues: any) => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
@@ -415,7 +407,7 @@ const Collection = () => {
                 <div className="sm:col-span-2">
                   <MultiSelect
                     label={labelWithTip(<Translate>Map Layers</Translate>, tips.mapLayers)}
-                    options={mapLayersOptions}
+                    options={mapLayerChoices()}
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}

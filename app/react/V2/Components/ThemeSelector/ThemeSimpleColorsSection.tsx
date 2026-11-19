@@ -83,9 +83,14 @@ const ThemeSimpleColorsSection = ({
 
   const patchAnchors = (patch: Partial<Record<SimpleSemanticAnchorKey, string>>) => {
     onChange(current =>
-      applySimpleModeSemanticsForMode(current, previewMode, basePreset, patch, mode =>
-        appliedTheme({ ...current, [THEME_PRESET_KEY]: basePreset }, mode, true)
-      )
+      applySimpleModeSemanticsForMode({
+        themeVars: current,
+        mode: previewMode,
+        basePreset,
+        anchorPatch: patch,
+        getResolved: mode =>
+          appliedTheme({ ...current, [THEME_PRESET_KEY]: basePreset }, mode, true),
+      })
     );
   };
 

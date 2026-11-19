@@ -170,9 +170,7 @@ const CustomUploadImagePicker = ({
       {logic.adjustSrc ? (
         <LogoAdjustModal
           src={logic.adjustSrc}
-          uploadName={
-            uploadSlot ? themeAssetUploadName(uploadSlot, 'png') : 'uwazi-theme-logo-light.png'
-          }
+          uploadName={themeAssetUploadName(uploadSlot ?? { kind: 'logo', mode: 'light' }, 'png')}
           onClose={() => logic.setAdjustSrc(null)}
           onApply={async (file, dimensions) => {
             await logic.submitAdjusted(file, dimensions);

@@ -87,13 +87,19 @@ const recomputeSimpleThemeVarsFromAnchors = (
   return next;
 };
 
-const applySimpleModeSemanticsForMode = (
-  themeVars: Record<string, string | undefined>,
-  mode: ThemeMode,
-  basePreset: ThemePresetId,
-  anchorPatch: Partial<Record<SimpleSemanticAnchorKey, string>>,
-  getResolved: (mode: ThemeMode) => ResolvedThemeVars
-): Record<string, string | undefined> => {
+const applySimpleModeSemanticsForMode = ({
+  themeVars,
+  mode,
+  basePreset,
+  anchorPatch,
+  getResolved,
+}: {
+  themeVars: Record<string, string | undefined>;
+  mode: ThemeMode;
+  basePreset: ThemePresetId;
+  anchorPatch: Partial<Record<SimpleSemanticAnchorKey, string>>;
+  getResolved: (mode: ThemeMode) => ResolvedThemeVars;
+}): Record<string, string | undefined> => {
   const resolved = getResolved(mode);
   const anchors = Object.fromEntries(
     SIMPLE_SEMANTIC_ANCHOR_KEYS.map(k => [

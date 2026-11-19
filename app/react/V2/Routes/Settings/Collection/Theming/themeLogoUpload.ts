@@ -3,10 +3,8 @@ import type { ThemeMode } from '#V2/theme/tokens.js';
 import * as FilesAPI from '#V2/api/files/index.js';
 import { assetUrl } from './customUploadImagePickerLib.js';
 
-type ThemeUploadKind = 'logo' | 'favicon';
-
 type ThemeUploadSlot = {
-  kind: ThemeUploadKind;
+  kind: 'logo' | 'favicon';
   mode: ThemeMode;
 };
 
@@ -16,7 +14,7 @@ type ThemeAssetUrls = {
 };
 
 const themeAssetUploadName = (slot: ThemeUploadSlot, extension: string) =>
-  `uwazi-theme-${slot.kind}-${slot.mode}.${extension.replace(/^\./, '').toLowerCase()}`;
+  `uwazi-theme-${slot.kind}-${slot.mode}.${extension.toLowerCase()}`;
 
 const fileExtension = (name: string) => /\.([a-z0-9]+)$/i.exec(name)?.[1]?.toLowerCase() ?? 'png';
 
@@ -31,15 +29,12 @@ const reservedThemeUpload = (originalname: string | undefined) =>
   originalname === 'uwazi-theme-logo.png' ||
   /^uwazi-theme-(logo|favicon)-(light|dark)\.[a-z0-9]+$/i.test(originalname ?? '');
 
-const keptThemeUrls = (assets: ThemeAssetUrls) =>
-  new Set(
+const themeAssetUploadsToRemove = (files: FileType[], assets: ThemeAssetUrls) => {
+  const kept = new Set(
     [assets.siteLogo?.light, assets.siteLogo?.dark, assets.favicon?.light, assets.favicon?.dark]
       .map(url => url?.trim() ?? '')
       .filter(url => url.length > 0)
   );
-
-const themeAssetUploadsToRemove = (files: FileType[], assets: ThemeAssetUrls) => {
-  const kept = keptThemeUrls(assets);
   return files.flatMap(file => {
     if (!file._id || !reservedThemeUpload(file.originalname)) return [];
     if (kept.has(assetUrl(file))) return [];
