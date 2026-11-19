@@ -1,10 +1,16 @@
 name: Auto version bump
 
 # Keeps the version committed in the repo: when a PR targeting production still
-# carries the latest released version, bump package.json to the next patch
+# carries an already-released version, bump package.json to the next patch
 # version and push that commit to the PR branch. The merged tree then already
 # has a unique, unreleased version, so production is a pure retag and no build
 # or manual bump is needed.
+#
+# "Released" is recorded in two places and the bump must honor both, because
+# each has its own immutability guard:
+#   - GHCR image tags (publish refuses to overwrite an existing `x.y.z` tag)
+#   - GitHub releases (release.sh fails if `gh release create` sees a duplicate)
+# So the version is bumped when it is not ahead of the max across both records.
 #
 # IMPORTANT: the bump is pushed with GH_TOKEN (a PAT), not GITHUB_TOKEN. Pushes
 # made with GITHUB_TOKEN do not trigger new workflow runs, so CI would not
@@ -17,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  packages: read
 
 concurrency:
   group: auto-version-bump-${{ github.event.pull_request.number }}
@@ -39,13 +46,36 @@ jobs:
           set -euo pipefail
 
           current="$(node -p "require('./package.json').version")"
-          latest="$(gh release list --limit 100 --json tagName,isLatest --jq '[.[] | select(.isLatest == true)][0].tagName // empty')"
-          echo "current=$current latest=${latest:-<none>}"
 
-          # Decide whether to bump. Pure Node, no dependencies needed.
-          next="$(node - "$current" "${latest:-}" <<'EOF'
-          const [current, latest] = process.argv.slice(2);
+          # Old flow's record: the latest GitHub release (written by release.sh).
+          latest_release="$(gh release list --limit 100 --json tagName,isLatest --jq '[.[] | select(.isLatest == true)][0].tagName // empty')"
+
+          # New flow's record: every tag published to the backend GHCR package
+          # (written by the publish job). Read with the workflow token so this
+          # needs only `packages: read`, not a `read:packages` scope on the PAT
+          # used for the push below.
+          image_tags="$(GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh api --paginate \
+            "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}-backend/versions?per_page=100" \
+            | jq -r '[.[] | .metadata.container.tags? // [] | .[]?] | unique | join(" ")')"
+
+          echo "current=$current latest_release=${latest_release:-<none>} image_tags=${image_tags:-<none>}"
+
+          # Decide whether to bump. The merged version must be fresh in BOTH
+          # records (publish refuses an existing GHCR tag, release.sh refuses an
+          # existing release), so bump unless `current` is ahead of the max
+          # version across both. Pure Node, no dependencies needed.
+          next="$(node - "$current" "${latest_release:-}" "${image_tags:-}" <<'EOF'
+          const [current, release, imageTags] = process.argv.slice(2);
           const parts = v => v.split('.').slice(0, 3).map(n => parseInt(n, 10) || 0);
+          const isSemver = v => /^\d+\.\d+\.\d+$/.test(v);
+          const cmp = (x, y) => {
+            const a = parts(x), b = parts(y);
+            if (a[0] !== b[0]) return a[0] - b[0];
+            if (a[1] !== b[1]) return a[1] - b[1];
+            return a[2] - b[2];
+          };
+          const candidates = [release, ...(imageTags || '').split(/\s+/)].filter(isSemver);
+          const latest = candidates.length ? candidates.sort(cmp).pop() : '';
           if (latest) {
             const a = parts(current), b = parts(latest);
             const ahead = a[0] !== b[0] ? a[0] > b[0] : a[1] !== b[1] ? a[1] > b[1] : a[2] > b[2];
@@ -56,7 +86,7 @@ jobs:
           )"
 
           if [ -z "$next" ]; then
-            echo "Version is ahead of the latest release; nothing to do."
+            echo "Version is ahead of the latest release and image tag; nothing to do."
             exit 0
           fi
 
