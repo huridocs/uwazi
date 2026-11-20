@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { PencilSquareIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { UsersStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import {
@@ -69,8 +70,8 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
               onClick={() => setSharing(true)}
               disabled={isDeleting}
             >
-              <ShareIcon className={iconClass} />
-              <Translate>Share</Translate>
+              <UsersStrokeIcon className={iconClass} />
+              <Translate>Permissions</Translate>
             </Button>
           </div>
           <div className="flex-1" />

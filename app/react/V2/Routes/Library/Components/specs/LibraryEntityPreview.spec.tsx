@@ -270,6 +270,13 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithToc.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    const footer = screen.getByTestId('entity-tab-footer');
+    const names = within(footer)
+      .getAllByRole('button')
+      .map(button => button.textContent);
+    expect(names.indexOf('Cancel')).toBeLessThan(names.indexOf('Save'));
+    expect(within(footer).queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Introduction' }));
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Updated introduction' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save label' }));
@@ -300,10 +307,16 @@ describe('LibraryEntityPreview', () => {
   });
 
   it('opens ToC in the preview when that tab is selected', async () => {
-    renderPreview(entityWithDocument.sharedId);
+    renderPreview(entityWithDocument.sharedId, { user: adminUser, onAction: jest.fn() });
     fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
     expect(screen.getByRole('tab', { name: 'ToC' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Document' })).toHaveAttribute('aria-selected', 'false');
+    const footer = screen.getByTestId('entity-tab-footer');
+    expect(within(footer).getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Permissions' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
   });
 
   it('switches to the Metadata tab using the entity viewer tabs', async () => {
@@ -497,8 +510,8 @@ describe('LibraryEntityPreview', () => {
     expect(within(footer).getByRole('button', { name: 'Close' })).toBeInTheDocument();
     expect(within(footer).getByRole('link', { name: /View entity/ })).toBeInTheDocument();
     expect(within(footer).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
-    expect(within(footer).queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
-    expect(within(footer).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Permissions' })).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: 'Delete' })).toBeInTheDocument();
     expect(footer.firstElementChild).toHaveClass('flex-wrap');
   });
 

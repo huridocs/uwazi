@@ -1,7 +1,7 @@
 import React from 'react';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
+import { NeedAuthorization, PortalTooltip } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterMenu } from './LibraryFooterMenu.js';
@@ -128,18 +128,22 @@ const LibraryResultsFooter = ({
           })}
         </LibraryFooterMenu>
       </div>
-      <button
-        ref={menus.panesRef}
-        type="button"
-        aria-label={menus.panesLabel}
-        aria-haspopup="menu"
-        aria-expanded={menus.panesOpen}
-        aria-controls={menus.panesMenuId}
-        onClick={menus.togglePanes}
-        className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border bg-paper text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
-      >
-        <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
-      </button>
+      <PortalTooltip content={menus.panesLabel} placement="top">
+        <span className="inline-flex">
+          <button
+            ref={menus.panesRef}
+            type="button"
+            aria-label={menus.panesLabel}
+            aria-haspopup="menu"
+            aria-expanded={menus.panesOpen}
+            aria-controls={menus.panesMenuId}
+            onClick={menus.togglePanes}
+            className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border bg-paper text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
+          >
+            <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
+          </button>
+        </span>
+      </PortalTooltip>
       <LibraryFooterMenu
         open={menus.panesOpen}
         onClose={menus.closePanes}
