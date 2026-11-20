@@ -22,7 +22,6 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   BACKEND_IMAGE: ${{ github.repository }}-backend
-  QUEUE_WORKER_IMAGE: ${{ github.repository }}-queue-worker
 
 jobs:
   precheck:
@@ -260,7 +259,6 @@ jobs:
     env:
       CI_IMAGE_REF: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
       BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
-      QUEUE_WORKER_IMAGE_REF: ghcr.io/${{ github.repository }}-queue-worker:tree-${{ needs.image_tag.outputs.tree }}
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -326,7 +324,6 @@ jobs:
         run: |
           docker pull "$CI_IMAGE_REF"
           docker pull "$BACKEND_IMAGE_REF"
-          docker pull "$QUEUE_WORKER_IMAGE_REF"
 
       - name: Initialize MongoDB replica set
         run: |
@@ -400,6 +397,7 @@ jobs:
 
       - name: Start queue-worker
         run: |
+          # Same image as the backend; the entrypoint dispatches on UWAZI_ROLE.
           docker run -d --name uwazi-queue-worker --network host \
             -e DBHOST=localhost:27017 \
             -e REDIS_HOST=localhost \
@@ -411,7 +409,8 @@ jobs:
             -e POSTGRES_APP_USER=app_user \
             -e POSTGRES_APP_PASSWORD=app_user \
             -e QUEUE_NAME=uwazi_jobs \
-            "$QUEUE_WORKER_IMAGE_REF"
+            -e UWAZI_ROLE=queue-worker \
+            "$BACKEND_IMAGE_REF"
 
       - name: Wait for backend
         run: |
@@ -483,7 +482,6 @@ jobs:
           TREE: ${{ needs.image_tag.outputs.tree }}
           VERSION: ${{ needs.image_tag.outputs.version }}
           BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
-          QUEUE_WORKER_IMAGE: ${{ env.QUEUE_WORKER_IMAGE }}
           REGISTRY: ${{ env.REGISTRY }}
         run: |
           set -euo pipefail
@@ -492,28 +490,22 @@ jobs:
           # built and tested) and the merged production commit (branch protection
           # requires PRs to be up to date). Promote the image the PR already
           # built instead of rebuilding on production.
-          echo "Promoting images for tree $TREE"
+          echo "Promoting image for tree $TREE"
 
           # Fail before mutating anything:
-          # 1) Both source images must exist.
-          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
-            docker buildx imagetools inspect "$REGISTRY/$image:tree-$TREE" >/dev/null
-          done
+          # 1) The source image must exist.
+          docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:tree-$TREE" >/dev/null
           # 2) The version tag must not already exist. Version tags are
           #    immutable: this enforces that package.json was bumped before
           #    merging (release.sh also fails on duplicate releases).
-          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
-            if docker buildx imagetools inspect "$REGISTRY/$image:$VERSION" >/dev/null 2>&1; then
-              echo "Refusing to publish: $REGISTRY/$image:$VERSION already exists (version not bumped)."
-              exit 1
-            fi
-          done
+          if docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:$VERSION" >/dev/null 2>&1; then
+            echo "Refusing to publish: $REGISTRY/$BACKEND_IMAGE:$VERSION already exists (version not bumped)."
+            exit 1
+          fi
 
-          for image in "$BACKEND_IMAGE" "$QUEUE_WORKER_IMAGE"; do
-            source="$REGISTRY/$image:tree-$TREE"
-            echo "Promoting $source -> latest, $VERSION"
-            docker buildx imagetools create \
-              --tag "$REGISTRY/$image:latest" \
-              --tag "$REGISTRY/$image:$VERSION" \
-              "$source"
-          done
+          source="$REGISTRY/$BACKEND_IMAGE:tree-$TREE"
+          echo "Promoting $source -> latest, $VERSION"
+          docker buildx imagetools create \
+            --tag "$REGISTRY/$BACKEND_IMAGE:latest" \
+            --tag "$REGISTRY/$BACKEND_IMAGE:$VERSION" \
+            "$source"

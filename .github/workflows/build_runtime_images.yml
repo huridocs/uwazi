@@ -1,8 +1,9 @@
 name: Build runtime images
 
-# Reusable: builds the backend and queue-worker runtime images (the slow webpack
-# production build). Tagged by git tree SHA so the same content address is
-# shared by every consumer and promoted on production.
+# Reusable: builds the backend runtime image (the slow webpack production
+# build). The single image runs backend (default), queue worker, or legacy
+# worker via its entrypoint. Tagged by git tree SHA so the same content address
+# is shared by every consumer and promoted on production.
 on:
   workflow_call:
     inputs:
@@ -46,15 +47,3 @@ jobs:
             type=registry,ref=ghcr.io/${{ github.repository }}-ci:cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}-backend:cache,mode=max,ignore-error=true
 
-      - name: Build and push queue-worker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: queue-worker
-          push: true
-          tags: ghcr.io/${{ github.repository }}-queue-worker:tree-${{ inputs.tree }}
-          cache-from: |
-            type=registry,ref=ghcr.io/${{ github.repository }}-queue-worker:cache
-            type=registry,ref=ghcr.io/${{ github.repository }}-backend:cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}-queue-worker:cache,mode=max,ignore-error=true

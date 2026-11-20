@@ -1,4 +1,4 @@
-# Uwazi images: CI test runner, backend and queue worker
+# Uwazi images: CI test runner and runtime (backend default, configurable role)
 # Single source of truth for dockerized Uwazi builds.
 
 FROM node:22.23.2-bookworm-slim AS base
@@ -73,7 +73,8 @@ RUN mkdir -p prod
 RUN yarn production-build
 
 
-# Minimal runtime shared by backend and queue-worker.
+# Minimal runtime image. The entrypoint selects the role: backend (default),
+# queue worker, or legacy worker — all from this single image.
 FROM node:22.23.2-bookworm-slim AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -104,19 +105,17 @@ RUN mkdir -p uploaded_documents temporal_files custom_uploads log \
 USER uwazi
 
 
-# Backend API server. No hard-coded ENTRYPOINT so the command/entrypoint can be
-# overridden to run the legacy worker, migrations, CLI or a custom entrypoint.
+# Single runtime image. Default role is the backend API server; set UWAZI_ROLE
+# (or pass "queue-worker"/"worker") to run a worker, or pass any other command
+# (migrations, CLI) to override entirely.
 FROM runtime AS backend
+
+COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/uwazi-entrypoint
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/api/version').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"
+  CMD ["uwazi-entrypoint", "healthcheck"]
 
-CMD ["node", "--no-experimental-fetch", "server.js"]
-
-
-# Standalone queue worker.
-FROM runtime AS queue-worker
-
-CMD ["node", "--no-experimental-fetch", "app/queueWorker.js"]
+ENTRYPOINT ["uwazi-entrypoint"]
+CMD ["backend"]
