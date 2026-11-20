@@ -67,11 +67,6 @@ jobs:
       - run: yarn lint --type-aware
       - run: yarn prettier
 
-  build:
-    needs: precheck
-    if: needs.precheck.outputs.should_run == 'true'
-    uses: ./.github/workflows/ci_build.yml
-
   check_translations:
     needs: [precheck]
     if: needs.precheck.outputs.should_run == 'true'

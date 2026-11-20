@@ -10,6 +10,19 @@ release_notes="$(git log --oneline "$previous_tag".. | grep -v Merge | grep "(.*
 
 echo -e "## What's changed\n\n$release_notes\n\n**Full Changelog**: https://github.com/huridocs/uwazi/compare/$previous_tag...$release_version" > release_notes.txt
 
+tree_sha="$(git rev-parse 'HEAD^{tree}')"
+repo="${GITHUB_REPOSITORY:-huridocs/uwazi}"
+
+cat >> release_notes.txt <<EOF
+
+## Docker images
+
+- \`ghcr.io/$repo-backend:tree-$tree_sha\`
+
+Friendly tags (published by the image pipeline after merge):
+- \`ghcr.io/$repo-backend:latest\` / \`ghcr.io/$repo-backend:$release_version\`
+EOF
+
 tar -czf uwazi.tgz ./prod
 
 GITHUB_TOKEN="$gh_token" gh release create "$release_version"\
