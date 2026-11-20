@@ -146,7 +146,7 @@ const RelationshipRowDetail = ({
           {relationshipTypeName && <span className="capitalize">{relationshipTypeName}</span>}
         </span>
         <div className="flex items-center gap-0.5">
-          {!editMode && onDelete && (
+          {editMode && onDelete && (
             <IconButton
               variant="danger"
               showOnGroupHover
