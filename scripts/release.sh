@@ -17,10 +17,10 @@ cat >> release_notes.txt <<EOF
 
 ## Docker images
 
-- \`ghcr.io/$repo-backend:tree-$tree_sha\`
+- \`ghcr.io/$repo:tree-$tree_sha\`
 
-Friendly tags (published by the image pipeline after merge):
-- \`ghcr.io/$repo-backend:latest\` / \`ghcr.io/$repo-backend:$release_version\`
+Friendly tag (published by the image pipeline after merge):
+- \`ghcr.io/$repo:$release_version\`
 EOF
 
 tar -czf uwazi.tgz ./prod
