@@ -10,13 +10,14 @@ type ToCTabFooterProps = {
 
 const ToCTabFooter = ({ mainDocument, trailing }: ToCTabFooterProps) => {
   const panel = useToCPanel({ toc: mainDocument?.toc, file: mainDocument });
+  const editing = panel.tocState.isEditMode;
 
   return (
     <EntityTabFooter inset="side">
-      <div className={trailing ? 'min-w-0 flex-1' : 'contents'}>
+      <div className={!editing && trailing ? 'min-w-0 flex-1' : 'contents'}>
         <ToCFooterBar panel={panel} />
       </div>
-      {trailing}
+      {editing ? null : trailing}
     </EntityTabFooter>
   );
 };
