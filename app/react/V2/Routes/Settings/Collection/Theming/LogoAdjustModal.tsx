@@ -5,11 +5,20 @@ import {
   applyCropDrag,
   defaultOutputScale,
   logoDisplaySize,
+  logoEditorSize,
   logoFrameClass,
   scaledCropSize,
   type Crop,
 } from '#V2/theme/logoFrame.js';
 import type { ImageDimensions } from './customUploadImagePickerLib.js';
+
+const fitEditorImage = (image: HTMLImageElement) => {
+  const bounds = { width: image.naturalWidth, height: image.naturalHeight };
+  const fitted = logoEditorSize(bounds.width, bounds.height);
+  image.style.width = `${fitted.width}px`;
+  image.style.height = `${fitted.height}px`;
+  return bounds;
+};
 
 const handles = ['nw', 'ne', 'sw', 'se'] as const;
 
@@ -172,10 +181,10 @@ const LogoAdjustModal = ({ src, uploadName, onClose, onApply }: LogoAdjustModalP
               src={src}
               alt=""
               crossOrigin="anonymous"
-              className="max-h-64 max-w-full"
+              className="max-w-full"
               onLoad={event => {
                 const image = event.currentTarget;
-                const nextBounds = { width: image.naturalWidth, height: image.naturalHeight };
+                const nextBounds = fitEditorImage(image);
                 const full = { x: 0, y: 0, width: nextBounds.width, height: nextBounds.height };
                 session.setBounds(nextBounds);
                 session.cropRef.current = full;

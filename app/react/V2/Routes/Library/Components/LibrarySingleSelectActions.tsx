@@ -1,7 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
-import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
+import { NeedAuthorization, PortalTooltip } from '#V2/Components/UI/index.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { LibraryFooterDivider } from './LibraryFooterDivider.js';
 import { bulkDeleteLimitTitle, librarySelectionActions } from './librarySelectionActions.js';
@@ -53,27 +53,31 @@ const LibrarySingleSelectActions = ({
                 <Translate>Edit</Translate>
               </LibraryFooterButton>
             ) : null}
-            <button
-              type="button"
-              aria-label={t('System', 'Permissions', null, false)}
-              onClick={() => onAction?.('permissions')}
-              className={iconButtonClassName}
-            >
-              {actionById('permissions')?.icon}
-            </button>
+            <PortalTooltip content={t('System', 'Permissions', null, false)} placement="top">
+              <button
+                type="button"
+                aria-label={t('System', 'Permissions', null, false)}
+                onClick={() => onAction?.('permissions')}
+                className={iconButtonClassName}
+              >
+                {actionById('permissions')?.icon}
+              </button>
+            </PortalTooltip>
             <LibraryFooterDivider />
-            <button
-              type="button"
-              aria-label={t('System', 'Delete', null, false)}
-              title={deleteDisabled ? bulkDeleteLimitTitle() : undefined}
-              disabled={deleteDisabled}
-              onClick={() => {
-                if (!deleteDisabled) onAction?.('delete');
-              }}
-              className={deleteButtonClassName}
-            >
-              {actionById('delete')?.icon}
-            </button>
+            <PortalTooltip content={t('System', 'Delete', null, false)} placement="top">
+              <button
+                type="button"
+                aria-label={t('System', 'Delete', null, false)}
+                title={deleteDisabled ? bulkDeleteLimitTitle() : undefined}
+                disabled={deleteDisabled}
+                onClick={() => {
+                  if (!deleteDisabled) onAction?.('delete');
+                }}
+                className={deleteButtonClassName}
+              >
+                {actionById('delete')?.icon}
+              </button>
+            </PortalTooltip>
           </div>
         </NeedAuthorization>
         {leading}

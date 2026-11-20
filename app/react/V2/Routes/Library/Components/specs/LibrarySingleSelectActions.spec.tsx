@@ -88,6 +88,15 @@ describe('LibrarySingleSelectActions', () => {
     expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 
+  it('shows a tooltip on the icon-only actions', () => {
+    renderActions();
+    fireEvent.mouseEnter(within(actionBar()).getByRole('button', { name: 'Permissions' }));
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Permissions');
+    fireEvent.mouseLeave(within(actionBar()).getByRole('button', { name: 'Permissions' }));
+    fireEvent.mouseEnter(within(actionBar()).getByRole('button', { name: 'Delete' }));
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Delete');
+  });
+
   it('does not delete when delete is disabled', () => {
     const onAction = jest.fn();
     renderActions({ onAction, deleteDisabled: true });

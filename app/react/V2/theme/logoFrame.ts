@@ -2,16 +2,24 @@ const MIN_CROP = 8;
 const MAX_CROP_SCALE = 2;
 const HEADER_LOGO_MAX_WIDTH = 128;
 const HEADER_LOGO_MAX_HEIGHT = 48;
+const EDITOR_LOGO_MAX_WIDTH = 480;
+const EDITOR_LOGO_MAX_HEIGHT = 256;
 
 type Crop = { x: number; y: number; width: number; height: number };
 type Bounds = { width: number; height: number };
 
 const logoFrameClass = (_variant: 'header' | 'preview' = 'header') =>
-  'logo-img h-auto max-h-12 w-auto max-w-32 shrink-0 object-contain';
+  'logo-img h-12 w-auto max-w-32 shrink-0 object-contain';
 
 const logoDisplaySize = (width: number, height: number) => {
   if (width === 0 || height === 0) return { width: 0, height: 0 };
   const scale = Math.min(HEADER_LOGO_MAX_WIDTH / width, HEADER_LOGO_MAX_HEIGHT / height, 1);
+  return { width: width * scale, height: height * scale };
+};
+
+const logoEditorSize = (width: number, height: number) => {
+  if (width === 0 || height === 0) return { width: 0, height: 0 };
+  const scale = Math.min(EDITOR_LOGO_MAX_WIDTH / width, EDITOR_LOGO_MAX_HEIGHT / height);
   return { width: width * scale, height: height * scale };
 };
 
@@ -62,4 +70,11 @@ const defaultOutputScale = (crop: Crop, maxWidth = 800, maxHeight = 256) =>
   Math.min(1, maxWidth / crop.width, maxHeight / crop.height);
 
 export type { Crop, Bounds };
-export { logoDisplaySize, logoFrameClass, applyCropDrag, scaledCropSize, defaultOutputScale };
+export {
+  logoDisplaySize,
+  logoEditorSize,
+  logoFrameClass,
+  applyCropDrag,
+  scaledCropSize,
+  defaultOutputScale,
+};

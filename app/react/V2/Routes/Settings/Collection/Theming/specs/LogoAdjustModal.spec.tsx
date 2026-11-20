@@ -35,6 +35,26 @@ describe('LogoAdjustModal', () => {
     HTMLCanvasElement.prototype.toDataURL = () => 'data:image/png;base64,xx';
   });
 
+  it('gives a viewBox-only logo a visible editor size', () => {
+    render(
+      <LogoAdjustModal
+        src="/logo.svg"
+        uploadName="uwazi-theme-logo-light.png"
+        onClose={() => undefined}
+        onApply={() => undefined}
+      />
+    );
+    const image = document.querySelector('img');
+    if (!image) throw new Error('missing image');
+    Object.defineProperty(image, 'naturalWidth', { value: 300 });
+    Object.defineProperty(image, 'naturalHeight', { value: 44 });
+    act(() => {
+      image.dispatchEvent(new Event('load'));
+    });
+    expect(image.style.width).toBe('480px');
+    expect(image.style.height).toBe('70.4px');
+  });
+
   it('keeps Apply disabled until the upload finishes', async () => {
     const pending = pendingApply();
     render(

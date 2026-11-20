@@ -97,6 +97,7 @@ type ActiveTabFooterInput = {
   relationshipsEditMode: boolean;
   entityBasePath: string;
   sharedId: string;
+  onAction?: (action: LibraryBulkAction) => void;
   onClose: () => void;
 };
 
@@ -106,10 +107,19 @@ const activeTabFooter = ({
   relationshipsEditMode,
   entityBasePath,
   sharedId,
+  onAction,
   onClose,
 }: ActiveTabFooterInput) => {
+  const sharedActions = (
+    <LibrarySingleSelectActions
+      entityBasePath={entityBasePath}
+      sharedId={sharedId}
+      onAction={onAction}
+      onClose={onClose}
+    />
+  );
   if (mainTabId === SIDE_TAB.TOC) {
-    return <ToCTabFooter mainDocument={mainDocument} />;
+    return <ToCTabFooter mainDocument={mainDocument} trailing={sharedActions} />;
   }
   if (mainTabId === MAIN_TAB.DOCUMENT && mainDocument?.filename) {
     return (
@@ -117,14 +127,7 @@ const activeTabFooter = ({
         mainDocument={mainDocument}
         inset="side"
         pageNavAlign="start"
-        trailing={
-          <LibrarySingleSelectActions
-            entityBasePath={entityBasePath}
-            sharedId={sharedId}
-            onClose={onClose}
-            includeActions={false}
-          />
-        }
+        trailing={sharedActions}
       />
     );
   }
@@ -194,6 +197,7 @@ const LibraryEntityPreviewFooter = ({
     relationshipsEditMode: state.relationshipsEditMode,
     entityBasePath,
     sharedId: state.entity.sharedId,
+    onAction,
     onClose: close,
   });
   if (switched) return switched;
