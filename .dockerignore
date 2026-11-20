@@ -1,0 +1,28 @@
+# VCS
+.git
+.gitignore
+.github
+
+# Dependencies and build output
+node_modules
+prod
+
+# Runtime writable directories (created inside the image)
+log
+uploaded_documents
+temporal_files
+custom_uploads
+
+# Tests and fixtures not needed by the image build
+cypress
+e2e
+playwright
+uwazi-fixtures
+
+# Environment files (may contain secrets)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log

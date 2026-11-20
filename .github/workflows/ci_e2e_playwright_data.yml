@@ -2,10 +2,15 @@ name: E2E Playwright Data
 
 on:
   workflow_call:
+    inputs:
+      backend_image:
+        required: true
+        type: string
 
 permissions:
   contents: read
   actions: read
+  packages: read
 
 jobs:
   e2e-playwright-data:
@@ -14,7 +19,7 @@ jobs:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
-          - 9200/tcp
+          - 9200:9200
         options: >-
           --memory=2g
           --memory-swap=2g
@@ -83,61 +88,54 @@ jobs:
         env:
           YARN_ENABLE_HARDENED_MODE: '0'
 
-      - name: Get Playwright version
-        id: playwright-version
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
+      - name: Install Playwright browsers and OS deps
+        uses: ./.github/actions/install-playwright-os-deps
         with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+          command: npx playwright install --with-deps chromium
 
-      - name: Install Playwright browsers (cache miss)
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Playwright OS deps (cache hit)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
-
-      - name: Wait For and Download Artifact
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y jq unzip
-          i=1
-          while [ $i -le 60 ]; do
-            echo "Attempt $i: Checking for artifact..."
-            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
-              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
-            if [ -n "$ARTIFACT_URL" ]; then
-              mkdir -p ./prod
-              curl -s -L -o artifact.zip \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "$ARTIFACT_URL"
-              unzip -q artifact.zip -d ./prod
-              echo "Artifact downloaded and unzipped successfully."
-              exit 0
-            fi
-            sleep 20
-            i=$(expr $i + 1)
-          done
-          echo "Timed out waiting for artifact."
-          exit 1
-        timeout-minutes: 6
-
-      - name: start Uwazi
+      - name: Run Uwazi from backend image
         env:
+          BACKEND_IMAGE: ${{ inputs.backend_image }}
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-        run: .github/scripts/start-uwazi.sh
+          EXTERNAL_SERVICES: true
+          SKIP_MIGRATION_CHECK: true
+        run: |
+          # Built by Dockerized CI (build_runtime_images); guaranteed present by
+          # the `needs` dependency before this job starts.
+          docker pull "$BACKEND_IMAGE"
+          docker run -d --name uwazi-backend --network host \
+            -e DBHOST="$DBHOST" \
+            -e ELASTICSEARCH_URL="$ELASTICSEARCH_URL" \
+            -e REDIS_HOST="$REDIS_HOST" \
+            -e REDIS_PORT="$REDIS_PORT" \
+            -e DATABASE_NAME="$DATABASE_NAME" \
+            -e INDEX_NAME="$INDEX_NAME" \
+            -e EXTERNAL_SERVICES="$EXTERNAL_SERVICES" \
+            -e SKIP_MIGRATION_CHECK="$SKIP_MIGRATION_CHECK" \
+            "$BACKEND_IMAGE"
+
+          for i in {1..60}; do
+            if curl -sf http://localhost:3000/api/version >/dev/null; then
+              echo "Uwazi is up"; exit 0
+            fi
+            echo "Waiting for Uwazi... (attempt $i/60)"
+            sleep 2
+          done
+          echo "Uwazi failed to start"
+          docker logs uwazi-backend --tail 100
+          exit 1
 
       - name: Run Playwright data specs
         run: |
@@ -150,10 +148,19 @@ jobs:
         timeout-minutes: 35
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-          TRANSPILED: true
+
+      - name: Capture Uwazi logs
+        if: always()
+        run: |
+          mkdir -p .github/logs
+          docker logs uwazi-backend > .github/logs/uwazi-backend.log 2>&1 || true
+
+      - name: Cleanup backend container
+        if: always()
+        run: docker rm -f uwazi-backend >/dev/null 2>&1 || true
 
       - name: Upload Playwright test-results
         if: failure()
