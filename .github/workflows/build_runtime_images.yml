@@ -41,9 +41,9 @@ jobs:
           file: Dockerfile
           target: backend
           push: true
-          tags: ghcr.io/${{ github.repository }}-backend:tree-${{ inputs.tree }}
+          tags: ghcr.io/${{ github.repository }}:tree-${{ inputs.tree }}
           cache-from: |
-            type=registry,ref=ghcr.io/${{ github.repository }}-backend:cache
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache
             type=registry,ref=ghcr.io/${{ github.repository }}-ci:cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}-backend:cache,mode=max,ignore-error=true
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max,ignore-error=true
 
