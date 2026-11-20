@@ -1,0 +1,53 @@
+name: Install Playwright browsers and OS deps
+description: >-
+  Installs Chromium's browser binaries and OS dependencies with a fallback
+  Ubuntu mirror and one retry. GitHub's default in-region EC2 apt mirror is
+  occasionally throttled to ~100 kB/s, which turns the normally ~8s OS-dep
+  install into 5-8 minutes.
+
+inputs:
+  command:
+    description: Command that installs the browsers and dependencies
+    required: false
+    default: npx playwright install --with-deps chromium
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install with mirror fallback
+      shell: bash
+      run: |
+        set -uo pipefail
+
+        clear_apt_locks() {
+          # A timed-out install can leave an orphaned apt-get/dpkg (spawned via
+          # sudo) still holding the lock; kill it and drop stale locks before
+          # retrying, otherwise the retry fails with "Could not get lock".
+          sudo pkill -9 -x apt-get 2>/dev/null || true
+          sudo pkill -9 -x apt 2>/dev/null || true
+          sudo pkill -9 -x dpkg 2>/dev/null || true
+          sleep 2
+          sudo rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock \
+            /var/cache/apt/archives/lock 2>/dev/null || true
+          sudo dpkg --configure -a 2>/dev/null || true
+        }
+
+        switch_mirror() {
+          local mirror="$1"
+          echo "Switching Ubuntu apt mirror to ${mirror}"
+          sudo sed -i -E "s#https?://[a-z0-9.-]*\.archive\.ubuntu\.com/ubuntu#${mirror}#g" \
+            /etc/apt/apt-mirrors.txt \
+            /etc/apt/sources.list \
+            /etc/apt/sources.list.d/*.list \
+            /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo apt-get update -qq
+        }
+
+        # The fast path takes ~15s; the only slow case is the ~5 min throttle.
+        # A 60s budget catches the throttled mirror without wasting 3 min.
+        if ! timeout --signal=TERM --kill-after=20 60 ${{ inputs.command }}; then
+          echo "install failed or timed out; retrying with fallback mirror"
+          clear_apt_locks
+          switch_mirror 'http://archive.ubuntu.com/ubuntu'
+          timeout --signal=TERM --kill-after=20 300 ${{ inputs.command }}
+        fi
