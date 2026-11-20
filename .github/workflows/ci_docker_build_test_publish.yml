@@ -21,7 +21,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE: ${{ github.repository }}-backend
+  BACKEND_IMAGE: ${{ github.repository }}
 
 jobs:
   precheck:
@@ -258,7 +258,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       CI_IMAGE_REF: ghcr.io/${{ github.repository }}-ci:tree-${{ needs.image_tag.outputs.tree }}
-      BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+      BACKEND_IMAGE_REF: ghcr.io/${{ github.repository }}:tree-${{ needs.image_tag.outputs.tree }}
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -445,21 +445,21 @@ jobs:
     if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
     uses: ./.github/workflows/ci_e2e_playwright_core.yml
     with:
-      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+      backend_image: ghcr.io/${{ github.repository }}:tree-${{ needs.image_tag.outputs.tree }}
 
   e2e_playwright_data:
     needs: [precheck, image_tag, build_runtime_images]
     if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
     uses: ./.github/workflows/ci_e2e_playwright_data.yml
     with:
-      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+      backend_image: ghcr.io/${{ github.repository }}:tree-${{ needs.image_tag.outputs.tree }}
 
   e2e_playwright_ix:
     needs: [precheck, image_tag, build_runtime_images]
     if: ${{ needs.precheck.outputs.should_run == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/development') || (github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'development' || github.event.pull_request.base.ref == 'staging' || github.event.pull_request.base.ref == 'production' || startsWith(github.event.pull_request.base.ref, 'dependabot/')))) }}
     uses: ./.github/workflows/ci_e2e_playwright_ix.yml
     with:
-      backend_image: ghcr.io/${{ github.repository }}-backend:tree-${{ needs.image_tag.outputs.tree }}
+      backend_image: ghcr.io/${{ github.repository }}:tree-${{ needs.image_tag.outputs.tree }}
 
   publish:
     name: publish
