@@ -14,6 +14,10 @@ jest.mock('#V2/api/client.js', () => ({
   apiClient: { postJson: jest.fn() },
 }));
 
+jest.mock('#app/V2/Components/UI/Header/Header.js', () => ({
+  Header: () => <header data-testid="site-header">Header</header>,
+}));
+
 const postJson = apiClient.postJson as jest.Mock;
 const assign = jest.fn();
 
@@ -40,6 +44,39 @@ describe('Login', () => {
     assign.mockReset();
     sessionStorage.clear();
     localStorage.clear();
+  });
+
+  it('keeps the site header in the form column', () => {
+    renderLogin();
+
+    const header = screen.getByTestId('site-header');
+    expect(header.closest('[data-part="panel"]')).toBeTruthy();
+    expect(header.closest('[data-part="art"]')).toBeNull();
+    expect(document.querySelector('[data-part="art"]')).toHaveClass('max-h-[16%]');
+  });
+
+  it('names the website link with its address and can remember the username', () => {
+    renderLogin();
+
+    expect(screen.getByRole('link', { name: 'uwazi.io' })).toHaveAttribute(
+      'href',
+      'https://uwazi.io'
+    );
+    expect(screen.getByRole('link', { name: 'Documentation' })).toHaveAttribute(
+      'href',
+      'https://docs.uwazi.io/'
+    );
+    const login = screen.getByRole('button', { name: 'Log in' });
+    const forgot = screen.getByRole('button', { name: 'Forgot password or username?' });
+    const names = [...(login.closest('form')?.querySelectorAll('button') ?? [])].map(button =>
+      button.textContent?.trim()
+    );
+    expect(names.indexOf('Log in')).toBeLessThan(names.indexOf('Forgot password or username?'));
+    expect(forgot.parentElement).toHaveClass('justify-center');
+    expect(screen.getByRole('checkbox', { name: 'Remember username' })).toHaveClass(
+      'login-checkbox'
+    );
+    expect(screen.getByLabelText('Username')).not.toHaveAttribute('placeholder');
   });
 
   it('asks for a username and password before calling the server', () => {

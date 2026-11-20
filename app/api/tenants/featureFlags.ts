@@ -24,7 +24,6 @@ const FEATURE_FLAGS = {
   telemetry: { enabled: 'boolean', sampleRate: 'number' },
   prometheus: { enabled: 'boolean', sampleRate: 'number' },
   experimentalFeatures: 'boolean',
-  devflagloginv2: 'boolean',
 } as const;
 
 type FeatureFlagType = 'boolean' | 'number' | 'string';

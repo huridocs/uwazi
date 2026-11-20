@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { t } from '#app/I18N/index.js';
+import { UsersStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { LibrarySelectionIcon } from './librarySelectionIcons.js';
 import type { LibrarySelectionIconName } from './librarySelectionIcons.js';
 
@@ -28,7 +29,11 @@ const actionIcon = (name: LibrarySelectionIconName) => (
 const librarySelectionActions = (): LibrarySelectionAction[] => [
   { id: 'edit', label: 'Edit', icon: actionIcon('pen-line') },
   { id: 'export', label: 'Export CSV', icon: actionIcon('file-down') },
-  { id: 'permissions', label: 'Permissions', icon: actionIcon('lock') },
+  {
+    id: 'permissions',
+    label: 'Permissions',
+    icon: <UsersStrokeIcon className="h-[13px] w-[13px]" />,
+  },
   { id: 'delete', label: 'Delete', icon: actionIcon('trash'), danger: true },
 ];
 

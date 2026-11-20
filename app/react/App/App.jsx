@@ -14,7 +14,7 @@ import { Header } from '#app/V2/Components/UI/Header/Header.js';
 import { InstanceSeo } from '#app/App/InstanceSeo.js';
 import { BertHost } from '#app/V2/Components/AIAssistant/BertHost.js';
 import { store } from '#app/store.js';
-import { isAuthPath, isLoginV2Enabled } from '#shared/authReturn.js';
+import { isAuthPath } from '#shared/authReturn.js';
 import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
@@ -94,15 +94,17 @@ const renderAppFrame = ({
 }) => {
   const userId = store?.getState()?.user?.get?.('_id');
   const bareAuth =
-    isLoginV2Enabled(settings.features) &&
-    (isAuthPath(pathname) ||
-      (Boolean(settings.private) && !userId && isCollectionHome(pathname, settings.languages)));
+    isAuthPath(pathname) ||
+    (Boolean(settings.private) && !userId && isCollectionHome(pathname, settings.languages));
   if (bareAuth) {
     return (
       <div id="app" className={`${appClassName} app-bare`.trim()}>
         <InstanceSeo />
-        <ThemeProvider style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-          <main id="main" style={{ flex: 1, minHeight: 0 }}>
+        <ThemeProvider style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <main
+            id="main"
+            style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
+          >
             {renderAppMainTree(appContext, confirmOptions)}
           </main>
         </ThemeProvider>

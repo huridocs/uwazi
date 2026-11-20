@@ -1,11 +1,12 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Translate, t } from '#app/I18N/index.js';
+import { Header } from '#app/V2/Components/UI/Header/Header.js';
 import { loginArtFallback, loginArtSrcSet, pickLoginArt, type LoginArt } from './loginArt.js';
 
 const FOOTER_LINKS = [
-  { href: 'https://uwazi.io', label: <Translate>Website</Translate> },
+  { href: 'https://uwazi.io', label: <Translate>uwazi.io</Translate> },
   {
-    href: 'https://uwazi.io/page/9852italrtk/support',
+    href: 'https://docs.uwazi.io/',
     label: <Translate>Documentation</Translate>,
   },
   { href: 'https://github.com/huridocs/uwazi', label: <Translate>Contribute</Translate> },
@@ -22,12 +23,12 @@ const AuthLayout = ({ component, children }: { component: string; children: Reac
   return (
     <div
       data-component={component}
-      className="flex min-h-dvh flex-col bg-paper md:flex-row md:overflow-hidden"
+      className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-paper md:flex-row"
     >
       <div
         data-part="art"
         aria-hidden
-        className="relative h-[35dvh] min-h-48 shrink-0 overflow-hidden bg-paper md:h-auto md:w-1/2 lg:w-[56%]"
+        className="relative max-h-[16%] min-h-12 w-full flex-[0_1_16%] overflow-hidden bg-paper md:h-auto md:max-h-none md:min-h-0 md:w-1/2 md:flex-none lg:w-[56%]"
       >
         {art && (
           <picture>
@@ -55,31 +56,36 @@ const AuthLayout = ({ component, children }: { component: string; children: Reac
           </picture>
         )}
       </div>
-      <div data-part="panel" className="flex flex-1 flex-col px-5 md:min-h-0 md:overflow-y-auto">
-        <div data-part="body" className="flex flex-1 items-center justify-center py-6">
-          <div className="w-full max-w-[22.5rem]">{children}</div>
+      <div data-part="panel" className="flex min-h-0 w-full flex-1 flex-col md:w-auto">
+        <div className="login-panel-header shrink-0">
+          <Header />
         </div>
-        <footer
-          data-part="footer"
-          className="flex flex-col items-center gap-2 py-6 text-xs text-ink-tertiary"
-        >
-          <nav
-            aria-label={t('System', 'About Uwazi', null, false)}
-            className="flex flex-wrap justify-center gap-x-5 gap-y-1"
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5">
+          <div data-part="body" className="flex flex-1 items-center justify-center py-6">
+            <div className="w-full max-w-[22.5rem]">{children}</div>
+          </div>
+          <footer
+            data-part="footer"
+            className="flex flex-col items-center gap-2 py-6 text-xs text-ink-tertiary"
           >
-            {FOOTER_LINKS.map(link => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-sm underline-offset-4 hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </footer>
+            <nav
+              aria-label={t('System', 'About Uwazi', null, false)}
+              className="flex flex-wrap justify-center gap-x-5 gap-y-1"
+            >
+              {FOOTER_LINKS.map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-sm underline-offset-4 hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          </footer>
+        </div>
       </div>
     </div>
   );

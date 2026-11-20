@@ -6,7 +6,6 @@ import { Navigate } from 'react-router';
 import { getIndexElement } from '#app/Routes.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { Login } from '#V2/Routes/Auth/index.js';
-import { Login as LoginLegacy } from '#app/Users/Login.js';
 import { LibraryTable } from '#app/Library/LibraryTable.js';
 import { PageView } from '#app/Pages/PageView.js';
 import { ViewerRoute } from '#app/Viewer/ViewerRoute.js';
@@ -107,14 +106,8 @@ describe('Routes', () => {
 
       it('should go to login if there is not a user', () => {
         const { element, parameters } = getIndexElement(settings, undefined);
-        expect(element).toMatchObject(<LoginLegacy />);
-        expect(parameters).toBeUndefined();
-      });
-
-      it('should use the v2 login when the flag is on', () => {
-        settings.features = { devflagloginv2: true };
-        const { element } = getIndexElement(settings, undefined);
         expect(element).toMatchObject(<Login />);
+        expect(parameters).toBeUndefined();
       });
     });
 
