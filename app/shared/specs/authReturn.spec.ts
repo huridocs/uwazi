@@ -67,28 +67,23 @@ describe('loginUrl', () => {
 });
 
 describe('anonymousClientFeatures', () => {
-  it('keeps the login v2 flag and drops the other client flags', () => {
+  it('keeps the header flag and drops the other client flags', () => {
     expect(
       anonymousClientFeatures({
         newHeader: true,
-        devflagloginv2: true,
         featureFlagLibraryV2: true,
       })
-    ).toEqual({ newHeader: true, devflagloginv2: true });
-    expect(anonymousClientFeatures({ newHeader: false })).toEqual({
-      newHeader: false,
-      devflagloginv2: undefined,
-    });
+    ).toEqual({ newHeader: true });
+    expect(anonymousClientFeatures({ newHeader: false })).toEqual({ newHeader: false });
   });
 });
 
 describe('loginRedirect', () => {
-  it('keeps the destination only when login v2 is on', () => {
-    expect(loginRedirect('/en/library/?q=some-search', { devflagloginv2: true })).toBe(
+  it('keeps a safe destination on the login query', () => {
+    expect(loginRedirect('/en/library/?q=some-search')).toBe(
       '/login?redirect=%2Fen%2Flibrary%2F%3Fq%3Dsome-search'
     );
-    expect(loginRedirect('/en/library/?q=some-search', { devflagloginv2: false })).toBe('/login');
-    expect(loginRedirect('/en/library/?q=some-search', null)).toBe('/login');
+    expect(loginRedirect('/')).toBe('/login');
   });
 });
 

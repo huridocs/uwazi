@@ -230,8 +230,8 @@ Clear selection,ရွေးချယ်မှု ရှင်းရန်
 Clear selection filter,ရွေးချယ်မှု စစ်ထုတ်မှု ရှင်းရန်
 Clear sort,စီရန် ရှင်းရန်
 Click,နှိပ်ပါ
-"Click records to add them. Cmd + click works anytime.","မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Cmd + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။"
-"Click records to add them. Ctrl + click works anytime.","မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Ctrl + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။"
+Click records to add them. Cmd + click works anytime.,မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Cmd + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။
+Click records to add them. Ctrl + click works anytime.,မှတ်တမ်းများကို နှိပ်၍ ထည့်ပါ။ Ctrl + နှိပ်ခြင်းသည် အချိန်မရွေး အလုပ်လုပ်သည်။
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Click to select an image,ပုံတစ်ပုံရွေးရန် နှိပ်ပါ
 Click to select audio or video,အသံ သို့မဟုတ် ဗီဒီယိုကို ရွေးရန် နှိပ်ပါ
@@ -662,7 +662,7 @@ Hide restricted relationships from public,ကန့်သတ်ထားသေ�
 Hide task,တာဝန် ဖုံးရန်
 Hide the matches in,ကိုက်ညီမှုများကို ဖျောက်ရန်
 Hide toolbar,ကိရိယာတန်းကို ဖျောက်ရန်
-"Hold Shift and click to select from the last record through this one.","Shift ကိုဖိထားပြီး နှိပ်ပါ။ နောက်ဆုံးမှတ်တမ်းမှ ဤမှတ်တမ်းအထိ ရွေးသည်။"
+Hold Shift and click to select from the last record through this one.,Shift ကိုဖိထားပြီး နှိပ်ပါ။ နောက်ဆုံးမှတ်တမ်းမှ ဤမှတ်တမ်းအထိ ရွေးသည်။
 Hours,နာရီ
 How to combine sources,ရင်းမြစ်များ ပေါင်းစည်းပုံ
 HTML,HTML
@@ -1200,6 +1200,7 @@ Relevance,သက်ဆိုင်မှု
 remaining,ကျန်ရှိနေခြင်း
 remaining files,ကျန်ရှိသော ဖိုင်များ
 Remember me,ကျွန်ုပ်ကို မှတ်ထားပါ
+Remember username,အသုံးပြုသူ အမည်ကို မှတ်ထားပါ
 Remote Server Unreachable,အဝေးဆာဗာ မရောက်နိုင်ပါ
 Remove,ဖယ်ရှားရန်
 Remove data source,ဒေတာရင်းမြစ် ဖယ်ရန်
@@ -1699,6 +1700,7 @@ Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 Uwazi label,Uwazi အညွှန်း
 Uwazi UI,Uwazi UI
+uwazi.io,uwazi.io
 Validating,အတည်ပြုခြင်း
 Validating file structure and headers.,ဖိုင်ဖွဲ့စည်းပုံနှင့် ခေါင်းစီးများကို အတည်ပြုခြင်း။
 Value,တန်ဖိုး

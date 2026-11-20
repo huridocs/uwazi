@@ -14,6 +14,10 @@ jest.mock('#V2/api/client.js', () => ({
   apiClient: { postJson: jest.fn() },
 }));
 
+jest.mock('#app/V2/Components/UI/Header/Header.js', () => ({
+  Header: () => <header data-testid="site-header">Header</header>,
+}));
+
 const postJson = apiClient.postJson as jest.Mock;
 
 const renderSetPassword = (entry: string) =>

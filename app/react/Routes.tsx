@@ -10,10 +10,6 @@ import { LibraryTable } from './Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
 import { Login, SetPassword, UnlockAccount } from '#V2/Routes/Auth/index.js';
-import { Login as LoginLegacy } from '#app/Users/Login.js';
-import { ResetPassword } from '#app/Users/ResetPassword.js';
-import { UnlockAccount as UnlockAccountLegacy } from '#app/Users/UnlockAccount.js';
-import { isLoginV2Enabled } from '#shared/authReturn.js';
 import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
 import { Theming, themingLoader } from '#V2/Routes/Settings/Theming/Theming.js';
@@ -132,15 +128,12 @@ type IndexParts = {
   LoginComp: React.ComponentType;
 };
 
-const indexParts = (
-  indexComponents: IndexComponents | undefined,
-  settings: ClientSettings | undefined
-): IndexParts => ({
+const indexParts = (indexComponents: IndexComponents | undefined): IndexParts => ({
   Root: indexComponents?.LibraryRoot ?? LibraryRoot,
   Cards: indexComponents?.LibraryCards ?? LibraryCards,
   Table: indexComponents?.LibraryTable ?? LibraryTable,
   Map: indexComponents?.LibraryMap ?? LibraryMap,
-  LoginComp: indexComponents?.Login ?? (isLoginV2Enabled(settings?.features) ? Login : LoginLegacy),
+  LoginComp: indexComponents?.Login ?? Login,
 });
 
 const libraryShell = (parts: IndexParts, view: string | undefined, params: { q?: string }) => {
@@ -208,7 +201,7 @@ const buildIndexElement = (
   indexComponents?: IndexComponents,
   settings?: ClientSettings
 ): React.ReactNode => {
-  const parts = indexParts(indexComponents, settings);
+  const parts = indexParts(indexComponents);
   switch (descriptor.branch) {
     case 'libraryDefault':
       return libraryDefaultElement(descriptor.libraryDefault, parts, settings);
@@ -246,10 +239,7 @@ const getRoutesLayout = ({
 }: RoutesLayoutInput) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route index element={indexElement} handle={defaultToLibrary ? { library: true } : undefined} />
-    <Route
-      path="login"
-      element={isLoginV2Enabled(settings?.features) ? <Login /> : <LoginLegacy />}
-    />
+    <Route path="login" element={<Login />} />
     {isLibraryV2Enabled(settings?.features) ? (
       <>
         <Route
@@ -346,14 +336,8 @@ const getRoutesLayout = ({
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="page-draft/:sharedId" element={<PageDraftView />} />
     <Route path="page-draft/:sharedId/:slug" element={<PageDraftView />} />
-    <Route
-      path="setpassword/:key"
-      element={isLoginV2Enabled(settings?.features) ? <SetPassword /> : <ResetPassword />}
-    />
-    <Route
-      path="unlockaccount/:username/:code"
-      element={isLoginV2Enabled(settings?.features) ? <UnlockAccount /> : <UnlockAccountLegacy />}
-    />
+    <Route path="setpassword/:key" element={<SetPassword />} />
+    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={createAccountLoader(services)(headers)} />
       <Route

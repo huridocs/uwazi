@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate, t } from '#app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import {
   INPUT,
   LABEL,
@@ -42,7 +42,6 @@ const Login = () => {
               autoComplete="username"
               autoCapitalize="none"
               spellCheck={false}
-              placeholder={t('System', 'e.g. admin', null, false)}
               value={state.identifier}
               onChange={event => dispatch({ type: 'identifier', value: event.target.value })}
               disabled={state.pending}
@@ -64,20 +63,17 @@ const Login = () => {
               describedBy={refs.messageId}
             />
           </div>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-ink-secondary">
+          <div className="mt-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm leading-none text-ink-secondary">
               <input
                 type="checkbox"
                 checked={state.remember}
                 onChange={event => dispatch({ type: 'remember', value: event.target.checked })}
                 disabled={state.pending}
-                className="h-4 w-4 rounded border-border"
+                className="login-checkbox h-4 w-4 shrink-0 rounded border-border"
               />
-              <Translate>Remember me</Translate>
+              <Translate>Remember username</Translate>
             </label>
-            <button type="button" onClick={actions.showForgot} className={TEXT_LINK}>
-              <Translate>Forgot password or username?</Translate>
-            </button>
           </div>
           <AuthMessage id={refs.messageId} message={state.message} />
           <AuthSubmit
@@ -85,6 +81,11 @@ const Login = () => {
             label={<Translate>Log in</Translate>}
             pendingLabel={<Translate>Logging in…</Translate>}
           />
+          <div className="mt-5 flex justify-center">
+            <button type="button" onClick={actions.showForgot} className={TEXT_LINK}>
+              <Translate>Forgot password or username?</Translate>
+            </button>
+          </div>
           {showCookieNote && (
             <p className="mt-3 text-center text-xs text-ink-tertiary">
               <Translate>
