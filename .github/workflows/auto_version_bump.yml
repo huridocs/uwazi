@@ -53,10 +53,12 @@ jobs:
           # New flow's record: every tag published to the uwazi GHCR package
           # (written by the publish job). Read with the workflow token so this
           # needs only `packages: read`, not a `read:packages` scope on the PAT
-          # used for the push below.
+          # used for the push below. The package does not exist until the first
+          # publish, so a 404 is treated as "no image tags yet".
           image_tags="$(GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh api --paginate \
-            "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" \
-            | jq -r '[.[] | .metadata.container.tags? // [] | .[]?] | unique | join(" ")')"
+            "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" 2>/dev/null \
+            || echo '[]')"
+          image_tags="$(jq -r '[.[] | .metadata.container.tags? // [] | .[]?] | unique | join(" ")' <<< "$image_tags")"
 
           echo "current=$current latest_release=${latest_release:-<none>} image_tags=${image_tags:-<none>}"
 
