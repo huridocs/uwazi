@@ -1,7 +1,9 @@
 # Uwazi images: CI test runner and runtime (backend default, configurable role)
 # Single source of truth for dockerized Uwazi builds.
 
-FROM node:22.23.2-bookworm-slim AS base
+ARG NODE_VERSION=22.23.2
+
+FROM node:${NODE_VERSION}-bookworm-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -75,17 +77,46 @@ RUN yarn production-build
 
 # Minimal runtime image. The entrypoint selects the role: backend (default),
 # queue worker, or legacy worker — all from this single image.
-FROM node:22.23.2-bookworm-slim AS runtime
+#
+# Debian forky instead of the build stages' bookworm: forky is the first
+# Debian release whose libvips (8.18.7) meets the thumbnail-generation minimum
+# (huridocs/Internal-Issues#589). There is no official node image on forky, so
+# Node is installed from the upstream tarball, pinned to the same version the
+# build stages compile with.
+FROM debian:forky-slim AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_ENV=production
 
+ARG NODE_VERSION
+ARG TARGETARCH
+
 # poppler-utils provides pdftotext, required by Uwazi PDF processing.
+# libvips-tools provides vips/vipsheader; libheif-plugin-libde265 is the HEVC
+# decoder libheif needs for iPhone photos; imagemagick gives libvips its BMP
+# delegate. ca-certificates/curl/xz-utils fetch and unpack the Node tarball.
 RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends \
        ca-certificates \
+       curl \
+       imagemagick \
+       libheif-plugin-libde265 \
+       libvips-tools \
        poppler-utils \
+       xz-utils \
     && rm -rf /var/lib/apt/lists/*
+
+RUN case "${TARGETARCH:-amd64}" in \
+      amd64) node_arch=x64 ;; \
+      arm64) node_arch=arm64 ;; \
+      *) echo "unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" \
+    | tar -xJ -C /usr/local --strip-components=1
+
+# Refuse to ship an image whose thumbnail dependencies are missing or too old.
+COPY --chmod=755 docker/check-thumbnail-deps.sh /usr/local/bin/check-thumbnail-deps
+RUN check-thumbnail-deps
 
 # Full ICU data for consistent Intl/Luxon locale formatting in production.
 RUN npm install -g full-icu \
