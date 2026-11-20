@@ -270,6 +270,13 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithToc.sharedId, { user: adminUser });
     fireEvent.click(await screen.findByRole('tab', { name: 'ToC' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    const footer = screen.getByTestId('entity-tab-footer');
+    const names = within(footer)
+      .getAllByRole('button')
+      .map(button => button.textContent);
+    expect(names.indexOf('Cancel')).toBeLessThan(names.indexOf('Save'));
+    expect(within(footer).queryByRole('button', { name: 'Permissions' })).not.toBeInTheDocument();
+    expect(within(footer).queryByRole('link', { name: /View entity/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Introduction' }));
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Updated introduction' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save label' }));
