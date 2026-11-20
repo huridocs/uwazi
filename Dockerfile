@@ -105,9 +105,9 @@ RUN mkdir -p uploaded_documents temporal_files custom_uploads log \
 USER uwazi
 
 
-# Single runtime image. Default role is the backend API server; set UWAZI_ROLE
-# (or pass "queue-worker"/"worker") to run a worker, or pass any other command
-# (migrations, CLI) to override entirely.
+# Single runtime image. Default role is the backend API server; pass
+# "queue-worker" (or "legacy-worker") as the first command argument to run a worker,
+# or pass any other command (migrations, CLI) to override entirely.
 FROM runtime AS backend
 
 COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/uwazi-entrypoint

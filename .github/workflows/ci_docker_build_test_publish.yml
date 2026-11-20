@@ -397,7 +397,7 @@ jobs:
 
       - name: Start queue-worker
         run: |
-          # Same image as the backend; the entrypoint dispatches on UWAZI_ROLE.
+          # Same image as the backend; the entrypoint dispatches on the first arg.
           docker run -d --name uwazi-queue-worker --network host \
             -e DBHOST=localhost:27017 \
             -e REDIS_HOST=localhost \
@@ -409,8 +409,8 @@ jobs:
             -e POSTGRES_APP_USER=app_user \
             -e POSTGRES_APP_PASSWORD=app_user \
             -e QUEUE_NAME=uwazi_jobs \
-            -e UWAZI_ROLE=queue-worker \
-            "$BACKEND_IMAGE_REF"
+            "$BACKEND_IMAGE_REF" \
+            queue-worker
 
       - name: Wait for backend
         run: |
