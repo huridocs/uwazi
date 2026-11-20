@@ -19,7 +19,7 @@ test('auth gate contract with blank fixtures', async ({ page }) => {
 
   await test.step('Open protected route and see login form', async () => {
     await page.goto('/library');
-    await expect(page).toHaveURL(/\/(en\/)?login$/);
+    await expect(page).toHaveURL(/\/(en\/)?login\?redirect=%2Flibrary$/);
     await expect(page.locator('input[name="username"]')).toBeVisible();
     await expect(page.locator('input[name="password"]')).toBeVisible();
   });
@@ -45,6 +45,6 @@ test('auth gate contract with blank fixtures', async ({ page }) => {
 
   await test.step('Try protected route again and get redirected', async () => {
     await page.goto('/library');
-    await expect(page).toHaveURL(/\/(en\/)?login$/);
+    await expect(page).toHaveURL(/\/(en\/)?login\?redirect=%2Flibrary$/);
   });
 });
