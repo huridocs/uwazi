@@ -6,7 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import { BlockDirtyNavigation } from '#V2/Components/UI/index.js';
+import { BlockDirtyNavigation, PortalTooltip } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -116,14 +116,16 @@ const LibraryEntityPreviewView = ({
               <EntityMainPaneHeader entity={entity} showDocumentViewMode={false} />
             </div>
             {isMobile ? null : (
-              <button
-                type="button"
-                onClick={() => editing.requestStopTranslations(onClose)}
-                className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-                aria-label={t('System', 'Close', null, false)}
-              >
-                <XMarkIcon className="h-4 w-4" />
-              </button>
+              <PortalTooltip content={t('System', 'Close', null, false)} placement="top">
+                <button
+                  type="button"
+                  onClick={() => editing.requestStopTranslations(onClose)}
+                  className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+                  aria-label={t('System', 'Close', null, false)}
+                >
+                  <XMarkIcon className="h-4 w-4" aria-hidden />
+                </button>
+              </PortalTooltip>
             )}
           </div>
           <div className="px-3 pt-2 pb-1">

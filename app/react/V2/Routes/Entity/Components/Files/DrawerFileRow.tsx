@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { CheckIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
+import { PortalTooltip } from '#V2/Components/UI/PortalTooltip.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileRowDownloadButton } from './FileRowDownloadButton.js';
@@ -155,14 +156,16 @@ const DrawerFileRow = ({
           <>
             {isFileRowSelectable(row) ? (
               <EntityWriteAuthorization>
-                <button
-                  type="button"
-                  onClick={() => onEdit(row)}
-                  aria-label={t('System', 'Rename', null, false)}
-                  className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-warm hover:text-ink"
-                >
-                  <PencilIcon className="h-3 w-3" />
-                </button>
+                <PortalTooltip content={t('System', 'Edit', null, false)} placement="top">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(row)}
+                    aria-label={t('System', 'Edit', null, false)}
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-warm hover:text-ink"
+                  >
+                    <PencilIcon className="h-3 w-3" aria-hidden />
+                  </button>
+                </PortalTooltip>
               </EntityWriteAuthorization>
             ) : null}
             <FileRowDownloadButton row={row} />
