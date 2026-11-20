@@ -24,7 +24,6 @@ describe('feature flags registry', () => {
         telemetry: { enabled: true, sampleRate: 0.5 },
         prometheus: { enabled: false, sampleRate: 0.1 },
         experimentalFeatures: true,
-        devflagloginv2: true,
       };
 
       expect(FeatureFlagsSchema.parse(every)).toEqual(every);

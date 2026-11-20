@@ -33,7 +33,7 @@ import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factor
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { shapeSettingsForSSR } from '#api/core/application/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
-import { anonymousClientFeatures, isLoginV2Enabled, loginRedirect } from '#shared/authReturn.js';
+import { anonymousClientFeatures, loginRedirect } from '#shared/authReturn.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
 import { Root } from './App/Root.js';
@@ -400,7 +400,6 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
     aiAssistant: featureFlags?.aiAssistant,
     translationService: featureFlags?.translationService,
     experimentalFeatures: featureFlags?.experimentalFeatures,
-    devflagloginv2: featureFlags?.devflagloginv2,
   };
   const settingsWithTenantFlags = {
     ...settings,
@@ -432,14 +431,13 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
     return;
   }
 
-  const loginV2 = isLoginV2Enabled(settingsWithFeatureFlags.features);
   const [lib, cards, table, map, login] = await withSpan('dynamic_imports', async () =>
     Promise.all([
       import('./Library/Library.js'),
       import('./Library/LibraryCards.js'),
       import('./Library/LibraryTable.js'),
       import('./Library/LibraryMap.js'),
-      loginV2 ? import('./V2/Routes/Auth/index.js') : import('./Users/Login.js'),
+      import('./V2/Routes/Auth/index.js'),
     ])
   );
 
@@ -491,7 +489,7 @@ const renderSSR = async (req: ExpressRequest, res: Response, ssrStart: bigint) =
     const userRole = req.user?.role || '';
     const { allowedRoles } = lastRouteElement.props;
     if (!userId || (allowedRoles && !allowedRoles.includes(userRole))) {
-      res.redirect(loginRedirect(req.originalUrl, settingsWithFeatureFlags.features));
+      res.redirect(loginRedirect(req.originalUrl));
       return;
     }
   }

@@ -233,8 +233,8 @@ Clear selection,Effacer la sélection
 Clear selection filter,Effacer le filtre de sélection
 Clear sort,Effacer le tri
 Click,Cliquez
-"Click records to add them. Cmd + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment."
-"Click records to add them. Ctrl + click works anytime.","Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment."
+Click records to add them. Cmd + click works anytime.,Cliquez sur les enregistrements pour les ajouter. Cmd + clic fonctionne à tout moment.
+Click records to add them. Ctrl + click works anytime.,Cliquez sur les enregistrements pour les ajouter. Ctrl + clic fonctionne à tout moment.
 Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
@@ -669,7 +669,7 @@ Hide restricted relationships from public,Masquer les relations restreintes au p
 Hide task,Masquer la tâche
 Hide the matches in,Masquer les correspondances dans
 Hide toolbar,Masquer la barre d'outils
-"Hold Shift and click to select from the last record through this one.","Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci."
+Hold Shift and click to select from the last record through this one.,Maintenez Shift et cliquez pour sélectionner du dernier enregistrement jusqu'à celui-ci.
 Hours,Heures
 How to combine sources,Comment combiner les sources
 HTML,HTML
@@ -1217,6 +1217,7 @@ Relevance,Pertinence
 remaining,restant
 remaining files,fichiers restants
 Remember me,Se souvenir de moi
+Remember username,Se souvenir du nom d'utilisateur
 Remote Server Unreachable,Serveur distant inaccessible
 Remove,Supprimer
 Remove data source,Retirer la source de données
@@ -1727,6 +1728,7 @@ Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi est développé par
 Uwazi label,Libellé Uwazi
 Uwazi UI,Interface utilisateur d'Uwazi
+uwazi.io,uwazi.io
 Validating,Validation
 Validating file structure and headers.,Vérification de la structure du fichier et des en-têtes.
 Value,Valeur
