@@ -473,6 +473,7 @@ class Entity {
         type: 'entity',
         value: item.value,
         label: related.getTitle(language),
+        ...(item.attributes !== undefined ? { attributes: item.attributes } : {}),
         ...(related.icon ? { icon: related.icon } : {}),
         ...(inheritedProp
           ? {

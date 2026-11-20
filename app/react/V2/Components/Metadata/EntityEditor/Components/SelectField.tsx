@@ -4,6 +4,7 @@ import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { BaseSelectField } from './BaseSelectField.js';
+import { reuseSelectedEntries } from '../functions/keepMetadataAttributes.js';
 import { getMetadataSelectedValues, getOptionInfo } from './metadataSelectUtils.js';
 import { useThesaurusAdornment } from './ThesaurusValueControls.js';
 
@@ -57,19 +58,20 @@ const SelectField = <TFormValues extends FieldValues = FieldValues>({
       singleSelect
       adornment={bound.adornment}
       getSelectedValues={getMetadataSelectedValues}
-      onSelectedValuesChange={(selectedValues, availableOptions) => {
+      onSelectedValuesChange={(selectedValues, availableOptions, currentValue) => {
         const [selectedValue] = selectedValues;
         if (!selectedValue) {
           return [];
         }
         const option = getOptionInfo(selectedValue, availableOptions);
-        return [
+        const nextValue = [
           {
             value: selectedValue,
             label: option.label,
             parent: option.parent,
           } satisfies MetadataValue,
         ];
+        return reuseSelectedEntries(currentValue, nextValue);
       }}
     />
   );

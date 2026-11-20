@@ -99,9 +99,10 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
                     geolocationField.onChange([]);
                     return;
                   }
-                  const rest = entries.slice(1);
+                  const [first, ...rest] = entries;
                   geolocationField.onChange([
                     {
+                      ...first,
                       value: {
                         lat: nextLat,
                         lon: nextLon,

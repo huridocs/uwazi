@@ -2,7 +2,11 @@ import type { LanguagesListSchema, MetadataObjectSchema } from '#shared/types/co
 import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
-import { metadataFormKey, type FormMetadataProperty } from './formatMetadataForForm.js';
+import {
+  metadataFormKey,
+  toFormMetadataValue,
+  type FormMetadataProperty,
+} from './formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
 
 const TRANSLATABLE_METADATA_TYPES = new Set([
@@ -75,10 +79,7 @@ const translationEntryText = (entry: unknown, part?: LinkPart) => {
 };
 
 const toFormMetadataValues = (values?: MetadataObjectSchema[]): MetadataValue[] =>
-  (values ?? []).map(entry => ({
-    value: entry.value,
-    ...(typeof entry.label === 'string' ? { label: entry.label } : {}),
-  }));
+  (values ?? []).map(toFormMetadataValue);
 
 const translatableProperties = (metadataProperties: FormMetadataProperty[]) =>
   metadataProperties.filter(property => isTranslatableMetadataType(property.type));
@@ -147,6 +148,15 @@ const setTranslationTouched = ({
   [language]: { ...touched[language], [propertyName]: true },
 });
 
+const withoutAttributes = (entries: MetadataObjectSchema[]): MetadataObjectSchema[] =>
+  entries.map(entry => {
+    if (entry.attributes === undefined) {
+      return entry;
+    }
+    const { attributes: _attributes, ...rest } = entry;
+    return rest;
+  });
+
 const pickTranslationValue = ({
   existing,
   fallback,
@@ -158,9 +168,10 @@ const pickTranslationValue = ({
   touched: boolean;
   blankFallsBack: boolean;
 }): MetadataObjectSchema[] => {
-  if (blankFallsBack && isBlankTitle(existing)) return fallback;
+  const copied = withoutAttributes(fallback);
+  if (blankFallsBack && isBlankTitle(existing)) return copied;
   if (touched) return existing ?? textValues('');
-  return isMissingTranslation(existing) ? fallback : (existing ?? fallback);
+  return isMissingTranslation(existing) ? copied : (existing ?? copied);
 };
 
 const completeLanguageBucket = ({
@@ -223,6 +234,20 @@ const buildTranslationsForSave = ({
   );
 };
 
+const attributesForTranslation = (entry: unknown): string[] | undefined => {
+  if (!Array.isArray(entry) || typeof entry[0] !== 'object' || entry[0] === null) {
+    return undefined;
+  }
+  const { attributes } = entry[0] as { attributes?: unknown };
+  if (
+    !Array.isArray(attributes) ||
+    !attributes.every((item): item is string => typeof item === 'string')
+  ) {
+    return undefined;
+  }
+  return attributes;
+};
+
 const setTranslationText = ({
   translations,
   language,
@@ -233,13 +258,16 @@ const setTranslationText = ({
   language: string;
   propertyName: string;
   value: string;
-}): EntityTranslationsDTO => ({
-  ...translations,
-  [language]: {
-    ...(translations[language] ?? {}),
-    [propertyName]: textValues(value),
-  },
-});
+}): EntityTranslationsDTO => {
+  const attributes = attributesForTranslation(translations[language]?.[propertyName]);
+  return {
+    ...translations,
+    [language]: {
+      ...(translations[language] ?? {}),
+      [propertyName]: [{ value, ...(attributes ? { attributes } : {}) }],
+    },
+  };
+};
 
 const translationValuePath = (language: string, propertyName: string) =>
   `translations.${language}.${metadataFormKey(propertyName)}`;
@@ -254,6 +282,7 @@ export {
   rekeyEditEntityLanguage,
   setTranslationText,
   setTranslationTouched,
+  attributesForTranslation,
   storedTranslationValue,
   stringFromValues,
   translationEntryText,

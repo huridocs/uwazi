@@ -216,6 +216,7 @@ export type GeolocationSchema = {
 export interface InheritedValueSchema {
   value: PropertyValueSchema;
   label?: string;
+  attributes?: string[];
   parent?: SelectParentSchema;
   [k: string]: unknown | undefined;
 }
@@ -264,6 +265,7 @@ export interface MetadataObjectSchema {
   attachment?: number;
   label?: string;
   suggestion_model?: string;
+  attributes?: string[];
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: InheritedValueSchema[];
   inheritedType?: string;

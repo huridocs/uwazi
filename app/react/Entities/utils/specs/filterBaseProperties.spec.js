@@ -27,4 +27,19 @@ describe('filterBaseProperties', () => {
 
     expect(util.filterBaseProperties(data)).toEqual(expectedData);
   });
+
+  it('keeps metadata attributes so a sidepanel save can reattach them', () => {
+    const metadataAttributes = {
+      text: { values: ['old'], attributes: [['ai_generated']] },
+    };
+    const data = {
+      title: 'title',
+      metadata: { text: 'edited' },
+      metadataAttributes,
+      toc: 'should not be sent',
+    };
+
+    expect(util.filterBaseProperties(data).metadataAttributes).toEqual(metadataAttributes);
+    expect(util.filterBaseProperties(data)).not.toHaveProperty('toc');
+  });
 });

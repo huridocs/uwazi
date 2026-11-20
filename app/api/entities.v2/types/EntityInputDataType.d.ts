@@ -219,6 +219,7 @@ export interface EntityInputModel {
                 lat: number;
                 lon: number;
               }[];
+          attributes?: string[];
           [k: string]: unknown | undefined;
         }[]
       | undefined;

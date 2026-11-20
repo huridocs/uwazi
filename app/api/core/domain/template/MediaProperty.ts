@@ -3,15 +3,26 @@ import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { MediaEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Media;
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
-const EntrySchema = z.object({
-  value: z.string().trim().min(1, 'Media Property value must be a non-empty string.'),
-});
+const EntrySchema = z
+  .object({
+    value: z.string().trim(),
+    attributes: attributesSchema,
+  })
+  .superRefine((entry, ctx) => {
+    if (!entry.value && entry.attributes === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Media Property value must be a non-empty string.',
+      });
+    }
+  });
 
 const createSchema = (isRequired: boolean) =>
   z
@@ -43,7 +54,7 @@ class MediaProperty extends AbstractImageProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment<MediaEntry> {
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.length)
+      value.filter(v => v?.value?.length || entryCarriesAttributes(v))
     );
 
     return {

@@ -4,7 +4,9 @@ import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
 import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
 import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
 
-type ImageValueInput = { value: string } | { attachment: number };
+type ImageValueInput = ({ value: string } | { attachment: number }) & {
+  attributes?: string[];
+};
 
 export class ImagePropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
@@ -28,11 +30,13 @@ export class ImagePropertyAssignmentCreatorService extends AbstractPropertyAssig
 
         return {
           value: attachment.filename,
+          ...(inputValue.attributes !== undefined ? { attributes: inputValue.attributes } : {}),
         };
       }
 
       return {
         value: inputValue.value,
+        ...(inputValue.attributes !== undefined ? { attributes: inputValue.attributes } : {}),
       };
     });
 

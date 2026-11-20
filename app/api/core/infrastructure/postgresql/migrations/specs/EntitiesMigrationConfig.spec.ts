@@ -352,7 +352,7 @@ describe('EntitiesMigrationConfig', () => {
       creationDate: 1700000000000,
       editDate: 1700000000000,
       metadata: {
-        text_field: [{ value: 'hello world' }],
+        text_field: [{ value: 'hello world', attributes: ['ai_generated', 'sync_off'] }],
         number_field: [{ value: 42 }],
         labeled_field: [{ value: 'val', label: 'Label' }],
         multi_value: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
@@ -367,12 +367,13 @@ describe('EntitiesMigrationConfig', () => {
 
     expect(row).toMatchObject({
       metadata: {
-        text_field: [{ value: 'hello world' }],
+        text_field: [{ value: 'hello world', attributes: ['ai_generated', 'sync_off'] }],
         number_field: [{ value: 42 }],
         labeled_field: [{ value: 'val', label: 'Label' }],
         multi_value: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
       },
     });
+    expect(row.metadata.number_field).toEqual([{ value: 42 }]);
   });
 
   it('should default metadata to empty object when missing', async () => {

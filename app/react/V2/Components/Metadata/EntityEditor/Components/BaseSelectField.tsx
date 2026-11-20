@@ -60,7 +60,11 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
     selectedIds: string[];
   }) => React.ReactNode;
   getSelectedValues: (value: unknown) => string[];
-  onSelectedValuesChange: (selectedValues: string[], options: MultiselectListOption[]) => unknown;
+  onSelectedValuesChange: (
+    selectedValues: string[],
+    options: MultiselectListOption[],
+    currentValue: unknown
+  ) => unknown;
 };
 
 const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
@@ -134,7 +138,9 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
             if (disabled) {
               return;
             }
-            fieldController.onChange(onSelectedValuesChange(ids, optionOverride ?? currentOptions));
+            fieldController.onChange(
+              onSelectedValuesChange(ids, optionOverride ?? currentOptions, fieldController.value)
+            );
           };
           const leading = adornment?.({ apply, selectedIds });
 

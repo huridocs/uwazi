@@ -205,6 +205,29 @@ describe('V1RelationshipProperty', () => {
       });
     });
 
+    it('should keep attributes, including on a blank value', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+      });
+
+      const assignment = relationship.createPropertyAssignment({
+        value: [
+          { value: 'shared-1', label: 'One', type: 'entity', attributes: ['sync_off'] },
+          { value: '', label: '', type: 'entity', attributes: [] },
+          { value: '', label: '', type: 'entity' },
+        ],
+        language: 'en',
+      });
+
+      expect(assignment.value).toEqual([
+        { value: 'shared-1', label: 'One', type: 'entity', attributes: ['sync_off'] },
+        { value: '', label: '', type: 'entity', attributes: [] },
+      ]);
+    });
+
     it('should throw if required and no value is provided', () => {
       const relationship = V1RelationshipProperty.create({
         id: 'id',

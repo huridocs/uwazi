@@ -218,6 +218,40 @@ describe('wrapEntityMetadata', () => {
       ],
     });
   });
+
+  it('reapplies attributes after the form unwraps and edits a value', () => {
+    const entity = {
+      title: 'A title',
+      metadata: { text: 'edited', image: '/api/files/photo.jpg' },
+      metadataAttributes: {
+        text: { values: ['old'], attributes: [['ai_generated', 'sync_off']] },
+        image: { values: ['/api/files/photo.jpg'], attributes: [[]] },
+      },
+    };
+    const wrappedEntity = wrapEntityMetadata(entity, template);
+    expect(wrappedEntity.metadata).toEqual({
+      text: [{ value: 'edited', attributes: ['ai_generated', 'sync_off'] }],
+      image: [{ value: '/api/files/photo.jpg', attributes: [] }],
+    });
+    expect(wrappedEntity).not.toHaveProperty('metadataAttributes');
+  });
+
+  it('does not copy attributes onto a different list of values', () => {
+    const entity = {
+      title: 'A title',
+      metadata: { tags: ['kept', 'also-kept'] },
+      metadataAttributes: {
+        tags: {
+          values: ['kept', 'removed', 'also-kept'],
+          attributes: [['ai_generated'], ['sync_off'], []],
+        },
+      },
+    };
+    const wrappedEntity = wrapEntityMetadata(entity, template);
+    expect(wrappedEntity.metadata).toEqual({
+      tags: [{ value: 'kept' }, { value: 'also-kept' }],
+    });
+  });
 });
 
 /* eslint-disable max-statements */

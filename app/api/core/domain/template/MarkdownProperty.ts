@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { MarkdownEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 const EntrySchema = z.object({
   value: z.string().trim(),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean) =>
@@ -42,7 +44,7 @@ class MarkdownProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment<MarkdownEntry> {
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.trim()?.length)
+      value.filter(v => v?.value?.trim()?.length || entryCarriesAttributes(v))
     );
 
     return {

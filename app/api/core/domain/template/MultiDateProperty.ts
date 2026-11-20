@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema } from './attributesSchema.js';
 import { DateEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 const EntrySchema = z.object({
   value: z.number({ required_error: 'Multi Date Property value is required' }),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean) =>

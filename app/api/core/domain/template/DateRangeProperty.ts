@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { DateRangeEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -17,12 +18,6 @@ const RangeSchema = z
     to: z.number({ required_error: 'Date Range Property "to" value must be provided.' }).nullable(),
   })
   .superRefine((range, ctx) => {
-    if (range.from === null && range.to === null) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Date Range Property requires at least one of "from" or "to".',
-      });
-    }
     if (range.from !== null && range.to !== null && range.to < range.from) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -32,9 +27,22 @@ const RangeSchema = z
     }
   });
 
-const EntrySchema = z.object({
-  value: RangeSchema,
-});
+const EntrySchema = z
+  .object({
+    value: RangeSchema,
+    attributes: attributesSchema,
+  })
+  .superRefine((entry, ctx) => {
+    if (entryCarriesAttributes(entry)) {
+      return;
+    }
+    if (entry.value.from === null && entry.value.to === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date Range Property requires at least one of "from" or "to".',
+      });
+    }
+  });
 
 const createSchema = (isRequired: boolean) =>
   z
@@ -65,7 +73,7 @@ class DateRangeProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment<DateRangeEntry> {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.from != null || v?.value?.to != null)
+      value.filter(v => v?.value?.from != null || v?.value?.to != null || entryCarriesAttributes(v))
     );
 
     return {

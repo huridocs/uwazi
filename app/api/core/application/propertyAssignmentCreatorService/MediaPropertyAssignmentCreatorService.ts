@@ -4,7 +4,9 @@ import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
 import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
 import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
 
-type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
+type MediaValueInput = ({ value: string } | { attachment: number; timeLinks?: string }) & {
+  attributes?: string[];
+};
 
 export class MediaPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
@@ -28,11 +30,13 @@ export class MediaPropertyAssignmentCreatorService extends AbstractPropertyAssig
 
         return {
           value: property.assignFilePath(attachment.filename, inputValue.timeLinks),
+          ...(inputValue.attributes !== undefined ? { attributes: inputValue.attributes } : {}),
         };
       }
 
       return {
         value: inputValue.value,
+        ...(inputValue.attributes !== undefined ? { attributes: inputValue.attributes } : {}),
       };
     });
 
