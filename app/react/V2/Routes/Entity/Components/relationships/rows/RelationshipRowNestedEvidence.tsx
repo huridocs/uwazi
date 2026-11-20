@@ -65,7 +65,7 @@ const RelationshipRowNestedEvidence = ({
           </span>
         )}
         {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
-        {!editMode && onDelete && (
+        {editMode && onDelete && (
           <IconButton
             variant="danger"
             showOnGroupHover

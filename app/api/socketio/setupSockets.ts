@@ -235,7 +235,7 @@ const setupWorkerSockets = (redisClient: RedisClient) => {
 };
 
 const closeSockets = () => {
-  io.disconnectSockets();
+  io?.disconnectSockets();
 };
 
 const endSocketServer = () => {

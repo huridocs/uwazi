@@ -33,12 +33,12 @@ const ToCFooterBar = ({ panel }: ToCFooterBarProps) => {
           ) : null}
         </div>
       ) : (
-        <div className="flex w-full items-center gap-2">
+        <div className="flex w-full items-center justify-end gap-2">
+          <Button variant="warm" onClick={handleCancel} disabled={isSaving}>
+            <Translate>Cancel</Translate>
+          </Button>
           <Button variant="success" onClick={handleSave} disabled={isSaving}>
             {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
-          </Button>
-          <Button variant="secondary" onClick={handleCancel} disabled={isSaving}>
-            <Translate>Cancel</Translate>
           </Button>
         </div>
       )}

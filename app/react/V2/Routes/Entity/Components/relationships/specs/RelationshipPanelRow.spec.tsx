@@ -193,6 +193,7 @@ describe('RelationshipPanelRow', () => {
               referencePage={2}
               editMode={false}
               representedIds={[emptyTextMarker._id]}
+              onDelete={jest.fn()}
             />
           </RelationshipsSelectionProvider>
         </EntityOverlayProvider>
@@ -200,5 +201,6 @@ describe('RelationshipPanelRow', () => {
     );
 
     expect(screen.getByText('Target 1')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete relationship' })).not.toBeInTheDocument();
   });
 });

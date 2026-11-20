@@ -199,6 +199,6 @@ describe('Relationships action bar', () => {
     await user.click(screen.getAllByRole('checkbox')[0]);
 
     expect(screen.getByText(/selected/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Delete$/ })).toBeInTheDocument();
   });
 });

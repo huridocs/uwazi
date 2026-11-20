@@ -82,11 +82,21 @@ describe('FilesToolbar', () => {
     expect(screen.getByRole('button', { name: 'Select all' })).toBeInTheDocument();
   });
 
+  const expectIconTooltip = (name: string) => {
+    const button = screen.getByRole('button', { name });
+    fireEvent.mouseEnter(button);
+    expect(screen.getByRole('tooltip')).toHaveTextContent(name);
+    fireEvent.mouseLeave(button);
+  };
+
   it('folds add, select, download and delete to icons when the bar is narrow', () => {
     renderToolbar(400);
     expect(screen.queryByText('Add file')).not.toBeInTheDocument();
+    expectIconTooltip('Add file');
     fireEvent.click(screen.getByRole('button', { name: 'Add file' }));
     expect(props.onAddFile).toHaveBeenCalled();
+    expectIconTooltip('Download 2 files');
+    expectIconTooltip('Delete 2 files');
     expectFoldedSelection();
   });
 });

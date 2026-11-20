@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { ArrowDownTrayIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
-import { Button, SelectControls } from '#V2/Components/UI/index.js';
+import { Button, PortalTooltip, SelectControls } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 
 type FilesToolbarProps = {
@@ -39,6 +39,46 @@ const useActionBarWidth = () => {
   return { barRef, folded: foldFilesActionBar(width) };
 };
 
+const downloadLabel = (downloadCount: number) =>
+  `${t('System', 'Download', null, false)} ${downloadCount} ${t('System', 'files', null, false)}`;
+
+const downloadButton = ({
+  folded,
+  downloadCount,
+  onDownloadSelected,
+}: {
+  folded: boolean;
+  downloadCount: number;
+  onDownloadSelected: () => void;
+}) => {
+  if (!folded) {
+    return (
+      <button
+        type="button"
+        data-testid="files-bulk-download"
+        onClick={onDownloadSelected}
+        className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary tabular-nums transition-colors hover:bg-warm hover:text-ink"
+      >
+        <Translate>Download</Translate> {downloadCount}
+      </button>
+    );
+  }
+  const label = downloadLabel(downloadCount);
+  return (
+    <PortalTooltip content={label} placement="top">
+      <button
+        type="button"
+        data-testid="files-bulk-download"
+        aria-label={label}
+        onClick={onDownloadSelected}
+        className={`${iconButtonClass} text-ink-secondary hover:bg-warm hover:text-ink`}
+      >
+        <ArrowDownTrayIcon className="h-3.5 w-3.5" aria-hidden />
+      </button>
+    </PortalTooltip>
+  );
+};
+
 const FilesToolbar = ({
   totalCount,
   selectedCount,
@@ -61,14 +101,16 @@ const FilesToolbar = ({
       <div className="flex min-w-0 items-center gap-3">
         <EntityWriteAuthorization>
           {folded ? (
-            <button
-              type="button"
-              aria-label={t('System', 'Add file', null, false)}
-              onClick={onAddFile}
-              className={`${iconButtonClass} bg-warm text-ink-secondary hover:bg-parchment hover:text-ink`}
-            >
-              <PlusIcon className="h-3.5 w-3.5" />
-            </button>
+            <PortalTooltip content={t('System', 'Add file', null, false)} placement="top">
+              <button
+                type="button"
+                aria-label={t('System', 'Add file', null, false)}
+                onClick={onAddFile}
+                className={`${iconButtonClass} bg-warm text-ink-secondary hover:bg-parchment hover:text-ink`}
+              >
+                <PlusIcon className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            </PortalTooltip>
           ) : (
             <Button variant="warm" onClick={onAddFile} className="inline-flex items-center gap-1.5">
               <span className="text-ink-tertiary">+</span>
@@ -107,42 +149,23 @@ const FilesToolbar = ({
               <Translate>Selected</Translate> {selectedCount} <Translate>of</Translate> {totalCount}
             </span>
           )}
-          {showDownload ? (
-            <button
-              type="button"
-              data-testid="files-bulk-download"
-              aria-label={
-                folded
-                  ? `${t('System', 'Download', null, false)} ${downloadCount} ${t('System', 'files', null, false)}`
-                  : undefined
-              }
-              onClick={onDownloadSelected}
-              className={
-                folded
-                  ? `${iconButtonClass} text-ink-secondary hover:bg-warm hover:text-ink`
-                  : 'cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary tabular-nums transition-colors hover:bg-warm hover:text-ink'
-              }
-            >
-              {folded ? (
-                <ArrowDownTrayIcon className="h-3.5 w-3.5" />
-              ) : (
-                <>
-                  <Translate>Download</Translate> {downloadCount}
-                </>
-              )}
-            </button>
-          ) : null}
+          {showDownload ? downloadButton({ folded, downloadCount, onDownloadSelected }) : null}
           <EntityWriteAuthorization>
             {folded ? (
-              <button
-                type="button"
-                aria-label={`${t('System', 'Delete', null, false)} ${selectedCount} ${t('System', 'files', null, false)}`}
-                onClick={onDeleteSelected}
-                data-testid="files-bulk-delete"
-                className={`${iconButtonClass} text-seal hover:bg-seal-tint`}
+              <PortalTooltip
+                content={`${t('System', 'Delete', null, false)} ${selectedCount} ${t('System', 'files', null, false)}`}
+                placement="top"
               >
-                <TrashIcon className="h-3.5 w-3.5" />
-              </button>
+                <button
+                  type="button"
+                  aria-label={`${t('System', 'Delete', null, false)} ${selectedCount} ${t('System', 'files', null, false)}`}
+                  onClick={onDeleteSelected}
+                  data-testid="files-bulk-delete"
+                  className={`${iconButtonClass} text-seal hover:bg-seal-tint`}
+                >
+                  <TrashIcon className="h-3.5 w-3.5" aria-hidden />
+                </button>
+              </PortalTooltip>
             ) : (
               <Button variant="danger" onClick={onDeleteSelected} data-testid="files-bulk-delete">
                 <Translate>Delete</Translate>

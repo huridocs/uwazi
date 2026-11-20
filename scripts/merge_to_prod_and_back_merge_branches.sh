@@ -32,13 +32,12 @@ echo "Squashing PR to production and deleting PR branch..."
 cd "$uwazi_path" || exit
 
 gh pr merge --squash --delete-branch
-echo "Bump version production..."
+echo "Syncing production..."
+# Production is already at the merged PR's version: auto_version_bump.yml bumps
+# the PR branch before merge, so there is no post-merge version bump. The image
+# is published with that version baked in, and the tarball release reads it too.
 git checkout production
 git pull origin production
-npm --no-git-tag-version version patch
-git add package.json
-git commit -m"Bump version"
-git push origin production
 
 echo "Back merging to staging..."
 git checkout staging
