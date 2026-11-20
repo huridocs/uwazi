@@ -18,6 +18,7 @@ export type { EntityIconData } from './EntityIcon.js';
 export { AudioWaveformIcon } from './AudioWaveformIcon.js';
 export { SplineIcon } from './SplineIcon.js';
 export { PencilStrokeIcon } from './PencilStrokeIcon.js';
+export { UsersStrokeIcon } from './UsersStrokeIcon.js';
 export { Trash2StrokeIcon } from './Trash2StrokeIcon.js';
 export { PlusStrokeIcon } from './PlusStrokeIcon.js';
 export { CloudUploadStrokeIcon } from './CloudUploadStrokeIcon.js';

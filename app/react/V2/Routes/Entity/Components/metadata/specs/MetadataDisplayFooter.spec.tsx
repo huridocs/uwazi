@@ -92,7 +92,7 @@ const expectButtons = (name: string, disabled: boolean) => {
 
 const expectFooterActions = (disabled: boolean) => {
   expectButtons('Edit', disabled);
-  expectButtons('Share', disabled);
+  expectButtons('Permissions', disabled);
   expectButtons('Delete', disabled);
 };
 
@@ -134,10 +134,10 @@ describe('MetadataDisplayFooter', () => {
     invalidateSpy.mockRestore();
   });
 
-  it('renders sibling Edit, Share, and Delete buttons per host', async () => {
+  it('renders sibling Edit, Permissions, and Delete buttons per host', async () => {
     await renderFooters(jest.fn().mockResolvedValue([undefined]));
     expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'Share' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'Permissions' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
     screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
       expect(button.className).toContain('text-seal-label');
