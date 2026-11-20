@@ -1,6 +1,5 @@
 import { t } from '#app/I18N/index.js';
 import { isAuthPath, loginUrl, rememberReturnPath } from '#shared/authReturn.js';
-import { loginV2Enabled } from '#app/utils/loginV2.js';
 import { isClient } from '#app/utils/index.js';
 import type { ApiClientEventBus, ApiError } from '#shared/apiClient/index.js';
 import { getStore } from '#shared/atomStore/index.js';
@@ -86,10 +85,6 @@ const createNotificationPolicy = (
 const createAuthPolicy = (
   eventBus: ApiClientEventBus,
   redirectToLogin: () => void = () => {
-    if (!loginV2Enabled()) {
-      window.location.assign('/login');
-      return;
-    }
     if (typeof window === 'undefined' || isAuthPath(window.location.pathname)) return;
     const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     rememberReturnPath(current);
