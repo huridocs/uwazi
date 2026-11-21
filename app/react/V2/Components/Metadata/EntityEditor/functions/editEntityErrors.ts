@@ -20,6 +20,51 @@ const parseMetadataPropertyName = (instancePath: string): string | undefined => 
   return undefined;
 };
 
+const MESSAGE_TYPES: { pattern: RegExp; types: FormMetadataProperty['type'][] }[] = [
+  { pattern: /Multi Date Range Property/, types: ['multidaterange'] },
+  { pattern: /Multi Date Property/, types: ['multidate'] },
+  { pattern: /Date Range Property/, types: ['daterange'] },
+  { pattern: /Date Property/, types: ['date'] },
+  { pattern: /Generated ID Property/, types: ['generatedid'] },
+  { pattern: /Geolocation Property/, types: ['geolocation'] },
+  { pattern: /Relationship Property/, types: ['relationship'] },
+  { pattern: /Markdown Property/, types: ['markdown'] },
+  { pattern: /Numeric Property/, types: ['numeric'] },
+  { pattern: /Nested Property/, types: ['nested'] },
+  { pattern: /Image Property/, types: ['image'] },
+  { pattern: /Media Property/, types: ['media'] },
+  { pattern: /Link Property/, types: ['link'] },
+  { pattern: /Text Property/, types: ['text'] },
+  { pattern: /Select\/MultiSelect|Parent (value|label)/, types: ['select', 'multiselect'] },
+];
+
+const handledPropertyMessage = (message: string) => {
+  if (message.includes('valid URL')) return 'Invalid URL';
+  if (/required|must be provided|non-empty/i.test(message)) return 'This field is required';
+  return message;
+};
+
+const soleNamed = (properties: FormMetadataProperty[], types: FormMetadataProperty['type'][]) => {
+  const matches = properties.filter(property => types.includes(property.type));
+  return matches.length === 1 ? matches[0].name : undefined;
+};
+
+const resolveMetadataPropertyName = (
+  instancePath: string,
+  message: string,
+  properties?: FormMetadataProperty[]
+): string | undefined => {
+  const fromPath = parseMetadataPropertyName(instancePath);
+  if (fromPath || !properties?.length) return fromPath;
+
+  const match = MESSAGE_TYPES.find(entry => entry.pattern.test(message));
+  const named = match ? soleNamed(properties, match.types) : undefined;
+  if (named) return named;
+  if (/^\/?\d+\/value\/url$/.test(instancePath)) return soleNamed(properties, ['link']);
+
+  return undefined;
+};
+
 const setIfEmpty = (target: Record<string, string>, key: string, message: string) => {
   if (!target[key]) target[key] = message;
 };
@@ -36,33 +81,39 @@ const applyRootValidation = (errors: EditEntityErrors, instancePath: string, mes
   return false;
 };
 
+const remember = (target: Record<string, string>, key: string, message: string) => {
+  setIfEmpty(target, key, message);
+  return true;
+};
+
 const applyValidation = ({
   errors,
   metadata,
   instancePath,
   message,
+  metadataProperties,
 }: {
   errors: EditEntityErrors;
   metadata: Record<string, string>;
   instancePath: string;
   message: string;
+  metadataProperties?: FormMetadataProperty[];
 }) => {
-  if (applyRootValidation(errors, instancePath, message)) return;
+  if (applyRootValidation(errors, instancePath, message)) return true;
   const translationProperty = instancePath.match(/^\/translations\/[^/]+\/([^/]+)/)?.[1];
   if (translationProperty === 'title') {
     if (!errors.title) errors.title = message;
-    return;
+    return true;
   }
-  if (translationProperty) {
-    setIfEmpty(metadata, translationProperty, message);
-    return;
-  }
-  const propertyName = parseMetadataPropertyName(instancePath);
-  if (propertyName) setIfEmpty(metadata, propertyName, message);
+  if (translationProperty)
+    return remember(metadata, translationProperty, handledPropertyMessage(message));
+  const propertyName = resolveMetadataPropertyName(instancePath, message, metadataProperties);
+  return propertyName ? remember(metadata, propertyName, handledPropertyMessage(message)) : false;
 };
 
 const apiValidationsToEditEntityErrors = (
-  validations: ApiValidation[] | undefined
+  validations: ApiValidation[] | undefined,
+  metadataProperties?: FormMetadataProperty[]
 ): EditEntityErrors | undefined => {
   if (!validations?.length) return undefined;
 
@@ -70,16 +121,11 @@ const apiValidationsToEditEntityErrors = (
   const metadata: Record<string, string> = {};
 
   validations.forEach(({ instancePath, message }) => {
-    if (message) applyValidation({ errors, metadata, instancePath, message });
+    if (message) applyValidation({ errors, metadata, instancePath, message, metadataProperties });
   });
 
-  if (Object.keys(metadata).length > 0) {
-    errors.metadata = metadata;
-  }
-
-  if (!errors.title && !errors.template && !errors.metadata) {
-    return undefined;
-  }
+  if (Object.keys(metadata).length > 0) errors.metadata = metadata;
+  if (!errors.title && !errors.template && !errors.metadata) return undefined;
 
   return errors;
 };
@@ -238,6 +284,7 @@ const applyEditEntityErrors = (
 
 export {
   apiValidationsToEditEntityErrors,
+  applyValidation,
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
   getMetadataFieldPath,

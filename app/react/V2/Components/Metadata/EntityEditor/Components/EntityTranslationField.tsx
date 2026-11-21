@@ -1,5 +1,6 @@
 import React from 'react';
 import { useIdleFormValue } from '#V2/CustomHooks/useIdleFormValue.js';
+import { isAcceptableLinkUrl } from '#shared/urlValidationUtils.js';
 import { useInstalledEntityLanguages } from './useInstalledEntityLanguages.js';
 import type { LinkPart } from '../functions/entityTranslations.js';
 import { useTranslationFieldHandlers } from './useTranslationFieldHandlers.js';
@@ -81,6 +82,7 @@ const EntityTranslationField = React.memo(
                 idPrefix: paired.idPrefix,
                 values: pairedHandlers.values,
                 onChange: pairedHandlers.onChange,
+                invalid: language => !isAcceptableLinkUrl(pairedHandlers.values[language] ?? ''),
               }
             : undefined
         }

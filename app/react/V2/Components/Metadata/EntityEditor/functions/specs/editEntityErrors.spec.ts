@@ -121,10 +121,109 @@ describe('editEntityErrors', () => {
       apiValidationsToEditEntityErrors([
         { instancePath: '/translations/es/title', message: 'Title is invalid' },
         { instancePath: '/translations/es/simple_text', message: 'Text is invalid' },
+        {
+          instancePath: '/translations/es/link/0/value/url',
+          message: 'Link Property value must be a valid URL.',
+        },
       ])
     ).toEqual({
       title: 'Title is invalid',
-      metadata: { simple_text: 'Text is invalid' },
+      metadata: { simple_text: 'Text is invalid', link: 'Invalid URL' },
+    });
+  });
+
+  describe('domain property messages', () => {
+    const linkAndImageProperties: FormMetadataProperty[] = [
+      { _id: '10', type: 'link', name: 'link', label: 'Link' },
+      { _id: '11', type: 'image', name: 'cover', label: 'Cover' },
+    ];
+
+    it('maps nested link url validations onto the link property', () => {
+      expect(
+        apiValidationsToEditEntityErrors(
+          [
+            {
+              instancePath: '/metadata/link/0/value/url',
+              message: 'Link Property value must be a valid URL.',
+            },
+          ],
+          linkAndImageProperties
+        )
+      ).toEqual({
+        metadata: { link: 'Invalid URL' },
+      });
+    });
+
+    it('maps domain-relative link url validations with a single link property', () => {
+      expect(
+        apiValidationsToEditEntityErrors(
+          [
+            {
+              instancePath: '/0/value/url',
+              message: 'Link Property value must be a valid URL.',
+            },
+          ],
+          linkAndImageProperties
+        )
+      ).toEqual({
+        metadata: { link: 'Invalid URL' },
+      });
+    });
+
+    it('maps image url validations onto the image property by message', () => {
+      expect(
+        apiValidationsToEditEntityErrors(
+          [
+            {
+              instancePath: '/0/value/url',
+              message: 'Image Property must be a valid URL.',
+            },
+          ],
+          linkAndImageProperties
+        )
+      ).toEqual({
+        metadata: { cover: 'Invalid URL' },
+      });
+    });
+
+    const typedProperties: FormMetadataProperty[] = [
+      { _id: 'd', type: 'date', name: 'event_date', label: 'Date' },
+      { _id: 'dr', type: 'daterange', name: 'span', label: 'Range' },
+      { _id: 'md', type: 'multidate', name: 'dates', label: 'Dates' },
+      { _id: 'mdr', type: 'multidaterange', name: 'spans', label: 'Ranges' },
+      { _id: 'g', type: 'geolocation', name: 'where', label: 'Where' },
+      { _id: 'n', type: 'numeric', name: 'count', label: 'Count' },
+      { _id: 't', type: 'text', name: 'note', label: 'Note' },
+      { _id: 'mk', type: 'markdown', name: 'body', label: 'Body' },
+      { _id: 'r', type: 'relationship', name: 'owner', label: 'Owner' },
+      { _id: 's', type: 'select', name: 'status', label: 'Status' },
+      { _id: 'ne', type: 'nested', name: 'rows', label: 'Rows' },
+      { _id: 'me', type: 'media', name: 'clip', label: 'Clip' },
+      { _id: 'id', type: 'generatedid', name: 'code', label: 'Code' },
+      { _id: 'im', type: 'image', name: 'cover', label: 'Cover' },
+    ];
+
+    it.each([
+      ['/0/value', 'Date Property value must be provided.', 'event_date'],
+      ['/0/value/from', 'Date Range Property "from" value must be provided.', 'span'],
+      ['/0/value', 'Multi Date Property value is required', 'dates'],
+      ['/0/value/to', 'Multi Date Range Property "to" value must be provided.', 'spans'],
+      ['/0/value/lat', 'Geolocation Property latitude must be provided.', 'where'],
+      ['/0/value', 'Numeric Property value must be provided.', 'count'],
+      ['/0', 'Text Property is required', 'note'],
+      ['/0', 'Markdown Property is required', 'body'],
+      ['/value', 'Relationship Property is required', 'owner'],
+      ['/0/value', 'Select/MultiSelect value must be a non-empty string.', 'status'],
+      ['/0', 'Nested Property is required', 'rows'],
+      ['/0/value', 'Media Property value must be a non-empty string.', 'clip'],
+      ['/0/value', 'Generated ID Property value must be provided.', 'code'],
+      ['/0/value', 'Image Property must be a non-empty string.', 'cover'],
+    ])('maps %s (%s) onto %s', (instancePath, message, name) => {
+      expect(
+        apiValidationsToEditEntityErrors([{ instancePath, message }], typedProperties)
+      ).toEqual({
+        metadata: { [name]: 'This field is required' },
+      });
     });
   });
 });
