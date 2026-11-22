@@ -10,6 +10,11 @@ const message: EmailMessage = {
   text: 'this is a test email',
 };
 
+const sentMessageInfo: SentMessageInfo = {
+  envelope: { from: false, to: [] },
+  messageId: 'test-message-id',
+};
+
 const fakeSettingsDS = (settings: Partial<Awaited<ReturnType<SettingsDataSource['get']>>> = {}) =>
   ({
     get: jest.fn().mockResolvedValue(settings),
@@ -19,7 +24,7 @@ const mockedSendMail = (
   _mailOptions: Mail.Options,
   callback: (err: Error | null, info: SentMessageInfo) => void
 ) => {
-  callback(null, '');
+  callback(null, sentMessageInfo);
 };
 
 describe('NodemailerEmailSender', () => {
@@ -66,7 +71,7 @@ describe('NodemailerEmailSender', () => {
       callback: (err: Error | null, info: SentMessageInfo) => void
     ) => {
       sentOptions = mailOptions;
-      callback(null, '');
+      callback(null, sentMessageInfo);
     }) as any);
     const sender = new NodemailerEmailSender(
       fakeSettingsDS({ senderEmail: 'hello@test.com', site_name: 'TestSite' })
@@ -84,7 +89,7 @@ describe('NodemailerEmailSender', () => {
       callback: (err: Error | null, info: SentMessageInfo) => void
     ) => {
       sentOptions = mailOptions;
-      callback(null, '');
+      callback(null, sentMessageInfo);
     }) as any);
     const sender = new NodemailerEmailSender(fakeSettingsDS());
 
@@ -100,7 +105,7 @@ describe('NodemailerEmailSender', () => {
       callback: (err: Error | null, info: SentMessageInfo) => void
     ) => {
       sentOptions = mailOptions;
-      callback(null, '');
+      callback(null, sentMessageInfo);
     }) as any);
     const sender = new NodemailerEmailSender(fakeSettingsDS({ senderEmail: '', site_name: '' }));
 
@@ -128,7 +133,7 @@ describe('NodemailerEmailSender', () => {
       _mailOptions: Mail.Options,
       callback: (err: Error | null, info: SentMessageInfo) => void
     ) => {
-      callback(new Error('smtp exploded'), null);
+      callback(new Error('smtp exploded'), sentMessageInfo);
     }) as any);
     const sender = new NodemailerEmailSender(fakeSettingsDS());
 
