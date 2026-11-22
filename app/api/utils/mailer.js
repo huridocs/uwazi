@@ -28,7 +28,7 @@ export default {
             transporter = getMailerTransport().createTransport(
               mailerConfigValue ? JSON.parse(mailerConfigValue) : transporterOptions
             );
-            transporter.sendMail(mailOptions, (error, info) => {
+            void transporter.sendMail(mailOptions, (error, info) => {
               if (error) {
                 reject(error);
                 return;
