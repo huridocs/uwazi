@@ -6,12 +6,17 @@ import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { LanguageSelect, NeedAuthorization } from '#V2/Components/UI/index.js';
+import {
+  LanguageSelect,
+  NeedAuthorization,
+  type LanguageSelectAppearance,
+} from '#V2/Components/UI/index.js';
 import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 import { followLanguageUrl } from './followLanguageUrl.js';
 
 type LanguageDropdownProps = {
   className?: string;
+  appearance?: LanguageSelectAppearance;
 };
 
 const languageAutonym = (language: { key: string; label?: string }) =>
@@ -77,7 +82,7 @@ const switchLanguage = (
   );
 };
 
-const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
+const LanguageDropdown = ({ className = '', appearance = 'header' }: LanguageDropdownProps) => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const locale = useAtomValue(localeAtom);
   const { languages: languageList } = useAtomValue(settingsAtom);
@@ -97,7 +102,7 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
         value={selected.key}
         options={options}
         align="end"
-        appearance="header"
+        appearance={appearance}
         aria-label={t('System', 'Language', null, false)}
         onChange={languageKey => switchLanguage(location, selected.key, languageKey)}
         footer={liveTranslateItem(() => setInlineEditState(startedEdit))}

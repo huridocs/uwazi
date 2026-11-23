@@ -1,6 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate, t } from '#app/I18N/index.js';
-import { Header } from '#app/V2/Components/UI/Header/Header.js';
+import { LanguageDropdown } from '#app/V2/Components/UI/Header/LanguageDropdown.js';
 import { loginArtFallback, loginArtSrcSet, pickLoginArt, type LoginArt } from './loginArt.js';
 
 const FOOTER_LINKS = [
@@ -57,8 +59,15 @@ const AuthLayout = ({ component, children }: { component: string; children: Reac
         )}
       </div>
       <div data-part="panel" className="flex min-h-0 w-full flex-1 flex-col md:w-auto">
-        <div className="login-panel-header shrink-0">
-          <Header />
+        <div className="login-panel-header flex min-h-13 shrink-0 items-center justify-between px-3">
+          <I18NLink
+            to="/"
+            aria-label={t('System', 'Back', null, false)}
+            className="cursor-pointer text-black dark:text-white"
+          >
+            <ArrowLeftIcon className="h-5 w-5 rtl:rotate-180" aria-hidden />
+          </I18NLink>
+          <LanguageDropdown appearance="default" />
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5">
           <div data-part="body" className="flex flex-1 items-center justify-center py-6">
@@ -92,7 +101,7 @@ const AuthLayout = ({ component, children }: { component: string; children: Reac
 };
 
 export { AuthLayout };
-export { INPUT, LABEL, TEXT_LINK } from './authStyles.js';
+export { INPUT, LABEL, TEXT_LINK, inputClass, showsControlError } from './authStyles.js';
 export { AuthCopy, noticeMessage } from './AuthCopy.js';
 export type { AuthMessageValue, AuthTone, CopyCode } from './AuthCopy.js';
 export { AuthHeading } from './AuthHeading.js';

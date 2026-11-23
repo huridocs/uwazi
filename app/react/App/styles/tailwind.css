@@ -55,13 +55,17 @@
   margin: 0;
 }
 
-/* The login header sits in the form column. The global header rule is position:fixed. */
-.tw-content .login-panel-header > header {
-  position: relative;
-  top: auto;
-  width: 100%;
-  min-height: 0;
-  z-index: 20;
+/* Keep the error treatment on top of the carbon focus ring. Login focuses the
+   field that failed, so a utility focus border would hide the error. */
+.tw-content input.login-field[aria-invalid='true'],
+.tw-content input.login-field[aria-invalid='true']:focus {
+  border-color: var(--color-theme-accent-emphasis);
+  background-color: var(--color-theme-accent-emphasis-tint);
+  color: var(--color-theme-accent-emphasis);
+  --tw-ring-color: var(
+    --color-theme-control-error-ring,
+    color-mix(in srgb, var(--color-theme-accent-emphasis) 25%, transparent)
+  );
 }
 
 .tw-content:not([data-path='settings']) {
