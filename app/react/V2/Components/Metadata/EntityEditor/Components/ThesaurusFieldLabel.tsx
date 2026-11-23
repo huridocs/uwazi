@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { Label } from '#V2/Components/Forms/Label.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 
 type ThesaurusFieldLabelProps = {
@@ -27,10 +28,10 @@ const ThesaurusFieldLabel = ({
   onClear,
 }: ThesaurusFieldLabelProps) => (
   <div className="flex min-h-4 items-center gap-2">
-    <label htmlFor={htmlFor} className="text-xs font-medium text-ink-secondary">
+    <Label htmlFor={htmlFor} variant="primary">
       <Translate context={context}>{label}</Translate>
       {required ? '*' : null}
-    </label>
+    </Label>
     {(showClear || showAdd) && (
       <span className="ms-auto inline-flex items-center gap-3">
         {showClear && (
