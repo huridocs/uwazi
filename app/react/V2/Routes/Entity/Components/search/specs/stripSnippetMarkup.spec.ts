@@ -73,6 +73,8 @@ describe('stripSnippetMarkup cut fragments', () => {
 
   it('strips a comment cut at the start and keeps an arrow', () => {
     expect(stripSnippetMarkup('com --> visible <b>hit</b>')).toBe('visible <b>hit</b>');
+    expect(stripSnippetMarkup('com --!> visible <b>hit</b>')).toBe('visible <b>hit</b>');
     expect(stripSnippetMarkup('a --> b <b>hit</b>')).toBe('a --> b <b>hit</b>');
+    expect(stripSnippetMarkup('a --!> b <b>hit</b>')).toBe('a --!> b <b>hit</b>');
   });
 });

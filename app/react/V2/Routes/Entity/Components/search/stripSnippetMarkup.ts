@@ -14,7 +14,7 @@ const OPEN_HIGHLIGHT = /<b\b[^>]*>([\s\S]*)$/i;
 const MARK_TOKEN = /%%H(\d+)%%/g;
 const BLOCK_BREAK = /<br\b[^>]*\/?>|<\/(?:p|div|li|tr|blockquote|h[1-6])\s*>/gi;
 const ENTITY = /&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z][a-zA-Z0-9]+);/g;
-const COMMENT_CUT = /^([^<]{0,40})-->/u;
+const COMMENT_CUT = /^([^<]{0,40})--!?>/u;
 const TAG_NAME_CUT = /^\/?[A-Za-z][A-Za-z0-9:-]{0,30}>/u;
 const ATTRIBUTE_CUT = /=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>]*)$/u;
 const ARROW = /^\s*\S{1,2}\s+$/u;
