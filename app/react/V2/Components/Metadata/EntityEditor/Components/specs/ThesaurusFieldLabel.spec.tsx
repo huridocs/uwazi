@@ -136,6 +136,15 @@ describe('ThesaurusFieldLabel', () => {
     expect(screen.queryByRole('button', { name: 'Add value' })).not.toBeInTheDocument();
   });
 
+  it('shows the property title as a primary field header', () => {
+    renderLabel(admin, true, true);
+    const title = screen.getByText('Estado').closest('label');
+    expect(title).toHaveClass('text-sm');
+    expect(title).toHaveClass('font-normal');
+    expect(title).toHaveClass('text-ink');
+    expect(title).toHaveAttribute('for', 'metadata.status');
+  });
+
   it('shows Clear only when a single value is selected', () => {
     const { unmount } = render(
       <Provider store={createStore()}>
