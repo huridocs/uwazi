@@ -29,6 +29,7 @@
     "#activitylog/composition": "./packages/activitylog/composition.js",
     "#usage": "./packages/usage/index.js",
     "#usage/composition": "./packages/usage/composition.js",
+    "#templates": "./packages/templates/index.js",
     "#api-client": "./packages/api-client/index.js",
     "#api-client/server": {
       "browser": "./packages/api-client/server.browser.js",
