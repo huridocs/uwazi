@@ -3,6 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import type { SnippetsSearchResponse } from '#V2/api/types.js';
 import { esFieldToFocusKey } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
+import { stripSnippetMarkup } from './stripSnippetMarkup.js';
 
 type MetadataSnippet = { field: string; texts: string[] };
 
@@ -56,7 +57,7 @@ const ensureSnippetEllipsis = (html: string) => {
 };
 
 const parseSnippetToNodes = (html?: string) => {
-  const sanitized = sanitizeHtml(html || '', { allowedTags: ['b'], allowedAttributes: {} });
+  const sanitized = stripSnippetMarkup(html || '');
   if (!sanitized) {
     return '';
   }
@@ -69,11 +70,11 @@ const parseSnippetToNodes = (html?: string) => {
         return (
           // eslint-disable-next-line react/no-array-index-key
           <mark key={`mark-${markMatch[1]}-${i}`} className={MARK_CLASS}>
-            {decodeSnippetText(markMatch[1])}
+            {markMatch[1]}
           </mark>
         );
       }
-      return decodeSnippetText(part);
+      return part;
     });
 };
 

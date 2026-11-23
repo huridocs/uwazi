@@ -90,6 +90,22 @@ describe('parseSnippetToNodes', () => {
   });
 });
 
+describe('parseSnippetToNodes rich text', () => {
+  it('strips escaped rich text tags and a tag cut in half', () => {
+    renderSnippet('ss="intro">&lt;p&gt;La <b>protesta</b> siguió&lt;/p&gt;<p class="nex');
+    const snippet = screen.getByTestId('snippet');
+    expect(snippet).toHaveTextContent('La protesta siguió');
+    expect(/ss="intro"|<p|&lt;|class="nex"/.test(snippet.textContent ?? '')).toBe(false);
+    expect(screen.getByText('protesta').tagName).toBe('MARK');
+  });
+
+  it('keeps comparisons visible around the highlight', () => {
+    renderSnippet('A &lt; b and score &gt; 10 <b>hit</b>');
+    expect(screen.getByTestId('snippet').textContent).toBe('A < b and score > 10 hit');
+    expect(screen.getByText('hit').tagName).toBe('MARK');
+  });
+});
+
 describe('scopeResultsToDocument', () => {
   const results: SnippetsSearchResponse = {
     data: [
