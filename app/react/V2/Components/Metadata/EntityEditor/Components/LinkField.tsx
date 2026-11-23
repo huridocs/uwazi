@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Controller,
   FieldValues,
   Path,
   RegisterOptions,
   useFormContext,
+  useWatch,
   type UseFormGetValues,
   type UseFormSetValue,
 } from 'react-hook-form';
@@ -52,11 +53,12 @@ type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   translatableName?: string;
 };
 
-const urlFromEntry = (entry: MetadataObjectSchema) => {
-  const raw = entry.value;
+const urlText = (raw: unknown) => {
   if (!raw || typeof raw !== 'object' || !('url' in raw)) return '';
   return typeof raw.url === 'string' ? raw.url : '';
 };
+
+const urlFromEntry = (entry: MetadataObjectSchema) => urlText(entry.value);
 
 const mainLinkMessage = (value: string, isRequired: boolean) => {
   const url = value.trim();
@@ -83,9 +85,37 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
   disabled,
   translatableName,
 }: LinkFieldProps<TFormValues>) => {
-  const { control } = useFormContext<TFormValues>();
-  const { getValues, setValue } = useFormContext<EditEntityFormValues>();
+  const {
+    control,
+    getFieldState,
+    clearErrors,
+    getValues: readField,
+  } = useFormContext<TFormValues>();
+  const { getValues, setValue, control: editControl } = useFormContext<EditEntityFormValues>();
+  const translations = useWatch({
+    control: editControl,
+    name: 'translations',
+    disabled: !translatableName,
+  });
   const required = Boolean(registerOptions?.required);
+
+  useEffect(() => {
+    if (!translatableName) return;
+    const { error } = getFieldState(field);
+    if (error?.type !== 'validate' || error.message !== 'Invalid URL') return;
+    if (mainLinkMessage(urlText(readField(field)), required)) return;
+    if (translationUrlInvalid(translatableName, getValues)) return;
+    clearErrors(field);
+  }, [
+    clearErrors,
+    field,
+    getFieldState,
+    getValues,
+    readField,
+    required,
+    translatableName,
+    translations,
+  ]);
 
   return (
     <EntityField>

@@ -170,6 +170,15 @@ describe('editEntityErrors', () => {
       });
     });
 
+    it('leaves an untyped url path unmapped when a link and an image both exist', () => {
+      expect(
+        apiValidationsToEditEntityErrors(
+          [{ instancePath: '/0/value/url', message: 'must be a valid URL.' }],
+          linkAndImageProperties
+        )
+      ).toBeUndefined();
+    });
+
     it('maps image url validations onto the image property by message', () => {
       expect(
         apiValidationsToEditEntityErrors(

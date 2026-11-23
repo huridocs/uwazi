@@ -3,7 +3,7 @@
  */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { FormProvider, useForm } from 'react-hook-form';
 import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
@@ -89,6 +89,7 @@ const Harness = ({
         <output data-testid="form-value">
           {JSON.stringify(form.watch('metadata.link.0.value'))}
         </output>
+        <output data-testid="link-error">{JSON.stringify(form.formState.errors)}</output>
       </FormProvider>
     </Provider>
   );
@@ -200,6 +201,43 @@ describe('LinkField', () => {
 
       expect(screen.getByText('Invalid URL')).toBeInTheDocument();
       expect(screen.getByLabelText('URL').className).not.toContain('border-emphasis');
+    });
+
+    it('clears the link error after the translation url is fixed', async () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: 'not-a-url' } }] },
+          }}
+        />
+      );
+
+      fireEvent.blur(screen.getByLabelText('URL'));
+      await waitFor(() =>
+        expect(screen.getByTestId('link-error')).toHaveTextContent('Invalid URL')
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+      const translated = screen.getByRole('textbox', { name: 'Español link url' });
+      fireEvent.change(translated, { target: { value: 'https://es.example' } });
+      fireEvent.blur(translated);
+
+      await waitFor(() => expect(screen.getByTestId('link-error')).toHaveTextContent('{}'));
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument();
+    });
+
+    it('flags a whitespace-only translation url', () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: '   ' } }] },
+          }}
+        />
+      );
+
+      expect(screen.getByText('Invalid URL')).toBeInTheDocument();
     });
 
     it('rejects a short url the media picker would reject', async () => {

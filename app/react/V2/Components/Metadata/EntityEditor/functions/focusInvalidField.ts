@@ -31,12 +31,17 @@ const findFirstErrorPath = (errors: FieldErrors<EditEntityFormValues>): string |
 const escapeCssAttributeValue = (value: string) =>
   value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
+const prefixedField = (path: string, escapedPath: string) => {
+  const matches = document.querySelectorAll<HTMLElement>(`[id^="${escapedPath}"]`);
+  return Array.from(matches).find(element => element.id === `${path}.url`) ?? matches[0] ?? null;
+};
+
 const resolveInvalidFieldElement = (path: string): HTMLElement | null => {
   const escapedPath = escapeCssAttributeValue(path);
   return (
     document.getElementById(path) ||
     document.querySelector<HTMLElement>(`[name="${escapedPath}"]`) ||
-    document.querySelector<HTMLElement>(`[id^="${escapedPath}"]`)
+    prefixedField(path, escapedPath)
   );
 };
 

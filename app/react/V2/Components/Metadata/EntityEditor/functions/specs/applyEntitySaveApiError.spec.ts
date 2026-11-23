@@ -43,7 +43,7 @@ describe('applyEntitySaveApiError', () => {
     expect(setSaveError).toHaveBeenCalledWith('Validation failed');
   });
 
-  it('shows a handled banner when validations do not map to one field', () => {
+  it('shows the banner when several links share an unnamed url path', () => {
     const setEditErrors = jest.fn();
     const setSaveError = jest.fn();
     const twoLinks: FormMetadataProperty[] = [
@@ -67,10 +67,11 @@ describe('applyEntitySaveApiError', () => {
       metadataProperties: twoLinks,
     });
 
+    expect(setEditErrors).toHaveBeenCalledWith(undefined);
     expect(setSaveError).toHaveBeenCalledWith('Validation failed');
   });
 
-  it('keeps mapped field errors and shows the banner when another validation does not map', () => {
+  it('keeps the banner when a mapped field is joined by an unmapped validation', () => {
     const setEditErrors = jest.fn();
     const setSaveError = jest.fn();
     const fields: FormMetadataProperty[] = [

@@ -44,25 +44,22 @@ const handledPropertyMessage = (message: string) => {
   return message;
 };
 
-const soleNamed = (properties: FormMetadataProperty[], types: FormMetadataProperty['type'][]) => {
-  const matches = properties.filter(property => types.includes(property.type));
-  return matches.length === 1 ? matches[0].name : undefined;
-};
-
-const resolveMetadataPropertyName = (
+const propertyNamesForMessage = (
   instancePath: string,
   message: string,
   properties?: FormMetadataProperty[]
-): string | undefined => {
+) => {
   const fromPath = parseMetadataPropertyName(instancePath);
-  if (fromPath || !properties?.length) return fromPath;
+  if (fromPath) return [fromPath];
+  if (!properties?.length) return [];
 
   const match = MESSAGE_TYPES.find(entry => entry.pattern.test(message));
-  const named = match ? soleNamed(properties, match.types) : undefined;
-  if (named) return named;
-  if (/^\/?\d+\/value\/url$/.test(instancePath)) return soleNamed(properties, ['link']);
+  if (!match) return [];
 
-  return undefined;
+  const names = properties
+    .filter(property => match.types.includes(property.type))
+    .map(property => property.name);
+  return names.length === 1 ? names : [];
 };
 
 const setIfEmpty = (target: Record<string, string>, key: string, message: string) => {
@@ -107,8 +104,10 @@ const applyValidation = ({
   }
   if (translationProperty)
     return remember(metadata, translationProperty, handledPropertyMessage(message));
-  const propertyName = resolveMetadataPropertyName(instancePath, message, metadataProperties);
-  return propertyName ? remember(metadata, propertyName, handledPropertyMessage(message)) : false;
+  const propertyNames = propertyNamesForMessage(instancePath, message, metadataProperties);
+  if (!propertyNames.length) return false;
+  propertyNames.forEach(name => setIfEmpty(metadata, name, handledPropertyMessage(message)));
+  return true;
 };
 
 const apiValidationsToEditEntityErrors = (

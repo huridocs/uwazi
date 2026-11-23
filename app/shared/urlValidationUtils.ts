@@ -36,6 +36,6 @@ export const validateAndSanitizeUrl = (url: string): { url: string; isValid: boo
 
 export const isAcceptableLinkUrl = (url: string) => {
   const trimmed = url.trim();
-  if (!trimmed) return true;
+  if (!trimmed) return !url;
   return validateAndSanitizeUrl(trimmed).isValid;
 };
