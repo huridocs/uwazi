@@ -106,6 +106,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
       expect(multiselect.props().options).toEqual([{ value: '1', label: 'option1' }]);
       expect(multiselect.props().optionsValue).toEqual('value');
       expect(multiselect.props().lookup).toBeDefined();
+      expect(multiselect.props().forceUpdate).toBe(true);
 
       const datepicker = component.find(DatePicker);
       expect(datepicker.length).toBe(1);
@@ -184,6 +185,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
         { id: 'entity-id', label: 'Related entity', icon: relationshipIcon },
       ]);
       expect(multiselect.props().optionsValue).toBe('id');
+      expect(multiselect.props().forceUpdate).toBe(true);
     });
 
     it('should omit icon when not set', () => {

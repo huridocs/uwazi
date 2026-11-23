@@ -4,6 +4,7 @@ import { MultiSelect, MultiSelectProps, Option, defaultProps } from './MultiSele
 
 interface LookupMultiSelectProps extends MultiSelectProps<string[]> {
   lookup: Function;
+  forceUpdate?: boolean;
 }
 
 interface LookupMultiSelectState {
@@ -41,7 +42,7 @@ const aggregationOptionsSignature = (
 export const debounceTime = 200;
 
 export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupMultiSelectState> {
-  static defaultProps = { ...defaultProps, value: [] as string[] };
+  static defaultProps = { ...defaultProps, value: [] as string[], forceUpdate: false };
 
   static getDerivedStateFromProps(props: LookupMultiSelectProps) {
     return { totalPossibleOptions: props.totalPossibleOptions };
@@ -62,6 +63,11 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     this.refreshPreloadedOptions = this.refreshPreloadedOptions.bind(this);
   }
 
+  shouldPreloadLookup() {
+    const { lookup, options, forceUpdate } = this.props;
+    return Boolean(lookup) && (Boolean(forceUpdate) || options.length === 0);
+  }
+
   async refreshPreloadedOptions() {
     const { lookup, options, optionsValue } = this.props;
     if (!lookup) {
@@ -79,7 +85,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   async componentDidMount() {
-    if (this.props.lookup) {
+    if (this.shouldPreloadLookup()) {
       await this.refreshPreloadedOptions();
     }
   }
@@ -96,9 +102,9 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
         this.props.optionsValue,
         this.props.optionsLabel
       );
-    const lookupChanged = prevProps.lookup !== this.props.lookup;
+    const lookupBecameAvailable = !prevProps.lookup && Boolean(this.props.lookup);
 
-    if (!optionsChanged && !lookupChanged) {
+    if (!optionsChanged && !lookupBecameAvailable) {
       return;
     }
 
@@ -109,7 +115,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
       });
     }
 
-    if (this.props.lookup) {
+    if (this.shouldPreloadLookup()) {
       await this.refreshPreloadedOptions();
     }
   }
@@ -149,7 +155,13 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   render() {
-    const { lookup, onChange, totalPossibleOptions, ...rest } = this.props;
+    const {
+      lookup,
+      onChange,
+      totalPossibleOptions,
+      forceUpdate: _forceUpdate,
+      ...rest
+    } = this.props;
     const filteredTotalPossibleOptions = this.state.totalPossibleOptions;
     return (
       <MultiSelect
