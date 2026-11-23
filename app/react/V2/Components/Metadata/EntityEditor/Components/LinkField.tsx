@@ -11,7 +11,6 @@ import {
 } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { isAcceptableLinkUrl } from '#shared/urlValidationUtils.js';
-import type { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
 import {
@@ -58,8 +57,6 @@ const urlText = (raw: unknown) => {
   return typeof raw.url === 'string' ? raw.url : '';
 };
 
-const urlFromEntry = (entry: MetadataObjectSchema) => urlText(entry.value);
-
 const mainLinkMessage = (value: string, isRequired: boolean) => {
   const url = value.trim();
   if (!url) return isRequired ? 'Required' : undefined;
@@ -73,7 +70,7 @@ const translationUrlInvalid = (
   if (!propertyName) return false;
   const translations = getValues('translations') ?? {};
   return Object.values(translations).some(bucket =>
-    (bucket[propertyName] ?? []).some(entry => !isAcceptableLinkUrl(urlFromEntry(entry)))
+    (bucket[propertyName] ?? []).some(entry => !isAcceptableLinkUrl(urlText(entry.value)))
   );
 };
 
@@ -102,9 +99,14 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
   useEffect(() => {
     if (!translatableName) return;
     const { error } = getFieldState(field);
-    if (error?.type !== 'validate' || error.message !== 'Invalid URL') return;
-    if (mainLinkMessage(urlText(readField(field)), required)) return;
-    if (translationUrlInvalid(translatableName, getValues)) return;
+    if (
+      error?.type !== 'validate' ||
+      error.message !== 'Invalid URL' ||
+      mainLinkMessage(urlText(readField(field)), required) ||
+      translationUrlInvalid(translatableName, getValues)
+    ) {
+      return;
+    }
     clearErrors(field);
   }, [
     clearErrors,
