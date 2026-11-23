@@ -43,6 +43,14 @@ const row = (overrides: Partial<LibrarySearchHit> = {}): LibrarySearchHit => ({
   ...overrides,
 });
 
+const TAG_LEFTOVER = /ss="intro"|<p|&lt;|class="nex"/;
+
+const expectCleanSnippet = (element: HTMLElement) => {
+  expect(element).toHaveTextContent('La protesta siguió');
+  expect(TAG_LEFTOVER.test(element.textContent ?? '')).toBe(false);
+  expect(screen.getByText('protesta').tagName).toBe('MARK');
+};
+
 const renderPanel = (search = 'test', rows: LibrarySearchHit[] = [row()]) => {
   const onFocusProperty = jest.fn();
   const onSelect = jest.fn();
@@ -75,6 +83,29 @@ describe('LibraryResultsPanel', () => {
     renderPanel('', [row()]);
     expect(screen.getByText('Search to see where terms match')).toBeInTheDocument();
     expect(screen.queryByText('Selvas Gómez')).not.toBeInTheDocument();
+  });
+
+  it('strips rich text tags from snippets, including a tag cut in half', async () => {
+    const user = userEvent.setup();
+    renderPanel('test', [
+      row({
+        snippets: {
+          count: 1,
+          metadata: [
+            {
+              field: 'metadata.resumen.value',
+              texts: ['ss="intro">&lt;p&gt;La <b>protesta</b> siguió&lt;/p&gt;<p class="nex'],
+            },
+          ],
+          fullText: [],
+        },
+      }),
+    ]);
+
+    expectCleanSnippet(screen.getByRole('button', { name: /protesta/ }));
+
+    await user.click(screen.getByRole('radio', { name: 'Passages' }));
+    expectCleanSnippet(screen.getByRole('button', { name: /protesta/ }));
   });
 
   it('lists property and document snippets for the loaded rows', () => {
