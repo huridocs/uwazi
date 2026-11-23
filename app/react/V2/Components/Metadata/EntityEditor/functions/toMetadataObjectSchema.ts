@@ -110,6 +110,10 @@ const toInheritedValueSchema = (value: MetadataValue): InheritedValueSchema => {
     inherited.label = value.label;
   }
 
+  if (Array.isArray(value.attributes) && value.attributes.every(item => typeof item === 'string')) {
+    inherited.attributes = value.attributes;
+  }
+
   const parent = toParentSchema(value.parent);
   if (parent) {
     inherited.parent = parent;
@@ -122,6 +126,10 @@ const toMetadataObjectSchema = (value: MetadataValue): MetadataObjectSchema => {
   if (value.type === 'entity') {
     return {
       value: toPropertyValueSchema(value.value),
+      ...(Array.isArray(value.attributes) &&
+      value.attributes.every(item => typeof item === 'string')
+        ? { attributes: value.attributes }
+        : {}),
     };
   }
 
@@ -131,6 +139,10 @@ const toMetadataObjectSchema = (value: MetadataValue): MetadataObjectSchema => {
 
   if (typeof value.label === 'string') {
     metadataValue.label = value.label;
+  }
+
+  if (Array.isArray(value.attributes) && value.attributes.every(item => typeof item === 'string')) {
+    metadataValue.attributes = value.attributes;
   }
 
   if (typeof value.inheritedType === 'string') {

@@ -314,6 +314,7 @@ export const inheritedValueSchema = {
   properties: {
     value: propertyValueSchema,
     label: { type: 'string' },
+    attributes: { type: 'array', items: { type: 'string' } },
     parent: selectParentSchema,
   },
 };
@@ -327,6 +328,7 @@ export const metadataObjectSchema = {
     attachment: { type: 'number' },
     label: { type: 'string' },
     suggestion_model: { type: 'string' },
+    attributes: { type: 'array', items: { type: 'string' } },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
     inheritedValue: { type: 'array', items: inheritedValueSchema },
     inheritedType: { type: 'string' },

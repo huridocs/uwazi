@@ -54,6 +54,29 @@ describe('toMetadataObjectSchema', () => {
     });
   });
 
+  it('should keep attributes on a relationship and on a plain value', () => {
+    expect(
+      toMetadataObjectSchema({
+        value: 'shared-target-1',
+        type: 'entity',
+        attributes: ['sync_off'],
+      })
+    ).toEqual({
+      value: 'shared-target-1',
+      attributes: ['sync_off'],
+    });
+
+    expect(
+      toMetadataObjectSchema({
+        value: 'Hello',
+        attributes: [],
+      })
+    ).toEqual({
+      value: 'Hello',
+      attributes: [],
+    });
+  });
+
   it('should normalize malformed daterange and link objects', () => {
     expect(
       toMetadataObjectSchema({

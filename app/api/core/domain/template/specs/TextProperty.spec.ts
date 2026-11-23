@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { PropertyTypeInvalidTypeError } from '../errors.js';
 import { MarkdownProperty } from '../MarkdownProperty.js';
 import { PropertyTypeEnum } from '../PropertyType.js';
@@ -148,6 +149,57 @@ describe('TextProperty', () => {
       expect(() =>
         text.createPropertyAssignment({ value: [{ value: null as any }] }, true)
       ).toThrow('Text Property is required');
+    });
+
+    it('should keep attributes beside the value', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: 'Hello', attributes: ['ai_generated', 'ai_generated', 'sync_off'] }],
+      });
+
+      expect(assignment.value).toEqual([
+        { value: 'Hello', attributes: ['ai_generated', 'ai_generated', 'sync_off'] },
+      ]);
+    });
+
+    it('should store an empty attributes array and omit the key when it is absent', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const withEmpty = text.createPropertyAssignment({
+        value: [{ value: 'Hello', attributes: [] }],
+      });
+      const without = text.createPropertyAssignment({ value: [{ value: 'Hello' }] });
+
+      expect(withEmpty.value).toEqual([{ value: 'Hello', attributes: [] }]);
+      expect(without.value).toEqual([{ value: 'Hello' }]);
+    });
+
+    it('should keep a blank value when attributes is present', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const withToken = text.createPropertyAssignment({
+        value: [{ value: '', attributes: ['blank'] }],
+      });
+      const withEmptyArray = text.createPropertyAssignment({
+        value: [{ value: '   ', attributes: [] }],
+      });
+
+      expect(withToken.value).toEqual([{ value: '', attributes: ['blank'] }]);
+      expect(withEmptyArray.value).toEqual([{ value: '', attributes: [] }]);
+    });
+
+    it('should reject attributes that are not an array of strings', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        text.createPropertyAssignment({
+          value: [{ value: 'Hello', attributes: 'ai_generated' as any }],
+        })
+      ).toThrow();
+      expect(() =>
+        text.createPropertyAssignment({ value: [{ value: 'Hello', attributes: [1] as any }] })
+      ).toThrow();
     });
 
     it('should throw if required and all provided values are empty/whitespace', () => {

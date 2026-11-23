@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema } from './attributesSchema.js';
 import { NumericPropertyValue, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 const EntrySchema = z.object({
   value: z.coerce.number({ required_error: 'Numeric Property value must be provided.' }),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean) =>

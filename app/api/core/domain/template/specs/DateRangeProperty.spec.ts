@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { PropertyTypeInvalidTypeError } from '../errors.js';
 import { DateRangeProperty } from '../DateRangeProperty.js';
 import { MultiDateRangeProperty } from '../MultiDateRangeProperty.js';
@@ -154,6 +155,16 @@ describe('DateRangeProperty', () => {
         type: dateRange.type,
         isTranslatable: false,
       });
+    });
+
+    it('should keep a blank range when attributes is present', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = dateRange.createPropertyAssignment({
+        value: [{ value: { from: null, to: null }, attributes: [] }],
+      });
+
+      expect(assignment.value).toEqual([{ value: { from: null, to: null }, attributes: [] }]);
     });
 
     it('should throw if "to" is before "from"', () => {

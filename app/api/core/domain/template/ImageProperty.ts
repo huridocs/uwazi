@@ -3,18 +3,30 @@ import { CreatePropertyAssignmentInput } from '#api/core/domain/template/Propert
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { PropertyAssignment, ImageEntry } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Image;
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
-const FilePathEntrySchema = z.object({
-  value: z.string().trim().min(1, 'Image Property must be a non-empty string.'),
-});
+const FilePathEntrySchema = z
+  .object({
+    value: z.string().trim(),
+    attributes: attributesSchema,
+  })
+  .superRefine((entry, ctx) => {
+    if (!entry.value && entry.attributes === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Image Property must be a non-empty string.',
+      });
+    }
+  });
 
 const URLEntrySchema = z.object({
   value: z.string().trim().url('Image Property must be a valid URL.'),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean, isFromURL: boolean) =>
@@ -58,12 +70,15 @@ class ImageProperty extends AbstractImageProperty {
     const isFromURL = this.isFromURL(value);
     const isFromFilePath = this.isFromFilePath(value);
     const parsed = createSchema(shouldValidateForRequired ? this.required : false, isFromURL).parse(
-      value.filter(v => v?.value?.length)
+      value.filter(v => v?.value?.length || entryCarriesAttributes(v))
     );
     let postProcessed = parsed;
 
     if (!isFromURL && !isFromFilePath) {
-      postProcessed = parsed.map(v => ({ value: `${this.FILE_PATH}${v.value}` }));
+      postProcessed = parsed.map(v => ({
+        ...v,
+        value: v.value ? `${this.FILE_PATH}${v.value}` : v.value,
+      }));
     }
 
     return {

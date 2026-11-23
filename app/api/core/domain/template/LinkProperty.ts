@@ -6,18 +6,34 @@ import {
 } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema, entryCarriesAttributes } from './attributesSchema.js';
 import { LinkEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Link;
 } & Omit<PropertyProps, 'type'>;
 
-const EntrySchema = z.object({
-  value: z.object({
-    url: z.string().url('Link Property value must be a valid URL.'),
-    label: z.string().optional(),
-  }),
-});
+const EntrySchema = z
+  .object({
+    value: z.object({
+      url: z.string(),
+      label: z.string().optional(),
+    }),
+    attributes: attributesSchema,
+  })
+  .superRefine((entry, ctx) => {
+    if (entryCarriesAttributes(entry) && !entry.value.url) {
+      return;
+    }
+    const parsed = z.string().url().safeParse(entry.value.url);
+    if (!parsed.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Link Property value must be a valid URL.',
+        path: ['value', 'url'],
+      });
+    }
+  });
 
 const createSchema = (shouldValidateForRequired = false) =>
   z
@@ -46,7 +62,7 @@ class LinkProperty extends Property {
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<LinkEntry> {
-    let parsed = value.filter(v => v?.value?.url?.trim()?.length);
+    let parsed = value.filter(v => v?.value?.url?.trim()?.length || entryCarriesAttributes(v));
 
     if (shouldValidateForRequired) {
       parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(parsed);

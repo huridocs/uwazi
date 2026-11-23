@@ -4,7 +4,7 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-type PropertyValueInput =
+type PropertyValueInput = (
   | { attachment: number; timeLinks?: string }
   | { attachment: number }
   | { value: string }
@@ -12,7 +12,8 @@ type PropertyValueInput =
   | { value: { from: number | null; to: number | null } }
   | { value: { lat: number; lon: number; label?: string } }
   | { value: { url: string; label?: string } }
-  | { value: { [childName: string]: { value: unknown; label?: string }[] } };
+  | { value: { [childName: string]: { value: unknown; label?: string; attributes?: string[] }[] } }
+) & { attributes?: string[] };
 
 type PropertyAssignmentInput<Value = PropertyValueInput> = {
   name: string;

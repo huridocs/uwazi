@@ -1,9 +1,14 @@
 import type { MetadataObjectSchema, MetadataSchema } from '#shared/types/commonTypes.js';
 import { mapMediaValue } from './mediaMetadata.js';
+import {
+  applyStoredAttributes,
+  omitMetadataAttributes,
+  type MetadataAttributesSidecar,
+} from './metadataAttributes.js';
 import { isLegacyMetadataObject, isMediaProperty, shouldSkipValue } from './legacyTypes.js';
 import type { LegacyTemplate, MediaProperty, WrapableEntity } from './legacyTypes.js';
 
-type WrappedEntity<T extends WrapableEntity> = Omit<T, 'metadata'> & {
+type WrappedEntity<T extends WrapableEntity> = Omit<T, 'metadata' | 'metadataAttributes'> & {
   metadata?: MetadataSchema;
 };
 
@@ -69,6 +74,19 @@ const wrapMetadataEntry = (
   return [defaultWrappedValue(metadataEntry)];
 };
 
+const readSidecar = (entity: object): MetadataAttributesSidecar | undefined => {
+  if (!('metadataAttributes' in entity)) {
+    return undefined;
+  }
+  const { metadataAttributes } = entity as { metadataAttributes?: MetadataAttributesSidecar };
+  return metadataAttributes;
+};
+
+const entityWithoutMetadata = <T extends WrapableEntity>(entity: T): WrappedEntity<T> => {
+  const { metadata: _metadata, ...rest } = omitMetadataAttributes(entity);
+  return { ...rest } as WrappedEntity<T>;
+};
+
 const wrapEntityMetadata = <T extends WrapableEntity>(
   entity: T,
   template?: LegacyTemplate | null
@@ -79,10 +97,10 @@ const wrapEntityMetadata = <T extends WrapableEntity>(
         property.type === 'image' || property.type === 'media'
     ) ?? [];
 
+  const sidecar = readSidecar(entity);
   const sourceMetadata = entity.metadata;
   if (!sourceMetadata) {
-    const { metadata: _metadata, ...rest } = entity;
-    return { ...rest };
+    return entityWithoutMetadata(entity);
   }
 
   const context: WrapEntryContext = {
@@ -90,11 +108,14 @@ const wrapEntityMetadata = <T extends WrapableEntity>(
     attachments: entity.attachments ?? [],
   };
   const metadata = Object.keys(sourceMetadata).reduce<MetadataSchema>((acc, key) => {
-    acc[key] = wrapMetadataEntry(key, sourceMetadata[key], context);
+    acc[key] = applyStoredAttributes(
+      wrapMetadataEntry(key, sourceMetadata[key], context),
+      sidecar?.[key]
+    );
     return acc;
   }, {});
 
-  return { ...entity, metadata };
+  return { ...omitMetadataAttributes(entity), metadata } as WrappedEntity<T>;
 };
 
 export { wrapEntityMetadata };

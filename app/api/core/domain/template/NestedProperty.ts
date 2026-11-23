@@ -4,6 +4,7 @@ import { PropertyName } from './PropertyName.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { PropertyTypeEnum } from './PropertyType.js';
+import { attributesSchema } from './attributesSchema.js';
 import { NestedEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
@@ -14,10 +15,12 @@ type Props = {
 const BaseMetadataValueSchema = z.object({
   value: z.any(),
   label: z.string().optional(),
+  attributes: attributesSchema,
 });
 
 const EntrySchema = z.object({
   value: z.union([z.record(z.string(), z.array(BaseMetadataValueSchema)), z.null()]),
+  attributes: attributesSchema,
 });
 
 const createSchema = (isRequired: boolean) =>

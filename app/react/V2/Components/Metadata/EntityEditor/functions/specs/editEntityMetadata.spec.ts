@@ -29,7 +29,7 @@ describe('formatMetadataForEntity', () => {
   it('should sync grouped relationship values before mapping to entity metadata', () => {
     const result = formatMetadataForEntity(
       {
-        simple_text: [{ value: 'hello' }],
+        simple_text: [{ value: 'hello', attributes: ['ai_generated', 'sync_off'] }],
         related_people: [{ value: 'shared-1', label: 'One' }],
         related_residents: [{ value: 'stale' }],
         location: [{ value: { lat: 1, lon: 2 } }],
@@ -39,7 +39,9 @@ describe('formatMetadataForEntity', () => {
 
     expect(result?.related_people).toEqual([{ value: 'shared-1', label: 'One' }]);
     expect(result?.related_residents).toEqual([{ value: 'shared-1', label: 'One' }]);
-    expect(result?.simple_text).toEqual([{ value: 'hello' }]);
+    expect(result?.simple_text).toEqual([
+      { value: 'hello', attributes: ['ai_generated', 'sync_off'] },
+    ]);
   });
 
   it('should drop null geolocation values', () => {

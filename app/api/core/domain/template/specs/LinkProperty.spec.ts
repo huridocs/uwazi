@@ -103,6 +103,17 @@ describe('LinkProperty', () => {
       });
     });
 
+    it('should keep a blank url when attributes is present', () => {
+      const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = link.createPropertyAssignment({
+        value: [{ value: { url: '' }, attributes: ['blank'] }],
+      });
+
+      expect(assignment.value).toEqual([{ value: { url: '' }, attributes: ['blank'] }]);
+      expect(() => link.validatePropertyAssignment(assignment)).not.toThrow();
+    });
+
     it('should handle whitespace-only URLs', () => {
       const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 

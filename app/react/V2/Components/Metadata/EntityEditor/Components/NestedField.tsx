@@ -3,6 +3,7 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { keepMetadataAttributes } from '../functions/keepMetadataAttributes.js';
 import {
   markdownFromMetadataValues,
   metadataValuesFromMarkdown,
@@ -60,7 +61,12 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
               }
               value={markdownValue}
               onChange={event => {
-                fieldController.onChange(metadataValuesFromMarkdown(event.target.value));
+                fieldController.onChange(
+                  keepMetadataAttributes(
+                    fieldController.value,
+                    metadataValuesFromMarkdown(event.target.value)
+                  )
+                );
               }}
               onBlur={fieldController.onBlur}
               name={fieldController.name}

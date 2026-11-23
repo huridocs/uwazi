@@ -59,6 +59,17 @@ describe('Select/MultiSelect duplicate removal', () => {
     expect(assignment.value).toEqual([{ value: 'apple', label: 'Apple' }]);
   });
 
+  it('should keep a blank value when attributes is present', () => {
+    const template = buildTemplate();
+
+    const assignment = template.createPropertyAssignment('select', {
+      language: 'en',
+      value: [{ value: '', label: '', attributes: ['blank'] }],
+    });
+
+    expect(assignment.value).toEqual([{ value: '', label: '', attributes: ['blank'] }]);
+  });
+
   it('should filter out empty and whitespace-only values', () => {
     const template = buildTemplate();
 

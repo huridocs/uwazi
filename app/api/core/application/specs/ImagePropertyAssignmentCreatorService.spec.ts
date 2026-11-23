@@ -73,6 +73,49 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     ]);
   });
 
+  it('keeps attributes on a stored image and on an uploaded file', async () => {
+    const { sut } = createSut();
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+    const attachments = [new InputFile({ filename: 'photo.jpg' } as any, 'attachment')];
+
+    const stored = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'url_image',
+        value: [{ value: '/api/files/photo.jpg', attributes: ['ai_generated', 'sync_off'] }],
+      },
+    });
+    const uploaded = await sut.create({
+      template,
+      attachments,
+      propertyAssignment: {
+        name: 'attached_image_1',
+        value: [{ attachment: 0, attributes: [] }],
+      },
+    });
+
+    expect(stored).toEqual([
+      {
+        isTranslatable: true,
+        name: 'url_image',
+        type: 'image',
+        value: [{ value: '/api/files/photo.jpg', attributes: ['ai_generated', 'sync_off'] }],
+      },
+    ]);
+    expect(uploaded).toEqual([
+      {
+        isTranslatable: true,
+        name: 'attached_image_1',
+        type: 'image',
+        value: [{ value: '/api/files/photo.jpg', attributes: [] }],
+      },
+    ]);
+  });
+
   it('should map an attachment index to a file path under /api/files/', async () => {
     const { sut } = createSut();
     const templateDBO = await testingEnvironment.db

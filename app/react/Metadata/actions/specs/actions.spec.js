@@ -68,6 +68,42 @@ describe('Metadata Actions', () => {
       expect(api.get).toHaveBeenCalledWith(new RequestParams({ sharedId: '1' }));
     });
 
+    it('should keep value attributes beside the unwrapped form value', async () => {
+      spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
+      const dispatch = jasmine.createSpy('dispatch');
+      const doc = {
+        sharedId: '1',
+        title: 'updated title',
+        template: 'templateId',
+        metadata: {
+          test: [{ value: 'test', attributes: ['ai_generated', 'sync_off'] }],
+        },
+      };
+      api.get.and.returnValue(Promise.resolve([doc]));
+      const templates = [
+        {
+          _id: 'templateId',
+          commonProperties: [{ name: 'title', generatedId: false }],
+          properties: [{ name: 'test' }, { name: 'id', type: 'generatedid' }],
+        },
+      ];
+
+      await actions.loadInReduxForm('formNamespace', { sharedId: '1' }, templates)(dispatch);
+
+      expect(reactReduxForm.actions.load).toHaveBeenCalledWith(
+        'formNamespace',
+        expect.objectContaining({
+          metadata: { test: 'test', id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) },
+          metadataAttributes: {
+            test: {
+              values: ['test'],
+              attributes: [['ai_generated', 'sync_off']],
+            },
+          },
+        })
+      );
+    });
+
     describe('When doc has no template', () => {
       let dispatch;
       let doc;

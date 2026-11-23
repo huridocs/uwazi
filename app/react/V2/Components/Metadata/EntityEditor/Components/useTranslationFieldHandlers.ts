@@ -3,6 +3,7 @@ import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
 import { translateText } from '#V2/api/translationService/index.js';
 import {
   linkValueWithPart,
+  attributesForTranslation,
   storedTranslationValue,
   translationEntryText,
   translationTouchedPath,
@@ -84,6 +85,11 @@ const useWatchedTranslationValues = ({
   }, [current, currentValue, linkPart, others, watched]);
 };
 
+const entryWithExistingAttributes = (value: unknown, existing: unknown) => {
+  const attributes = attributesForTranslation(existing);
+  return [{ value, ...(attributes ? { attributes } : {}) }];
+};
+
 const useTranslationFieldHandlers = ({
   propertyName,
   current,
@@ -131,7 +137,9 @@ const useTranslationFieldHandlers = ({
               text,
             })
           : text;
-      setValue(valuePath, [{ value: nextValue }], { shouldDirty: true });
+      setValue(valuePath, entryWithExistingAttributes(nextValue, getValues(valuePath)), {
+        shouldDirty: true,
+      });
       if (!getValues(touchedPath)) {
         setValue(touchedPath, true, { shouldDirty: true });
       }
