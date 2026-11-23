@@ -35,6 +35,7 @@ const useCreateRelationshipActions = ({
   targetSelection,
   store,
   setIsSaving,
+  setSaveError,
   isTextAnchored,
   targetPdfFiles,
   setStep,
@@ -55,6 +56,7 @@ const useCreateRelationshipActions = ({
   targetSelection: ReturnType<typeof useCreateRelationshipModalState>['targetSelection'];
   store: ReturnType<typeof useStore>;
   setIsSaving: (value: boolean) => void;
+  setSaveError: (value: boolean) => void;
   isTextAnchored: boolean;
   targetPdfFiles: ReturnType<typeof useCreateRelationshipModalState>['targetPdfFiles'];
   setStep: ReturnType<typeof useCreateRelationshipModalState>['setStep'];
@@ -83,32 +85,32 @@ const useCreateRelationshipActions = ({
     handleEntitySelect(created);
   }, [handleEntitySelect, newEntityTemplateId, newEntityTitle, setIsSaving]);
 
-  const notifyCreateError = () => {
-    notify(
-      t('System', 'Error', null, false),
-      'error',
-      t('System', 'An error occurred', null, false)
-    );
-  };
-
   const handleCreate = useCallback(async () => {
-    if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
-    setIsSaving(true);
-    try {
-      const saved = await handleSaveReference({
-        selection: createReferenceSelection,
-        targetEntityId: selectedEntity.sharedId,
-        relationshipType: selectedRelationshipType,
-        sourcePage: store.get(entityPageAtom),
-        ...(selectedFile && { targetFileId: String(selectedFile._id) }),
-        ...(targetSelection && { targetSelection }),
-      });
+    const applyCreateResult = (saved: boolean) => {
       if (!saved) {
-        notifyCreateError();
+        setSaveError(true);
         return;
       }
       notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
       reset();
+    };
+
+    if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
+    setSaveError(false);
+    setIsSaving(true);
+    try {
+      await applyCreateResult(
+        await handleSaveReference({
+          selection: createReferenceSelection,
+          targetEntityId: selectedEntity.sharedId,
+          relationshipType: selectedRelationshipType,
+          sourcePage: store.get(entityPageAtom),
+          ...(selectedFile && { targetFileId: String(selectedFile._id) }),
+          ...(targetSelection && { targetSelection }),
+        })
+      );
+    } catch {
+      setSaveError(true);
     } finally {
       setIsSaving(false);
     }
@@ -121,6 +123,7 @@ const useCreateRelationshipActions = ({
     selectedFile,
     selectedRelationshipType,
     setIsSaving,
+    setSaveError,
     store,
     targetSelection,
   ]);
@@ -145,6 +148,7 @@ const useCreateRelationshipDeps = (mainDocument?: FileType) => {
   const { handleSaveReference } = useRelationshipSave(mainDocument);
   const store = useStore();
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   return {
     entity,
     relationships,
@@ -155,6 +159,8 @@ const useCreateRelationshipDeps = (mainDocument?: FileType) => {
     store,
     isSaving,
     setIsSaving,
+    saveError,
+    setSaveError,
   };
 };
 
@@ -182,15 +188,23 @@ const useCreateRelationshipModal = (mainDocument?: FileType) => {
     targetSelection: state.targetSelection,
     store: deps.store,
     setIsSaving: deps.setIsSaving,
+    setSaveError: deps.setSaveError,
     isTextAnchored: state.isTextAnchored,
     targetPdfFiles: state.targetPdfFiles,
     setStep: state.setStep,
   });
-  const { reset } = state;
+  const { reset, step } = state;
+  const { setSaveError } = deps;
   const isOpen = deps.relationships.createRelationshipModalOpen;
   useEffect(() => {
-    if (!isOpen) reset();
-  }, [isOpen, reset]);
+    if (!isOpen) {
+      reset();
+      setSaveError(false);
+    }
+  }, [isOpen, reset, setSaveError]);
+  useEffect(() => {
+    setSaveError(false);
+  }, [step, setSaveError]);
   return { isOpen, deps, state, handlers };
 };
 
@@ -201,6 +215,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
     <CreateRelationshipModalBody
       state={state}
       isSaving={deps.isSaving}
+      saveError={deps.saveError}
       templates={deps.templates}
       relationshipTypes={deps.relationshipTypes}
       selectionPreview={deps.relationships.createReferenceSelection?.text?.trim()}

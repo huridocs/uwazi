@@ -158,6 +158,23 @@ describe('Create relationship dialog', () => {
     cy.contains('Create entity').should('be.visible');
   });
 
+  it('keeps the dialog open and shows an error when saving the relationship fails', () => {
+    cy.intercept('POST', '**/relationships/bulk*', {
+      statusCode: 422,
+      body: { error: 'validation failed', validations: [] },
+    }).as('saveRelationshipFailed');
+    mountCreateRelationshipModal({ withSelection: false });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.get('[data-testid="modal"]').contains('button', 'related to').click();
+    cy.get('[data-testid="modal"]').contains('button', 'Create relationship').click();
+    cy.wait('@saveRelationshipFailed');
+    cy.get('[data-testid="modal"]').should('be.visible');
+    cy.get('[data-testid="modal"]').contains('An error occurred').should('be.visible');
+    cy.contains('Choose relation type').should('be.visible');
+  });
+
   it('connects two entities with a chosen relationship type', () => {
     mountCreateRelationshipModal({ withSelection: false });
     openModal();
