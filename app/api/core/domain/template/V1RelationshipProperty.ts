@@ -12,6 +12,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
 import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
 import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
+import type { PropertyConflict } from './PropertyConflict.js';
 
 type Inherit = {
   property: string;
@@ -105,10 +106,24 @@ class V1RelationshipProperty extends FilterableProperty {
     return updateInfo;
   }
 
+  protected sameNameConflictsWith(property: Property): PropertyConflict[] {
+    const conflicts = super.sameNameConflictsWith(property);
+
+    if (
+      property instanceof V1RelationshipProperty &&
+      this.inherit &&
+      this.inherit.type !== property.inherit?.type
+    ) {
+      conflicts.push('inheritType');
+    }
+
+    return conflicts;
+  }
+
   ensurePropertyIsConsistent(property: V1RelationshipProperty): void {
     super.ensurePropertyIsConsistent(property);
 
-    if (this.inherit && this.inherit.type !== property.inherit?.type) {
+    if (this.conflictsWith(property).includes('inheritType')) {
       throw new PropertyInheritedTypeMismatchError(this, property);
     }
   }

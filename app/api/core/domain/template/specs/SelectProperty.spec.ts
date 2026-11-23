@@ -6,6 +6,7 @@ import {
 } from '../errors.js';
 import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
 import { SelectProperty } from '../select/SelectProperty.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('SelectProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -105,6 +106,42 @@ describe('SelectProperty', () => {
 
     expect(() => select.ensurePropertyIsConsistent(multiSelect)).not.toThrow();
     expect(() => multiSelect.ensurePropertyIsConsistent(select)).not.toThrow();
+  });
+
+  describe('conflictsWith()', () => {
+    it('should report a content conflict when same-name selects use different thesauri', () => {
+      const select = new SelectProperty({ id: '', label: 'label', template: '', content: 'a' });
+      const other = new SelectProperty({ id: '', label: 'label', template: '', content: 'b' });
+
+      expect(select.conflictsWith(other)).toEqual(['content']);
+    });
+
+    it('should report no conflicts with a same-name multiselect on the same thesaurus', () => {
+      const select = new SelectProperty({ id: '', label: 'label', template: '', content: 'a' });
+      const multiSelect = new MultiSelectProperty({
+        id: '',
+        label: 'label',
+        template: '',
+        content: 'a',
+      });
+
+      expect(select.conflictsWith(multiSelect)).toEqual([]);
+      expect(multiSelect.conflictsWith(select)).toEqual([]);
+    });
+
+    it('should report no conflicts with a select of a different name', () => {
+      const select = new SelectProperty({ id: '', label: 'label', template: '', content: 'a' });
+      const other = new SelectProperty({ id: '', label: 'other', template: '', content: 'b' });
+
+      expect(select.conflictsWith(other)).toEqual([]);
+    });
+
+    it('should report only a type conflict against a same-name non-select property', () => {
+      const select = new SelectProperty({ id: '', label: 'label', template: '', content: 'a' });
+      const text = new TextProperty({ id: '', label: 'label', template: '' });
+
+      expect(select.conflictsWith(text)).toEqual(['type']);
+    });
   });
 
   describe('createPropertyAssignment()', () => {
