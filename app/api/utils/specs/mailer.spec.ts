@@ -29,7 +29,10 @@ describe('mailer', () => {
     _mailOptions: Mail.Options,
     callback: (err: Error | null, info: SentMessageInfo) => void
   ) => {
-    callback(null, '');
+    callback(null, {
+      envelope: { from: false, to: [] },
+      messageId: '',
+    });
   };
 
   describe('non test environment', () => {

@@ -8,7 +8,10 @@ export class FakeMailer {
     callback: (err: Error | null, info: SentMessageInfo) => void
   ) {
     console.log('Fake sent of mail with:', _mailOptions);
-    callback(null, '');
+    callback(null, {
+      envelope: { from: false, to: [] },
+      messageId: '',
+    });
   }
 }
 

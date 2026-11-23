@@ -159,8 +159,9 @@ function setupQueueWorker(props?: Props) {
       ListenerRegistration.registerEvents();
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
-      // 'system' jobs stay in Mongo until release 2, so only the Mongo worker schedules them.
-      if (config.queueBackend === 'mongo') {
+      // 'system' jobs live on the store selected by SYSTEM_JOBS_BACKEND. Schedule them from the
+      // worker that polls that store, so a Mongo drain worker never re-creates them in Mongo.
+      if (config.queueBackend === config.systemJobsBackend) {
         await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
         logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
 
