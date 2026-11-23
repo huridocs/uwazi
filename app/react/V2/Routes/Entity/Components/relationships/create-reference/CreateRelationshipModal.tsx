@@ -86,23 +86,25 @@ const useCreateRelationshipActions = ({
   }, [handleEntitySelect, newEntityTemplateId, newEntityTitle, setIsSaving]);
 
   const handleCreate = useCallback(async () => {
+    if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
+    const targetEntity = selectedEntity;
+
     const applyCreateResult = (saved: boolean) => {
       if (!saved) {
         setSaveError(true);
         return;
       }
-      notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
+      notify(t('System', 'Relationship created', null, false), 'success', targetEntity.title);
       reset();
     };
 
-    if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
     setSaveError(false);
     setIsSaving(true);
     try {
       await applyCreateResult(
         await handleSaveReference({
           selection: createReferenceSelection,
-          targetEntityId: selectedEntity.sharedId,
+          targetEntityId: targetEntity.sharedId,
           relationshipType: selectedRelationshipType,
           sourcePage: store.get(entityPageAtom),
           ...(selectedFile && { targetFileId: String(selectedFile._id) }),
