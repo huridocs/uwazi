@@ -1,5 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { config } from '#api/config.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import {
   DefaultDispatcher,
@@ -7,8 +8,11 @@ import {
   DefaultQueueAdapter,
 } from '#api/core/libs/queue/configuration/factories.js';
 import { QueueAdapter, PushJobInput } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { PostgresTransactionManager } from '../postgresql/common/PostgresTransactionManager.js';
 import { UwaziDispatcherFactory } from '../jobs/UwaziDispatcherFactory.js';
+import { LoggerFactory } from './LoggerFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 const SYSTEM_NAMESPACE = 'system';
@@ -61,8 +65,25 @@ class JobsDispatcherFactory {
     );
   }
 
-  /** Dispatches into the 'system' namespace (migrations, scheduled maintenance jobs). */
+  /**
+   * Dispatches into the 'system' namespace (migrations, scheduled maintenance jobs) on the store
+   * selected by SYSTEM_JOBS_BACKEND. System jobs have no tenant, so Postgres rows get a null one.
+   */
   static system(): JobsDispatcher {
+    if (config.systemJobsBackend === 'postgres') {
+      const transactionManager = new PostgresTransactionManager(
+        PostgresDB.pipelinedPool(),
+        config.defaultTenant.name,
+        LoggerFactory.systemLogger()
+      );
+
+      return DefaultDispatcher(
+        SYSTEM_NAMESPACE,
+        transactionManager,
+        DefaultPostgresQueueAdapter(transactionManager, tenantIdForJob)
+      );
+    }
+
     return DefaultDispatcher(SYSTEM_NAMESPACE, TransactionManagerFactory.createForSharedDataBase());
   }
 
