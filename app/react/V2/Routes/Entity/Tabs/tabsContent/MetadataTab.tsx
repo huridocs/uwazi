@@ -8,7 +8,9 @@ import type { Template } from '#app/apiResponseTypes.js';
 import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import {
   EditEntity,
-  apiValidationsToEditEntityErrors,
+  applyEntitySaveApiError,
+  beginEntitySave,
+  mapTemplateProperty,
   submitEditEntityForm,
 } from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
@@ -65,17 +67,6 @@ const persistSavedEntity = async ({
   finishEditing();
 };
 
-const reportUpsertError = (
-  error: NonNullable<Awaited<ReturnType<ReturnType<typeof useServices>['entities']['upsert']>>[1]>,
-  setEditErrors: MetadataEditingState['setEditErrors'],
-  setSaveError: MetadataEditingState['setSaveError']
-) => {
-  if (error.kind === 'cancelled') return;
-  const fieldErrors = apiValidationsToEditEntityErrors(error.validations);
-  setEditErrors(fieldErrors);
-  if (!fieldErrors) setSaveError(error.detail ?? error.message);
-};
-
 const saveEditedEntity = async ({
   editedEntity,
   abortController,
@@ -109,7 +100,12 @@ const saveEditedEntity = async ({
     saveMediaContext: mediaContextFromTemplate(template),
   });
   if (error) {
-    reportUpsertError(error, setEditErrors, setSaveError);
+    applyEntitySaveApiError({
+      error,
+      setEditErrors,
+      setSaveError,
+      metadataProperties: template.properties?.map(mapTemplateProperty) ?? [],
+    });
     return;
   }
   if (!data) return;
@@ -121,14 +117,13 @@ const useMetadataTabSave = (entity: Entity, editing: MetadataEditingState) => {
   const templates = useAtomValue(templatesAtom);
   const { setEntity } = useEntityContext();
   const revalidator = useRevalidator();
-  const { setSaveError, setEditErrors, finishEditing, tryBeginSave, endSave } = editing;
+  const { setSaveError, setEditErrors, finishEditing, tryBeginSave, endSave, form } = editing;
 
   return useCallback(
     async (editedEntity: EntitySaveInput) => {
       const abortController = tryBeginSave();
       if (!abortController) return;
-      setSaveError(undefined);
-      setEditErrors(undefined);
+      beginEntitySave({ setSaveError, setEditErrors, clearErrors: form.clearErrors });
       try {
         await saveEditedEntity({
           editedEntity,
@@ -149,6 +144,7 @@ const useMetadataTabSave = (entity: Entity, editing: MetadataEditingState) => {
     [
       endSave,
       entities,
+      form.clearErrors,
       entity,
       finishEditing,
       revalidator,

@@ -19,6 +19,11 @@ import { useTranslationServiceAvailability } from './TranslationServiceAvailabil
 
 const formPath = (path: string) => path as FieldPath<EditEntityFormValues>;
 
+const writtenTranslation = (value: string, origin: TranslationWriteOrigin, linkPart?: LinkPart) => {
+  const text = origin === 'user' ? stripAiTranslated(value) : value;
+  return linkPart === 'url' ? text.trim() : text;
+};
+
 const requestFieldTranslation = async ({
   current,
   currentValue,
@@ -115,7 +120,7 @@ const useTranslationFieldHandlers = ({
 
   const onChange = useCallback(
     (language: string, value: string, origin: TranslationWriteOrigin = 'user') => {
-      const text = origin === 'user' ? stripAiTranslated(value) : value;
+      const text = writtenTranslation(value, origin, linkPart);
       if (language === current) {
         onCurrentChange?.(text);
         return;
