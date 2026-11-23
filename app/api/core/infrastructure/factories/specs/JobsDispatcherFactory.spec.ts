@@ -106,11 +106,30 @@ describe('JobsDispatcherFactory', () => {
   });
 
   describe('system()', () => {
-    it('should dispatch to the Mongo system namespace', async () => {
+    const previousSystemJobsBackend = config.systemJobsBackend;
+
+    afterAll(() => {
+      config.systemJobsBackend = previousSystemJobsBackend;
+    });
+
+    it('should dispatch to the Mongo system namespace when SYSTEM_JOBS_BACKEND is mongo', async () => {
+      config.systemJobsBackend = 'mongo';
+
       await JobsDispatcherFactory.system().dispatch(JobsDispatcherFactorySpecJob, {});
 
       expect(await mongoJobs()).toEqual([expect.objectContaining({ namespace: 'system' })]);
       expect(await postgresJobs()).toEqual([]);
+    });
+
+    it('should dispatch to the Postgres system namespace with a null tenant when SYSTEM_JOBS_BACKEND is postgres', async () => {
+      config.systemJobsBackend = 'postgres';
+
+      await JobsDispatcherFactory.system().dispatch(JobsDispatcherFactorySpecJob, {});
+
+      expect(await postgresJobs()).toEqual([
+        expect.objectContaining({ namespace: 'system', tenant_id: null }),
+      ]);
+      expect(await mongoJobs()).toEqual([]);
     });
   });
 

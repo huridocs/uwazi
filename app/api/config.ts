@@ -31,6 +31,13 @@ const QueueBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
 /** Which job store this process's queue worker polls. Run one worker per backend. */
 const queueBackend = QueueBackendSchema.parse(process.env.QUEUE_BACKEND || undefined);
 
+const SystemJobsBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
+
+/** Which store `system`-namespace jobs are dispatched to. Independent of QUEUE_BACKEND. */
+const systemJobsBackend = SystemJobsBackendSchema.parse(
+  process.env.SYSTEM_JOBS_BACKEND || undefined
+);
+
 const SessionsBackendSchema = z.enum(['mongo', 'postgres']).default('mongo');
 
 /** Which Express session store this process uses. One backend for every tenant. */
@@ -258,6 +265,7 @@ export const config = {
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
   queueBackend,
+  systemJobsBackend,
   sessionsBackend,
   tenantsBackend,
   tenantsPollIntervalSeconds,
