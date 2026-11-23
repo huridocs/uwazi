@@ -7,8 +7,10 @@ import { localeAtom, templatesAtom } from '#V2/atoms/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import {
-  apiValidationsToEditEntityErrors,
+  applyEntitySaveApiError,
+  beginEntitySave,
   buildEditEntityDefaultValues,
+  mapTemplateProperty,
   useEntityMediaUpload,
   type EditEntityErrors,
   type EditEntityFormValues,
@@ -27,6 +29,8 @@ const CREATE_FORM_ID = 'library-create-entity-form';
 type NewEntitySaveResult = {
   saved?: Entity;
   error?: ApiError;
+  templateId: string;
+  templates: ReturnType<typeof useLibraryCreateEntityForm>['templates'];
   onCreated: (sharedId: string, row?: LibrarySearchHit) => void;
   setEditErrors: (errors: EditEntityErrors | undefined) => void;
   setSaveError: (message: string | undefined) => void;
@@ -35,15 +39,16 @@ type NewEntitySaveResult = {
 const applyNewEntitySaveResult = ({
   saved,
   error,
+  templateId,
+  templates,
   onCreated,
   setEditErrors,
   setSaveError,
 }: NewEntitySaveResult) => {
   if (error) {
-    if (error.kind === 'cancelled') return;
-    const fieldErrors = apiValidationsToEditEntityErrors(error.validations);
-    setEditErrors(fieldErrors);
-    if (!fieldErrors) setSaveError(error.detail ?? error.message);
+    const template = templates.find(item => item._id === templateId);
+    const metadataProperties = template?.properties?.map(mapTemplateProperty) ?? [];
+    applyEntitySaveApiError({ error, setEditErrors, setSaveError, metadataProperties });
     return;
   }
   if (saved?.sharedId) onCreated(saved.sharedId, libraryHitFromEntity(saved));
@@ -72,14 +77,21 @@ const useLibraryCreateEntity = (onCreated: (sharedId: string, row?: LibrarySearc
 
   const onSave = async (input: EntitySaveInput) => {
     setSaving(true);
-    setSaveError(undefined);
-    setEditErrors(undefined);
+    beginEntitySave({ setSaveError, setEditErrors, clearErrors: form.clearErrors });
     try {
       const template = templates.find(item => item._id === input.template);
       const [saved, error] = await entities.upsert(toNewEntitySaveInput(input), {
         saveMediaContext: template ? mediaContextFromTemplate(template) : undefined,
       });
-      applyNewEntitySaveResult({ saved, error, onCreated, setEditErrors, setSaveError });
+      applyNewEntitySaveResult({
+        saved,
+        error,
+        templateId: form.getValues('template'),
+        templates,
+        onCreated,
+        setEditErrors,
+        setSaveError,
+      });
     } finally {
       setSaving(false);
     }

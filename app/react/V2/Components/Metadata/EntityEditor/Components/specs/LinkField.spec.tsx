@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import React, { useEffect } from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { FormProvider, useForm } from 'react-hook-form';
 import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
@@ -42,12 +42,15 @@ const Harness = ({
   link = { label: 'Docs', url: 'https://en.example' },
   disabled,
   translations = {},
+  serverError,
 }: {
   link?: { label: string; url: string };
   disabled?: boolean;
   translations?: EditEntityFormValues['translations'];
+  serverError?: string;
 }) => {
   const form = useForm<EditEntityFormValues>({
+    mode: 'onTouched',
     defaultValues: {
       title: 'Hearing',
       template: 't1',
@@ -58,6 +61,10 @@ const Harness = ({
       touchedTranslations: {},
     },
   });
+  useEffect(() => {
+    if (!serverError) return;
+    form.setError('metadata.link.0.value', { type: 'server', message: serverError });
+  }, [form, serverError]);
   const store = createStore();
   store.set(settingsAtom, {
     languages: [
@@ -82,6 +89,7 @@ const Harness = ({
         <output data-testid="form-value">
           {JSON.stringify(form.watch('metadata.link.0.value'))}
         </output>
+        <output data-testid="link-error">{JSON.stringify(form.formState.errors)}</output>
       </FormProvider>
     </Provider>
   );
@@ -149,5 +157,130 @@ describe('LinkField', () => {
 
     render(<Harness disabled />);
     expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+  });
+
+  it('shows Invalid URL on the link field when the url is not valid', async () => {
+    render(<Harness link={{ label: 'Docs', url: 'not-a-url' }} />);
+
+    const url = screen.getByLabelText('URL');
+    expect(url).toHaveAttribute('type', 'text');
+    fireEvent.blur(url);
+
+    expect(await screen.findByText('Invalid URL')).toBeInTheDocument();
+  });
+
+  it('rejects htp URLs that pass browser url input but fail isValidUrl', async () => {
+    render(<Harness link={{ label: 'Docs', url: 'htp:/a.url.com' }} />);
+
+    fireEvent.blur(screen.getByLabelText('URL'));
+
+    expect(await screen.findByText('Invalid URL')).toBeInTheDocument();
+  });
+
+  it('stores a trimmed url so a padded valid url is what gets saved', () => {
+    render(<Harness link={{ label: 'Docs', url: ' https://example.com ' }} />);
+
+    fireEvent.blur(screen.getByLabelText('URL'));
+
+    expect(screen.getByTestId('form-value')).toHaveTextContent(
+      JSON.stringify({ label: 'Docs', url: 'https://example.com' })
+    );
+    expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument();
+  });
+
+  describe('error placement', () => {
+    it('shows an invalid translation url on the languages row', () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: 'not-a-url' } }] },
+          }}
+        />
+      );
+
+      expect(screen.getByText('Invalid URL')).toBeInTheDocument();
+      expect(screen.getByLabelText('URL').className).not.toContain('border-emphasis');
+    });
+
+    it('clears the link error after the translation url is fixed', async () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: 'not-a-url' } }] },
+          }}
+        />
+      );
+
+      fireEvent.blur(screen.getByLabelText('URL'));
+      await waitFor(() =>
+        expect(screen.getByTestId('link-error')).toHaveTextContent('Invalid URL')
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /Languages:/ }));
+      const translated = screen.getByRole('textbox', { name: 'Español link url' });
+      fireEvent.change(translated, { target: { value: 'https://es.example' } });
+      fireEvent.blur(translated);
+
+      await waitFor(() => expect(screen.getByTestId('link-error')).toHaveTextContent('{}'));
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument();
+    });
+
+    it('flags a whitespace-only translation url', () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: '   ' } }] },
+          }}
+        />
+      );
+
+      expect(screen.getByText('Invalid URL')).toBeInTheDocument();
+    });
+
+    it('rejects a short url the media picker would reject', async () => {
+      render(<Harness link={{ label: 'Docs', url: 'http://x' }} />);
+
+      fireEvent.blur(screen.getByLabelText('URL'));
+
+      expect(await screen.findByText('Invalid URL')).toBeInTheDocument();
+    });
+
+    it('shows a server error on the main url when the url itself is valid', async () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          serverError="This field is required"
+        />
+      );
+
+      expect(await screen.findByText('This field is required')).toBeInTheDocument();
+      expect(screen.getByLabelText('URL').className).toContain('border-emphasis');
+    });
+
+    it('keeps a translation-only server url error off the main url', async () => {
+      render(
+        <Harness
+          link={{ label: 'Docs', url: 'https://example.com' }}
+          translations={{
+            es: { link: [{ value: { label: 'Docs', url: 'not-a-url' } }] },
+          }}
+          serverError="Invalid URL"
+        />
+      );
+
+      expect(await screen.findByText('Invalid URL')).toBeInTheDocument();
+      expect(screen.getByLabelText('URL').className).not.toContain('border-emphasis');
+    });
+
+    it('accepts an empty url when the link field is optional', () => {
+      render(<Harness link={{ label: '', url: '' }} />);
+
+      fireEvent.blur(screen.getByLabelText('URL'));
+
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument();
+    });
   });
 });
