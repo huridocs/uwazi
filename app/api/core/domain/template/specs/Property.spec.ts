@@ -76,4 +76,39 @@ describe('Property', () => {
       new PropertyTypeMismatchError(dateProperty, textProperty)
     );
   });
+
+  describe('conflictsWith()', () => {
+    it('should return a type conflict when same-name properties have incompatible types', () => {
+      const dateProperty = new Property({ id: '', label: 'label', template: '', type: 'date' });
+      const textProperty = new Property({ id: '', label: 'label', template: '', type: 'text' });
+
+      expect(dateProperty.conflictsWith(textProperty)).toEqual(['type']);
+    });
+
+    it('should return no conflicts when same-name properties have the same type', () => {
+      const dateProperty = new Property({ id: '', label: 'label', template: '', type: 'date' });
+      const otherDate = new Property({ id: '', label: 'label', template: '', type: 'date' });
+
+      expect(dateProperty.conflictsWith(otherDate)).toEqual([]);
+    });
+
+    it('should return no conflicts when properties have different names', () => {
+      const dateProperty = new Property({ id: '', label: 'label', template: '', type: 'date' });
+      const textProperty = new Property({ id: '', label: 'other', template: '', type: 'text' });
+
+      expect(dateProperty.conflictsWith(textProperty)).toEqual([]);
+    });
+
+    it('should compare the derived names, not the labels', () => {
+      const textProperty = new Property({ id: '', label: 'T!est', template: '', type: 'text' });
+      const numericProperty = new Property({
+        id: '',
+        label: 'T?est',
+        template: '',
+        type: 'numeric',
+      });
+
+      expect(textProperty.conflictsWith(numericProperty)).toEqual(['type']);
+    });
+  });
 });
