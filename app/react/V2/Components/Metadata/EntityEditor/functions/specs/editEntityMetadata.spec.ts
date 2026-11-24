@@ -83,7 +83,6 @@ describe('buildEditEntitySaveInput', () => {
     translations: {},
     touchedTranslations: {},
   };
-
   it('should format metadata and clear icon when showIcon is false', () => {
     const saved = buildEditEntitySaveInput({
       entity,
@@ -100,7 +99,6 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.icon).toEqual(EMPTY_ICON);
   });
-
   it('should clear icon when showIcon is true but icon is empty', () => {
     const saved = buildEditEntitySaveInput({
       entity,
@@ -112,7 +110,6 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.icon).toEqual(EMPTY_ICON);
   });
-
   it('should keep icon when showIcon is true and icon is set', () => {
     const icon = { _id: 'icon-1', type: 'Icons', label: 'Icon' };
     const saved = buildEditEntitySaveInput({
@@ -125,7 +122,6 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.icon).toEqual(icon);
   });
-
   it('should add propertySelections when mainDocument id and draft selections exist', () => {
     const draft = [
       {
@@ -152,7 +148,6 @@ describe('buildEditEntitySaveInput', () => {
       selections: draft,
     });
   });
-
   it('should include deleteSelection drafts in propertySelections payload', () => {
     const draft = [
       {
@@ -177,7 +172,6 @@ describe('buildEditEntitySaveInput', () => {
       selections: draft,
     });
   });
-
   it('should omit propertySelections without a main document id', () => {
     const saved = buildEditEntitySaveInput({
       entity,
@@ -190,17 +184,32 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.propertySelections).toBeUndefined();
   });
-
   describe('translations', () => {
     const langs: LanguagesListSchema = [
       { key: 'en', label: 'English', default: true },
       { key: 'es', label: 'Spanish' },
     ];
+    const savedIn = (form: EditEntityFormValues, subject?: Entity, currentLanguage = 'en') =>
+      buildEditEntitySaveInput({
+        entity: subject,
+        currentLanguage,
+        values: form,
+        metadataProperties: properties,
+        pendingAttachments: [],
+        mediaPropertyNames: new Set(),
+        languages: langs,
+      });
+    it('copies languages the user has not edited when saving an entity', () => {
+      expect(savedIn(values, entity).translations).toEqual({
+        es: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
+      });
+    });
+    it('omits languages the user never edited when creating an entity', () => {
+      expect(savedIn(values).translations).toBeUndefined();
+    });
     it('omits the UI language from translations even when it differs from entity.language', () => {
-      const saved = buildEditEntitySaveInput({
-        entity,
-        currentLanguage: 'es',
-        values: {
+      const saved = savedIn(
+        {
           ...values,
           title: 'Audiencia',
           metadata: { simple_text: [{ value: 'hola' }] },
@@ -208,17 +217,14 @@ describe('buildEditEntitySaveInput', () => {
             en: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
           },
         },
-        metadataProperties: properties,
-        pendingAttachments: [],
-        mediaPropertyNames: new Set(),
-        languages: langs,
-      });
+        entity,
+        'es'
+      );
       expect(saved.language).toBe('es');
       expect(saved.translations).toEqual({
         en: { title: [{ value: 'Updated' }], simple_text: [{ value: 'hello' }] },
       });
     });
-
     const pending: ClientFile = {
       _id: 'esPhoto',
       fileLocalID: 'esPhoto',
@@ -229,7 +235,6 @@ describe('buildEditEntitySaveInput', () => {
     const photoProps: FormMetadataProperty[] = [
       { _id: 'p', type: 'image', name: 'photo', label: 'Photo' },
     ];
-
     it('keeps pending uploads referenced only by another language', () => {
       const saved = buildEditEntitySaveInput({
         entity,
@@ -247,7 +252,7 @@ describe('buildEditEntitySaveInput', () => {
       expect(saved.attachments).toEqual([{ _id: 'a1', filename: 'existing.pdf' }, pending]);
     });
 
-    it('creates without persisted ids and keeps pending media referenced only in translations', () => {
+    it('creates without persisted ids and keeps a language the user edited', () => {
       const saved = buildEditEntitySaveInput({
         currentLanguage: 'en',
         values: {
@@ -255,6 +260,7 @@ describe('buildEditEntitySaveInput', () => {
           title: 'New',
           metadata: { photo: [{ value: '/en.jpg' }] },
           translations: { es: { title: [{ value: 'Nuevo' }], photo: [{ value: 'esPhoto' }] } },
+          touchedTranslations: { es: { title: true } },
         },
         metadataProperties: photoProps,
         pendingAttachments: [pending],

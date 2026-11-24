@@ -244,5 +244,6 @@ describe('useTranslationFieldHandlers', () => {
       expect(translateText).toHaveBeenCalled();
     });
     expect(screen.getByTestId('returned')).toHaveTextContent(/^$/);
+    expect(mockMarkUnavailable).not.toHaveBeenCalled();
   });
 });

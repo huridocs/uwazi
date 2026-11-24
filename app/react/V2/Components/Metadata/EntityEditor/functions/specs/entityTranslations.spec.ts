@@ -2,19 +2,7 @@ import type { LanguagesListSchema, PropertyValueSchema } from '#shared/types/com
 import { EMPTY_ICON } from '../../Components/IconField.js';
 import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
-import {
-  buildTranslationsForSave,
-  installedLanguageKeys,
-  linkValueWithPart,
-  rekeyEditEntityLanguage,
-  setTranslationText,
-  setTranslationTouched,
-  storedTranslationValue,
-  stringFromValues,
-  translationEntryText,
-  translationTouchedPath,
-  translationValuePath,
-} from '../entityTranslations.js';
+import { buildTranslationsForSave, rekeyEditEntityLanguage } from '../entityTranslations.js';
 
 type ValuesOverrides = {
   title?: EditEntityFormValues['title'];
@@ -64,6 +52,14 @@ const save = (form: EditEntityFormValues, properties = textPhoto, languageList =
     languages: languageList,
     currentLanguage: 'en',
   });
+const creating = (form: EditEntityFormValues, properties = textPhoto, languageList = languages) =>
+  buildTranslationsForSave({
+    values: form,
+    metadataProperties: properties,
+    languages: languageList,
+    currentLanguage: 'en',
+    createSave: true,
+  });
 const enHearing = bucket('Hearing', 'Summary', '/en.jpg');
 const esHearing = bucket('Audiencia', 'Resumen', '/es.jpg');
 describe('rekeyEditEntityLanguage', () => {
@@ -82,7 +78,10 @@ describe('rekeyEditEntityLanguage', () => {
       }),
       'es'
     );
-    expect(next.touchedTranslations).toEqual({ fr: { title: true } });
+    expect(next.touchedTranslations).toEqual({
+      en: { title: true, description: true, photo: true },
+      fr: { title: true },
+    });
   });
   it('returns the same values object when the language does not change', () => {
     const current = values();
@@ -131,6 +130,7 @@ describe('rekeyEditEntityLanguage', () => {
     expect(back.metadata.description).toEqual(entry('Summary en'));
     expect(back.metadata.photo).toEqual(entry('enPhoto'));
     expect(save(back, props)).toEqual({ es: bucket('Nuevo', 'Resumen es', 'esPhoto') });
+    expect(creating(back, props)).toEqual({ es: bucket('Nuevo', 'Resumen es', 'esPhoto') });
   });
 });
 describe('buildTranslationsForSave', () => {
@@ -215,82 +215,20 @@ describe('buildTranslationsForSave', () => {
       ])
     ).toEqual({ es: { title: entry('Audiencia'), description: entry('Summary') } });
   });
-});
-describe('setTranslationText', () => {
-  const write = (
-    translations: EditEntityFormValues['translations'],
-    propertyName: string,
-    value: string
-  ) => setTranslationText({ translations, language: 'es', propertyName, value });
-  it('writes a string property into a language bucket', () => {
-    expect(write({}, 'title', 'Audiencia')).toEqual({ es: { title: entry('Audiencia') } });
-  });
-  it('merges a property into an existing language bucket', () => {
-    expect(
-      write(
-        {
-          en: { title: entry('Hearing') },
-          es: { title: entry('Audiencia'), description: entry('Resumen') },
-        },
-        'description',
-        'Nuevo'
-      )
-    ).toEqual({
-      en: { title: entry('Hearing') },
-      es: { title: entry('Audiencia'), description: entry('Nuevo') },
+  describe('when creating an entity', () => {
+    it('omits an installed language the user never edited', () => {
+      expect(creating(values())).toBeUndefined();
+      expect(creating(values({ touchedTranslations: { es: { title: false } } }))).toBeUndefined();
     });
-  });
-});
-describe('translation readers', () => {
-  const site = link('Sitio', 'https://es.example');
-  it('drops languages that are still installing', () => {
-    expect(installedLanguageKeys(languages)).toEqual(['en', 'es']);
-  });
-  it('returns an empty string when values are missing, empty, or not a string', () => {
-    expect(stringFromValues()).toBe('');
-    expect(stringFromValues([])).toBe('');
-    expect(stringFromValues(entry(1))).toBe('');
-  });
-  it('reads the first value wrapper and ignores non-arrays and empty lists', () => {
-    expect(storedTranslationValue('Audiencia')).toBeUndefined();
-    expect(storedTranslationValue([])).toBeUndefined();
-    expect(storedTranslationValue([{}])).toBeUndefined();
-    expect(storedTranslationValue(entry('Audiencia'))).toBe('Audiencia');
-    expect(storedTranslationValue(site)).toEqual({ label: 'Sitio', url: 'https://es.example' });
-  });
-  it('returns string text, link parts, and an empty string for malformed links', () => {
-    expect(translationEntryText(entry('Audiencia'))).toBe('Audiencia');
-    expect(translationEntryText(entry(1))).toBe('');
-    expect(translationEntryText('Audiencia')).toBe('');
-    expect(translationEntryText(site, 'label')).toBe('Sitio');
-    expect(translationEntryText(site, 'url')).toBe('https://es.example');
-    expect(translationEntryText(site)).toBe('');
-    expect(
-      translationEntryText([{ value: { label: 1, url: 'https://es.example' } }], 'label')
-    ).toBe('');
-    expect(translationEntryText([{ value: { foo: 'bar' } }], 'url')).toBe('');
-  });
-  it('builds the value and touched field paths', () => {
-    expect(translationValuePath('es', 'title')).toBe('translations.es.title');
-    expect(translationTouchedPath('es', 'description')).toBe('touchedTranslations.es.description');
-  });
-  it('sets one flag without wiping other languages or properties', () => {
-    const touched = { es: { title: true }, fr: { description: true } };
-    expect(setTranslationTouched({ touched, language: 'es', propertyName: 'photo' })).toEqual({
-      es: { title: true, photo: true },
-      fr: touched.fr,
+    it('keeps a language the user edited and copies the other fields from the current language', () => {
+      expect(
+        creating(
+          values({
+            translations: { es: { title: entry('Audiencia') } },
+            touchedTranslations: { es: { title: true } },
+          })
+        )
+      ).toEqual({ es: bucket('Audiencia', 'Summary', '/en.jpg') });
     });
-  });
-});
-describe('linkValueWithPart', () => {
-  const existing = { label: 'S', url: 'http://e' };
-  const fallback = { label: 'E', url: 'http://e' };
-  const part = (linkPart: 'label' | 'url', text: string, current: unknown = existing) =>
-    linkValueWithPart({ existing: current, fallback, part: linkPart, text });
-  it('keeps the other link part, prefers an existing record, and falls back otherwise', () => {
-    expect(part('label', 'N')).toEqual({ label: 'N', url: 'http://e' });
-    expect(part('url', 'http://n')).toEqual({ label: 'S', url: 'http://n' });
-    expect(part('label', 'S', { url: 'http://e' })).toEqual({ label: 'S', url: 'http://e' });
-    expect(part('url', 'http://n', 'nope')).toEqual({ label: 'E', url: 'http://n' });
   });
 });
