@@ -20,7 +20,7 @@ const AskBertButton = ({ compact }: { compact?: boolean }) => {
     <FeatureToggle feature="aiAssistant">
       <button
         type="button"
-        className="header-bar-button flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
+        className="header-bar-button flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1 text-[0.8125rem] font-medium transition-colors"
         onClick={() => setOpen(previous => !previous)}
         aria-label={t('System', 'Ask Bert', null, false)}
         aria-keyshortcuts="Control+K"
