@@ -49,14 +49,15 @@ const signedInUser: ClientUserSchema = {
   email: 'editor@example.com',
 };
 
-const renderHeader = (compact: boolean, user?: ClientUserSchema) => {
+const renderHeader = (compact: boolean, user?: ClientUserSchema, location?: string) => {
   useCompactBar.mockReturnValue({ barRef: { current: null }, compact });
   return renderConnectedContainer(
     <TestAtomStoreProvider initialValues={user ? [[userAtom, user]] : []}>
       <Header />
     </TestAtomStoreProvider>,
     () => headerState,
-    'MemoryRouter'
+    'MemoryRouter',
+    location ? [location] : undefined
   );
 };
 
@@ -73,7 +74,7 @@ const expectCompactMenuClosed = () => {
 };
 
 const expectCompactMenuOpen = (options: HTMLElement | null) => {
-  expect(options).toContainElement(screen.getByRole('link', { name: 'Library' }));
+  expect(options).toContainElement(screen.getByRole('menuitem', { name: 'Library' }));
   expect(options).not.toContainElement(screen.getByRole('link', { name: 'Sign in' }));
   expect(screen.queryByRole('link', { name: 'Settings' })).not.toBeInTheDocument();
   expect(options).toContainElement(screen.getByRole('button', { name: 'EN' }));
@@ -97,7 +98,7 @@ describe('Header', () => {
     expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Toggle options menu' }));
     expect(optionsMenu()).not.toContainElement(library);
-    expect(optionsMenu()).toContainElement(screen.getByRole('link', { name: 'Settings' }));
+    expect(optionsMenu()).toContainElement(screen.getByRole('menuitem', { name: 'Settings' }));
   });
 
   it('shows library and sign in as chips with 14px icons on a wide bar', () => {
@@ -111,6 +112,13 @@ describe('Header', () => {
     expect(library.querySelector('svg')).toHaveAttribute('width', '14');
     expect(signIn.querySelector('svg')).toHaveAttribute('data-icon', 'log-in');
     expect(signIn.querySelector('svg')).toHaveAttribute('width', '14');
+  });
+
+  it('marks sign in when the login route is current', () => {
+    renderHeader(false, undefined, '/login');
+    expect(screen.getByRole('link', { name: 'Sign in' }).className).toContain(
+      'header-bar-button-active'
+    );
   });
 
   it('shows settings as a chip with a 14px icon when signed in', () => {

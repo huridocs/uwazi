@@ -137,7 +137,7 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
 
   if (!valid.length) return null;
 
-  const visible = hasMeasured ? valid.slice(0, visibleCount) : [];
+  const visible = hasMeasured ? valid.slice(0, visibleCount) : valid;
   const overflow = hasMeasured ? valid.slice(visibleCount) : [];
 
   return (
@@ -162,8 +162,12 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
         </span>
       </div>
 
-      {visible.map(renderLink)}
-      {overflow.length > 0 && <MoreMenu links={overflow} />}
+      <div
+        className={`flex min-w-0 flex-1 items-center gap-2${hasMeasured ? '' : ' overflow-x-auto'}`}
+      >
+        {visible.map(renderLink)}
+        {overflow.length > 0 && <MoreMenu links={overflow} />}
+      </div>
     </nav>
   );
 };

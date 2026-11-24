@@ -7,9 +7,9 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { Dropdown } from '../Dropdown.js';
 
-const renderMenu = () =>
+const renderMenu = (path = '/') =>
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[path]}>
       <Dropdown title="Reports" items={[{ title: 'Annual', url: '/annual' }]} />
     </MemoryRouter>
   );
@@ -47,5 +47,14 @@ describe('Dropdown', () => {
     await user.click(closedChip());
     expectOpenTrigger();
     expectOpenPanel();
+  });
+
+  it('marks the current page in the group menu', async () => {
+    const user = userEvent.setup();
+    renderMenu('/annual');
+    await user.click(screen.getByRole('button', { name: 'Reports' }));
+    expect(screen.getByRole('menuitem', { name: 'Annual' }).className).toContain(
+      'header-bar-panel-item-active'
+    );
   });
 });

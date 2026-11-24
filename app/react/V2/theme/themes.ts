@@ -382,9 +382,21 @@ const mergeScopedThemeAndChrome = (
   const tenantBar = tenantChrome['--color-theme-chrome-app-bar'];
   if (!tenantBar) return merged;
   const derived = headerCompanionsFromBar(tenantBar);
+  const storedFg = tenantChrome['--color-theme-chrome-app-bar-fg'];
+  const legacySingleInk =
+    storedFg !== undefined &&
+    tenantChrome['--color-theme-chrome-app-bar-fg-hover'] === undefined &&
+    normalizeHex(storedFg).toUpperCase() ===
+      normalizeHex(derived['--color-theme-chrome-app-bar-fg-hover']).toUpperCase();
   const filled = { ...merged };
   HEADER_CHROME_VAR_KEYS.forEach(key => {
-    if (key === '--color-theme-chrome-app-bar' || tenantChrome[key] !== undefined) return;
+    const replaceStoredFg = legacySingleInk && key === '--color-theme-chrome-app-bar-fg';
+    if (
+      key === '--color-theme-chrome-app-bar' ||
+      (tenantChrome[key] !== undefined && !replaceStoredFg)
+    ) {
+      return;
+    }
     filled[key] = derived[key];
   });
   return filled;

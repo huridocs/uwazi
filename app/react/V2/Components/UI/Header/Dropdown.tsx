@@ -67,6 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
               <I18NLink
                 to={item.url}
                 className={`header-bar-panel-item block px-3 py-2 text-xs font-medium transition-colors ${roundedClasses}`}
+                activeClassname="header-bar-panel-item-active"
                 onClick={() => setIsOpen(false)}
                 role="menuitem"
                 tabIndex={isOpen ? 0 : -1}

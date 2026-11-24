@@ -157,6 +157,25 @@ describe('mergeScopedThemeAndChrome', () => {
       derived['--color-theme-chrome-app-bar-separator']
     );
   });
+
+  it('splits a stored single header ink into rest and hover', () => {
+    const bar = '#242424';
+    const derived = headerCompanionsFromBar(bar);
+    const merged = mergeScopedThemeAndChrome(
+      {},
+      {
+        '--color-theme-chrome-app-bar': bar,
+        '--color-theme-chrome-app-bar-fg': derived['--color-theme-chrome-app-bar-fg-hover'],
+      },
+      appliedTheme({}, 'light', true)
+    );
+    expect(merged['--color-theme-chrome-app-bar-fg']).toBe(
+      derived['--color-theme-chrome-app-bar-fg']
+    );
+    expect(merged['--color-theme-chrome-app-bar-fg-hover']).toBe(
+      derived['--color-theme-chrome-app-bar-fg-hover']
+    );
+  });
 });
 
 describe('header color samples', () => {

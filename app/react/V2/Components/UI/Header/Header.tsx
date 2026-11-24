@@ -172,7 +172,11 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
                   <Translate>Settings</Translate>
                 </I18NLink>
               ) : (
-                <I18NLink to="/login" className={headerChipClass}>
+                <I18NLink
+                  to="/login"
+                  className={headerChipClass}
+                  activeClassname="header-bar-button-active"
+                >
                   <HeaderIcon name="log-in" />
                   <Translate>Sign in</Translate>
                 </I18NLink>

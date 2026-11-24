@@ -740,6 +740,13 @@
 .tw-content .header-bar[data-uwazi-header] button {
   color: inherit;
 }
+.tw-content:not([data-theme-preset='legacy']) .header-bar[data-uwazi-header] a,
+.tw-content:not([data-theme-preset='legacy']) .header-bar-panel a,
+.tw-content:not([data-theme-preset='legacy'])
+  nav[aria-label='Settings navigation']
+  .settings-nav-link {
+  text-decoration: none;
+}
 .tw-content .header-bar[data-uwazi-header] a svg:not(.notification-kind-icon),
 .tw-content .header-bar[data-uwazi-header] button svg:not(.notification-kind-icon) {
   color: inherit;

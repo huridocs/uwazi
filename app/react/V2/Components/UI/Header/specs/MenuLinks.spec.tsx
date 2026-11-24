@@ -3,20 +3,24 @@
  */
 import React from 'react';
 import { renderToString } from 'react-dom/server';
+import { MemoryRouter } from 'react-router';
 import { MenuLinks } from '../MenuLinks.js';
 
 describe('MenuLinks', () => {
-  it('omits links until the row has been measured', () => {
+  it('keeps links in the server markup and clips the row until it is measured', () => {
     const html = renderToString(
-      <MenuLinks
-        links={[
-          { title: 'About', url: '/about', type: 'link' },
-          { title: 'Methodology', url: '/methodology', type: 'link' },
-        ]}
-      />
+      <MemoryRouter>
+        <MenuLinks
+          links={[
+            { title: 'About', url: '/about', type: 'link' },
+            { title: 'Methodology', url: '/methodology', type: 'link' },
+          ]}
+        />
+      </MemoryRouter>
     );
     expect(html).toContain('aria-busy="true"');
-    expect(html).not.toContain('href="/about"');
-    expect(html).not.toContain('href="/methodology"');
+    expect(html).toContain('overflow-x-auto');
+    expect(html).toContain('href="/about"');
+    expect(html).toContain('href="/methodology"');
   });
 });

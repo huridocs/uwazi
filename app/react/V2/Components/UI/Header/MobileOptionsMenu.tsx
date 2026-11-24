@@ -31,25 +31,28 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
       isOpen={isOpen}
       onToggle={setIsOpen}
       align="right"
-      dropdownClassName="w-64 max-w-[calc(100vw-2rem)]"
+      dropdownClassName="flex w-64 max-w-[calc(100vw-2rem)] flex-col gap-1 p-2"
     >
       {isOpen ? (
-        <div className="flex flex-col gap-1 p-2">
+        <>
           {actions.map(action => (
-            <I18NLink
-              key={action.id}
-              to={action.to}
-              className="header-bar-panel-item block rounded-md px-3 py-2 text-xs font-medium transition-colors"
-              onClick={() => {
-                action.onClick?.();
-                close();
-              }}
-            >
-              <Translate>{action.label}</Translate>
-            </I18NLink>
+            <li key={action.id} role="none">
+              <I18NLink
+                to={action.to}
+                className="header-bar-panel-item block rounded-md px-3 py-2 text-xs font-medium transition-colors"
+                activeClassname="header-bar-panel-item-active"
+                onClick={() => {
+                  action.onClick?.();
+                  close();
+                }}
+                role="menuitem"
+              >
+                <Translate>{action.label}</Translate>
+              </I18NLink>
+            </li>
           ))}
-          {children}
-        </div>
+          {children ? <li role="none">{children}</li> : null}
+        </>
       ) : null}
     </BaseDropdown>
   );

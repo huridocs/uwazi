@@ -33,7 +33,13 @@ const renderLinkItem = (item: DropdownItem, onNavigate: () => void, indented = f
       {item.title}
     </a>
   ) : (
-    <I18NLink to={item.url} className={className} role="menuitem" onClick={onNavigate}>
+    <I18NLink
+      to={item.url}
+      className={className}
+      activeClassname="header-bar-panel-item-active"
+      role="menuitem"
+      onClick={onNavigate}
+    >
       {item.title}
     </I18NLink>
   );
