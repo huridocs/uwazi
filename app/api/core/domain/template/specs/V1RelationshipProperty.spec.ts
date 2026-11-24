@@ -1,5 +1,6 @@
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('V1RelationshipProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -132,6 +133,39 @@ describe('V1RelationshipProperty', () => {
     );
 
     expect(() => relationship.ensurePropertyIsConsistent(relationship)).not.toThrow();
+  });
+
+  describe('conflictsWith()', () => {
+    const build = (inherit?: { type: 'text' | 'date'; property: string }) =>
+      V1RelationshipProperty.create({
+        id: '',
+        label: 'label',
+        template: '',
+        content: 'content',
+        relationType: 'relationType',
+        inherit,
+      });
+
+    it('should report an inheritType conflict when inherited types differ', () => {
+      const relationship = build({ type: 'text', property: 'prop' });
+      const other = build({ type: 'date', property: 'prop' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['inheritType']);
+    });
+
+    it('should report no conflicts when inherited types match', () => {
+      const relationship = build({ type: 'text', property: 'prop' });
+      const other = build({ type: 'text', property: 'other_prop' });
+
+      expect(relationship.conflictsWith(other)).toEqual([]);
+    });
+
+    it('should report only a type conflict against a same-name non-relationship property', () => {
+      const relationship = build({ type: 'text', property: 'prop' });
+      const text = new TextProperty({ id: '', label: 'label', template: '' });
+
+      expect(relationship.conflictsWith(text)).toEqual(['type']);
+    });
   });
 
   describe('createPropertyAssignment()', () => {

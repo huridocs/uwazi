@@ -32,6 +32,7 @@
       "#activitylog/composition": ["./packages/activitylog/composition.ts"],
       "#usage": ["./packages/usage/index.ts"],
       "#usage/composition": ["./packages/usage/composition.ts"],
+      "#templates": ["./packages/templates/index.ts"],
       "#api-client": ["./packages/api-client/index.ts"],
       "#api-client/server": ["./packages/api-client/server.ts"],
       "#UI": ["./app/react/UI"],

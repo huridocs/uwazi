@@ -80,6 +80,7 @@ module.exports = production => {
         // Client bundles get the throwing stub: server-only code must never ship to the browser.
         '#api-client/server$': path.join(rootPath, 'packages/api-client/server.browser'),
         '#api-client$': path.join(rootPath, 'packages/api-client/index'),
+        '#templates$': path.join(rootPath, 'packages/templates/index'),
       },
     },
     resolveLoader: {
@@ -105,8 +106,12 @@ module.exports = production => {
       rules: [
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          // packages/api-client: its public entry (`#api-client`) is isomorphic.
-          include: [path.join(rootPath, 'app'), path.join(rootPath, 'packages/api-client')],
+          // packages/api-client and packages/templates: their public entries are isomorphic.
+          include: [
+            path.join(rootPath, 'app'),
+            path.join(rootPath, 'packages/api-client'),
+            path.join(rootPath, 'packages/templates'),
+          ],
           exclude: /node_modules/,
           use: [
             {
