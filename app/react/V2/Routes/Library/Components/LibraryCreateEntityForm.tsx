@@ -29,7 +29,8 @@ const createPdfFill = (language: string) => ({
 });
 
 const LibraryCreateEntityForm = ({ onClose, create }: LibraryCreateEntityFormProps) => {
-  const { entity, form, formId, mediaUpload, saving, saveError, editErrors, onSave } = create;
+  const { entity, form, formId, mediaUpload, saving, created, saveError, editErrors, onSave } =
+    create;
   const {
     isEditing,
     isDirty,
@@ -118,7 +119,12 @@ const LibraryCreateEntityForm = ({ onClose, create }: LibraryCreateEntityFormPro
                   <LibraryFooterButton onClick={requestClose} disabled={saving}>
                     <Translate>Cancel</Translate>
                   </LibraryFooterButton>
-                  <Button type="submit" variant="success" form={formId} disabled={saving}>
+                  <Button
+                    type="submit"
+                    variant="success"
+                    form={formId}
+                    disabled={saving || created}
+                  >
                     <Translate>Save</Translate>
                   </Button>
                 </div>

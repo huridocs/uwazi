@@ -48,11 +48,11 @@ const requestFieldTranslation = async ({
   if (error?.kind === 'cancelled' || error?.kind === 'timeout' || error?.kind === 'network') {
     return '';
   }
-  if (error || !text) {
+  if (error) {
     onUnavailable();
     return '';
   }
-  return prependAiTranslated(text);
+  return text ? prependAiTranslated(text) : '';
 };
 
 const useWatchedTranslationValues = ({
