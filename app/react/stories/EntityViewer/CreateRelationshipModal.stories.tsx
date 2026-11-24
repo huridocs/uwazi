@@ -41,9 +41,10 @@ const ModalOpener = ({ selection }: { selection?: TextSelection }) => {
   );
 };
 
-const RelationTypeStepPreview = () => {
+const RelationTypeStepPreview = ({ saveError = false }: { saveError?: boolean }) => {
   const types = useAtomValue(relationshipTypesAtom);
   const [selected, setSelected] = useState<string>();
+  const selectedType = selected ?? (saveError ? types[0]?._id : undefined);
   return (
     <Modal size="lg" ariaLabel="Choose relation type">
       <CreateRelationshipModalHeader
@@ -56,8 +57,9 @@ const RelationTypeStepPreview = () => {
         selectedEntity={apiEntity}
         selectedFile={undefined}
         relationshipTypes={types}
-        selectedRelationshipType={selected}
+        selectedRelationshipType={selectedType}
         isSaving={false}
+        saveError={saveError}
         onBack={() => undefined}
         onRelationshipTypeSelect={setSelected}
         onContinueToTargetText={() => undefined}
@@ -134,6 +136,14 @@ const ChooseRelationType = meta.story({
   ),
 });
 
+const ChooseRelationTypeSaveError = meta.story({
+  render: () => (
+    <RelationshipsStoryShell locale="en" user={adminUser}>
+      <RelationTypeStepPreview saveError />
+    </RelationshipsStoryShell>
+  ),
+});
+
 const ChooseRelationTypeEmpty = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" relationshipTypes={[]} user={adminUser}>
@@ -148,5 +158,6 @@ export {
   EmptyTypes,
   EmptyTypesEditor,
   ChooseRelationType,
+  ChooseRelationTypeSaveError,
   ChooseRelationTypeEmpty,
 };

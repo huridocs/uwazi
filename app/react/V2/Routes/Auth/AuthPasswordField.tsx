@@ -1,7 +1,7 @@
 import React, { ReactNode, useId, useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
-import { INPUT, LABEL } from './authStyles.js';
+import { LABEL, inputClass } from './authStyles.js';
 
 const AuthPasswordField = ({
   label,
@@ -47,7 +47,7 @@ const AuthPasswordField = ({
           disabled={disabled}
           aria-invalid={invalid || undefined}
           aria-describedby={invalid ? describedBy : undefined}
-          className={`${INPUT} pe-10`}
+          className={`${inputClass(invalid)} pe-10`}
         />
         <button
           type="button"

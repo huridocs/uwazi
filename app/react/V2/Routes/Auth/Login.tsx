@@ -1,9 +1,10 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import {
-  INPUT,
   LABEL,
   TEXT_LINK,
+  inputClass,
+  showsControlError,
   AuthHeading,
   AuthLayout,
   AuthMessage,
@@ -14,6 +15,11 @@ import { useLoginForm } from './useLoginForm.js';
 
 const Login = () => {
   const { state, dispatch, refs, settings, actions, showCookieNote } = useLoginForm();
+  const anyFieldInvalid = Boolean(
+    state.invalid.identifier || state.invalid.password || state.invalid.token || state.invalid.email
+  );
+  const controlError = (field?: boolean) =>
+    showsControlError(field, state.message?.tone, anyFieldInvalid);
 
   return (
     <AuthLayout component="LoginView">
@@ -45,9 +51,9 @@ const Login = () => {
               value={state.identifier}
               onChange={event => dispatch({ type: 'identifier', value: event.target.value })}
               disabled={state.pending}
-              aria-invalid={state.invalid.identifier || undefined}
-              aria-describedby={state.invalid.identifier ? refs.messageId : undefined}
-              className={INPUT}
+              aria-invalid={controlError(state.invalid.identifier) || undefined}
+              aria-describedby={controlError(state.invalid.identifier) ? refs.messageId : undefined}
+              className={inputClass(controlError(state.invalid.identifier))}
             />
           </div>
           <div className="mt-4">
@@ -59,7 +65,7 @@ const Login = () => {
               value={state.password}
               onChange={value => dispatch({ type: 'password', value })}
               disabled={state.pending}
-              invalid={state.invalid.password}
+              invalid={controlError(state.invalid.password)}
               describedBy={refs.messageId}
             />
           </div>
@@ -125,9 +131,9 @@ const Login = () => {
               value={state.token}
               onChange={event => dispatch({ type: 'token', value: event.target.value })}
               disabled={state.pending}
-              aria-invalid={state.invalid.token || undefined}
-              aria-describedby={state.invalid.token ? refs.messageId : undefined}
-              className={`${INPUT} font-mono tracking-[0.3em]`}
+              aria-invalid={controlError(state.invalid.token) || undefined}
+              aria-describedby={controlError(state.invalid.token) ? refs.messageId : undefined}
+              className={`${inputClass(controlError(state.invalid.token))} font-mono tracking-[0.3em]`}
             />
           </div>
           <AuthMessage id={refs.messageId} message={state.message} />
@@ -176,9 +182,9 @@ const Login = () => {
               value={state.email}
               onChange={event => dispatch({ type: 'email', value: event.target.value })}
               disabled={state.pending}
-              aria-invalid={state.invalid.email || undefined}
-              aria-describedby={state.invalid.email ? refs.messageId : undefined}
-              className={INPUT}
+              aria-invalid={controlError(state.invalid.email) || undefined}
+              aria-describedby={controlError(state.invalid.email) ? refs.messageId : undefined}
+              className={inputClass(controlError(state.invalid.email))}
             />
           </div>
           <AuthMessage id={refs.messageId} message={state.message} />
