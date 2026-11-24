@@ -16,7 +16,9 @@ const sameHex = (left: string | undefined, right: string | undefined) =>
   normalizeHex(left).toUpperCase() === normalizeHex(right).toUpperCase();
 
 const inkFor = (background: string) =>
-  headerCompanionsFromBar(background)['--color-theme-chrome-app-bar-fg'];
+  checkContrast(background, '#1A1A1A').ratio >= checkContrast(background, '#FFFFFF').ratio
+    ? '#1A1A1A'
+    : '#FFFFFF';
 
 const contrastRatio = (swatch: string, against: string, swatchIsBackground: boolean) =>
   checkContrast(swatchIsBackground ? swatch : against, swatchIsBackground ? against : swatch).ratio;
