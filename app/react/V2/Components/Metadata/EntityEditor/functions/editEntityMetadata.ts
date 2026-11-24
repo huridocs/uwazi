@@ -96,6 +96,7 @@ const buildEditEntitySaveInput = ({
     metadataProperties,
     languages,
     currentLanguage,
+    createSave: !entity?.sharedId,
   });
   const saved: EntitySaveInput = {
     ...(entity ?? {}),

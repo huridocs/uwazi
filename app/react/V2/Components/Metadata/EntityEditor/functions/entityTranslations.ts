@@ -199,27 +199,33 @@ const buildTranslationsForSave = ({
   metadataProperties,
   languages,
   currentLanguage,
+  createSave = false,
 }: {
   values: EditEntityFormValues;
   metadataProperties: FormMetadataProperty[];
   languages: LanguagesListSchema;
   currentLanguage: string;
+  createSave?: boolean;
 }): EntityTranslationsDTO | undefined => {
   const keys = installedLanguageKeys(languages);
   if (keys.length < 2) return undefined;
   const fallback = bucketFromCurrent(values, metadataProperties);
+  const translated = keys.filter(
+    key =>
+      key !== currentLanguage &&
+      (!createSave || Object.values(values.touchedTranslations?.[key] ?? {}).some(Boolean))
+  );
+  if (translated.length === 0) return undefined;
   return Object.fromEntries(
-    keys
-      .filter(key => key !== currentLanguage)
-      .map(key => [
-        key,
-        completeLanguageBucket({
-          bucket: values.translations?.[key] ?? {},
-          fallback,
-          metadataProperties,
-          touched: values.touchedTranslations?.[key] ?? {},
-        }),
-      ])
+    translated.map(key => [
+      key,
+      completeLanguageBucket({
+        bucket: values.translations?.[key] ?? {},
+        fallback,
+        metadataProperties,
+        touched: values.touchedTranslations?.[key] ?? {},
+      }),
+    ])
   );
 };
 
