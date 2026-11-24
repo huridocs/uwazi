@@ -12,6 +12,7 @@ import {
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import { libraryHitFromEntity } from './libraryCreatedRows.js';
 import { blankLibraryEntity, defaultLibraryTemplateId } from './libraryCreateEntity.js';
 import {
   finishNewEntity,
@@ -21,6 +22,8 @@ import {
 
 const CREATE_FORM_ID = 'library-create-entity-form';
 
+type NotedEntity = (sharedId: string, row?: LibrarySearchHit) => void;
+
 const clearRejectedCreate = (
   session: { accepted: boolean; active: boolean },
   setSaving: (saving: boolean) => void
@@ -29,12 +32,19 @@ const clearRejectedCreate = (
   if (session.active) setSaving(false);
 };
 
-const keepCreatedForm = (
-  session: { active: boolean },
-  setCreated: (created: boolean) => void,
-  setSaving: (saving: boolean) => void
-) => {
+const keepCreatedForm = ({
+  session,
+  form,
+  setCreated,
+  setSaving,
+}: {
+  session: { active: boolean };
+  form: ReturnType<typeof useForm<EditEntityFormValues>>;
+  setCreated: (created: boolean) => void;
+  setSaving: (saving: boolean) => void;
+}) => {
   if (!session.active) return false;
+  form.reset(form.getValues());
   setCreated(true);
   setSaving(false);
   return true;
@@ -54,7 +64,7 @@ const useLibraryCreateEntityForm = () => {
   return { templates, entity, form, mediaUpload };
 };
 
-const useLibraryCreateEntity = (onCreated: (sharedId: string, row?: LibrarySearchHit) => void) => {
+const useLibraryCreateEntity = (onCreated: NotedEntity, onNoted: NotedEntity = () => undefined) => {
   const { entities } = useServices();
   const settings = useAtomValue(settingsAtom);
   const { templates, entity, form, mediaUpload } = useLibraryCreateEntityForm();
@@ -80,7 +90,8 @@ const useLibraryCreateEntity = (onCreated: (sharedId: string, row?: LibrarySearc
       setSaveError,
     });
     if (!saved) return clearRejectedCreate(current, setSaving);
-    if (!keepCreatedForm(current, setCreated, setSaving)) return;
+    onNoted(saved.sharedId, libraryHitFromEntity(saved));
+    if (!keepCreatedForm({ session: current, form, setCreated, setSaving })) return;
     await finishNewEntity({
       saved,
       input,

@@ -42,6 +42,8 @@ const installedLanguages = [
 const renderCreate = async (getBySharedId: jest.Mock = jest.fn()) => {
   const upsert = jest.fn().mockResolvedValue([savedEntity('Paella'), undefined]);
   const onCreated = jest.fn();
+  const onNoted = jest.fn();
+  const onClose = jest.fn();
   const view = render(
     <ServicesProvider value={createTestServices({ entities: { upsert, getBySharedId } })}>
       <TestAtomStoreProvider
@@ -54,13 +56,13 @@ const renderCreate = async (getBySharedId: jest.Mock = jest.fn()) => {
         ]}
       >
         <TestRouterContext>
-          <LibraryCreateEntityPanel onClose={jest.fn()} onCreated={onCreated} />
+          <LibraryCreateEntityPanel onClose={onClose} onCreated={onCreated} onNoted={onNoted} />
         </TestRouterContext>
       </TestAtomStoreProvider>
     </ServicesProvider>
   );
   expect(await screen.findByTestId('library-create-entity')).toBeInTheDocument();
-  return { upsert, onCreated, view, getBySharedId };
+  return { upsert, onCreated, onNoted, onClose, view, getBySharedId };
 };
 
 const savePaella = async () => {
@@ -83,7 +85,26 @@ const expectWaiting = (getBySharedId: jest.Mock, onCreated: jest.Mock) => {
   expect(getBySharedId).not.toHaveBeenCalled();
 };
 
-const expectCreated = (onCreated: jest.Mock) => {
+const expectNoted = (onNoted: jest.Mock) => {
+  expect(onNoted).toHaveBeenCalledTimes(1);
+  expect(onNoted).toHaveBeenCalledWith(
+    'created-1',
+    expect.objectContaining({ sharedId: 'created-1', title: 'Paella' })
+  );
+};
+
+const expectLeftClosed = (
+  reads: jest.Mock,
+  notes: { onCreated: jest.Mock; onNoted: jest.Mock }
+) => {
+  expect(reads).toHaveBeenCalledTimes(1);
+  expect(notes.onCreated).not.toHaveBeenCalled();
+  expectNoted(notes.onNoted);
+  expect(screen.queryByTestId('library-create-entity')).not.toBeInTheDocument();
+};
+
+const expectCreated = (onCreated: jest.Mock, onNoted: jest.Mock) => {
+  expectNoted(onNoted);
   expect(onCreated).toHaveBeenCalledTimes(1);
   expect(onCreated).toHaveBeenCalledWith(
     'created-1',
@@ -101,15 +122,20 @@ const expectSaveLocked = (upsert: jest.Mock, onCreated: jest.Mock) => {
   expect(onCreated).not.toHaveBeenCalled();
 };
 
-const expectPanelHeld = (getBySharedId: jest.Mock, onCreated: jest.Mock, upsert: jest.Mock) => {
+const expectPanelHeld = (
+  getBySharedId: jest.Mock,
+  notes: { onCreated: jest.Mock; onNoted: jest.Mock },
+  upsert: jest.Mock
+) => {
   expect(getBySharedId).toHaveBeenCalledTimes(3);
-  expect(onCreated).not.toHaveBeenCalled();
+  expect(notes.onCreated).not.toHaveBeenCalled();
+  expectNoted(notes.onNoted);
   expect(screen.getByTestId('library-create-entity')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
   expect(upsert).toHaveBeenCalledTimes(1);
 };
 
-const expectPendingTitle = (getBySharedId: jest.Mock, onCreated: jest.Mock) => {
+const expectPendingTitle = (getBySharedId: jest.Mock, onCreated: jest.Mock, onNoted: jest.Mock) => {
   expect(getBySharedId).toHaveBeenCalledTimes(2);
   expect(getBySharedId).toHaveBeenCalledWith('created-1', {
     language: 'en',
@@ -121,6 +147,7 @@ const expectPendingTitle = (getBySharedId: jest.Mock, onCreated: jest.Mock) => {
   expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled();
   expect(onCreated).not.toHaveBeenCalled();
+  expectNoted(onNoted);
   expect(screen.getByTestId('library-create-entity')).toBeInTheDocument();
 };
 
@@ -150,43 +177,44 @@ describe('Library create pending translations', () => {
       .fn()
       .mockResolvedValueOnce([[translatedRow('')]])
       .mockResolvedValueOnce([[translatedRow('(AI translation pending) Hola')]]);
-    const { onCreated, upsert } = await renderCreate(getBySharedId);
+    const { onCreated, onNoted, upsert } = await renderCreate(getBySharedId);
     await savePaella();
     expectWaiting(getBySharedId, onCreated);
     await advance(1000);
     expect(getBySharedId).toHaveBeenCalledTimes(1);
     await advance(1000);
-    expectPendingTitle(getBySharedId, onCreated);
+    expectPendingTitle(getBySharedId, onCreated, onNoted);
     expectSaveLocked(upsert, onCreated);
   });
 
   it('closes after three reads that are still empty', async () => {
     const getBySharedId = jest.fn(async () => [[savedEntity('Paella')]]);
-    const { onCreated } = await renderCreate(getBySharedId);
+    const { onCreated, onNoted } = await renderCreate(getBySharedId);
     await savePaella();
     expectWaiting(getBySharedId, onCreated);
     await advance(1000);
     await advance(1000);
     await advance(1000);
     expect(getBySharedId).toHaveBeenCalledTimes(3);
-    expectCreated(onCreated);
+    expectCreated(onCreated, onNoted);
   });
 
   it('stays closed when the form is closed before the next read', async () => {
     const getBySharedId = jest.fn(async () => [[translatedRow('(AI translation pending) Late')]]);
-    const { onCreated, view } = await renderCreate(getBySharedId);
+    const { onCreated, onNoted, view } = await renderCreate(getBySharedId);
     await savePaella();
     expectWaiting(getBySharedId, onCreated);
     view.unmount();
     await advance(3000);
     expect(getBySharedId).not.toHaveBeenCalled();
     expect(onCreated).not.toHaveBeenCalled();
+    expectNoted(onNoted);
     expect(screen.queryByTestId('library-create-entity')).not.toBeInTheDocument();
   });
 
   it('does not read again when a fetch finishes after the form is left', async () => {
     const read = deferredRead();
-    const { onCreated, view } = await renderCreate(read.getBySharedId);
+    const { onCreated, onNoted, view } = await renderCreate(read.getBySharedId);
     await savePaella();
     await advance(1000);
     expect(read.getBySharedId).toHaveBeenCalledTimes(1);
@@ -195,26 +223,38 @@ describe('Library create pending translations', () => {
       read.finish();
       await jest.advanceTimersByTimeAsync(3000);
     });
-    expect(read.getBySharedId).toHaveBeenCalledTimes(1);
-    expect(onCreated).not.toHaveBeenCalled();
-    expect(screen.queryByTestId('library-create-entity')).not.toBeInTheDocument();
+    expectLeftClosed(read.getBySharedId, { onCreated, onNoted });
+  });
+
+  it('closes when a failed read is followed by empty reads', async () => {
+    const getBySharedId = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockResolvedValue([[savedEntity('Paella')]]);
+    const { onCreated, onNoted } = await renderCreate(getBySharedId);
+    await savePaella();
+    await advance(1000);
+    await advance(1000);
+    await advance(1000);
+    expect(getBySharedId).toHaveBeenCalledTimes(3);
+    expectCreated(onCreated, onNoted);
   });
 
   it('stays open when the translation reads fail', async () => {
     const getBySharedId = jest.fn(async () => {
       throw new Error('offline');
     });
-    const { upsert, onCreated } = await renderCreate(getBySharedId);
+    const { upsert, onCreated, onNoted } = await renderCreate(getBySharedId);
     await savePaella();
     await advance(1000);
     await advance(1000);
     await advance(1000);
-    expectPanelHeld(getBySharedId, onCreated, upsert);
+    expectPanelHeld(getBySharedId, { onCreated, onNoted }, upsert);
   });
 
   it('closes immediately when the create already sent every other language', async () => {
     const getBySharedId = jest.fn();
-    const { upsert, onCreated } = await renderCreate(getBySharedId);
+    const { upsert, onCreated, onNoted } = await renderCreate(getBySharedId);
     fireEvent.change(screen.getByLabelText(/Title/), { target: { value: 'Paella' } });
     openLanguages();
     fireEvent.change(screen.getByLabelText('Español title'), { target: { value: 'Hola' } });
@@ -222,8 +262,21 @@ describe('Library create pending translations', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => {
       expect(onCreated).toHaveBeenCalledTimes(1);
+      expectNoted(onNoted);
     });
     expect(getBySharedId).not.toHaveBeenCalled();
     expect(upsert.mock.calls[0][0].translations.es.title).toEqual([{ value: 'Hola' }]);
+  });
+
+  it('closes a saved entity without asking to discard changes', async () => {
+    const getBySharedId = jest
+      .fn()
+      .mockResolvedValue([[translatedRow('(AI translation pending) Hola')]]);
+    const { onClose } = await renderCreate(getBySharedId);
+    await savePaella();
+    await advance(1000);
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByText(/Discard changes/)).not.toBeInTheDocument();
+    expect(onClose).toHaveBeenCalled();
   });
 });

@@ -4,6 +4,7 @@ import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { metadataFormKey, type FormMetadataProperty } from './formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './toMetadataObjectSchema.js';
+import { parkCurrentLanguage } from './entityLanguagePark.js';
 
 const TRANSLATABLE_METADATA_TYPES = new Set([
   'text',
@@ -109,23 +110,23 @@ const rekeyEditEntityLanguage = ({
   metadataProperties: FormMetadataProperty[];
 }): EditEntityFormValues => {
   if (fromLanguage === toLanguage) return values;
-  const toBucket = values.translations?.[toLanguage] ?? {};
-  const nextTranslations = { ...(values.translations ?? {}) };
-  delete nextTranslations[toLanguage];
-  nextTranslations[fromLanguage] = bucketFromCurrent(values, metadataProperties);
-  const nextTouched = { ...(values.touchedTranslations ?? {}) };
-  delete nextTouched[toLanguage];
+  const parked = parkCurrentLanguage({
+    values,
+    fromLanguage,
+    toLanguage,
+    parkedBucket: bucketFromCurrent(values, metadataProperties),
+  });
   const nextMetadata = { ...values.metadata };
   translatableProperties(metadataProperties).forEach(property => {
     const formKey = metadataFormKey(property.name);
-    nextMetadata[formKey] = toFormMetadataValues(toBucket[formKey]);
+    nextMetadata[formKey] = toFormMetadataValues(parked.toBucket[formKey]);
   });
   return {
     ...values,
-    title: stringFromValues(toBucket.title),
+    title: stringFromValues(parked.toBucket.title),
     metadata: nextMetadata,
-    translations: nextTranslations,
-    touchedTranslations: nextTouched,
+    translations: parked.translations,
+    touchedTranslations: parked.touchedTranslations,
   };
 };
 

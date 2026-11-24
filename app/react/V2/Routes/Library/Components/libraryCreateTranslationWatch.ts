@@ -137,20 +137,20 @@ const nextTranslationRows = async (ctx: WatchContext) => {
 
 const takeTranslationRead = async (
   attempt: number,
-  failures: number,
+  lastFailed: boolean,
   ctx: WatchContext
 ): Promise<'empty' | 'found' | 'left' | 'unavailable'> => {
   if (!stillWatching(ctx.session, ctx.token)) return 'left';
-  if (attempt >= CREATE_TRANSLATION_READS) return failures > 0 ? 'unavailable' : 'empty';
+  if (attempt >= CREATE_TRANSLATION_READS) return lastFailed ? 'unavailable' : 'empty';
   const rows = await nextTranslationRows(ctx);
   if (!stillWatching(ctx.session, ctx.token)) return 'left';
-  if (rows === 'error') return takeTranslationRead(attempt + 1, failures + 1, ctx);
+  if (rows === 'error') return takeTranslationRead(attempt + 1, true, ctx);
   const read = readCreatedTranslations(rows, ctx.omitted, ctx.saved.language);
   if (read.status === 'found') {
     applyFoundTranslations(ctx, read.translations);
     return 'found';
   }
-  return takeTranslationRead(attempt + 1, failures, ctx);
+  return takeTranslationRead(attempt + 1, false, ctx);
 };
 
 const requestNewEntity = async ({
@@ -218,7 +218,7 @@ const finishNewEntity = async ({
   const { token } = session;
   releaseWaits(session.waits);
   if (omitted.length === 0) return publishCreate(session, saved);
-  const outcome = await takeTranslationRead(0, 0, {
+  const outcome = await takeTranslationRead(0, false, {
     session,
     token,
     saved,

@@ -8,10 +8,15 @@ import { useLibraryCreateEntity } from './useLibraryCreateEntity.js';
 type LibraryCreateEntityPanelProps = {
   onClose: () => void;
   onCreated: (sharedId: string, row?: LibrarySearchHit) => void;
+  onNoted?: (sharedId: string, row?: LibrarySearchHit) => void;
 };
 
-const LibraryCreateEntityPanel = ({ onClose, onCreated }: LibraryCreateEntityPanelProps) => {
-  const create = useLibraryCreateEntity(onCreated);
+const LibraryCreateEntityPanel = ({
+  onClose,
+  onCreated,
+  onNoted,
+}: LibraryCreateEntityPanelProps) => {
+  const create = useLibraryCreateEntity(onCreated, onNoted);
 
   return (
     <EntityProvider entity={create.entity}>

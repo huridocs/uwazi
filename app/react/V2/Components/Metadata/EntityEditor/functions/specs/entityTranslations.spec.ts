@@ -78,7 +78,10 @@ describe('rekeyEditEntityLanguage', () => {
       }),
       'es'
     );
-    expect(next.touchedTranslations).toEqual({ fr: { title: true } });
+    expect(next.touchedTranslations).toEqual({
+      en: { title: true, description: true, photo: true },
+      fr: { title: true },
+    });
   });
   it('returns the same values object when the language does not change', () => {
     const current = values();
@@ -127,6 +130,7 @@ describe('rekeyEditEntityLanguage', () => {
     expect(back.metadata.description).toEqual(entry('Summary en'));
     expect(back.metadata.photo).toEqual(entry('enPhoto'));
     expect(save(back, props)).toEqual({ es: bucket('Nuevo', 'Resumen es', 'esPhoto') });
+    expect(creating(back, props)).toEqual({ es: bucket('Nuevo', 'Resumen es', 'esPhoto') });
   });
 });
 describe('buildTranslationsForSave', () => {
