@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { bucketIsFinished } from './libraryCreatePendingTranslations.js';
 import {
   libraryEntityRevisionAtom,
   localeAtom,
@@ -57,16 +58,6 @@ const loadPreviewEntity = async (
     return { error: true };
   }
 };
-
-const bucketIsFinished = (bucket: EntityTranslationsDTO[string]) =>
-  Object.values(bucket).some(entries =>
-    entries.some(
-      entry =>
-        typeof entry.value === 'string' &&
-        entry.value.length > 0 &&
-        !entry.value.startsWith('(AI translation pending)')
-    )
-  );
 
 const withRecordedTranslations = (
   entity: Entity | undefined,

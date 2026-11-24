@@ -23,14 +23,19 @@ const isLinkValue = (value: unknown): value is { label?: unknown; url?: unknown 
   !Array.isArray(value) &&
   ('label' in value || 'url' in value);
 
-const entryHasText = (entry: MetadataObjectSchema) => {
-  if (typeof entry.value === 'string') return entry.value.length > 0;
-  if (!isLinkValue(entry.value)) return false;
-  const { label, url } = entry.value;
-  return (
-    (typeof label === 'string' && label.length > 0) || (typeof url === 'string' && url.length > 0)
-  );
+const textParts = (value: unknown) => {
+  if (typeof value === 'string') return [value];
+  if (!isLinkValue(value)) return [];
+  return [value.label, value.url].filter((part): part is string => typeof part === 'string');
 };
+
+const entryHasText = (entry: MetadataObjectSchema) =>
+  textParts(entry.value).some(part => part.length > 0);
+
+const entryIsFinished = (entry: MetadataObjectSchema) =>
+  textParts(entry.value).some(
+    part => part.length > 0 && !part.startsWith('(AI translation pending)')
+  );
 
 const sourceText = (row: TranslationRow, property: string) => {
   if (property === 'title') return row.title;
@@ -71,4 +76,7 @@ const readCreatedTranslations = (
     : { status: 'empty' };
 };
 
-export { createOmittedLanguages, readCreatedTranslations };
+const bucketIsFinished = (bucket: EntityTranslationsDTO[string]) =>
+  Object.values(bucket).some(entries => entries.some(entryIsFinished));
+
+export { bucketIsFinished, createOmittedLanguages, readCreatedTranslations };

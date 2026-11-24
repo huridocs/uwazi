@@ -7,7 +7,11 @@ import { useSetAtom } from 'jotai';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
-import { libraryEntityRevisionAtom, localeAtom } from '#V2/atoms/index.js';
+import {
+  libraryEntityRevisionAtom,
+  localeAtom,
+  type LibraryEntityRevision,
+} from '#V2/atoms/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { useLibraryPreviewEntity } from '../useLibraryPreviewEntity.js';
 
@@ -36,8 +40,11 @@ const pendingSpanish = {
 };
 
 const spanishTitle = (entity: Entity) => {
-  const value = entity.translations?.es?.title?.[0]?.value;
-  return typeof value === 'string' ? value : '';
+  const title = entity.translations?.es?.title?.[0]?.value;
+  if (typeof title === 'string' && title.length > 0) return title;
+  const link = entity.translations?.es?.link?.[0]?.value;
+  if (typeof link !== 'object' || link === null || !('label' in link)) return '';
+  return typeof link.label === 'string' ? link.label : '';
 };
 
 const PreviewProbe = () => {
@@ -71,7 +78,7 @@ describe('useLibraryPreviewEntity', () => {
     getBySharedId = jest.fn().mockResolvedValue([[entityWithoutFile]]);
   });
 
-  const renderHookView = (recorded?: typeof pendingSpanish) =>
+  const renderHookView = (recorded?: LibraryEntityRevision) =>
     render(
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
         <TestAtomStoreProvider
@@ -145,6 +152,38 @@ describe('useLibraryPreviewEntity', () => {
     });
     await waitFor(() => {
       expect(screen.getByTestId('es-title')).toHaveTextContent('Hola');
+    });
+  });
+
+  it('shows a finished link from a reload instead of the recorded pending link', async () => {
+    const pendingLink = {
+      sharedId,
+      translations: {
+        es: { link: [{ value: { label: '(AI translation pending) Docs', url: '' } }] },
+      },
+    };
+    getBySharedId.mockResolvedValue([
+      [{ ...entityWithoutFile, translations: pendingLink.translations }],
+    ]);
+    renderHookView(pendingLink);
+    expect(await screen.findByTestId('es-title')).toHaveTextContent(
+      '(AI translation pending) Docs'
+    );
+    getBySharedId.mockResolvedValue([
+      [
+        {
+          ...entityWithoutFile,
+          translations: {
+            es: { link: [{ value: { label: 'Documentos', url: 'https://example.test' } }] },
+          },
+        },
+      ],
+    ]);
+    await act(async () => {
+      screen.getByRole('button', { name: 'Reload' }).click();
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('es-title')).toHaveTextContent('Documentos');
     });
   });
 
