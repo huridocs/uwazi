@@ -15,6 +15,7 @@ type ModalState = ReturnType<typeof useCreateRelationshipModalState>;
 type CreateRelationshipModalBodyProps = {
   state: ModalState;
   isSaving: boolean;
+  saveError: boolean;
   templates: Template[];
   relationshipTypes: ClientRelationshipType[];
   selectionPreview?: string;
@@ -25,7 +26,7 @@ type CreateRelationshipModalBodyProps = {
 };
 
 const CreateRelationshipModalBody = (props: CreateRelationshipModalBodyProps) => {
-  const { state, isSaving, templates, relationshipTypes, selectionPreview } = props;
+  const { state, isSaving, saveError, templates, relationshipTypes, selectionPreview } = props;
   const { onClose, onConfirmNewEntity, onCreate, onRelationBack } = props;
   const {
     step,
@@ -108,6 +109,7 @@ const CreateRelationshipModalBody = (props: CreateRelationshipModalBodyProps) =>
           relationshipTypes={relationshipTypes}
           selectedRelationshipType={selectedRelationshipType}
           isSaving={isSaving}
+          saveError={saveError}
           onBack={onRelationBack}
           onRelationshipTypeSelect={handleRelationshipTypeSelect}
           onContinueToTargetText={handleContinueToTargetText}
@@ -121,6 +123,7 @@ const CreateRelationshipModalBody = (props: CreateRelationshipModalBodyProps) =>
           selectedRelationshipType={selectedRelationshipType}
           targetSelection={targetSelection}
           isSaving={isSaving}
+          saveError={saveError}
           onBack={() => setStep('relation')}
           onCreate={onCreate}
           onTargetPdfSelect={handleTargetPdfSelect}

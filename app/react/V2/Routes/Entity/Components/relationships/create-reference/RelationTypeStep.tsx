@@ -9,7 +9,7 @@ import { userAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { PlusStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { Button, Modal } from '#V2/Components/UI/index.js';
+import { AlertBanner, Button, Modal } from '#V2/Components/UI/index.js';
 import { checkRole } from '#V2/Components/UI/NeedAuthorization.js';
 
 type RelationTypeStepProps = {
@@ -18,6 +18,7 @@ type RelationTypeStepProps = {
   relationshipTypes: ClientRelationshipType[];
   selectedRelationshipType: string | undefined;
   isSaving: boolean;
+  saveError: boolean;
   onBack: () => void;
   onRelationshipTypeSelect: (relationshipTypeId: string) => void;
   onContinueToTargetText: () => void;
@@ -33,6 +34,7 @@ const RelationTypeStep = ({
   relationshipTypes,
   selectedRelationshipType,
   isSaving,
+  saveError,
   onBack,
   onRelationshipTypeSelect,
   onContinueToTargetText,
@@ -166,27 +168,34 @@ const RelationTypeStep = ({
           </div>
         ) : null}
       </Modal.Body>
-      <Modal.Footer className="flex justify-between">
-        <Button variant="secondary" onClick={onBack} disabled={isSaving}>
-          <Translate>Back</Translate>
-        </Button>
-        {needsTargetText ? (
-          <Button
-            variant="primary"
-            onClick={onContinueToTargetText}
-            disabled={!selectedRelationshipType || isSaving}
-          >
-            <Translate>Continue</Translate>
+      <Modal.Footer className="flex flex-col gap-3">
+        {saveError ? (
+          <AlertBanner variant="error">
+            <Translate>An error occurred</Translate>
+          </AlertBanner>
+        ) : null}
+        <div className="flex justify-between">
+          <Button variant="secondary" onClick={onBack} disabled={isSaving}>
+            <Translate>Back</Translate>
           </Button>
-        ) : (
-          <Button
-            variant="primary"
-            onClick={onCreate}
-            disabled={!selectedRelationshipType || isSaving}
-          >
-            <Translate>Create relationship</Translate>
-          </Button>
-        )}
+          {needsTargetText ? (
+            <Button
+              variant="primary"
+              onClick={onContinueToTargetText}
+              disabled={!selectedRelationshipType || isSaving}
+            >
+              <Translate>Continue</Translate>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={onCreate}
+              disabled={!selectedRelationshipType || isSaving}
+            >
+              <Translate>Create relationship</Translate>
+            </Button>
+          )}
+        </div>
       </Modal.Footer>
     </>
   );
