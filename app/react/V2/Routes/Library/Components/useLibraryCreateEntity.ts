@@ -1,7 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useAtomValue } from 'jotai';
-import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { useAtomValue, useSetAtom } from 'jotai';
+import {
+  libraryEntityRevisionAtom,
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+} from '#V2/atoms/index.js';
 import {
   beginEntitySave,
   buildEditEntityDefaultValues,
@@ -12,6 +17,7 @@ import {
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { libraryHitFromEntity } from './libraryCreatedRows.js';
 import { blankLibraryEntity, defaultLibraryTemplateId } from './libraryCreateEntity.js';
 import {
@@ -32,24 +38,6 @@ const clearRejectedCreate = (
   if (session.active) setSaving(false);
 };
 
-const keepCreatedForm = ({
-  session,
-  form,
-  setCreated,
-  setSaving,
-}: {
-  session: { active: boolean };
-  form: ReturnType<typeof useForm<EditEntityFormValues>>;
-  setCreated: (created: boolean) => void;
-  setSaving: (saving: boolean) => void;
-}) => {
-  if (!session.active) return false;
-  form.reset(form.getValues());
-  setCreated(true);
-  setSaving(false);
-  return true;
-};
-
 const useLibraryCreateEntityForm = () => {
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom) || 'en';
@@ -64,6 +52,36 @@ const useLibraryCreateEntityForm = () => {
   return { templates, entity, form, mediaUpload };
 };
 
+const noteIfPanelClosed = ({
+  session,
+  form,
+  setCreated,
+  setSaving,
+  saved,
+  onNoted,
+}: {
+  session: { active: boolean };
+  form: ReturnType<typeof useForm<EditEntityFormValues>>;
+  setCreated: (created: boolean) => void;
+  setSaving: (saving: boolean) => void;
+  saved: Entity;
+  onNoted: NotedEntity;
+}) => {
+  if (!session.active) {
+    onNoted(saved.sharedId, libraryHitFromEntity(saved));
+    return;
+  }
+  form.reset(form.getValues());
+  setCreated(true);
+  setSaving(false);
+};
+
+const useCreateSession = (onCreated: NotedEntity) => {
+  const session = useHeldCreate(onCreated);
+  const setRevision = useSetAtom(libraryEntityRevisionAtom);
+  return { session, setRevision };
+};
+
 const useLibraryCreateEntity = (onCreated: NotedEntity, onNoted: NotedEntity = () => undefined) => {
   const { entities } = useServices();
   const settings = useAtomValue(settingsAtom);
@@ -72,7 +90,7 @@ const useLibraryCreateEntity = (onCreated: NotedEntity, onNoted: NotedEntity = (
   const [created, setCreated] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const [editErrors, setEditErrors] = useState<EditEntityErrors>();
-  const session = useHeldCreate(onCreated);
+  const { session, setRevision } = useCreateSession(onCreated);
 
   const onSave = async (input: EntitySaveInput) => {
     const { current } = session;
@@ -90,17 +108,14 @@ const useLibraryCreateEntity = (onCreated: NotedEntity, onNoted: NotedEntity = (
       setSaveError,
     });
     if (!saved) return clearRejectedCreate(current, setSaving);
-    onNoted(saved.sharedId, libraryHitFromEntity(saved));
-    if (!keepCreatedForm({ session: current, form, setCreated, setSaving })) return;
+    noteIfPanelClosed({ session: current, form, setCreated, setSaving, saved, onNoted });
     await finishNewEntity({
       saved,
       input,
       session: current,
-      blank: entity,
-      form,
-      templates,
       languages: settings.languages,
       getBySharedId: entities.getBySharedId,
+      onTranslated: (sharedId, translations) => setRevision({ sharedId, translations }),
     });
   };
 

@@ -1,7 +1,6 @@
 import {
   createOmittedLanguages,
   readCreatedTranslations,
-  withFoundTranslations,
 } from '../libraryCreatePendingTranslations.js';
 
 describe('libraryCreatePendingTranslations', () => {
@@ -54,6 +53,22 @@ describe('libraryCreatePendingTranslations', () => {
     });
   });
 
+  it('ignores a copied source title', () => {
+    expect(
+      readCreatedTranslations(
+        [
+          {
+            language: 'en',
+            title: 'Panel check',
+            translations: { es: { title: [{ value: 'Panel check' }] } },
+          },
+        ],
+        ['es'],
+        'en'
+      )
+    ).toEqual({ status: 'empty' });
+  });
+
   it('stops when an omitted language already has text', () => {
     expect(
       readCreatedTranslations(
@@ -95,20 +110,6 @@ describe('libraryCreatePendingTranslations', () => {
       status: 'found',
       translations: {
         es: { link: [{ value: { label: '(AI translation pending) Docs', url: '' } }] },
-      },
-    });
-  });
-
-  it('merges found values into the open form translations', () => {
-    expect(
-      withFoundTranslations(
-        { es: { title: [{ value: 'kept' }] } },
-        { es: { summary: [{ value: '(AI translation pending) Hola' }] } }
-      )
-    ).toEqual({
-      es: {
-        title: [{ value: 'kept' }],
-        summary: [{ value: '(AI translation pending) Hola' }],
       },
     });
   });
