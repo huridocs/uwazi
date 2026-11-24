@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { type DropdownItem } from './Dropdown.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { HeaderIcon, headerChipClass } from './headerIcons.js';
 import type { HeaderLink } from './MenuLinks.js';
 
-const navButtonClasses =
-  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors';
+const navButtonClasses = `${headerChipClass} shrink-0`;
 const activeClasses = 'header-bar-button-active';
 
 const linkKey = (link: HeaderLink) => String(link.id ?? link._id ?? link.localId ?? link.title);
@@ -50,9 +49,10 @@ const MoreMenu = ({ links }: { links: HeaderLink[] }) => {
       aria-haspopup="menu"
     >
       <Translate>More</Translate>
-      <span className="text-ink-tertiary tabular-nums">{links.length}</span>
-      <ChevronDownIcon
-        className={`h-3.5 w-3.5 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      <span className="tabular-nums">{links.length}</span>
+      <HeaderIcon
+        name="chevron-down"
+        className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
       />
     </button>
   );
@@ -63,7 +63,7 @@ const MoreMenu = ({ links }: { links: HeaderLink[] }) => {
         if (link.type === 'group') {
           return (
             <li key={linkKey(link)} role="none">
-              <span className="block px-3 pt-2 pb-1 text-[0.6875rem] font-semibold uppercase tracking-wide text-ink-tertiary">
+              <span className="header-bar-panel-group block px-3 pt-2 pb-1 text-[0.6875rem] font-semibold uppercase tracking-wide">
                 {menuLabel(link.title)}
               </span>
               <ul role="none">

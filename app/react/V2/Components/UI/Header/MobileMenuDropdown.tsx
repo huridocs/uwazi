@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
-import { availableLanguages } from '#shared/language/index.js';
-import { localeAtom, settingsAtom } from '../../../atoms/index.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { HeaderIcon, headerIconButtonClass, joinActive } from './headerIcons.js';
 
 type HeaderLink = {
   id?: string;
@@ -106,23 +103,16 @@ const renderMobileLink = (
 
 const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links, actions = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const locale = useAtomValue(localeAtom);
-  const { languages } = useAtomValue(settingsAtom);
-  const currentLanguage = languages?.find(lang => lang.key === locale);
-  const isRTL = currentLanguage
-    ? availableLanguages.find(language => language.key === currentLanguage.key)?.rtl
-    : false;
-  const HamburgerIcon = isRTL ? Bars3BottomRightIcon : Bars3BottomLeftIcon;
   const flatLinks = flattenLinks(links || []);
 
   const trigger = (
     <button
       type="button"
-      className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+      className={joinActive(headerIconButtonClass, isOpen)}
       aria-expanded={isOpen}
       aria-label={t('System', 'Toggle navigation menu', null, false)}
     >
-      <HamburgerIcon className="h-5 w-5" />
+      <HeaderIcon name="menu" />
     </button>
   );
 

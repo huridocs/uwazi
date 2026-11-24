@@ -1,4 +1,8 @@
-import { getAccessibleForegroundOnBackground, mixHex } from '#shared/utils/contrast.js';
+import {
+  checkContrast,
+  getAccessibleForegroundOnBackground,
+  mixHex,
+} from '#shared/utils/contrast.js';
 import { normalizeHex } from '#V2/theme/themePaletteSort.js';
 import { PRESET_DEFINITIONS } from '#V2/theme/tokens.js';
 import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
@@ -58,6 +62,7 @@ type ThemeRoles = {
     appBarHover: string;
     appBarActive: string;
     appBarFg: string;
+    appBarFgHover: string;
     separator: string;
     settingsRailBg: string;
     settingsNavItemActiveBg: string;
@@ -71,10 +76,19 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
     resolved['--color-theme-bg-primary']
   ).foreground;
   const chromeAppBar = resolved['--color-theme-bg-surface'];
+  const appBarHover = resolved['--color-theme-bg-warm'];
+  const appBarActive = resolved['--color-theme-bg-muted'];
+  const textPrimary = resolved['--color-theme-text-primary'];
   const appBarFg = getAccessibleForegroundOnBackground(
     chromeAppBar,
-    resolved['--color-theme-text-primary']
+    resolved['--color-theme-text-secondary']
   ).foreground;
+  const emphasisPasses =
+    checkContrast(appBarHover, textPrimary).passesAA &&
+    checkContrast(appBarActive, textPrimary).passesAA;
+  const appBarFgHover = emphasisPasses
+    ? textPrimary
+    : getAccessibleForegroundOnBackground(appBarHover, textPrimary).foreground;
 
   return {
     surface: {
@@ -127,9 +141,10 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
     },
     chrome: {
       appBar: chromeAppBar,
-      appBarHover: resolved['--color-theme-bg-warm'],
-      appBarActive: resolved['--color-theme-bg-muted'],
+      appBarHover,
+      appBarActive,
       appBarFg,
+      appBarFgHover,
       separator: resolved['--color-theme-border-primary'],
       settingsRailBg:
         presetId === 'legacy'
@@ -174,6 +189,7 @@ const getThemeRoleVars = (roles: ThemeRoles): Record<string, string> => ({
   '--color-theme-chrome-app-bar-hover': roles.chrome.appBarHover,
   '--color-theme-chrome-app-bar-active': roles.chrome.appBarActive,
   '--color-theme-chrome-app-bar-fg': roles.chrome.appBarFg,
+  '--color-theme-chrome-app-bar-fg-hover': roles.chrome.appBarFgHover,
   '--color-theme-chrome-app-bar-separator': roles.chrome.separator,
   '--color-theme-chrome-settings-rail-bg': roles.chrome.settingsRailBg,
   '--color-theme-chrome-settings-nav-item-active-bg': roles.chrome.settingsNavItemActiveBg,

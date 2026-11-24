@@ -100,6 +100,41 @@ describe('Header', () => {
     expect(optionsMenu()).toContainElement(screen.getByRole('link', { name: 'Settings' }));
   });
 
+  it('shows library and sign in as chips with 14px icons on a wide bar', () => {
+    renderHeader(false);
+    const library = screen.getByRole('link', { name: 'Library' });
+    const signIn = screen.getByRole('link', { name: 'Sign in' });
+    expect(library.className).toContain(
+      'header-bar-button flex items-center gap-1.5 rounded-md px-3 py-1 text-tab font-medium'
+    );
+    expect(library.querySelector('svg')).toHaveAttribute('data-icon', 'book-open');
+    expect(library.querySelector('svg')).toHaveAttribute('width', '14');
+    expect(signIn.querySelector('svg')).toHaveAttribute('data-icon', 'log-in');
+    expect(signIn.querySelector('svg')).toHaveAttribute('width', '14');
+  });
+
+  it('shows settings as a chip with a 14px icon when signed in', () => {
+    renderHeader(false, signedInUser);
+    const settings = screen.getByRole('link', { name: 'Settings' });
+    expect(settings.className).toContain('px-3 py-1 text-tab font-medium');
+    expect(settings.querySelector('svg')).toHaveAttribute('data-icon', 'settings');
+    expect(settings.querySelector('svg')).toHaveAttribute('width', '14');
+  });
+
+  it('uses 14px icons on the compact bar', () => {
+    renderHeader(true);
+    expect(
+      screen.getByRole('button', { name: 'Toggle navigation menu' }).querySelector('svg')
+    ).toHaveAttribute('data-icon', 'menu');
+    expect(
+      screen.getByRole('button', { name: 'Toggle options menu' }).querySelector('svg')
+    ).toHaveAttribute('data-icon', 'ellipsis-vertical');
+    expect(screen.getByRole('link', { name: 'Sign in' }).querySelector('svg')).toHaveAttribute(
+      'width',
+      '14'
+    );
+  });
+
   it('shows language, library, and Ask Bert inline on a wide bar', () => {
     renderHeader(false);
     const tools = screen.getByTestId('header-tools');

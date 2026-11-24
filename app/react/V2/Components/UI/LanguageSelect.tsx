@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { HeaderIcon, headerChipClass, joinActive } from './Header/headerIcons.js';
 import { AnchoredPortal } from './AnchoredPortal.js';
 import { useLanguageSelectListbox } from './useLanguageSelectListbox.js';
 
@@ -26,25 +27,43 @@ type LanguageSelectProps<T extends string = string> = {
   footer?: React.ReactNode;
 };
 
-const chevronClass = (appearance: LanguageSelectAppearance) => {
-  if (appearance === 'header') return 'size-3.5 shrink-0';
-  if (appearance === 'compact') return 'size-2.5 shrink-0 text-ink-tertiary';
-  return 'size-3.5 shrink-0 text-ink-tertiary';
-};
+const chevronClass = (appearance: LanguageSelectAppearance) =>
+  appearance === 'compact'
+    ? 'size-2.5 shrink-0 text-ink-tertiary'
+    : 'size-3.5 shrink-0 text-ink-tertiary';
 
 const triggerClassByAppearance: Record<LanguageSelectAppearance, string> = {
   default:
     'inline-flex h-8 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
   compact:
     'inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden rounded border border-border bg-paper py-0.5 ps-2 pe-1.5 text-tiny font-semibold text-ink-secondary transition-colors hover:bg-warm focus:outline-none focus-visible:ring-1 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
-  header:
-    'header-bar-button inline-flex h-8 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md border ps-2.5 pe-2 text-tab font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60',
+  header: `${headerChipClass} max-w-full whitespace-nowrap focus:outline-none disabled:cursor-not-allowed disabled:opacity-60`,
 };
 
 const optionClassName = (isHighlighted: boolean, isSelected: boolean) => {
   if (isHighlighted) return 'bg-parchment text-ink';
   if (isSelected) return 'bg-warm text-ink';
   return 'text-ink-secondary hover:bg-parchment';
+};
+
+const panelClass = (appearance: LanguageSelectAppearance) =>
+  appearance === 'header'
+    ? 'header-bar-panel w-max min-w-40 overflow-hidden rounded-lg'
+    : 'w-max min-w-40 overflow-hidden rounded-md border border-border bg-paper shadow-md';
+
+const rowClass = (
+  appearance: LanguageSelectAppearance,
+  highlighted: boolean,
+  selected: boolean
+) => {
+  const layout =
+    'block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors';
+  if (appearance !== 'header') return `${layout} ${optionClassName(highlighted, selected)}`;
+  const state =
+    highlighted || selected
+      ? 'header-bar-panel-item header-bar-panel-item-active'
+      : 'header-bar-panel-item';
+  return `${layout} ${state}`;
 };
 
 type MutableRef<T> = { current: T | null };
@@ -109,10 +128,21 @@ const LanguageSelect = <T extends string>({
         aria-controls={open ? listboxId : undefined}
         onClick={onTriggerClick}
         onKeyDown={onTriggerKeyDown}
-        className={triggerClassByAppearance[appearance]}
+        className={joinActive(
+          triggerClassByAppearance[appearance],
+          appearance === 'header' && open
+        )}
       >
+        {appearance === 'header' ? <HeaderIcon name="languages" /> : null}
         <span className="truncate">{triggerLabel}</span>
-        <ChevronDownIcon className={chevronClass(appearance)} aria-hidden />
+        {appearance === 'header' ? (
+          <HeaderIcon
+            name="chevron-down"
+            className={open ? 'rotate-180 transition-transform' : 'transition-transform'}
+          />
+        ) : (
+          <ChevronDownIcon className={chevronClass(appearance)} aria-hidden />
+        )}
       </button>
       <AnchoredPortal
         open={open && !disabled}
@@ -120,7 +150,7 @@ const LanguageSelect = <T extends string>({
         onClose={close}
         prefer={align === 'end' ? 'end' : 'start'}
       >
-        <div className="w-max min-w-40 overflow-hidden rounded-md border border-border bg-paper shadow-md">
+        <div className={panelClass(appearance)}>
           <div
             ref={listboxRef}
             id={listboxId}
@@ -140,10 +170,7 @@ const LanguageSelect = <T extends string>({
                 aria-selected={option.value === value}
                 onMouseDown={event => event.preventDefault()}
                 onClick={() => selectOption(option.value)}
-                className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
-                  index === highlightedIndex,
-                  option.value === value
-                )}`}
+                className={rowClass(appearance, index === highlightedIndex, option.value === value)}
               >
                 {option.label}
               </button>
