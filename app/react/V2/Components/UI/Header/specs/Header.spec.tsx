@@ -49,14 +49,15 @@ const signedInUser: ClientUserSchema = {
   email: 'editor@example.com',
 };
 
-const renderHeader = (compact: boolean, user?: ClientUserSchema) => {
+const renderHeader = (compact: boolean, user?: ClientUserSchema, location?: string) => {
   useCompactBar.mockReturnValue({ barRef: { current: null }, compact });
   return renderConnectedContainer(
     <TestAtomStoreProvider initialValues={user ? [[userAtom, user]] : []}>
       <Header />
     </TestAtomStoreProvider>,
     () => headerState,
-    'MemoryRouter'
+    'MemoryRouter',
+    location ? [location] : undefined
   );
 };
 
@@ -73,7 +74,7 @@ const expectCompactMenuClosed = () => {
 };
 
 const expectCompactMenuOpen = (options: HTMLElement | null) => {
-  expect(options).toContainElement(screen.getByRole('link', { name: 'Library' }));
+  expect(options).toContainElement(screen.getByRole('menuitem', { name: 'Library' }));
   expect(options).not.toContainElement(screen.getByRole('link', { name: 'Sign in' }));
   expect(screen.queryByRole('link', { name: 'Settings' })).not.toBeInTheDocument();
   expect(options).toContainElement(screen.getByRole('button', { name: 'EN' }));
@@ -97,7 +98,49 @@ describe('Header', () => {
     expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Toggle options menu' }));
     expect(optionsMenu()).not.toContainElement(library);
-    expect(optionsMenu()).toContainElement(screen.getByRole('link', { name: 'Settings' }));
+    expect(optionsMenu()).toContainElement(screen.getByRole('menuitem', { name: 'Settings' }));
+  });
+
+  it('shows library and sign in as chips with 14px icons on a wide bar', () => {
+    renderHeader(false);
+    const library = screen.getByRole('link', { name: 'Library' });
+    const signIn = screen.getByRole('link', { name: 'Sign in' });
+    expect(library.className).toContain(
+      'header-bar-button flex items-center gap-1.5 rounded-md px-3 py-1 text-tab font-medium'
+    );
+    expect(library.querySelector('svg')).toHaveAttribute('data-icon', 'book-open');
+    expect(library.querySelector('svg')).toHaveAttribute('width', '14');
+    expect(signIn.querySelector('svg')).toHaveAttribute('data-icon', 'log-in');
+    expect(signIn.querySelector('svg')).toHaveAttribute('width', '14');
+  });
+
+  it('marks sign in when the login route is current', () => {
+    renderHeader(false, undefined, '/login');
+    expect(screen.getByRole('link', { name: 'Sign in' }).className).toContain(
+      'header-bar-button-active'
+    );
+  });
+
+  it('shows settings as a chip with a 14px icon when signed in', () => {
+    renderHeader(false, signedInUser);
+    const settings = screen.getByRole('link', { name: 'Settings' });
+    expect(settings.className).toContain('px-3 py-1 text-tab font-medium');
+    expect(settings.querySelector('svg')).toHaveAttribute('data-icon', 'settings');
+    expect(settings.querySelector('svg')).toHaveAttribute('width', '14');
+  });
+
+  it('uses 14px icons on the compact bar', () => {
+    renderHeader(true);
+    expect(
+      screen.getByRole('button', { name: 'Toggle navigation menu' }).querySelector('svg')
+    ).toHaveAttribute('data-icon', 'menu');
+    expect(
+      screen.getByRole('button', { name: 'Toggle options menu' }).querySelector('svg')
+    ).toHaveAttribute('data-icon', 'ellipsis-vertical');
+    expect(screen.getByRole('link', { name: 'Sign in' }).querySelector('svg')).toHaveAttribute(
+      'width',
+      '14'
+    );
   });
 
   it('shows language, library, and Ask Bert inline on a wide bar', () => {

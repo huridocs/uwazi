@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { LanguageIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
@@ -13,6 +12,7 @@ import {
 } from '#V2/Components/UI/index.js';
 import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 import { followLanguageUrl } from './followLanguageUrl.js';
+import { HeaderIcon, headerChipClass } from './headerIcons.js';
 
 type LanguageDropdownProps = {
   className?: string;
@@ -37,7 +37,7 @@ const startedEdit = { inlineEdit: true, translationKey: '', context: '' };
 
 const liveTranslateLabel = () => (
   <>
-    <LanguageIcon className="h-3.5 w-3.5" />
+    <HeaderIcon name="languages" />
     <Translate>Live translate</Translate>
   </>
 );
@@ -58,7 +58,7 @@ const liveTranslateItem = (onClick: () => void) => (
 const liveTranslateButton = (className: string, onClick: () => void) => (
   <button
     type="button"
-    className={`header-bar-button header-bar-button-active flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium ${className}`}
+    className={`${headerChipClass} header-bar-button-active ${className}`}
     aria-pressed
     onClick={onClick}
   >

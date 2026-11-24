@@ -20,6 +20,7 @@ const GROUPS = [
     keys: [
       '--color-theme-chrome-app-bar',
       '--color-theme-chrome-app-bar-fg',
+      '--color-theme-chrome-app-bar-fg-hover',
       '--color-theme-chrome-app-bar-hover',
       '--color-theme-chrome-app-bar-active',
       '--color-theme-chrome-app-bar-separator',

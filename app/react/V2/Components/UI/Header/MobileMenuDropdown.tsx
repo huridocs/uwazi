@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
-import { availableLanguages } from '#shared/language/index.js';
-import { localeAtom, settingsAtom } from '../../../atoms/index.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { HeaderIcon, headerIconButtonClass, joinActive } from './headerIcons.js';
 
 type HeaderLink = {
   id?: string;
@@ -68,80 +65,81 @@ const renderMobileLink = (
 
   if (link.group) {
     return (
-      <div key={`mobile-group-${linkKey(link)}`}>
+      <li key={`mobile-group-${linkKey(link)}`} role="none">
         <div
           className={`header-bar-panel-group py-2 ${paddingLeft} text-[0.6875rem] font-semibold uppercase tracking-wider ${roundedClasses}`}
         >
           {t('Menu', link.title)}
         </div>
-      </div>
+      </li>
     );
   }
 
-  if (url.startsWith('http')) {
-    return (
-      <div key={`mobile-link-${linkKey(link)}`}>
-        <a
-          href={url}
-          className={itemClass}
-          target="_blank"
-          rel="noreferrer"
-          onClick={menu.close}
-          tabIndex={menu.isOpen ? 0 : -1}
-        >
-          {t('Menu', link.title)}
-        </a>
-      </div>
-    );
-  }
+  const row = url.startsWith('http') ? (
+    <a
+      href={url}
+      className={itemClass}
+      target="_blank"
+      rel="noreferrer"
+      onClick={menu.close}
+      role="menuitem"
+      tabIndex={menu.isOpen ? 0 : -1}
+    >
+      {t('Menu', link.title)}
+    </a>
+  ) : (
+    <I18NLink
+      to={url}
+      className={itemClass}
+      activeClassname="header-bar-panel-item-active"
+      onClick={menu.close}
+      role="menuitem"
+      tabIndex={menu.isOpen ? 0 : -1}
+    >
+      {t('Menu', link.title)}
+    </I18NLink>
+  );
 
   return (
-    <div key={`mobile-link-${linkKey(link)}`}>
-      <I18NLink to={url} className={itemClass} onClick={menu.close} tabIndex={menu.isOpen ? 0 : -1}>
-        {t('Menu', link.title)}
-      </I18NLink>
-    </div>
+    <li key={`mobile-link-${linkKey(link)}`} role="none">
+      {row}
+    </li>
   );
 };
 
 const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links, actions = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const locale = useAtomValue(localeAtom);
-  const { languages } = useAtomValue(settingsAtom);
-  const currentLanguage = languages?.find(lang => lang.key === locale);
-  const isRTL = currentLanguage
-    ? availableLanguages.find(language => language.key === currentLanguage.key)?.rtl
-    : false;
-  const HamburgerIcon = isRTL ? Bars3BottomRightIcon : Bars3BottomLeftIcon;
   const flatLinks = flattenLinks(links || []);
 
   const trigger = (
     <button
       type="button"
-      className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+      className={joinActive(headerIconButtonClass, isOpen)}
       aria-expanded={isOpen}
       aria-label={t('System', 'Toggle navigation menu', null, false)}
     >
-      <HamburgerIcon className="h-5 w-5" />
+      <HeaderIcon name="menu" />
     </button>
   );
 
   const dropdownContent = (
-    <div className="max-h-[80vh] overflow-y-auto py-1">
+    <>
       {actions.map(action => (
-        <div key={action.id}>
+        <li key={action.id} role="none">
           <I18NLink
             to={action.to}
             className="header-bar-panel-item block py-2.5 pl-4 text-sm transition-colors"
+            activeClassname="header-bar-panel-item-active"
             onClick={() => {
               action.onClick?.();
               setIsOpen(false);
             }}
+            role="menuitem"
             tabIndex={isOpen ? 0 : -1}
           >
             <Translate>{action.label}</Translate>
           </I18NLink>
-        </div>
+        </li>
       ))}
       {flatLinks.map((link, index) =>
         renderMobileLink(link, roundedClass(index === 0, index === flatLinks.length - 1), {
@@ -149,7 +147,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links, actions 
           close: () => setIsOpen(false),
         })
       )}
-    </div>
+    </>
   );
 
   return (
@@ -157,7 +155,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links, actions 
       trigger={trigger}
       isOpen={isOpen}
       onToggle={setIsOpen}
-      dropdownClassName="w-80 max-w-[calc(100vw-2rem)]"
+      dropdownClassName="max-h-[80vh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto py-1"
     >
       {dropdownContent}
     </BaseDropdown>

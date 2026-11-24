@@ -3,7 +3,6 @@ import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { actions } from '#app/BasicReducer/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -21,6 +20,7 @@ import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.js';
 import { MobileOptionsMenu } from './MobileOptionsMenu.js';
 import { useRememberedLibraryUrl } from '#V2/Routes/Library/useRememberedLibraryUrl.js';
+import { HeaderIcon, headerChipClass, headerIconButtonClass } from './headerIcons.js';
 
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
@@ -135,15 +135,11 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
                 <I18NLink
                   to={barAction.to}
                   onClick={barAction.onClick}
-                  className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+                  className={headerIconButtonClass}
                   activeClassname="header-bar-button-active"
                   aria-label={t('System', barAction.label, null, false)}
                 >
-                  {barAction.id === 'library' ? (
-                    <BookOpenIcon className="h-5 w-5" />
-                  ) : (
-                    <KeyIcon className="h-5 w-5" />
-                  )}
+                  <HeaderIcon name={barAction.id === 'library' ? 'book-open' : 'log-in'} />
                 </I18NLink>
               ) : null}
               {optionsMenu}
@@ -157,30 +153,31 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
                 <I18NLink
                   to={libraryUrl}
                   onClick={() => setSidePanelView('library')}
-                  className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                  className={headerChipClass}
                   activeClassname="header-bar-button-active"
                   aria-label={t('System', 'Library', null, false)}
                 >
-                  <BookOpenIcon className="h-4 w-4" />
+                  <HeaderIcon name="book-open" />
                   <Translate>Library</Translate>
                 </I18NLink>
               )}
               {authenticatedUser ? (
                 <I18NLink
                   to="/settings/account"
-                  className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                  className={headerChipClass}
                   activeClassname="header-bar-button-active"
                   aria-label={t('System', 'Settings', null, false)}
                 >
-                  <Cog6ToothIcon className="h-4 w-4" />
+                  <HeaderIcon name="settings" />
                   <Translate>Settings</Translate>
                 </I18NLink>
               ) : (
                 <I18NLink
                   to="/login"
-                  className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
+                  className={headerChipClass}
+                  activeClassname="header-bar-button-active"
                 >
-                  <KeyIcon className="h-4 w-4" />
+                  <HeaderIcon name="log-in" />
                   <Translate>Sign in</Translate>
                 </I18NLink>
               )}

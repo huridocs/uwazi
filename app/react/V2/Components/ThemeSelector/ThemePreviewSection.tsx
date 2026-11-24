@@ -83,7 +83,7 @@ const ThemePreviewSection = ({ previewMode, themeVars }: ThemePreviewSectionProp
   return (
     <SurfacePanel
       tone="warm"
-      className="border-warning-light bg-warning-light px-4 py-3 shadow-none"
+      className="sticky top-0 z-20 border-warning-light bg-warning-light px-4 py-3 shadow-none"
     >
       <p className="text-xs font-medium text-amber-800">
         <Translate>Accessibility checks need attention</Translate>
