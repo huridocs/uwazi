@@ -108,14 +108,11 @@ class V1RelationshipProperty extends FilterableProperty {
 
   protected sameNameConflictsWith(property: Property): PropertyConflict[] {
     const conflicts = super.sameNameConflictsWith(property);
+    if (!(property instanceof V1RelationshipProperty)) return conflicts;
 
-    if (
-      property instanceof V1RelationshipProperty &&
-      this.inherit &&
-      this.inherit.type !== property.inherit?.type
-    ) {
-      conflicts.push('inheritType');
-    }
+    if (this.relationType !== property.relationType) conflicts.push('relationType');
+    if (this.content !== property.content) conflicts.push('content');
+    if (this.inherit?.type !== property.inherit?.type) conflicts.push('inheritType');
 
     return conflicts;
   }

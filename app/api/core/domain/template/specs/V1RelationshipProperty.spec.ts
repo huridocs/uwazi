@@ -166,6 +166,60 @@ describe('V1RelationshipProperty', () => {
 
       expect(relationship.conflictsWith(text)).toEqual(['type']);
     });
+
+    const relationshipWith = (overrides: { relationType?: string; content?: string }) =>
+      V1RelationshipProperty.create({
+        id: '',
+        label: 'label',
+        template: '',
+        relationType: 'relationType',
+        content: 'content',
+        ...overrides,
+      });
+
+    it('should report a relationType conflict when relationship types differ', () => {
+      const relationship = relationshipWith({ relationType: 'victim_of' });
+      const other = relationshipWith({ relationType: 'perpetrator_of' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['relationType']);
+    });
+
+    it('should report a content conflict when related templates differ', () => {
+      const relationship = relationshipWith({ content: 'cases' });
+      const other = relationshipWith({ content: 'hearings' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['content']);
+      expect(relationshipWith({ content: '' }).conflictsWith(other)).toEqual(['content']);
+    });
+
+    it('should treat a missing related template as any template', () => {
+      const relationship = relationshipWith({ content: '' });
+      const other = relationshipWith({ content: undefined });
+
+      expect(relationship.conflictsWith(other)).toEqual([]);
+    });
+
+    it('should report an inheritType conflict whichever side inherits', () => {
+      const inheriting = build({ type: 'text', property: 'prop' });
+      const notInheriting = build();
+
+      expect(inheriting.conflictsWith(notInheriting)).toEqual(['inheritType']);
+      expect(notInheriting.conflictsWith(inheriting)).toEqual(['inheritType']);
+    });
+
+    it('should report every conflict at once', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: '',
+        label: 'label',
+        template: '',
+        relationType: 'victim_of',
+        content: 'cases',
+        inherit: { type: 'text', property: 'prop' },
+      });
+      const other = relationshipWith({ relationType: 'perpetrator_of', content: 'hearings' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['relationType', 'content', 'inheritType']);
+    });
   });
 
   describe('createPropertyAssignment()', () => {
