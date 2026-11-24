@@ -78,21 +78,17 @@ const duplicate = PropertyMatching.findDuplicateInTemplate(propertyBeingEdited, 
 
 ## Conflict codes
 
-| Code           | Meaning                                                 | Suggested message                                         |
-| -------------- | ------------------------------------------------------- | --------------------------------------------------------- |
-| `type`         | The types are not compatible (text and markdown are)    | `A property with this name has a different type`          |
-| `content`      | Two selects use different thesauri                      | `A property with this name uses a different thesaurus`    |
-| `inheritType`  | Two relationships inherit properties of different types | `A property with this name inherits a different type`     |
-| `relationType` | Reserved, not reported yet (see below)                  | `A property with this name uses a different relationship` |
+| Code           | Meaning                                                                              | Suggested message                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `type`         | The types are not compatible (text and markdown are)                                 | `A property with this name has a different type`                                                                   |
+| `content`      | Two selects use different thesauri, or two relationships link to different templates | `A property with this name uses a different thesaurus` / `A property with this name links to a different template` |
+| `inheritType`  | Two relationships inherit properties of different types                              | `A property with this name inherits a different type`                                                              |
+| `relationType` | Two relationships use different relationship types                                   | `A property with this name uses a different relationship`                                                          |
 
 Treat the list as open: a new code is a new message to add.
 
 ## Not covered yet
 
-- **Same relationship type and target template** for same-name relationship properties. The V1
-  validator required them, and the V2 refactor lost the check. Restoring it is planned after this
-  package; when it lands, `findMatches` starts reporting `relationType` and `content` for
-  relationships with no change to the API above.
 - **Swapping names** between two properties of a template in one save (A takes B's label while B
   takes A's) is rejected by save but not reported here.
 
