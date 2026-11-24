@@ -756,6 +756,31 @@ it('should cleanup Relationship properties on Template delete', () => {
   });
 });
 
+describe('ensurePropertyIsConsistent()', () => {
+  const relationship = (relationType: string, template: string) =>
+    V1RelationshipProperty.create({ id: '', label: 'Mecanismo', template, relationType });
+
+  it('should name this template when a same-name property conflicts', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'audiencia', name: 'Audiencia' })
+      .withProperties([relationship('related_to', 'audiencia')])
+      .build();
+
+    expect(() =>
+      template.ensurePropertyIsConsistent(relationship('mechanism', 'sentencia'))
+    ).toThrow(/"Audiencia"/);
+  });
+
+  it('should accept a consistent same-name property', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'audiencia', name: 'Audiencia' })
+      .withProperties([relationship('mechanism', 'audiencia')])
+      .build();
+
+    expect(() =>
+      template.ensurePropertyIsConsistent(relationship('mechanism', 'sentencia'))
+    ).not.toThrow();
+  });
+});
+
 describe('translatableProperties', () => {
   it('should list the title and the translatable template properties', () => {
     const template = TemplateBuilder.aTemplate({ id: 'template' })

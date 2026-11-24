@@ -99,7 +99,7 @@ class Property {
     return this.isTypeEqual(property.type) ? [] : ['type'];
   }
 
-  ensurePropertyIsConsistent(property: Property) {
+  ensurePropertyIsConsistent(property: Property, _existingTemplateName?: string) {
     if (this.conflictsWith(property).includes('type')) {
       throw new PropertyTypeMismatchError(this, property);
     }
