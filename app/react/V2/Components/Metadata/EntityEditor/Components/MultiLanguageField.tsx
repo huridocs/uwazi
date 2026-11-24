@@ -1,4 +1,5 @@
 import React, { useState, type ReactNode } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useFoldStep } from './useFoldStep.js';
 import { languageRowSummary, type FoldStep } from './multiLanguageFieldHelpers.js';
 import { LanguageSummaryControls } from './LanguageSummaryControls.js';
@@ -22,6 +23,7 @@ type MultiLanguageFieldProps = {
     idPrefix: string;
     values: Record<string, string>;
     onChange: (language: string, value: string) => void;
+    invalid?: (language: string) => boolean;
   };
 };
 
@@ -59,6 +61,11 @@ const MultiLanguageField = React.memo(
       });
     const { step, availRef, probe0, probe1, probe2 } = useFoldStep();
 
+    const showTranslationUrlError =
+      !messageSlot &&
+      !open &&
+      Boolean(extra?.invalid && others.some(language => extra.invalid?.(language)));
+
     const controls = (s: FoldStep, probe: boolean) => (
       <LanguageSummaryControls
         step={s}
@@ -90,6 +97,13 @@ const MultiLanguageField = React.memo(
         <div ref={availRef} className="-mt-1 flex h-6 min-w-0 items-center gap-2">
           {controls(step, false)}
           {messageSlot ? <div className="min-w-0 truncate">{messageSlot}</div> : null}
+          {showTranslationUrlError ? (
+            <div className="min-w-0 truncate">
+              <span className="text-meta text-seal">
+                <Translate>Invalid URL</Translate>
+              </span>
+            </div>
+          ) : null}
         </div>
         <div
           aria-hidden
@@ -128,16 +142,23 @@ const MultiLanguageField = React.memo(
                   }}
                 />
                 {extra ? (
-                  <MultiLanguageFieldRow
-                    language={language}
-                    current={current}
-                    label={extra.label}
-                    idPrefix={extra.idPrefix}
-                    sideLabel="URL"
-                    value={extra.values[language] ?? ''}
-                    disabled={disabled}
-                    onChange={extra.onChange}
-                  />
+                  <>
+                    <MultiLanguageFieldRow
+                      language={language}
+                      current={current}
+                      label={extra.label}
+                      idPrefix={extra.idPrefix}
+                      sideLabel="URL"
+                      value={extra.values[language] ?? ''}
+                      disabled={disabled}
+                      onChange={extra.onChange}
+                    />
+                    {extra.invalid?.(language) ? (
+                      <p className="text-sm text-seal">
+                        <Translate>Invalid URL</Translate>
+                      </p>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
             ))}

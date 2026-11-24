@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Controller,
   FieldValues,
   Path,
   RegisterOptions,
   useFormContext,
+  useWatch,
   type UseFormGetValues,
   type UseFormSetValue,
 } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import { isAcceptableLinkUrl } from '#shared/urlValidationUtils.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
 import {
@@ -50,6 +52,28 @@ type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   translatableName?: string;
 };
 
+const urlText = (raw: unknown) => {
+  if (!raw || typeof raw !== 'object' || !('url' in raw)) return '';
+  return typeof raw.url === 'string' ? raw.url : '';
+};
+
+const mainLinkMessage = (value: string, isRequired: boolean) => {
+  const url = value.trim();
+  if (!url) return isRequired ? 'Required' : undefined;
+  return isAcceptableLinkUrl(url) ? undefined : 'Invalid URL';
+};
+
+const translationUrlInvalid = (
+  propertyName: string | undefined,
+  getValues: UseFormGetValues<EditEntityFormValues>
+) => {
+  if (!propertyName) return false;
+  const translations = getValues('translations') ?? {};
+  return Object.values(translations).some(bucket =>
+    (bucket[propertyName] ?? []).some(entry => !isAcceptableLinkUrl(urlText(entry.value)))
+  );
+};
+
 const LinkField = <TFormValues extends FieldValues = FieldValues>({
   context,
   label,
@@ -58,9 +82,42 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
   disabled,
   translatableName,
 }: LinkFieldProps<TFormValues>) => {
-  const { control } = useFormContext<TFormValues>();
-  const { getValues, setValue } = useFormContext<EditEntityFormValues>();
+  const {
+    control,
+    getFieldState,
+    clearErrors,
+    getValues: readField,
+  } = useFormContext<TFormValues>();
+  const { getValues, setValue, control: editControl } = useFormContext<EditEntityFormValues>();
+  const translations = useWatch({
+    control: editControl,
+    name: 'translations',
+    disabled: !translatableName,
+  });
   const required = Boolean(registerOptions?.required);
+
+  useEffect(() => {
+    if (!translatableName) return;
+    const { error } = getFieldState(field);
+    if (
+      error?.type !== 'validate' ||
+      error.message !== 'Invalid URL' ||
+      mainLinkMessage(urlText(readField(field)), required) ||
+      translationUrlInvalid(translatableName, getValues)
+    ) {
+      return;
+    }
+    clearErrors(field);
+  }, [
+    clearErrors,
+    field,
+    getFieldState,
+    getValues,
+    readField,
+    required,
+    translatableName,
+    translations,
+  ]);
 
   return (
     <EntityField>
@@ -70,11 +127,9 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
         rules={{
           ...registerOptions,
           validate: value => {
-            if (!required) {
-              return true;
-            }
-            const url = value.url ? value.url.trim() : '';
-            return url.length > 0 || 'Required';
+            const message = mainLinkMessage(value?.url ?? '', required);
+            if (message) return message;
+            return translationUrlInvalid(translatableName, getValues) ? 'Invalid URL' : true;
           },
         }}
         render={({ field: fieldValue, fieldState }) => {
@@ -87,13 +142,23 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const { showError, message } = getFieldErrorState(fieldState);
+          const translationServerError =
+            fieldState.error?.type === 'server' &&
+            fieldState.error.message === 'Invalid URL' &&
+            translationUrlInvalid(translatableName, getValues);
+          const showMainError =
+            showError &&
+            (Boolean(mainLinkMessage(url, required)) ||
+              (fieldState.error?.type === 'server' && !translationServerError));
           const linkSource = String(field);
           const hasLink = Boolean(linkLabel) || Boolean(url);
+          const commitUrl = (next: string) =>
+            fieldValue.onChange({ label: linkLabel, url: next.trim() });
 
           return (
             <>
               <div className="flex items-start justify-between gap-2">
-                <Label htmlFor={`${field}.url`} hasErrors={showError}>
+                <Label htmlFor={`${field}.url`} hasErrors={showMainError}>
                   <Translate context={context}>{label}</Translate>
                   {registerOptions?.required && '*'}
                 </Label>
@@ -116,7 +181,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                     disabled={disabled}
                     name={`${fieldValue.name}.label`}
                     value={linkLabel}
-                    hasErrors={showError}
+                    hasErrors={showMainError}
                     onBlur={fieldValue.onBlur}
                     labelVariant="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -128,17 +193,20 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   <InputField
                     id={`${field}.url`}
                     label={<Translate>URL</Translate>}
-                    type="url"
+                    type="text"
                     disabled={disabled}
                     name={`${fieldValue.name}.url`}
                     ref={fieldValue.ref}
                     value={url}
                     placeholder="https://"
-                    hasErrors={showError}
-                    onBlur={fieldValue.onBlur}
+                    hasErrors={showMainError}
+                    onBlur={() => {
+                      if (url.trim() !== url) commitUrl(url);
+                      fieldValue.onBlur();
+                    }}
                     labelVariant="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      fieldValue.onChange({ ...fieldValue.value, url: event.target.value })
+                      commitUrl(event.target.value)
                     }
                   />
                 </div>
@@ -150,12 +218,12 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                   idPrefix={`${linkSource}.label`}
                   linkPart="label"
                   linkSource={linkSource}
-                  messageSlot={translationMessageSlot(showError, message)}
+                  messageSlot={translationMessageSlot(showMainError, message)}
                   disabled={disabled}
                   paired={{ label: `${label} URL`, idPrefix: `${linkSource}.url` }}
                 />
               ) : (
-                <EntityFieldError showError={showError} message={message} />
+                <EntityFieldError showError={showMainError} message={message} />
               )}
             </>
           );

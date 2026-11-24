@@ -6,6 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import {
   TEXT_LINK,
+  showsControlError,
   AuthHeading,
   AuthLayout,
   AuthMessage,
@@ -22,7 +23,8 @@ const useSetPasswordForm = () => {
   useEffect(() => {
     if (state.expired) titleRef.current?.focus();
   }, [state.expired]);
-  return { state, dispatch, firstRef, titleRef, messageId };
+  const passwordInvalid = showsControlError(state.mismatch, state.message?.tone, state.mismatch);
+  return { state, dispatch, firstRef, titleRef, messageId, passwordInvalid };
 };
 
 const SetPassword = () => {
@@ -115,7 +117,7 @@ const SetPassword = () => {
             value={form.state.password}
             onChange={value => form.dispatch({ type: 'password', value })}
             disabled={form.state.pending}
-            invalid={form.state.mismatch}
+            invalid={form.passwordInvalid}
             describedBy={form.messageId}
           />
         </div>
@@ -127,7 +129,7 @@ const SetPassword = () => {
             value={form.state.repeat}
             onChange={value => form.dispatch({ type: 'repeat', value })}
             disabled={form.state.pending}
-            invalid={form.state.mismatch}
+            invalid={form.passwordInvalid}
             describedBy={form.messageId}
           />
         </div>

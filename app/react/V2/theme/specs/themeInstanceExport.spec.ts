@@ -1,3 +1,5 @@
+import { headerCompanionsFromBar } from '../themeChromeOverrides.js';
+import { appliedTheme, mergeScopedThemeAndChrome } from '../themes.js';
 import {
   parseThemeInstanceImportText,
   themeVarsFromInstanceImport,
@@ -125,6 +127,54 @@ describe('theme instance id', () => {
     expect(file).toContain('"assetPreset": "legacy"');
     const parsed = parseThemeInstanceImportText(file);
     expect('assetPreset' in parsed && parsed.assetPreset).toBe('legacy');
+  });
+});
+
+describe('mergeScopedThemeAndChrome', () => {
+  it('fills missing header colors from the stored bar', () => {
+    const bar = '#242424';
+    const derived = headerCompanionsFromBar(bar);
+    const merged = mergeScopedThemeAndChrome(
+      {
+        '--color-theme-chrome-app-bar': '#FFFFFF',
+        '--color-theme-chrome-app-bar-hover': '#FCFAF8',
+        '--color-theme-chrome-app-bar-active': '#F5EED7',
+      },
+      { '--color-theme-chrome-app-bar': bar, '--color-theme-chrome-app-bar-fg': '#ABCDEF' },
+      appliedTheme({}, 'light', true)
+    );
+    expect(merged['--color-theme-chrome-app-bar-fg']).toBe('#ABCDEF');
+    expect(merged['--color-theme-chrome-app-bar-fg-hover']).toBe(
+      derived['--color-theme-chrome-app-bar-fg-hover']
+    );
+    expect(merged['--color-theme-chrome-app-bar-hover']).toBe(
+      derived['--color-theme-chrome-app-bar-hover']
+    );
+    expect(merged['--color-theme-chrome-app-bar-active']).toBe(
+      derived['--color-theme-chrome-app-bar-active']
+    );
+    expect(merged['--color-theme-chrome-app-bar-separator']).toBe(
+      derived['--color-theme-chrome-app-bar-separator']
+    );
+  });
+
+  it('splits a stored single header ink into rest and hover', () => {
+    const bar = '#242424';
+    const derived = headerCompanionsFromBar(bar);
+    const merged = mergeScopedThemeAndChrome(
+      {},
+      {
+        '--color-theme-chrome-app-bar': bar,
+        '--color-theme-chrome-app-bar-fg': derived['--color-theme-chrome-app-bar-fg-hover'],
+      },
+      appliedTheme({}, 'light', true)
+    );
+    expect(merged['--color-theme-chrome-app-bar-fg']).toBe(
+      derived['--color-theme-chrome-app-bar-fg']
+    );
+    expect(merged['--color-theme-chrome-app-bar-fg-hover']).toBe(
+      derived['--color-theme-chrome-app-bar-fg-hover']
+    );
   });
 });
 

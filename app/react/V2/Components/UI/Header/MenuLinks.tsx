@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Dropdown, type DropdownItem } from './Dropdown.js';
+import { HeaderIcon, headerChipClass } from './headerIcons.js';
 import { MoreMenu } from './MoreMenu.js';
 
 type HeaderLink = {
@@ -23,8 +23,7 @@ type MenuLinksProps = {
 
 const GAP = 8;
 
-const navButtonClasses =
-  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors';
+const navButtonClasses = `${headerChipClass} shrink-0`;
 const activeClasses = 'header-bar-button-active';
 const labelClasses = 'max-w-[12rem] truncate';
 
@@ -80,7 +79,7 @@ const renderLink = (link: HeaderLink) => {
 const renderMeasure = (link: HeaderLink) => (
   <span key={linkKey(link)} className={navButtonClasses}>
     <span className={labelClasses}>{menuLabel(link.title)}</span>
-    {link.type === 'group' && <ChevronDownIcon className="h-3.5 w-3.5 shrink-0" />}
+    {link.type === 'group' && <HeaderIcon name="chevron-down" className="shrink-0" />}
   </span>
 );
 
@@ -159,12 +158,16 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
         <span ref={moreRef} className={navButtonClasses}>
           <Translate>More</Translate>
           <span className="tabular-nums">99</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 shrink-0" />
+          <HeaderIcon name="chevron-down" className="shrink-0" />
         </span>
       </div>
 
-      {visible.map(renderLink)}
-      {overflow.length > 0 && <MoreMenu links={overflow} />}
+      <div
+        className={`flex min-w-0 flex-1 items-center gap-2${hasMeasured ? '' : ' overflow-x-auto'}`}
+      >
+        {visible.map(renderLink)}
+        {overflow.length > 0 && <MoreMenu links={overflow} />}
+      </div>
     </nav>
   );
 };

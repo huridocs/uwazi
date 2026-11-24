@@ -1,4 +1,11 @@
-import { escapeCssAttributeValue, findFirstErrorPath } from '../focusInvalidField.js';
+/**
+ * @jest-environment jsdom
+ */
+import {
+  escapeCssAttributeValue,
+  findFirstErrorPath,
+  focusAndScrollToInvalidField,
+} from '../focusInvalidField.js';
 
 describe('focusInvalidField', () => {
   it('should escape CSS attribute special characters', () => {
@@ -28,5 +35,16 @@ describe('focusInvalidField', () => {
         },
       })
     ).toBe('metadata.simple_text.0.value');
+  });
+
+  it('focuses the url input when the link value path also matches the label', () => {
+    document.body.innerHTML =
+      '<input id="metadata.link.0.value.label" /><input id="metadata.link.0.value.url" />';
+    const url = document.getElementById('metadata.link.0.value.url');
+    const focus = jest.spyOn(url as HTMLElement, 'focus');
+
+    focusAndScrollToInvalidField('metadata.link.0.value');
+
+    expect(focus).toHaveBeenCalled();
   });
 });
