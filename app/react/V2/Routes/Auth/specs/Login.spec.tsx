@@ -5,17 +5,13 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { ApiError } from '#shared/apiClient/ApiError.js';
-import { settingsAtom } from '#V2/atoms/index.js';
+import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { apiClient } from '#V2/api/client.js';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { Login } from '../Login.js';
 
 jest.mock('#V2/api/client.js', () => ({
   apiClient: { postJson: jest.fn() },
-}));
-
-jest.mock('#app/V2/Components/UI/Header/Header.js', () => ({
-  Header: () => <header data-testid="site-header">Header</header>,
 }));
 
 const postJson = apiClient.postJson as jest.Mock;
@@ -30,12 +26,34 @@ const renderLogin = (entry = '/login') => {
   return render(
     <MemoryRouter initialEntries={[entry]}>
       <TestAtomStoreProvider
-        initialValues={[[settingsAtom, { site_name: 'CEJIL', cookiepolicy: false }]]}
+        initialValues={[
+          [localeAtom, 'en'],
+          [
+            settingsAtom,
+            {
+              site_name: 'CEJIL',
+              cookiepolicy: false,
+              languages: [
+                { key: 'en', label: 'English', localized_label: 'English', default: true },
+                { key: 'es', label: 'Spanish', localized_label: 'Español' },
+              ],
+            },
+          ],
+        ]}
       >
         <Login />
       </TestAtomStoreProvider>
     </MemoryRouter>
   );
+};
+
+const loginChrome = () => {
+  const back = screen.getByRole('link', { name: 'Back' });
+  return {
+    back,
+    language: screen.getByRole('button', { name: 'Language' }),
+    chrome: back.parentElement,
+  };
 };
 
 describe('Login', () => {
@@ -46,13 +64,28 @@ describe('Login', () => {
     localStorage.clear();
   });
 
-  it('keeps the site header in the form column', () => {
+  it('puts a home link and a language selector in the form column', () => {
     renderLogin();
+    const { back, language, chrome } = loginChrome();
 
-    const header = screen.getByTestId('site-header');
-    expect(header.closest('[data-part="panel"]')).toBeTruthy();
-    expect(header.closest('[data-part="art"]')).toBeNull();
+    expect(back).toHaveAttribute('href', '/en/');
+    expect(back.closest('[data-part="panel"]')).toBeTruthy();
+    expect(back.closest('[data-part="art"]')).toBeNull();
+    expect(chrome).toHaveClass('justify-between');
+    expect(chrome?.firstElementChild).toBe(back);
+    expect(chrome?.lastElementChild).toContainElement(language);
+    expect(screen.queryByRole('banner')).toBeNull();
     expect(document.querySelector('[data-part="art"]')).toHaveClass('max-h-[16%]');
+  });
+
+  it('draws the home link as a pointer without a hover treatment', () => {
+    renderLogin();
+    const back = screen.getByRole('link', { name: 'Back' });
+
+    expect(back).toHaveClass('cursor-pointer', 'text-black');
+    expect(back.className.includes('hover:') || back.className.includes('focus-visible:')).toBe(
+      false
+    );
   });
 
   it('names the website link with its address and can remember the username', () => {
@@ -85,7 +118,20 @@ describe('Login', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
     expect(screen.getByRole('alert')).toHaveTextContent('Enter your username and password.');
+    expect(screen.getByLabelText('Username')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByLabelText('Password')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByLabelText('Username').className).toContain('border-emphasis');
     expect(postJson).not.toHaveBeenCalled();
+  });
+
+  it('marks only the empty field', () => {
+    renderLogin();
+    fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'ada' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(screen.getByLabelText('Username')).not.toHaveAttribute('aria-invalid');
+    expect(screen.getByLabelText('Password').className).toContain('border-emphasis');
   });
 
   it('shows one failure for a wrong password', async () => {
