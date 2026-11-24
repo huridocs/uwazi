@@ -11,13 +11,13 @@ const HEADER_CONTRAST_PAIRS = [
     id: 'header-buttons',
     label: 'Header bar hover background',
     background: '--color-theme-chrome-app-bar-hover',
-    foreground: '--color-theme-chrome-app-bar-fg',
+    foreground: '--color-theme-chrome-app-bar-fg-hover',
   },
   {
     id: 'header-active',
     label: 'Header bar active background',
     background: '--color-theme-chrome-app-bar-active',
-    foreground: '--color-theme-chrome-app-bar-fg',
+    foreground: '--color-theme-chrome-app-bar-fg-hover',
   },
 ] as const;
 
@@ -27,7 +27,7 @@ const headerContrastChecks = (colors: Record<string, string | undefined>) =>
     label: pair.label,
     result: checkContrast(
       colors[pair.background] ?? '#000000',
-      colors[pair.foreground] ?? '#FFFFFF'
+      colors[pair.foreground] ?? colors['--color-theme-chrome-app-bar-fg'] ?? '#FFFFFF'
     ),
   }));
 

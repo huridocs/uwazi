@@ -16,8 +16,11 @@ import type {
   ThemeMode,
   ThemePresetId,
 } from './tokens.js';
-import { getAccessibleForegroundOnBackground } from '#shared/utils/contrast.js';
-import { CHROME_OVERRIDE_VAR_KEYS } from './themeChromeOverrides.js';
+import {
+  CHROME_OVERRIDE_VAR_KEYS,
+  HEADER_CHROME_VAR_KEYS,
+  headerCompanionsFromBar,
+} from './themeChromeOverrides.js';
 import { THEME_EDITOR_MODE_KEY } from './themeSimpleDerivation.js';
 import { THEME_PALETTE } from './themePaletteList.js';
 import { isValidHex, normalizeHex, sortPaletteHexColors } from './themePaletteSort.js';
@@ -373,20 +376,30 @@ const stripChromeStorageKeysAbsentFromImport = (
 const mergeScopedThemeAndChrome = (
   scoped: Record<string, string>,
   tenantChrome: Record<string, string>,
-  resolved: ResolvedThemeVars
+  _resolved: ResolvedThemeVars
 ): Record<string, string> => {
   const merged = { ...scoped, ...tenantChrome };
   const tenantBar = tenantChrome['--color-theme-chrome-app-bar'];
-  if (!tenantBar || tenantChrome['--color-theme-chrome-app-bar-fg'] !== undefined) {
-    return merged;
-  }
-  return {
-    ...merged,
-    '--color-theme-chrome-app-bar-fg': getAccessibleForegroundOnBackground(
-      tenantBar,
-      resolved['--color-theme-text-primary']
-    ).foreground,
-  };
+  if (!tenantBar) return merged;
+  const derived = headerCompanionsFromBar(tenantBar);
+  const storedFg = tenantChrome['--color-theme-chrome-app-bar-fg'];
+  const legacySingleInk =
+    storedFg !== undefined &&
+    tenantChrome['--color-theme-chrome-app-bar-fg-hover'] === undefined &&
+    normalizeHex(storedFg).toUpperCase() ===
+      normalizeHex(derived['--color-theme-chrome-app-bar-fg-hover']).toUpperCase();
+  const filled = { ...merged };
+  HEADER_CHROME_VAR_KEYS.forEach(key => {
+    const replaceStoredFg = legacySingleInk && key === '--color-theme-chrome-app-bar-fg';
+    if (
+      key === '--color-theme-chrome-app-bar' ||
+      (tenantChrome[key] !== undefined && !replaceStoredFg)
+    ) {
+      return;
+    }
+    filled[key] = derived[key];
+  });
+  return filled;
 };
 
 const COMPATIBILITY_VAR_ENTRIES: Array<

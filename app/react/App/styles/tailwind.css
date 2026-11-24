@@ -731,14 +731,21 @@
 
 /* Header bar: uses header-scoped appearance vars rather than the tenant accent pipeline. */
 .tw-content .header-bar[data-uwazi-header] {
-  background: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
-  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+  background: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface));
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary));
   border-bottom: 1px solid
-    var(--color-theme-chrome-app-bar-separator, var(--color-theme-border-primary, #e5e7eb));
+    var(--color-theme-chrome-app-bar-separator, var(--color-theme-border-primary));
 }
 .tw-content .header-bar[data-uwazi-header] a,
 .tw-content .header-bar[data-uwazi-header] button {
   color: inherit;
+}
+.tw-content:not([data-theme-preset='legacy']) .header-bar[data-uwazi-header] a,
+.tw-content:not([data-theme-preset='legacy']) .header-bar-panel a,
+.tw-content:not([data-theme-preset='legacy'])
+  nav[aria-label='Settings navigation']
+  .settings-nav-link {
+  text-decoration: none;
 }
 .tw-content .header-bar[data-uwazi-header] a svg:not(.notification-kind-icon),
 .tw-content .header-bar[data-uwazi-header] button svg:not(.notification-kind-icon) {
@@ -776,60 +783,58 @@ header button svg:not([class*='notification-kind-icon']),
 }
 
 .tw-content .header-bar[data-uwazi-header] .header-bar-brand {
-  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button {
-  background-color: var(--color-theme-chrome-app-bar-hover, var(--color-theme-bg-warm, #f5f3f0));
-  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-secondary, #333333));
+  background-color: color-mix(
+    in srgb,
+    var(--color-theme-chrome-app-bar) 97.26%,
+    var(--color-theme-chrome-app-bar-fg-hover, var(--color-theme-chrome-app-bar-fg))
+  );
+  color: var(--color-theme-chrome-app-bar-fg);
+  outline: none;
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:focus-visible,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:focus-visible {
-  background-color: var(
-    --color-theme-chrome-app-bar-active,
-    var(--color-theme-bg-parchment, #ede9e4)
-  );
-  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+  background-color: var(--color-theme-chrome-app-bar-hover);
+  color: var(--color-theme-chrome-app-bar-fg-hover, var(--color-theme-chrome-app-bar-fg));
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-button-active,
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item-active {
-  background-color: var(
-    --color-theme-chrome-app-bar-active,
-    var(--color-theme-bg-parchment, #ede9e4)
-  );
-  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+.tw-content .header-bar[data-uwazi-header] .header-bar-button-active {
+  background-color: var(--color-theme-chrome-app-bar-active);
+  color: var(--color-theme-chrome-app-bar-fg-hover, var(--color-theme-chrome-app-bar-fg));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-separator {
-  background-color: var(
-    --color-theme-chrome-app-bar-separator,
-    var(--color-theme-border-primary, #e5e7eb)
-  );
+  background-color: var(--color-theme-chrome-app-bar-separator, var(--color-theme-border-primary));
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel {
-  background-color: var(--color-theme-bg-surface, #ffffff);
-  border: 1px solid var(--color-theme-border-primary, #e5e7eb);
-  border-radius: 12px;
-  box-shadow: var(--color-theme-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.08));
-  color: var(--color-theme-text-secondary, #333333);
+.tw-content .header-bar-panel {
+  background-color: var(--color-theme-bg-surface);
+  border: 1px solid var(--color-theme-border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--color-theme-shadow-lg);
+  color: var(--color-theme-text-secondary);
   overflow: hidden;
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item {
-  color: var(--color-theme-text-secondary, #333333);
+.tw-content .header-bar-panel .header-bar-panel-item {
+  color: var(--color-theme-text-secondary);
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item:hover,
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item:focus-visible {
-  background-color: var(--color-theme-bg-warm, #f9fafb);
-  color: var(--color-theme-text-primary, #1a1a1a);
+.tw-content .header-bar-panel .header-bar-panel-item:hover,
+.tw-content .header-bar-panel .header-bar-panel-item:focus-visible {
+  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
+  color: var(--color-theme-text-primary);
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-panel-group {
-  background-color: var(--color-theme-bg-warm, #f9fafb);
-  color: var(--color-theme-text-tertiary, #6b7280);
+.tw-content .header-bar-panel .header-bar-panel-item-active {
+  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
+  color: var(--color-theme-text-primary);
+}
+.tw-content .header-bar-panel .header-bar-panel-group {
+  color: var(--color-theme-text-secondary);
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-skip {
-  background-color: var(--color-theme-bg-surface, #ffffff);
-  color: var(--color-theme-text-primary, #1a1a1a);
+  background-color: var(--color-theme-bg-surface);
+  color: var(--color-theme-text-primary);
 }
 
 .tw-content nav[aria-label='Settings navigation'] .settings-nav-link {
@@ -840,6 +845,7 @@ header button svg:not([class*='notification-kind-icon']),
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-theme-text-primary);
+  outline: none;
 }
 .tw-content nav[aria-label='Settings navigation'] .settings-nav-link:hover {
   color: var(--color-theme-text-primary);
@@ -851,15 +857,6 @@ header button svg:not([class*='notification-kind-icon']),
     var(--color-theme-surface-selected, var(--color-theme-bg-selected))
   );
   color: var(--color-theme-action-primary);
-}
-.tw-content nav[aria-label='Settings navigation'] .settings-nav-link:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px
-    color-mix(
-      in srgb,
-      var(--color-theme-border-interactive, var(--color-theme-accent-primary)) 35%,
-      transparent
-    );
 }
 
 .tw-content .theme-notification {

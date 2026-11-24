@@ -32,6 +32,26 @@ describe('tailwind @theme carbon', () => {
     expect(inputField).toContain('ring-carbon/20');
   });
 
+  it('paints header chips and menus with theme tokens', () => {
+    const header = theme.slice(
+      theme.indexOf('/* Header bar:'),
+      theme.indexOf(".tw-content nav[aria-label='Settings navigation']")
+    );
+    const chip = header.slice(header.indexOf('.header-bar-button,'));
+    expect(chip).toContain('--color-theme-chrome-app-bar-hover');
+    expect(chip).toContain('--color-theme-chrome-app-bar-active');
+    const hover = chip.slice(chip.indexOf(':hover'), chip.indexOf('.header-bar-button-active'));
+    expect(hover).toContain('var(--color-theme-chrome-app-bar-hover)');
+    expect(hover).not.toContain('surface-parchment');
+    expect(header).toContain("[data-theme-preset='legacy']");
+    expect(header).toContain('text-decoration: none');
+    expect(header).toContain("nav[aria-label='Settings navigation']");
+    expect(header).toContain('.settings-nav-link');
+    expect(chip).toContain('outline: none');
+    expect(chip).toContain('border-radius: var(--radius-lg)');
+    expect(chip).not.toMatch(/#[0-9a-fA-F]{3,8}|rgb\(/);
+  });
+
   it('does not pin Design utilities to light hex fallbacks', () => {
     const body = (name: string) =>
       theme.match(new RegExp(`@utility ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? '';

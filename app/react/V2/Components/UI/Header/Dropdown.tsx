@@ -1,7 +1,7 @@
 import React from 'react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { HeaderIcon, headerChipClass, joinActive } from './headerIcons.js';
 
 export interface DropdownItem {
   title: string;
@@ -21,17 +21,16 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
   const trigger = (
     <button
       type="button"
-      className={`header-bar-button ${
-        isOpen ? 'header-bar-button-active' : ''
-      } flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors`}
+      className={joinActive(headerChipClass, isOpen)}
       aria-expanded={isOpen}
       aria-haspopup="menu"
     >
       <span className="max-w-48 truncate" title={title}>
         {title}
       </span>
-      <ChevronDownIcon
-        className={`h-3.5 w-3.5 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      <HeaderIcon
+        name="chevron-down"
+        className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
       />
     </button>
   );
@@ -68,6 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
               <I18NLink
                 to={item.url}
                 className={`header-bar-panel-item block px-3 py-2 text-xs font-medium transition-colors ${roundedClasses}`}
+                activeClassname="header-bar-panel-item-active"
                 onClick={() => setIsOpen(false)}
                 role="menuitem"
                 tabIndex={isOpen ? 0 : -1}
