@@ -1,3 +1,4 @@
+import { fillChromeImportDefaults, headerCompanionsFromBar } from '../themeChromeOverrides.js';
 import { settingsColorsFromRail } from '../relatedColorSuggestions.js';
 import {
   parseThemeInstanceImportJson,
@@ -166,6 +167,16 @@ describe('themeVarsFromInstanceImport', () => {
     expect(next.__themeSimpleBase).toBe('legacy');
     expect(next['light:--color-theme-text-secondary']).toBe(
       legacy['light:--color-theme-text-secondary']
+    );
+  });
+});
+
+describe('fillChromeImportDefaults', () => {
+  it('derives the same separator as a header bar change', () => {
+    const bar = '#242424';
+    const filled = fillChromeImportDefaults({ '--color-theme-chrome-app-bar': bar });
+    expect(filled['--color-theme-chrome-app-bar-separator']).toBe(
+      headerCompanionsFromBar(bar)['--color-theme-chrome-app-bar-separator']
     );
   });
 });

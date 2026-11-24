@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { settingsAtom, themeModeAtom } from '../../../atoms/index.js';
+import { HeaderIcon } from './headerIcons.js';
 
 const ThemeToggle = ({ labeled = false }: { labeled?: boolean }) => {
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
@@ -20,7 +20,7 @@ const ThemeToggle = ({ labeled = false }: { labeled?: boolean }) => {
       aria-label={label}
       title={label}
     >
-      {themeMode === 'light' ? <MoonIcon className="h-4 w-4" /> : <SunIcon className="h-4 w-4" />}
+      <HeaderIcon name={themeMode === 'light' ? 'moon' : 'sun'} />
       {labeled ? label : null}
     </button>
   );

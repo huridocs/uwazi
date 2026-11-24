@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { HeaderIcon, headerIconButtonClass, joinActive } from './headerIcons.js';
 import type { MobileMenuAction } from './MobileMenuDropdown.js';
 
 interface MobileOptionsMenuProps {
@@ -17,11 +17,11 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
   const trigger = (
     <button
       type="button"
-      className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+      className={joinActive(headerIconButtonClass, isOpen)}
       aria-expanded={isOpen}
       aria-label={t('System', 'Toggle options menu', null, false)}
     >
-      <EllipsisVerticalIcon className="h-5 w-5" />
+      <HeaderIcon name="ellipsis-vertical" />
     </button>
   );
 
@@ -31,25 +31,28 @@ const MobileOptionsMenu = ({ actions = [], children }: MobileOptionsMenuProps) =
       isOpen={isOpen}
       onToggle={setIsOpen}
       align="right"
-      dropdownClassName="w-64 max-w-[calc(100vw-2rem)]"
+      dropdownClassName="flex w-64 max-w-[calc(100vw-2rem)] flex-col gap-1 p-2"
     >
       {isOpen ? (
-        <div className="flex flex-col gap-1 p-2">
+        <>
           {actions.map(action => (
-            <I18NLink
-              key={action.id}
-              to={action.to}
-              className="header-bar-panel-item block rounded-md px-3 py-2 text-sm transition-colors"
-              onClick={() => {
-                action.onClick?.();
-                close();
-              }}
-            >
-              <Translate>{action.label}</Translate>
-            </I18NLink>
+            <li key={action.id} role="none">
+              <I18NLink
+                to={action.to}
+                className="header-bar-panel-item block rounded-md px-3 py-2 text-xs font-medium transition-colors"
+                activeClassname="header-bar-panel-item-active"
+                onClick={() => {
+                  action.onClick?.();
+                  close();
+                }}
+                role="menuitem"
+              >
+                <Translate>{action.label}</Translate>
+              </I18NLink>
+            </li>
           ))}
-          {children}
-        </div>
+          {children ? <li role="none">{children}</li> : null}
+        </>
       ) : null}
     </BaseDropdown>
   );

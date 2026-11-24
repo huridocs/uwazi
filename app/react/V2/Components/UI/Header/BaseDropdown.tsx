@@ -59,7 +59,7 @@ export const BaseDropdown: React.FC<BaseDropdownProps> = ({
       <ul
         className={`${dropdownClassName} ${
           isOpen
-            ? `header-bar-panel absolute top-full mt-1.5 min-w-max z-50 ${
+            ? `header-bar-panel absolute top-full z-50 mt-1.5 min-w-max rounded-lg ${
                 align === 'right' ? 'right-0' : 'left-0'
               }`
             : 'absolute left-[-9999px] top-0 w-0 h-0 overflow-hidden'
