@@ -14,10 +14,6 @@ jest.mock('#V2/api/client.js', () => ({
   apiClient: { postJson: jest.fn() },
 }));
 
-jest.mock('#app/V2/Components/UI/Header/Header.js', () => ({
-  Header: () => <header data-testid="site-header">Header</header>,
-}));
-
 const postJson = apiClient.postJson as jest.Mock;
 
 const renderSetPassword = (entry: string) =>
@@ -45,6 +41,8 @@ describe('SetPassword', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save password' }));
 
     expect(screen.getByRole('alert')).toHaveTextContent('Passwords don’t match.');
+    expect(screen.getByLabelText('Password').className).toContain('border-emphasis');
+    expect(screen.getByLabelText('Repeat password')).toHaveAttribute('aria-invalid', 'true');
     expect(postJson).not.toHaveBeenCalled();
   });
 
