@@ -1,5 +1,9 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
+import {
+  PropertyRelatedTemplateMismatchError,
+  PropertyRelationTypeMismatchError,
+  TemplateWithDuplicatedNameOnTheSystemError,
+} from '#api/core/domain/template/errors.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { CreateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/CreateTemplateUseCaseFactory.js';
 import { TemplateTranslationService } from '#api/core/domain/template/TemplateTranslationService.js';
@@ -637,6 +641,81 @@ describe('CreateTemplateUseCase', () => {
 
       const templates = await getTemplates();
       expect(templates.some(t => t.name === 'Failing Template')).toBe(false);
+    });
+
+    describe('when a relationship property reuses a name from another template', () => {
+      beforeEach(async () => {
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          relationtypes: [
+            ...fixtures.relationtypes!,
+            { _id: factory.id('relatedToId'), name: 'Related to', __v: 0 },
+          ],
+          templates: [
+            ...fixtures.templates!,
+            factory.template('Sentencia', [
+              factory.property('mecanismo', 'relationship', {
+                label: 'Mecanismo',
+                relationType: factory.id('relationTypeId').toString(),
+                content: factory.id('targetedTemplate').toString(),
+              }),
+            ]),
+          ],
+        });
+      });
+
+      const createWithMecanismo = async (relationType: string, content?: string) => {
+        const { sut } = createSut(undefined, postgresCore);
+        return sut.execute({
+          name: 'Audiencia',
+          properties: [
+            {
+              label: 'Mecanismo',
+              type: PropertyTypeEnum.Relationship,
+              relationType: factory.id(relationType).toHexString(),
+              ...(content ? { content: factory.id(content).toHexString() } : {}),
+            },
+          ],
+          commonProperties: [
+            { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+            {
+              label: 'Creation Date',
+              type: PropertyTypeEnum.Date,
+              name: 'creationDate',
+              isCommonProperty: true,
+            },
+            {
+              label: 'Edit Date',
+              type: PropertyTypeEnum.Date,
+              name: 'editDate',
+              isCommonProperty: true,
+            },
+          ],
+        });
+      };
+
+      it('should reject a different relationship type and name the other template', async () => {
+        await expect(createWithMecanismo('relatedToId', 'targetedTemplate')).rejects.toThrow(
+          PropertyRelationTypeMismatchError
+        );
+        await expect(createWithMecanismo('relatedToId', 'targetedTemplate')).rejects.toThrow(
+          /in "Sentencia"/
+        );
+
+        expect((await getTemplates()).some(t => t.name === 'Audiencia')).toBe(false);
+      });
+
+      it('should reject a different related template', async () => {
+        await expect(createWithMecanismo('relationTypeId')).rejects.toThrow(
+          PropertyRelatedTemplateMismatchError
+        );
+      });
+
+      it('should accept the same relationship type and related template', async () => {
+        await createWithMecanismo('relationTypeId', 'targetedTemplate');
+
+        expect((await getTemplates()).some(t => t.name === 'Audiencia')).toBe(true);
+      });
     });
   });
 });
