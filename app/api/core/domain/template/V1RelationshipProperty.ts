@@ -5,6 +5,8 @@ import {
 import {
   PropertyInheritedTypeMismatchError,
   InvalidPropertyComparisonTypeError,
+  PropertyRelatedTemplateMismatchError,
+  PropertyRelationTypeMismatchError,
 } from '#api/core/domain/template/errors.js';
 import { z } from 'zod';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -108,23 +110,31 @@ class V1RelationshipProperty extends FilterableProperty {
 
   protected sameNameConflictsWith(property: Property): PropertyConflict[] {
     const conflicts = super.sameNameConflictsWith(property);
+    if (!(property instanceof V1RelationshipProperty)) return conflicts;
 
-    if (
-      property instanceof V1RelationshipProperty &&
-      this.inherit &&
-      this.inherit.type !== property.inherit?.type
-    ) {
-      conflicts.push('inheritType');
-    }
+    if (this.relationType !== property.relationType) conflicts.push('relationType');
+    if (this.content !== property.content) conflicts.push('content');
+    if (this.inherit?.type !== property.inherit?.type) conflicts.push('inheritType');
 
     return conflicts;
   }
 
-  ensurePropertyIsConsistent(property: V1RelationshipProperty): void {
-    super.ensurePropertyIsConsistent(property);
+  ensurePropertyIsConsistent(
+    property: V1RelationshipProperty,
+    existingTemplateName?: string
+  ): void {
+    super.ensurePropertyIsConsistent(property, existingTemplateName);
 
-    if (this.conflictsWith(property).includes('inheritType')) {
+    const conflicts = this.conflictsWith(property);
+
+    if (conflicts.includes('inheritType')) {
       throw new PropertyInheritedTypeMismatchError(this, property);
+    }
+    if (conflicts.includes('relationType')) {
+      throw new PropertyRelationTypeMismatchError(this, property, existingTemplateName);
+    }
+    if (conflicts.includes('content')) {
+      throw new PropertyRelatedTemplateMismatchError(this, property, existingTemplateName);
     }
   }
 

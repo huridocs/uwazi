@@ -1,5 +1,8 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { InheritedPropertyCanNotBeDeleted } from '#api/core/domain/template/errors.js';
+import {
+  InheritedPropertyCanNotBeDeleted,
+  PropertyRelationTypeMismatchError,
+} from '#api/core/domain/template/errors.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { UpdateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTemplateUseCaseFactory.js';
@@ -466,5 +469,72 @@ describe('UpdateTemplateUseCase', () => {
         expect(templates.some((t: any) => t.name === 'Failing Update')).toBe(false);
       });
     }
+
+    describe('when a relationship property already conflicts with another template', () => {
+      const mecanismo = (relationType: string, id: string) =>
+        factory.property('mecanismo', 'relationship', {
+          _id: factory.id(id),
+          label: 'Mecanismo',
+          relationType: factory.id(relationType).toString(),
+          content: factory.id('targetedTemplate').toString(),
+        });
+
+      beforeEach(async () => {
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          relationtypes: [
+            ...fixtures.relationtypes!,
+            { _id: factory.id('relatedToId'), name: 'Related to', __v: 0 },
+          ],
+          templates: [
+            ...fixtures.templates!,
+            factory.template('Sentencia', [mecanismo('relationTypeId', 'sentencia mecanismo')]),
+            factory.template('Audiencia', [mecanismo('relatedToId', 'audiencia mecanismo')]),
+          ],
+        });
+      });
+
+      const updateAudiencia = async (label: string) => {
+        const { sut } = createSut(undefined, postgresCore);
+        return sut.execute(
+          {
+            id: factory.id('Audiencia').toString(),
+            name: 'Audiencia',
+            color: '#ff0000',
+            properties: [
+              {
+                label,
+                type: PropertyTypeEnum.Relationship,
+                id: factory.id('audiencia mecanismo').toString(),
+                relationType: factory.id('relatedToId').toString(),
+                content: factory.id('targetedTemplate').toString(),
+              },
+            ],
+            commonProperties: defaultCommonProperties('audiencia'),
+          },
+          { language: 'en', fullReindex: false }
+        );
+      };
+
+      it('should reject an unrelated edit and name the other template', async () => {
+        await expect(updateAudiencia('Mecanismo')).rejects.toThrow(
+          PropertyRelationTypeMismatchError
+        );
+        await expect(updateAudiencia('Mecanismo')).rejects.toThrow(/in "Sentencia"/);
+
+        const audiencia = (await getTemplates()).find((t: any) => t.name === 'Audiencia');
+        expect(audiencia.color).not.toBe('#ff0000');
+      });
+
+      it('should save once the property is renamed in the same edit', async () => {
+        await updateAudiencia('Relacionado a');
+
+        const audiencia = (await getTemplates()).find((t: any) => t.name === 'Audiencia');
+        expect(audiencia.color).toBe('#ff0000');
+        expect(audiencia.properties).toMatchObject([
+          { label: 'Relacionado a', name: 'relacionado_a' },
+        ]);
+      });
+    });
   });
 });

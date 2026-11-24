@@ -124,6 +124,39 @@ describe('PropertyMatching', () => {
       ]);
     });
 
+    it('should report a relationType conflict for a relationship using another relationship type', () => {
+      const result = PropertyMatching.findMatches(
+        {
+          label: 'Victim',
+          type: 'relationship',
+          content: 'people',
+          relationType: 'witness-of',
+          inherit: { property: 'people-age', type: 'numeric' },
+        },
+        [cases]
+      );
+
+      expect(result.matches).toEqual([
+        expect.objectContaining({ propertyId: 'cases-victim', conflicts: ['relationType'] }),
+      ]);
+    });
+
+    it('should report a content conflict for a relationship to another template', () => {
+      const result = PropertyMatching.findMatches(
+        {
+          label: 'Victim',
+          type: 'relationship',
+          relationType: 'victim-of',
+          inherit: { property: 'people-age', type: 'numeric' },
+        },
+        [cases]
+      );
+
+      expect(result.matches).toEqual([
+        expect.objectContaining({ propertyId: 'cases-victim', conflicts: ['content'] }),
+      ]);
+    });
+
     it('should match the stored name of other templates, not one derived from their label', () => {
       expect(
         PropertyMatching.findMatches({ label: 'Renamed later', type: 'text' }, [cases]).matches

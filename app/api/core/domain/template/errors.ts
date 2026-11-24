@@ -163,6 +163,49 @@ export class PropertyInheritedTypeMismatchError extends DomainError {
   }
 }
 
+const relationshipMismatchMessage = (
+  attempted: V1RelationshipProperty,
+  difference: string,
+  existingTemplateName?: string
+) => {
+  const where = existingTemplateName ? `"${existingTemplateName}"` : 'another template';
+  return (
+    `"${attempted.label}" ${difference} than the property with the same name in ${where}. ` +
+    'Properties with the same name must use the same relationship type and related template. ' +
+    'Rename this property to save the template.'
+  );
+};
+
+export class PropertyRelationTypeMismatchError extends DomainError {
+  constructor(
+    _existing: V1RelationshipProperty,
+    attempted: V1RelationshipProperty,
+    existingTemplateName?: string
+  ) {
+    super(
+      relationshipMismatchMessage(
+        attempted,
+        'uses a different relationship type',
+        existingTemplateName
+      ),
+      'template.property.relation_type_mismatch_error'
+    );
+  }
+}
+
+export class PropertyRelatedTemplateMismatchError extends DomainError {
+  constructor(
+    _existing: V1RelationshipProperty,
+    attempted: V1RelationshipProperty,
+    existingTemplateName?: string
+  ) {
+    super(
+      relationshipMismatchMessage(attempted, 'links to a different template', existingTemplateName),
+      'template.property.related_template_mismatch_error'
+    );
+  }
+}
+
 export class TemplateWithDuplicatedNameOnTheSystemError extends DomainError {
   constructor(template: Template) {
     super(

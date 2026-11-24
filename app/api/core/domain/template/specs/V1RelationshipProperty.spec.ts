@@ -1,5 +1,10 @@
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors.js';
+import {
+  PropertyInheritedTypeMismatchError,
+  PropertyRelatedTemplateMismatchError,
+  PropertyRelationTypeMismatchError,
+  PropertyTypeMismatchError,
+} from '../errors.js';
 import { TextProperty } from '../TextProperty.js';
 
 describe('V1RelationshipProperty', () => {
@@ -135,6 +140,66 @@ describe('V1RelationshipProperty', () => {
     expect(() => relationship.ensurePropertyIsConsistent(relationship)).not.toThrow();
   });
 
+  describe('ensurePropertyIsConsistent() with a different relationship type or related template', () => {
+    const relationship = (overrides: { relationType?: string; content?: string }) =>
+      V1RelationshipProperty.create({
+        id: '',
+        label: 'Mecanismo',
+        template: '',
+        relationType: 'mechanism',
+        content: 'organism',
+        ...overrides,
+      });
+
+    it('should throw a relationship type mismatch naming the other template', () => {
+      const existing = relationship({});
+      const attempted = relationship({ relationType: 'related_to' });
+
+      expect(() => existing.ensurePropertyIsConsistent(attempted, 'Sentencia')).toThrow(
+        new PropertyRelationTypeMismatchError(existing, attempted, 'Sentencia')
+      );
+      expect(new PropertyRelationTypeMismatchError(existing, attempted, 'Sentencia').message).toBe(
+        '"Mecanismo" uses a different relationship type than the property with the same name in "Sentencia". ' +
+          'Properties with the same name must use the same relationship type and related template. ' +
+          'Rename this property to save the template.'
+      );
+    });
+
+    it('should throw a related template mismatch naming the other template', () => {
+      const existing = relationship({});
+      const attempted = relationship({ content: '' });
+
+      expect(() => existing.ensurePropertyIsConsistent(attempted, 'Sentencia')).toThrow(
+        new PropertyRelatedTemplateMismatchError(existing, attempted, 'Sentencia')
+      );
+      expect(
+        new PropertyRelatedTemplateMismatchError(existing, attempted, 'Sentencia').message
+      ).toBe(
+        '"Mecanismo" links to a different template than the property with the same name in "Sentencia". ' +
+          'Properties with the same name must use the same relationship type and related template. ' +
+          'Rename this property to save the template.'
+      );
+    });
+
+    it('should say "another template" when the template name is unknown', () => {
+      const existing = relationship({});
+      const attempted = relationship({ relationType: 'related_to' });
+
+      expect(() => existing.ensurePropertyIsConsistent(attempted)).toThrow(
+        'the property with the same name in another template'
+      );
+    });
+
+    it('should report the relationship type before the related template', () => {
+      const existing = relationship({});
+      const attempted = relationship({ relationType: 'related_to', content: '' });
+
+      expect(() => existing.ensurePropertyIsConsistent(attempted, 'Sentencia')).toThrow(
+        PropertyRelationTypeMismatchError
+      );
+    });
+  });
+
   describe('conflictsWith()', () => {
     const build = (inherit?: { type: 'text' | 'date'; property: string }) =>
       V1RelationshipProperty.create({
@@ -165,6 +230,60 @@ describe('V1RelationshipProperty', () => {
       const text = new TextProperty({ id: '', label: 'label', template: '' });
 
       expect(relationship.conflictsWith(text)).toEqual(['type']);
+    });
+
+    const relationshipWith = (overrides: { relationType?: string; content?: string }) =>
+      V1RelationshipProperty.create({
+        id: '',
+        label: 'label',
+        template: '',
+        relationType: 'relationType',
+        content: 'content',
+        ...overrides,
+      });
+
+    it('should report a relationType conflict when relationship types differ', () => {
+      const relationship = relationshipWith({ relationType: 'victim_of' });
+      const other = relationshipWith({ relationType: 'perpetrator_of' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['relationType']);
+    });
+
+    it('should report a content conflict when related templates differ', () => {
+      const relationship = relationshipWith({ content: 'cases' });
+      const other = relationshipWith({ content: 'hearings' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['content']);
+      expect(relationshipWith({ content: '' }).conflictsWith(other)).toEqual(['content']);
+    });
+
+    it('should treat a missing related template as any template', () => {
+      const relationship = relationshipWith({ content: '' });
+      const other = relationshipWith({ content: undefined });
+
+      expect(relationship.conflictsWith(other)).toEqual([]);
+    });
+
+    it('should report an inheritType conflict whichever side inherits', () => {
+      const inheriting = build({ type: 'text', property: 'prop' });
+      const notInheriting = build();
+
+      expect(inheriting.conflictsWith(notInheriting)).toEqual(['inheritType']);
+      expect(notInheriting.conflictsWith(inheriting)).toEqual(['inheritType']);
+    });
+
+    it('should report every conflict at once', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: '',
+        label: 'label',
+        template: '',
+        relationType: 'victim_of',
+        content: 'cases',
+        inherit: { type: 'text', property: 'prop' },
+      });
+      const other = relationshipWith({ relationType: 'perpetrator_of', content: 'hearings' });
+
+      expect(relationship.conflictsWith(other)).toEqual(['relationType', 'content', 'inheritType']);
     });
   });
 

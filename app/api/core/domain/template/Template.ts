@@ -97,7 +97,7 @@ class Template {
 
   ensurePropertyIsConsistent(property: Property) {
     this.properties.forEach(
-      p => p.name === property.name && p.ensurePropertyIsConsistent(property as any)
+      p => p.name === property.name && p.ensurePropertyIsConsistent(property as any, this.name)
     );
   }
 
