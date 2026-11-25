@@ -147,6 +147,16 @@ const parseMarkerPoint = (
   };
 };
 
+const checkMapInitialization = (map: L.Map, containerId: string) => {
+  if (!map) {
+    const container = L.DomUtil.get(containerId);
+    if (container != null) {
+      // @ts-ignore
+      container._leaflet_id = null;
+    }
+  }
+};
+
 const mapPointerModifiers = (originalEvent?: Event): MapPointerModifiers => {
   if (!(originalEvent instanceof MouseEvent)) {
     return { shiftKey: false, ctrlKey: false, metaKey: false };
@@ -158,5 +168,11 @@ const mapPointerModifiers = (originalEvent?: Event): MapPointerModifiers => {
   };
 };
 
-export { DataMarker, getClusterMarker, mapPointerModifiers, parseMarkerPoint };
+export {
+  DataMarker,
+  getClusterMarker,
+  mapPointerModifiers,
+  parseMarkerPoint,
+  checkMapInitialization,
+};
 export type { LMarker, MapPointerModifiers, MarkerProperties, MarkerInput, TemplatesInfo };
