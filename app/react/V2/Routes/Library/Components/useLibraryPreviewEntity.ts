@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { localeAtom } from '#V2/atoms/index.js';
+import { bucketIsFinished } from './libraryCreatePendingTranslations.js';
+import {
+  libraryEntityRevisionAtom,
+  localeAtom,
+  type LibraryEntityRevision,
+} from '#V2/atoms/index.js';
 import { useServices } from '#V2/services/index.js';
 
 type LibraryPreviewEntityState = {
@@ -53,10 +59,26 @@ const loadPreviewEntity = async (
   }
 };
 
+const withRecordedTranslations = (
+  entity: Entity | undefined,
+  sharedId: string,
+  recorded: LibraryEntityRevision | undefined
+) => {
+  if (!entity || entity.sharedId !== sharedId) return undefined;
+  if (recorded?.sharedId !== sharedId) return entity;
+  const translations: EntityTranslationsDTO = { ...recorded.translations };
+  Object.entries(entity.translations ?? {}).forEach(([language, bucket]) => {
+    translations[language] = bucketIsFinished(bucket)
+      ? bucket
+      : (recorded.translations[language] ?? bucket);
+  });
+  return { ...entity, translations };
+};
+
 const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState => {
   const { entities } = useServices();
   const language = useAtomValue(localeAtom);
-  const { getBySharedId } = entities;
+  const recorded = useAtomValue(libraryEntityRevisionAtom);
   const [state, setState] = useState<PreviewState>({ loading: true, error: false });
   const requestIdRef = useRef(0);
 
@@ -65,7 +87,7 @@ const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState =>
       const requestId = requestIdRef.current + 1;
       requestIdRef.current = requestId;
       setState(current => (silent ? current : { loading: true, error: false }));
-      const result = await loadPreviewEntity(getBySharedId, targetSharedId, language);
+      const result = await loadPreviewEntity(entities.getBySharedId, targetSharedId, language);
       if (requestId !== requestIdRef.current) return;
       setState(current => {
         if (!result.error) return { entity: result.entity, loading: false, error: false };
@@ -74,7 +96,7 @@ const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState =>
         return { loading: false, error: true };
       });
     },
-    [getBySharedId, language]
+    [entities.getBySharedId, language]
   );
 
   useEffect(() => {
@@ -85,14 +107,9 @@ const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState =>
   }, [fetchEntity, sharedId]);
 
   const reload = useCallback(async () => fetchEntity(sharedId, true), [fetchEntity, sharedId]);
-  const matchesRequest = Boolean(state.entity && state.entity.sharedId === sharedId);
+  const entity = withRecordedTranslations(state.entity, sharedId, recorded);
 
-  return {
-    entity: matchesRequest ? state.entity : undefined,
-    loading: !matchesRequest && !state.error && state.loading,
-    error: state.error,
-    reload,
-  };
+  return { entity, loading: !entity && !state.error && state.loading, error: state.error, reload };
 };
 
 export { useLibraryPreviewEntity };

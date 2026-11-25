@@ -57,6 +57,7 @@ const libraryRightPaneElement = (
     onRemoveSelection={pane.onRemoveSelection}
     onPreviewSelection={pane.onPreviewSelection}
     onCreated={pane.onCreated}
+    onNoted={pane.onNoted}
     onAction={pane.onAction}
     editingSelection={pane.editingSelection}
     onEditSelection={pane.onEditSelection}

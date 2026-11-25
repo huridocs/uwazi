@@ -29,6 +29,7 @@ type LibraryRightPaneProps = {
   onRemoveSelection: (sharedId: string) => void;
   onPreviewSelection: (sharedId: string) => void;
   onCreated: (sharedId?: string) => void;
+  onNoted?: (sharedId?: string, row?: LibrarySearchHit) => void;
   onAction?: (action: LibraryBulkAction) => void;
   editingSelection?: boolean;
   onEditSelection?: () => void;
@@ -46,6 +47,7 @@ const libraryPaneOverlay = ({
   creating,
   onClosePreview,
   onCreated,
+  onNoted,
   selectedIds,
   selectionPanelOpen,
   rows,
@@ -60,7 +62,9 @@ const libraryPaneOverlay = ({
   focusFieldKey,
 }: LibraryRightPaneProps): ReactElement | null => {
   if (creating) {
-    return <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} />;
+    return (
+      <LibraryCreateEntityPanel onClose={onClosePreview} onCreated={onCreated} onNoted={onNoted} />
+    );
   }
   if (selectedIds.length > 1 && selectionPanelOpen) {
     return (

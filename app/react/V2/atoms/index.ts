@@ -8,6 +8,10 @@ export { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
 export { userAtom } from './userAtom.js';
 export { relationshipTypesAtom } from './relationshipTypes.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
+export {
+  libraryEntityRevisionAtom,
+  type LibraryEntityRevision,
+} from './libraryEntityRevisionAtom.js';
 export { entityPageViewAtom } from './entityPageViewAtom.js';
 export { serverIsMobileAtom, isMobileOverrideAtom } from './isMobileAtom.js';
 export { requestOriginAtom } from './requestOriginAtom.js';

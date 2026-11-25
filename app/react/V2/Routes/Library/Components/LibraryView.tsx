@@ -270,6 +270,7 @@ const LibraryView = ({
             onSelectedIdsChange(selectedIds.filter(id => id !== sharedId)),
           onPreviewSelection: sharedId => selectEntity(sharedId),
           onCreated: finishCreated,
+          onNoted: onEntityCreated,
           onAction,
           editingSelection,
           onEditSelection: startEdit,

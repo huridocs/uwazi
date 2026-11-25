@@ -12,6 +12,7 @@ import {
   render as renderComponent,
 } from '@testing-library/react';
 
+import Leaflet from 'leaflet';
 import { Map } from '#app/Map/index.jsx';
 import * as MapHelper from '#app/Map/MapHelper.jsx';
 import {
@@ -30,6 +31,20 @@ jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useRouteError: () => () => undefined,
 }));
+
+const actualLeafletMap = jest.requireActual<typeof import('leaflet')>('leaflet').map;
+
+const markerAt = (map: Leaflet.Map, lat: number, lng: number) => {
+  let found = false;
+  const visit = (layer: Leaflet.Layer) => {
+    if (layer instanceof Leaflet.Marker) {
+      const position = layer.getLatLng();
+      found = found || (position.lat === lat && position.lng === lng);
+    } else if (layer instanceof Leaflet.LayerGroup) layer.eachLayer(visit);
+  };
+  map.eachLayer(visit);
+  return found;
+};
 
 describe('Map', () => {
   let renderResult: RenderResult;
@@ -136,7 +151,6 @@ describe('Map', () => {
       // @ts-ignore
       expect(zoomButtons[3].text).toEqual('−');
     });
-
     it('should call clickOnCluster when clicking on a cluster', async () => {
       await waitFor(async () => {
         const cluster = await screen.getByText('3');
@@ -144,7 +158,6 @@ describe('Map', () => {
         expect(clickOnCluster).toHaveBeenCalled();
       });
     });
-
     it('should call onClick when clicking somewhere on the map', async () => {
       await waitFor(async () => {
         const [data] = renderResult.container.getElementsByClassName('leaflet-pane');
@@ -153,7 +166,6 @@ describe('Map', () => {
       });
     });
   });
-
   describe('deleted entities', () => {
     it('should not show entities marked as deleted', async () => {
       testStore.set(deletedEntityAtom, 'entity2');
@@ -165,8 +177,29 @@ describe('Map', () => {
       });
     });
   });
-
   describe('render options', () => {
+    const trackedMaps: Leaflet.Map[] = [];
+    const trackMaps = () => {
+      trackedMaps.length = 0;
+      jest.spyOn(Leaflet, 'map').mockImplementation((element, options) => {
+        const map = actualLeafletMap(element, options);
+        trackedMaps.push(map);
+        return map;
+      });
+    };
+    const view = (markers: MapHelper.MarkerInput[], recenterRequest?: number) => (
+      <Provider store={testStore}>
+        <Map markers={markers} onClick={onClick} showControls recenterRequest={recenterRequest} />
+      </Provider>
+    );
+    const moved = (latitude: number, longitude: number) => ({
+      ...singleMarker,
+      latitude,
+      longitude,
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     it('should update markers when values change even with onClick', async () => {
       testStore.set(deletedEntityAtom, '');
       const { rerender } = renderComponent(
@@ -196,7 +229,6 @@ describe('Map', () => {
         expect(screen.queryByText('3')).not.toBeInTheDocument();
       });
     });
-
     it('should keep the leaflet container when markers are the same values', async () => {
       const { container, rerender } = renderComponent(
         <Provider store={testStore}>
@@ -224,12 +256,44 @@ describe('Map', () => {
       );
       expect(container.querySelector('.leafletmap')?.id).toBe(mapId);
     });
-
+    it('keeps the current zoom when the marker moves and recenters once when asked', async () => {
+      trackMaps();
+      const fitBounds = jest.spyOn(Leaflet.Map.prototype, 'fitBounds');
+      const { rerender } = renderComponent(view([singleMarker]));
+      await waitFor(() => expect(trackedMaps.length).toBeGreaterThan(0));
+      expect(fitBounds).toHaveBeenCalled();
+      fitBounds.mockClear();
+      rerender(view([moved(12, 44)]));
+      await waitFor(() => expect(fitBounds).toHaveBeenCalledTimes(1));
+      trackedMaps[0].setZoom(12);
+      fitBounds.mockClear();
+      rerender(view([moved(3, 8)], 0));
+      await waitFor(() => expect(markerAt(trackedMaps[0], 3, 8)).toBe(true));
+      expect(trackedMaps[0].getZoom()).toBe(12);
+      expect(fitBounds).not.toHaveBeenCalled();
+      rerender(view([moved(3, 8)], 1));
+      await waitFor(() => expect(fitBounds).toHaveBeenCalledTimes(1));
+      trackedMaps[0].panTo([20, 20]);
+      fitBounds.mockClear();
+      rerender(view([moved(3, 8)], 2));
+      await waitFor(() => expect(fitBounds).toHaveBeenCalledTimes(1));
+      fitBounds.mockClear();
+      rerender(view([moved(1, 2)], 2));
+      await waitFor(() => expect(markerAt(trackedMaps[0], 1, 2)).toBe(true));
+      expect(fitBounds).not.toHaveBeenCalled();
+    });
+    it('keeps the configured zoom when framing was not requested', async () => {
+      trackMaps();
+      const fitBounds = jest.spyOn(Leaflet.Map.prototype, 'fitBounds');
+      renderComponent(view([singleMarker], 0));
+      await waitFor(() => expect(trackedMaps[0]?.getZoom()).toBe(6));
+      expect(fitBounds).not.toHaveBeenCalled();
+    });
     it('should render controls if showControls is false', async () => {
-      await waitFor(async () => {
-        render([singleMarker], undefined, false);
-        expect((await screen.queryAllByRole('radio')).length).toBe(0);
-        expect((await screen.queryAllByRole('button')).length).toBe(0);
+      render([singleMarker], undefined, false);
+      await waitFor(() => {
+        expect(screen.queryAllByRole('radio')).toHaveLength(0);
+        expect(screen.queryAllByRole('button')).toHaveLength(0);
       });
     });
   });
