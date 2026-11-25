@@ -94,12 +94,11 @@ const useLibrarySelection = (rows: readonly LibrarySearchHit[], totalRows: numbe
     onEntitiesDeleted: (sharedIds: readonly string[]) => {
       setCreated(current => forgetCreatedRows(current, sharedIds));
     },
-    onEntityCreated: (sharedId?: string, row?: LibrarySearchHit) => {
+    onEntityCreated: (_sharedId?: string, row?: LibrarySearchHit) => {
       void revalidator.revalidate();
       if (row?.sharedId) {
         setCreated(current => rememberCreatedRow(current, { row, totalRows, rows }));
       }
-      if (sharedId) setSelectedIds([sharedId]);
     },
   };
 };

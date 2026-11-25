@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Map, Layer } from '#app/Map/MapContainer.js';
 import { Label, InputField } from '#V2/Components/Forms/index.js';
@@ -33,6 +33,36 @@ interface Marker {
   properties: { [k: string]: unknown };
 }
 
+const validPair = (lat?: number, lon?: number) =>
+  isValidLatitude(lat) && isValidLongitude(lon) ? { lat, lon } : undefined;
+
+const markersFor = (lat?: number, lon?: number): Marker[] => {
+  const point = validPair(lat, lon);
+  return point ? [{ latitude: point.lat, longitude: point.lon, properties: {} }] : [];
+};
+
+const adoptIncomingValue = (
+  value: { lat?: number; lon?: number },
+  current: { lat?: number; lon?: number },
+  reset: () => void
+) => {
+  if (value.lat === current.lat && value.lon === current.lon) return;
+  reset();
+};
+
+const coordinate = (raw: string, clamp: (value: number) => number) => {
+  const parsed = parseCoordinate(raw);
+  return parsed === undefined ? undefined : clamp(parsed);
+};
+
+const framePair = (
+  lat: number | undefined,
+  lon: number | undefined,
+  setRecenterRequest: (update: (current: number) => number) => void
+) => {
+  if (validPair(lat, lon)) setRecenterRequest(current => current + 1);
+};
+
 const Geolocation = ({
   name,
   onChange,
@@ -47,23 +77,26 @@ const Geolocation = ({
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
-
-  useEffect(() => {
-    setCurrentLatitude(value?.lat);
-    setCurrentLongitude(value?.lon);
-  }, [value?.lat, value?.lon]);
+  const [recenterRequest, setRecenterRequest] = useState(() =>
+    validPair(value.lat, value.lon) ? 1 : 0
+  );
+  adoptIncomingValue(value, { lat: currentLatitude, lon: currentLongitude }, () => {
+    setCurrentLatitude(value.lat);
+    setCurrentLongitude(value.lon);
+    framePair(value.lat, value.lon, setRecenterRequest);
+  });
 
   const latChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsed = parseCoordinate(e.target.value);
-    const nextLat = parsed === undefined ? undefined : clampLatitude(parsed);
+    const nextLat = coordinate(e.target.value, clampLatitude);
     setCurrentLatitude(nextLat);
+    framePair(nextLat, currentLongitude, setRecenterRequest);
     onChange?.({ lat: nextLat, lon: currentLongitude });
   };
 
   const lonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsed = parseCoordinate(e.target.value);
-    const nextLon = parsed === undefined ? undefined : clampLongitude(parsed);
+    const nextLon = coordinate(e.target.value, clampLongitude);
     setCurrentLongitude(nextLon);
+    framePair(currentLatitude, nextLon, setRecenterRequest);
     onChange?.({ lat: currentLatitude, lon: nextLon });
   };
 
@@ -73,10 +106,7 @@ const Geolocation = ({
     onChange?.({ lat: undefined, lon: undefined });
   };
 
-  const markers: Marker[] =
-    isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)
-      ? [{ latitude: currentLatitude, longitude: currentLongitude, properties: {} }]
-      : [];
+  const markers = markersFor(currentLatitude, currentLongitude);
 
   const mapClick = ({ lngLat }: { lngLat: [number, number] }) => {
     if (disabled) return;
@@ -93,6 +123,7 @@ const Geolocation = ({
       {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}
+        recenterRequest={recenterRequest}
         height={370}
         showControls
         zoom={zoom}
