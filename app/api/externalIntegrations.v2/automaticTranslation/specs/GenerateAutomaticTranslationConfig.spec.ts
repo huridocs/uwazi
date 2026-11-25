@@ -5,7 +5,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig.js';
-import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource.js';
+import { ATConfigDataSource } from '../contracts/ATConfigDataSource.js';
 import { GenerateATConfigError } from '../errors/generateATErrors.js';
 import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig.js';
 import { ValidationError, Validator } from '../infrastructure/Validator.js';
@@ -77,7 +77,7 @@ afterAll(async () => {
 
 describe('GenerateAutomaticTranslationConfig', () => {
   let generateAutomaticTranslationConfig: GenerateAutomaticTranslationsCofig;
-  let automaticTranslationConfigDS: MongoATConfigDataSource;
+  let automaticTranslationConfigDS: ATConfigDataSource;
 
   beforeEach(() => {
     automaticTranslationConfigDS = AutomaticTranslationFactory.defaultATConfigDataSource(
