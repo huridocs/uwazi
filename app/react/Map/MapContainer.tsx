@@ -18,6 +18,7 @@ type MapProps = {
   renderPopupInfo?: boolean;
   layers?: Layer[];
   zoom?: number;
+  recenterRequest?: number;
 };
 
 const Map = ({ ...props }: MapProps) => {

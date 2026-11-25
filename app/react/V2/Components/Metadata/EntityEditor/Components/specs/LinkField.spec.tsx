@@ -40,11 +40,15 @@ global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 
 const Harness = ({
   link = { label: 'Docs', url: 'https://en.example' },
+  omitValue,
+  required,
   disabled,
   translations = {},
   serverError,
 }: {
   link?: { label: string; url: string };
+  omitValue?: boolean;
+  required?: boolean;
   disabled?: boolean;
   translations?: EditEntityFormValues['translations'];
   serverError?: string;
@@ -56,7 +60,7 @@ const Harness = ({
       template: 't1',
       showIcon: false,
       icon: EMPTY_ICON,
-      metadata: { link: [{ value: link }] },
+      metadata: { link: omitValue ? [] : [{ value: link }] },
       translations,
       touchedTranslations: {},
     },
@@ -82,6 +86,7 @@ const Harness = ({
           label="Link"
           field="metadata.link.0.value"
           translatableName="link"
+          registerOptions={required ? { required: true } : undefined}
           disabled={disabled}
         />
         <pre data-testid="values">{JSON.stringify(form.watch('translations'))}</pre>
@@ -175,6 +180,15 @@ describe('LinkField', () => {
     fireEvent.blur(screen.getByLabelText('URL'));
 
     expect(await screen.findByText('Invalid URL')).toBeInTheDocument();
+  });
+
+  it('keeps a string url when a required link label is typed', async () => {
+    render(<Harness omitValue required />);
+    fireEvent.change(screen.getByLabelText('Label'), { target: { value: 'Site' } });
+    fireEvent.blur(screen.getByLabelText('URL'));
+    await waitFor(() =>
+      expect(screen.getByTestId('form-value').textContent).toBe('{"label":"Site","url":""}')
+    );
   });
 
   it('stores a trimmed url so a padded valid url is what gets saved', () => {
