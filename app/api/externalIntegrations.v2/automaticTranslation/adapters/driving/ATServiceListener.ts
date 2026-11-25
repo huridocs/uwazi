@@ -1,4 +1,4 @@
-import { tenants } from '#api/tenants/index.js';
+import { ExecutionContextFactory } from '#api/core/infrastructure/factories/ExecutionContextFactory.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { InvalidATServerResponse } from '../../errors/generateATErrors.js';
@@ -22,10 +22,14 @@ export class ATServiceListener {
           });
         }
 
-        await tenants.run(async () => {
-          permissionsContext.setCommandContext();
-          await ATFactory.defaultSaveEntityTranslations().execute(result);
-        }, result.key[0]);
+        await ExecutionContextFactory.runForTenant(
+          result.key[0],
+          { telemetry: { kind: 'queue_job' } },
+          async () => {
+            permissionsContext.setCommandContext();
+            await ATFactory.defaultSaveEntityTranslations().execute(result);
+          }
+        );
       },
     });
   }
