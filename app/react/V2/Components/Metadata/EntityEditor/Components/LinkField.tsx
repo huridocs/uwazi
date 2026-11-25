@@ -52,9 +52,11 @@ type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   translatableName?: string;
 };
 
-const urlText = (raw: unknown) => {
-  if (!raw || typeof raw !== 'object' || !('url' in raw)) return '';
-  return typeof raw.url === 'string' ? raw.url : '';
+const linkRecord = (raw: unknown) => {
+  if (typeof raw !== 'object' || raw === null) return { label: '', url: '' };
+  const label = 'label' in raw && typeof raw.label === 'string' ? raw.label : '';
+  const url = 'url' in raw && typeof raw.url === 'string' ? raw.url : '';
+  return { label, url };
 };
 
 const mainLinkMessage = (value: string, isRequired: boolean) => {
@@ -70,7 +72,7 @@ const translationUrlInvalid = (
   if (!propertyName) return false;
   const translations = getValues('translations') ?? {};
   return Object.values(translations).some(bucket =>
-    (bucket[propertyName] ?? []).some(entry => !isAcceptableLinkUrl(urlText(entry.value)))
+    (bucket[propertyName] ?? []).some(entry => !isAcceptableLinkUrl(linkRecord(entry.value).url))
   );
 };
 
@@ -102,7 +104,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
     if (
       error?.type !== 'validate' ||
       error.message !== 'Invalid URL' ||
-      mainLinkMessage(urlText(readField(field)), required) ||
+      mainLinkMessage(linkRecord(readField(field)).url, required) ||
       translationUrlInvalid(translatableName, getValues)
     ) {
       return;
@@ -127,19 +129,13 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
         rules={{
           ...registerOptions,
           validate: value => {
-            const message = mainLinkMessage(value?.url ?? '', required);
+            const message = mainLinkMessage(linkRecord(value).url, required);
             if (message) return message;
             return translationUrlInvalid(translatableName, getValues) ? 'Invalid URL' : true;
           },
         }}
         render={({ field: fieldValue, fieldState }) => {
-          const { label: linkLabel, url } = (fieldValue.value as {
-            url: string;
-            label?: string;
-          }) || {
-            label: '',
-            url: '',
-          };
+          const { label: linkLabel, url } = linkRecord(fieldValue.value);
 
           const { showError, message } = getFieldErrorState(fieldState);
           const translationServerError =
@@ -185,7 +181,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                     onBlur={fieldValue.onBlur}
                     labelVariant="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      fieldValue.onChange({ ...fieldValue.value, label: event.target.value })
+                      fieldValue.onChange({ label: event.target.value, url })
                     }
                   />
                 </div>
