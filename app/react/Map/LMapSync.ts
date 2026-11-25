@@ -35,7 +35,7 @@ const syncMarkersIfNeeded = ({
   map,
   markerGroup,
   markerState,
-  recenterRequest = 0,
+  recenterRequest,
   appliedSyncKeyRef,
   framedRequestRef,
 }: {
@@ -48,12 +48,14 @@ const syncMarkersIfNeeded = ({
 }) => {
   if (!map || !markerGroup) return;
   if (recenterRequest === 0) framedRequestRef.current = 0;
+  const markersChanged = appliedSyncKeyRef.current !== markerState.syncKey;
   const shouldFrame =
-    recenterRequest > framedRequestRef.current && markerState.pointMarkers.length > 0;
-  if (appliedSyncKeyRef.current === markerState.syncKey && !shouldFrame) return;
+    markerState.pointMarkers.length > 0 &&
+    (recenterRequest === undefined ? markersChanged : recenterRequest > framedRequestRef.current);
+  if (!markersChanged && !shouldFrame) return;
   syncMapMarkers(markerLayerArgs({ map, markerGroup, markerState, fitToMarkers: shouldFrame }));
   appliedSyncKeyRef.current = markerState.syncKey;
-  if (shouldFrame) framedRequestRef.current = recenterRequest;
+  if (shouldFrame && recenterRequest !== undefined) framedRequestRef.current = recenterRequest;
 };
 
 const clearStaleLeafletId = (containerId: string) => {

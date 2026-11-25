@@ -42,15 +42,17 @@ const addMapChrome = ({
   attributionControlRef.current = Leaflet.control
     .attribution({ prefix: false, position: 'bottomright' })
     .addTo(map);
+  const tileLayers = Object.values(mapLayers);
   if (showControls) {
     Leaflet.control.zoom({ position: 'bottomright' }).addTo(map);
   }
-  if (showControls && Object.values(mapLayers).length > 1) {
+  if (showControls && tileLayers.length > 1) {
     Leaflet.control
       .layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false })
       .addTo(map);
   }
-  const [initialLayer] = Object.values(mapLayers);
+  const [initialLayer] = tileLayers;
+  if (!initialLayer) return;
   initialLayer.options.zIndex = 0;
   initialLayer.addTo(map);
 };

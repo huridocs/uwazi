@@ -257,16 +257,18 @@ describe('Map', () => {
       expect(container.querySelector('.leafletmap')?.id).toBe(mapId);
     });
     it('keeps the current zoom when the marker moves and recenters once when asked', async () => {
-      testStore.set(deletedEntityAtom, '');
       trackMaps();
       const fitBounds = jest.spyOn(Leaflet.Map.prototype, 'fitBounds');
       const { rerender } = renderComponent(view([singleMarker]));
       await waitFor(() => expect(trackedMaps.length).toBeGreaterThan(0));
       expect(fitBounds).toHaveBeenCalled();
-      trackedMaps[0].setZoom(12);
       fitBounds.mockClear();
       rerender(view([moved(12, 44)]));
-      await waitFor(() => expect(markerAt(trackedMaps[0], 12, 44)).toBe(true));
+      await waitFor(() => expect(fitBounds).toHaveBeenCalledTimes(1));
+      trackedMaps[0].setZoom(12);
+      fitBounds.mockClear();
+      rerender(view([moved(3, 8)], 0));
+      await waitFor(() => expect(markerAt(trackedMaps[0], 3, 8)).toBe(true));
       expect(trackedMaps[0].getZoom()).toBe(12);
       expect(fitBounds).not.toHaveBeenCalled();
       rerender(view([moved(3, 8)], 1));
@@ -276,18 +278,16 @@ describe('Map', () => {
       rerender(view([moved(3, 8)], 2));
       await waitFor(() => expect(fitBounds).toHaveBeenCalledTimes(1));
       fitBounds.mockClear();
-      rerender(view([moved(1, 2)]));
+      rerender(view([moved(1, 2)], 2));
       await waitFor(() => expect(markerAt(trackedMaps[0], 1, 2)).toBe(true));
       expect(fitBounds).not.toHaveBeenCalled();
     });
     it('keeps the configured zoom when framing was not requested', async () => {
-      testStore.set(deletedEntityAtom, '');
       trackMaps();
       const fitBounds = jest.spyOn(Leaflet.Map.prototype, 'fitBounds');
       renderComponent(view([singleMarker], 0));
-      await waitFor(() => expect(trackedMaps.length).toBeGreaterThan(0));
+      await waitFor(() => expect(trackedMaps[0]?.getZoom()).toBe(6));
       expect(fitBounds).not.toHaveBeenCalled();
-      expect(trackedMaps[0].getZoom()).toBe(6);
     });
     it('should render controls if showControls is false', async () => {
       render([singleMarker], undefined, false);

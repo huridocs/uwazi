@@ -77,11 +77,13 @@ const Geolocation = ({
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
-  const [recenterRequest, setRecenterRequest] = useState(0);
+  const [recenterRequest, setRecenterRequest] = useState(() =>
+    validPair(value.lat, value.lon) ? 1 : 0
+  );
   adoptIncomingValue(value, { lat: currentLatitude, lon: currentLongitude }, () => {
     setCurrentLatitude(value.lat);
     setCurrentLongitude(value.lon);
-    setRecenterRequest(0);
+    framePair(value.lat, value.lon, setRecenterRequest);
   });
 
   const latChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -5,7 +5,6 @@ import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
 import { captureException } from '@sentry/react';
 import { GeolocationSchema } from '#shared/types/commonTypes.js';
-import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
@@ -33,6 +32,9 @@ type LMapProps = {
 };
 
 const EMPTY_MARKERS: MarkerInput[] = [];
+
+let mapContainerSeq = 0;
+const nextMapContainerId = () => `leaflet-map-${(mapContainerSeq += 1)}`;
 
 const markerSyncKey = (markers: MarkerInput[], deletedEntity?: string) =>
   `${deletedEntity || ''}|${markers
@@ -209,7 +211,7 @@ const LMap = ({
   layers,
   ...props
 }: LMapProps) => {
-  const containerId = useRef(uniqueID()).current;
+  const containerId = useRef(nextMapContainerId()).current;
   useLeafletMap({
     pointMarkers,
     showControls,
