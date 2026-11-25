@@ -1,4 +1,4 @@
-import type { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 import Leaflet from 'leaflet';
 import { GeolocationSchema } from '#shared/types/commonTypes.js';
 import { getMapProvider } from './TilesProviderFactory.js';
@@ -12,15 +12,8 @@ import {
   type MarkerLayerArgs,
 } from './LMapSetup.js';
 
-type MarkerSyncState = {
-  pointMarkers: MarkerLayerArgs['pointMarkers'];
-  deletedEntity: MarkerLayerArgs['deletedEntity'];
-  templatesInfo: MarkerLayerArgs['templatesInfo'];
-  renderPopupInfo: MarkerLayerArgs['renderPopupInfo'];
-  zoom: MarkerLayerArgs['zoom'];
+type MarkerSyncState = Omit<MarkerLayerArgs, 'map' | 'markerGroup' | 'fitToMarkers'> & {
   syncKey: string;
-  clickOnCluster?: MarkerLayerArgs['clickOnCluster'];
-  clickOnMarker?: MarkerLayerArgs['clickOnMarker'];
 };
 
 const markerLayerArgs = ({
@@ -50,8 +43,8 @@ const syncMarkersIfNeeded = ({
   markerGroup: Leaflet.MarkerClusterGroup | null;
   markerState: MarkerSyncState;
   recenterRequest?: number;
-  appliedSyncKeyRef: MutableRefObject<string | null>;
-  framedRequestRef: MutableRefObject<number>;
+  appliedSyncKeyRef: RefObject<string | null>;
+  framedRequestRef: RefObject<number>;
 }) => {
   if (!map || !markerGroup) return;
   if (recenterRequest === 0) framedRequestRef.current = 0;
@@ -131,7 +124,7 @@ const createLeafletMap = ({
   zoom: number;
   showControls: boolean;
   shouldScroll: boolean;
-  attributionControlRef: MutableRefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
   markerState: MarkerSyncState;
   frameOnLoad: boolean;
   readOnClick: () => ((event: { lngLat: [number, number] }) => void) | undefined;
