@@ -136,7 +136,7 @@ const handleMapClick = (args: {
   onClick({ lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] });
 };
 
-const addMapMarkers = (args: {
+type MarkerLayerArgs = {
   map: Leaflet.Map;
   markerGroup: Leaflet.MarkerClusterGroup;
   pointMarkers: MarkerInput[];
@@ -144,9 +144,12 @@ const addMapMarkers = (args: {
   templatesInfo: TemplatesInfo;
   renderPopupInfo: boolean | undefined;
   zoom: number;
+  fitToMarkers: boolean;
   clickOnCluster?: (cluster: DataMarker[], modifiers?: MapPointerModifiers) => void;
   clickOnMarker?: (marker: DataMarker, modifiers?: MapPointerModifiers) => void;
-}) => {
+};
+
+const addMapMarkers = (args: MarkerLayerArgs) => {
   const { map, markerGroup, pointMarkers, deletedEntity, templatesInfo, renderPopupInfo, zoom } =
     args;
   const markers = pointMarkers
@@ -172,10 +175,20 @@ const addMapMarkers = (args: {
   markerGroup.on('click', marker => {
     args.clickOnMarker?.(marker.layer, mapPointerModifiers(marker.originalEvent));
   });
-  if (pointMarkers.length) {
+  if (args.fitToMarkers && pointMarkers.length) {
     map.fitBounds(markerGroup.getBounds(), { maxZoom: zoom });
   }
-  markerGroup.addTo(map);
+  if (!map.hasLayer(markerGroup)) {
+    markerGroup.addTo(map);
+  }
 };
 
-export { finishMapSetup, mapGestureHandlers, handleMapClick, addMapMarkers };
+const syncMapMarkers = (args: MarkerLayerArgs) => {
+  args.markerGroup.clearLayers();
+  args.markerGroup.off('clusterclick');
+  args.markerGroup.off('click');
+  addMapMarkers(args);
+};
+
+export { finishMapSetup, mapGestureHandlers, handleMapClick, addMapMarkers, syncMapMarkers };
+export type { Layer, MarkerLayerArgs };
