@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import React from 'react';
 import Leaflet from 'leaflet';
 import { getMapProvider } from './TilesProviderFactory.js';
 import {
@@ -37,7 +37,7 @@ const addMapChrome = ({
   map: Leaflet.Map;
   mapLayers: { [k: string]: Leaflet.TileLayer };
   showControls: boolean;
-  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
 }) => {
   attributionControlRef.current = Leaflet.control
     .attribution({ prefix: false, position: 'bottomright' })
@@ -66,7 +66,7 @@ const bindMapAttribution = ({
   mapLayers: { [k: string]: Leaflet.TileLayer };
   baseMaps: ReturnType<typeof getMapProvider>;
   provider: 'google' | 'mapbox';
-  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
 }) => {
   const updateAttribution = (layerKey?: string) => {
     if (!attributionControlRef.current || provider === 'google') {
@@ -93,7 +93,7 @@ const finishMapSetup = (args: {
   baseMaps: ReturnType<typeof getMapProvider>;
   provider: 'google' | 'mapbox';
   showControls: boolean;
-  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
   initMarkers: () => void;
   clickHandler: (markerPoint: Leaflet.LeafletMouseEvent) => void;
 }) => {
