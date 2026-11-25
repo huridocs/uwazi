@@ -58,7 +58,9 @@ const NotificationsProbe = () => {
 };
 
 const renderFooters = async (deleteFn: jest.Mock) => {
-  const services = createTestServices({ entities: { delete: deleteFn } });
+  const services = createTestServices({
+    entities: { delete: deleteFn, getBySharedId: async () => [[entity]] },
+  });
   render(
     <TestRouterContext loaderData={{ entity, mainDocument: undefined, pagePlaintext: '' }}>
       <ServicesProvider value={services}>
