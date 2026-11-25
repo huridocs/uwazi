@@ -114,7 +114,17 @@ const renderEntity = ({
   return {
     store,
     ...render(
-      user ? <ServicesProvider value={createTestServices()}>{tree}</ServicesProvider> : tree
+      user ? (
+        <ServicesProvider
+          value={createTestServices({
+            entities: { getBySharedId: async () => [[shown]] },
+          })}
+        >
+          {tree}
+        </ServicesProvider>
+      ) : (
+        tree
+      )
     ),
   };
 };

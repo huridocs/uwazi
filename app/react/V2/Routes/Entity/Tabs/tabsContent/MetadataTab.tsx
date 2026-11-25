@@ -175,6 +175,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     registerCancelTranslations,
     requestStopTranslations,
     setEditErrors,
+    editBase,
   } = editing;
   const {
     documentPdfSelection,
@@ -186,7 +187,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   } = useDocumentPdf();
   const { openEntityOverlayTarget } = useEntityOverlayActions();
   const showEditor = isEditing && formMountHost === host;
-  const onSave = useMetadataTabSave(entity, editing);
+  const onSave = useMetadataTabSave(editBase ?? entity, editing);
 
   const pdfFill: PdfFillHost = useMemo(
     () => ({
@@ -230,40 +231,38 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
         host === 'side' ? 'px-3 py-3 pb-8' : MAIN_TAB_PAPER_PADDING
       }`}
     >
+      {saveError ? (
+        <p className="mb-3 text-sm text-red-600" role="alert">
+          {saveError}
+        </p>
+      ) : null}
       {!showEditor && <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />}
       {showEditor && (
-        <>
-          {saveError && (
-            <p className="mb-3 text-sm text-red-600" role="alert">
-              {saveError}
-            </p>
-          )}
-          <PdfFillProvider value={pdfFill}>
-            <EditEntity
-              formId={formId}
-              form={form}
-              entity={entity}
-              mediaUpload={mediaUpload}
-              onSave={onSave}
-              disabled={isSaving}
-              errors={editErrors}
-              onDirtyChange={setIsDirty}
-              onTranslationPendingChange={setTranslationsPending}
-              onRegisterCancelTranslations={registerCancelTranslations}
-              onTranslationSaveAttempt={() => {
-                requestStopTranslations(() => submitEditEntityForm(formId));
-              }}
-              mainDocumentId={mainDocument?._id}
-              onEditSource={(sharedId, title, templateId) =>
-                openEntityOverlayTarget({
-                  sharedId,
-                  title,
-                  templateId: templateId ?? '',
-                })
-              }
-            />
-          </PdfFillProvider>
-        </>
+        <PdfFillProvider value={pdfFill}>
+          <EditEntity
+            formId={formId}
+            form={form}
+            entity={editBase ?? entity}
+            mediaUpload={mediaUpload}
+            onSave={onSave}
+            disabled={isSaving}
+            errors={editErrors}
+            onDirtyChange={setIsDirty}
+            onTranslationPendingChange={setTranslationsPending}
+            onRegisterCancelTranslations={registerCancelTranslations}
+            onTranslationSaveAttempt={() => {
+              requestStopTranslations(() => submitEditEntityForm(formId));
+            }}
+            mainDocumentId={mainDocument?._id}
+            onEditSource={(sharedId, title, templateId) =>
+              openEntityOverlayTarget({
+                sharedId,
+                title,
+                templateId: templateId ?? '',
+              })
+            }
+          />
+        </PdfFillProvider>
       )}
     </div>
   );

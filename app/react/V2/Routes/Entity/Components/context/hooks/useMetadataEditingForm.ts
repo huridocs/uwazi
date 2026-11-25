@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import type { Entity } from '#V2/api/entities/types.js';
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -10,6 +11,12 @@ import {
 } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { useEntityContext } from '../EntityContext.js';
 
+const useEditSource = (entity: Entity, templateId: Parameters<typeof useEntityMediaUpload>[1]) => {
+  const [editBase, setEditBase] = useState<Entity>();
+  const mediaUpload = useEntityMediaUpload(editBase ?? entity, templateId);
+  return { editBase, setEditBase, mediaUpload };
+};
+
 const useMetadataEditingForm = () => {
   const { entity } = useEntityContext();
   const templates = useAtomValue(templatesAtom);
@@ -20,7 +27,7 @@ const useMetadataEditingForm = () => {
     defaultValues: buildEditEntityDefaultValues(entity, templates),
   });
   void form.formState.isDirty;
-  const mediaUpload = useEntityMediaUpload(entity, form.watch('template'));
+  const { editBase, setEditBase, mediaUpload } = useEditSource(entity, form.watch('template'));
 
   const registerCancelEdit = useCallback((handler: () => void) => {
     formCancelRef.current = handler;
@@ -33,6 +40,8 @@ const useMetadataEditingForm = () => {
     entity,
     templates,
     form,
+    editBase,
+    setEditBase,
     mediaUpload,
     saveError,
     setSaveError,
