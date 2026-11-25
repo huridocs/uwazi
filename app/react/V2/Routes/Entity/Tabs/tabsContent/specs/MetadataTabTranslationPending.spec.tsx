@@ -55,7 +55,11 @@ const hangTranslation = () => {
 const renderEditor = (upsert: jest.Mock, sessionRef: { current: Session | null }) => {
   render(
     <TestRouterContext loaderData={{ entity, mainDocument: undefined, pagePlaintext: '' }}>
-      <ServicesProvider value={createTestServices({ entities: { upsert } })}>
+      <ServicesProvider
+        value={createTestServices({
+          entities: { upsert, getBySharedId: jest.fn().mockResolvedValue([[entity]]) },
+        })}
+      >
         <TestAtomStoreProvider
           initialValues={[
             [templatesAtom, [{ _id: 't1', name: 'T', properties: [] }]],
