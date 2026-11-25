@@ -1,21 +1,13 @@
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
-import { Db } from 'mongodb';
-import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource.js';
 import { ATGateway } from '../contracts/ATGateway.js';
 import { ATConfig, ATTemplateConfig } from '../model/ATConfig.js';
 
-export class MongoATConfigDataSource
-  extends MongoDataSource<SettingsType>
-  implements ATConfigDataSource
-{
-  protected collectionName = 'settings';
-
+export class SettingsATConfigDataSource implements ATConfigDataSource {
   private settings: SettingsDataSource;
 
   private templates: TemplatesDataSource;
@@ -23,21 +15,19 @@ export class MongoATConfigDataSource
   private automaticTranslation: ATGateway;
 
   constructor(
-    db: Db,
-    transactionManager: TransactionManager,
     settings: SettingsDataSource,
     templates: TemplatesDataSource,
     automaticTranslation: ATGateway
   ) {
-    super(db, transactionManager);
     this.settings = settings;
     this.templates = templates;
     this.automaticTranslation = automaticTranslation;
   }
 
   async get() {
-    const settings = await this.getCollection().findOne();
-    const rawConfig = settings?.features?.automaticTranslation ?? { active: false };
+    const rawConfig = (await this.settings.readFeature('automaticTranslation')) ?? {
+      active: false,
+    };
 
     const validProperties = await this.templates.getAllTextProperties();
     const configuredLanguages = await this.settings.getLanguageKeys();
@@ -79,23 +69,26 @@ export class MongoATConfigDataSource
   }
 
   async update(active: boolean, config: ATTemplateConfig[]) {
-    await this.getCollection().findOneAndUpdate(
-      {},
-      {
-        $set: {
-          'features.automaticTranslation.active': active,
-          'features.automaticTranslation.templates': config.map(templateConfig => ({
-            template: templateConfig.template,
-            properties: templateConfig.properties
-              .filter(prop => !(prop instanceof CommonProperty))
-              .map(prop => prop.id),
-            commonProperties: templateConfig.properties
-              .filter(prop => prop instanceof CommonProperty)
-              .map(prop => prop.id),
-          })),
-        },
-      }
+    const current = await this.settings.find();
+    if (!current) return this.get();
+
+    const automaticTranslation = {
+      active,
+      templates: config.map(templateConfig => ({
+        template: templateConfig.template,
+        properties: templateConfig.properties
+          .filter(property => !(property instanceof CommonProperty))
+          .map(property => property.id),
+        commonProperties: templateConfig.properties
+          .filter(property => property instanceof CommonProperty)
+          .map(property => property.id),
+      })),
+    };
+
+    await this.settings.update(
+      new Settings({ features: { ...(current.features ?? {}), automaticTranslation } })
     );
+
     return this.get();
   }
 }

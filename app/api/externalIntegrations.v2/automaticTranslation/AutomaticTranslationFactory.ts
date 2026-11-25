@@ -1,5 +1,4 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
@@ -12,7 +11,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener.js';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig.js';
 import { ATExternalAPI } from './infrastructure/ATExternalAPI.js';
-import { MongoATConfigDataSource } from './infrastructure/MongoATConfigDataSource.js';
+import { SettingsATConfigDataSource } from './infrastructure/SettingsATConfigDataSource.js';
 import { Validator } from './infrastructure/Validator.js';
 import { ATTaskMessage, RequestEntityTranslation } from './RequestEntityTranslation.js';
 import { SaveEntityTranslations } from './SaveEntityTranslations.js';
@@ -21,10 +20,7 @@ import { TranslationResult, translationResultSchema } from './types/TranslationR
 
 const AutomaticTranslationFactory = {
   defaultATConfigDataSource(transactionManager: TransactionManager) {
-    const db = getConnection();
-    return new MongoATConfigDataSource(
-      db,
-      transactionManager,
+    return new SettingsATConfigDataSource(
       SettingsDataSourceFactory.default({ transactionManager }),
       TemplatesDataSourceFactory.default({ transactionManager }),
       new ATExternalAPI()
