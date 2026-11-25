@@ -1,4 +1,4 @@
-import React from 'react';
+import type { RefObject } from 'react';
 import Leaflet from 'leaflet';
 import { getMapProvider } from './TilesProviderFactory.js';
 import {
@@ -37,20 +37,22 @@ const addMapChrome = ({
   map: Leaflet.Map;
   mapLayers: { [k: string]: Leaflet.TileLayer };
   showControls: boolean;
-  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
 }) => {
   attributionControlRef.current = Leaflet.control
     .attribution({ prefix: false, position: 'bottomright' })
     .addTo(map);
+  const tileLayers = Object.values(mapLayers);
   if (showControls) {
     Leaflet.control.zoom({ position: 'bottomright' }).addTo(map);
   }
-  if (showControls && Object.values(mapLayers).length > 1) {
+  if (showControls && tileLayers.length > 1) {
     Leaflet.control
       .layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false })
       .addTo(map);
   }
-  const [initialLayer] = Object.values(mapLayers);
+  const [initialLayer] = tileLayers;
+  if (!initialLayer) return;
   initialLayer.options.zIndex = 0;
   initialLayer.addTo(map);
 };
@@ -66,7 +68,7 @@ const bindMapAttribution = ({
   mapLayers: { [k: string]: Leaflet.TileLayer };
   baseMaps: ReturnType<typeof getMapProvider>;
   provider: 'google' | 'mapbox';
-  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
 }) => {
   const updateAttribution = (layerKey?: string) => {
     if (!attributionControlRef.current || provider === 'google') {
@@ -93,7 +95,7 @@ const finishMapSetup = (args: {
   baseMaps: ReturnType<typeof getMapProvider>;
   provider: 'google' | 'mapbox';
   showControls: boolean;
-  attributionControlRef: React.MutableRefObject<Leaflet.Control.Attribution | null>;
+  attributionControlRef: RefObject<Leaflet.Control.Attribution | null>;
   initMarkers: () => void;
   clickHandler: (markerPoint: Leaflet.LeafletMouseEvent) => void;
 }) => {
@@ -136,7 +138,7 @@ const handleMapClick = (args: {
   onClick({ lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] });
 };
 
-const addMapMarkers = (args: {
+type MarkerLayerArgs = {
   map: Leaflet.Map;
   markerGroup: Leaflet.MarkerClusterGroup;
   pointMarkers: MarkerInput[];
@@ -144,9 +146,12 @@ const addMapMarkers = (args: {
   templatesInfo: TemplatesInfo;
   renderPopupInfo: boolean | undefined;
   zoom: number;
+  fitToMarkers: boolean;
   clickOnCluster?: (cluster: DataMarker[], modifiers?: MapPointerModifiers) => void;
   clickOnMarker?: (marker: DataMarker, modifiers?: MapPointerModifiers) => void;
-}) => {
+};
+
+const addMapMarkers = (args: MarkerLayerArgs) => {
   const { map, markerGroup, pointMarkers, deletedEntity, templatesInfo, renderPopupInfo, zoom } =
     args;
   const markers = pointMarkers
@@ -172,10 +177,20 @@ const addMapMarkers = (args: {
   markerGroup.on('click', marker => {
     args.clickOnMarker?.(marker.layer, mapPointerModifiers(marker.originalEvent));
   });
-  if (pointMarkers.length) {
+  if (args.fitToMarkers && pointMarkers.length) {
     map.fitBounds(markerGroup.getBounds(), { maxZoom: zoom });
   }
-  markerGroup.addTo(map);
+  if (!map.hasLayer(markerGroup)) {
+    markerGroup.addTo(map);
+  }
 };
 
-export { finishMapSetup, mapGestureHandlers, handleMapClick, addMapMarkers };
+const syncMapMarkers = (args: MarkerLayerArgs) => {
+  args.markerGroup.clearLayers();
+  args.markerGroup.off('clusterclick');
+  args.markerGroup.off('click');
+  addMapMarkers(args);
+};
+
+export { finishMapSetup, mapGestureHandlers, handleMapClick, addMapMarkers, syncMapMarkers };
+export type { Layer, MarkerLayerArgs };
