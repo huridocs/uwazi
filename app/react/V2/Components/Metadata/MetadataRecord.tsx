@@ -211,7 +211,6 @@ const MetadataRecord = ({
         templates,
         entity,
         onOpenEntity,
-        inheritingOnly: true,
       }),
     [
       partition.inheritingRels,

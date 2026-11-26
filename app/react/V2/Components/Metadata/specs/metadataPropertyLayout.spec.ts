@@ -166,8 +166,8 @@ describe('metadataPropertyLayout', () => {
       const groups = groupInheritingRelationships([second, first], templateMap);
       expect(groups.size).toBe(1);
       expect(groups.get(inheritGroupKey(first, templateMap))?.map(field => field._id)).toEqual([
-        'inh-b',
         'inh-a',
+        'inh-b',
       ]);
     });
 
@@ -187,6 +187,69 @@ describe('metadataPropertyLayout', () => {
           field => field._id
         )
       ).toEqual(['inh-a', 'inh-b']);
+    });
+
+    it('places a direct relationship that shares the inherited target and type inside that group', () => {
+      const inherited = inheritingSibling('inh-a', 'rel_a', 'Rel A');
+      const fields = [
+        { ...linkOnlyRel('direct-same'), name: 'direct_same', label: 'Direct same' },
+        inherited,
+        { ...linkOnlyRel('direct-other'), name: 'direct_other', label: 'Direct other' },
+        { ...linkOnlyRel('direct-third-a'), name: 'third_a', label: 'Third A' },
+        { ...linkOnlyRel('direct-third-b'), name: 'third_b', label: 'Third B' },
+      ];
+      const templateMap = buildTemplatePropertyById([
+        {
+          _id: 'inh-a',
+          name: 'rel_a',
+          type: 'relationship',
+          label: 'Rel A',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'p1', type: 'text' },
+        },
+        {
+          _id: 'direct-same',
+          name: 'direct_same',
+          type: 'relationship',
+          label: 'Direct same',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+        },
+        {
+          _id: 'direct-other',
+          name: 'direct_other',
+          type: 'relationship',
+          label: 'Direct other',
+          content: 'related-tmpl',
+          relationType: 'rel-type-2',
+        },
+        {
+          _id: 'direct-third-a',
+          name: 'third_a',
+          type: 'relationship',
+          label: 'Third A',
+          content: 'third-tmpl',
+          relationType: 'rel-type-3',
+        },
+        {
+          _id: 'direct-third-b',
+          name: 'third_b',
+          type: 'relationship',
+          label: 'Third B',
+          content: 'third-tmpl',
+          relationType: 'rel-type-3',
+        },
+      ]);
+      const groups = groupInheritingRelationships(fields, templateMap);
+      expect(groups.size).toBe(1);
+      expect(groups.get(inheritGroupKey(inherited, templateMap))?.map(field => field._id)).toEqual([
+        'inh-a',
+        'direct-same',
+      ]);
+      expect(
+        partitionMetadataRecord([], fields, templateMap).masonryFields.map(field => field._id)
+      ).toEqual(['inh-a', 'direct-other', 'direct-third-a', 'direct-third-b']);
     });
 
     it('anchors a relation-type group on its first sibling when that sibling is empty', () => {

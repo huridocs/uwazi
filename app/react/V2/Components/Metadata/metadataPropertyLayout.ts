@@ -2,7 +2,7 @@ import type { ClientProperty } from '#V2/shared/types.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { sortByTemplatePropertyOrder } from './sortByTemplatePropertyOrder.js';
-import { anchorInheritGroup, relationshipGroupKey } from './relationshipInherit.js';
+import { anchorInheritGroup } from './relationshipInherit.js';
 
 const LONG_FIELD_CHAR_THRESHOLD = 100;
 
@@ -76,13 +76,9 @@ const isInheritingRelationship = (
 const inheritGroupKey = (
   field: RelationshipMetadataProperty,
   byId: Map<string, ClientProperty>
-): string => {
+) => {
   const property = byId.get(field._id);
-  return `${relationshipGroupKey({
-    content: property?.content,
-    inherited: field.inherited,
-    inherit: property?.inherit,
-  })}::${property?.relationType ?? ''}`;
+  return `${property?.content ?? ''}::${property?.relationType ?? ''}`;
 };
 
 const contentLength = (data: MetadataProperty): number => {
@@ -225,26 +221,24 @@ type MetadataRecordPartition = {
 
 const groupInheritingRelationships = (
   fields: RelationshipMetadataProperty[],
-  templatePropertyById: Map<string, ClientProperty>
+  byId: Map<string, ClientProperty>
 ): Map<string, RelationshipMetadataProperty[]> => {
   const groups = new Map<string, RelationshipMetadataProperty[]>();
-  fields.forEach(field => {
-    if (!isInheritingRelationship(field)) {
-      return;
-    }
-    const groupKey = inheritGroupKey(field, templatePropertyById);
+  const add = (field: RelationshipMetadataProperty) => {
+    const groupKey = inheritGroupKey(field, byId);
     groups.set(groupKey, [...(groups.get(groupKey) ?? []), field]);
-  });
+  };
+  const ordered = sortByTemplatePropertyOrder(fields, [...byId.values()]);
+  ordered.filter(field => field.inherited).forEach(add);
+  ordered
+    .filter(field => !field.inherited)
+    .forEach(field => {
+      const property = byId.get(field._id);
+      const key = inheritGroupKey(field, byId);
+      if (property?.content && property.relationType && groups.has(key)) add(field);
+    });
   return groups;
 };
-
-const inheritGroupPrimaries = (
-  inheritingRels: RelationshipMetadataProperty[],
-  templatePropertyById: Map<string, ClientProperty>
-): RelationshipMetadataProperty[] =>
-  [...groupInheritingRelationships(inheritingRels, templatePropertyById).values()].flatMap(
-    anchorInheritGroup
-  );
 
 const partitionMetadataRecord = (
   otherFields: MetadataProperty[],
@@ -252,21 +246,27 @@ const partitionMetadataRecord = (
   templatePropertyById: Map<string, ClientProperty>
 ): MetadataRecordPartition => {
   const templateProperties = [...templatePropertyById.values()];
-  const inheritingRels = sortByTemplatePropertyOrder(
-    relationshipFields.filter(isInheritingRelationship),
-    templateProperties
+  const groups = groupInheritingRelationships(relationshipFields, templatePropertyById);
+  const clusteredDirectIds = new Set(
+    [...groups.values()].flat().flatMap(field => (field.inherited ? [] : [field._id]))
   );
-
   return {
     masonryFields: sortByTemplatePropertyOrder(
       [
         ...otherFields,
-        ...relationshipFields.filter(isLinkOnlyRelationship),
-        ...inheritGroupPrimaries(inheritingRels, templatePropertyById),
+        ...relationshipFields.filter(
+          field => isLinkOnlyRelationship(field) && !clusteredDirectIds.has(field._id)
+        ),
+        ...[...groups.values()].flatMap(anchorInheritGroup),
       ],
       templateProperties
     ).filter(includeInMasonry),
-    inheritingRels,
+    inheritingRels: sortByTemplatePropertyOrder(
+      relationshipFields.filter(
+        field => isInheritingRelationship(field) || clusteredDirectIds.has(field._id)
+      ),
+      templateProperties
+    ),
   };
 };
 

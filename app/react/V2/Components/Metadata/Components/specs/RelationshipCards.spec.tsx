@@ -146,7 +146,6 @@ const renderCards = (
         templatePropertyById={templatePropertyById}
         templates={[personTemplate]}
         entity={entity}
-        inheritingOnly
       />
     </TestAtomStoreProvider>
   );
