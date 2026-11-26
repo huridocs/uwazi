@@ -77,6 +77,12 @@ const TABLE_ROW_HEIGHT: Record<DataTableDensity, number> = {
   compact: 36,
 };
 
+const tableScrollClass = (stickyHeader: boolean | undefined, scrolls: boolean) => {
+  if (stickyHeader) return 'h-full overflow-auto';
+  if (scrolls) return 'overflow-x-auto';
+  return 'overflow-hidden';
+};
+
 interface DataTableProps<T extends { rowId: string }> {
   columns: DataTableColumn<T>[];
   data: T[];
@@ -96,6 +102,7 @@ interface DataTableProps<T extends { rowId: string }> {
   minWidthRem?: number;
   /** Mounts only the rows near the viewport. Ignored while reordering or tree rows are on. */
   virtualize?: boolean;
+  stickyHeader?: boolean;
 }
 
 const SortIcon = ({ sortKey, sort }: { sortKey: string; sort?: DataTableSort }) => {
@@ -328,6 +335,7 @@ const DataTable = <T extends { rowId: string }>({
   density = 'comfortable',
   minWidthRem,
   virtualize = false,
+  stickyHeader,
 }: DataTableProps<T>) => {
   const [internalData, setInternalData] = useState(data);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -428,13 +436,13 @@ const DataTable = <T extends { rowId: string }>({
       sensors={sensors}
     >
       <div
-        className={`bg-paper ${scrolls ? 'overflow-x-auto' : 'overflow-hidden'}`}
+        className={`bg-paper ${tableScrollClass(stickyHeader, scrolls)}`}
         style={{ boxShadow: CARD_SHADOW, borderRadius: CARD_RADIUS }}
       >
         <div className="w-full" style={scrolls ? { minWidth: `${minWidthRem}rem` } : undefined}>
           {/* Header strip */}
           <div
-            className="grid items-center gap-3 px-4 h-10 text-[11px] font-semibold text-ink-tertiary uppercase tracking-wider shrink-0"
+            className={`grid items-center gap-3 px-4 h-10 text-[11px] font-semibold text-ink-tertiary uppercase tracking-wider shrink-0 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}
             style={{
               gridTemplateColumns,
               backgroundColor: 'var(--color-theme-surface-warm, var(--color-theme-bg-warm))',

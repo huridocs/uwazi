@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Label } from './Label.js';
@@ -85,6 +85,21 @@ const filterOptions = (options: SearchSelectOption[], search: string) => {
   return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
 };
 
+const revealInScrollContainer = (list: HTMLElement) => {
+  let node = list.parentElement;
+  while (node) {
+    const overflow = getComputedStyle(node).overflowY;
+    if (overflow === 'auto' || overflow === 'scroll') {
+      const past = list.getBoundingClientRect().bottom - node.getBoundingClientRect().bottom;
+      if (past > 0) {
+        node.scrollTop += past;
+      }
+      return;
+    }
+    node = node.parentElement;
+  }
+};
+
 const renderCaretIcon = (open: boolean) => {
   const Icon = open ? ChevronUpIcon : ChevronDownIcon;
   return (
@@ -132,6 +147,7 @@ const SearchSelect = ({
   const fieldId = id ?? generatedId;
   const listboxId = `${fieldId}-listbox`;
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -149,6 +165,12 @@ const SearchSelect = ({
   );
 
   const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
+
+  useLayoutEffect(() => {
+    if (isOpen && listRef.current) {
+      revealInScrollContainer(listRef.current);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -305,7 +327,7 @@ const SearchSelect = ({
       {renderFieldControl()}
 
       {isOpen && !disabled && (
-        <ul className={compactSelectDropdownClassName} role="listbox" id={listboxId}>
+        <ul ref={listRef} className={compactSelectDropdownClassName} role="listbox" id={listboxId}>
           {filteredOptions.length === 0 && (
             <li className="px-3 py-2 text-sm text-ink-muted" role="presentation">
               <Translate>No results found</Translate>

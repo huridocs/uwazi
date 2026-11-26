@@ -59,11 +59,14 @@ const dateToValues = (from?: number, to?: number): string[] => {
   return [from === undefined ? '' : String(from), to === undefined ? '' : String(to)];
 };
 
-const facetTitle = (property: PropertySchema) => (
-  <Translate context={property._id ? String(property._id) : property.name}>
-    {property.label}
-  </Translate>
-);
+const facetTitle = (property: PropertySchema, templates: Template[]) => {
+  const templateId = templates.find(template =>
+    [...(template.commonProperties ?? []), ...(template.properties ?? [])].some(
+      item => item.name === property.name
+    )
+  )?._id;
+  return <Translate context={templateId ?? property.name}>{property.label}</Translate>;
+};
 
 const changeFacetMode = (
   andFilters: string[],
@@ -80,7 +83,7 @@ const propertyFacetShared = (
 ): PropertyFacetShared => ({
   ...props,
   buckets,
-  title: facetTitle(props.property),
+  title: facetTitle(props.property, props.templates),
   selected: props.filters[props.property.name] ?? [],
   mode: props.andFilters.includes(props.property.name) ? 'and' : 'or',
   onModeChange: next =>

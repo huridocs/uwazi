@@ -9,20 +9,44 @@ type ChipParts = {
   translateValue: boolean;
 };
 
+type ChipProperty = {
+  type: string;
+  content?: string;
+  label?: string;
+  name: string;
+  templateId?: string;
+};
+
+const propertiesOf = (template: Template) => [
+  ...(template.commonProperties ?? []),
+  ...(template.properties ?? []),
+];
+
+const namedProperty = (templates: Template[], name: string): ChipProperty | undefined =>
+  templates.reduce<ChipProperty | undefined>((found, template) => {
+    if (found) {
+      return found;
+    }
+    const property = propertiesOf(template).find(item => item.name === name);
+    if (!property) {
+      return undefined;
+    }
+    return {
+      type: property.type,
+      ...(property.content ? { content: property.content } : {}),
+      label: property.label,
+      name: property.name,
+      templateId: template._id,
+    };
+  }, undefined);
+
 const findProperty = (templates: Template[], name: string) => {
-  const properties = templates.flatMap(template => [
-    ...(template.commonProperties ?? []),
-    ...(template.properties ?? []),
-  ]);
-  const direct = properties.find(property => property.name === name);
+  const direct = namedProperty(templates, name);
   if (direct) {
     return direct;
   }
   const separator = name.indexOf('.');
-  if (separator < 1) {
-    return undefined;
-  }
-  return properties.find(property => property.name === name.slice(0, separator));
+  return separator < 1 ? undefined : namedProperty(templates, name.slice(0, separator));
 };
 
 const nestedGroupKey = (name: string, propertyName: string) =>
@@ -50,7 +74,8 @@ const thesaurusValueLabel = (thesauri: ClientThesaurus[], contentId: string, val
 
 const THESAURUS_PROPERTY_TYPES = new Set(['select', 'multiselect', 'nested']);
 
-type ChipProperty = { type: string; content?: string; label?: string; name?: string; _id?: string };
+const propertyContext = (property: ChipProperty | undefined) =>
+  property?.templateId || property?.name;
 
 const thesaurusContent = (property: ChipProperty | undefined) =>
   property?.content && THESAURUS_PROPERTY_TYPES.has(property.type) ? property.content : undefined;
@@ -63,7 +88,7 @@ const aggregationChip = (
   const content = thesaurusContent(property);
   return {
     propertyLabel: property?.label ?? key,
-    propertyContext: property?._id || property?.name,
+    propertyContext: propertyContext(property),
     valueLabel,
     ...(content ? { valueContext: content } : {}),
     translateValue: Boolean(content),
@@ -117,7 +142,7 @@ const anyGroupChip = (
   group: string
 ): ChipParts => ({
   propertyLabel: property?.label ?? key,
-  propertyContext: property?._id || property?.name,
+  propertyContext: propertyContext(property),
   valueLabel: group,
   translateValue: false,
 });
@@ -131,7 +156,7 @@ const thesaurusFallbackChip = (
     property?.content && thesaurusValueLabel(source.thesauri, property.content, source.value);
   return {
     propertyLabel: property?.label ?? key,
-    propertyContext: property?._id || property?.name,
+    propertyContext: propertyContext(property),
     valueLabel: fromThesaurus || source.value,
     valueContext: property?.content,
     translateValue: Boolean(fromThesaurus),

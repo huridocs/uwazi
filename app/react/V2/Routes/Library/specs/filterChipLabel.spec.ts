@@ -45,7 +45,7 @@ describe('resolveFilterChipParts', () => {
   it('uses property and value labels instead of names and ids', () => {
     expect(resolveFilterChipParts('country', 'ES', { templates, aggregations, thesauri })).toEqual({
       propertyLabel: 'Country',
-      propertyContext: 'prop-country',
+      propertyContext: 'tpl-case',
       valueLabel: 'Spain (agg)',
       valueContext: 'th-countries',
       translateValue: true,
@@ -82,7 +82,7 @@ describe('resolveFilterChipParts', () => {
       })
     ).toEqual({
       propertyLabel: 'Court',
-      propertyContext: 'prop-court',
+      propertyContext: 'tpl-case',
       valueLabel: 'Supreme Court',
       translateValue: false,
     });
@@ -91,7 +91,7 @@ describe('resolveFilterChipParts', () => {
   it('falls back to the thesaurus label when aggregations have no match', () => {
     expect(resolveFilterChipParts('country', 'FR', { templates, thesauri })).toEqual({
       propertyLabel: 'Country',
-      propertyContext: 'prop-country',
+      propertyContext: 'tpl-case',
       valueLabel: 'France',
       valueContext: 'th-countries',
       translateValue: true,

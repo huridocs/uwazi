@@ -72,6 +72,39 @@ describe('SearchSelect', () => {
     expect(screen.getByRole('combobox')).toHaveClass('text-sm');
   });
 
+  it('scrolls a clipping pane so the open list stays in view', () => {
+    const rect = jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+    const box = (bottom: number) => ({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom,
+      width: 0,
+      height: bottom,
+      toJSON: () => ({}),
+    });
+    rect.mockImplementation(function mockRect(this: HTMLElement) {
+      if (this.getAttribute('role') === 'listbox') return box(340);
+      if (this.style.overflowY === 'auto') return box(100);
+      return box(0);
+    });
+
+    const { container } = render(
+      <div style={{ overflowY: 'auto', height: 120 }}>
+        <SearchSelect id="country" label="Country" groups={groups} />
+      </div>
+    );
+
+    try {
+      fireEvent.click(screen.getByRole('button', { name: 'Country' }));
+      expect(container.firstElementChild).toHaveProperty('scrollTop', 240);
+    } finally {
+      rect.mockRestore();
+    }
+  });
+
   it('closes on Escape', () => {
     render(<SearchSelect id="country" label="Country" groups={groups} />);
 
