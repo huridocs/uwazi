@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
+import type { Entity } from '#V2/api/entities/types.js';
 import type {
   EditEntityFormValues,
   EditEntityErrors,
@@ -23,6 +24,7 @@ type MetadataEditingState = {
   form: UseFormReturn<EditEntityFormValues>;
   formId: typeof EDIT_ENTITY_FORM_ID;
   mediaUpload: EntityMediaUpload;
+  editBase?: Entity;
   saveError?: string;
   editErrors?: EditEntityErrors;
 };

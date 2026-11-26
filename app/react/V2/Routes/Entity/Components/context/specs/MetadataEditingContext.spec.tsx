@@ -1,27 +1,9 @@
 /** @jest-environment jsdom */
 /* eslint-disable max-statements */
-import React, { type ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import type { ClientFile } from '#app/istore.js';
-import type { Entity } from '#V2/api/entities/types.js';
-import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { EntityProvider } from '../EntityContext.js';
-import { MetadataEditingProvider, useMetadataEditing } from '../MetadataEditingContext.js';
-
-const entity: Entity = {
-  _id: 'e1',
-  sharedId: 's1',
-  title: 'Entity',
-  template: 't1',
-  language: 'en',
-  metadata: {
-    simple_text: [{ value: 'entity-text' }],
-    report: [{ value: 'entity-report' }],
-  },
-  creationDate: 0,
-  user: 'user1',
-};
+import { useMetadataEditing } from '../MetadataEditingContext.js';
+import { entity, getBySharedId, wrapper } from './metadataEditingSpecSetup.js';
 
 const pendingFile = (fileLocalID: string): ClientFile => ({
   _id: fileLocalID,
@@ -34,21 +16,15 @@ const pendingFile = (fileLocalID: string): ClientFile => ({
   entity: 's1',
 });
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <TestAtomStoreProvider
-    initialValues={[[templatesAtom, [{ _id: 't1', name: 'T', properties: [] }]]]}
-  >
-    <EntityProvider entity={entity}>
-      <MetadataEditingProvider>{children}</MetadataEditingProvider>
-    </EntityProvider>
-  </TestAtomStoreProvider>
-);
-
 describe('MetadataEditingContext', () => {
-  it('starts editing and tracks last metadata anchor', () => {
+  beforeEach(() => {
+    getBySharedId.mockReset();
+    getBySharedId.mockResolvedValue([[entity]]);
+  });
+  it('starts editing and tracks last metadata anchor', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
     });
     expect(result.current.isEditing).toBe(true);
@@ -61,11 +37,13 @@ describe('MetadataEditingContext', () => {
     expect(result.current.lastMetadataAnchor).toBe('side');
   });
 
-  it('requestDiscard cancels immediately when the form is clean', () => {
+  it('requestDiscard cancels immediately when the form is clean', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
+    });
+    act(() => {
       result.current.requestDiscard('discard');
     });
 
@@ -73,12 +51,14 @@ describe('MetadataEditingContext', () => {
     expect(result.current.pendingDiscardAction).toBeUndefined();
   });
 
-  it('requestStopTranslations waits for confirm and leaves the action unrun on dismiss', () => {
+  it('requestStopTranslations waits for confirm and leaves the action unrun on dismiss', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     const run = jest.fn();
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
+    });
+    act(() => {
       result.current.setTranslationsPending(true);
       result.current.requestStopTranslations(run);
     });
@@ -113,13 +93,15 @@ describe('MetadataEditingContext', () => {
     expect(result.current.translationStopOpen).toBe(false);
   });
 
-  it('requestDiscard confirms before leaving a dirty form', () => {
+  it('requestDiscard confirms before leaving a dirty form', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     const proceed = jest.fn();
     const onStay = jest.fn();
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
+    });
+    act(() => {
       result.current.setIsDirty(true);
     });
     act(() => {
@@ -148,13 +130,17 @@ describe('MetadataEditingContext', () => {
     expect(result.current.pendingDiscardAction).toBeUndefined();
   });
 
-  it('cancelEdit clears editing state and aborts running translations', () => {
+  it('cancelEdit clears editing state and aborts running translations', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     const cancel = jest.fn();
 
     act(() => {
       result.current.registerCancelTranslations(cancel);
+    });
+    await act(async () => {
       result.current.startEditing('side');
+    });
+    act(() => {
       result.current.setIsDirty(true);
       result.current.setIsSaving(true);
       result.current.setTranslationsPending(true);
@@ -169,12 +155,16 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isSaving).toBe(false);
   });
 
-  it('tracks formMountHost via registerMetadataActive and prefers edit host', () => {
+  it('tracks formMountHost via registerMetadataActive and prefers edit host', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
     act(() => {
       result.current.registerMetadataActive('main', true);
+    });
+    await act(async () => {
       result.current.startEditing('side');
+    });
+    act(() => {
       result.current.registerMetadataActive('side', true);
     });
     expect(result.current.lastMetadataAnchor).toBe('side');
@@ -187,11 +177,13 @@ describe('MetadataEditingContext', () => {
     expect(result.current.formMountHost).toBe('side');
   });
 
-  it('preserves pending media across form mount host changes', () => {
+  it('preserves pending media across form mount host changes', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('side');
+    });
+    act(() => {
       result.current.registerMetadataActive('side', true);
       result.current.mediaUpload.registerPendingAttachment(pendingFile('local1'));
     });
@@ -207,12 +199,14 @@ describe('MetadataEditingContext', () => {
     expect(result.current.mediaUpload.pendingAttachments[0]?.fileLocalID).toBe('local1');
   });
 
-  it('aborts in-flight save only via cancelEdit, not host remount registration', () => {
+  it('aborts in-flight save only via cancelEdit, not host remount registration', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     let signal: AbortSignal | undefined;
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('side');
+    });
+    act(() => {
       result.current.registerMetadataActive('side', true);
       signal = result.current.tryBeginSave()?.signal;
     });
@@ -232,10 +226,10 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isEditing).toBe(false);
   });
 
-  it('tryBeginSave rejects a second in-flight save', () => {
+  it('tryBeginSave rejects a second in-flight save', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
     });
 
@@ -256,13 +250,17 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isSaving).toBe(false);
   });
 
-  it('ignores startEditing join while a save is in flight', () => {
+  it('ignores startEditing join while a save is in flight', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
     act(() => {
       result.current.registerMetadataActive('side', true);
       result.current.registerMetadataActive('main', true);
+    });
+    await act(async () => {
       result.current.startEditing('side');
+    });
+    act(() => {
       result.current.tryBeginSave();
     });
     expect(result.current.formMountHost).toBe('side');
@@ -275,11 +273,13 @@ describe('MetadataEditingContext', () => {
     expect(result.current.lastMetadataAnchor).toBe('side');
   });
 
-  it('clears editErrors on finishEditing', () => {
+  it('clears editErrors on finishEditing', async () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
-    act(() => {
+    await act(async () => {
       result.current.startEditing('main');
+    });
+    act(() => {
       result.current.setEditErrors({ title: 'Title is required' });
     });
     expect(result.current.editErrors?.title).toBe('Title is required');

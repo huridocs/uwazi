@@ -58,6 +58,17 @@ const sampleEntity: Partial<EntityType> = {
   metadata: {},
 };
 
+const loadedEntity = (current: Partial<EntityType>): EntityType => ({
+  ...current,
+  _id: current._id ?? '',
+  sharedId: current.sharedId ?? '',
+  language: current.language ?? '',
+  title: current.title ?? '',
+  template: current.template ?? '',
+  creationDate: current.creationDate ?? 0,
+  user: typeof current.user === 'string' ? current.user : '',
+});
+
 const [sampleMainDocument] = sampleEntity.documents!;
 
 const sampleTemplate = [
@@ -166,7 +177,19 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
   );
 
   return render(
-    withServices ? <ServicesProvider value={createTestServices()}>{tree}</ServicesProvider> : tree
+    withServices ? (
+      <ServicesProvider
+        value={createTestServices({
+          entities: {
+            getBySharedId: async () => [[loadedEntity(entity)]],
+          },
+        })}
+      >
+        {tree}
+      </ServicesProvider>
+    ) : (
+      tree
+    )
   );
 };
 
