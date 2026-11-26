@@ -190,6 +190,7 @@ const PropertyFacet = ({
       onToggle={id => setFilter(property.name, toggleValue(selected, id))}
       mode={mode}
       onModeChange={type === 'multiselect' ? onModeChange : undefined}
+      valueContext={type === 'select' || type === 'multiselect' ? property.content : undefined}
       onClear={() => setFilter(property.name, [])}
     />
   );

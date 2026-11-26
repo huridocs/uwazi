@@ -1,4 +1,5 @@
 import React, { type ReactNode } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import nestedPropertyLabels from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
@@ -22,6 +23,9 @@ const nestedGroupLabel = (key: string, locale: string) => {
   const entry = nestedLabelMap[key.toLowerCase()];
   return entry?.[`label_${locale}`] || entry?.label_en || key;
 };
+
+const nestedValueLabel = (label: string, context?: string) =>
+  context ? <Translate context={context}>{label}</Translate> : label;
 
 const toggleValue = (current: string[] | undefined, value: string): string[] => {
   const next = new Set(current ?? []);
@@ -87,7 +91,7 @@ const NestedFacet = ({
                         )
                       )
                     }
-                    label={child.label || child.id}
+                    label={nestedValueLabel(child.label || child.id, property.content)}
                     count={child.count}
                   />
                 ))}

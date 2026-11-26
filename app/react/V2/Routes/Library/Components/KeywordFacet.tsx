@@ -18,6 +18,7 @@ type KeywordFacetProps = {
   mode?: FacetMode;
   onModeChange?: (mode: FacetMode) => void;
   lookup?: FacetLookup;
+  valueContext?: string;
   defaultExpanded?: boolean;
   alwaysSearch?: boolean;
   optionsCap?: number;
@@ -44,6 +45,7 @@ const KeywordFacet = ({
   mode = 'or',
   onModeChange,
   lookup,
+  valueContext,
   defaultExpanded = false,
   alwaysSearch = false,
   optionsCap = OPTIONS_CAP,
@@ -147,6 +149,7 @@ const KeywordFacet = ({
             buckets={visible}
             selected={selected}
             onToggle={onToggle}
+            valueContext={valueContext}
             defaultExpanded={defaultExpanded}
             forceExpanded={Boolean(query)}
           />

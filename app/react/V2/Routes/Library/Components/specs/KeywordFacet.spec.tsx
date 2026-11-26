@@ -6,6 +6,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
+import type { ClientTranslationSchema } from '#app/istore.js';
 import { translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { FacetLookup } from '../../lookupAggregation.js';
@@ -28,20 +29,28 @@ const renderFacet = ({
   mode,
   lookup,
   alwaysSearch,
+  valueContext,
+  locale = 'en',
+  localeTranslations = translations,
+  defaultExpanded,
 }: {
   buckets?: LibraryFacetBucket[];
   selected?: string[];
   mode?: FacetMode;
   lookup?: FacetLookup;
   alwaysSearch?: boolean;
+  valueContext?: string;
+  locale?: string;
+  localeTranslations?: ClientTranslationSchema[];
+  defaultExpanded?: boolean;
 } = {}) => {
   const onToggle = jest.fn();
   const onModeChange = jest.fn();
   render(
     <TestAtomStoreProvider
       initialValues={[
-        [localeAtom, 'en'],
-        [translationsAtom, translations],
+        [localeAtom, locale],
+        [translationsAtom, localeTranslations],
       ]}
     >
       <KeywordFacet
@@ -53,6 +62,8 @@ const renderFacet = ({
         mode={mode}
         lookup={lookup}
         alwaysSearch={alwaysSearch}
+        valueContext={valueContext}
+        defaultExpanded={defaultExpanded}
       />
     </TestAtomStoreProvider>
   );
@@ -105,6 +116,58 @@ describe('KeywordFacet', () => {
       ],
     });
     expect(screen.getByTestId('fa-icon')).toHaveTextContent('star');
+  });
+
+  it('shows the thesaurus value in the current language', () => {
+    const spanish: ClientTranslationSchema[] = [
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'th-countries',
+            label: 'Countries',
+            values: { Spain: 'España', Europe: 'Europa' },
+          },
+        ],
+      },
+    ];
+    renderFacet({
+      locale: 'es',
+      localeTranslations: spanish,
+      valueContext: 'th-countries',
+      defaultExpanded: true,
+      buckets: [
+        {
+          id: 'eu',
+          label: 'Europe',
+          count: 2,
+          values: [{ id: 'ES', label: 'Spain', count: 1 }],
+        },
+      ],
+    });
+    expect(screen.getByText('Europa')).toBeInTheDocument();
+    expect(screen.getByText('España')).toBeInTheDocument();
+  });
+
+  it('shows the related record title', () => {
+    const spanish: ClientTranslationSchema[] = [
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: { 'Supreme Court': 'Corte Suprema' },
+          },
+        ],
+      },
+    ];
+    renderFacet({
+      locale: 'es',
+      localeTranslations: spanish,
+      buckets: [{ id: 'org-1', label: 'Supreme Court', count: 1 }],
+    });
+    expect(screen.getByText('Supreme Court')).toBeInTheDocument();
   });
 
   it('queries a lookup instead of filtering locally', async () => {

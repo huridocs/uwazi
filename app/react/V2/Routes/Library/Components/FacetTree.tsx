@@ -10,9 +10,13 @@ type FacetTreeProps = {
   buckets: LibraryFacetBucket[];
   selected: string[];
   onToggle: (id: string) => void;
+  valueContext?: string;
   defaultExpanded?: boolean;
   forceExpanded?: boolean;
 };
+
+const facetValueLabel = (label: string, context?: string) =>
+  context ? <Translate context={context}>{label}</Translate> : label;
 
 const bucketIcon = (bucket: LibraryFacetBucket) =>
   bucket.icon ? <EntityIcon data={bucket.icon} className="shrink-0" /> : undefined;
@@ -21,6 +25,7 @@ const FacetTree = ({
   buckets,
   selected,
   onToggle,
+  valueContext,
   defaultExpanded = false,
   forceExpanded = false,
 }: FacetTreeProps) => {
@@ -43,7 +48,7 @@ const FacetTree = ({
             <FacetRow
               checked={selected.includes(bucket.id)}
               onToggle={() => onToggle(bucket.id)}
-              label={bucket.label || bucket.id}
+              label={facetValueLabel(bucket.label || bucket.id, valueContext)}
               count={bucket.count}
               icon={bucketIcon(bucket)}
               bold
@@ -60,7 +65,7 @@ const FacetTree = ({
                     child
                     checked={selected.includes(child.id)}
                     onToggle={() => onToggle(child.id)}
-                    label={child.label || child.id}
+                    label={facetValueLabel(child.label || child.id, valueContext)}
                     count={child.count}
                     icon={bucketIcon(child)}
                   />

@@ -48,6 +48,28 @@ const thesaurusValueLabel = (thesauri: ClientThesaurus[], contentId: string, val
   return flattenThesaurusValues(thesaurus.values).find(value => value.id === valueId)?.label;
 };
 
+const THESAURUS_PROPERTY_TYPES = new Set(['select', 'multiselect', 'nested']);
+
+type ChipProperty = { type: string; content?: string; label?: string; name?: string; _id?: string };
+
+const thesaurusContent = (property: ChipProperty | undefined) =>
+  property?.content && THESAURUS_PROPERTY_TYPES.has(property.type) ? property.content : undefined;
+
+const aggregationChip = (
+  property: ChipProperty | undefined,
+  key: string,
+  valueLabel: string
+): ChipParts => {
+  const content = thesaurusContent(property);
+  return {
+    propertyLabel: property?.label ?? key,
+    propertyContext: property?._id || property?.name,
+    valueLabel,
+    ...(content ? { valueContext: content } : {}),
+    translateValue: Boolean(content),
+  };
+};
+
 const aggregationValueLabel = (
   buckets: LibraryFacetBucket[] | undefined,
   value: string
@@ -96,12 +118,7 @@ const resolveFilterChipParts = (
   const aggregationKey = property?.name ?? key;
   const fromAggregation = aggregationValueLabel(aggregations?.properties?.[aggregationKey], value);
   if (fromAggregation) {
-    return {
-      propertyLabel: property?.label ?? key,
-      propertyContext: property?._id || property?.name,
-      valueLabel: fromAggregation,
-      translateValue: false,
-    };
+    return aggregationChip(property, key, fromAggregation);
   }
 
   const group = property ? nestedGroupKey(key, property.name) : undefined;

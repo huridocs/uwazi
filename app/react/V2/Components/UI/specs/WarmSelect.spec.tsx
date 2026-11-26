@@ -43,6 +43,23 @@ describe('WarmSelect', () => {
     document.removeEventListener('keydown', onCapture, true);
   });
 
+  it('scrolls a long sort menu', async () => {
+    const user = userEvent.setup();
+    const options = Array.from({ length: 24 }, (_, index) => ({
+      value: `sort-${index}`,
+      label: `Sort ${index + 1}`,
+    }));
+    render(
+      <WarmSelect ariaLabel="Sort" value="sort-0" onChange={() => undefined} options={options} />
+    );
+    await user.click(screen.getByRole('button', { name: 'Sort' }));
+    const listbox = screen.getByRole('listbox');
+    expect(listbox.className).toContain('max-h-80');
+    expect(listbox.className).toContain('overflow-y-auto');
+    expect(screen.getByRole('option', { name: 'Sort 1' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Sort 24' })).toBeInTheDocument();
+  });
+
   it('truncates the trigger label while keeping the accessory outside it', () => {
     render(
       <WarmSelect

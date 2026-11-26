@@ -47,6 +47,40 @@ describe('resolveFilterChipParts', () => {
       propertyLabel: 'Country',
       propertyContext: 'prop-country',
       valueLabel: 'Spain (agg)',
+      valueContext: 'th-countries',
+      translateValue: true,
+    });
+  });
+
+  it('keeps a related record title as plain text', () => {
+    const relationshipTemplates = [
+      {
+        _id: 'tpl-case',
+        name: 'Case',
+        properties: [
+          {
+            _id: 'prop-court',
+            name: 'court',
+            label: 'Court',
+            type: 'relationship',
+            content: 'tpl-org',
+          },
+        ],
+      },
+    ] as Template[];
+    const relationshipAggregations: LibraryAggregations = {
+      templates: [],
+      published: { published: 0, restricted: 0 },
+      properties: {
+        court: [{ id: 'org-1', label: 'Supreme Court', count: 1 }],
+      },
+    };
+    expect(
+      resolveFilterChipParts('court', 'org-1', relationshipTemplates, relationshipAggregations)
+    ).toEqual({
+      propertyLabel: 'Court',
+      propertyContext: 'prop-court',
+      valueLabel: 'Supreme Court',
       translateValue: false,
     });
   });
