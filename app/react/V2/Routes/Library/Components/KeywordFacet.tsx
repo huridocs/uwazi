@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, type ReactNode } from 'react';
+import React, { useEffect, useState, type ReactNode } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
@@ -35,23 +35,7 @@ const matchesQuery = (bucket: LibraryFacetBucket, query: string): boolean => {
   return Boolean(bucket.values?.some(child => matchesQuery(child, query)));
 };
 
-const KeywordFacet = ({
-  title,
-  buckets,
-  selected,
-  onToggle,
-  onClear,
-  open = true,
-  mode = 'or',
-  onModeChange,
-  lookup,
-  valueContext,
-  defaultExpanded = false,
-  alwaysSearch = false,
-  optionsCap = OPTIONS_CAP,
-}: KeywordFacetProps) => {
-  const [search, setSearch] = useState('');
-  const [showAll, setShowAll] = useState(false);
+const useFacetLookup = (lookup: FacetLookup | undefined, search: string) => {
   const [lookupBuckets, setLookupBuckets] = useState<LibraryFacetBucket[] | null>(null);
   const [lookupTotal, setLookupTotal] = useState<number>();
   const [lookupError, setLookupError] = useState(false);
@@ -84,20 +68,81 @@ const KeywordFacet = ({
     };
   }, [lookup, search]);
 
-  const source = lookup ? (lookupBuckets ?? buckets) : buckets;
-  const query = lookup ? '' : search.trim().toLowerCase();
-  const filtered = useMemo(
-    () => (query ? source.filter(bucket => matchesQuery(bucket, query)) : source),
-    [query, source]
-  );
+  return { lookupBuckets, lookupTotal, lookupError };
+};
+
+const searchedBuckets = (source: LibraryFacetBucket[], query: string) => {
+  const filtered = query ? source.filter(bucket => matchesQuery(bucket, query)) : source;
   const groups = filtered.filter(bucket => bucket.id !== 'any');
-  const anyBucket = source.find(bucket => bucket.id === 'any');
-  const visibleGroups = showAll ? groups : groups.slice(0, optionsCap);
+  return { groups, anyBucket: source.find(bucket => bucket.id === 'any') };
+};
+
+const cappedBuckets = (
+  groups: LibraryFacetBucket[],
+  anyBucket: LibraryFacetBucket | undefined,
+  cap: { showAll: boolean; optionsCap: number }
+) => {
+  const visibleGroups = cap.showAll ? groups : groups.slice(0, cap.optionsCap);
   const hidden = Math.max(0, groups.length - visibleGroups.length);
   const visible = anyBucket ? [...visibleGroups, anyBucket] : visibleGroups;
-  const totalKnown = lookupTotal ?? groups.length;
+  return { visible, hidden };
+};
+
+const keywordFacetView = (input: {
+  buckets: LibraryFacetBucket[];
+  lookup?: FacetLookup;
+  lookupBuckets: LibraryFacetBucket[] | null;
+  lookupTotal?: number;
+  search: string;
+  showAll: boolean;
+  optionsCap: number;
+  alwaysSearch: boolean;
+}) => {
+  const source = input.lookup ? (input.lookupBuckets ?? input.buckets) : input.buckets;
+  const query = input.lookup ? '' : input.search.trim().toLowerCase();
+  const { groups, anyBucket } = searchedBuckets(source, query);
+  const capped = cappedBuckets(groups, anyBucket, {
+    showAll: input.showAll,
+    optionsCap: input.optionsCap,
+  });
+  const totalKnown = input.lookupTotal ?? groups.length;
   const showSearch =
-    alwaysSearch || Boolean(lookup) || groups.length > optionsCap || totalKnown > optionsCap;
+    input.alwaysSearch ||
+    Boolean(input.lookup) ||
+    groups.length > input.optionsCap ||
+    totalKnown > input.optionsCap;
+  return { ...capped, groups, showSearch, query };
+};
+
+const KeywordFacet = ({
+  title,
+  buckets,
+  selected,
+  onToggle,
+  onClear,
+  open = true,
+  mode = 'or',
+  onModeChange,
+  lookup,
+  valueContext,
+  defaultExpanded = false,
+  alwaysSearch = false,
+  optionsCap = OPTIONS_CAP,
+}: KeywordFacetProps) => {
+  const [search, setSearch] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const lookupState = useFacetLookup(lookup, search);
+  const view = keywordFacetView({
+    buckets,
+    lookup,
+    search,
+    showAll,
+    optionsCap,
+    alwaysSearch,
+    ...lookupState,
+  });
+  const { lookupError } = lookupState;
+  const { visible, hidden, groups, showSearch, query } = view;
 
   const headerAction = onModeChange ? (
     <AndOrToggle value={mode} onChange={onModeChange} />

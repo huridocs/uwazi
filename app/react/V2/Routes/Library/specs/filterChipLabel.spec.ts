@@ -43,7 +43,7 @@ const aggregations: LibraryAggregations = {
 
 describe('resolveFilterChipParts', () => {
   it('uses property and value labels instead of names and ids', () => {
-    expect(resolveFilterChipParts('country', 'ES', templates, aggregations, thesauri)).toEqual({
+    expect(resolveFilterChipParts('country', 'ES', { templates, aggregations, thesauri })).toEqual({
       propertyLabel: 'Country',
       propertyContext: 'prop-country',
       valueLabel: 'Spain (agg)',
@@ -76,7 +76,10 @@ describe('resolveFilterChipParts', () => {
       },
     };
     expect(
-      resolveFilterChipParts('court', 'org-1', relationshipTemplates, relationshipAggregations)
+      resolveFilterChipParts('court', 'org-1', {
+        templates: relationshipTemplates,
+        aggregations: relationshipAggregations,
+      })
     ).toEqual({
       propertyLabel: 'Court',
       propertyContext: 'prop-court',
@@ -86,7 +89,7 @@ describe('resolveFilterChipParts', () => {
   });
 
   it('falls back to the thesaurus label when aggregations have no match', () => {
-    expect(resolveFilterChipParts('country', 'FR', templates, undefined, thesauri)).toEqual({
+    expect(resolveFilterChipParts('country', 'FR', { templates, thesauri })).toEqual({
       propertyLabel: 'Country',
       propertyContext: 'prop-country',
       valueLabel: 'France',
@@ -96,13 +99,13 @@ describe('resolveFilterChipParts', () => {
   });
 
   it('resolves type and status with their display labels', () => {
-    expect(resolveFilterChipParts('type', 'tpl-case', templates)).toEqual({
+    expect(resolveFilterChipParts('type', 'tpl-case', { templates })).toEqual({
       propertyLabel: 'Type',
       valueLabel: 'Case',
       valueContext: 'tpl-case',
       translateValue: true,
     });
-    expect(resolveFilterChipParts('status', 'restricted', templates)).toEqual({
+    expect(resolveFilterChipParts('status', 'restricted', { templates })).toEqual({
       propertyLabel: 'Status',
       valueLabel: 'Restricted',
       translateValue: true,
