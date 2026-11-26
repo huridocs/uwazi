@@ -4,7 +4,7 @@ import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
-import { DEFAULT_LIBRARY_URL_STATE } from '../libraryUrlState.js';
+import { DEFAULT_LIBRARY_URL_STATE, type LibraryViewMode } from '../libraryUrlState.js';
 import type { LibraryViewProps } from './libraryViewProps.js';
 import { uploadChosenLibraryPdfs } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
@@ -14,6 +14,12 @@ import { useLibraryPaneRequest } from './useLibraryMobilePane.js';
 import { useLibraryResultsChrome } from './useLibraryResultsChrome.js';
 import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
+
+const resultsRegionClass = (view: LibraryViewMode) => {
+  if (view === 'map') return 'relative min-h-0 flex-1 overflow-hidden bg-warm';
+  const scroll = view === 'table' ? 'overflow-hidden' : 'overflow-auto';
+  return `min-h-0 flex-1 ${scroll} bg-warm p-3`;
+};
 
 const libraryPaneMode = (creating: boolean, selectedCount: number) => {
   if (creating) return 'create';
@@ -165,11 +171,7 @@ const LibraryView = ({
               onTableDensityChange={onTableDensityChange}
             />
             <div
-              className={
-                view === 'map'
-                  ? 'relative min-h-0 flex-1 overflow-hidden bg-warm'
-                  : 'min-h-0 flex-1 overflow-auto bg-warm p-3'
-              }
+              className={resultsRegionClass(view)}
               role="region"
               aria-label={t('System', 'Library results', null, false)}
             >

@@ -77,7 +77,7 @@
 
 .content-header ~ .library-filters {
   @media (min-width: 1024px) {
-    top: 101px;
+    top: calc(101px + var(--live-translate-banner, 0px));
   }
 }
 

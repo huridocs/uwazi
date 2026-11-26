@@ -9,20 +9,42 @@ type ChipParts = {
   translateValue: boolean;
 };
 
-const findProperty = (templates: Template[], name: string) => {
-  const properties = templates.flatMap(template => [
-    ...(template.commonProperties ?? []),
-    ...(template.properties ?? []),
-  ]);
-  const direct = properties.find(property => property.name === name);
-  if (direct) {
-    return direct;
+type ChipProperty = {
+  content?: string;
+  label?: string;
+  name: string;
+  templateId?: string;
+};
+
+const propertiesOf = (template: Template) => [
+  ...(template.commonProperties ?? []),
+  ...(template.properties ?? []),
+];
+
+const matchesNamed = (templates: Template[], name: string): ChipProperty[] =>
+  templates.flatMap(template => {
+    const property = propertiesOf(template).find(item => item.name === name);
+    if (!property) {
+      return [];
+    }
+    return [
+      {
+        ...(property.content ? { content: property.content } : {}),
+        label: property.label,
+        name: property.name,
+        templateId: template._id,
+      },
+    ];
+  });
+
+const namedProperty = (templates: Template[], name: string): ChipProperty | undefined => {
+  const matches = matchesNamed(templates, name);
+  const [first] = matches;
+  if (!first || matches.length === 1) {
+    return first;
   }
-  const separator = name.indexOf('.');
-  if (separator < 1) {
-    return undefined;
-  }
-  return properties.find(property => property.name === name.slice(0, separator));
+  const label = matches.every(item => item.label === first.label) ? first.label : first.name;
+  return { ...first, templateId: undefined, label };
 };
 
 const nestedGroupKey = (name: string, propertyName: string) =>
@@ -48,6 +70,20 @@ const thesaurusValueLabel = (thesauri: ClientThesaurus[], contentId: string, val
   return flattenThesaurusValues(thesaurus.values).find(value => value.id === valueId)?.label;
 };
 
+const propertyContext = (property: ChipProperty | undefined) =>
+  property?.templateId || property?.name;
+
+const plainChip = (
+  property: ChipProperty | undefined,
+  key: string,
+  valueLabel: string
+): ChipParts => ({
+  propertyLabel: property?.label ?? key,
+  propertyContext: propertyContext(property),
+  valueLabel,
+  translateValue: false,
+});
+
 const aggregationValueLabel = (
   buckets: LibraryFacetBucket[] | undefined,
   value: string
@@ -67,63 +103,101 @@ const aggregationValueLabel = (
   }, undefined);
 };
 
-const resolveFilterChipParts = (
+type ChipSources = {
+  templates: Template[];
+  aggregations?: LibraryAggregations;
+  thesauri?: ClientThesaurus[];
+  typeIds?: string[];
+};
+
+const templatesInScope = (templates: Template[], typeIds: string[] | undefined) => {
+  const selected = (typeIds ?? []).filter(Boolean);
+  if (!selected.length) {
+    return templates;
+  }
+  const scoped = templates.filter(template => selected.includes(template._id));
+  return scoped.length ? scoped : templates;
+};
+
+const propertyNamed = (templates: Template[], name: string) => {
+  const direct = namedProperty(templates, name);
+  if (direct) {
+    return direct;
+  }
+  const separator = name.indexOf('.');
+  return separator < 1 ? undefined : namedProperty(templates, name.slice(0, separator));
+};
+
+const findProperty = (templates: Template[], name: string, typeIds?: string[]) => {
+  const scoped = templatesInScope(templates, typeIds);
+  const match = propertyNamed(scoped, name);
+  if (match || scoped === templates) {
+    return match;
+  }
+  return propertyNamed(templates, name);
+};
+
+const statusChip = (value: string): ChipParts => ({
+  propertyLabel: 'Status',
+  valueLabel: value === 'restricted' ? 'Restricted' : 'Published',
+  translateValue: true,
+});
+
+const typeChip = (value: string, templates: Template[]): ChipParts => {
+  const template = templates.find(item => item._id === value);
+  return {
+    propertyLabel: 'Type',
+    valueLabel: template?.name ?? value,
+    valueContext: template?._id,
+    translateValue: true,
+  };
+};
+
+const thesaurusFallbackChip = (
+  property: ChipProperty | undefined,
   key: string,
-  value: string,
-  templates: Template[],
-  aggregations?: LibraryAggregations,
-  thesauri: ClientThesaurus[] = []
+  source: { value: string; thesauri: ClientThesaurus[] }
 ): ChipParts => {
-  if (key === 'status') {
-    return {
-      propertyLabel: 'Status',
-      valueLabel: value === 'restricted' ? 'Restricted' : 'Published',
-      translateValue: true,
-    };
-  }
-
-  if (key === 'type') {
-    const template = templates.find(item => item._id === value);
-    return {
-      propertyLabel: 'Type',
-      valueLabel: template?.name ?? value,
-      valueContext: template?._id,
-      translateValue: true,
-    };
-  }
-
-  const property = findProperty(templates, key);
-  const aggregationKey = property?.name ?? key;
-  const fromAggregation = aggregationValueLabel(aggregations?.properties?.[aggregationKey], value);
-  if (fromAggregation) {
-    return {
-      propertyLabel: property?.label ?? key,
-      propertyContext: property?._id || property?.name,
-      valueLabel: fromAggregation,
-      translateValue: false,
-    };
-  }
-
-  const group = property ? nestedGroupKey(key, property.name) : undefined;
-  if (group && value === 'any') {
-    return {
-      propertyLabel: property?.label ?? key,
-      propertyContext: property?._id || property?.name,
-      valueLabel: group,
-      translateValue: false,
-    };
-  }
-
-  const fromThesaurus = property?.content && thesaurusValueLabel(thesauri, property.content, value);
-
+  const fromThesaurus =
+    property?.content && thesaurusValueLabel(source.thesauri, property.content, source.value);
   return {
     propertyLabel: property?.label ?? key,
-    propertyContext: property?._id || property?.name,
-    valueLabel: fromThesaurus || value,
+    propertyContext: propertyContext(property),
+    valueLabel: fromThesaurus || source.value,
     valueContext: property?.content,
     translateValue: Boolean(fromThesaurus),
   };
 };
 
-export { resolveFilterChipParts };
+const propertyChip = (key: string, value: string, sources: ChipSources): ChipParts => {
+  const property = findProperty(sources.templates, key, sources.typeIds);
+  const aggregationKey = property?.name ?? key;
+  const fromAggregation = aggregationValueLabel(
+    sources.aggregations?.properties?.[aggregationKey],
+    value
+  );
+  if (fromAggregation) {
+    return plainChip(property, key, fromAggregation);
+  }
+  const group = property ? nestedGroupKey(key, property.name) : undefined;
+  if (group && value === 'any') {
+    return plainChip(property, key, group);
+  }
+  return thesaurusFallbackChip(property, key, { value, thesauri: sources.thesauri ?? [] });
+};
+
+const resolveFilterChipParts = (key: string, value: string, sources: ChipSources): ChipParts => {
+  if (key === 'status') {
+    return statusChip(value);
+  }
+  if (key === 'type') {
+    return typeChip(value, sources.templates);
+  }
+  return propertyChip(key, value, sources);
+};
+
+const templateContextForProperty = (templates: Template[], name: string, typeIds?: string[]) =>
+  findProperty(templates, name, typeIds)?.templateId;
+
+export { resolveFilterChipParts, templateContextForProperty };
 export type { ChipParts };

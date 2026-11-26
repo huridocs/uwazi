@@ -82,8 +82,8 @@ header {
     width: 85vw;
     max-width: 360px;
     min-width: 250px;
-    top: 50px;
-    height: calc(100% - 50px);
+    top: calc(50px + var(--live-translate-banner, 0px));
+    height: calc(100% - 50px - var(--live-translate-banner, 0px));
     background-color: var(--c-bg-menu-mobile);
     color: var(--c-text-menu-mobile);
     border-top: 1px solid color.adjust(colors.$c-black, $alpha: -0.6);
@@ -349,7 +349,7 @@ header {
 
 .menuNav::before {
   @media (max-width: 1023px) {
-    top: 50px;
+    top: calc(50px + var(--live-translate-banner, 0px));
     left: calc(min(85vw, 360px));
     z-index: 10;
 

@@ -1,11 +1,11 @@
-@use "../config/colors";
+$inline-translate: 'color-mix(in srgb, var(--color-theme-warning, #f59e0b) 55%, var(--color-theme-text-primary, #1a1a1a))';
 
 .translation.active {
-  border-bottom: 2px dashed colors.$c-active-feature;
+  border-bottom: 2px dashed #{$inline-translate};
   cursor: pointer;
 }
 
 .menuNav-btn.inlineEdit.active {
-  border-color: colors.$c-active-feature;
+  border-color: #{$inline-translate};
   background-color: white;
 }

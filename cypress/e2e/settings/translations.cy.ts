@@ -174,7 +174,7 @@ describe('Translations', () => {
     });
 
     it('should disable live translate', () => {
-      cy.get('button.singleItem[aria-label="Turn off inline translation"]').click();
+      cy.contains('button', 'Turn off live translate').click();
     });
 
     it('Should navigate to library and active live translate', () => {
@@ -196,7 +196,7 @@ describe('Translations', () => {
     });
 
     it('should deactive the live translate and check the translatations in english and spanish', () => {
-      cy.get('button[aria-label="Turn off inline translation"]').click();
+      cy.contains('button', 'Turn off live translate').click();
       cy.contains('span', 'Filtering');
       changeLanguage('Español');
       cy.contains('span', 'Filtros');

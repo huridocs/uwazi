@@ -836,6 +836,36 @@ header button svg:not([class*='notification-kind-icon']),
 .tw-content .header-bar-panel .header-bar-panel-group {
   color: var(--color-theme-text-secondary);
 }
+.tw-content .live-translate-banner {
+  background-color: var(--color-theme-warning-light);
+  color: color-mix(in srgb, var(--color-theme-warning) 55%, var(--color-theme-text-primary));
+}
+.tw-content .live-translate-banner .live-translate-esc {
+  display: none;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: inherit;
+  font-family: inherit;
+}
+@media (min-width: 48rem) {
+  .tw-content .live-translate-banner .live-translate-esc {
+    display: inline;
+  }
+}
+.tw-content .live-translate-banner button,
+.tw-content .header-bar[data-uwazi-header] .live-translate-banner button {
+  color: var(--color-theme-text-primary);
+  background-color: var(--color-theme-bg-surface);
+}
+.tw-content .live-translate-banner button:hover,
+.tw-content .live-translate-banner button:focus-visible,
+.tw-content .header-bar[data-uwazi-header] .live-translate-banner button:hover,
+.tw-content .header-bar[data-uwazi-header] .live-translate-banner button:focus-visible {
+  background-color: var(--color-theme-bg-warm);
+  color: var(--color-theme-text-primary);
+}
 .tw-content .header-bar[data-uwazi-header] .header-bar-skip {
   background-color: var(--color-theme-bg-surface);
   color: var(--color-theme-text-primary);

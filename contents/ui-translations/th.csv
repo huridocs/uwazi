@@ -239,6 +239,7 @@ Click to fill,คลิกเพื่อใส่ค่า
 Click to select an image,คลิกเพื่อเลือกภาพ
 Click to select audio or video,คลิกเพื่อเลือกไฟล์เสียงหรือวิดีโอ
 Click to select files,คลิกเพื่อเลือกไฟล์
+Click underlined text to translate it.,คลิกข้อความที่ขีดเส้นใต้เพื่อแปล
 Close,ปิด
 Close filters,ปิดตัวกรอง
 Close modal,ปิดหน้าต่าง
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,�
 Live (always up to date),สด (อัปเดตเสมอ)
 Live preview,ดูตัวอย่างแบบเรียลไทม์
 Live translate,แปลแบบเรียลไทม์
+Live translate is on.,เปิดการแปลแบบเรียลไทม์อยู่.
 Load,โหลด
 Load example,โหลดตัวอย่าง
 Load more,โหลดเพิ่มเติม
@@ -1640,6 +1642,7 @@ Translations saved,บันทึกการแปล
 Tree,ต้นไม้
 Try a different search or clear filters.,ลองค้นหาด้วยคำค้นหาอื่น หรือล้างตัวกรอง
 Turn off inline translation,ปิดการแปลแบบทันที
+Turn off live translate,ปิดการแปลแบบเรียลไทม์
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","สองมิติแบบหมวดหมู่ช่วยให้สามารถสร้างแผนภูมิแท่งซ้อน (เช่น แผนภูมิตามประเทศและเพศ
 ) ได้"

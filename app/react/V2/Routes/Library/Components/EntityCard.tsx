@@ -179,7 +179,7 @@ const EntityCard = ({
           {fields.map(field => (
             <div key={field.id} className="min-w-0">
               <span className="block text-[10px] leading-tight text-ink-tertiary">
-                {field.label}
+                <Translate context={templateId}>{field.label}</Translate>
               </span>
               {renderFieldValue(field, onFocusProperty)}
             </div>

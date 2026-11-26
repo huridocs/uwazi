@@ -12,7 +12,7 @@ import {
 } from '#V2/Components/UI/index.js';
 import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 import { followLanguageUrl } from './followLanguageUrl.js';
-import { HeaderIcon, headerChipClass } from './headerIcons.js';
+import { HeaderIcon } from './headerIcons.js';
 
 type LanguageDropdownProps = {
   className?: string;
@@ -32,7 +32,6 @@ const languageOptions = (languages: LanguagesListSchema) =>
     iso6391: language.key,
   }));
 
-const stoppedEdit = { inlineEdit: false, translationKey: '', context: '' };
 const startedEdit = { inlineEdit: true, translationKey: '', context: '' };
 
 const liveTranslateLabel = () => (
@@ -53,17 +52,6 @@ const liveTranslateItem = (onClick: () => void) => (
       {liveTranslateLabel()}
     </button>
   </NeedAuthorization>
-);
-
-const liveTranslateButton = (className: string, onClick: () => void) => (
-  <button
-    type="button"
-    className={`${headerChipClass} header-bar-button-active ${className}`}
-    aria-pressed
-    onClick={onClick}
-  >
-    {liveTranslateLabel()}
-  </button>
 );
 
 const switchLanguage = (
@@ -90,15 +78,12 @@ const LanguageDropdown = ({ className = '', appearance = 'header' }: LanguageDro
   const options = useMemo(() => languageOptions(languageList ?? []), [languageList]);
   const selected = getSelectedLanguage(locale, languageList);
 
-  if (!languageList?.length || !selected || inlineEditState.inlineEdit) {
-    return inlineEditState.inlineEdit
-      ? liveTranslateButton(className, () => setInlineEditState(stoppedEdit))
-      : null;
-  }
+  if (!languageList?.length || !selected) return null;
 
   return (
     <div className={className}>
       <LanguageSelect
+        key={inlineEditState.inlineEdit ? 'live-on' : 'live-off'}
         value={selected.key}
         options={options}
         align="end"
