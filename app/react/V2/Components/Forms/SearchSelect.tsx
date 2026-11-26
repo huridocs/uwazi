@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Label } from './Label.js';
@@ -85,6 +85,52 @@ const filterOptions = (options: SearchSelectOption[], search: string) => {
   return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
 };
 
+const scrollsY = (overflow: string) => overflow === 'auto' || overflow === 'scroll';
+
+const clipsY = (overflow: string) => scrollsY(overflow) || overflow === 'hidden';
+
+const scrollInto = (node: HTMLElement, past: number) => {
+  const before = node.scrollTop;
+  node.scrollTop = before + past;
+  return node.scrollTop - before;
+};
+
+const resetListBox = (list: HTMLElement) => {
+  list.style.removeProperty('max-height');
+  list.style.removeProperty('margin-top');
+};
+
+const fitList = (list: HTMLElement, clip: HTMLElement) => {
+  const listRect = list.getBoundingClientRect();
+  const clipBottom = clip.getBoundingClientRect().bottom;
+  const room = clipBottom - listRect.top;
+  resetListBox(list);
+  if (room > 0) {
+    list.style.maxHeight = `${Math.floor(room)}px`;
+    return;
+  }
+  const shift = listRect.bottom - clipBottom;
+  if (shift > 0) {
+    list.style.marginTop = `${-shift}px`;
+  }
+};
+
+const revealInScrollContainer = (list: HTMLElement) => {
+  resetListBox(list);
+  let node = list.parentElement;
+  while (node) {
+    const overflow = getComputedStyle(node).overflowY;
+    if (clipsY(overflow)) {
+      const past = list.getBoundingClientRect().bottom - node.getBoundingClientRect().bottom;
+      const moved = past > 0 && scrollsY(overflow) ? scrollInto(node, past) : 0;
+      if (past > moved) {
+        fitList(list, node);
+      }
+    }
+    node = node.parentElement;
+  }
+};
+
 const renderCaretIcon = (open: boolean) => {
   const Icon = open ? ChevronUpIcon : ChevronDownIcon;
   return (
@@ -132,6 +178,7 @@ const SearchSelect = ({
   const fieldId = id ?? generatedId;
   const listboxId = `${fieldId}-listbox`;
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -149,6 +196,16 @@ const SearchSelect = ({
   );
 
   const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
+
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!isOpen || !list) {
+      return undefined;
+    }
+    revealInScrollContainer(list);
+    const frame = window.requestAnimationFrame(() => revealInScrollContainer(list));
+    return () => window.cancelAnimationFrame(frame);
+  }, [groupedOptions, isOpen]);
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -305,7 +362,7 @@ const SearchSelect = ({
       {renderFieldControl()}
 
       {isOpen && !disabled && (
-        <ul className={compactSelectDropdownClassName} role="listbox" id={listboxId}>
+        <ul ref={listRef} className={compactSelectDropdownClassName} role="listbox" id={listboxId}>
           {filteredOptions.length === 0 && (
             <li className="px-3 py-2 text-sm text-ink-muted" role="presentation">
               <Translate>No results found</Translate>

@@ -77,6 +77,12 @@ const TABLE_ROW_HEIGHT: Record<DataTableDensity, number> = {
   compact: 36,
 };
 
+const tableScrollClass = (stickyHeader: boolean | undefined, scrolls: boolean) => {
+  if (stickyHeader) return 'h-full overflow-auto';
+  if (scrolls) return 'overflow-x-auto';
+  return 'overflow-hidden';
+};
+
 interface DataTableProps<T extends { rowId: string }> {
   columns: DataTableColumn<T>[];
   data: T[];
@@ -96,6 +102,7 @@ interface DataTableProps<T extends { rowId: string }> {
   minWidthRem?: number;
   /** Mounts only the rows near the viewport. Ignored while reordering or tree rows are on. */
   virtualize?: boolean;
+  stickyHeader?: boolean;
 }
 
 const SortIcon = ({ sortKey, sort }: { sortKey: string; sort?: DataTableSort }) => {
@@ -291,6 +298,137 @@ const SortableRow = <T extends { rowId: string }>({
   );
 };
 
+const columnDef = <T extends { rowId: string }>(column: DataTableColumn<T>): ColumnDef<T> => ({
+  id: column.id,
+  accessorKey: column.sortKey ?? column.id,
+  header: () => <>{column.header}</>,
+  cell: ({ row }) => <>{column.cell(row.original, row.index)}</>,
+  enableSorting: Boolean(column.sortKey),
+});
+
+const useTableState = <T extends { rowId: string }>(props: DataTableProps<T>) => {
+  const { data, onSort, selection } = props;
+  const [internalData, setInternalData] = useState(data);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+
+  useEffect(() => {
+    setInternalData(data);
+  }, [data]);
+
+  useEffect(() => {
+    if (!onSort || !sorting.length) return;
+    onSort(sorting[0].id);
+  }, [sorting, onSort]);
+
+  useEffect(() => {
+    if (!selection) return;
+    const ids = new Set(Object.keys(rowSelection).filter(id => rowSelection[id]));
+    selection.onChange(ids);
+  }, [rowSelection, selection]);
+
+  return {
+    internalData,
+    setInternalData,
+    sorting,
+    setSorting,
+    rowSelection,
+    setRowSelection,
+    expanded,
+    setExpanded,
+  };
+};
+
+const useRowDrag = <T extends { rowId: string }>(
+  reorder: DataTableReorder<T> | undefined,
+  setRows: (update: (rows: T[]) => T[]) => void
+) => {
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
+  );
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      setRows(prev => {
+        const oldIndex = prev.findIndex(row => row.rowId === active.id);
+        const newIndex = prev.findIndex(row => row.rowId === over.id);
+        const next = arrayMove(prev, oldIndex, newIndex);
+        reorder?.onReorder(next);
+        return next;
+      });
+    },
+    [reorder, setRows]
+  );
+  return { sensors, handleDragEnd };
+};
+
+const tableLayout = <T extends { rowId: string }>(props: DataTableProps<T>) => {
+  const reorderEnabled = Boolean(props.reorder);
+  const treeEnabled = Boolean(props.tree);
+  const hasSelection = Boolean(props.selection);
+  const gridTemplateColumns = [
+    reorderEnabled ? '2rem' : null,
+    treeEnabled ? '1.75rem' : null,
+    hasSelection ? '2.5rem' : null,
+    ...props.columns.map(column => column.width ?? '1fr'),
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return {
+    reorderEnabled,
+    treeEnabled,
+    deferOffscreen: Boolean(props.virtualize) && !reorderEnabled && !treeEnabled,
+    isClickable: Boolean(props.onRowClick),
+    gridTemplateColumns,
+    scrolls: props.minWidthRem !== undefined,
+  };
+};
+
+const useDataTableView = <T extends { rowId: string }>(props: DataTableProps<T>) => {
+  const state = useTableState(props);
+  const { selection, tree, onSort } = props;
+  const selectionColumn = useMemo(
+    () => createSelectionColumn<T>(selection?.disableRow),
+    [selection]
+  );
+  const columns = useMemo(() => {
+    const defs = props.columns.map(column => columnDef(column));
+    return selection ? [selectionColumn, ...defs] : defs;
+  }, [props.columns, selection, selectionColumn]);
+  const table = useReactTable({
+    data: state.internalData,
+    columns,
+    state: {
+      sorting: state.sorting,
+      rowSelection: state.rowSelection,
+      expanded: state.expanded,
+    },
+    onSortingChange: state.setSorting,
+    onRowSelectionChange: state.setRowSelection,
+    onExpandedChange: state.setExpanded,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: tree ? row => tree.getSubRows(row) ?? undefined : undefined,
+    getRowId: row => row.rowId,
+    enableRowSelection: selection ? row => !selection.disableRow?.(row.original) : false,
+    manualSorting: Boolean(onSort),
+  });
+  const drag = useRowDrag(props.reorder, state.setInternalData);
+  return {
+    ...props,
+    density: props.density ?? 'comfortable',
+    ...drag,
+    ...tableLayout(props),
+    table,
+    rows: table.getRowModel().rows.filter(row => row.depth === 0),
+  };
+};
+
 const rowIsSelected = ({
   rowId,
   tanstackSelected,
@@ -311,114 +449,32 @@ const rowIsSelected = ({
   return tanstackSelected;
 };
 
-const DataTable = <T extends { rowId: string }>({
-  columns,
-  data,
-  emptyState,
-  footer,
-  sort,
-  onSort,
-  onRowClick,
-  rowSelectId,
-  selectedRowId,
-  selectedRowIds,
-  selection,
-  reorder,
-  tree,
-  density = 'comfortable',
-  minWidthRem,
-  virtualize = false,
-}: DataTableProps<T>) => {
-  const [internalData, setInternalData] = useState(data);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [expanded, setExpanded] = useState<ExpandedState>({});
-
-  useEffect(() => {
-    setInternalData(data);
-  }, [data]);
-
-  const selectionColumn = useMemo(
-    () => createSelectionColumn<T>(selection?.disableRow),
-    [selection]
-  );
-
-  const tanstackColumns = useMemo<ColumnDef<T>[]>(() => {
-    const cols = columns.map<ColumnDef<T>>(col => ({
-      id: col.id,
-      accessorKey: col.sortKey ?? col.id,
-      header: () => <>{col.header}</>,
-      cell: ({ row }) => <>{col.cell(row.original, row.index)}</>,
-      enableSorting: Boolean(col.sortKey),
-    }));
-    return selection ? [selectionColumn, ...cols] : cols;
-  }, [columns, selection, selectionColumn]);
-
-  const table = useReactTable({
-    data: internalData,
-    columns: tanstackColumns,
-    state: { sorting, rowSelection, expanded },
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onExpandedChange: setExpanded,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getSubRows: tree ? row => tree.getSubRows(row) ?? undefined : undefined,
-    getRowId: row => row.rowId,
-    enableRowSelection: selection ? row => !selection.disableRow?.(row.original) : false,
-    manualSorting: Boolean(onSort),
-  });
-
-  useEffect(() => {
-    if (!selection) return;
-    const ids = new Set(Object.keys(rowSelection).filter(id => rowSelection[id]));
-    selection.onChange(ids);
-  }, [rowSelection, selection]);
-
-  useEffect(() => {
-    if (!onSort || !sorting.length) return;
-    onSort(sorting[0].id);
-  }, [sorting, onSort]);
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
-  );
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
-      setInternalData(prev => {
-        const oldIndex = prev.findIndex(r => r.rowId === active.id);
-        const newIndex = prev.findIndex(r => r.rowId === over.id);
-        const next = arrayMove(prev, oldIndex, newIndex);
-        reorder?.onReorder(next);
-        return next;
-      });
-    },
-    [reorder]
-  );
-
-  const reorderEnabled = Boolean(reorder);
-  const treeEnabled = Boolean(tree);
-  const deferOffscreen = virtualize && !reorderEnabled && !treeEnabled;
-  const isClickable = Boolean(onRowClick);
-
-  const gridTemplateColumns = [
-    reorderEnabled ? '2rem' : null,
-    treeEnabled ? '1.75rem' : null,
-    selection ? '2.5rem' : null,
-    ...columns.map(c => c.width ?? '1fr'),
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const scrolls = minWidthRem !== undefined;
-
-  const rows = table.getRowModel().rows.filter(r => r.depth === 0);
+const DataTable = <T extends { rowId: string }>(props: DataTableProps<T>) => {
+  const {
+    columns,
+    emptyState,
+    footer,
+    sort,
+    onSort,
+    onRowClick,
+    rowSelectId,
+    selectedRowId,
+    selectedRowIds,
+    selection,
+    density,
+    minWidthRem,
+    stickyHeader,
+    table,
+    sensors,
+    handleDragEnd,
+    reorderEnabled,
+    treeEnabled,
+    deferOffscreen,
+    isClickable,
+    gridTemplateColumns,
+    scrolls,
+    rows,
+  } = useDataTableView(props);
 
   return (
     <DndContext
@@ -428,13 +484,13 @@ const DataTable = <T extends { rowId: string }>({
       sensors={sensors}
     >
       <div
-        className={`bg-paper ${scrolls ? 'overflow-x-auto' : 'overflow-hidden'}`}
+        className={`bg-paper ${tableScrollClass(stickyHeader, scrolls)}`}
         style={{ boxShadow: CARD_SHADOW, borderRadius: CARD_RADIUS }}
       >
         <div className="w-full" style={scrolls ? { minWidth: `${minWidthRem}rem` } : undefined}>
           {/* Header strip */}
           <div
-            className="grid items-center gap-3 px-4 h-10 text-[11px] font-semibold text-ink-tertiary uppercase tracking-wider shrink-0"
+            className={`grid items-center gap-3 px-4 h-10 text-[11px] font-semibold text-ink-tertiary uppercase tracking-wider shrink-0 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}
             style={{
               gridTemplateColumns,
               backgroundColor: 'var(--color-theme-surface-warm, var(--color-theme-bg-warm))',

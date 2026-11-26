@@ -28,6 +28,13 @@ describe('DataTable density', () => {
     expect(row?.className).toContain('text-sm');
     expect(container.querySelector('.min-h-11')).toBeFalsy();
   });
+
+  it('keeps the header pinned inside the table scroller', () => {
+    const { container } = render(<DataTable columns={columns} data={data} stickyHeader />);
+    const header = container.querySelector('.sticky.top-0');
+    expect(header?.textContent).toContain('Name');
+    expect(header?.closest('.h-full.overflow-auto')).toBeTruthy();
+  });
 });
 
 const manyRows = Array.from({ length: 41 }, (_, index) => ({

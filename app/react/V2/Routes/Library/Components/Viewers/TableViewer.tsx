@@ -137,6 +137,7 @@ const TableViewer = ({
   return (
     <div
       data-testid="library-table"
+      className="h-full min-h-0"
       onMouseDown={event => {
         if (event.shiftKey) {
           event.preventDefault();
@@ -167,6 +168,7 @@ const TableViewer = ({
         }
         minWidthRem={tableMinWidthRem(columns)}
         virtualize
+        stickyHeader
       />
     </div>
   );

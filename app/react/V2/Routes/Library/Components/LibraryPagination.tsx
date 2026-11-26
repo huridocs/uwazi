@@ -66,7 +66,9 @@ const LibraryPagination = ({
             aria-controls={menuId}
             onClick={() => setSizeOpen(open => !open)}
           >
-            <span className="tabular-nums">{limit}</span> {perPage}
+            <span className="tabular-nums">
+              {limit} {perPage}
+            </span>
             <ChevronUpIcon className="h-3.5 w-3.5" aria-hidden />
           </button>
           <LibraryFooterMenu
@@ -88,7 +90,9 @@ const LibraryPagination = ({
                   onLimitChange(size);
                 }}
               >
-                <span className="tabular-nums">{size}</span> {perPage}
+                <span className="tabular-nums">
+                  {size} {perPage}
+                </span>
               </button>
             ))}
           </LibraryFooterMenu>

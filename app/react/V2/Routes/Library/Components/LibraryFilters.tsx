@@ -5,21 +5,15 @@ import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
-import { toSearchEndpointQuery } from '#V2/services/search/librarySearchEndpoint.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
 import type { Template } from '#app/apiResponseTypes.js';
-import { publishedStatusFromFilters, type LibraryFiltersState } from '../libraryUrlState.js';
+import type { LibraryFiltersState } from '../libraryUrlState.js';
 import { filterableProperties } from '../filterableProperties.js';
 import { filterPropertyType, isDateFilterType } from '../filterPropertyType.js';
-import { lookupAggregation } from '../lookupAggregation.js';
-import { FacetCard, FacetRow, type FacetMode } from './FacetCard.js';
-import { KeywordFacet } from './KeywordFacet.js';
-import { RelationshipFacet } from './RelationshipFacet.js';
-import { NestedFacet, toggleValue } from './NestedFacet.js';
-import { TextFacet } from './TextFacet.js';
-import { NumericFacet } from './NumericFacet.js';
-import { DateFacet } from './DateFacet.js';
+import { FacetCard, FacetRow } from './FacetCard.js';
+import { toggleValue } from './NestedFacet.js';
+import { PropertyFacet } from './PropertyFacet.js';
 import { TypeFacet } from './TypeFacet.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { ActiveFiltersSheet, type Chip } from './ActiveFiltersSheet.js';
@@ -37,163 +31,41 @@ type LibraryFiltersProps = {
   chips?: Chip[];
 };
 
-const rangeFromValues = (values: string[] | undefined) => ({
-  from: values?.[0] ?? '',
-  to: values?.[1] ?? '',
-});
-
-const dateFromValues = (values: string[] | undefined) => ({
-  from: values?.[0] ? Number(values[0]) : undefined,
-  to: values?.[1] ? Number(values[1]) : undefined,
-});
-
-const rangeToValues = (from: string, to: string): string[] => {
-  if (!from && !to) {
-    return [];
+const nextFilters = (
+  filters: LibraryFiltersState,
+  key: string,
+  values: string[]
+): LibraryFiltersState => {
+  const next = { ...filters };
+  if (values.length) {
+    next[key] = values;
+  } else {
+    delete next[key];
   }
-  return [from, to];
+  return next;
 };
 
-const dateToValues = (from?: number, to?: number): string[] => {
-  if (from === undefined && to === undefined) {
-    return [];
-  }
-  return [from === undefined ? '' : String(from), to === undefined ? '' : String(to)];
+const statusCounts = (aggregations: LibraryAggregations) => {
+  const publishedCount = aggregations.published.published;
+  const restrictedCount = aggregations.published.restricted;
+  return { publishedCount, restrictedCount, showStatus: publishedCount + restrictedCount > 0 };
 };
 
-const PropertyFacet = ({
-  property,
-  templates,
-  aggregations,
-  filters,
-  setFilter,
-  locale,
-  typeIds,
-  andFilters,
-  onAndFiltersChange,
-}: {
-  property: PropertySchema;
-  templates: Template[];
-  aggregations: LibraryAggregations;
-  filters: LibraryFiltersState;
-  setFilter: (key: string, values: string[]) => void;
-  locale: string;
-  typeIds: string[];
-  andFilters: string[];
-  onAndFiltersChange: (andFilters: string[]) => void;
-}) => {
-  const type = filterPropertyType(property, templates);
-  const buckets = (aggregations.properties[property.name] ?? []).filter(bucket => bucket.count > 0);
-  const title = (
-    <Translate context={property._id ? String(property._id) : property.name}>
-      {property.label}
-    </Translate>
-  );
-  const selected = filters[property.name] ?? [];
-  const mode: FacetMode = andFilters.includes(property.name) ? 'and' : 'or';
-  const onModeChange = (next: FacetMode) => {
-    const without = andFilters.filter(name => name !== property.name);
-    onAndFiltersChange(next === 'and' ? [...without, property.name] : without);
-  };
-  const lookupQuery = () => {
-    const propertyFilters = Object.fromEntries(
-      Object.entries(filters).filter(([key]) => key !== 'type' && key !== 'status')
-    );
-    return toSearchEndpointQuery({
-      templateIds: typeIds,
-      filters: propertyFilters,
-      andFilters,
-      publishedStatus: publishedStatusFromFilters(filters.status),
-    });
-  };
-
-  if (type === 'nested') {
-    if (!buckets.length) {
-      return null;
+const propertyFacetsFor = (
+  properties: PropertySchema[],
+  templates: Template[],
+  aggregations: LibraryAggregations
+) =>
+  properties.filter(property => {
+    const type = filterPropertyType(property, templates);
+    if (type === 'text' || type === 'markdown' || type === 'numeric' || isDateFilterType(type)) {
+      return true;
     }
-    const selectedByGroup = Object.fromEntries(
-      Object.entries(filters).filter(([key]) => key.startsWith(`${property.name}.`))
-    );
-    return (
-      <NestedFacet
-        title={title}
-        property={property}
-        groups={buckets}
-        selectedByGroup={selectedByGroup}
-        onChangeGroup={(groupId, values) => setFilter(`${property.name}.${groupId}`, values)}
-        locale={locale}
-      />
-    );
-  }
+    return (aggregations.properties[property.name] ?? []).some(bucket => bucket.count > 0);
+  });
 
-  if (type === 'numeric') {
-    const range = rangeFromValues(selected);
-    return (
-      <NumericFacet
-        title={title}
-        name={property.name}
-        from={range.from}
-        to={range.to}
-        onChange={({ from, to }) => setFilter(property.name, rangeToValues(from, to))}
-      />
-    );
-  }
-
-  if (isDateFilterType(type)) {
-    const range = dateFromValues(selected);
-    return (
-      <DateFacet
-        title={title}
-        name={property.name}
-        from={range.from}
-        to={range.to}
-        onChange={({ from, to }) => setFilter(property.name, dateToValues(from, to))}
-      />
-    );
-  }
-
-  if (type === 'text' || type === 'markdown') {
-    return (
-      <TextFacet
-        title={title}
-        name={property.name}
-        value={selected[0] ?? ''}
-        onChange={value => setFilter(property.name, value.trim() ? [value.trim()] : [])}
-      />
-    );
-  }
-
-  if (type === 'relationship') {
-    return (
-      <RelationshipFacet
-        title={title}
-        buckets={buckets}
-        selected={selected}
-        onToggle={id => setFilter(property.name, toggleValue(selected, id))}
-        lookup={async searchTerm => lookupAggregation(property.name, searchTerm, lookupQuery())}
-        mode={mode}
-        onModeChange={onModeChange}
-        onClear={() => setFilter(property.name, [])}
-      />
-    );
-  }
-
-  if (!buckets.length) {
-    return null;
-  }
-
-  return (
-    <KeywordFacet
-      title={title}
-      buckets={buckets}
-      selected={selected}
-      onToggle={id => setFilter(property.name, toggleValue(selected, id))}
-      mode={mode}
-      onModeChange={type === 'multiselect' ? onModeChange : undefined}
-      onClear={() => setFilter(property.name, [])}
-    />
-  );
-};
+const activeFilterCount = (filters: LibraryFiltersState) =>
+  Object.values(filters).reduce((sum, values) => sum + values.length, 0);
 
 const LibraryFilters = ({
   aggregations,
@@ -205,35 +77,16 @@ const LibraryFilters = ({
 }: LibraryFiltersProps) => {
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom) || 'en';
-  const typeIds = filters.type ?? [];
-  const status = filters.status ?? [];
-  const properties = filterableProperties(templates, typeIds);
-
-  const publishedCount = aggregations.published.published;
-  const restrictedCount = aggregations.published.restricted;
-  const showStatus = publishedCount + restrictedCount > 0;
-
-  const propertyFacets = properties.filter(property => {
-    const type = filterPropertyType(property, templates);
-    if (type === 'text' || type === 'markdown' || type === 'numeric' || isDateFilterType(type)) {
-      return true;
-    }
-    return (aggregations.properties[property.name] ?? []).some(bucket => bucket.count > 0);
-  });
-
-  const activeCount = Object.values(filters).reduce((sum, values) => sum + values.length, 0);
+  const selection = { typeIds: filters.type ?? [], status: filters.status ?? [] };
+  const { publishedCount, restrictedCount, showStatus } = statusCounts(aggregations);
+  const propertyFacets = propertyFacetsFor(
+    filterableProperties(templates, selection.typeIds),
+    templates,
+    aggregations
+  );
+  const activeCount = activeFilterCount(filters);
   const { expansion, expandAll, collapseAll } = useNestedGroupsExpansionControls();
-
-  const setFilter = (key: string, values: string[]) => {
-    const next = { ...filters };
-    if (values.length) {
-      next[key] = values;
-    } else {
-      delete next[key];
-    }
-    onChange(next);
-  };
-
+  const setFilter = (key: string, values: string[]) => onChange(nextFilters(filters, key, values));
   const clearAll = () => {
     onChange({});
     onAndFiltersChange([]);
@@ -247,16 +100,16 @@ const LibraryFilters = ({
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <FacetCard title={<Translate>Status</Translate>}>
                 <FacetRow
-                  checked={status.includes('restricted')}
-                  onToggle={() => setFilter('status', toggleValue(status, 'restricted'))}
+                  checked={selection.status.includes('restricted')}
+                  onToggle={() => setFilter('status', toggleValue(selection.status, 'restricted'))}
                   label={<Translate>Restricted</Translate>}
                   icon={<LockClosedIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
                   count={restrictedCount}
                   bold
                 />
                 <FacetRow
-                  checked={status.includes('published')}
-                  onToggle={() => setFilter('status', toggleValue(status, 'published'))}
+                  checked={selection.status.includes('published')}
+                  onToggle={() => setFilter('status', toggleValue(selection.status, 'published'))}
                   label={<Translate>Published</Translate>}
                   icon={<GlobeAltIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
                   count={publishedCount}
@@ -266,7 +119,11 @@ const LibraryFilters = ({
             </NeedAuthorization>
           )}
 
-          <TypeFacet aggregations={aggregations} typeIds={typeIds} setFilter={setFilter} />
+          <TypeFacet
+            aggregations={aggregations}
+            typeIds={selection.typeIds}
+            setFilter={setFilter}
+          />
 
           {propertyFacets.map(property => (
             <PropertyFacet
@@ -277,7 +134,7 @@ const LibraryFilters = ({
               filters={filters}
               setFilter={setFilter}
               locale={locale}
-              typeIds={typeIds}
+              typeIds={selection.typeIds}
               andFilters={andFilters}
               onAndFiltersChange={onAndFiltersChange}
             />

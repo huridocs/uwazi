@@ -71,7 +71,7 @@ const WarmSelect = <T extends string>({
       {open && !disabled && (
         <div
           role="listbox"
-          className={`absolute top-full z-30 mt-1 w-max min-w-full max-w-72 rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
+          className={`absolute top-full z-30 mt-1 max-h-80 w-max min-w-full max-w-72 overflow-y-auto rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
             align === 'end' ? 'end-0' : 'start-0'
           }`}
         >
