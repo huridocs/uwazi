@@ -54,12 +54,12 @@
   top: 0;
   z-index: 6;
   @media (min-width: 1024px) {
-    top: materials.$header-height + 1 !important;
+    top: calc(#{materials.$header-height} + 1px + var(--live-translate-banner, 0px)) !important;
   }
 }
 
 .entity-attachments {
-  top: materials.$header-height * 3;
+  top: calc(#{materials.$header-height} * 3 + var(--live-translate-banner, 0px));
 }
 
 .entity-content {
@@ -67,9 +67,9 @@
   max-width: 9999px;
 
   .side-panel {
-    top: materials.$header-height;
+    top: calc(#{materials.$header-height} + var(--live-translate-banner, 0px));
     @media (min-width: 1024px) {
-      top: materials.$header-height + 1;
+      top: calc(#{materials.$header-height} + 1px + var(--live-translate-banner, 0px));
     }
   }
 }

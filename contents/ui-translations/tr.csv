@@ -239,6 +239,7 @@ Click to fill,Doldurmak için tıklayın
 Click to select an image,Bir resim seçmek için tıklayın
 Click to select audio or video,Ses veya videoyu seçmek için tıklayın
 Click to select files,Dosyaları seçmek için tıklayın
+Click underlined text to translate it.,Çevirmek için altı çizili metne tıklayın.
 Close,Kapat
 Close filters,Filtreleri kapat
 Close modal,Pencereyi kapat
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,L
 Live (always up to date),Canlı (her zaman güncel)
 Live preview,Canlı önizleme
 Live translate,Canlı çeviri
+Live translate is on.,Canlı çeviri açık.
 Load,Yükle
 Load example,Örnek yükle
 Load more,Daha fazlasını yükle
@@ -1639,6 +1641,7 @@ Translations saved,Çeviriler kaydedildi
 Tree,Ağaç
 Try a different search or clear filters.,Farklı bir arama deneyin veya filtreleri temizleyin.
 Turn off inline translation,Satır içi çeviriyi devre dışı bırak
+Turn off live translate,Canlı çeviriyi kapat
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","İki kategorik boyut, yığılmış çubuk grafiklerin oluşturulmasına olanak tanır (örneğin, ülke ve cinsiyete
 göre dağılım)."

@@ -238,6 +238,7 @@ Click to fill,Κάντε κλικ για να συμπληρώσετε
 Click to select an image,Κάντε κλικ για να επιλέξετε μια εικόνα
 Click to select audio or video,Κάντε κλικ για να επιλέξετε αρχείο ήχου ή βίντεο
 Click to select files,Κάντε κλικ για να επιλέξετε αρχεία
+Click underlined text to translate it.,Κάντε κλικ στο υπογραμμισμένο κείμενο για να το μεταφράσετε.
 Close,Κλείσιμο
 Close filters,Κλείσιμο φίλτρων
 Close modal,Κλείσιμο παραθύρου
@@ -790,6 +791,7 @@ List renders as a table. Use the options below to filter empty or zero values.,�
 Live (always up to date),Ζωντανά (πάντα ενημερωμένο)
 Live preview,Ζωντανή προεπισκόπηση
 Live translate,Ζωντανή μετάφραση
+Live translate is on.,Η ζωντανή μετάφραση είναι ενεργή.
 Load,Φόρτωση
 Load example,Φόρτωση παραδείγματος
 Load more,Φόρτωση περισσότερων
@@ -1639,6 +1641,7 @@ Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
 Tree,Δέντρο
 Try a different search or clear filters.,Δοκιμάστε μια διαφορετική αναζήτηση ή καταργήστε τα φίλτρα.
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
+Turn off live translate,Απενεργοποίηση ζωντανής μετάφρασης
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Δύο κατηγορικές διαστάσεις επιτρέπουν τη δημιουργία γραφημάτων με στοιβαγμένες ράβδους (π.χ. ανά χώρα με
 ανάλυση ανά φύλο)."

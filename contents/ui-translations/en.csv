@@ -239,6 +239,7 @@ Click to fill,Click to fill
 Click to select an image,Click to select an image
 Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
+Click underlined text to translate it.,Click underlined text to translate it.
 Close,Close
 Close filters,Close filters
 Close modal,Close modal
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,L
 Live (always up to date),Live (always up to date)
 Live preview,Live preview
 Live translate,Live translate
+Live translate is on.,Live translate is on.
 Load,Load
 Load example,Load example
 Load more,Load more
@@ -1640,6 +1642,7 @@ Translations saved,Translations saved
 Tree,Tree
 Try a different search or clear filters.,Try a different search or clear filters.
 Turn off inline translation,Turn off inline translation
+Turn off live translate,Turn off live translate
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown)."

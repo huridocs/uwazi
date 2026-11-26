@@ -15,7 +15,7 @@ $c-sidebar: colors.$c-white;
   flex-direction: column;
   position: fixed;
   right: 0;
-  top: materials.$header-height + 1;
+  top: calc(#{materials.$header-height} + 1px + var(--live-translate-banner, 0px));
   bottom: 0;
   border-left: 1px solid colors.$c-grey-light;
   background-color: $c-sidebar;

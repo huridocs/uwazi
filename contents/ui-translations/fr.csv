@@ -239,6 +239,7 @@ Click to fill,Cliquez pour remplir
 Click to select an image,Cliquez pour sélectionner une image
 Click to select audio or video,Cliquez pour sélectionner un fichier audio ou vidéo
 Click to select files,Cliquez pour sélectionner des fichiers
+Click underlined text to translate it.,Cliquez sur le texte souligné pour le traduire.
 Close,Fermer
 Close filters,Fermer les filtres
 Close modal,Fermer la fenêtre
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,L
 Live (always up to date),En direct (toujours à jour)
 Live preview,Aperçu en direct
 Live translate,Traduction en direct
+Live translate is on.,La traduction en direct est activée.
 Load,Charger
 Load example,Charger un exemple
 Load more,Afficher plus
@@ -1639,6 +1641,7 @@ Translations saved,Traductions sauvegardées
 Tree,Arbre
 Try a different search or clear filters.,Essayez une autre recherche ou effacez les filtres.
 Turn off inline translation,Désactiver la traduction en ligne
+Turn off live translate,Désactiver la traduction en direct
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Deux dimensions catégorielles permettent de créer des graphiques à barres empilées (par exemple, par pays et par sexe
 )."

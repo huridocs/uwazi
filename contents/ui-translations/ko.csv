@@ -236,6 +236,7 @@ Click to fill,텍스트 자동 채우기
 Click to select an image,이미지를 선택하려면 클릭하세요
 Click to select audio or video,오디오 또는 동영상을 선택하려면 클릭하세요
 Click to select files,클릭하여 파일을 선택하세요
+Click underlined text to translate it.,밑줄 친 텍스트를 클릭하면 번역할 수 있습니다.
 Close,닫기
 Close filters,필터 닫기
 Close modal,모달 닫기
@@ -788,6 +789,7 @@ List renders as a table. Use the options below to filter empty or zero values.,�
 Live (always up to date),실시간 (항상 최신)
 Live preview,실시간 미리보기
 Live translate,실시간 번역
+Live translate is on.,실시간 번역이 켜져 있습니다.
 Load,로드
 Load example,예제 불러오기
 Load more,더 보기
@@ -1632,6 +1634,7 @@ Translations saved,번역 저장 완료
 Tree,트리
 Try a different search or clear filters.,다른 검색어를 입력하거나 필터를 해제해 보세요.
 Turn off inline translation,인라인 번역 끄기
+Turn off live translate,실시간 번역 끄기
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","두 가지 범주형 차원을 사용하면 적층 막대 차트를 만들 수 있습니다(예: 국가별 성별
 분포)."

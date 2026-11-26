@@ -238,6 +238,7 @@ Click to fill,انقر للتعبئة
 Click to select an image,انقر لاختيار صورة
 Click to select audio or video,انقر لاختيار ملف صوتي أو فيديو
 Click to select files,انقر لاختيار الملفات
+Click underlined text to translate it.,انقر على النص المسطر لترجمته.
 Close,غلق
 Close filters,إغلاق عوامل التصفية
 Close modal,إغلاق النافذة
@@ -790,6 +791,7 @@ List renders as a table. Use the options below to filter empty or zero values.,�
 Live (always up to date),مباشر (محدّث دائماً)
 Live preview,معاينة مباشرة
 Live translate,الترجمة الفورية
+Live translate is on.,الترجمة الفورية مفعّلة.
 Load,تحميل
 Load example,تحميل مثال
 Load more,تحميل المزيد
@@ -1639,6 +1641,7 @@ Translations saved,تم حفظ الترجمات
 Tree,شجرة
 Try a different search or clear filters.,جرب إجراء بحث مختلف أو امسح المعايير.
 Turn off inline translation,إيقاف الترجمة المباشرة
+Turn off live translate,إيقاف الترجمة الفورية
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","هناك بعدان تصنيفيان يتيحان إنشاء مخططات شريطية مكدسة (مثل: البلد مع
 التوزيع حسب الجنس)."
