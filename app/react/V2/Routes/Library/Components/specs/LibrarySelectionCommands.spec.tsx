@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import * as notifyBridge from '#V2/utils/notifyBridge.js';
 import { card, clickCard, expectSingleEntity } from './libraryMultiSelectAssertions.js';
 import {
   deleteEntities,
@@ -136,5 +137,95 @@ describe('library selection commands', () => {
     clickCard('Gelman', { shiftKey: true });
     expect(screen.getByTestId('library-selection-count')).toHaveTextContent('3 entities');
     expect(screen.getByTestId('library-selection-panel')).toBeInTheDocument();
+  });
+});
+
+describe('library csv export', () => {
+  const fetchMock = jest.fn();
+  let downloaded: string | undefined;
+
+  const csvResponse = () => ({
+    ok: true,
+    status: 200,
+    text: async () => 'title\nMexico',
+    headers: { get: () => 'attachment; filename="uwazi.csv"' },
+  });
+
+  const exportedIds = () => {
+    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('export'));
+    if (!call) {
+      throw new Error(
+        `no export request in ${fetchMock.mock.calls.map(([url]) => url).join(', ')}`
+      );
+    }
+    return JSON.parse(call[1].body).ids;
+  };
+
+  beforeEach(() => {
+    resetEntityMocks();
+    downloaded = undefined;
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValue(csvResponse());
+    global.fetch = fetchMock;
+    Object.assign(URL, { createObjectURL: () => 'blob:csv', revokeObjectURL: jest.fn() });
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function click(
+      this: HTMLAnchorElement
+    ) {
+      downloaded = this.download;
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    restoreMediaMock();
+  });
+
+  it('exports every loaded entity when nothing is selected', async () => {
+    renderLibrary('cards');
+    await ready('Mexico');
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+    await waitFor(() => {
+      expect(exportedIds()).toEqual(['mexico', 'ellacuria', 'gelman']);
+    });
+    expect(downloaded).toBe('uwazi.csv');
+  });
+
+  it('exports the one selected entity', async () => {
+    await selectMexico();
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+    await waitFor(() => {
+      expect(exportedIds()).toEqual(['mexico']);
+    });
+  });
+
+  it('reports a failed export', async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: async () => '',
+      headers: { get: () => null },
+    });
+    const notify = jest.spyOn(notifyBridge, 'notify').mockImplementation(() => undefined);
+    renderLibrary('cards');
+    await ready('Mexico');
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+    await waitFor(() => {
+      expect(notify).toHaveBeenCalledWith('An error has occurred during data export', 'error');
+    });
+  });
+
+  it('exports the multi-selection from the selection bar', async () => {
+    renderLibrary('cards');
+    await ready('Mexico');
+    clickCard('Mexico');
+    clickCard('Gelman', { ctrlKey: true });
+    fireEvent.click(
+      within(screen.getByTestId('library-multi-select-footer')).getByRole('button', {
+        name: 'Export CSV',
+      })
+    );
+    await waitFor(() => {
+      expect(exportedIds()).toEqual(['mexico', 'gelman']);
+    });
   });
 });

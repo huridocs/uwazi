@@ -7,6 +7,7 @@ import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { useServices } from '#V2/services/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
+import { downloadLibraryCsv, libraryCsvExportIds } from '../libraryCsvExport.js';
 import { deleteExceedsBulkLimit } from './librarySelectionActions.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
 import { LibrarySelectionDialogs } from './LibrarySelectionDialogs.js';
@@ -123,6 +124,19 @@ const useSelectionDialogs = ({ selectedIds, rows, onDeleted, stopEdit }: Selecti
   };
 };
 
+const exportLoadedOrSelected = (
+  selectedIds: readonly string[],
+  rows: readonly LibrarySearchHit[]
+) => {
+  const ids = libraryCsvExportIds(
+    selectedIds,
+    rows.map(row => row.sharedId)
+  );
+  void downloadLibraryCsv(ids).catch(() => {
+    notify(t('System', 'An error has occurred during data export', null, false), 'error');
+  });
+};
+
 const useLibrarySelectionCommands = (
   selectedIds: readonly string[],
   rows: readonly LibrarySearchHit[],
@@ -141,6 +155,7 @@ const useLibrarySelectionCommands = (
       edit.startEdit();
       return;
     }
+    if (action === 'export') exportLoadedOrSelected(selectedIds, rows);
     if (action === 'delete') {
       if (deleteExceedsBulkLimit(selectedIds.length)) return;
       open(action);
