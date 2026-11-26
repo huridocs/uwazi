@@ -18,6 +18,19 @@ const templates = [
   },
 ] as Template[];
 
+const sharedCountryTemplates = [
+  {
+    _id: 'tpl-a',
+    name: 'A',
+    properties: [{ name: 'country', label: 'Country A', type: 'select', content: 'th-a' }],
+  },
+  {
+    _id: 'tpl-b',
+    name: 'B',
+    properties: [{ name: 'country', label: 'Country B', type: 'select', content: 'th-b' }],
+  },
+] as Template[];
+
 const thesauri = [
   {
     _id: 'th-countries',
@@ -47,8 +60,7 @@ describe('resolveFilterChipParts', () => {
       propertyLabel: 'Country',
       propertyContext: 'tpl-case',
       valueLabel: 'Spain (agg)',
-      valueContext: 'th-countries',
-      translateValue: true,
+      translateValue: false,
     });
   });
 
@@ -98,22 +110,33 @@ describe('resolveFilterChipParts', () => {
     });
   });
 
-  it('uses the selected template when several templates share the property name', () => {
-    const shared = [
-      {
-        _id: 'tpl-a',
-        name: 'A',
-        properties: [{ name: 'country', label: 'Country A', type: 'select', content: 'th-a' }],
-      },
-      {
-        _id: 'tpl-b',
-        name: 'B',
-        properties: [{ name: 'country', label: 'Country B', type: 'select', content: 'th-b' }],
-      },
-    ] as Template[];
-
+  it('does not pick a template context when the property name is shared', () => {
     expect(
-      resolveFilterChipParts('country', 'ES', { templates: shared, typeIds: ['tpl-b'] })
+      resolveFilterChipParts('country', 'ES', { templates: sharedCountryTemplates })
+    ).toMatchObject({
+      propertyLabel: 'country',
+      propertyContext: 'country',
+    });
+  });
+
+  it('uses the property name when selected templates label it differently', () => {
+    expect(
+      resolveFilterChipParts('country', 'ES', {
+        templates: sharedCountryTemplates,
+        typeIds: ['tpl-a', 'tpl-b'],
+      })
+    ).toMatchObject({
+      propertyLabel: 'country',
+      propertyContext: 'country',
+    });
+  });
+
+  it('uses the selected template when several templates share the property name', () => {
+    expect(
+      resolveFilterChipParts('country', 'ES', {
+        templates: sharedCountryTemplates,
+        typeIds: ['tpl-b'],
+      })
     ).toEqual({
       propertyLabel: 'Country B',
       propertyContext: 'tpl-b',

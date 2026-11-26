@@ -10,7 +10,6 @@ type ChipParts = {
 };
 
 type ChipProperty = {
-  type: string;
   content?: string;
   label?: string;
   name: string;
@@ -22,23 +21,31 @@ const propertiesOf = (template: Template) => [
   ...(template.properties ?? []),
 ];
 
-const namedProperty = (templates: Template[], name: string): ChipProperty | undefined =>
-  templates.reduce<ChipProperty | undefined>((found, template) => {
-    if (found) {
-      return found;
-    }
+const matchesNamed = (templates: Template[], name: string): ChipProperty[] =>
+  templates.flatMap(template => {
     const property = propertiesOf(template).find(item => item.name === name);
     if (!property) {
-      return undefined;
+      return [];
     }
-    return {
-      type: property.type,
-      ...(property.content ? { content: property.content } : {}),
-      label: property.label,
-      name: property.name,
-      templateId: template._id,
-    };
-  }, undefined);
+    return [
+      {
+        ...(property.content ? { content: property.content } : {}),
+        label: property.label,
+        name: property.name,
+        templateId: template._id,
+      },
+    ];
+  });
+
+const namedProperty = (templates: Template[], name: string): ChipProperty | undefined => {
+  const matches = matchesNamed(templates, name);
+  const [first] = matches;
+  if (!first || matches.length === 1) {
+    return first;
+  }
+  const label = matches.every(item => item.label === first.label) ? first.label : first.name;
+  return { ...first, templateId: undefined, label };
+};
 
 const nestedGroupKey = (name: string, propertyName: string) =>
   name.startsWith(`${propertyName}.`) ? name.slice(propertyName.length + 1) : undefined;
@@ -63,28 +70,19 @@ const thesaurusValueLabel = (thesauri: ClientThesaurus[], contentId: string, val
   return flattenThesaurusValues(thesaurus.values).find(value => value.id === valueId)?.label;
 };
 
-const THESAURUS_PROPERTY_TYPES = new Set(['select', 'multiselect', 'nested']);
-
 const propertyContext = (property: ChipProperty | undefined) =>
   property?.templateId || property?.name;
 
-const thesaurusContent = (property: ChipProperty | undefined) =>
-  property?.content && THESAURUS_PROPERTY_TYPES.has(property.type) ? property.content : undefined;
-
-const aggregationChip = (
+const plainChip = (
   property: ChipProperty | undefined,
   key: string,
   valueLabel: string
-): ChipParts => {
-  const content = thesaurusContent(property);
-  return {
-    propertyLabel: property?.label ?? key,
-    propertyContext: propertyContext(property),
-    valueLabel,
-    ...(content ? { valueContext: content } : {}),
-    translateValue: Boolean(content),
-  };
-};
+): ChipParts => ({
+  propertyLabel: property?.label ?? key,
+  propertyContext: propertyContext(property),
+  valueLabel,
+  translateValue: false,
+});
 
 const aggregationValueLabel = (
   buckets: LibraryFacetBucket[] | undefined,
@@ -155,17 +153,6 @@ const typeChip = (value: string, templates: Template[]): ChipParts => {
   };
 };
 
-const anyGroupChip = (
-  property: ChipProperty | undefined,
-  key: string,
-  group: string
-): ChipParts => ({
-  propertyLabel: property?.label ?? key,
-  propertyContext: propertyContext(property),
-  valueLabel: group,
-  translateValue: false,
-});
-
 const thesaurusFallbackChip = (
   property: ChipProperty | undefined,
   key: string,
@@ -190,11 +177,11 @@ const propertyChip = (key: string, value: string, sources: ChipSources): ChipPar
     value
   );
   if (fromAggregation) {
-    return aggregationChip(property, key, fromAggregation);
+    return plainChip(property, key, fromAggregation);
   }
   const group = property ? nestedGroupKey(key, property.name) : undefined;
   if (group && value === 'any') {
-    return anyGroupChip(property, key, group);
+    return plainChip(property, key, group);
   }
   return thesaurusFallbackChip(property, key, { value, thesauri: sources.thesauri ?? [] });
 };

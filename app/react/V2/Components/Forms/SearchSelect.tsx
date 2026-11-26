@@ -85,14 +85,46 @@ const filterOptions = (options: SearchSelectOption[], search: string) => {
   return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
 };
 
+const scrollsY = (overflow: string) => overflow === 'auto' || overflow === 'scroll';
+
+const clipsY = (overflow: string) => scrollsY(overflow) || overflow === 'hidden';
+
+const scrollInto = (node: HTMLElement, past: number) => {
+  const before = node.scrollTop;
+  node.scrollTop = before + past;
+  return node.scrollTop - before;
+};
+
+const resetListBox = (list: HTMLElement) => {
+  list.style.removeProperty('max-height');
+  list.style.removeProperty('margin-top');
+};
+
+const fitList = (list: HTMLElement, clip: HTMLElement) => {
+  const listRect = list.getBoundingClientRect();
+  const clipBottom = clip.getBoundingClientRect().bottom;
+  const room = clipBottom - listRect.top;
+  resetListBox(list);
+  if (room > 0) {
+    list.style.maxHeight = `${Math.floor(room)}px`;
+    return;
+  }
+  const shift = listRect.bottom - clipBottom;
+  if (shift > 0) {
+    list.style.marginTop = `${-shift}px`;
+  }
+};
+
 const revealInScrollContainer = (list: HTMLElement) => {
+  resetListBox(list);
   let node = list.parentElement;
   while (node) {
     const overflow = getComputedStyle(node).overflowY;
-    if (overflow === 'auto' || overflow === 'scroll') {
+    if (clipsY(overflow)) {
       const past = list.getBoundingClientRect().bottom - node.getBoundingClientRect().bottom;
-      if (past > 0) {
-        node.scrollTop += past;
+      const moved = past > 0 && scrollsY(overflow) ? scrollInto(node, past) : 0;
+      if (past > moved) {
+        fitList(list, node);
       }
     }
     node = node.parentElement;
@@ -166,10 +198,14 @@ const SearchSelect = ({
   const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
 
   useLayoutEffect(() => {
-    if (isOpen && listRef.current) {
-      revealInScrollContainer(listRef.current);
+    const list = listRef.current;
+    if (!isOpen || !list) {
+      return undefined;
     }
-  }, [isOpen]);
+    revealInScrollContainer(list);
+    const frame = window.requestAnimationFrame(() => revealInScrollContainer(list));
+    return () => window.cancelAnimationFrame(frame);
+  }, [groupedOptions, isOpen]);
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
