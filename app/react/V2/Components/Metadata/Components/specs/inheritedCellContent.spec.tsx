@@ -5,7 +5,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
-import { inheritedCellContent } from '../inheritedCellContent.js';
+import { inheritedCellContent, inheritedCellSortKey } from '../inheritedCellContent.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -43,6 +43,25 @@ const renderCell = (node: React.ReactNode) =>
       <div data-testid="cell">{node}</div>
     </TestAtomStoreProvider>
   );
+
+describe('inheritedCellSortKey', () => {
+  it('gives each geolocation a coordinate key so different maps stay apart', () => {
+    const point = (id: string, lat: number, lon: number) => ({
+      value: id,
+      inheritedType: 'geolocation',
+      inheritedValue: [{ value: { lat, lon } }],
+    });
+
+    expect(inheritedCellSortKey([point('e1', 41, 29)], 'e1')).toBe('41,29');
+    expect(inheritedCellSortKey([point('e2', 37, -180)], 'e2')).toBe('37,-180');
+    expect(
+      inheritedCellSortKey(
+        [{ value: 'e3', inheritedType: 'geolocation', inheritedValue: [] }],
+        'e3'
+      )
+    ).toBe('');
+  });
+});
 
 describe('inheritedCellContent', () => {
   it('renders numeric inherited values', () => {

@@ -11,7 +11,7 @@ describe('relationshipGroupKey', () => {
     expect(relationshipGroupKey({})).toBe('::');
   });
 
-  it('should group inherited properties by content and relation type', () => {
+  it('shares one key for an inherited property and a direct property with the same content and relation type', () => {
     const markdown = {
       content: 'tpl',
       relationType: 'rel-a',
@@ -24,8 +24,10 @@ describe('relationshipGroupKey', () => {
       inherited: true,
       inherit: { property: 'geo', type: 'geolocation' },
     };
-    expect(relationshipGroupKey(markdown)).toBe('inherit::tpl::rel-a');
-    expect(relationshipGroupKey(geo)).toBe('inherit::tpl::rel-b');
+    const direct = { content: 'tpl', relationType: 'rel-a' };
+    expect(relationshipGroupKey(markdown)).toBe('tpl::rel-a');
+    expect(relationshipGroupKey(geo)).toBe('tpl::rel-b');
+    expect(relationshipGroupKey(direct)).toBe(relationshipGroupKey(markdown));
     expect(relationshipGroupKey({ ...geo, relationType: 'rel-a' })).toBe(
       relationshipGroupKey(markdown)
     );
@@ -260,7 +262,15 @@ describe('buildInheritColumns', () => {
     expect(columns.map(column => column.label)).toEqual(['Markdown']);
     expect(columns[0]?.id).toBe('md');
     const linkOnly = { ...markdown, _id: 'link', inherited: false, inherit: undefined };
-    expect(buildInheritColumns(linkOnly, [markdown, geo], { templates: [] })).toEqual([]);
+    expect(buildInheritColumns(linkOnly, [markdown, geo], { templates: [] })).toEqual([
+      {
+        id: 'md',
+        label: 'RelationshipMark',
+        inheritedType: 'markdown',
+        cellsByEntityId: {},
+        sortKeyByEntityId: {},
+      },
+    ]);
     expect(
       buildInheritColumns(geo, [markdown, geo], {
         templates: [

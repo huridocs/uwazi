@@ -2,7 +2,7 @@ import type { Path, UseFormSetError } from 'react-hook-form';
 import type { ApiValidation } from '#shared/apiClient/index.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { metadataFormPath, type FormMetadataProperty } from './formatMetadataForForm.js';
-import { relationshipGroupKey } from '../../relationshipInherit.js';
+import { relationshipMemberKey } from '../../relationshipInherit.js';
 
 type EditEntityErrors = {
   title?: string;
@@ -138,7 +138,7 @@ const buildRelationshipPrimaryNames = (properties: FormMetadataProperty[]) => {
       return;
     }
 
-    const groupKey = relationshipGroupKey(property);
+    const groupKey = relationshipMemberKey(property, property.name);
     const primaryName = primaryByGroupKey.get(groupKey) ?? property.name;
 
     if (!primaryByGroupKey.has(groupKey)) {

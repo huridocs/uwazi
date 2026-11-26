@@ -88,18 +88,27 @@ const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContex
   );
 };
 
+const clusterTitle = (siblings: RelationshipMetadataProperty[], title?: string) => {
+  const inherited = siblings.filter(field => field.inherited);
+  const [primary] = inherited.length === 1 ? inherited : siblings;
+  if (inherited.length > 1 && inherited.length < siblings.length && title) {
+    return { label: title, hideLabel: false };
+  }
+  return { label: primary.label, hideLabel: primary.hideLabel };
+};
+
 const inheritingGroupCard = (
   siblings: RelationshipMetadataProperty[],
   groupKey: string,
   ctx: CardRenderContext
 ): ReactNode => {
   const [primary] = siblings;
+  const title = clusterTitle(siblings, ctx.entity?.title);
   const primaryTpl = ctx.templatePropertyById.get(primary._id);
   const columns = buildInheritColumns(
     {
       content: primaryTpl?.content,
       relationType: primaryTpl?.relationType,
-      inherited: true,
     },
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
@@ -115,9 +124,9 @@ const inheritingGroupCard = (
     <Relationship
       key={groupKey}
       values={entityValues(siblings)}
-      label={primary.label}
+      label={title.label}
       translationContext={ctx.translationContext}
-      hideLabel={primary.hideLabel}
+      hideLabel={title.hideLabel}
       className={ctx.relationshipClassName}
       relationTypeId={primaryTpl?.relationType}
       targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
@@ -143,34 +152,37 @@ const cardRenderContext = ({
   relationshipClassName,
 });
 
+const hasClusterLinks = (siblings: RelationshipMetadataProperty[]) =>
+  siblings.some(hasLinkedEntities);
+
 const buildInheritingCardsByGroupKey = (
   args: BuildRelationshipCardNodesArgs
 ): Map<string, ReactNode> => {
-  const linked = args.fields.filter(hasLinkedEntities);
   const ctx = cardRenderContext(args);
   const cards = new Map<string, ReactNode>();
-  groupInheritingRelationships(linked, args.templatePropertyById).forEach((siblings, groupKey) => {
-    cards.set(groupKey, inheritingGroupCard(siblings, groupKey, ctx));
-  });
+  groupInheritingRelationships(args.fields, args.templatePropertyById).forEach(
+    (siblings, groupKey) => {
+      if (hasClusterLinks(siblings)) {
+        cards.set(groupKey, inheritingGroupCard(siblings, groupKey, ctx));
+      }
+    }
+  );
   return cards;
 };
 
 const buildRelationshipCardNodes = (args: BuildRelationshipCardNodesArgs): ReactNode[] => {
-  const linked = args.fields.filter(hasLinkedEntities);
   const ctx = cardRenderContext(args);
-  const inheritingByGroup = groupInheritingRelationships(linked, args.templatePropertyById);
+  const inheritingByGroup = groupInheritingRelationships(args.fields, args.templatePropertyById);
   const nodes: ReactNode[] = [];
 
-  linked.forEach(field => {
+  args.fields.forEach(field => {
     const groupKey = inheritGroupKey(field, args.templatePropertyById);
     const siblings = inheritingByGroup.get(groupKey);
-    if (!siblings?.includes(field)) {
-      nodes.push(linkOnlyCard(field, ctx));
+    if (!siblings || !hasClusterLinks(siblings)) {
+      if (hasLinkedEntities(field)) nodes.push(linkOnlyCard(field, ctx));
       return;
     }
-    if (siblings[0] === field) {
-      nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
-    }
+    if (siblings[0] === field) nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
   });
 
   return nodes;

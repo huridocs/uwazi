@@ -228,8 +228,11 @@ const MetadataRecord = ({
         if (showDocumentPreview && field.type === 'preview') {
           return true;
         }
-        if (isInheritingRelationship(field)) {
-          return inheritingCardsByGroupKey.has(inheritGroupKey(field, templatePropertyById));
+        if (isRelationshipProperty(field)) {
+          const grouped = inheritingCardsByGroupKey.has(
+            inheritGroupKey(field, templatePropertyById)
+          );
+          if (isInheritingRelationship(field) || grouped) return grouped;
         }
         return hasRenderableMetadata(field);
       }),
@@ -242,21 +245,20 @@ const MetadataRecord = ({
 
   const hasSystemDates = entityHasSystemDates(entity);
 
-  const renderPropertyCard = (field: MetadataProperty) =>
-    isInheritingRelationship(field)
-      ? inheritingPropertyCard({
-          field,
-          inheritingCardsByGroupKey,
-          templatePropertyById,
-        })
-      : standardPropertyCard({
-          field,
-          translationContext,
-          templatePropertyById,
-          onOpenEntity,
-          entity,
-          showDocumentPreview,
-        });
+  const renderPropertyCard = (field: MetadataProperty) => {
+    const grouped = isRelationshipProperty(field)
+      ? inheritingPropertyCard({ field, inheritingCardsByGroupKey, templatePropertyById })
+      : null;
+    if (grouped || isInheritingRelationship(field)) return grouped;
+    return standardPropertyCard({
+      field,
+      translationContext,
+      templatePropertyById,
+      onOpenEntity,
+      entity,
+      showDocumentPreview,
+    });
+  };
 
   if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;

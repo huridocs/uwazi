@@ -242,14 +242,64 @@ describe('metadataPropertyLayout', () => {
         },
       ]);
       const groups = groupInheritingRelationships(fields, templateMap);
-      expect(groups.size).toBe(1);
       expect(groups.get(inheritGroupKey(inherited, templateMap))?.map(field => field._id)).toEqual([
         'inh-a',
         'direct-same',
       ]);
+      expect(groups.get('third-tmpl::rel-type-3')?.map(field => field._id)).toEqual([
+        'direct-third-a',
+        'direct-third-b',
+      ]);
+      expect(groups.get('related-tmpl::rel-type-2')?.map(field => field._id)).toEqual([
+        'direct-other',
+      ]);
       expect(
         partitionMetadataRecord([], fields, templateMap).masonryFields.map(field => field._id)
-      ).toEqual(['inh-a', 'direct-other', 'direct-third-a', 'direct-third-b']);
+      ).toEqual(['inh-a', 'direct-other', 'direct-third-a']);
+    });
+
+    it('keeps a relationship that lacks a target template or relation type in its own card', () => {
+      const fields = [
+        { ...linkOnlyRel('missing-content'), name: 'missing_content', label: 'Missing content' },
+        { ...linkOnlyRel('missing-type'), name: 'missing_type', label: 'Missing type' },
+        {
+          ...linkOnlyRel('also-missing-type'),
+          name: 'also_missing_type',
+          label: 'Also missing type',
+        },
+      ];
+      const templateMap = buildTemplatePropertyById([
+        {
+          _id: 'missing-content',
+          name: 'missing_content',
+          type: 'relationship',
+          label: 'Missing content',
+          relationType: 'rel-type-1',
+        },
+        {
+          _id: 'missing-type',
+          name: 'missing_type',
+          type: 'relationship',
+          label: 'Missing type',
+          content: 'related-tmpl',
+        },
+        {
+          _id: 'also-missing-type',
+          name: 'also_missing_type',
+          type: 'relationship',
+          label: 'Also missing type',
+          content: 'related-tmpl',
+        },
+      ]);
+      const groups = groupInheritingRelationships(fields, templateMap);
+      expect(groups.get('missing-content')?.map(field => field._id)).toEqual(['missing-content']);
+      expect(groups.get('missing-type')?.map(field => field._id)).toEqual(['missing-type']);
+      expect(groups.get('also-missing-type')?.map(field => field._id)).toEqual([
+        'also-missing-type',
+      ]);
+      expect(
+        partitionMetadataRecord([], fields, templateMap).masonryFields.map(field => field._id)
+      ).toEqual(['missing-content', 'missing-type', 'also-missing-type']);
     });
 
     it('anchors a relation-type group on its first sibling when that sibling is empty', () => {

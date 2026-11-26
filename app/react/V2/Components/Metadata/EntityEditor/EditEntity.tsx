@@ -36,6 +36,7 @@ import {
   alignGroupedRelationshipValues,
   getGroupedRelationshipSyncPairs,
   groupRelationshipProperties,
+  syncGroupedRelationshipMetadata,
 } from './functions/relationshipGrouping.js';
 import { sortByTemplatePropertyOrder } from '../sortByTemplatePropertyOrder.js';
 import { sortAvailableTemplates } from './functions/sortAvailableTemplates.js';
@@ -200,6 +201,17 @@ const EditEntity = ({
     const pairs = getGroupedRelationshipSyncPairs(displayProperties);
     if (!pairs.length) return undefined;
     const mains = new Set<string>(pairs.map(pair => metadataFormPath(pair.mainName)));
+    const metadata = getValues('metadata') ?? {};
+    const seeded = syncGroupedRelationshipMetadata(metadata, displayProperties);
+    pairs.forEach(({ mainName, otherNames }) => {
+      [mainName, ...otherNames].forEach(name => {
+        const key = metadataFormKey(name);
+        const next = seeded[key] ?? [];
+        if (JSON.stringify(metadata[key] ?? []) !== JSON.stringify(next)) {
+          setValue(metadataFormPath(name), next);
+        }
+      });
+    });
     const sync = () => {
       pairs.forEach(({ mainName, otherNames }) => {
         const sourceValues = getValues(metadataFormPath(mainName)) ?? [];
@@ -216,7 +228,6 @@ const EditEntity = ({
     const { unsubscribe } = watch((_values, info) => {
       if (info.name && mains.has(info.name)) sync();
     });
-    sync();
     return unsubscribe;
   }, [displayProperties, getValues, setValue, watch]);
 

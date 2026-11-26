@@ -1071,6 +1071,60 @@ describe('MetadataRecord', () => {
     expect(screen.getAllByRole('heading', { name: 'Inherited link' })).toHaveLength(1);
   });
 
+  it('shows two direct relationships that share a target template and relation type in one card', () => {
+    const pairTemplate = {
+      _id: 'tmpl-direct-pair',
+      name: 'Direct pair',
+      properties: [
+        {
+          _id: 'p-third-a',
+          name: 'thirda',
+          type: 'relationship' as const,
+          label: 'Third A',
+          content: 'related-tmpl',
+          relationType: 'rel-type-3',
+        },
+        {
+          _id: 'p-third-b',
+          name: 'thirdb',
+          type: 'relationship' as const,
+          label: 'Third B',
+          content: 'related-tmpl',
+          relationType: 'rel-type-3',
+        },
+      ],
+    };
+    const pairEntity: Entity = {
+      ...entity,
+      _id: 'e-direct-pair',
+      template: 'tmpl-direct-pair',
+      metadata: {
+        thirda: [{ value: 'linked-a', label: 'Mara', type: 'entity' }],
+        thirdb: [{ value: 'linked-b', label: 'Noah', type: 'entity' }],
+      },
+      relations: [
+        { entity: 'linked-a', entityData: { title: 'Mara', template: 'related-tmpl' } },
+        { entity: 'linked-b', entityData: { title: 'Noah', template: 'related-tmpl' } },
+      ],
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [pairTemplate, relatedTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-3', name: 'Third type' }]],
+        ]}
+      >
+        <MetadataRecord entity={pairEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    const card = sectionForLabel('Third A');
+    expect(within(card).getByRole('link', { name: /Mara/i })).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: /Noah/i })).toBeInTheDocument();
+  });
+
   it('shows a link-only relationship as entity pills', () => {
     renderRecord();
 

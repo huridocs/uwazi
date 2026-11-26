@@ -55,6 +55,7 @@ const Geolocation = ({
   }
 
   const markersForMap = formatMarkers(markers);
+  const creditBelow = !showPrintMap;
   const sharedMapProps = {
     markers: markersForMap,
     clickOnMarker,
@@ -68,6 +69,7 @@ const Geolocation = ({
     <div className="flex w-full min-w-0 flex-col gap-1.5">
       <div
         data-part="map-frame"
+        data-credit={creditBelow ? 'below' : undefined}
         className="relative w-full min-w-0 overflow-hidden rounded-md [&_.map-container]:h-auto"
       >
         <div data-part="screen-map">
@@ -86,7 +88,10 @@ const Geolocation = ({
           </div>
         ) : null}
       </div>
-      <p data-part="map-credit" className="hidden">
+      <p
+        data-part="map-credit"
+        className={creditBelow ? 'wrap-break-word text-meta text-ink-tertiary' : 'hidden'}
+      >
         {PAPER_MAP_CREDIT}
       </p>
       {showLegend ? <GeolocationLegend markers={markers} onOpenEntity={onOpenEntity} /> : null}
