@@ -817,6 +817,7 @@
         "react/no-multi-comp": "off",
         "react/jsx-pascal-case": "off",
         "react/exhaustive-deps": "off",
+        "import/no-default-export": "off",
         "import/exports-last": "off",
         "eslint/max-statements": "off",
         "eslint/max-params": "off",

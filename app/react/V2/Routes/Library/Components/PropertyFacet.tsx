@@ -4,6 +4,7 @@ import { toSearchEndpointQuery } from '#V2/services/search/librarySearchEndpoint
 import type { LibraryAggregations, LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
 import type { Template } from '#app/apiResponseTypes.js';
+import { templateContextForProperty } from '../filterChipLabel.js';
 import { publishedStatusFromFilters, type LibraryFiltersState } from '../libraryUrlState.js';
 import { filterPropertyType, isDateFilterType } from '../filterPropertyType.js';
 import { lookupAggregation } from '../lookupAggregation.js';
@@ -59,14 +60,13 @@ const dateToValues = (from?: number, to?: number): string[] => {
   return [from === undefined ? '' : String(from), to === undefined ? '' : String(to)];
 };
 
-const facetTitle = (property: PropertySchema, templates: Template[]) => {
-  const templateId = templates.find(template =>
-    [...(template.commonProperties ?? []), ...(template.properties ?? [])].some(
-      item => item.name === property.name
-    )
-  )?._id;
-  return <Translate context={templateId ?? property.name}>{property.label}</Translate>;
-};
+const facetTitle = (property: PropertySchema, templates: Template[], typeIds: string[]) => (
+  <Translate
+    context={templateContextForProperty(templates, property.name, typeIds) ?? property.name}
+  >
+    {property.label}
+  </Translate>
+);
 
 const changeFacetMode = (
   andFilters: string[],
@@ -83,7 +83,7 @@ const propertyFacetShared = (
 ): PropertyFacetShared => ({
   ...props,
   buckets,
-  title: facetTitle(props.property, props.templates),
+  title: facetTitle(props.property, props.templates, props.typeIds),
   selected: props.filters[props.property.name] ?? [],
   mode: props.andFilters.includes(props.property.name) ? 'and' : 'or',
   onModeChange: next =>

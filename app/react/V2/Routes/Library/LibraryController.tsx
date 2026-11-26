@@ -46,11 +46,13 @@ const chipLabel = (chip: {
   templates: Template[];
   aggregations: LibraryAggregations;
   thesauri: ClientThesaurus[];
+  typeIds?: string[];
 }): ReactNode => {
   const parts = resolveFilterChipParts(chip.key, chip.value, {
     templates: chip.templates,
     aggregations: chip.aggregations,
     thesauri: chip.thesauri,
+    typeIds: chip.typeIds,
   });
   return (
     <>
@@ -135,6 +137,7 @@ const LibraryController = () => {
             templates,
             aggregations: data.aggregations,
             thesauri,
+            typeIds: urlState.filters.type,
           }),
           color:
             key === 'type' ? templates.find(template => template._id === value)?.color : undefined,

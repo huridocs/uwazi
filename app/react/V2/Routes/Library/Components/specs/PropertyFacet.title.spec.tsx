@@ -39,4 +39,38 @@ describe('PropertyFacet title', () => {
       'tpl-case'
     );
   });
+
+  it('translates the property label in the selected template context', () => {
+    render(
+      <PropertyFacet
+        property={{ _id: 'prop-country', name: 'country', label: 'Country', type: 'text' }}
+        templates={[
+          {
+            _id: 'tpl-case',
+            name: 'Case',
+            properties: [{ _id: 'prop-country', name: 'country', label: 'Country', type: 'text' }],
+          },
+          {
+            _id: 'tpl-org',
+            name: 'Organization',
+            properties: [
+              { _id: 'prop-country-org', name: 'country', label: 'Country', type: 'text' },
+            ],
+          },
+        ]}
+        aggregations={{ templates: [], published: { published: 0, restricted: 0 }, properties: {} }}
+        filters={{}}
+        setFilter={() => undefined}
+        locale="es"
+        typeIds={['tpl-org']}
+        andFilters={[]}
+        onAndFiltersChange={() => undefined}
+      />
+    );
+
+    expect(screen.getAllByText('Country')[0]).toHaveAttribute(
+      'data-translation-context',
+      'tpl-org'
+    );
+  });
 });

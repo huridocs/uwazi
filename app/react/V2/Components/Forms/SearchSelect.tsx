@@ -94,7 +94,6 @@ const revealInScrollContainer = (list: HTMLElement) => {
       if (past > 0) {
         node.scrollTop += past;
       }
-      return;
     }
     node = node.parentElement;
   }

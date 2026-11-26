@@ -98,6 +98,31 @@ describe('resolveFilterChipParts', () => {
     });
   });
 
+  it('uses the selected template when several templates share the property name', () => {
+    const shared = [
+      {
+        _id: 'tpl-a',
+        name: 'A',
+        properties: [{ name: 'country', label: 'Country A', type: 'select', content: 'th-a' }],
+      },
+      {
+        _id: 'tpl-b',
+        name: 'B',
+        properties: [{ name: 'country', label: 'Country B', type: 'select', content: 'th-b' }],
+      },
+    ] as Template[];
+
+    expect(
+      resolveFilterChipParts('country', 'ES', { templates: shared, typeIds: ['tpl-b'] })
+    ).toEqual({
+      propertyLabel: 'Country B',
+      propertyContext: 'tpl-b',
+      valueLabel: 'ES',
+      valueContext: 'th-b',
+      translateValue: false,
+    });
+  });
+
   it('resolves type and status with their display labels', () => {
     expect(resolveFilterChipParts('type', 'tpl-case', { templates })).toEqual({
       propertyLabel: 'Type',

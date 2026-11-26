@@ -40,15 +40,6 @@ const namedProperty = (templates: Template[], name: string): ChipProperty | unde
     };
   }, undefined);
 
-const findProperty = (templates: Template[], name: string) => {
-  const direct = namedProperty(templates, name);
-  if (direct) {
-    return direct;
-  }
-  const separator = name.indexOf('.');
-  return separator < 1 ? undefined : namedProperty(templates, name.slice(0, separator));
-};
-
 const nestedGroupKey = (name: string, propertyName: string) =>
   name.startsWith(`${propertyName}.`) ? name.slice(propertyName.length + 1) : undefined;
 
@@ -118,6 +109,34 @@ type ChipSources = {
   templates: Template[];
   aggregations?: LibraryAggregations;
   thesauri?: ClientThesaurus[];
+  typeIds?: string[];
+};
+
+const templatesInScope = (templates: Template[], typeIds: string[] | undefined) => {
+  const selected = (typeIds ?? []).filter(Boolean);
+  if (!selected.length) {
+    return templates;
+  }
+  const scoped = templates.filter(template => selected.includes(template._id));
+  return scoped.length ? scoped : templates;
+};
+
+const propertyNamed = (templates: Template[], name: string) => {
+  const direct = namedProperty(templates, name);
+  if (direct) {
+    return direct;
+  }
+  const separator = name.indexOf('.');
+  return separator < 1 ? undefined : namedProperty(templates, name.slice(0, separator));
+};
+
+const findProperty = (templates: Template[], name: string, typeIds?: string[]) => {
+  const scoped = templatesInScope(templates, typeIds);
+  const match = propertyNamed(scoped, name);
+  if (match || scoped === templates) {
+    return match;
+  }
+  return propertyNamed(templates, name);
 };
 
 const statusChip = (value: string): ChipParts => ({
@@ -164,7 +183,7 @@ const thesaurusFallbackChip = (
 };
 
 const propertyChip = (key: string, value: string, sources: ChipSources): ChipParts => {
-  const property = findProperty(sources.templates, key);
+  const property = findProperty(sources.templates, key, sources.typeIds);
   const aggregationKey = property?.name ?? key;
   const fromAggregation = aggregationValueLabel(
     sources.aggregations?.properties?.[aggregationKey],
@@ -190,5 +209,8 @@ const resolveFilterChipParts = (key: string, value: string, sources: ChipSources
   return propertyChip(key, value, sources);
 };
 
-export { resolveFilterChipParts };
+const templateContextForProperty = (templates: Template[], name: string, typeIds?: string[]) =>
+  findProperty(templates, name, typeIds)?.templateId;
+
+export { resolveFilterChipParts, templateContextForProperty };
 export type { ChipParts };
