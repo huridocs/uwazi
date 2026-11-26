@@ -1657,3 +1657,6 @@ Borders and dividers,UI text,Settings > Theme and branding,Hint under a theme co
 Settings sidebar,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
 Active settings navigation item,UI text,Settings > Theme and branding,Hint under a theme color saying where that color appears.,false
 Changes stay temporary until you save the theme.,UI text,Settings > Theme and branding,Note beside Save theme: live edits stay temporary until the theme is saved.,false
+Turn off live translate,Button label,Header,Button at the end of the live-translate strip that turns the mode off.,false
+Live translate is on.,UI text,Header,First sentence of the strip under the header while live translate is on. Shown semibold.,false
+Click underlined text to translate it.,UI text,Header,"Second sentence of that strip, in regular weight, telling the user to click underlined text to edit that string.",false

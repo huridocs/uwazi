@@ -27,7 +27,7 @@
   @media (max-width: 1023px) {
     position: fixed;
     width: 98%;
-    top: 50px;
+    top: calc(50px + var(--live-translate-banner, 0px));
     margin-left: -15px;
 
     &.closed {
@@ -52,7 +52,7 @@
 .open-toolbar-button {
   display: flex;
   position: fixed;
-  top: 50px;
+  top: calc(50px + var(--live-translate-banner, 0px));
   justify-content: center;
   left: 49%;
   width: 150px;

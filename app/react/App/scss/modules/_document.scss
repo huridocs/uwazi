@@ -164,7 +164,7 @@ mark.searchTerm {
       colors.$c-background 70%,
       transparent 100%
     );
-    top: materials.$header-height;
+    top: calc(#{materials.$header-height} + var(--live-translate-banner, 0px));
     width: 100%;
     max-width: 900px;
     left: 0;

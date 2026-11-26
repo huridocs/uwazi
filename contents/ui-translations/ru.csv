@@ -239,6 +239,7 @@ Click to fill,"Нажмите, чтобы заполнить"
 Click to select an image,"Нажмите, чтобы выбрать изображение"
 Click to select audio or video,"Нажмите, чтобы выбрать аудио или видео"
 Click to select files,"Нажмите, чтобы выбрать файлы"
+Click underlined text to translate it.,"Нажмите на подчёркнутый текст, чтобы перевести его."
 Close,Закрыть
 Close filters,Закрыть фильтры
 Close modal,Закрыть окно
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,"
 Live (always up to date),Вживую (всегда актуально)
 Live preview,Предварительный просмотр в режиме реального времени
 Live translate,Перевод в режиме реального времени
+Live translate is on.,Перевод в режиме реального времени включён.
 Load,Загрузить
 Load example,Загрузить пример
 Load more,Показать ещё
@@ -1635,6 +1637,7 @@ Translations saved,Переводы сохранены
 Tree,Дерево
 Try a different search or clear filters.,Попробуйте ввести другой запрос или сбросить фильтры.
 Turn off inline translation,Отключить встроенный перевод
+Turn off live translate,Отключить перевод в режиме реального времени
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Два категориальных измерения позволяют создавать многоуровневые столбчатые диаграммы (например, по странам с разбивкой по полу
 )."

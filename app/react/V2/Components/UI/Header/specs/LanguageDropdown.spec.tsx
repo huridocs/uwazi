@@ -90,19 +90,15 @@ describe('LanguageDropdown', () => {
     );
   });
 
-  it('turns live translate on from the menu and off from that button', async () => {
+  it('keeps the language selector when live translate is turned on', async () => {
     const user = userEvent.setup();
     renderDropdown(UserRole.ADMIN);
 
     await user.click(screen.getByRole('button', { name: 'Language' }));
     await user.click(screen.getByRole('button', { name: 'Live translate' }));
-    expect(screen.getByRole('button', { name: 'Live translate' })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    );
 
-    await user.click(screen.getByRole('button', { name: 'Live translate' }));
     expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument();
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
   it('does not offer live translate to collaborators', async () => {
