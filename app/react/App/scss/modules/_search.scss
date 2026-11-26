@@ -6,7 +6,7 @@
 
 .library-filters {
   z-index: 6;
-  top: materials.$header-height;
+  top: calc(#{materials.$header-height} + var(--live-translate-banner, 0px));
 
   @media (min-width: 1024px) {
     z-index: 4;

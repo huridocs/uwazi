@@ -21,6 +21,7 @@ import { MobileMenuDropdown, type MobileMenuAction } from './MobileMenuDropdown.
 import { MobileOptionsMenu } from './MobileOptionsMenu.js';
 import { useRememberedLibraryUrl } from '#V2/Routes/Library/useRememberedLibraryUrl.js';
 import { HeaderIcon, headerChipClass, headerIconButtonClass } from './headerIcons.js';
+import { LiveTranslateBanner } from './LiveTranslateBanner.js';
 
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
@@ -185,6 +186,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
           )}
         </div>
       </div>
+      <LiveTranslateBanner />
     </header>
   );
 };

@@ -3,6 +3,8 @@ import { Icon } from '#UI/index.js';
 import { t } from '#app/I18N/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
+import { LiveTranslateBanner } from '#V2/Components/UI/Header/LiveTranslateBanner.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { Menu } from './Menu.js';
 import { SiteName } from './SiteName.js';
 
@@ -61,6 +63,9 @@ const LegacyHeader = () => {
           </div>
         )}
         <Menu toggleMobileMenu={toggleMobileMenu} className={navClass} isMobile={isMobile} />
+        <ThemeProvider style={{ display: 'contents' }}>
+          <LiveTranslateBanner />
+        </ThemeProvider>
       </header>
     </>
   );

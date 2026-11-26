@@ -239,6 +239,7 @@ Click to fill,"Натисніть, щоб заповнити"
 Click to select an image,"Натисніть, щоб вибрати зображення"
 Click to select audio or video,"Натисніть, щоб вибрати аудіо- або відеофайл"
 Click to select files,"Натисніть, щоб вибрати файли"
+Click underlined text to translate it.,"Натисніть підкреслений текст, щоб перекласти його."
 Close,Закрити
 Close filters,Закрити фільтри
 Close modal,Закрити вікно
@@ -791,6 +792,7 @@ List renders as a table. Use the options below to filter empty or zero values.,"
 Live (always up to date),Наживо (завжди актуально)
 Live preview,Попередній перегляд у реальному часі
 Live translate,Прямий переклад
+Live translate is on.,Прямий переклад увімкнено.
 Load,Завантажити
 Load example,Завантажити приклад
 Load more,Завантажити ще
@@ -1640,6 +1642,7 @@ Translations saved,Переклади збережено
 Tree,Дерево
 Try a different search or clear filters.,Спробуйте ввести інший запит або скинути фільтри.
 Turn off inline translation,Вимкнути вбудований переклад
+Turn off live translate,Вимкнути прямий переклад
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Два категоріальних виміри дають змогу створювати багатошарові гістограми (наприклад, за країною та статтю
 )."

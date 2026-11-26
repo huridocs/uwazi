@@ -10,12 +10,12 @@ body {
   -webkit-flex-direction: column;
   flex-direction: column;
   height: 100vh;
-  padding-top: materials.$header-height;
+  padding-top: calc(#{materials.$header-height} + var(--live-translate-banner, 0px));
   overflow: hidden;
 }
 
 #app:has(.header-bar[data-uwazi-header]) {
-  padding-top: 3.25rem;
+  padding-top: calc(3.25rem + var(--live-translate-banner, 0px));
 }
 
 #app.app-bare,

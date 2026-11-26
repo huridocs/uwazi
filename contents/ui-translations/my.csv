@@ -236,6 +236,7 @@ Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Click to select an image,ပုံတစ်ပုံရွေးရန် နှိပ်ပါ
 Click to select audio or video,အသံ သို့မဟုတ် ဗီဒီယိုကို ရွေးရန် နှိပ်ပါ
 Click to select files,ဖိုင်များရွေးရန် နှိပ်ပါ
+Click underlined text to translate it.,ဘာသာပြန်ရန် မျဉ်းသားထားသော စာသားကို နှိပ်ပါ။
 Close,ပိတ်ရန်
 Close filters,စစ်ထုတ်မှုများ ပိတ်ရန်
 Close modal,ဝင်းဒိုး ပိတ်ရန်
@@ -783,6 +784,7 @@ List renders as a table. Use the options below to filter empty or zero values.,L
 Live (always up to date),တိုက်ရိုက် (အမြဲလတ်)
 Live preview,တိုက်ရိုက်ကြိုကြည့်
 Live translate,တိုက်ရိုက်ဘာသာပြန်
+Live translate is on.,တိုက်ရိုက်ဘာသာပြန် ဖွင့်ထားသည်။
 Load,တင်ပါ
 Load example,ဥပမာတင်ပါ
 Load more,ပိုမိုတင်ပါ
@@ -1613,6 +1615,7 @@ Translations saved,ဘာသာပြန်ဆိုချက်များ သ
 Tree,သစ်ပင်ပုံ
 Try a different search or clear filters.,ရှာဖွေမှုကို အခြားတစ်ခုဖြင့် ကြိုးစားပါ သို့မဟုတ် စစ်ထုတ်ကိရိယာများကို ဖျက်ပါ။
 Turn off inline translation,အတွင်းတန်းဘာသာပြန်ဆိုမှုကို ပိတ်ပါ။
+Turn off live translate,တိုက်ရိုက်ဘာသာပြန်ကို ပိတ်ပါ
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).",အမျိုးအစားနှစ်မျိုးသည် တစ်ထပ်တည်းထားသော ဘားဂရပ်ဇယားများ (ဥပမာ နိုင်ငံအလိုက် ကျားမ ခွဲခြားပြထားခြင်း) ကို ဖန်တီးနိုင်စေသည်။
 Two-Factor Authentication,နှစ်ဆအတည်ပြုခြင်း
