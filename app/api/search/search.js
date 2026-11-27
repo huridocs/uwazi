@@ -21,6 +21,7 @@ import templatesFacade from '../core/v1_layer/templates/index.js';
 import thesauri from '../core/v1_layer/thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
+import { MetadataSearchTerm } from './metadataSearchTerm/MetadataSearchTerm.js';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import * as v2 from './v2_support.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
@@ -762,17 +763,30 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 }
 
+const prepareSearchTerm = async (searchTerm, language) => {
+  const searchTextType = searchTerm
+    ? await searchTypeFromSearchTermValidity(searchTerm)
+    : 'query_string';
+  const metadataSearchTerm = await MetadataSearchTerm.for(
+    searchTerm || '',
+    language,
+    searchTextType
+  );
+  return { searchTextType, metadataSearchTerm };
+};
+
 // eslint-disable-next-line max-statements
 const buildQuery = async (query, language, user, resources) => {
   const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
-  const searchTextType = query.searchTerm
-    ? await searchTypeFromSearchTermValidity(query.searchTerm)
-    : 'query_string';
+  const { searchTextType, metadataSearchTerm } = await prepareSearchTerm(
+    query.searchTerm,
+    language
+  );
   const onlyPublished = query.published || !(query.includeUnpublished || query.unpublished);
   const queryBuilder = documentQueryBuilder()
     .include(query.include)
-    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
+    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType, metadataSearchTerm)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language)
@@ -897,15 +911,13 @@ const search = {
   async searchSnippets(searchTerm, sharedId, language, user) {
     const templatesData = await templatesFacade.get();
 
-    const searchTextType = searchTerm
-      ? await searchTypeFromSearchTermValidity(searchTerm)
-      : 'query_string';
+    const { searchTextType, metadataSearchTerm } = await prepareSearchTerm(searchTerm, language);
     const searchFields = propertiesHelper
       .textFields(templatesData)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(searchTerm, searchFields, 9999, searchTextType)
+      .fullTextSearch(searchTerm, searchFields, 9999, searchTextType, metadataSearchTerm)
       .filterById(sharedId)
       .language(language);
 

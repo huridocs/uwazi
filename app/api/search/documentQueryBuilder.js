@@ -157,7 +157,8 @@ export default function () {
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
-      searchTextType = 'query_string'
+      searchTextType = 'query_string',
+      metadataTerm = term
     ) {
       if (!term) {
         return this;
@@ -170,7 +171,7 @@ export default function () {
       if (fields.length) {
         should.push({
           [searchTextType]: {
-            query: term,
+            query: metadataTerm,
             fields,
             boost: 2,
           },
