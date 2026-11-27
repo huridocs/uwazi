@@ -54,6 +54,9 @@ jobs:
       - name: Release
         run: ./scripts/release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
 
+      - name: Pre release (transitional)
+        run: ./scripts/pre-release-production.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
+
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
