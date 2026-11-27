@@ -43,7 +43,9 @@ const aggregations: LibraryAggregations = {
 
 describe('resolveFilterChipParts', () => {
   it('uses property and value labels instead of names and ids', () => {
-    expect(resolveFilterChipParts('country', 'ES', templates, aggregations, thesauri)).toEqual({
+    expect(
+      resolveFilterChipParts({ key: 'country', value: 'ES', templates, aggregations, thesauri })
+    ).toEqual({
       propertyLabel: 'Country',
       propertyContext: 'prop-country',
       valueLabel: 'Spain (agg)',
@@ -52,7 +54,7 @@ describe('resolveFilterChipParts', () => {
   });
 
   it('falls back to the thesaurus label when aggregations have no match', () => {
-    expect(resolveFilterChipParts('country', 'FR', templates, undefined, thesauri)).toEqual({
+    expect(resolveFilterChipParts({ key: 'country', value: 'FR', templates, thesauri })).toEqual({
       propertyLabel: 'Country',
       propertyContext: 'prop-country',
       valueLabel: 'France',
@@ -61,14 +63,48 @@ describe('resolveFilterChipParts', () => {
     });
   });
 
+  it('names a permission chip by level so the same member can appear twice', () => {
+    const withPermissions: LibraryAggregations = {
+      ...aggregations,
+      permissions: {
+        read: [{ id: 'user1', label: 'afarah', count: 4, group: false }],
+        write: [{ id: 'group1', label: 'Litigation', count: 1, group: true }],
+      },
+    };
+    expect(
+      resolveFilterChipParts({
+        key: 'permissions.read',
+        value: 'user1',
+        templates,
+        aggregations: withPermissions,
+      })
+    ).toEqual({
+      propertyLabel: 'Can view',
+      valueLabel: 'afarah',
+      translateValue: false,
+    });
+    expect(
+      resolveFilterChipParts({
+        key: 'permissions.write',
+        value: 'group1',
+        templates,
+        aggregations: withPermissions,
+      })
+    ).toEqual({
+      propertyLabel: 'Can edit',
+      valueLabel: 'Litigation',
+      translateValue: false,
+    });
+  });
+
   it('resolves type and status with their display labels', () => {
-    expect(resolveFilterChipParts('type', 'tpl-case', templates)).toEqual({
+    expect(resolveFilterChipParts({ key: 'type', value: 'tpl-case', templates })).toEqual({
       propertyLabel: 'Type',
       valueLabel: 'Case',
       valueContext: 'tpl-case',
       translateValue: true,
     });
-    expect(resolveFilterChipParts('status', 'restricted', templates)).toEqual({
+    expect(resolveFilterChipParts({ key: 'status', value: 'restricted', templates })).toEqual({
       propertyLabel: 'Status',
       valueLabel: 'Restricted',
       translateValue: true,

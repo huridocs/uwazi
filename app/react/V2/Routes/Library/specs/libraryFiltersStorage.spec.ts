@@ -33,18 +33,35 @@ describe('libraryFiltersStorage', () => {
     expect(readStoredLibraryFilters()).toEqual({
       filters: { type: ['tpl-a'] },
       andFilters: ['type'],
+      permissionFilters: [],
+      permissionsAnd: false,
     });
 
     window.localStorage.setItem(LIBRARY_FILTERS_STORAGE_KEY, '{not-json');
-    expect(readStoredLibraryFilters()).toEqual({ filters: {}, andFilters: [] });
+    expect(readStoredLibraryFilters()).toEqual({
+      filters: {},
+      andFilters: [],
+      permissionFilters: [],
+      permissionsAnd: false,
+    });
   });
 
   it('merges a filter patch with the current stored values', () => {
     expect(
       storedLibraryFiltersFromPatch(
         { filters: { type: ['tpl-b'] }, andFilters: null },
-        { filters: { type: ['tpl-a'] }, andFilters: ['country'] }
+        {
+          filters: { type: ['tpl-a'] },
+          andFilters: ['country'],
+          permissionFilters: [],
+          permissionsAnd: false,
+        }
       )
-    ).toEqual({ filters: { type: ['tpl-b'] }, andFilters: [] });
+    ).toEqual({
+      filters: { type: ['tpl-b'] },
+      andFilters: [],
+      permissionFilters: [],
+      permissionsAnd: false,
+    });
   });
 });

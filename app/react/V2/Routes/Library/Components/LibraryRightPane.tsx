@@ -1,5 +1,9 @@
 import React, { type ReactElement } from 'react';
-import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
+import type {
+  LibraryAggregations,
+  LibraryPermissionPick,
+  LibrarySearchHit,
+} from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState } from '../libraryUrlState.js';
 import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryCreateEntityPanel } from './LibraryCreateEntityPanel.js';
@@ -21,9 +25,14 @@ type LibraryRightPaneProps = {
   aggregations: LibraryAggregations;
   filters: LibraryFiltersState;
   andFilters: string[];
+  permissionFilters?: LibraryPermissionPick[];
+  permissionsAnd?: boolean;
   chips: Chip[];
   onFiltersChange: (filters: LibraryFiltersState) => void;
   onAndFiltersChange: (andFilters: string[]) => void;
+  onPermissionFiltersChange?: (picks: LibraryPermissionPick[]) => void;
+  onPermissionsAndChange?: (and: boolean) => void;
+  onClearFilters?: () => void;
   onClosePreview: (afterClose?: () => void) => void;
   onCloseSelection: () => void;
   onRemoveSelection: (sharedId: string) => void;
@@ -110,8 +119,13 @@ const librarySideChrome = ({
   aggregations,
   filters,
   andFilters,
+  permissionFilters,
+  permissionsAnd,
   onFiltersChange,
   onAndFiltersChange,
+  onPermissionFiltersChange,
+  onPermissionsAndChange,
+  onClearFilters,
 }: LibraryRightPaneProps) => {
   const hasResults = Boolean(search.trim()) && libraryResultViews(rows).length > 0;
   return (
@@ -136,8 +150,13 @@ const librarySideChrome = ({
             aggregations={aggregations}
             filters={filters}
             andFilters={andFilters}
+            permissionFilters={permissionFilters}
+            permissionsAnd={permissionsAnd}
             onChange={onFiltersChange}
             onAndFiltersChange={onAndFiltersChange}
+            onPermissionFiltersChange={onPermissionFiltersChange}
+            onPermissionsAndChange={onPermissionsAndChange}
+            onClear={onClearFilters}
             chips={chips}
           />
         )}

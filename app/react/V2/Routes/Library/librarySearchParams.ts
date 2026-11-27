@@ -1,4 +1,5 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral, createParser } from 'nuqs';
+import type { LibraryPermissionPick } from '#shared/types/librarySearch.js';
 import {
   DEFAULT_LIBRARY_URL_STATE,
   LIBRARY_VIEW_MODES,
@@ -6,6 +7,8 @@ import {
   serializeCompactFilters,
   parseAndFilters,
   serializeAndFilters,
+  parsePermissionFilters,
+  serializePermissionFilters,
   normalizeFilters,
   type LibraryFiltersState,
 } from './libraryUrlState.js';
@@ -31,9 +34,26 @@ const parseAsAndFilters = createParser({
   .withDefault([])
   .withOptions(notifyLoader);
 
+const parseAsPermissionFilters = createParser({
+  parse: (value: string) => parsePermissionFilters(value),
+  serialize: (value: LibraryPermissionPick[]) => serializePermissionFilters(value),
+  eq: (a, b) => serializePermissionFilters(a) === serializePermissionFilters(b),
+})
+  .withDefault([])
+  .withOptions(notifyLoader);
+
+const parseAsPermissionsAnd = createParser({
+  parse: (value: string) => value === '1',
+  serialize: (value: boolean) => (value ? '1' : ''),
+})
+  .withDefault(false)
+  .withOptions(notifyLoader);
+
 const librarySearchParams = {
   filters: parseAsCompactFilters,
   andFilters: parseAsAndFilters,
+  permissionFilters: parseAsPermissionFilters,
+  permissionsAnd: parseAsPermissionsAnd,
   search: parseAsString.withDefault(DEFAULT_LIBRARY_URL_STATE.search).withOptions(notifyLoader),
   limit: parseAsInteger.withDefault(DEFAULT_LIBRARY_URL_STATE.limit).withOptions(notifyLoader),
   page: parseAsInteger.withDefault(DEFAULT_LIBRARY_URL_STATE.page).withOptions(notifyLoader),

@@ -1,4 +1,8 @@
-import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
+import type {
+  LibraryAggregations,
+  LibraryPermissionPick,
+  LibrarySearchHit,
+} from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import type { Chip } from './ActiveFiltersSheet.js';
 
@@ -19,6 +23,11 @@ type LibraryViewProps = {
   onFiltersChange: (filters: LibraryFiltersState) => void;
   andFilters: string[];
   onAndFiltersChange: (andFilters: string[]) => void;
+  permissionFilters?: LibraryPermissionPick[];
+  permissionsAnd?: boolean;
+  onPermissionFiltersChange?: (picks: LibraryPermissionPick[]) => void;
+  onPermissionsAndChange?: (and: boolean) => void;
+  onClearFilters?: () => void;
   chips: Chip[];
   selectedIds?: readonly string[];
   onSelectedIdsChange: (ids: string[]) => void;
@@ -32,4 +41,11 @@ type LibraryViewProps = {
   onEntitiesDeleted?: (sharedIds: readonly string[]) => void;
 };
 
+const libraryPaneMode = (creating: boolean, selectedCount: number) => {
+  if (creating) return 'create';
+  if (selectedCount > 0) return 'entity';
+  return 'filters';
+};
+
+export { libraryPaneMode };
 export type { LibraryViewProps };

@@ -67,63 +67,94 @@ const aggregationValueLabel = (
   }, undefined);
 };
 
-const resolveFilterChipParts = (
+type ChipSource = {
+  key: string;
+  value: string;
+  templates: Template[];
+  aggregations?: LibraryAggregations;
+  thesauri?: ClientThesaurus[];
+};
+
+const labeled = (
+  propertyLabel: string,
+  valueLabel: string,
+  extra: Partial<ChipParts> = {}
+): ChipParts => ({
+  propertyLabel,
+  valueLabel,
+  translateValue: false,
+  ...extra,
+});
+
+const permissionChip = (
   key: string,
   value: string,
-  templates: Template[],
-  aggregations?: LibraryAggregations,
-  thesauri: ClientThesaurus[] = []
-): ChipParts => {
-  if (key === 'status') {
-    return {
-      propertyLabel: 'Status',
-      valueLabel: value === 'restricted' ? 'Restricted' : 'Published',
-      translateValue: true,
-    };
+  aggregations?: LibraryAggregations
+): ChipParts | undefined => {
+  if (key !== 'permissions.read' && key !== 'permissions.write') {
+    return undefined;
   }
+  const level = key === 'permissions.write' ? 'write' : 'read';
+  const bucket = aggregations?.permissions?.[level]?.find(item => item.id === value);
+  return labeled(level === 'write' ? 'Can edit' : 'Can view', bucket?.label || value);
+};
 
-  if (key === 'type') {
-    const template = templates.find(item => item._id === value);
-    return {
-      propertyLabel: 'Type',
-      valueLabel: template?.name ?? value,
-      valueContext: template?._id,
-      translateValue: true,
-    };
+const statusChip = (key: string, value: string): ChipParts | undefined => {
+  if (key !== 'status') {
+    return undefined;
   }
+  return labeled('Status', value === 'restricted' ? 'Restricted' : 'Published', {
+    translateValue: true,
+  });
+};
 
+const typeChip = (key: string, value: string, templates: Template[]): ChipParts | undefined => {
+  if (key !== 'type') {
+    return undefined;
+  }
+  const template = templates.find(item => item._id === value);
+  return labeled('Type', template?.name ?? value, {
+    valueContext: template?._id,
+    translateValue: true,
+  });
+};
+
+const propertyChip = ({
+  key,
+  value,
+  templates,
+  aggregations,
+  thesauri = [],
+}: ChipSource): ChipParts => {
   const property = findProperty(templates, key);
-  const aggregationKey = property?.name ?? key;
-  const fromAggregation = aggregationValueLabel(aggregations?.properties?.[aggregationKey], value);
+  const fromAggregation = aggregationValueLabel(
+    aggregations?.properties?.[property?.name ?? key],
+    value
+  );
   if (fromAggregation) {
-    return {
-      propertyLabel: property?.label ?? key,
+    return labeled(property?.label ?? key, fromAggregation, {
       propertyContext: property?._id || property?.name,
-      valueLabel: fromAggregation,
-      translateValue: false,
-    };
+    });
   }
-
   const group = property ? nestedGroupKey(key, property.name) : undefined;
   if (group && value === 'any') {
-    return {
-      propertyLabel: property?.label ?? key,
+    return labeled(property?.label ?? key, group, {
       propertyContext: property?._id || property?.name,
-      valueLabel: group,
-      translateValue: false,
-    };
+    });
   }
-
   const fromThesaurus = property?.content && thesaurusValueLabel(thesauri, property.content, value);
-
-  return {
-    propertyLabel: property?.label ?? key,
+  return labeled(property?.label ?? key, fromThesaurus || value, {
     propertyContext: property?._id || property?.name,
-    valueLabel: fromThesaurus || value,
     valueContext: property?.content,
     translateValue: Boolean(fromThesaurus),
-  };
+  });
 };
+
+const resolveFilterChipParts = (source: ChipSource): ChipParts =>
+  permissionChip(source.key, source.value, source.aggregations) ??
+  statusChip(source.key, source.value) ??
+  typeChip(source.key, source.value, source.templates) ??
+  propertyChip(source);
 
 export { resolveFilterChipParts };
 export type { ChipParts };

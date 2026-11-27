@@ -8,7 +8,8 @@ import {
   isEntityViewerV2Enabled,
 } from '#app/utils/entityViewerPaths.js';
 import { LibraryAggregations } from '#shared/types/librarySearch.js';
-import { settingsAtom, templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { settingsAtom, templatesAtom, thesauriAtom, userAtom } from '#V2/atoms/index.js';
 import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { LibraryView } from './Components/LibraryView.js';
 import type { Chip } from './Components/ActiveFiltersSheet.js';
@@ -47,13 +48,7 @@ const chipLabel = (chip: {
   aggregations: LibraryAggregations;
   thesauri: ClientThesaurus[];
 }): ReactNode => {
-  const parts = resolveFilterChipParts(
-    chip.key,
-    chip.value,
-    chip.templates,
-    chip.aggregations,
-    chip.thesauri
-  );
+  const parts = resolveFilterChipParts(chip);
   return (
     <>
       {translatedText(parts.propertyLabel, parts.propertyContext)}
@@ -103,6 +98,77 @@ const useLibrarySelection = (rows: readonly LibrarySearchHit[], totalRows: numbe
   };
 };
 
+const useLibraryChips = ({
+  urlState,
+  updateUrl,
+  templates,
+  aggregations,
+  thesauri,
+}: {
+  urlState: ReturnType<typeof useLibraryUrlState>['urlState'];
+  updateUrl: ReturnType<typeof useLibraryUrlState>['updateUrl'];
+  templates: Template[];
+  aggregations: LibraryAggregations;
+  thesauri: ClientThesaurus[];
+}) => {
+  const permissionsApply = useAtomValue(userAtom)?.role === UserRole.ADMIN;
+  return useMemo((): Chip[] => {
+    const items: Chip[] = [];
+    Object.entries(urlState.filters).forEach(([key, values]) => {
+      values.forEach(value => {
+        items.push({
+          key: `${key}:${value}`,
+          label: chipLabel({
+            key,
+            value,
+            templates,
+            aggregations,
+            thesauri,
+          }),
+          color:
+            key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
+          onRemove: () => {
+            updateUrl({
+              filters: removeFilterValue(urlState.filters, key, value),
+              page: null,
+            });
+          },
+        });
+      });
+    });
+    if (permissionsApply) {
+      urlState.permissionFilters.forEach(pick => {
+        const key = pick.level === 'write' ? 'permissions.write' : 'permissions.read';
+        items.push({
+          key: `${key}:${pick.refId}`,
+          label: chipLabel({
+            key,
+            value: pick.refId,
+            templates,
+            aggregations,
+            thesauri,
+          }),
+          onRemove: () => {
+            const next = urlState.permissionFilters.filter(
+              item => item.level !== pick.level || item.refId !== pick.refId
+            );
+            updateUrl({ permissionFilters: next.length ? next : null, page: null });
+          },
+        });
+      });
+    }
+    return items;
+  }, [
+    aggregations,
+    permissionsApply,
+    templates,
+    thesauri,
+    updateUrl,
+    urlState.filters,
+    urlState.permissionFilters,
+  ]);
+};
+
 const LibraryController = () => {
   const data = useLoaderData() as LoaderResponse;
   const { urlState, updateUrl } = useLibraryUrlState();
@@ -124,33 +190,13 @@ const LibraryController = () => {
   } = useLibrarySearchInput(urlState.search, updateUrl);
 
   const entityBasePath = getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features));
-
-  const chips = useMemo((): Chip[] => {
-    const items: Chip[] = [];
-    Object.entries(urlState.filters).forEach(([key, values]) => {
-      values.forEach(value => {
-        items.push({
-          key: `${key}:${value}`,
-          label: chipLabel({
-            key,
-            value,
-            templates,
-            aggregations: data.aggregations,
-            thesauri,
-          }),
-          color:
-            key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
-          onRemove: () => {
-            updateUrl({
-              filters: removeFilterValue(urlState.filters, key, value),
-              page: null,
-            });
-          },
-        });
-      });
-    });
-    return items;
-  }, [data.aggregations, templates, thesauri, updateUrl, urlState.filters]);
+  const chips = useLibraryChips({
+    urlState,
+    updateUrl,
+    templates,
+    aggregations: data.aggregations,
+    thesauri,
+  });
 
   return (
     <LibraryView
@@ -185,6 +231,26 @@ const LibraryController = () => {
       }}
       onAndFiltersChange={andFilters => {
         updateUrl({ andFilters: andFilters.length ? andFilters : null, page: null });
+      }}
+      permissionFilters={urlState.permissionFilters}
+      permissionsAnd={urlState.permissionsAnd}
+      onPermissionFiltersChange={permissionFilters => {
+        updateUrl({
+          permissionFilters: permissionFilters.length ? permissionFilters : null,
+          page: null,
+        });
+      }}
+      onPermissionsAndChange={permissionsAnd => {
+        updateUrl({ permissionsAnd: permissionsAnd || null, page: null });
+      }}
+      onClearFilters={() => {
+        updateUrl({
+          filters: null,
+          andFilters: null,
+          permissionFilters: null,
+          permissionsAnd: null,
+          page: null,
+        });
       }}
       chips={chips}
       selectedIds={selectedIds}

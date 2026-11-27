@@ -94,7 +94,7 @@ const LibraryPreview = ({ initialView = 'cards' }: { initialView?: LibraryViewMo
         items.push({
           key: `${key}:${value}`,
           label: (() => {
-            const parts = resolveFilterChipParts(key, value, templates, aggregations);
+            const parts = resolveFilterChipParts({ key, value, templates, aggregations });
             return `${parts.propertyLabel}: ${parts.valueLabel}`;
           })(),
           color:

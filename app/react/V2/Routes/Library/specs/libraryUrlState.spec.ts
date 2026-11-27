@@ -65,6 +65,8 @@ describe('libraryUrlState', () => {
       const state = {
         filters: { type: ['abc'] },
         andFilters: [],
+        permissionFilters: [],
+        permissionsAnd: false,
         search: 'batman',
         limit: 50,
         page: 1,
@@ -92,6 +94,21 @@ describe('libraryUrlState', () => {
       expect(params.get('sort')).toBe('title');
       expect(params.get('order')).toBe('asc');
       expect(params.get('view')).toBe('table');
+    });
+
+    it('round-trips permission picks and one shared AND', () => {
+      const state = {
+        ...DEFAULT_LIBRARY_URL_STATE,
+        permissionFilters: [
+          { level: 'read' as const, refId: 'user1' },
+          { level: 'write' as const, refId: 'group1' },
+        ],
+        permissionsAnd: true,
+      };
+      expect(serializeLibrarySearchString(state)).toBe(
+        'permissionFilters=(read:(user1),write:(group1))&permissionsAnd=1'
+      );
+      expect(parseLibrarySearchParams(serializeLibrarySearchParams(state))).toEqual(state);
     });
 
     it('round-trips AND properties as andFilters=(name)', () => {

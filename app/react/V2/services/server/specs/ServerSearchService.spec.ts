@@ -53,6 +53,7 @@ describe('ServerSearchService', () => {
     expect(data?.aggregations).toEqual({
       templates: [],
       published: { published: 0, restricted: 0 },
+      permissions: { read: [], write: [] },
       properties: {},
     });
   });

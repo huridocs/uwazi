@@ -82,6 +82,7 @@ describe('HttpSearchService', () => {
       aggregations: {
         templates: [{ id: 't1', count: 1 }],
         published: { published: 4, restricted: 2 },
+        permissions: { read: [], write: [] },
         properties: { country: [{ id: 'ES', label: 'Spain', count: 1 }] },
       },
     });

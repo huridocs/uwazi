@@ -5,7 +5,7 @@ import { LibraryMultiSelectFooter } from './LibraryMultiSelectFooter.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
 import { DEFAULT_LIBRARY_URL_STATE } from '../libraryUrlState.js';
-import type { LibraryViewProps } from './libraryViewProps.js';
+import { libraryPaneMode, type LibraryViewProps } from './libraryViewProps.js';
 import { uploadChosenLibraryPdfs } from './libraryUploadPdf.js';
 import { LibraryViewerHost } from './Viewers/index.js';
 import { librarySidePanes } from './LibrarySidePanes.js';
@@ -14,12 +14,6 @@ import { useLibraryPaneRequest } from './useLibraryMobilePane.js';
 import { useLibraryResultsChrome } from './useLibraryResultsChrome.js';
 import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
-
-const libraryPaneMode = (creating: boolean, selectedCount: number) => {
-  if (creating) return 'create';
-  if (selectedCount > 0) return 'entity';
-  return 'filters';
-};
 
 const LibraryView = ({
   rows,
@@ -38,6 +32,11 @@ const LibraryView = ({
   onFiltersChange,
   andFilters,
   onAndFiltersChange,
+  permissionFilters = [],
+  permissionsAnd = false,
+  onPermissionFiltersChange = () => undefined,
+  onPermissionsAndChange = () => undefined,
+  onClearFilters,
   chips,
   selectedIds = [],
   onSelectedIdsChange,
@@ -258,6 +257,11 @@ const LibraryView = ({
           aggregations,
           filters,
           andFilters,
+          permissionFilters,
+          permissionsAnd,
+          onPermissionFiltersChange,
+          onPermissionsAndChange,
+          onClearFilters,
           chips,
           onFiltersChange,
           onAndFiltersChange,
@@ -287,6 +291,5 @@ const LibraryView = ({
     </div>
   );
 };
-
 export type { LibraryViewProps } from './libraryViewProps.js';
 export { LibraryView };

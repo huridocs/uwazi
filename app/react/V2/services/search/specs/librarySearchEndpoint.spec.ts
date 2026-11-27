@@ -79,6 +79,7 @@ describe('librarySearchEndpoint', () => {
       aggregations: {
         templates: [{ id: 't1', count: 1 }],
         published: { published: 4, restricted: 2 },
+        permissions: { read: [], write: [] },
         properties: {
           country: [
             {
@@ -176,6 +177,60 @@ describe('librarySearchEndpoint', () => {
         descriptores: { values: ['d1', 'd2'], and: true },
         country: 'ES',
       },
+    });
+  });
+
+  it('sends assignee permissions as customFilters and asks admins for user aggregations', () => {
+    expect(
+      toSearchEndpointQuery({
+        permissionFilters: [
+          { refId: 'user1', level: 'read' },
+          { refId: 'group1', level: 'write' },
+        ],
+        permissionsAnd: true,
+        aggregatePermissionsByUsers: true,
+      })
+    ).toMatchObject({
+      aggregatePermissionsByUsers: true,
+      customFilters: {
+        permissions: {
+          and: true,
+          values: [
+            { refId: 'user1', level: 'read' },
+            { refId: 'group1', level: 'write' },
+          ],
+        },
+      },
+    });
+  });
+
+  it('maps permission aggregations and keeps them out of property facets', () => {
+    const result = fromSearchEndpointResult({
+      aggregations: {
+        all: {
+          '_permissions.read': {
+            buckets: [
+              { key: 'user1', label: 'afarah', filtered: { doc_count: 4 } },
+              { key: 'group1', label: 'Litigation', icon: 'users', filtered: { doc_count: 2 } },
+            ],
+          },
+          '_permissions.write': {
+            buckets: [
+              { key: 'group1', label: 'Litigation', icon: 'users', filtered: { doc_count: 1 } },
+            ],
+          },
+        },
+      },
+    });
+
+    expect(result.aggregations.properties['_permissions.read']).toBeUndefined();
+    expect(result.aggregations.properties['_permissions.write']).toBeUndefined();
+    expect(result.aggregations.permissions).toEqual({
+      read: [
+        { id: 'user1', label: 'afarah', count: 4, group: false },
+        { id: 'group1', label: 'Litigation', count: 2, group: true },
+      ],
+      write: [{ id: 'group1', label: 'Litigation', count: 1, group: true }],
     });
   });
 

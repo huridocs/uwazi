@@ -104,17 +104,25 @@ const aggregations: LibraryAggregations = {
 const renderFilters = ({
   onChange = jest.fn(),
   onAndFiltersChange = jest.fn(),
+  onPermissionFiltersChange = jest.fn(),
+  onPermissionsAndChange = jest.fn(),
   chips = [],
   filterState = { type: ['template1'] },
   andFilters = [],
+  permissionFilters = [],
+  permissionsAnd = false,
   aggs = aggregations,
   settings = {},
 }: {
   onChange?: jest.Mock;
   onAndFiltersChange?: jest.Mock;
+  onPermissionFiltersChange?: jest.Mock;
+  onPermissionsAndChange?: jest.Mock;
   chips?: { key: string; label: string; onRemove: () => void }[];
   filterState?: Record<string, string[]>;
   andFilters?: string[];
+  permissionFilters?: { level: 'read' | 'write'; refId: string }[];
+  permissionsAnd?: boolean;
   aggs?: LibraryAggregations;
   settings?: ClientSettings;
 } = {}) =>
@@ -132,8 +140,12 @@ const renderFilters = ({
         aggregations={aggs}
         filters={filterState}
         andFilters={andFilters}
+        permissionFilters={permissionFilters}
+        permissionsAnd={permissionsAnd}
         onChange={onChange}
         onAndFiltersChange={onAndFiltersChange}
+        onPermissionFiltersChange={onPermissionFiltersChange}
+        onPermissionsAndChange={onPermissionsAndChange}
         chips={chips}
       />
     </TestAtomStoreProvider>
@@ -283,13 +295,96 @@ describe('LibraryFilters', () => {
     renderFilters({ onAndFiltersChange });
 
     expect(screen.getByText('Descriptores')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'AND' }));
+    const descriptores = screen.getByText('Descriptores').closest('.rounded-lg') as HTMLElement;
+    await user.click(within(descriptores).getByRole('button', { name: 'AND' }));
     expect(onAndFiltersChange).toHaveBeenCalledWith(['descriptores']);
   });
 
   it('does not show AND/OR on a select property', () => {
     renderFilters();
-    const andButtons = screen.getAllByRole('button', { name: 'AND' });
-    expect(andButtons).toHaveLength(1);
+    const country = screen.getByText('Country').closest('.rounded-lg') as HTMLElement;
+    expect(within(country).queryByRole('button', { name: 'AND' })).not.toBeInTheDocument();
+  });
+
+  it('lists who records are shared with, for admins, as the last card', async () => {
+    const user = userEvent.setup();
+    const onPermissionFiltersChange = jest.fn();
+    const onPermissionsAndChange = jest.fn();
+    renderFilters({
+      onPermissionFiltersChange,
+      onPermissionsAndChange,
+      aggs: {
+        ...aggregations,
+        permissions: {
+          read: [
+            { id: 'user1', label: 'afarah', count: 4, group: false },
+            { id: 'group1', label: 'Litigation', count: 9, group: true },
+          ],
+          write: [{ id: 'group1', label: 'Litigation', count: 2, group: true }],
+        },
+      },
+    });
+
+    const permissions = screen.getByRole('region', { name: 'Permissions' });
+    const descriptores = screen.getByText('Descriptores');
+    expect(descriptores.compareDocumentPosition(permissions)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+    expect(within(permissions).getByText('Can view')).toBeInTheDocument();
+    expect(within(permissions).getByText('Can edit')).toBeInTheDocument();
+    expect(within(permissions).getByRole('checkbox', { name: /afarah/ })).not.toBeChecked();
+
+    await user.click(within(permissions).getByRole('checkbox', { name: /afarah/ }));
+    expect(onPermissionFiltersChange).toHaveBeenCalledWith([{ level: 'read', refId: 'user1' }]);
+
+    await user.click(within(permissions).getByRole('button', { name: 'AND' }));
+    expect(onPermissionsAndChange).toHaveBeenCalledWith(true);
+  });
+
+  it('keeps a picked member when the current results no longer count them', () => {
+    renderFilters({
+      permissionFilters: [{ level: 'read', refId: 'user1' }],
+      aggs: {
+        ...aggregations,
+        permissions: {
+          read: [],
+          write: [],
+        },
+      },
+    });
+
+    const permissions = screen.getByRole('region', { name: 'Permissions' });
+    expect(within(permissions).getByRole('checkbox', { name: /user1/ })).toBeChecked();
+    expect(within(permissions).getByText('0')).toBeInTheDocument();
+    expect(within(permissions).getByText('No options found')).toBeInTheDocument();
+  });
+
+  it('hides the permissions card from anyone who is not an admin', () => {
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [templatesAtom, filterTemplates],
+          [translationsAtom, translations],
+          [settingsAtom, {}],
+          [userAtom, { _id: 'ed1', role: 'editor', username: 'ed' }],
+        ]}
+      >
+        <LibraryFilters
+          aggregations={{
+            ...aggregations,
+            permissions: {
+              read: [{ id: 'user1', label: 'afarah', count: 4, group: false }],
+              write: [],
+            },
+          }}
+          filters={{ type: ['template1'] }}
+          onChange={jest.fn()}
+        />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.queryByRole('region', { name: 'Permissions' })).not.toBeInTheDocument();
+    expect(screen.queryByText('afarah')).not.toBeInTheDocument();
   });
 });

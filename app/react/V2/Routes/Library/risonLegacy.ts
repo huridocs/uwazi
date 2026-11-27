@@ -165,6 +165,8 @@ const stateFromLegacyQuery = (query: LegacyRisonQuery): LibraryUrlState => {
   return {
     filters,
     andFilters,
+    permissionFilters: [],
+    permissionsAnd: false,
     search: decodeSearchTerm(query.searchTerm),
     limit,
     page: from > 0 ? Math.floor(from / limit) + 1 : 1,

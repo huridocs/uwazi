@@ -38,6 +38,8 @@ describe('risonLegacy', () => {
         year: ['2020', '2021'],
       },
       andFilters: [],
+      permissionFilters: [],
+      permissionsAnd: false,
       search: 'batman',
       limit: 10,
       page: 1,
@@ -99,6 +101,8 @@ describe('risonLegacy', () => {
     expect(legacyRisonToLibraryUrlState(params.get('q') ?? '')).toEqual({
       filters: { status: ['published'] },
       andFilters: [],
+      permissionFilters: [],
+      permissionsAnd: false,
       search: 'arroz',
       limit: 30,
       page: 1,

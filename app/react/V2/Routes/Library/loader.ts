@@ -1,7 +1,10 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, redirect } from 'react-router';
 import type { ApiError } from '#shared/apiClient/index.js';
+import { getStore } from '#shared/atomStore/index.js';
 import type { LibrarySearchQuery, LibrarySearchResult } from '#shared/types/librarySearch.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { userAtom } from '#V2/atoms/index.js';
 import { throwApiError } from '#V2/shared/errorUtils.js';
 import type { V2Services } from '#V2/services/types.js';
 import { httpServices } from '#V2/services/http/index.js';
@@ -27,8 +30,11 @@ type SearchRange = {
   geolocation?: boolean;
 };
 
+const viewerIsAdmin = () => getStore().get(userAtom)?.role === UserRole.ADMIN;
+
 const toSearchQuery = (urlState: LibraryUrlState, range: SearchRange): LibrarySearchQuery => {
   const { type, status, ...propertyFilters } = urlState.filters;
+  const admin = viewerIsAdmin();
   return {
     searchTerm: urlState.search,
     templateIds: type,
@@ -40,6 +46,13 @@ const toSearchQuery = (urlState: LibraryUrlState, range: SearchRange): LibrarySe
     sort: urlState.sort || undefined,
     order: urlState.order,
     ...(range.geolocation ? { geolocation: true } : {}),
+    ...(admin ? { aggregatePermissionsByUsers: true } : {}),
+    ...(admin && urlState.permissionFilters.length
+      ? {
+          permissionFilters: urlState.permissionFilters,
+          ...(urlState.permissionsAnd ? { permissionsAnd: true } : {}),
+        }
+      : {}),
   };
 };
 

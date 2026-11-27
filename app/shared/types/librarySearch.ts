@@ -3,12 +3,37 @@ import type { EntitySchema } from '#shared/types/entityType.js';
 type LibraryPublishedStatus = 'published' | 'restricted' | 'all';
 type LibrarySortOrder = 'asc' | 'desc';
 
+type LibraryPermissionLevel = 'read' | 'write';
+
+type LibraryPermissionPick = {
+  refId: string;
+  level: LibraryPermissionLevel;
+};
+
+type LibraryPermissionBucket = {
+  id: string;
+  label?: string;
+  count: number;
+  group: boolean;
+};
+
+type LibraryPermissionAggregations = {
+  read: LibraryPermissionBucket[];
+  write: LibraryPermissionBucket[];
+};
+
 type LibrarySearchQuery = {
   searchTerm?: string;
   templateIds?: string[];
   filters?: Record<string, string[]>;
   /** Property names that use AND (must match all values). Same as V1 `filters[name].and`. */
   andFilters?: string[];
+  /** Users and groups a record is shared with. Sent as `customFilters.permissions`. */
+  permissionFilters?: LibraryPermissionPick[];
+  /** One AND for both Can view and Can edit. OR is the default. */
+  permissionsAnd?: boolean;
+  /** Ask `/api/search` for `_permissions.read` and `_permissions.write`. Admins only. */
+  aggregatePermissionsByUsers?: boolean;
   publishedStatus?: LibraryPublishedStatus;
   from?: number;
   limit?: number;
@@ -43,6 +68,7 @@ type LibraryAggregations = {
     restricted: number;
   };
   properties: Record<string, LibraryFacetBucket[]>;
+  permissions?: LibraryPermissionAggregations;
 };
 
 type LibrarySnippetMetadata = {
@@ -88,6 +114,10 @@ export type {
   LibraryAggregations,
   LibraryFacetBucket,
   LibraryFacetIcon,
+  LibraryPermissionAggregations,
+  LibraryPermissionBucket,
+  LibraryPermissionLevel,
+  LibraryPermissionPick,
   LibraryHitSnippets,
   LibraryPublishedStatus,
   LibrarySearchHit,

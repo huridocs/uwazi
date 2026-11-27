@@ -1,6 +1,7 @@
 import type {
   LibraryAggregations,
   LibraryFacetBucket,
+  LibraryPermissionBucket,
   LibraryPublishedStatus,
   LibrarySearchQuery,
   LibrarySearchResult,
@@ -41,6 +42,13 @@ type SearchEndpointQuery = {
   include: ['permissions'];
   fields?: string[];
   geolocation?: boolean;
+  aggregatePermissionsByUsers?: boolean;
+  customFilters?: {
+    permissions: {
+      values: { refId: string; level: 'read' | 'write' }[];
+      and?: boolean;
+    };
+  };
 };
 
 type RawBucket = {
@@ -51,7 +59,7 @@ type RawBucket = {
     total?: { filtered?: { doc_count?: number } };
   };
   values?: RawBucket[];
-  icon?: EntitySchema['icon'];
+  icon?: EntitySchema['icon'] | string;
 };
 
 type RawAggregation = {
@@ -159,6 +167,7 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     }
   });
   const fields = projectedFields(query);
+  const permissionFilters = query.permissionFilters ?? [];
 
   return {
     searchTerm: query.searchTerm || '',
@@ -174,11 +183,34 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     include: ['permissions'],
     ...(fields?.length ? { fields } : {}),
     ...(query.geolocation ? { geolocation: true } : {}),
+    ...(query.aggregatePermissionsByUsers ? { aggregatePermissionsByUsers: true } : {}),
+    ...(permissionFilters.length
+      ? {
+          customFilters: {
+            permissions: {
+              values: permissionFilters.map(({ refId, level }) => ({ refId, level })),
+              ...(query.permissionsAnd ? { and: true } : {}),
+            },
+          },
+        }
+      : {}),
   };
 };
 
 const bucketDocCount = (bucket: RawBucket) =>
   bucket.filtered?.doc_count ?? bucket.filtered?.total?.filtered?.doc_count ?? 0;
+
+const toPermissionBuckets = (buckets: RawBucket[] | undefined): LibraryPermissionBucket[] =>
+  (buckets ?? [])
+    .filter(bucket => bucket.key !== 'missing' && bucket.key !== 'any')
+    .map(bucket => ({
+      id: String(bucket.key),
+      ...(bucket.label ? { label: bucket.label } : {}),
+      count: bucketDocCount(bucket),
+      group:
+        bucket.icon === 'users' ||
+        (typeof bucket.icon === 'object' && bucket.icon?._id === 'users'),
+    }));
 
 const bucketCount = (buckets: RawBucket[] | undefined, key: string) =>
   buckets?.find(bucket => String(bucket.key) === key)?.filtered?.doc_count ?? 0;
@@ -188,7 +220,7 @@ const toFacetBuckets = (buckets: RawBucket[] | undefined): LibraryFacetBucket[] 
     .filter(bucket => bucket.key !== 'missing' && bucketDocCount(bucket) > 0)
     .map(bucket => {
       const values = bucket.values ? toFacetBuckets(bucket.values) : undefined;
-      const icon = libraryFacetIcon(bucket.icon);
+      const icon = libraryFacetIcon(typeof bucket.icon === 'string' ? undefined : bucket.icon);
       return {
         id: String(bucket.key),
         label: bucket.label,
@@ -252,6 +284,10 @@ const fromSearchEndpointResult = (response: SearchEndpointResult): LibrarySearch
         restricted: bucketCount(all._published?.buckets, 'false'),
       },
       properties,
+      permissions: {
+        read: toPermissionBuckets(all['_permissions.read']?.buckets),
+        write: toPermissionBuckets(all['_permissions.write']?.buckets),
+      },
     },
   };
 };

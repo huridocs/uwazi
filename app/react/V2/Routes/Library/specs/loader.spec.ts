@@ -1,3 +1,5 @@
+import { getStore } from '#shared/atomStore/index.js';
+import { userAtom } from '#V2/atoms/index.js';
 import { createLibraryLoader } from '../loader.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 
@@ -12,6 +14,7 @@ const runLoader = (url: string) =>
 
 describe('library loader', () => {
   beforeEach(() => {
+    getStore().set(userAtom, undefined);
     searchLibrary.mockReset();
     searchLibrary.mockResolvedValue([
       {
@@ -96,6 +99,46 @@ describe('library loader', () => {
     expect(location).toContain('sort=title');
     expect(location).toContain('order=asc');
     expect(searchLibrary).not.toHaveBeenCalled();
+  });
+
+  it('asks an admin for permission aggregations and sends the assignee filter', async () => {
+    getStore().set(userAtom, {
+      _id: 'admin1',
+      role: 'admin',
+      username: 'admin',
+      email: 'admin@example.com',
+    });
+
+    await runLoader(
+      'http://localhost/en/libraryv2?permissionFilters=(read:(user1),write:(group1))&permissionsAnd=1'
+    );
+
+    expect(searchLibrary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        aggregatePermissionsByUsers: true,
+        permissionFilters: [
+          { level: 'read', refId: 'user1' },
+          { level: 'write', refId: 'group1' },
+        ],
+        permissionsAnd: true,
+      }),
+      expect.anything()
+    );
+  });
+
+  it('drops a leftover permission filter when the viewer is not an admin', async () => {
+    getStore().set(userAtom, {
+      _id: 'ed1',
+      role: 'editor',
+      username: 'ed',
+      email: 'ed@example.com',
+    });
+
+    await runLoader('http://localhost/en/libraryv2?permissionFilters=(read:(user1))');
+
+    const query = searchLibrary.mock.calls[0][0];
+    expect(query.permissionFilters).toBeUndefined();
+    expect(query.aggregatePermissionsByUsers).toBeUndefined();
   });
 
   it('passes AND properties to searchLibrary', async () => {

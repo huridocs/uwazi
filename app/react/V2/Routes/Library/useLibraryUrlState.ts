@@ -3,18 +3,24 @@ import { useQueryStates } from 'nuqs';
 import {
   storedLibraryFiltersFromPatch,
   writeStoredLibraryFilters,
+  type StoredLibraryFilters,
 } from './libraryFiltersStorage.js';
 import { librarySearchParams } from './librarySearchParams.js';
-import type { LibraryFiltersState } from './libraryUrlState.js';
 
 type LibraryUrlSetter = ReturnType<typeof useQueryStates<typeof librarySearchParams>>[1];
 type LibraryUrlPatch = Parameters<LibraryUrlSetter>[0];
 
-const persistLibraryUrlFilters = (
-  patch: LibraryUrlPatch,
-  current: { filters: LibraryFiltersState; andFilters: string[] }
-) => {
-  if (!patch || typeof patch !== 'object' || !('filters' in patch || 'andFilters' in patch)) {
+const persistLibraryUrlFilters = (patch: LibraryUrlPatch, current: StoredLibraryFilters) => {
+  if (
+    !patch ||
+    typeof patch !== 'object' ||
+    !(
+      'filters' in patch ||
+      'andFilters' in patch ||
+      'permissionFilters' in patch ||
+      'permissionsAnd' in patch
+    )
+  ) {
     return;
   }
   writeStoredLibraryFilters(storedLibraryFiltersFromPatch(patch, current));
@@ -28,10 +34,18 @@ const useLibraryUrlState = () => {
       persistLibraryUrlFilters(patch, {
         filters: urlState.filters,
         andFilters: urlState.andFilters,
+        permissionFilters: urlState.permissionFilters,
+        permissionsAnd: urlState.permissionsAnd,
       });
       setUrlState(patch).catch(() => undefined);
     },
-    [setUrlState, urlState.andFilters, urlState.filters]
+    [
+      setUrlState,
+      urlState.andFilters,
+      urlState.filters,
+      urlState.permissionFilters,
+      urlState.permissionsAnd,
+    ]
   );
 
   return { urlState, updateUrl };

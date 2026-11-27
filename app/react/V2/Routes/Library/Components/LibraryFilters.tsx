@@ -1,26 +1,25 @@
 import React from 'react';
 import { GlobeAltIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
+import type { Template } from '#app/apiResponseTypes.js';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { localeAtom } from '#V2/atoms/index.js';
+import { localeAtom, userAtom } from '#V2/atoms/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
-import { toSearchEndpointQuery } from '#V2/services/search/librarySearchEndpoint.js';
-import type { LibraryAggregations } from '#shared/types/librarySearch.js';
-import type { PropertySchema } from '#shared/types/commonTypes.js';
-import type { Template } from '#app/apiResponseTypes.js';
-import { publishedStatusFromFilters, type LibraryFiltersState } from '../libraryUrlState.js';
+import type {
+  LibraryAggregations,
+  LibraryPermissionLevel,
+  LibraryPermissionPick,
+} from '#shared/types/librarySearch.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { type LibraryFiltersState } from '../libraryUrlState.js';
 import { filterableProperties } from '../filterableProperties.js';
 import { filterPropertyType, isDateFilterType } from '../filterPropertyType.js';
-import { lookupAggregation } from '../lookupAggregation.js';
-import { FacetCard, FacetRow, type FacetMode } from './FacetCard.js';
-import { KeywordFacet } from './KeywordFacet.js';
-import { RelationshipFacet } from './RelationshipFacet.js';
-import { NestedFacet, toggleValue } from './NestedFacet.js';
-import { TextFacet } from './TextFacet.js';
-import { NumericFacet } from './NumericFacet.js';
-import { DateFacet } from './DateFacet.js';
+import { FacetCard, FacetRow } from './FacetCard.js';
+import { toggleValue } from './NestedFacet.js';
 import { TypeFacet } from './TypeFacet.js';
+import { PropertyFacet } from './PropertyFacet.js';
+import { PermissionsFacet } from './PermissionsFacet.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { ActiveFiltersSheet, type Chip } from './ActiveFiltersSheet.js';
 import {
@@ -32,187 +31,38 @@ type LibraryFiltersProps = {
   aggregations: LibraryAggregations;
   filters: LibraryFiltersState;
   andFilters?: string[];
+  permissionFilters?: LibraryPermissionPick[];
+  permissionsAnd?: boolean;
   onChange: (filters: LibraryFiltersState) => void;
   onAndFiltersChange?: (andFilters: string[]) => void;
+  onPermissionFiltersChange?: (picks: LibraryPermissionPick[]) => void;
+  onPermissionsAndChange?: (and: boolean) => void;
+  onClear?: () => void;
   chips?: Chip[];
 };
 
-const rangeFromValues = (values: string[] | undefined) => ({
-  from: values?.[0] ?? '',
-  to: values?.[1] ?? '',
-});
-
-const dateFromValues = (values: string[] | undefined) => ({
-  from: values?.[0] ? Number(values[0]) : undefined,
-  to: values?.[1] ? Number(values[1]) : undefined,
-});
-
-const rangeToValues = (from: string, to: string): string[] => {
-  if (!from && !to) {
-    return [];
+const togglePermissionPick = (
+  picks: LibraryPermissionPick[],
+  level: LibraryPermissionLevel,
+  refId: string
+): LibraryPermissionPick[] => {
+  const exists = picks.some(pick => pick.level === level && pick.refId === refId);
+  if (exists) {
+    return picks.filter(pick => pick.level !== level || pick.refId !== refId);
   }
-  return [from, to];
+  return [...picks, { level, refId }];
 };
 
-const dateToValues = (from?: number, to?: number): string[] => {
-  if (from === undefined && to === undefined) {
-    return [];
-  }
-  return [from === undefined ? '' : String(from), to === undefined ? '' : String(to)];
-};
-
-const PropertyFacet = ({
-  property,
-  templates,
-  aggregations,
-  filters,
-  setFilter,
-  locale,
-  typeIds,
-  andFilters,
-  onAndFiltersChange,
-}: {
-  property: PropertySchema;
-  templates: Template[];
-  aggregations: LibraryAggregations;
-  filters: LibraryFiltersState;
-  setFilter: (key: string, values: string[]) => void;
-  locale: string;
-  typeIds: string[];
-  andFilters: string[];
-  onAndFiltersChange: (andFilters: string[]) => void;
-}) => {
-  const type = filterPropertyType(property, templates);
-  const buckets = (aggregations.properties[property.name] ?? []).filter(bucket => bucket.count > 0);
-  const title = (
-    <Translate context={property._id ? String(property._id) : property.name}>
-      {property.label}
-    </Translate>
-  );
-  const selected = filters[property.name] ?? [];
-  const mode: FacetMode = andFilters.includes(property.name) ? 'and' : 'or';
-  const onModeChange = (next: FacetMode) => {
-    const without = andFilters.filter(name => name !== property.name);
-    onAndFiltersChange(next === 'and' ? [...without, property.name] : without);
-  };
-  const lookupQuery = () => {
-    const propertyFilters = Object.fromEntries(
-      Object.entries(filters).filter(([key]) => key !== 'type' && key !== 'status')
-    );
-    return toSearchEndpointQuery({
-      templateIds: typeIds,
-      filters: propertyFilters,
-      andFilters,
-      publishedStatus: publishedStatusFromFilters(filters.status),
-    });
-  };
-
-  if (type === 'nested') {
-    if (!buckets.length) {
-      return null;
-    }
-    const selectedByGroup = Object.fromEntries(
-      Object.entries(filters).filter(([key]) => key.startsWith(`${property.name}.`))
-    );
-    return (
-      <NestedFacet
-        title={title}
-        property={property}
-        groups={buckets}
-        selectedByGroup={selectedByGroup}
-        onChangeGroup={(groupId, values) => setFilter(`${property.name}.${groupId}`, values)}
-        locale={locale}
-      />
-    );
-  }
-
-  if (type === 'numeric') {
-    const range = rangeFromValues(selected);
-    return (
-      <NumericFacet
-        title={title}
-        name={property.name}
-        from={range.from}
-        to={range.to}
-        onChange={({ from, to }) => setFilter(property.name, rangeToValues(from, to))}
-      />
-    );
-  }
-
-  if (isDateFilterType(type)) {
-    const range = dateFromValues(selected);
-    return (
-      <DateFacet
-        title={title}
-        name={property.name}
-        from={range.from}
-        to={range.to}
-        onChange={({ from, to }) => setFilter(property.name, dateToValues(from, to))}
-      />
-    );
-  }
-
-  if (type === 'text' || type === 'markdown') {
-    return (
-      <TextFacet
-        title={title}
-        name={property.name}
-        value={selected[0] ?? ''}
-        onChange={value => setFilter(property.name, value.trim() ? [value.trim()] : [])}
-      />
-    );
-  }
-
-  if (type === 'relationship') {
-    return (
-      <RelationshipFacet
-        title={title}
-        buckets={buckets}
-        selected={selected}
-        onToggle={id => setFilter(property.name, toggleValue(selected, id))}
-        lookup={async searchTerm => lookupAggregation(property.name, searchTerm, lookupQuery())}
-        mode={mode}
-        onModeChange={onModeChange}
-        onClear={() => setFilter(property.name, [])}
-      />
-    );
-  }
-
-  if (!buckets.length) {
-    return null;
-  }
-
-  return (
-    <KeywordFacet
-      title={title}
-      buckets={buckets}
-      selected={selected}
-      onToggle={id => setFilter(property.name, toggleValue(selected, id))}
-      mode={mode}
-      onModeChange={type === 'multiselect' ? onModeChange : undefined}
-      onClear={() => setFilter(property.name, [])}
-    />
-  );
-};
-
-const LibraryFilters = ({
-  aggregations,
-  filters,
-  andFilters = [],
-  onChange,
-  onAndFiltersChange = () => undefined,
-  chips = [],
-}: LibraryFiltersProps) => {
-  const templates = useAtomValue(templatesAtom);
-  const locale = useAtomValue(localeAtom) || 'en';
+const useFacetList = (
+  templates: Template[],
+  filters: LibraryFiltersState,
+  aggregations: LibraryAggregations
+) => {
   const typeIds = filters.type ?? [];
   const status = filters.status ?? [];
   const properties = filterableProperties(templates, typeIds);
-
   const publishedCount = aggregations.published.published;
   const restrictedCount = aggregations.published.restricted;
-  const showStatus = publishedCount + restrictedCount > 0;
-
   const propertyFacets = properties.filter(property => {
     const type = filterPropertyType(property, templates);
     if (type === 'text' || type === 'markdown' || type === 'numeric' || isDateFilterType(type)) {
@@ -220,10 +70,24 @@ const LibraryFilters = ({
     }
     return (aggregations.properties[property.name] ?? []).some(bucket => bucket.count > 0);
   });
+  return {
+    typeIds,
+    status,
+    propertyFacets,
+    publishedCount,
+    restrictedCount,
+    showStatus: publishedCount + restrictedCount > 0,
+  };
+};
 
-  const activeCount = Object.values(filters).reduce((sum, values) => sum + values.length, 0);
-  const { expansion, expandAll, collapseAll } = useNestedGroupsExpansionControls();
-
+const useFilterActions = ({
+  filters,
+  onChange,
+  onClear,
+  onAndFiltersChange,
+  onPermissionFiltersChange,
+  onPermissionsAndChange,
+}: LibraryFiltersProps) => {
   const setFilter = (key: string, values: string[]) => {
     const next = { ...filters };
     if (values.length) {
@@ -233,11 +97,50 @@ const LibraryFilters = ({
     }
     onChange(next);
   };
-
   const clearAll = () => {
+    if (onClear) {
+      onClear();
+      return;
+    }
     onChange({});
-    onAndFiltersChange([]);
+    onAndFiltersChange?.([]);
+    onPermissionFiltersChange?.([]);
+    onPermissionsAndChange?.(false);
   };
+  return { setFilter, clearAll };
+};
+
+const LibraryFilters = ({
+  aggregations,
+  filters,
+  andFilters = [],
+  permissionFilters = [],
+  permissionsAnd = false,
+  onChange,
+  onAndFiltersChange = () => undefined,
+  onPermissionFiltersChange = () => undefined,
+  onPermissionsAndChange = () => undefined,
+  onClear,
+  chips = [],
+}: LibraryFiltersProps) => {
+  const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom) || 'en';
+  const applyPermissions = useAtomValue(userAtom)?.role === UserRole.ADMIN;
+  const facets = useFacetList(templates, filters, aggregations);
+  const { expansion, expandAll, collapseAll } = useNestedGroupsExpansionControls();
+  const { setFilter, clearAll } = useFilterActions({
+    aggregations,
+    filters,
+    onChange,
+    onAndFiltersChange,
+    onPermissionFiltersChange,
+    onPermissionsAndChange,
+    onClear,
+  });
+  const activeCount =
+    Object.values(filters).reduce((sum, values) => sum + values.length, 0) +
+    permissionFilters.length;
+  const { typeIds, status, propertyFacets, publishedCount, restrictedCount, showStatus } = facets;
 
   return (
     <NestedGroupsExpansionProvider value={expansion}>
@@ -280,8 +183,25 @@ const LibraryFilters = ({
               typeIds={typeIds}
               andFilters={andFilters}
               onAndFiltersChange={onAndFiltersChange}
+              permissionFilters={permissionFilters}
+              permissionsAnd={permissionsAnd}
+              applyPermissions={applyPermissions}
             />
           ))}
+
+          {applyPermissions && (
+            <PermissionsFacet
+              read={aggregations.permissions?.read ?? []}
+              write={aggregations.permissions?.write ?? []}
+              selected={permissionFilters}
+              mode={permissionsAnd ? 'and' : 'or'}
+              onToggle={(level, refId) =>
+                onPermissionFiltersChange(togglePermissionPick(permissionFilters, level, refId))
+              }
+              onModeChange={next => onPermissionsAndChange(next === 'and')}
+              onClear={() => onPermissionFiltersChange([])}
+            />
+          )}
         </div>
 
         <ActiveFiltersSheet chips={chips} onClearAll={clearAll} />

@@ -19,16 +19,26 @@ const filtersList = ({
   aggregations,
   filters,
   andFilters,
+  permissionFilters,
+  permissionsAnd,
   chips,
   onFiltersChange,
   onAndFiltersChange,
+  onPermissionFiltersChange,
+  onPermissionsAndChange,
+  onClearFilters,
 }: LibraryRightPaneProps) => (
   <LibraryFilters
     aggregations={aggregations}
     filters={filters}
     andFilters={andFilters}
+    permissionFilters={permissionFilters}
+    permissionsAnd={permissionsAnd}
     onChange={onFiltersChange}
     onAndFiltersChange={onAndFiltersChange}
+    onPermissionFiltersChange={onPermissionFiltersChange}
+    onPermissionsAndChange={onPermissionsAndChange}
+    onClear={onClearFilters}
     chips={chips}
   />
 );
@@ -49,9 +59,14 @@ const libraryRightPaneElement = (
     aggregations={pane.aggregations}
     filters={pane.filters}
     andFilters={pane.andFilters}
+    permissionFilters={pane.permissionFilters}
+    permissionsAnd={pane.permissionsAnd}
     chips={pane.chips}
     onFiltersChange={pane.onFiltersChange}
     onAndFiltersChange={pane.onAndFiltersChange}
+    onPermissionFiltersChange={pane.onPermissionFiltersChange}
+    onPermissionsAndChange={pane.onPermissionsAndChange}
+    onClearFilters={pane.onClearFilters}
     onClosePreview={onClosePreview}
     onCloseSelection={pane.onCloseSelection}
     onRemoveSelection={pane.onRemoveSelection}

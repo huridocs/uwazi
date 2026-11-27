@@ -1,3 +1,13 @@
+import type { LibraryPermissionPick } from '#shared/types/librarySearch.js';
+import {
+  parseAndFilters,
+  parseCompactFilters,
+  parsePermissionFilters,
+  serializeAndFilters,
+  serializeCompactFilters,
+  serializePermissionFilters,
+  type LibraryFiltersState,
+} from './libraryCompactFilters.js';
 import { normalizeFilters } from './libraryFilterValues.js';
 
 const LIBRARY_VIEW_MODES = ['cards', 'map', 'table'] as const;
@@ -7,12 +17,14 @@ const isLibraryViewMode = (value: string | null | undefined): value is LibraryVi
   Boolean(value && (LIBRARY_VIEW_MODES as readonly string[]).includes(value));
 type LibrarySortOrder = 'asc' | 'desc';
 
-type LibraryFiltersState = Record<string, string[]>;
-
 type LibraryUrlState = {
   filters: LibraryFiltersState;
   /** Properties in AND mode (V1 `filters[name].and: true`). OR is the default. */
   andFilters: string[];
+  /** Users and groups records are shared with. Separate from metadata filters. */
+  permissionFilters: LibraryPermissionPick[];
+  /** One AND for both Can view and Can edit. OR is the default. */
+  permissionsAnd: boolean;
   search: string;
   limit: number;
   page: number;
@@ -24,163 +36,14 @@ type LibraryUrlState = {
 const DEFAULT_LIBRARY_URL_STATE: LibraryUrlState = {
   filters: {},
   andFilters: [],
+  permissionFilters: [],
+  permissionsAnd: false,
   search: '',
   limit: 50,
   page: 1,
   sort: '',
   order: 'desc',
   view: 'cards',
-};
-
-const SIMPLE_VALUE = /^[A-Za-z0-9._-]+$/;
-const IDENT = /[A-Za-z0-9._-]/;
-
-const serializeFilterValue = (value: string): string => {
-  if (SIMPLE_VALUE.test(value)) {
-    return value;
-  }
-  return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
-};
-
-const parseCompactFilters = (raw: string): LibraryFiltersState | null => {
-  const input = raw.trim();
-  if (!input) {
-    return {};
-  }
-  if (input[0] !== '(' || input[input.length - 1] !== ')') {
-    return null;
-  }
-
-  const inner = input.slice(1, -1);
-  if (!inner.trim()) {
-    return {};
-  }
-
-  const result: LibraryFiltersState = {};
-  let i = 0;
-
-  const skipComma = () => {
-    if (inner[i] === ',') {
-      i += 1;
-    }
-  };
-
-  const readIdent = (): string => {
-    const start = i;
-    while (i < inner.length && IDENT.test(inner[i]!)) {
-      i += 1;
-    }
-    return inner.slice(start, i);
-  };
-
-  const readValue = (): string | null => {
-    if (inner[i] === "'") {
-      i += 1;
-      let out = '';
-      while (i < inner.length && inner[i] !== "'") {
-        const escaped = inner.slice(i, i + 2);
-        if (escaped === "\\'") {
-          out += "'";
-          i += 2;
-        } else if (escaped === '\\\\') {
-          out += '\\';
-          i += 2;
-        } else {
-          out += inner[i];
-          i += 1;
-        }
-      }
-      if (inner[i] !== "'") {
-        return null;
-      }
-      i += 1;
-      return out;
-    }
-    const ident = readIdent();
-    return ident || null;
-  };
-
-  while (i < inner.length) {
-    const key = readIdent();
-    if (!key || inner[i] !== ':') {
-      return null;
-    }
-    i += 1;
-    if (inner[i] !== '(') {
-      return null;
-    }
-    i += 1;
-
-    const values: string[] = [];
-    if (inner[i] !== ')') {
-      while (i < inner.length) {
-        const value = readValue();
-        if (value === null) {
-          return null;
-        }
-        values.push(value);
-        if (inner[i] !== ',') {
-          break;
-        }
-        i += 1;
-      }
-    }
-    if (inner[i] !== ')') {
-      return null;
-    }
-    i += 1;
-    result[key] = values;
-    skipComma();
-  }
-
-  return result;
-};
-
-const serializeCompactFilters = (filters: LibraryFiltersState): string => {
-  const parts = Object.entries(filters)
-    .filter(([, values]) => values.length > 0)
-    .map(([key, values]) => `${key}:(${values.map(serializeFilterValue).join(',')})`);
-  return parts.length ? `(${parts.join(',')})` : '';
-};
-
-const parseAndFilters = (raw: string): string[] | null => {
-  const input = raw.trim();
-  if (!input) {
-    return [];
-  }
-  if (input[0] !== '(' || input[input.length - 1] !== ')') {
-    return null;
-  }
-
-  const inner = input.slice(1, -1);
-  if (!inner.trim()) {
-    return [];
-  }
-
-  const names: string[] = [];
-  let i = 0;
-  while (i < inner.length) {
-    const start = i;
-    while (i < inner.length && IDENT.test(inner[i]!)) {
-      i += 1;
-    }
-    const name = inner.slice(start, i);
-    if (!name) {
-      return null;
-    }
-    names.push(name);
-    if (inner[i] === ',') {
-      i += 1;
-    } else if (i < inner.length) {
-      return null;
-    }
-  }
-  return [...new Set(names)];
-};
-
-const serializeAndFilters = (names: string[]): string => {
-  const unique = [...new Set(names.filter(Boolean))];
-  return unique.length ? `(${unique.join(',')})` : '';
 };
 
 const parsePositiveInt = (raw: string | null, fallback: number): number => {
@@ -213,6 +76,10 @@ const parseLibrarySearchParams = (params: URLSearchParams): LibraryUrlState => {
   return {
     filters: normalizeFilters(filters),
     andFilters: parseAndFilters(params.get('andFilters') || '') ?? [],
+    permissionFilters:
+      parsePermissionFilters(params.get('permissionFilters') || params.get('permissions') || '') ??
+      [],
+    permissionsAnd: params.get('permissionsAnd') === '1',
     search: params.get('search') || '',
     limit,
     page: parsePage(params, limit),
@@ -222,39 +89,48 @@ const parseLibrarySearchParams = (params: URLSearchParams): LibraryUrlState => {
   };
 };
 
-const serializeLibrarySearchParams = (state: Partial<LibraryUrlState>): URLSearchParams => {
-  const params = new URLSearchParams();
-  const filters = serializeCompactFilters(normalizeFilters(state.filters ?? {}));
-  if (filters) {
-    params.set('filters', filters);
+const setParam = (params: URLSearchParams, key: string, value: string | undefined) => {
+  if (value) {
+    params.set(key, value);
   }
-  const andFilters = serializeAndFilters(state.andFilters ?? []);
-  if (andFilters) {
-    params.set('andFilters', andFilters);
-  }
-  if (state.search) {
-    params.set('search', state.search);
-  }
+};
+
+const appendPaging = (params: URLSearchParams, state: Partial<LibraryUrlState>) => {
   if (state.limit && state.limit !== DEFAULT_LIBRARY_URL_STATE.limit) {
     params.set('limit', String(state.limit));
   }
   if (state.page && state.page !== DEFAULT_LIBRARY_URL_STATE.page) {
     params.set('page', String(state.page));
   }
-  if (state.sort) {
-    params.set('sort', state.sort);
-  }
+  setParam(params, 'sort', state.sort);
   if (state.order && state.order !== DEFAULT_LIBRARY_URL_STATE.order) {
     params.set('order', state.order);
   }
   if (state.view && state.view !== DEFAULT_LIBRARY_URL_STATE.view) {
     params.set('view', state.view);
   }
+};
+
+const serializeLibrarySearchParams = (state: Partial<LibraryUrlState>): URLSearchParams => {
+  const params = new URLSearchParams();
+  setParam(params, 'filters', serializeCompactFilters(normalizeFilters(state.filters ?? {})));
+  setParam(params, 'andFilters', serializeAndFilters(state.andFilters ?? []));
+  setParam(params, 'permissionFilters', serializePermissionFilters(state.permissionFilters ?? []));
+  if (state.permissionsAnd) {
+    params.set('permissionsAnd', '1');
+  }
+  setParam(params, 'search', state.search);
+  appendPaging(params, state);
   return params;
 };
 
 const encodeLibraryQueryValue = (key: string, value: string): string => {
-  if (key === 'filters' || key === 'andFilters') {
+  if (
+    key === 'filters' ||
+    key === 'andFilters' ||
+    key === 'permissionFilters' ||
+    key === 'permissions'
+  ) {
     return value;
   }
   return encodeURIComponent(value).replace(/%20/g, '+');
@@ -290,6 +166,8 @@ export {
   serializeCompactFilters,
   parseAndFilters,
   serializeAndFilters,
+  parsePermissionFilters,
+  serializePermissionFilters,
   normalizeFilters,
   parseLibrarySearchParams,
   serializeLibrarySearchParams,
