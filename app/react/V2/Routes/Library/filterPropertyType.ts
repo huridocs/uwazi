@@ -1,10 +1,12 @@
-import type { Template } from '#app/apiResponseTypes.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
 
 const DATE_FILTER_TYPES = new Set(['date', 'multidate', 'daterange', 'multidaterange']);
 const LIST_FILTER_TYPES = new Set(['select', 'multiselect', 'relationship']);
 
-const filterPropertyType = (property: PropertySchema, templates: Template[] = []): string => {
+const filterPropertyType = (
+  property: PropertySchema,
+  templates: { properties?: PropertySchema[] }[] = []
+): string => {
   if (property.inherit?.type) {
     return property.inherit.type;
   }

@@ -1,3 +1,4 @@
+import { ApiError } from '#shared/apiClient/index.js';
 import { createLibraryLoader } from '../loader.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 
@@ -20,6 +21,91 @@ describe('library loader', () => {
         aggregations: { templates: [], published: { published: 1, restricted: 0 }, properties: {} },
       },
     ]);
+  });
+
+  it('redirects when a property is not filterable for the selected type', async () => {
+    const templates = jest.fn().mockResolvedValue([
+      [
+        {
+          _id: 'contracts',
+          name: 'Contracts',
+          properties: [{ name: 'contracting', type: 'select', filter: true }],
+        },
+        {
+          _id: 'contractors',
+          name: 'Contractors',
+          properties: [{ name: 'country', type: 'select', filter: true, defaultfilter: true }],
+        },
+      ],
+    ]);
+    const loader = createLibraryLoader(
+      createTestServices({
+        search: { searchLibrary },
+        templates: { getAll: templates },
+      })
+    )();
+
+    const result = await loader({
+      request: new Request(
+        'http://localhost/en/libraryv2?filters=(type:(contractors),contracting:(services))&andFilters=(contracting)'
+      ),
+      params: {},
+      context: undefined,
+    } as never);
+
+    expect(searchLibrary).not.toHaveBeenCalled();
+    expect(result).toBeInstanceOf(Response);
+    expect((result as Response).headers.get('Location')).toBe(
+      '/en/libraryv2?filters=(type:(contractors))'
+    );
+  });
+
+  describe('when property filters need templates', () => {
+    it('does not search a bookmark when templates cannot be loaded', async () => {
+      const templates = jest
+        .fn()
+        .mockResolvedValue([undefined, new ApiError('fail', { kind: 'http', status: 500 })]);
+      const loader = createLibraryLoader(
+        createTestServices({
+          search: { searchLibrary },
+          templates: { getAll: templates },
+        })
+      )();
+
+      await expect(
+        loader({
+          request: new Request(
+            'http://localhost/en/libraryv2?filters=(type:(contractors),contracting:(services))'
+          ),
+          params: {},
+          context: undefined,
+        } as never)
+      ).rejects.toBeTruthy();
+      expect(searchLibrary).not.toHaveBeenCalled();
+    });
+
+    it('redirects a property filter when the collection has no templates', async () => {
+      const templates = jest.fn().mockResolvedValue([[]]);
+      const loader = createLibraryLoader(
+        createTestServices({
+          search: { searchLibrary },
+          templates: { getAll: templates },
+        })
+      )();
+
+      const result = await loader({
+        request: new Request(
+          'http://localhost/en/libraryv2?filters=(type:(contractors),contracting:(services))'
+        ),
+        params: {},
+        context: undefined,
+      } as never);
+
+      expect(searchLibrary).not.toHaveBeenCalled();
+      expect((result as Response).headers.get('Location')).toBe(
+        '/en/libraryv2?filters=(type:(contractors))'
+      );
+    });
   });
 
   it('searches with parsed URL state', async () => {
@@ -99,9 +185,42 @@ describe('library loader', () => {
   });
 
   it('passes AND properties to searchLibrary', async () => {
-    await runLoader(
-      'http://localhost/en/libraryv2?filters=(descriptores:(d1,d2))&andFilters=(descriptores)'
-    );
+    const templates = jest.fn().mockResolvedValue([
+      [
+        {
+          _id: 't1',
+          name: 'Doc',
+          properties: [
+            { name: 'descriptores', type: 'multiselect', filter: true, defaultfilter: true },
+          ],
+        },
+      ],
+    ]);
+    const loader = createLibraryLoader(
+      createTestServices({
+        search: { searchLibrary },
+        templates: { getAll: templates },
+      })
+    )();
+
+    searchLibrary.mockResolvedValueOnce([
+      {
+        rows: [],
+        totalRows: 0,
+        aggregations: {
+          templates: [],
+          published: { published: 0, restricted: 0 },
+          properties: { descriptores: [{ id: 'd1', label: 'Amenazas', count: 2 }] },
+        },
+      },
+    ]);
+    await loader({
+      request: new Request(
+        'http://localhost/en/libraryv2?filters=(descriptores:(d1,d2))&andFilters=(descriptores)'
+      ),
+      params: {},
+      context: undefined,
+    } as never);
 
     expect(searchLibrary).toHaveBeenCalledWith(
       expect.objectContaining({
