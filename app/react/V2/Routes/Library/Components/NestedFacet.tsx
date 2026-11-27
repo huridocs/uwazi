@@ -1,8 +1,8 @@
 import React, { type ReactNode } from 'react';
-import { Translate } from '#app/I18N/index.js';
 import nestedPropertyLabels from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
 import type { PropertySchema } from '#shared/types/commonTypes.js';
+import { facetValueLabel, MISSING_FACET_ID } from '../missingFacetLabel.js';
 import { FacetCard, FacetRow, TreeChildren } from './FacetCard.js';
 import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
 
@@ -23,9 +23,6 @@ const nestedGroupLabel = (key: string, locale: string) => {
   const entry = nestedLabelMap[key.toLowerCase()];
   return entry?.[`label_${locale}`] || entry?.label_en || key;
 };
-
-const nestedValueLabel = (label: string, context?: string) =>
-  context ? <Translate context={context}>{label}</Translate> : label;
 
 const toggleValue = (current: string[] | undefined, value: string): string[] => {
   const next = new Set(current ?? []);
@@ -67,7 +64,11 @@ const NestedFacet = ({
             <FacetRow
               checked={anySelected}
               onToggle={() => onChangeGroup(group.id, anySelected ? [] : ['any'])}
-              label={nestedGroupLabel(group.id, locale)}
+              label={
+                group.id === MISSING_FACET_ID
+                  ? facetValueLabel(group.id, group.label || group.id)
+                  : nestedGroupLabel(group.id, locale)
+              }
               count={group.count}
               bold
               expandable={children.length > 0}
@@ -91,7 +92,7 @@ const NestedFacet = ({
                         )
                       )
                     }
-                    label={nestedValueLabel(child.label || child.id, property.content)}
+                    label={facetValueLabel(child.id, child.label || child.id, property.content)}
                     count={child.count}
                   />
                 ))}

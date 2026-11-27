@@ -2,6 +2,7 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { EntityIcon } from '#V2/Components/CustomIcons/EntityIcon.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { facetValueLabel } from '../missingFacetLabel.js';
 import { FacetRow } from './FacetRow.js';
 import { TreeChildren } from './TreeChildren.js';
 import { useNestedGroupExpansion } from './useNestedGroupExpansion.js';
@@ -14,9 +15,6 @@ type FacetTreeProps = {
   defaultExpanded?: boolean;
   forceExpanded?: boolean;
 };
-
-const facetValueLabel = (label: string, context?: string) =>
-  context ? <Translate context={context}>{label}</Translate> : label;
 
 const bucketIcon = (bucket: LibraryFacetBucket) =>
   bucket.icon ? <EntityIcon data={bucket.icon} className="shrink-0" /> : undefined;
@@ -48,7 +46,7 @@ const FacetTree = ({
             <FacetRow
               checked={selected.includes(bucket.id)}
               onToggle={() => onToggle(bucket.id)}
-              label={facetValueLabel(bucket.label || bucket.id, valueContext)}
+              label={facetValueLabel(bucket.id, bucket.label || bucket.id, valueContext)}
               count={bucket.count}
               icon={bucketIcon(bucket)}
               bold
@@ -65,7 +63,7 @@ const FacetTree = ({
                     child
                     checked={selected.includes(child.id)}
                     onToggle={() => onToggle(child.id)}
-                    label={facetValueLabel(child.label || child.id, valueContext)}
+                    label={facetValueLabel(child.id, child.label || child.id, valueContext)}
                     count={child.count}
                     icon={bucketIcon(child)}
                   />

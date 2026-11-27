@@ -87,6 +87,7 @@ describe('librarySearchEndpoint', () => {
               count: 3,
               values: [{ id: 'ES', label: 'Spain', count: 1 }],
             },
+            { id: 'missing', count: 2 },
           ],
         },
       },
@@ -229,5 +230,13 @@ describe('library facet icons', () => {
         icon: { _id: 'star', type: 'Icons', label: 'Star' },
       },
     ]);
+  });
+});
+
+describe('librarySearchEndpoint missing filter', () => {
+  it('sends a selected missing id as a scalar filter', () => {
+    expect(toSearchEndpointQuery({ filters: { country: ['missing'] } }).filters).toEqual({
+      country: 'missing',
+    });
   });
 });

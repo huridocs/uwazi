@@ -5,6 +5,7 @@ import type { LibraryAggregations, LibraryFacetBucket } from '#shared/types/libr
 import type { PropertySchema } from '#shared/types/commonTypes.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import { templateContextForProperty } from '../filterChipLabel.js';
+import { MISSING_FACET_ID } from '../missingFacetLabel.js';
 import { publishedStatusFromFilters, type LibraryFiltersState } from '../libraryUrlState.js';
 import { filterPropertyType, isDateFilterType } from '../filterPropertyType.js';
 import { lookupAggregation } from '../lookupAggregation.js';
@@ -59,6 +60,13 @@ const dateToValues = (from?: number, to?: number): string[] => {
   }
   return [from === undefined ? '' : String(from), to === undefined ? '' : String(to)];
 };
+
+const omitMissingBuckets = (buckets: LibraryFacetBucket[]): LibraryFacetBucket[] =>
+  buckets
+    .filter(bucket => bucket.id !== MISSING_FACET_ID)
+    .map(bucket =>
+      bucket.values ? { ...bucket, values: omitMissingBuckets(bucket.values) } : bucket
+    );
 
 const facetTitle = (property: PropertySchema, templates: Template[], typeIds: string[]) => (
   <Translate
@@ -217,9 +225,10 @@ const renderListFacet = (shared: PropertyFacetShared, type: string, bucketCount:
 
 const PropertyFacet = (props: PropertyFacetProps) => {
   const type = filterPropertyType(props.property, props.templates);
-  const buckets = (props.aggregations.properties[props.property.name] ?? []).filter(
+  const counted = (props.aggregations.properties[props.property.name] ?? []).filter(
     bucket => bucket.count > 0
   );
+  const buckets = props.typeIds.length ? counted : omitMissingBuckets(counted);
   const shared = propertyFacetShared(props, buckets);
   const scalar = renderScalarFacet(shared, type);
   return scalar === undefined ? renderListFacet(shared, type, buckets.length) : scalar;
