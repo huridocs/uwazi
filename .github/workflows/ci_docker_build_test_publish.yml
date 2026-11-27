@@ -497,7 +497,7 @@ jobs:
           docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:tree-$TREE" >/dev/null
           # 2) The version tag must not already exist. Version tags are
           #    immutable: this enforces that package.json was bumped before
-          #    merging (release.sh also fails on duplicate releases).
+          #    merging (the release step also fails on a duplicate release tag).
           if docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:$VERSION" >/dev/null 2>&1; then
             echo "Refusing to publish: $REGISTRY/$BACKEND_IMAGE:$VERSION already exists (version not bumped)."
             exit 1
