@@ -108,6 +108,20 @@ const renderCards = ({
 };
 
 describe('CardViewer thumbnail fit', () => {
+  it('shows a restricted padlock on a restricted card', () => {
+    renderCards({ hits: [{ ...rows[0], published: false }] });
+    expect(
+      screen.getByTitle('Restricted: only people it is shared with can see it')
+    ).toBeInTheDocument();
+  });
+
+  it('shows no padlock on a published card', () => {
+    const { container } = renderCards({ hits: [{ ...rows[0], published: true }] });
+    expect(
+      container.querySelector('[title="Restricted: only people it is shared with can see it"]')
+    ).toBeNull();
+  });
+
   it('shows the entity icon beside the title', () => {
     renderCards({
       hits: [

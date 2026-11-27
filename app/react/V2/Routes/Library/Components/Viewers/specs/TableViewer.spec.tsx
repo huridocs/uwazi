@@ -92,6 +92,23 @@ const renderTable = (
     </MemoryRouter>
   );
 
+const restricted = 'Restricted: only people it is shared with can see it';
+
+describe('TableViewer restricted rows', () => {
+  it('shows a restricted padlock after the title', () => {
+    renderTable({ rows: [{ ...rows[0], published: false }] });
+    expect(screen.getByText('Amnesty International').nextElementSibling).toHaveAttribute(
+      'title',
+      restricted
+    );
+  });
+
+  it('shows no padlock on a published row', () => {
+    renderTable({ rows: [{ ...rows[0], published: true }] });
+    expect(screen.queryByTitle(restricted)).not.toBeInTheDocument();
+  });
+});
+
 describe('TableViewer', () => {
   it('shows the entity icon beside the title', () => {
     renderTable({

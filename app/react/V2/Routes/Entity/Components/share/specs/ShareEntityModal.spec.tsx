@@ -6,7 +6,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createStore, Provider } from 'jotai';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { userAtom } from '#V2/atoms/index.js';
@@ -100,6 +100,70 @@ const renderModal = (
   };
 };
 
+const sectionLabel = (name: string) => {
+  expect(screen.getByText(name).closest('h4')).toHaveClass(
+    'text-meta',
+    'font-semibold',
+    'uppercase',
+    'tracking-wide',
+    'text-ink-tertiary'
+  );
+};
+
+const expectHeaderRow = () => {
+  const title = screen.getByRole('heading', { name: 'Permissions' });
+  const subtitle = screen.getByText('Case 123');
+  expect(title).toHaveClass('text-sm', 'font-semibold');
+  expect(subtitle).toHaveClass('truncate', 'text-meta', 'text-ink-tertiary');
+  expect(title.parentElement).toHaveClass('items-baseline', 'gap-2');
+  expect(title.parentElement).toContainElement(subtitle);
+};
+
+const expectSegmentHeights = () => {
+  expect(screen.getByRole('radio', { name: 'Private' })).toHaveClass('h-8', 'text-xs', 'bg-vellum');
+  expect(screen.getByRole('radio', { name: 'Published' })).toHaveClass('h-8', 'text-xs');
+  expect(screen.getByRole('radio', { name: 'Can view' })).toHaveClass('h-8', 'text-xs');
+  expect(screen.getByRole('radio', { name: 'Can edit' })).toHaveClass('h-8', 'text-xs', 'bg-vellum');
+};
+
+const expectFixedAccessRow = () => {
+  const fixedName = screen.getByText('Administrators and Editors');
+  const fixedRow = fixedName.closest('div');
+  expect(fixedName.parentElement).toHaveClass('text-xs');
+  expect(fixedRow?.querySelector('svg')).toHaveClass('h-[11px]', 'w-[11px]');
+  expect(fixedRow?.querySelector('span.rounded-full')).toHaveClass('h-5', 'w-5', 'ring-inset');
+  const always = screen.getByText('Always');
+  expect(always).toHaveClass('block', 'text-meta', 'text-ink-tertiary');
+  expect(always.parentElement).toContainElement(fixedName);
+  const staticLevel = screen
+    .getAllByText('Can edit')
+    .find(node => node.closest('[role="radio"]') === null);
+  expect(staticLevel).toHaveClass('text-meta', 'font-medium', 'text-ink-secondary');
+};
+
+const expectMemberMarkAndClose = () => {
+  expect(screen.getByText('admin')).toHaveClass('text-xs');
+  expect(screen.getByText('admin').parentElement?.querySelector('svg')).toHaveClass(
+    'h-3.5',
+    'w-3.5'
+  );
+  expect(screen.getByPlaceholderText('Username, email or group')).toHaveClass(
+    'h-9',
+    'rounded-md',
+    'px-2.5'
+  );
+  const add = screen.getByRole('button', { name: 'Add' });
+  expect(add).toBeDisabled();
+  expect(add).toHaveClass('h-8', 'bg-warm', 'text-ink-secondary', 'disabled:opacity-40');
+  expect(screen.getByRole('button', { name: 'Close' })).toHaveClass(
+    'border-0',
+    'bg-transparent',
+    'text-xs',
+    'font-medium',
+    'text-ink-secondary'
+  );
+};
+
 describe('ShareEntityModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -111,10 +175,13 @@ describe('ShareEntityModal', () => {
     renderModal();
 
     expect(await screen.findByText('admin')).toBeInTheDocument();
-    expect(
-      screen.getByText('Administrators and Editors always have edit access')
-    ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Permissions' })).toBeInTheDocument();
+    expectHeaderRow();
+    sectionLabel('General access');
+    sectionLabel('People and groups');
+    expectSegmentHeights();
+    expectFixedAccessRow();
+    expectMemberMarkAndClose();
     expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
   });
 
@@ -299,10 +366,14 @@ describe('ShareEntityModal', () => {
     expect(screen.queryByRole('radiogroup', { name: 'General access' })).not.toBeInTheDocument();
   });
 
-  it('shows an empty state when no people or groups are assigned', async () => {
+  it('shows the administrators row when no people or groups are assigned', async () => {
     getPermissions.mockResolvedValue([[]]);
     renderModal();
-    expect(await screen.findByText('No people or groups added yet')).toBeInTheDocument();
+    expect(await screen.findByText('Administrators and Editors')).toBeInTheDocument();
+    expect(screen.getByText('Always')).toBeInTheDocument();
+    const level = screen.getByText('Can edit');
+    expect(level).toHaveClass('text-meta', 'font-medium', 'text-ink-secondary');
+    expect(level.closest('[role="radio"]')).toBeNull();
   });
 
   it('blocks editing and saving when permissions fail to load', async () => {
@@ -334,26 +405,28 @@ describe('ShareEntityModal', () => {
     expect(screen.getByText('General access')).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Private' })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Published' })).toBeInTheDocument();
-    expect(
-      screen.getByText('Administrators and Editors always have edit access')
-    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Published' }));
-    expect(
-      screen.getByText(/Caution: the selected entities will be|Anyone will be able to see them/i)
-    ).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Published' }).className).toContain('bg-ink');
+    expect(screen.getByRole('radio', { name: 'Published' }).className).toContain('text-parchment');
+    expect(document.getElementById('share-public-caution')).toHaveClass(
+      'text-meta',
+      'shadow-sm',
+      'w-56'
+    );
     expect(screen.getByRole('radio', { name: 'Published' })).toHaveAttribute(
       'aria-describedby',
       'share-public-caution'
     );
     expect(screen.queryByText('Anyone can see this entity')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Can see' })).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Can view' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Can edit' })).toBeInTheDocument();
 
     await user.click(screen.getByText('People and groups'));
     expect(
       screen.queryByText(/Caution: the selected entities will be|Anyone will be able to see them/i)
     ).not.toBeInTheDocument();
-    expect(screen.getByText('Anyone can see this entity')).toBeInTheDocument();
+    expect(screen.getByText('Anyone can see this entity').closest('p')).toHaveClass('text-meta');
 
     await user.hover(screen.getByRole('radio', { name: 'Published' }));
     expect(
@@ -394,21 +467,36 @@ describe('ShareEntityModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('changes permission level with icon actions and removes members', async () => {
+  it('changes permission level with labeled radios and removes members', async () => {
     const user = userEvent.setup();
     renderModal();
     await screen.findByText('admin');
-
-    const canSee = screen.getByRole('button', { name: 'Can see' });
-    const canEdit = screen.getByRole('button', { name: 'Can edit' });
-    expect(canEdit).toHaveAttribute('aria-pressed', 'true');
-
-    await user.click(canSee);
-    expect(canSee).toHaveAttribute('aria-pressed', 'true');
-    expect(canEdit).toHaveAttribute('aria-pressed', 'false');
-
+    expect(screen.getByRole('radio', { name: 'Can edit' })).toHaveAttribute('aria-checked', 'true');
+    await user.click(screen.getByRole('radio', { name: 'Can view' }));
+    expect(screen.getByRole('radio', { name: 'Can view' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: 'Can edit' })).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
     await user.click(screen.getByRole('button', { name: 'Remove' }));
     expect(screen.queryByText('admin')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+  });
+
+  it('leaves both levels unchecked when access is mixed', async () => {
+    getPermissions.mockResolvedValue([
+      granted.map(member => ({ ...member, level: MixedAccess.MIXED })),
+    ]);
+    renderModal();
+    await screen.findByText('admin');
+
+    expect(screen.getByRole('radio', { name: 'Can view' })).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
+    expect(screen.getByRole('radio', { name: 'Can edit' })).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
   });
 });

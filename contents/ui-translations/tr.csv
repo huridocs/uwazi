@@ -1254,6 +1254,7 @@ Resize panels,Panellerin boyutunu değiştir
 Restore,Geri Yükle
 Restore previous version,Önceki sürümü geri yükle
 Restricted,Kısıtlanmış
+Restricted: only people it is shared with can see it,Kısıtlanmış: yalnızca paylaşıldığı kişiler görebilir
 Results,Sonuçlar
 Results layout,Sonuç düzeni
 Results show the passages behind each hit.,Sonuçlar her eşleşmenin ardındaki pasajları gösterir.
@@ -1804,3 +1805,4 @@ Zoom in,Yakınlaştır
 Zoom in library view,Kütüphane görünümünü yakınlaştır
 Zoom out,Uzaklaştır
 Zoom out library view,Kütüphane görünümünü uzaklaştır
+Always,Her zaman

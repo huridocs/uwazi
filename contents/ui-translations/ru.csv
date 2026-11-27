@@ -1251,6 +1251,7 @@ Resize panels,Изменение размера панелей
 Restore,Восстановить
 Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
+Restricted: only people it is shared with can see it,Ограничено: это видят только те, с кем этим поделились
 Results,Результаты
 Results layout,Вид результатов
 Results show the passages behind each hit.,В результатах показаны фрагменты каждого совпадения.
@@ -1800,3 +1801,4 @@ Zoom in,Увеличить масштаб
 Zoom in library view,Увеличить масштаб просмотра библиотеки
 Zoom out,Уменьшить масштаб
 Zoom out library view,Уменьшить масштаб просмотра библиотеки
+Always,Всегда

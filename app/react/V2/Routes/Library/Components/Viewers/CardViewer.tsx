@@ -100,6 +100,7 @@ const CardViewer = ({
               thumbSize={thumbSize}
               showThumbnail={showThumbnail}
               showMetadata={showMetadata}
+              published={entity.published}
               selected={selectedIds.includes(entity.sharedId)}
               selectId={entity.sharedId}
               onSelect={modifiers => onSelect(entity.sharedId, modifiers)}

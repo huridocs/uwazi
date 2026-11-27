@@ -1251,6 +1251,7 @@ Resize panels,Cambiar el tamaño de los paneles
 Restore,Restaurar
 Restore previous version,Restaurar la versión anterior
 Restricted,Restringido
+Restricted: only people it is shared with can see it,Restringido: solo las personas con las que se ha compartido pueden verlo
 Results,Resultados
 Results layout,Disposición de resultados
 Results show the passages behind each hit.,Los resultados muestran los pasajes de cada coincidencia.
@@ -1799,3 +1800,4 @@ Zoom in,Aumentar zoom
 Zoom in library view,Aumentar zoom en la colección
 Zoom out,Reducir zoom
 Zoom out library view,Reducir zoom en la colección
+Always,Siempre

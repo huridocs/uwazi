@@ -1237,6 +1237,7 @@ Resize panels,ပန်နယ်များ၏ အရွယ်အစား ပ�
 Restore,ပြန်လည်ထူထောင်
 Restore previous version,ယခင်ဗားရှင်းကို ပြန်လည်ထူထောင်ပါ။
 Restricted,ကန့်သတ်ထားသည်
+Restricted: only people it is shared with can see it,ကန့်သတ်ထားသည်: မျှဝေထားသူများသာ မြင်နိုင်သည်
 Results,ရလဒ်များ
 Results layout,ရလဒ် အပြင်အဆင်
 Results show the passages behind each hit.,ရလဒ်များသည် ကိုက်ညီမှုတစ်ခုစီ၏ နောက်ကွယ်ရှိ ကောက်နုတ်ချက်များကို ပြသည်။
@@ -1776,3 +1777,4 @@ Zoom in,ချုံ့သည်
 Zoom in library view,စာကြည့်တိုက် မြင်ကွင်းကို ချုံ့သည်
 Zoom out,ချဲ့သည်
 Zoom out library view,စာကြည့်တိုက် မြင်ကွင်းကို ချဲ့သည်
+Always,အမြဲ

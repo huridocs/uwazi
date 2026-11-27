@@ -17,6 +17,8 @@ const memberKey = (member: MemberWithPermission) => `${member.type}:${member.ref
 const isVisibility = (value: string): value is Visibility =>
   value === 'private' || value === 'published';
 
+const shareSectionLabelClass = 'text-meta font-semibold uppercase tracking-wide text-ink-tertiary';
+
 const filterCollaboratorCandidates = (
   term: string,
   results: MemberWithPermission[],
@@ -34,4 +36,11 @@ const filterCollaboratorCandidates = (
 };
 
 export type { Visibility };
-export { publicReadPermission, findPublic, memberKey, isVisibility, filterCollaboratorCandidates };
+export {
+  publicReadPermission,
+  findPublic,
+  memberKey,
+  isVisibility,
+  shareSectionLabelClass,
+  filterCollaboratorCandidates,
+};

@@ -15,6 +15,7 @@ import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { libraryFacetIcon } from '#V2/services/search/libraryFacetIcon.js';
 import { EntityTitle } from '#V2/Routes/Entity/Components/shared/EntityTitle.js';
 import { LibraryLinks } from '../LibraryLinks.js';
+import { RestrictedMark } from '../RestrictedMark.js';
 import { LibraryTableCell } from '../LibraryTableCell.js';
 import { formatLibraryTableDate, libraryTableCellValue } from '../libraryTableCellValue.js';
 import { nextLibrarySort } from '../librarySort.js';
@@ -50,8 +51,11 @@ const renderLibraryTableCell = ({
       <span className="flex min-w-0 items-center gap-2 overflow-visible">
         <EntityTypeChip templateId={row.template} />
         <EntityTitle icon={libraryFacetIcon(row.icon)} className="min-w-0 flex-1">
-          <span className="truncate font-medium text-ink" title={row.title}>
-            {row.title}
+          <span className="flex min-w-0 flex-1 items-center gap-1.5">
+            <span className="truncate font-medium text-ink" title={row.title}>
+              {row.title}
+            </span>
+            <RestrictedMark published={row.published} />
           </span>
         </EntityTitle>
       </span>

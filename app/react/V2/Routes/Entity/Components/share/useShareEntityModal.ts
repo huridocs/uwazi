@@ -107,7 +107,6 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
       assignments,
       loading,
       loadFailed,
-      showCanSee: !isPublished,
       updateMember,
       removeMember,
     },

@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import * as reactRouter from 'react-router';
 import * as notifyBridge from '#V2/utils/notifyBridge.js';
 import { card, clickCard, expectSingleEntity } from './libraryMultiSelectAssertions.js';
 import {
@@ -39,6 +40,16 @@ const expectTextOnlyEdit = (footer: HTMLElement) => {
 const openTab = (name: string | RegExp) => {
   fireEvent.click(screen.getByRole('tab', { name }));
   expect(screen.getByRole('tab', { name })).toHaveAttribute('aria-selected', 'true');
+};
+
+const openPermissionsDialog = async () => {
+  await selectMexico();
+  fireEvent.click(within(oneEntityActions()).getByRole('button', { name: 'Permissions' }));
+  const dialog = await screen.findByRole('dialog');
+  expect(within(dialog).getByRole('heading', { name: 'Permissions' })).toBeInTheDocument();
+  expect(within(dialog).getByText('Mexico')).toBeInTheDocument();
+  await waitFor(() => expect(getPermissions).toHaveBeenCalledWith(['mexico']));
+  return dialog;
 };
 
 describe('library selection commands', () => {
@@ -88,14 +99,20 @@ describe('library selection commands', () => {
     });
   });
 
-  it('opens permissions from the lock on the one-entity panel bar', async () => {
-    await selectMexico();
-    fireEvent.click(within(oneEntityActions()).getByRole('button', { name: 'Permissions' }));
-    const dialog = await screen.findByRole('dialog');
-    expect(within(dialog).getByRole('heading', { name: 'Share' })).toBeInTheDocument();
-    await waitFor(() => {
-      expect(getPermissions).toHaveBeenCalledWith(['mexico']);
+  it('opens permissions from the lock on the one-entity panel bar and reloads on close', async () => {
+    const revalidate = jest.fn(async () => undefined);
+    const spy = jest.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
+      revalidate,
+      state: 'idle',
     });
+    try {
+      const dialog = await openPermissionsDialog();
+      expect(revalidate).not.toHaveBeenCalled();
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+      expect(revalidate).toHaveBeenCalledTimes(1);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('deletes the selected entity from the trash on the one-entity panel bar', async () => {
