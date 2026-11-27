@@ -149,6 +149,97 @@ describe('KeywordFacet', () => {
     expect(screen.getByText('España')).toBeInTheDocument();
   });
 
+  it('translates a missing bucket with the System No Label string', async () => {
+    const user = userEvent.setup();
+    const spanish: ClientTranslationSchema[] = [
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: { 'No Label': 'Sin etiqueta' },
+          },
+          {
+            id: 'th-countries',
+            label: 'Countries',
+            values: { 'No label': 'Etiqueta de tesauro', 'No Label': 'No debe usarse' },
+          },
+        ],
+      },
+    ];
+    const { onToggle } = renderFacet({
+      locale: 'es',
+      localeTranslations: spanish,
+      valueContext: 'th-countries',
+      defaultExpanded: true,
+      buckets: [
+        { id: 'missing', label: 'No label', count: 2 },
+        {
+          id: 'eu',
+          label: 'Europe',
+          count: 1,
+          values: [{ id: 'missing', label: 'No label', count: 1 }],
+        },
+      ],
+    });
+
+    expect(screen.getAllByText('Sin etiqueta')).toHaveLength(2);
+    expect(screen.queryByText('No label')).not.toBeInTheDocument();
+    await user.click(screen.getAllByRole('checkbox')[0]);
+    expect(onToggle).toHaveBeenCalledWith('missing');
+  });
+
+  it('uses the System No Label key for the active locale', () => {
+    renderFacet({
+      locale: 'fr',
+      localeTranslations: [
+        {
+          locale: 'fr',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: { 'No Label': 'Sans libellé' },
+            },
+          ],
+        },
+      ],
+      buckets: [{ id: 'missing', label: 'No label', count: 2 }],
+    });
+
+    expect(screen.getByText('Sans libellé')).toBeInTheDocument();
+    expect(screen.queryByText('No label')).not.toBeInTheDocument();
+  });
+
+  it('finds a missing bucket by its translated System label', async () => {
+    const user = userEvent.setup();
+    renderFacet({
+      alwaysSearch: true,
+      locale: 'es',
+      localeTranslations: [
+        {
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: { 'No Label': 'Sin etiqueta' },
+            },
+          ],
+        },
+      ],
+      buckets: [
+        { id: 'missing', label: 'No label', count: 2 },
+        { id: 'eu', label: 'Europe', count: 1 },
+      ],
+    });
+
+    await user.type(screen.getByRole('searchbox'), 'Sin etiqueta');
+    expect(screen.getByText('Sin etiqueta')).toBeInTheDocument();
+    expect(screen.queryByText('Europe')).not.toBeInTheDocument();
+  });
+
   it('shows the related record title', () => {
     const spanish: ClientTranslationSchema[] = [
       {

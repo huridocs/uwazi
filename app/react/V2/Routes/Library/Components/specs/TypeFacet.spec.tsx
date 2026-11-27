@@ -5,7 +5,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
-import { settingsAtom, templatesAtom, translationsAtom, userAtom } from '#V2/atoms/index.js';
+import {
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+  translationsAtom,
+  userAtom,
+} from '#V2/atoms/index.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import type { ClientSettings } from '#app/apiResponseTypes.js';
@@ -135,5 +141,64 @@ describe('TypeFacet', () => {
 
     await user.click(screen.getByText('Legal'));
     expect(onChange).toHaveBeenCalledWith({ type: ['template1', 'template2'] });
+  });
+
+  it('does not add a missing type row from aggregations', () => {
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, templates],
+          [translationsAtom, translations],
+          [settingsAtom, { filters: [{ id: 'template1', name: 'Documents' }] }],
+          [localeAtom, 'es'],
+        ]}
+      >
+        <TypeFacet
+          aggregations={{
+            ...aggregations,
+            templates: [...aggregations.templates, { id: 'missing', label: 'No label', count: 4 }],
+          }}
+          typeIds={[]}
+          setFilter={() => undefined}
+          open
+        />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByText('Documents')).toBeInTheDocument();
+    expect(screen.queryByText('No label')).not.toBeInTheDocument();
+    expect(screen.queryByText('No Label')).not.toBeInTheDocument();
+  });
+
+  it('labels an existing missing type item with the System No Label string', () => {
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, templates],
+          [
+            translationsAtom,
+            [
+              {
+                locale: 'es',
+                contexts: [
+                  {
+                    id: 'System',
+                    label: 'System',
+                    values: { 'No Label': 'Sin etiqueta' },
+                  },
+                ],
+              },
+            ],
+          ],
+          [settingsAtom, { filters: [{ id: 'missing', name: 'No label' }] }],
+          [localeAtom, 'es'],
+        ]}
+      >
+        <TypeFacet aggregations={aggregations} typeIds={[]} setFilter={() => undefined} open />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByText('Sin etiqueta')).toBeInTheDocument();
+    expect(screen.queryByText('No label')).not.toBeInTheDocument();
   });
 });

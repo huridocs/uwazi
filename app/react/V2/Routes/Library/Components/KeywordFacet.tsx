@@ -1,7 +1,11 @@
 import React, { useEffect, useState, type ReactNode } from 'react';
+import { useAtomValue } from 'jotai';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
+import translate, { getContext, getLocaleTranslation } from '#shared/translate.js';
+import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import type { LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { MISSING_FACET_ID, NO_LABEL_KEY, SYSTEM_CONTEXT } from '../missingFacetLabel.js';
 import type { FacetLookup } from '../lookupAggregation.js';
 import { AndOrToggle } from './AndOrToggle.js';
 import { FacetCard, FacetTree, type FacetMode } from './FacetCard.js';
@@ -24,15 +28,23 @@ type KeywordFacetProps = {
   optionsCap?: number;
 };
 
-const matchesQuery = (bucket: LibraryFacetBucket, query: string): boolean => {
+const bucketSearchText = (bucket: LibraryFacetBucket, missingLabel: string) => {
+  const systemLabel = bucket.id === MISSING_FACET_ID ? missingLabel : '';
+  return `${systemLabel} ${bucket.label || ''} ${bucket.id}`.toLowerCase();
+};
+
+const matchesQuery = (
+  bucket: LibraryFacetBucket,
+  query: string,
+  missingLabel: string
+): boolean => {
   if (!query) {
     return true;
   }
-  const haystack = `${bucket.label || ''} ${bucket.id}`.toLowerCase();
-  if (haystack.includes(query)) {
+  if (bucketSearchText(bucket, missingLabel).includes(query)) {
     return true;
   }
-  return Boolean(bucket.values?.some(child => matchesQuery(child, query)));
+  return Boolean(bucket.values?.some(child => matchesQuery(child, query, missingLabel)));
 };
 
 const useFacetLookup = (lookup: FacetLookup | undefined, search: string) => {
@@ -71,8 +83,10 @@ const useFacetLookup = (lookup: FacetLookup | undefined, search: string) => {
   return { lookupBuckets, lookupTotal, lookupError };
 };
 
-const searchedBuckets = (source: LibraryFacetBucket[], query: string) => {
-  const filtered = query ? source.filter(bucket => matchesQuery(bucket, query)) : source;
+const searchedBuckets = (source: LibraryFacetBucket[], query: string, missingLabel: string) => {
+  const filtered = query
+    ? source.filter(bucket => matchesQuery(bucket, query, missingLabel))
+    : source;
   const groups = filtered.filter(bucket => bucket.id !== 'any');
   return { groups, anyBucket: source.find(bucket => bucket.id === 'any') };
 };
@@ -97,10 +111,11 @@ const keywordFacetView = (input: {
   showAll: boolean;
   optionsCap: number;
   alwaysSearch: boolean;
+  missingLabel: string;
 }) => {
   const source = input.lookup ? (input.lookupBuckets ?? input.buckets) : input.buckets;
   const query = input.lookup ? '' : input.search.trim().toLowerCase();
-  const { groups, anyBucket } = searchedBuckets(source, query);
+  const { groups, anyBucket } = searchedBuckets(source, query, input.missingLabel);
   const capped = cappedBuckets(groups, anyBucket, {
     showAll: input.showAll,
     optionsCap: input.optionsCap,
@@ -112,6 +127,16 @@ const keywordFacetView = (input: {
     groups.length > input.optionsCap ||
     totalKnown > input.optionsCap;
   return { ...capped, groups, showSearch, query };
+};
+
+const useMissingFacetSearchLabel = () => {
+  const translations = useAtomValue(translationsAtom);
+  const locale = useAtomValue(localeAtom);
+  return translate(
+    getContext(getLocaleTranslation(translations, locale), SYSTEM_CONTEXT),
+    NO_LABEL_KEY,
+    NO_LABEL_KEY
+  );
 };
 
 const KeywordFacet = ({
@@ -129,6 +154,7 @@ const KeywordFacet = ({
   alwaysSearch = false,
   optionsCap = OPTIONS_CAP,
 }: KeywordFacetProps) => {
+  const missingLabel = useMissingFacetSearchLabel();
   const [search, setSearch] = useState('');
   const [showAll, setShowAll] = useState(false);
   const lookupState = useFacetLookup(lookup, search);
@@ -139,6 +165,7 @@ const KeywordFacet = ({
     showAll,
     optionsCap,
     alwaysSearch,
+    missingLabel,
     ...lookupState,
   });
   const { lookupError } = lookupState;

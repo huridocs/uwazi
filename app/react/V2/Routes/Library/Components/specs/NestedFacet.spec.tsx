@@ -63,4 +63,89 @@ describe('NestedFacet', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('España')).toBeInTheDocument();
   });
+
+  it('translates a missing child with the System No Label string', () => {
+    const systemSpanish: ClientTranslationSchema[] = [
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: { 'No Label': 'Sin etiqueta' },
+          },
+          {
+            id: 'th-articles',
+            label: 'Articles',
+            values: { 'No label': 'Etiqueta de tesauro', 'No Label': 'No debe usarse' },
+          },
+        ],
+      },
+    ];
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'es'],
+          [translationsAtom, systemSpanish],
+        ]}
+      >
+        <NestedFacet
+          title="Violated articles"
+          property={property}
+          locale="es"
+          defaultExpanded
+          selectedByGroup={{}}
+          onChangeGroup={() => undefined}
+          groups={[
+            {
+              id: 'daddh',
+              label: 'daddh',
+              count: 2,
+              values: [{ id: 'missing', label: 'No label', count: 1 }],
+            },
+          ]}
+        />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByText('Sin etiqueta')).toBeInTheDocument();
+    expect(screen.queryByText('No label')).not.toBeInTheDocument();
+  });
+
+  it('translates a missing group header with the System No Label string', () => {
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'es'],
+          [
+            translationsAtom,
+            [
+              {
+                locale: 'es',
+                contexts: [
+                  {
+                    id: 'System',
+                    label: 'System',
+                    values: { 'No Label': 'Sin etiqueta' },
+                  },
+                ],
+              },
+            ],
+          ],
+        ]}
+      >
+        <NestedFacet
+          title="Violated articles"
+          property={property}
+          locale="es"
+          selectedByGroup={{}}
+          onChangeGroup={() => undefined}
+          groups={[{ id: 'missing', label: 'No label', count: 1 }]}
+        />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByText('Sin etiqueta')).toBeInTheDocument();
+    expect(screen.queryByText('missing')).not.toBeInTheDocument();
+  });
 });

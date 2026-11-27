@@ -1,5 +1,6 @@
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import type { LibraryAggregations, LibraryFacetBucket } from '#shared/types/librarySearch.js';
+import { MISSING_FACET_ID, NO_LABEL_KEY, SYSTEM_CONTEXT } from './missingFacetLabel.js';
 
 type ChipParts = {
   propertyLabel: string;
@@ -143,7 +144,18 @@ const statusChip = (value: string): ChipParts => ({
   translateValue: true,
 });
 
+const missingValueChip = (propertyLabel: string, context?: string): ChipParts => ({
+  propertyLabel,
+  ...(context ? { propertyContext: context } : {}),
+  valueLabel: NO_LABEL_KEY,
+  valueContext: SYSTEM_CONTEXT,
+  translateValue: true,
+});
+
 const typeChip = (value: string, templates: Template[]): ChipParts => {
+  if (value === MISSING_FACET_ID) {
+    return missingValueChip('Type');
+  }
   const template = templates.find(item => item._id === value);
   return {
     propertyLabel: 'Type',
@@ -192,6 +204,10 @@ const resolveFilterChipParts = (key: string, value: string, sources: ChipSources
   }
   if (key === 'type') {
     return typeChip(value, sources.templates);
+  }
+  if (value === MISSING_FACET_ID) {
+    const property = findProperty(sources.templates, key, sources.typeIds);
+    return missingValueChip(property?.label ?? key, propertyContext(property));
   }
   return propertyChip(key, value, sources);
 };
