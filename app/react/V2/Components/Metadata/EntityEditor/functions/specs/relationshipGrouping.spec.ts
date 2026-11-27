@@ -82,6 +82,87 @@ describe('groupRelationshipProperties', () => {
     expect(grouped[0].groupedRelationshipNames).toEqual(['relationshipmark']);
     expect(grouped[1].groupedRelationshipNames).toEqual(['relationshipgeo']);
   });
+
+  it('shows one selector when a direct relationship and an inherited relationship share a target template and relation type', () => {
+    const grouped = groupRelationshipProperties([
+      {
+        _id: 'b',
+        type: 'relationship',
+        name: 'direct_b',
+        label: 'B',
+        content: 'T1',
+        relationType: 'R',
+      },
+      {
+        _id: 'c',
+        type: 'relationship',
+        name: 'inherited_c',
+        label: 'C',
+        content: 'T1',
+        relationType: 'R',
+        inherited: true,
+        inherit: { property: 'E', type: 'text' },
+      },
+      {
+        _id: 'other',
+        type: 'relationship',
+        name: 'other_type',
+        label: 'Other',
+        content: 'T1',
+        relationType: 'other',
+      },
+    ]);
+
+    expect(grouped).toHaveLength(2);
+    expect(grouped[0]).toMatchObject({
+      name: 'direct_b',
+      groupedRelationshipNames: ['direct_b', 'inherited_c'],
+    });
+    expect(grouped[1]).toMatchObject({
+      name: 'other_type',
+      groupedRelationshipNames: ['other_type'],
+    });
+  });
+
+  it('keeps relationship properties that lack a target template or relation type as separate selectors', () => {
+    const grouped = groupRelationshipProperties([
+      {
+        _id: 'no-content-a',
+        type: 'relationship',
+        name: 'no_content_a',
+        label: 'No content A',
+        relationType: 'R',
+      },
+      {
+        _id: 'no-content-b',
+        type: 'relationship',
+        name: 'no_content_b',
+        label: 'No content B',
+        relationType: 'R',
+      },
+      {
+        _id: 'no-type-a',
+        type: 'relationship',
+        name: 'no_type_a',
+        label: 'No type A',
+        content: 'T1',
+      },
+      {
+        _id: 'no-type-b',
+        type: 'relationship',
+        name: 'no_type_b',
+        label: 'No type B',
+        content: 'T1',
+      },
+    ]);
+
+    expect(grouped.map(property => property.name)).toEqual([
+      'no_content_a',
+      'no_content_b',
+      'no_type_a',
+      'no_type_b',
+    ]);
+  });
 });
 
 describe('syncGroupedRelationshipMetadata', () => {
@@ -109,7 +190,7 @@ describe('syncGroupedRelationshipMetadata', () => {
     ]);
   });
 
-  it('should copy primary relationship values onto secondary names', () => {
+  it('keeps every entity stored on the grouped properties', () => {
     const source: MetadataValue[] = [{ value: 'shared-1', label: 'One' }];
     const metadata = {
       related_people: source,
@@ -118,8 +199,8 @@ describe('syncGroupedRelationshipMetadata', () => {
     };
 
     expect(syncGroupedRelationshipMetadata(metadata, displayProperties)).toEqual({
-      related_people: source,
-      related_residents: source,
+      related_people: [...source, { value: 'stale', label: 'Stale' }],
+      related_residents: [...source, { value: 'stale', label: 'Stale' }],
       simple_text: [{ value: 'keep' }],
     });
   });

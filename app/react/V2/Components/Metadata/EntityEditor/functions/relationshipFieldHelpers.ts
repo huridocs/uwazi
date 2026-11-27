@@ -4,7 +4,7 @@ import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { relationshipGroupKey } from '../../relationshipInherit.js';
+import { relationshipMemberKey } from '../../relationshipInherit.js';
 import type { MultiselectListOption } from '../../../Forms/index.js';
 import type { DisplayProperty } from './relationshipGrouping.js';
 import { thesaurusFreshLabel } from './thesaurusOptionLabel.js';
@@ -76,7 +76,7 @@ const mergeRelationshipLookupOptions = ({
   cache,
   includeCachedOptions = true,
 }: MergeRelationshipLookupArgs): MultiselectListOption[] => {
-  const cacheKey = relationshipGroupKey(property);
+  const cacheKey = relationshipMemberKey(property, property._id);
   const cachedOptions = includeCachedOptions ? (cache.get(cacheKey) ?? []) : [];
   const selectedOptions = selectedValues
     .filter(value => value?.value)

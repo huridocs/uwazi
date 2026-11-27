@@ -2,11 +2,7 @@ import React, { ReactNode, useMemo } from 'react';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import {
-  inheritGroupKey,
-  isInheritingRelationship,
-  groupInheritingRelationships,
-} from '../metadataPropertyLayout.js';
+import { inheritGroupKey, groupInheritingRelationships } from '../metadataPropertyLayout.js';
 import { buildInheritColumns, type InheritColumnProperty } from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
 import {
@@ -22,7 +18,6 @@ type RelationshipCardsProps = {
   templates?: ClientTemplateSchema[];
   entity?: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
-  inheritingOnly?: boolean;
 };
 
 type BuildRelationshipCardNodesArgs = {
@@ -32,7 +27,6 @@ type BuildRelationshipCardNodesArgs = {
   templates?: ClientTemplateSchema[];
   entity?: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
-  inheritingOnly?: boolean;
   relationshipClassName?: string;
 };
 
@@ -73,7 +67,7 @@ const toInheritColumnProperty = (
   label: field.label,
   content: templateProperty?.content,
   relationType: templateProperty?.relationType,
-  inherited: true,
+  inherited: field.inherited,
   inherit: templateProperty?.inherit,
 });
 
@@ -94,18 +88,27 @@ const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContex
   );
 };
 
+const clusterTitle = (siblings: RelationshipMetadataProperty[], title?: string) => {
+  const inherited = siblings.filter(field => field.inherited);
+  const [primary] = inherited.length === 1 ? inherited : siblings;
+  if (inherited.length > 1 && inherited.length < siblings.length && title) {
+    return { label: title, hideLabel: false };
+  }
+  return { label: primary.label, hideLabel: primary.hideLabel };
+};
+
 const inheritingGroupCard = (
   siblings: RelationshipMetadataProperty[],
   groupKey: string,
   ctx: CardRenderContext
 ): ReactNode => {
   const [primary] = siblings;
+  const title = clusterTitle(siblings, ctx.entity?.title);
   const primaryTpl = ctx.templatePropertyById.get(primary._id);
   const columns = buildInheritColumns(
     {
       content: primaryTpl?.content,
       relationType: primaryTpl?.relationType,
-      inherited: true,
     },
     siblings.map(sibling =>
       toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
@@ -121,9 +124,9 @@ const inheritingGroupCard = (
     <Relationship
       key={groupKey}
       values={entityValues(siblings)}
-      label={primary.label}
+      label={title.label}
       translationContext={ctx.translationContext}
-      hideLabel={primary.hideLabel}
+      hideLabel={title.hideLabel}
       className={ctx.relationshipClassName}
       relationTypeId={primaryTpl?.relationType}
       targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
@@ -149,47 +152,37 @@ const cardRenderContext = ({
   relationshipClassName,
 });
 
-const linkedRelationshipFields = ({
-  fields,
-  inheritingOnly = false,
-}: Pick<BuildRelationshipCardNodesArgs, 'fields' | 'inheritingOnly'>) =>
-  fields.filter(field => {
-    if (!hasLinkedEntities(field)) {
-      return false;
-    }
-    return !(inheritingOnly && !isInheritingRelationship(field));
-  });
+const hasClusterLinks = (siblings: RelationshipMetadataProperty[]) =>
+  siblings.some(hasLinkedEntities);
 
 const buildInheritingCardsByGroupKey = (
   args: BuildRelationshipCardNodesArgs
 ): Map<string, ReactNode> => {
-  const linked = linkedRelationshipFields(args);
   const ctx = cardRenderContext(args);
   const cards = new Map<string, ReactNode>();
-  groupInheritingRelationships(linked, args.templatePropertyById).forEach((siblings, groupKey) => {
-    cards.set(groupKey, inheritingGroupCard(siblings, groupKey, ctx));
-  });
+  groupInheritingRelationships(args.fields, args.templatePropertyById).forEach(
+    (siblings, groupKey) => {
+      if (hasClusterLinks(siblings)) {
+        cards.set(groupKey, inheritingGroupCard(siblings, groupKey, ctx));
+      }
+    }
+  );
   return cards;
 };
 
 const buildRelationshipCardNodes = (args: BuildRelationshipCardNodesArgs): ReactNode[] => {
-  const linked = linkedRelationshipFields(args);
   const ctx = cardRenderContext(args);
-  const inheritingByGroup = groupInheritingRelationships(linked, args.templatePropertyById);
+  const inheritingByGroup = groupInheritingRelationships(args.fields, args.templatePropertyById);
   const nodes: ReactNode[] = [];
 
-  linked.forEach(field => {
-    if (!isInheritingRelationship(field)) {
-      nodes.push(linkOnlyCard(field, ctx));
-      return;
-    }
-
+  args.fields.forEach(field => {
     const groupKey = inheritGroupKey(field, args.templatePropertyById);
     const siblings = inheritingByGroup.get(groupKey);
-    if (!siblings || siblings[0] !== field) {
+    if (!siblings || !hasClusterLinks(siblings)) {
+      if (hasLinkedEntities(field)) nodes.push(linkOnlyCard(field, ctx));
       return;
     }
-    nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
+    if (siblings[0] === field) nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
   });
 
   return nodes;
@@ -202,7 +195,6 @@ const RelationshipCards = ({
   templates,
   entity,
   onOpenEntity,
-  inheritingOnly = false,
 }: RelationshipCardsProps) => {
   const list = useMemo(
     () =>
@@ -213,17 +205,8 @@ const RelationshipCards = ({
         templates,
         entity,
         onOpenEntity,
-        inheritingOnly,
       }),
-    [
-      fields,
-      translationContext,
-      templatePropertyById,
-      templates,
-      entity,
-      onOpenEntity,
-      inheritingOnly,
-    ]
+    [fields, translationContext, templatePropertyById, templates, entity, onOpenEntity]
   );
 
   if (!list.length) {

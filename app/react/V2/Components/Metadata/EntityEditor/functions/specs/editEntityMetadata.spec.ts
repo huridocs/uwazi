@@ -37,8 +37,8 @@ describe('formatMetadataForEntity', () => {
       properties
     );
 
-    expect(result?.related_people).toEqual([{ value: 'shared-1', label: 'One' }]);
-    expect(result?.related_residents).toEqual([{ value: 'shared-1', label: 'One' }]);
+    const shared = [{ value: 'shared-1', label: 'One' }, { value: 'stale' }];
+    expect([result?.related_people, result?.related_residents]).toEqual([shared, shared]);
     expect(result?.simple_text).toEqual([{ value: 'hello' }]);
   });
 

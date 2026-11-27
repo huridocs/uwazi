@@ -178,4 +178,15 @@ describe('renderFieldContent density', () => {
     expect(screenMap).toHaveAttribute('data-height', '160');
     expect(screenMap).toHaveAttribute('data-show-controls', 'false');
   });
+
+  it('places the compact map credit under the tiles', () => {
+    const { container } = render(<>{renderFieldContent(geoProp, { density: 'compact' })}</>);
+    const credit = container.querySelector('[data-part="map-credit"]');
+    expect(container.querySelector('[data-part="map-frame"]')).toHaveAttribute(
+      'data-credit',
+      'below'
+    );
+    expect(credit).not.toHaveClass('hidden');
+    expect(credit).toHaveTextContent('© Mapbox © OpenStreetMap');
+  });
 });
