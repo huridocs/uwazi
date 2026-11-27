@@ -101,11 +101,15 @@ jobs:
             echo "specs=${SELECTED[*]}" >> "$GITHUB_OUTPUT"
             echo "has_specs=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Install Chrome for Testing (pinned to 157)
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 157
       - name: Cypress run
         if: steps.shard-specs.outputs.has_specs == 'true'
         uses: cypress-io/github-action@v6
         with:
-          browser: chrome
+          browser: chrome-for-testing
           component: true
           config-file: cypress.config.cjs
           headed: false
