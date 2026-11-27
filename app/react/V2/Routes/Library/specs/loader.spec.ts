@@ -1,28 +1,31 @@
 import { ApiError } from '#shared/apiClient/index.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import { createLibraryLoader } from '../loader.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 
 const searchLibrary = jest.fn();
 
-const runLoader = (url: string) =>
-  createLibraryLoader(createTestServices({ search: { searchLibrary } }))()({
+const runLoader = (url: string, headers?: { 'content-language': string }) =>
+  createLibraryLoader(createTestServices({ search: { searchLibrary } }))(headers)({
     request: new Request(url),
     params: {},
     context: undefined,
   } as never);
 
-describe('library loader', () => {
-  beforeEach(() => {
-    searchLibrary.mockReset();
-    searchLibrary.mockResolvedValue([
-      {
-        rows: [{ title: 'Entity 1', sharedId: 'abc', template: 't1' }],
-        totalRows: 1,
-        aggregations: { templates: [], published: { published: 1, restricted: 0 }, properties: {} },
-      },
-    ]);
-  });
+beforeEach(() => {
+  getStore().set(localeAtom, '');
+  searchLibrary.mockReset();
+  searchLibrary.mockResolvedValue([
+    {
+      rows: [{ title: 'Entity 1', sharedId: 'abc', template: 't1' }],
+      totalRows: 1,
+      aggregations: { templates: [], published: { published: 1, restricted: 0 }, properties: {} },
+    },
+  ]);
+});
 
+describe('library loader', () => {
   it('redirects when a property is not filterable for the selected type', async () => {
     const templates = jest.fn().mockResolvedValue([
       [
@@ -269,5 +272,29 @@ describe('library loader', () => {
       aggregations: listResult.aggregations,
       urlState: expect.objectContaining({ view: 'map', search: 'batman' }),
     });
+  });
+});
+
+describe('library search language', () => {
+  const en = { 'content-language': 'en' };
+  const expectLanguage = (language: string, headers?: typeof en) => {
+    searchLibrary.mock.calls.forEach(([, options]) => {
+      expect(options).toEqual(expect.objectContaining({ language, headers }));
+    });
+  };
+  it('requests search results in the header UI language', async () => {
+    getStore().set(localeAtom, 'es');
+    await runLoader('http://localhost/en/libraryv2?search=batman');
+    expectLanguage('es');
+  });
+  it('keeps the header UI language for map results when content-language differs', async () => {
+    getStore().set(localeAtom, 'es');
+    await runLoader('http://localhost/en/libraryv2?view=map', en);
+    expect(searchLibrary).toHaveBeenCalledTimes(2);
+    expectLanguage('es', en);
+  });
+  it('uses content-language when the header UI language is unset', async () => {
+    await runLoader('http://localhost/en/libraryv2?search=batman', en);
+    expectLanguage('en', en);
   });
 });
