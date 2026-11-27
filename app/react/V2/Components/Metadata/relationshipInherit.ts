@@ -46,17 +46,13 @@ const inheritedPropertyOnTarget = (
 type RelationshipGroupProperty = {
   content?: string;
   relationType?: string;
-  inherited?: boolean;
-  inherit?: InheritColumnProperty['inherit'];
 };
 
-const inheritsValue = (property: RelationshipGroupProperty): boolean =>
-  Boolean(property.inherited || property.inherit);
-
 const relationshipGroupKey = (property: RelationshipGroupProperty): string =>
-  inheritsValue(property)
-    ? `inherit::${property.content ?? ''}::${property.relationType ?? ''}`
-    : `${property.content ?? ''}::${property.relationType ?? ''}`;
+  `${property.content ?? ''}::${property.relationType ?? ''}`;
+
+const relationshipMemberKey = (property: RelationshipGroupProperty, ownKey: string): string =>
+  property.content && property.relationType ? relationshipGroupKey(property) : ownKey;
 
 const inheritColumnLabel = (
   property: InheritColumnProperty,
@@ -75,9 +71,8 @@ const buildInheritColumns = (
   property: RelationshipGroupProperty,
   metadataProperties: InheritColumnProperty[],
   { templates, sourceMetadata, onOpenEntity }: InheritColumnContext
-): InheritColumn[] => {
-  if (!inheritsValue(property)) return [];
-  return metadataProperties
+): InheritColumn[] =>
+  metadataProperties
     .filter(
       candidate =>
         candidate.type === 'relationship' &&
@@ -112,7 +107,6 @@ const buildInheritColumns = (
         sortKeyByEntityId,
       };
     });
-};
 
 const anchorInheritGroup = (
   siblings: RelationshipMetadataProperty[]
@@ -121,5 +115,11 @@ const anchorInheritGroup = (
     ? [siblings[0]]
     : [];
 
-export { relationshipGroupKey, buildInheritColumns, inheritColumnLabel, anchorInheritGroup };
+export {
+  relationshipGroupKey,
+  relationshipMemberKey,
+  buildInheritColumns,
+  inheritColumnLabel,
+  anchorInheritGroup,
+};
 export type { InheritColumn, InheritColumnTemplate, InheritColumnProperty };

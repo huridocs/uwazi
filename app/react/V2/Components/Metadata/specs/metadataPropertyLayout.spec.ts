@@ -166,8 +166,8 @@ describe('metadataPropertyLayout', () => {
       const groups = groupInheritingRelationships([second, first], templateMap);
       expect(groups.size).toBe(1);
       expect(groups.get(inheritGroupKey(first, templateMap))?.map(field => field._id)).toEqual([
-        'inh-b',
         'inh-a',
+        'inh-b',
       ]);
     });
 
@@ -187,6 +187,119 @@ describe('metadataPropertyLayout', () => {
           field => field._id
         )
       ).toEqual(['inh-a', 'inh-b']);
+    });
+
+    it('places a direct relationship that shares the inherited target and type inside that group', () => {
+      const inherited = inheritingSibling('inh-a', 'rel_a', 'Rel A');
+      const fields = [
+        { ...linkOnlyRel('direct-same'), name: 'direct_same', label: 'Direct same' },
+        inherited,
+        { ...linkOnlyRel('direct-other'), name: 'direct_other', label: 'Direct other' },
+        { ...linkOnlyRel('direct-third-a'), name: 'third_a', label: 'Third A' },
+        { ...linkOnlyRel('direct-third-b'), name: 'third_b', label: 'Third B' },
+      ];
+      const templateMap = buildTemplatePropertyById([
+        {
+          _id: 'inh-a',
+          name: 'rel_a',
+          type: 'relationship',
+          label: 'Rel A',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'p1', type: 'text' },
+        },
+        {
+          _id: 'direct-same',
+          name: 'direct_same',
+          type: 'relationship',
+          label: 'Direct same',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+        },
+        {
+          _id: 'direct-other',
+          name: 'direct_other',
+          type: 'relationship',
+          label: 'Direct other',
+          content: 'related-tmpl',
+          relationType: 'rel-type-2',
+        },
+        {
+          _id: 'direct-third-a',
+          name: 'third_a',
+          type: 'relationship',
+          label: 'Third A',
+          content: 'third-tmpl',
+          relationType: 'rel-type-3',
+        },
+        {
+          _id: 'direct-third-b',
+          name: 'third_b',
+          type: 'relationship',
+          label: 'Third B',
+          content: 'third-tmpl',
+          relationType: 'rel-type-3',
+        },
+      ]);
+      const groups = groupInheritingRelationships(fields, templateMap);
+      expect(groups.get(inheritGroupKey(inherited, templateMap))?.map(field => field._id)).toEqual([
+        'inh-a',
+        'direct-same',
+      ]);
+      expect(groups.get('third-tmpl::rel-type-3')?.map(field => field._id)).toEqual([
+        'direct-third-a',
+        'direct-third-b',
+      ]);
+      expect(groups.get('related-tmpl::rel-type-2')?.map(field => field._id)).toEqual([
+        'direct-other',
+      ]);
+      expect(
+        partitionMetadataRecord([], fields, templateMap).masonryFields.map(field => field._id)
+      ).toEqual(['inh-a', 'direct-other', 'direct-third-a']);
+    });
+
+    it('keeps a relationship that lacks a target template or relation type in its own card', () => {
+      const fields = [
+        { ...linkOnlyRel('missing-content'), name: 'missing_content', label: 'Missing content' },
+        { ...linkOnlyRel('missing-type'), name: 'missing_type', label: 'Missing type' },
+        {
+          ...linkOnlyRel('also-missing-type'),
+          name: 'also_missing_type',
+          label: 'Also missing type',
+        },
+      ];
+      const templateMap = buildTemplatePropertyById([
+        {
+          _id: 'missing-content',
+          name: 'missing_content',
+          type: 'relationship',
+          label: 'Missing content',
+          relationType: 'rel-type-1',
+        },
+        {
+          _id: 'missing-type',
+          name: 'missing_type',
+          type: 'relationship',
+          label: 'Missing type',
+          content: 'related-tmpl',
+        },
+        {
+          _id: 'also-missing-type',
+          name: 'also_missing_type',
+          type: 'relationship',
+          label: 'Also missing type',
+          content: 'related-tmpl',
+        },
+      ]);
+      const groups = groupInheritingRelationships(fields, templateMap);
+      expect(groups.get('missing-content')?.map(field => field._id)).toEqual(['missing-content']);
+      expect(groups.get('missing-type')?.map(field => field._id)).toEqual(['missing-type']);
+      expect(groups.get('also-missing-type')?.map(field => field._id)).toEqual([
+        'also-missing-type',
+      ]);
+      expect(
+        partitionMetadataRecord([], fields, templateMap).masonryFields.map(field => field._id)
+      ).toEqual(['missing-content', 'missing-type', 'also-missing-type']);
     });
 
     it('anchors a relation-type group on its first sibling when that sibling is empty', () => {

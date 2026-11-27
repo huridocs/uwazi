@@ -93,8 +93,27 @@ const flattenedInherited = (values: unknown, entityId: string) => {
   return flattened;
 };
 
-const inheritedCellSortKey = (values: unknown, entityId: string): string =>
-  labelFallback(flattenedInherited(values, entityId)?.values ?? []) ?? '';
+const readNumber = (value: object, keys: string[]): number | undefined => {
+  const field = Object.entries(value).find(([name]) => keys.includes(name))?.[1];
+  return typeof field === 'number' ? field : undefined;
+};
+
+const coordinatePart = (value: unknown): string | undefined => {
+  if (!value || typeof value !== 'object') return undefined;
+  const lat = readNumber(value, ['lat', 'latitude']);
+  const lon = readNumber(value, ['lon', 'longitude']);
+  if (lat === undefined || lon === undefined) return undefined;
+  return `${lat},${lon}`;
+};
+
+const inheritedCellSortKey = (values: unknown, entityId: string): string => {
+  const items = flattenedInherited(values, entityId)?.values ?? [];
+  const coordinates = items.flatMap(item => {
+    const point = coordinatePart(item.value);
+    return point ? [point] : [];
+  });
+  return coordinates.join('|') || labelFallback(items) || '';
+};
 
 const renderTypedInheritedCell = (
   flattened: NonNullable<ReturnType<typeof flattenedInherited>>,

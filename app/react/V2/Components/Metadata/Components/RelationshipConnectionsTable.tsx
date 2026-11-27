@@ -23,8 +23,12 @@ const headerClass = `min-w-0 break-words ${columnLabelClass}`;
 
 const inheritedHeaderClass = `whitespace-nowrap px-3 ${columnLabelClass}`;
 
-const inheritedCellClass =
-  'min-w-0 overflow-hidden break-words border-s border-t border-border/40 px-3 py-1.5 align-middle';
+const cellBox = 'min-w-0 overflow-hidden break-words border-s border-t border-border/40 px-3';
+
+const inheritedCellClass = `${cellBox} py-1.5 align-middle`;
+
+const cellClass = (inheritedType?: string) =>
+  inheritedType === 'geolocation' ? `${cellBox} py-0 align-top` : inheritedCellClass;
 
 const entityCellClass = 'w-0 whitespace-nowrap border-t border-border/40 px-1 py-1.5 align-middle';
 
@@ -112,7 +116,7 @@ const connectionsTable = ({
                 <td
                   key={`${row.id}-${columnKey(column)}`}
                   rowSpan={cell.rowSpan}
-                  className={inheritedCellClass}
+                  className={cellClass(column.inheritedType)}
                 >
                   <div className="max-w-full overflow-hidden [&_.map-container]:z-0">
                     {renderPreviewCell(
