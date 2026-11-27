@@ -185,7 +185,7 @@ const bucketCount = (buckets: RawBucket[] | undefined, key: string) =>
 
 const toFacetBuckets = (buckets: RawBucket[] | undefined): LibraryFacetBucket[] =>
   (buckets ?? [])
-    .filter(bucket => bucket.key !== 'missing' && bucketDocCount(bucket) > 0)
+    .filter(bucket => bucketDocCount(bucket) > 0)
     .map(bucket => {
       const values = bucket.values ? toFacetBuckets(bucket.values) : undefined;
       const icon = libraryFacetIcon(bucket.icon);

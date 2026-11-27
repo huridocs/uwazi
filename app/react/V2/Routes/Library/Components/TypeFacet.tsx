@@ -6,6 +6,7 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import type { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
+import { facetValueLabel } from '../missingFacetLabel.js';
 import { toggleValue } from './NestedFacet.js';
 import { TypeScopeToggle } from './TypeScopeToggle.js';
 import { FacetCard, FacetRow, TreeChildren } from './FacetCard.js';
@@ -104,7 +105,7 @@ const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetP
                     )
                   )
                 }
-                label={<Translate context="Filters">{item.name}</Translate>}
+                label={facetValueLabel(item.id, item.name, 'Filters')}
                 count={countFor(item)}
                 bold
                 expandable
@@ -120,7 +121,7 @@ const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetP
                       child
                       checked={typeIds.includes(child.id)}
                       onToggle={() => setFilter('type', toggleValue(typeIds, child.id))}
-                      label={<Translate context={child.id}>{child.name}</Translate>}
+                      label={facetValueLabel(child.id, child.name, child.id)}
                       count={countFor(child)}
                     />
                   ))}
@@ -135,7 +136,7 @@ const TypeFacet = ({ aggregations, typeIds, setFilter, open = true }: TypeFacetP
             key={item.id}
             checked={typeIds.includes(item.id)}
             onToggle={() => setFilter('type', toggleValue(typeIds, item.id))}
-            label={<Translate context={item.id}>{item.name}</Translate>}
+            label={facetValueLabel(item.id, item.name, item.id)}
             count={countFor(item)}
             bold
             reserveGutter={reserveGutter}

@@ -146,6 +146,37 @@ describe('resolveFilterChipParts', () => {
     });
   });
 
+  it('resolves a missing property value to the System No Label key before aggregations', () => {
+    const withMissing: LibraryAggregations = {
+      ...aggregations,
+      properties: {
+        country: [{ id: 'missing', label: 'No label', count: 2 }],
+      },
+    };
+    expect(
+      resolveFilterChipParts('country', 'missing', {
+        templates,
+        aggregations: withMissing,
+        thesauri,
+      })
+    ).toEqual({
+      propertyLabel: 'Country',
+      propertyContext: 'tpl-case',
+      valueLabel: 'No Label',
+      valueContext: 'System',
+      translateValue: true,
+    });
+  });
+
+  it('resolves a missing type value to the System No Label key', () => {
+    expect(resolveFilterChipParts('type', 'missing', { templates })).toEqual({
+      propertyLabel: 'Type',
+      valueLabel: 'No Label',
+      valueContext: 'System',
+      translateValue: true,
+    });
+  });
+
   it('resolves type and status with their display labels', () => {
     expect(resolveFilterChipParts('type', 'tpl-case', { templates })).toEqual({
       propertyLabel: 'Type',
