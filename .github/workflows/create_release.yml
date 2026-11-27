@@ -5,58 +5,85 @@ on:
     branches:
       - production
 
+permissions:
+  contents: read
+  packages: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  BACKEND_IMAGE: ${{ github.repository }}
+
 jobs:
-  create_release:
+  release:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: 'production'
+          ref: production
           fetch-depth: 0
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Cache node modules
-        uses: actions/cache@v4
+
+      - name: Compute tree SHA
+        id: tree
+        run: echo "sha=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Read package version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Cache Yarn
-        uses: actions/cache@v4
-        with:
-          path: ~/.yarn/berry
-          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-cache-
-      - name: Enable Corepack
-        run: corepack enable
-      - name: install dependencies
-        run: yarn install
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4
-        with:
-          path: ./prod
-          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*', 'apps/**/*.*', 'packages/**/*.*', 'database/**/*.*', '**/yarn.lock', '**/package.json', '**/run.js', '**/server.js') }}
-      - name: build production
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: yarn production-build
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Publish image tag
+        env:
+          TREE: ${{ steps.tree.outputs.sha }}
+          VERSION: ${{ steps.version.outputs.version }}
+          REGISTRY: ${{ env.REGISTRY }}
+          BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
+        run: |
+          set -euo pipefail
+
+          # The tree SHA is identical between the PR's merge ref (what PR CI
+          # built and tested) and the merged production commit (branch protection
+          # requires PRs to be up to date). Promote the image the PR already
+          # built instead of rebuilding on production.
+          echo "Promoting image for tree $TREE"
+
+          # Fail before mutating anything:
+          # 1) The source image must exist.
+          docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:tree-$TREE" >/dev/null
+          # 2) The version tag must not already exist. Version tags are
+          #    immutable: this enforces that package.json was bumped before
+          #    merging (the release step also fails on a duplicate release tag).
+          if docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:$VERSION" >/dev/null 2>&1; then
+            echo "Refusing to publish: $REGISTRY/$BACKEND_IMAGE:$VERSION already exists (version not bumped)."
+            exit 1
+          fi
+
+          source="$REGISTRY/$BACKEND_IMAGE:tree-$TREE"
+          echo "Promoting $source -> latest, $VERSION"
+          docker buildx imagetools create \
+            --tag "$REGISTRY/$BACKEND_IMAGE:latest" \
+            --tag "$REGISTRY/$BACKEND_IMAGE:$VERSION" \
+            "$source"
+
       - name: Pre release
         run: ./scripts/pre-release-production.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
-
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
@@ -67,5 +94,60 @@ jobs:
         with:
           environment: production
           projects: ${{ secrets.SENTRY_PROJECTS }}
-          version: ${{ steps.package-version.outputs.current-version}}
+          version: ${{ steps.version.outputs.version }}
           ignore_empty: true
+
+  attach_tarball:
+    needs: release
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: install dependencies
+        run: yarn install
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ./prod
+          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*', 'apps/**/*.*', 'packages/**/*.*', 'database/**/*.*', '**/yarn.lock', '**/package.json', '**/run.js', '**/server.js') }}
+
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
+
+      - name: Create tarball
+        run: tar -czf uwazi.tgz ./prod
+
+      - name: Upload tarball
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          gh release upload "$version" uwazi.tgz
