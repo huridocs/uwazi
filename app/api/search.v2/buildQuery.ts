@@ -119,7 +119,7 @@ export const buildQuery = async (
   language: string,
   currentMappings: Record<string, any>
 ): Promise<RequestBody> => {
-  const searchParams = await extractSearchParams(query);
+  const searchParams = await extractSearchParams(query, language);
 
   return {
     _source: {

@@ -3,6 +3,7 @@ import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import propertiesHelper from '#shared/commonProperties.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
+import { MetadataSearchTerm } from '#api/search/metadataSearchTerm/MetadataSearchTerm.js';
 
 export const cleanUp = (value: any) => value;
 
@@ -22,7 +23,7 @@ const extractFullTextGroups = (searchString: string) => {
 };
 
 // eslint-disable-next-line max-statements
-async function extractSearchParams(query: SearchQuery) {
+async function extractSearchParams(query: SearchQuery, language: string) {
   const allTemplates = await templates.get();
   const uniqueProperties = (propertiesHelper.allUniqueProperties(allTemplates) as PropertySchema[])
     .map(prop =>
@@ -49,7 +50,7 @@ async function extractSearchParams(query: SearchQuery) {
     const searchMethod = await searchStringMethod(searchString);
     return {
       search: {
-        string: searchString,
+        string: await MetadataSearchTerm.for(searchString, language, searchMethod),
         method: searchMethod,
         properties: uniqueProperties,
       },
