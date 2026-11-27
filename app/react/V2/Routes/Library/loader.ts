@@ -12,6 +12,11 @@ import {
   type LibraryUrlState,
 } from './libraryUrlState.js';
 import { legacyLibraryRedirectUrl } from './risonLegacy.js';
+import {
+  pruneLibraryFilters,
+  pruneUnavailableFilters,
+  sameLibraryFilterCriteria,
+} from './pruneLibraryFilters.js';
 import type { LoaderResponse } from './types.js';
 
 const MAP_GEO_LIMIT = 9999;
@@ -55,6 +60,40 @@ const unwrapSearch = (result: LibrarySearchResult | undefined, error?: ApiError)
   return result!;
 };
 
+const searchOptions = (headers?: IncomingHttpHeaders): SearchRequestOptions => ({
+  headers,
+  language:
+    typeof headers?.['content-language'] === 'string' ? headers['content-language'] : undefined,
+});
+
+const withPrunedFilters = async (
+  services: V2Services,
+  urlState: LibraryUrlState,
+  requestOptions: SearchRequestOptions
+) => {
+  const hasPropertyFilter = Object.keys(urlState.filters).some(
+    key => key !== 'type' && key !== 'status'
+  );
+  if (!hasPropertyFilter && !urlState.andFilters.length) {
+    return { urlState, templates: [] };
+  }
+  const [templates, error] = await services.templates.getAll({ headers: requestOptions.headers });
+  if (error) {
+    throwApiError(error);
+  }
+  const loaded = templates ?? [];
+  const pruned = pruneLibraryFilters({
+    filters: urlState.filters,
+    andFilters: urlState.andFilters,
+    templates: loaded,
+    typeIds: urlState.filters.type ?? [],
+  });
+  return {
+    templates: loaded,
+    urlState: { ...urlState, filters: pruned.filters, andFilters: pruned.andFilters },
+  };
+};
+
 const loadLibraryResult = async (
   services: V2Services,
   urlState: LibraryUrlState,
@@ -81,6 +120,47 @@ const loadLibraryResult = async (
   return { ...list, rows: geo.rows, totalRows: geo.totalRows };
 };
 
+const redirectResponse = (url: URL, state: LibraryUrlState) => {
+  const next = serializeLibrarySearchString(state);
+  return redirect(`${url.pathname}${next ? `?${next}` : ''}`);
+};
+
+const availableFiltersRedirect = (
+  url: URL,
+  prepared: Awaited<ReturnType<typeof withPrunedFilters>>,
+  aggregations: LibrarySearchResult['aggregations']
+) => {
+  const available = pruneUnavailableFilters({
+    filters: prepared.urlState.filters,
+    andFilters: prepared.urlState.andFilters,
+    templates: prepared.templates,
+    aggregations,
+  });
+  return sameLibraryFilterCriteria(prepared.urlState, available)
+    ? undefined
+    : redirectResponse(url, { ...prepared.urlState, ...available });
+};
+
+const libraryResponse = async (
+  services: V2Services,
+  url: URL,
+  headers?: IncomingHttpHeaders
+): Promise<LoaderResponse | Response> => {
+  const requested = parseLibrarySearchParams(url.searchParams);
+  const requestOptions = searchOptions(headers);
+  const prepared = await withPrunedFilters(services, requested, requestOptions);
+  if (url.searchParams.has('from') || !sameLibraryFilterCriteria(requested, prepared.urlState)) {
+    return redirectResponse(url, prepared.urlState);
+  }
+  const result = await loadLibraryResult(services, prepared.urlState, requestOptions);
+  return (
+    availableFiltersRedirect(url, prepared, result.aggregations) ?? {
+      ...result,
+      urlState: prepared.urlState,
+    }
+  );
+};
+
 const createLibraryLoader =
   (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -90,19 +170,7 @@ const createLibraryLoader =
     if (legacyDestination) {
       return redirect(legacyDestination);
     }
-
-    const urlState = parseLibrarySearchParams(url.searchParams);
-    if (url.searchParams.has('from')) {
-      const next = serializeLibrarySearchString(urlState);
-      return redirect(`${url.pathname}${next ? `?${next}` : ''}`);
-    }
-    const result = await loadLibraryResult(services, urlState, {
-      headers,
-      language:
-        typeof headers?.['content-language'] === 'string' ? headers['content-language'] : undefined,
-    });
-
-    return { ...result, urlState };
+    return libraryResponse(services, url, headers);
   };
 
 const libraryLoader = createLibraryLoader(httpServices);
