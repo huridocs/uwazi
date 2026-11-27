@@ -1,6 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, redirect } from 'react-router';
+import { getStore } from '#shared/atomStore/index.js';
 import type { ApiError } from '#shared/apiClient/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import type { LibrarySearchQuery, LibrarySearchResult } from '#shared/types/librarySearch.js';
 import { throwApiError } from '#V2/shared/errorUtils.js';
 import type { V2Services } from '#V2/services/types.js';
@@ -60,11 +62,15 @@ const unwrapSearch = (result: LibrarySearchResult | undefined, error?: ApiError)
   return result!;
 };
 
-const searchOptions = (headers?: IncomingHttpHeaders): SearchRequestOptions => ({
-  headers,
-  language:
-    typeof headers?.['content-language'] === 'string' ? headers['content-language'] : undefined,
-});
+const searchOptions = (headers?: IncomingHttpHeaders): SearchRequestOptions => {
+  const headerLanguage = headers?.['content-language'];
+  return {
+    headers,
+    language:
+      getStore().get(localeAtom) ||
+      (typeof headerLanguage === 'string' ? headerLanguage : undefined),
+  };
+};
 
 const withPrunedFilters = async (
   services: V2Services,
