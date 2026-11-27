@@ -201,8 +201,9 @@ describe('LibraryFilters', () => {
     expect(screen.getByText('Type: Documents')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Clear all' }));
+    expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith({});
-    expect(onAndFiltersChange).toHaveBeenCalledWith([]);
+    expect(onAndFiltersChange).not.toHaveBeenCalled();
   });
 
   it('clears active filters from the footer', async () => {
@@ -212,8 +213,9 @@ describe('LibraryFilters', () => {
     renderFilters({ onChange, onAndFiltersChange });
 
     await user.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith({});
-    expect(onAndFiltersChange).toHaveBeenCalledWith([]);
+    expect(onAndFiltersChange).not.toHaveBeenCalled();
   });
 
   it('only shows Use as filter properties that have aggregations', () => {
