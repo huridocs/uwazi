@@ -226,7 +226,7 @@ jobs:
               // Treat as push-like: derive branch from ref
               const m = /^refs\/heads\/(.+)$/.exec(ref || '');
               branch = branch || (m ? m[1] : '');
-              const isProtectedBranch = String(process.env.INPUT_IS_PROTECTED_PUSH || '') === 'true' || branch === 'development' || branch === 'production';
+              const isProtectedBranch = String(process.env.INPUT_IS_PROTECTED_PUSH || '') === 'true' || branch === 'production';
               if (isProtectedBranch) {
                 shouldRun = true; // always run on direct pushes to protected branches
               } else {

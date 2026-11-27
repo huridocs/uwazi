@@ -3,7 +3,7 @@ name: Component testing
 on:
   push:
     branches:
-      - development
+      - production
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -29,7 +29,7 @@ jobs:
       ref: ${{ github.ref }}
       branch: ${{ github.ref_name }}
       event_name: ${{ github.event_name }}
-      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
+      is_protected_push: ${{ github.ref_name == 'production' }}
       sha: ${{ github.sha }}
 
   cypress-component-shards:
