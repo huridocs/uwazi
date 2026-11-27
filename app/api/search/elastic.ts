@@ -94,6 +94,16 @@ const elastic = {
         options
       );
     },
+
+    async analyze(
+      params?: RequestParams.IndicesAnalyze<RequestBody>,
+      options?: TransportRequestOptions
+    ) {
+      return elasticClient.indices.analyze(
+        { ...params, index: tenants.current().indexName },
+        options
+      );
+    },
   },
 
   cat: {
