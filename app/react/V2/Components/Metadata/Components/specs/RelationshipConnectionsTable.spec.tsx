@@ -264,12 +264,12 @@ describe('RelationshipConnectionsTable cells', () => {
       { label: 'Clip', inheritedType: 'media', cellsByEntityId: { e1: 'm' } },
       { label: 'Photo', inheritedType: 'image', cellsByEntityId: { e1: 'i' } },
     ]);
-    const classes = within(rowEl('Alpha'))
-      .getAllByRole('cell')
-      .map(cell => cell.className)
-      .join(' ');
-    expect(classes).toContain('min-w-0');
-    expect(classes).toContain('break-words');
+    const [, geoCell, mediaCell] = within(rowEl('Alpha')).getAllByRole('cell');
+    expect(geoCell.className).toContain('min-w-0');
+    expect(geoCell.className).toContain('break-words');
+    expect(geoCell.className).toContain('align-top');
+    expect(geoCell.className).toContain('py-0');
+    expect(mediaCell.className).toContain('align-middle');
   });
 
   it('renders an em dash when inherited cells are empty', () => {

@@ -1,5 +1,5 @@
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { relationshipGroupKey } from '../../relationshipInherit.js';
+import { relationshipMemberKey } from '../../relationshipInherit.js';
 import { metadataFormKey, type FormMetadataProperty } from './formatMetadataForForm.js';
 
 type DisplayProperty = FormMetadataProperty & {
@@ -20,7 +20,7 @@ const groupRelationshipProperties = (properties: FormMetadataProperty[]): Displa
       return;
     }
 
-    const groupKey = relationshipGroupKey(property);
+    const groupKey = relationshipMemberKey(property, property._id);
     const existing = groupedProperties.get(groupKey);
 
     if (!existing) {
@@ -66,6 +66,32 @@ const connectionValue = (value: MetadataValue): MetadataValue => {
   return connection;
 };
 
+const withInherited = (base: MetadataValue, extra: MetadataValue): MetadataValue => {
+  const merged = { ...base };
+  if (merged.inheritedType === undefined && extra.inheritedType !== undefined) {
+    merged.inheritedType = extra.inheritedType;
+  }
+  if (merged.inheritedValue === undefined && extra.inheritedValue !== undefined) {
+    merged.inheritedValue = extra.inheritedValue;
+  }
+  return merged;
+};
+
+const unionRelationshipValues = (lists: MetadataValue[][]): MetadataValue[] => {
+  const byEntity = new Map<string, MetadataValue>();
+  lists.flat().forEach(value => {
+    const id = String(value.value ?? '');
+    const current = byEntity.get(id);
+    if (!current) {
+      byEntity.set(id, value);
+      return;
+    }
+    const kept = withInherited(connectionValue(current), current);
+    byEntity.set(id, withInherited(kept, value));
+  });
+  return [...byEntity.values()];
+};
+
 const alignGroupedRelationshipValues = (
   sourceValues: MetadataValue[],
   currentValues: MetadataValue[]
@@ -74,12 +100,7 @@ const alignGroupedRelationshipValues = (
   return sourceValues.map(source => {
     const current = currentByEntity.get(String(source.value ?? ''));
     const connection = connectionValue(source);
-    if (!current) return connection;
-    return {
-      ...connection,
-      ...(current.inheritedType !== undefined ? { inheritedType: current.inheritedType } : {}),
-      ...(current.inheritedValue !== undefined ? { inheritedValue: current.inheritedValue } : {}),
-    };
+    return current ? withInherited(connection, current) : connection;
   });
 };
 
@@ -90,10 +111,11 @@ const syncGroupedRelationshipMetadata = (
   const synced = { ...metadata };
 
   getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
-    const sourceValues = synced[metadataFormKey(mainName)] ?? [];
-    otherNames.forEach(name => {
-      const key = metadataFormKey(name);
-      synced[key] = alignGroupedRelationshipValues(sourceValues, synced[key] ?? []);
+    const names = [mainName, ...otherNames];
+    const lists = names.map(name => synced[metadataFormKey(name)] ?? []);
+    const union = unionRelationshipValues(lists);
+    names.forEach((name, index) => {
+      synced[metadataFormKey(name)] = alignGroupedRelationshipValues(union, lists[index]);
     });
   });
 
