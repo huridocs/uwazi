@@ -33,11 +33,7 @@ const bucketSearchText = (bucket: LibraryFacetBucket, missingLabel: string) => {
   return `${systemLabel} ${bucket.label || ''} ${bucket.id}`.toLowerCase();
 };
 
-const matchesQuery = (
-  bucket: LibraryFacetBucket,
-  query: string,
-  missingLabel: string
-): boolean => {
+const matchesQuery = (bucket: LibraryFacetBucket, query: string, missingLabel: string): boolean => {
   if (!query) {
     return true;
   }
