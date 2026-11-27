@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, createMemoryRouter, RouterProvider } from 'react-router';
 import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { UploadService } from '#V2/api/files/UploadService.js';
 import type { FileType } from '#shared/types/fileType.js';
@@ -81,6 +81,120 @@ const createdRouter = () => {
     { initialEntries: ['/'] }
   );
 };
+
+const filterTemplates = [
+  {
+    _id: 'contracts',
+    name: 'Contracts',
+    properties: [
+      {
+        _id: 'contracting',
+        name: 'contracting',
+        label: 'Contracting',
+        type: 'select',
+        filter: true,
+      },
+    ],
+  },
+  {
+    _id: 'contractors',
+    name: 'Contractors',
+    properties: [
+      {
+        _id: 'country',
+        name: 'country',
+        label: 'Country',
+        type: 'select',
+        filter: true,
+        defaultfilter: true,
+      },
+    ],
+  },
+];
+
+describe('LibraryController applied filters', () => {
+  it('removes a bookmarked property the selected type cannot use', async () => {
+    window.history.replaceState(
+      null,
+      '',
+      '/en/library?filters=(type:(contractors),contracting:(services))&andFilters=(contracting)'
+    );
+    const router = createBrowserRouter([
+      {
+        path: '/en/library',
+        loader: () => ({ rows: [alpha], totalRows: 1, aggregations }),
+        Component: () => (
+          <NuqsAdapter>
+            <LibraryController />
+          </NuqsAdapter>
+        ),
+      },
+    ]);
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [templatesAtom, filterTemplates],
+          [translationsAtom, translations],
+          [
+            settingsAtom,
+            { languages: [{ key: 'en', label: 'English', default: true }], features: {} },
+          ],
+          [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
+        ]}
+      >
+        <RouterProvider router={router} />
+      </TestAtomStoreProvider>
+    );
+
+    await waitFor(() => {
+      expect(router.state.location.search).toBe('?filters=(type:(contractors))');
+    });
+    router.dispose();
+  });
+
+  it('keeps the page when a bookmarked property is removed', async () => {
+    window.history.replaceState(
+      null,
+      '',
+      '/en/library?filters=(type:(contractors),contracting:(services))&page=2'
+    );
+    const router = createBrowserRouter([
+      {
+        path: '/en/library',
+        loader: () => ({ rows: [alpha], totalRows: 1, aggregations }),
+        Component: () => (
+          <NuqsAdapter>
+            <LibraryController />
+          </NuqsAdapter>
+        ),
+      },
+    ]);
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [localeAtom, 'en'],
+          [templatesAtom, filterTemplates],
+          [translationsAtom, translations],
+          [
+            settingsAtom,
+            { languages: [{ key: 'en', label: 'English', default: true }], features: {} },
+          ],
+          [userAtom, { _id: 'admin1', role: 'admin', username: 'admin', email: 'a@b.c' }],
+        ]}
+      >
+        <RouterProvider router={router} />
+      </TestAtomStoreProvider>
+    );
+
+    await waitFor(() => {
+      expect(router.state.location.search).toBe('?filters=(type:(contractors))&page=2');
+    });
+    router.dispose();
+  });
+});
 
 describe('LibraryController created rows', () => {
   it('selects the uploaded entity and lists it until the loader contains that shared id', async () => {

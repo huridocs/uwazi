@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
@@ -13,7 +13,15 @@ import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { LibraryView } from './Components/LibraryView.js';
 import type { Chip } from './Components/ActiveFiltersSheet.js';
 import { resolveFilterChipParts } from './filterChipLabel.js';
-import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
+import {
+  DEFAULT_LIBRARY_URL_STATE,
+  type LibraryFiltersState,
+} from './libraryUrlState.js';
+import {
+  pruneLibraryFilters,
+  pruneUnavailableFilters,
+  sameLibraryFilterCriteria,
+} from './pruneLibraryFilters.js';
 import { useLibraryUrlState } from './useLibraryUrlState.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import {
@@ -35,6 +43,74 @@ const removeFilterValue = (
     delete next[key];
   }
   return next;
+};
+
+const urlFilterPatch = (pruned: { filters: LibraryFiltersState; andFilters: string[] }) => ({
+  filters: pruned.filters,
+  andFilters: pruned.andFilters.length ? pruned.andFilters : null,
+});
+
+const prunedFilterPatch = (
+  filters: LibraryFiltersState,
+  andFilters: string[],
+  templates: Template[]
+) =>
+  urlFilterPatch(
+    pruneLibraryFilters({
+      filters,
+      andFilters,
+      templates,
+      typeIds: filters.type ?? [],
+    })
+  );
+
+const libraryFiltersPatch = (
+  filters: LibraryFiltersState,
+  andFilters: string[],
+  templates: Template[]
+) => ({ ...prunedFilterPatch(filters, andFilters, templates), page: null });
+
+const appliedFilterPatch = (input: {
+  filters: LibraryFiltersState;
+  andFilters: string[];
+  templates: Template[];
+  aggregations: LibraryAggregations;
+}) => {
+  const scoped = prunedFilterPatch(input.filters, input.andFilters, input.templates);
+  return urlFilterPatch(
+    pruneUnavailableFilters({
+      filters: scoped.filters,
+      andFilters: scoped.andFilters ?? [],
+      templates: input.templates,
+      aggregations: input.aggregations,
+    })
+  );
+};
+
+const useAppliedLibraryFilters = (
+  source: {
+    urlState: { filters: LibraryFiltersState; andFilters: string[] };
+    templates: Template[];
+    aggregations: LibraryAggregations;
+  },
+  updateUrl: (patch: { filters: LibraryFiltersState; andFilters: string[] | null }) => void
+) => {
+  const { urlState, templates, aggregations } = source;
+  const patch = templates.length
+    ? appliedFilterPatch({
+        filters: urlState.filters,
+        andFilters: urlState.andFilters,
+        templates,
+        aggregations,
+      })
+    : undefined;
+
+  useEffect(() => {
+    if (!patch || sameLibraryFilterCriteria(urlState, patch)) {
+      return;
+    }
+    updateUrl(patch);
+  }, [patch, updateUrl, urlState]);
 };
 
 const translatedText = (text: string, context?: string) =>
@@ -123,7 +199,10 @@ const LibraryController = () => {
     commitNow: commitSearchNow,
   } = useLibrarySearchInput(urlState.search, updateUrl);
 
-  const entityBasePath = getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features));
+  useAppliedLibraryFilters(
+    { urlState, templates, aggregations: data.aggregations },
+    updateUrl
+  );
 
   const chips = useMemo((): Chip[] => {
     const items: Chip[] = [];
@@ -142,16 +221,19 @@ const LibraryController = () => {
           color:
             key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
           onRemove: () => {
-            updateUrl({
-              filters: removeFilterValue(urlState.filters, key, value),
-              page: null,
-            });
+            updateUrl(
+              libraryFiltersPatch(
+                removeFilterValue(urlState.filters, key, value),
+                urlState.andFilters,
+                templates
+              )
+            );
           },
         });
       });
     });
     return items;
-  }, [data.aggregations, templates, thesauri, updateUrl, urlState.filters]);
+  }, [data.aggregations, templates, thesauri, updateUrl, urlState.andFilters, urlState.filters]);
 
   return (
     <LibraryView
@@ -178,20 +260,20 @@ const LibraryController = () => {
       filters={urlState.filters}
       andFilters={urlState.andFilters}
       onFiltersChange={filters => {
-        updateUrl({
-          filters,
-          ...(Object.keys(filters).length === 0 ? { andFilters: null } : {}),
-          page: null,
-        });
+        updateUrl(libraryFiltersPatch(filters, urlState.andFilters, templates));
       }}
       onAndFiltersChange={andFilters => {
-        updateUrl({ andFilters: andFilters.length ? andFilters : null, page: null });
+        updateUrl(
+          templates.length
+            ? libraryFiltersPatch(urlState.filters, andFilters, templates)
+            : { andFilters: andFilters.length ? andFilters : null, page: null }
+        );
       }}
       chips={chips}
       selectedIds={selectedIds}
       onSelectedIdsChange={setSelectedIds}
       onClosePreview={onClosePreview}
-      entityBasePath={entityBasePath}
+      entityBasePath={getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features))}
       page={urlState.page}
       limit={urlState.limit}
       onPageChange={page => {

@@ -6,11 +6,8 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
-import type { PropertySchema } from '#shared/types/commonTypes.js';
-import type { Template } from '#app/apiResponseTypes.js';
 import type { LibraryFiltersState } from '../libraryUrlState.js';
-import { filterableProperties } from '../filterableProperties.js';
-import { filterPropertyType, isDateFilterType } from '../filterPropertyType.js';
+import { visibleFilterProperties } from '../filterableProperties.js';
 import { FacetCard, FacetRow } from './FacetCard.js';
 import { toggleValue } from './NestedFacet.js';
 import { PropertyFacet } from './PropertyFacet.js';
@@ -51,19 +48,6 @@ const statusCounts = (aggregations: LibraryAggregations) => {
   return { publishedCount, restrictedCount, showStatus: publishedCount + restrictedCount > 0 };
 };
 
-const propertyFacetsFor = (
-  properties: PropertySchema[],
-  templates: Template[],
-  aggregations: LibraryAggregations
-) =>
-  properties.filter(property => {
-    const type = filterPropertyType(property, templates);
-    if (type === 'text' || type === 'markdown' || type === 'numeric' || isDateFilterType(type)) {
-      return true;
-    }
-    return (aggregations.properties[property.name] ?? []).some(bucket => bucket.count > 0);
-  });
-
 const activeFilterCount = (filters: LibraryFiltersState) =>
   Object.values(filters).reduce((sum, values) => sum + values.length, 0);
 
@@ -79,17 +63,12 @@ const LibraryFilters = ({
   const locale = useAtomValue(localeAtom) || 'en';
   const selection = { typeIds: filters.type ?? [], status: filters.status ?? [] };
   const { publishedCount, restrictedCount, showStatus } = statusCounts(aggregations);
-  const propertyFacets = propertyFacetsFor(
-    filterableProperties(templates, selection.typeIds),
-    templates,
-    aggregations
-  );
+  const propertyFacets = visibleFilterProperties(templates, selection.typeIds, aggregations);
   const activeCount = activeFilterCount(filters);
   const { expansion, expandAll, collapseAll } = useNestedGroupsExpansionControls();
   const setFilter = (key: string, values: string[]) => onChange(nextFilters(filters, key, values));
   const clearAll = () => {
     onChange({});
-    onAndFiltersChange([]);
   };
 
   return (
