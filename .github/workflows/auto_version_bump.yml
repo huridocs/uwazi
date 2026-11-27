@@ -9,7 +9,7 @@ name: Auto version bump
 # "Released" is recorded in two places and the bump must honor both, because
 # each has its own immutability guard:
 #   - GHCR image tags (publish refuses to overwrite an existing `x.y.z` tag)
-#   - GitHub releases (release.sh fails if `gh release create` sees a duplicate)
+#   - GitHub releases (the release step fails if `gh release create` sees a duplicate)
 # So the version is bumped when it is not ahead of the max across both records.
 #
 # IMPORTANT: the bump is pushed with GH_TOKEN (a PAT), not GITHUB_TOKEN. Pushes
@@ -47,27 +47,33 @@ jobs:
 
           current="$(node -p "require('./package.json').version")"
 
-          # Old flow's record: the latest GitHub release (written by release.sh).
-          latest_release="$(gh release list --limit 100 --json tagName,isLatest --jq '[.[] | select(.isLatest == true)][0].tagName // empty')"
+          # Release record: every GitHub release tag, full or prerelease. A
+          # production merge now emits a prerelease tagged <version>, and a full
+          # release is promoted from the same tag, so `isLatest` is no longer a
+          # reliable record of what has been released. Key off all release tags.
+          release_tags="$(gh api --paginate \
+            "/repos/${{ github.repository }}/releases?per_page=100" 2>/dev/null \
+            || echo '[]')"
+          release_tags="$(jq -r '[.[] | .tag_name] | unique | join(" ")' <<< "$release_tags")"
 
-          # New flow's record: every tag published to the uwazi GHCR package
-          # (written by the publish job). Read with the workflow token so this
-          # needs only `packages: read`, not a `read:packages` scope on the PAT
-          # used for the push below. The package does not exist until the first
-          # publish, so a 404 is treated as "no image tags yet".
+          # Image record: every tag published to the uwazi GHCR package (written
+          # by the publish job). Read with the workflow token so this needs only
+          # `packages: read`, not a `read:packages` scope on the PAT used for the
+          # push below. The package does not exist until the first publish, so a
+          # 404 is treated as "no image tags yet".
           image_tags="$(GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh api --paginate \
             "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" 2>/dev/null \
             || echo '[]')"
           image_tags="$(jq -r '[.[] | .metadata.container.tags? // [] | .[]?] | unique | join(" ")' <<< "$image_tags")"
 
-          echo "current=$current latest_release=${latest_release:-<none>} image_tags=${image_tags:-<none>}"
+          echo "current=$current release_tags=${release_tags:-<none>} image_tags=${image_tags:-<none>}"
 
           # Decide whether to bump. The merged version must be fresh in BOTH
-          # records (publish refuses an existing GHCR tag, release.sh refuses an
-          # existing release), so bump unless `current` is ahead of the max
-          # version across both. Pure Node, no dependencies needed.
-          next="$(node - "$current" "${latest_release:-}" "${image_tags:-}" <<'EOF'
-          const [current, release, imageTags] = process.argv.slice(2);
+          # records (publish refuses an existing GHCR tag, and the release step
+          # refuses an existing release tag), so bump unless `current` is ahead
+          # of the max version across both. Pure Node, no dependencies needed.
+          next="$(node - "$current" "${release_tags:-}" "${image_tags:-}" <<'EOF'
+          const [current, releaseTags, imageTags] = process.argv.slice(2);
           const parts = v => v.split('.').slice(0, 3).map(n => parseInt(n, 10) || 0);
           const isSemver = v => /^\d+\.\d+\.\d+$/.test(v);
           const cmp = (x, y) => {
@@ -76,7 +82,10 @@ jobs:
             if (a[1] !== b[1]) return a[1] - b[1];
             return a[2] - b[2];
           };
-          const candidates = [release, ...(imageTags || '').split(/\s+/)].filter(isSemver);
+          const candidates = [
+            ...(releaseTags || '').split(/\s+/),
+            ...(imageTags || '').split(/\s+/),
+          ].filter(isSemver);
           const latest = candidates.length ? candidates.sort(cmp).pop() : '';
           if (latest) {
             const a = parts(current), b = parts(latest);

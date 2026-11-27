@@ -23,8 +23,8 @@ $release_notes
 - \`ghcr.io/$repo:$release_version\`
 EOF
 
-GITHUB_TOKEN="$gh_token" gh release create "$release_version-pre" \
-  --title "$release_version (pre-release)" \
+GITHUB_TOKEN="$gh_token" gh release create "$release_version" \
+  --title "$release_version" \
   --notes-file pre_release_notes.txt \
   --prerelease \
   --target production
