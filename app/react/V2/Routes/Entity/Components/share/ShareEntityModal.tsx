@@ -26,7 +26,15 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
           <h3 className="shrink-0 text-sm font-semibold text-ink">
             <Translate>Permissions</Translate>
           </h3>
-          <p className="min-w-0 truncate text-meta text-ink-tertiary">{entity.title}</p>
+          <p className="flex min-w-0 items-baseline gap-1 text-meta text-ink-tertiary">
+            <span className="min-w-0 truncate">{entity.title}</span>
+            {sharedIds.length > 1 ? (
+              <>
+                <span className="shrink-0 tabular-nums">+{sharedIds.length - 1}</span>
+                <Translate className="shrink-0">x more</Translate>
+              </>
+            ) : null}
+          </p>
         </div>
         <Modal.CloseButton onClick={onClose} disabled={footer.saving} className="ml-0!" />
       </Modal.Header>
@@ -63,6 +71,7 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
             loading={members.loading}
             loadFailed={members.loadFailed}
             assignments={members.assignments}
+            published={generalAccess.visibility === 'published' && sharedIds.length === 1}
             onChange={members.updateMember}
             onRemove={members.removeMember}
           />

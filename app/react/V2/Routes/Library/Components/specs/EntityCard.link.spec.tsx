@@ -25,6 +25,7 @@ describe('EntityCard link property', () => {
             title="Case file"
             templateId="template1"
             viewHref="/entityv2/abc"
+            published
             onSelect={onSelect}
             fields={[
               {

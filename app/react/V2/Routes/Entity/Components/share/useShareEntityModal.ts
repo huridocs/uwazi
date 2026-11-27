@@ -1,57 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { t } from '#app/I18N/index.js';
-import { AccessLevels } from '#shared/types/permissionSchema.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { useEntityContext } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import type { EntitiesService } from '#V2/services/contracts/EntitiesService.js';
 import { useServices } from '#V2/services/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
-import { publicReadPermission, type Visibility } from './shareUtils.js';
+import { permissionsToSave, type Visibility } from './shareUtils.js';
 import { useShareAssignments } from './useShareAssignments.js';
 import { useShareLookup } from './useShareLookup.js';
 import { useSharePermissionsLoad } from './useSharePermissionsLoad.js';
 
-const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
-  const { entities } = useServices();
-  const { entity, setEntity } = useEntityContext();
+type ShareSources = {
+  entities: EntitiesService;
+  sharedIds: string[];
+  setDirty: (value: boolean) => void;
+  setVisibility: (value: Visibility) => void;
+};
+
+type SavePermissionsInput = {
+  entities: EntitiesService;
+  entity: Entity;
+  setEntity: (entity: Entity) => void;
+  onClose: () => void;
+  visibility: Visibility;
+  loadFailed: boolean;
+  loading: boolean;
+  setSaving: (value: boolean) => void;
+  assignments: MemberWithPermission[];
+  sharedIdsRef: RefObject<string[]>;
+};
+
+const useDialogState = () => {
   const [visibility, setVisibility] = useState<Visibility>('private');
   const [showPublicTip, setShowPublicTip] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const generalAccessRef = useRef<HTMLDivElement>(null);
-  const entityRef = useRef(entity);
-  entityRef.current = entity;
-  const isPublished = visibility === 'published';
-
-  const {
-    assignments,
-    assignmentsRef,
-    replaceAssignments,
-    updateMember,
-    removeMember,
-    appendMatch,
-  } = useShareAssignments(setDirty);
-
-  const { loading, loadFailed, sharedIdsRef } = useSharePermissionsLoad({
-    entities,
-    sharedIds,
-    replaceAssignments,
-    setVisibility,
-    setDirty,
-  });
-
-  const lookup = useShareLookup({
-    entities,
-    assignmentsRef,
-    appendMatch,
-    loadFailed,
-  });
-
-  const controlsDisabled = loading || saving || loadFailed;
 
   useEffect(() => {
     if (!showPublicTip) return undefined;
-    const onPointerDown = (event: PointerEvent) => {
-      if (!generalAccessRef.current?.contains(event.target as Node)) {
+    const onPointerDown = ({ target }: PointerEvent) => {
+      if (target instanceof Node && !generalAccessRef.current?.contains(target)) {
         setShowPublicTip(false);
       }
     };
@@ -59,9 +50,56 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [showPublicTip]);
 
+  return {
+    visibility,
+    setVisibility,
+    showPublicTip,
+    setShowPublicTip,
+    dirty,
+    setDirty,
+    saving,
+    setSaving,
+    generalAccessRef,
+  };
+};
+
+const useSharing = ({ entities, sharedIds, setDirty, setVisibility }: ShareSources) => {
+  const assignmentState = useShareAssignments(setDirty);
+  const loaded = useSharePermissionsLoad({
+    entities,
+    sharedIds,
+    replaceAssignments: assignmentState.replaceAssignments,
+    setVisibility,
+    setDirty,
+  });
+  const lookup = useShareLookup({
+    entities,
+    assignmentsRef: assignmentState.assignmentsRef,
+    appendMatch: assignmentState.appendMatch,
+    loadFailed: loaded.loadFailed,
+  });
+
+  return { assignmentState, loaded, lookup };
+};
+
+const useSavePermissions = ({
+  entities,
+  entity,
+  setEntity,
+  onClose,
+  visibility,
+  loadFailed,
+  loading,
+  setSaving,
+  assignments,
+  sharedIdsRef,
+}: SavePermissionsInput) => {
+  const entityRef = useRef(entity);
+  entityRef.current = entity;
+
   const applySavedPermissions = () => {
     const { current } = entityRef;
-    setEntity({ ...current, published: isPublished });
+    if (visibility !== 'mixed') setEntity({ ...current, published: visibility === 'published' });
     entityLoaderCache.invalidateEntity(current.sharedId);
     notify(t('System', 'Permissions updated', null, false), 'success');
     onClose();
@@ -72,49 +110,68 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
     setSaving(true);
     const [, error] = await entities.savePermissions({
       ids: sharedIdsRef.current,
-      permissions: [
-        ...assignments.map(member => ({
-          refId: member.refId,
-          type: member.type,
-          level: member.level ?? AccessLevels.READ,
-        })),
-        ...(isPublished ? [publicReadPermission] : []),
-      ],
+      permissions: permissionsToSave(assignments, visibility),
     });
     if (error) notify(t('System', 'An error occurred', null, false), 'error');
     else applySavedPermissions();
     setSaving(false);
   };
 
+  return handleSave;
+};
+
+const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
+  const { entities } = useServices();
+  const { entity, setEntity } = useEntityContext();
+  const dialog = useDialogState();
+  const { assignmentState, loaded, lookup } = useSharing({
+    entities,
+    sharedIds,
+    setDirty: dialog.setDirty,
+    setVisibility: dialog.setVisibility,
+  });
+  const controlsDisabled = loaded.loading || dialog.saving || loaded.loadFailed;
+  const handleSave = useSavePermissions({
+    entities,
+    entity,
+    setEntity,
+    onClose,
+    visibility: dialog.visibility,
+    loadFailed: loaded.loadFailed,
+    loading: loaded.loading,
+    setSaving: dialog.setSaving,
+    assignments: assignmentState.assignments,
+    sharedIdsRef: loaded.sharedIdsRef,
+  });
   const setGeneralAccess = (next: Visibility) => {
-    if (loadFailed) return;
-    setVisibility(next);
-    setDirty(true);
-    setShowPublicTip(next === 'published');
+    if (loaded.loadFailed) return;
+    dialog.setVisibility(next);
+    dialog.setDirty(true);
+    dialog.setShowPublicTip(next === 'published');
   };
 
   return {
     entity,
     controlsDisabled,
     generalAccess: {
-      visibility,
-      showPublicTip,
-      generalAccessRef,
+      visibility: dialog.visibility,
+      showPublicTip: dialog.showPublicTip,
+      generalAccessRef: dialog.generalAccessRef,
       setGeneralAccess,
     },
     lookup,
     members: {
-      assignments,
-      loading,
-      loadFailed,
-      updateMember,
-      removeMember,
+      assignments: assignmentState.assignments,
+      loading: loaded.loading,
+      loadFailed: loaded.loadFailed,
+      updateMember: assignmentState.updateMember,
+      removeMember: assignmentState.removeMember,
     },
     footer: {
-      dirty,
-      saving,
-      loading,
-      loadFailed,
+      dirty: dialog.dirty,
+      saving: dialog.saving,
+      loading: loaded.loading,
+      loadFailed: loaded.loadFailed,
       handleSave,
     },
   };

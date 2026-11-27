@@ -32,7 +32,7 @@ const renderCard = ({
   thumbFrame,
   thumbSize,
   showMetadata,
-  published,
+  published = true,
 }: {
   selected?: boolean;
   showThumbnail?: boolean;

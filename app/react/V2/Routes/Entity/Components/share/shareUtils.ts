@@ -1,16 +1,38 @@
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import { AccessLevels, MixedAccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
+import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
 
-type Visibility = 'private' | 'published';
+type Visibility = 'private' | 'published' | 'mixed';
+type SavedPermission = PermissionsDataSchema['permissions'][number];
 
-const publicReadPermission = {
-  refId: 'public',
-  type: PermissionType.PUBLIC,
-  level: AccessLevels.READ as MixedAccessLevels,
+const visibilityFromPermissions = (permissions: MemberWithPermission[]): Visibility => {
+  const level = permissions.find(member => member.type === PermissionType.PUBLIC)?.level;
+  if (level === MixedAccess.MIXED) return 'mixed';
+  if (level) return 'published';
+  return 'private';
 };
 
-const findPublic = (permissions: MemberWithPermission[]) =>
-  permissions.find(p => p.type === PermissionType.PUBLIC);
+const permissionsToSave = (
+  assignments: MemberWithPermission[],
+  visibility: Visibility
+): SavedPermission[] => [
+  ...assignments
+    .filter(member => member.level !== MixedAccess.MIXED)
+    .map(member => ({
+      refId: member.refId,
+      type: member.type,
+      level: member.level === AccessLevels.WRITE ? AccessLevels.WRITE : AccessLevels.READ,
+    })),
+  ...(visibility === 'private'
+    ? []
+    : [
+        {
+          refId: 'public',
+          type: PermissionType.PUBLIC,
+          level: visibility === 'mixed' ? MixedAccess.MIXED : AccessLevels.READ,
+        },
+      ]),
+];
 
 const memberKey = (member: MemberWithPermission) => `${member.type}:${member.refId}`;
 
@@ -37,8 +59,8 @@ const filterCollaboratorCandidates = (
 
 export type { Visibility };
 export {
-  publicReadPermission,
-  findPublic,
+  visibilityFromPermissions,
+  permissionsToSave,
   memberKey,
   isVisibility,
   shareSectionLabelClass,

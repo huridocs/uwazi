@@ -8,12 +8,19 @@ const segmentRootClass = (disabled: boolean, className = ''): string =>
     .filter(Boolean)
     .join(' ');
 
-const segmentItemClass = (
-  active: boolean,
-  disabled: boolean,
+type SegmentItemOptions = {
+  active: boolean;
+  disabled: boolean;
+  className?: string;
+  size?: 'sm' | 'md';
+};
+
+const segmentItemClass = ({
+  active,
+  disabled,
   className = '',
-  size: 'sm' | 'md' = 'sm'
-): string => {
+  size = 'sm',
+}: SegmentItemOptions): string => {
   const height = size === 'md' ? 'h-8' : 'h-6';
   const type = size === 'md' ? 'text-xs' : 'text-micro';
   const parts = [

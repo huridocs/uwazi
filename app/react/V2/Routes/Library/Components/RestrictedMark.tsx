@@ -7,7 +7,7 @@ type RestrictedMarkProps = {
 };
 
 const RestrictedMark = ({ published }: RestrictedMarkProps) => {
-  if (published !== false) return null;
+  if (published) return null;
 
   return (
     <span

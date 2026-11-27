@@ -39,6 +39,7 @@ const rows: LibrarySearchHit[] = [
     language: 'en',
     title: 'Amnesty International',
     template: 'template1',
+    published: true,
     creationDate: 1704067200000,
     editDate: 1735689600000,
     metadata: {

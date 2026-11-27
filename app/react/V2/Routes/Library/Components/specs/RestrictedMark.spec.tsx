@@ -22,8 +22,8 @@ describe('RestrictedMark', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('draws nothing when published is missing', () => {
-    const { container } = render(<RestrictedMark />);
-    expect(container).toBeEmptyDOMElement();
+  it('names a padlock when published is missing', () => {
+    render(<RestrictedMark />);
+    expect(screen.getByTitle(restricted)).toBeInTheDocument();
   });
 });

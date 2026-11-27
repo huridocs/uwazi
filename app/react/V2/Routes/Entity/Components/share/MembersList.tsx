@@ -11,6 +11,7 @@ type MembersListProps = {
   loading: boolean;
   loadFailed: boolean;
   assignments: MemberWithPermission[];
+  published: boolean;
   onChange: (index: number, level: MixedAccessLevels) => void;
   onRemove: (index: number) => void;
 };
@@ -36,6 +37,7 @@ const MembersList = ({
   loading,
   loadFailed,
   assignments,
+  published,
   onChange,
   onRemove,
 }: MembersListProps) => {
@@ -62,6 +64,7 @@ const MembersList = ({
         <MemberRow
           key={memberKey(member)}
           member={member}
+          published={published}
           onChange={level => onChange(index, level)}
           onRemove={() => onRemove(index)}
         />

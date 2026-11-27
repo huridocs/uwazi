@@ -50,6 +50,7 @@ const rows: LibrarySearchHit[] = [
     language: 'en',
     title: 'Hearing',
     template: 'template1',
+    published: true,
     creationDate: 1,
     metadata: {
       cover: [{ value: '/api/files/cover.png' }],
