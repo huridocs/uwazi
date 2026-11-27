@@ -13,10 +13,7 @@ import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { LibraryView } from './Components/LibraryView.js';
 import type { Chip } from './Components/ActiveFiltersSheet.js';
 import { resolveFilterChipParts } from './filterChipLabel.js';
-import {
-  DEFAULT_LIBRARY_URL_STATE,
-  type LibraryFiltersState,
-} from './libraryUrlState.js';
+import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
 import {
   pruneLibraryFilters,
   pruneUnavailableFilters,
@@ -199,10 +196,7 @@ const LibraryController = () => {
     commitNow: commitSearchNow,
   } = useLibrarySearchInput(urlState.search, updateUrl);
 
-  useAppliedLibraryFilters(
-    { urlState, templates, aggregations: data.aggregations },
-    updateUrl
-  );
+  useAppliedLibraryFilters({ urlState, templates, aggregations: data.aggregations }, updateUrl);
 
   const chips = useMemo((): Chip[] => {
     const items: Chip[] = [];

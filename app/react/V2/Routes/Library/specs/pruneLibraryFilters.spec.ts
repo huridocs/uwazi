@@ -30,9 +30,7 @@ const templates: Template[] = [
   },
 ];
 
-const aggregations = (
-  properties: LibraryAggregations['properties']
-): LibraryAggregations => ({
+const aggregations = (properties: LibraryAggregations['properties']): LibraryAggregations => ({
   templates: [],
   published: { published: 0, restricted: 0 },
   properties,
