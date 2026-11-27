@@ -1,4 +1,4 @@
-name: Dockerized CI (build, test, publish)
+name: Dockerized CI (build, test)
 
 permissions:
   contents: read
@@ -49,15 +49,11 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       tree: ${{ steps.tag.outputs.tree }}
-      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - name: Compute tree SHA
         id: tag
         run: echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
-      - name: Read package version
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
   # Test images only: source + dev deps + client tooling. No production build,
   # so unit tests can start without waiting on webpack. Defined in a reusable
@@ -460,52 +456,3 @@ jobs:
     uses: ./.github/workflows/ci_e2e_playwright_ix.yml
     with:
       backend_image: ghcr.io/${{ github.repository }}:tree-${{ needs.image_tag.outputs.tree }}
-
-  publish:
-    name: publish
-    needs: [image_tag]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/production' }}
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Publish known-good tags
-        env:
-          TREE: ${{ needs.image_tag.outputs.tree }}
-          VERSION: ${{ needs.image_tag.outputs.version }}
-          BACKEND_IMAGE: ${{ env.BACKEND_IMAGE }}
-          REGISTRY: ${{ env.REGISTRY }}
-        run: |
-          set -euo pipefail
-
-          # The tree SHA is identical between the PR's merge ref (what PR CI
-          # built and tested) and the merged production commit (branch protection
-          # requires PRs to be up to date). Promote the image the PR already
-          # built instead of rebuilding on production.
-          echo "Promoting image for tree $TREE"
-
-          # Fail before mutating anything:
-          # 1) The source image must exist.
-          docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:tree-$TREE" >/dev/null
-          # 2) The version tag must not already exist. Version tags are
-          #    immutable: this enforces that package.json was bumped before
-          #    merging (the release step also fails on a duplicate release tag).
-          if docker buildx imagetools inspect "$REGISTRY/$BACKEND_IMAGE:$VERSION" >/dev/null 2>&1; then
-            echo "Refusing to publish: $REGISTRY/$BACKEND_IMAGE:$VERSION already exists (version not bumped)."
-            exit 1
-          fi
-
-          source="$REGISTRY/$BACKEND_IMAGE:tree-$TREE"
-          echo "Promoting $source -> latest, $VERSION"
-          docker buildx imagetools create \
-            --tag "$REGISTRY/$BACKEND_IMAGE:latest" \
-            --tag "$REGISTRY/$BACKEND_IMAGE:$VERSION" \
-            "$source"

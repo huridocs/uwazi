@@ -17,9 +17,9 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 │   ├── temporal_files/
 ```
 
-- From within the `uwazi` folder, download the latest release .tar file:
+- From within the `uwazi` folder, download a release `.tar` file, replacing `<VERSION>` with the release version (e.g. `1.229.350`):
 
-`wget https://github.com/huridocs/uwazi/releases/latest/download/uwazi.tgz`
+`wget https://github.com/huridocs/uwazi/releases/download/<VERSION>/uwazi.tgz`
 
 - Unpack the file. This will create a `prod` folder with the latest Uwazi production code:
 
@@ -48,10 +48,10 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 ## Update Uwazi to a new release
 
 - Rename or delete previous `latest` folder
-- From within `uwazi` folder, download the latest release .tar file, unpack, rename to `latest` and remove the previous .tar file.
+- From within `uwazi` folder, download a release `.tar` file (replacing `<VERSION>` with the release version), unpack, rename to `latest` and remove the previous `.tar` file.
 
 ```
-wget https://github.com/huridocs/uwazi/releases/latest/download/uwazi.tgz
+wget https://github.com/huridocs/uwazi/releases/download/<VERSION>/uwazi.tgz
 tar xvf uwazi.tgz
 mv prod latest && rm uwazi.tgz
 ```

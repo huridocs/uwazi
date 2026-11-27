@@ -57,10 +57,10 @@ jobs:
           release_tags="$(jq -r '[.[] | .tag_name] | unique | join(" ")' <<< "$release_tags")"
 
           # Image record: every tag published to the uwazi GHCR package (written
-          # by the publish job). Read with the workflow token so this needs only
-          # `packages: read`, not a `read:packages` scope on the PAT used for the
-          # push below. The package does not exist until the first publish, so a
-          # 404 is treated as "no image tags yet".
+          # by the production release workflow). Read with the workflow token so
+          # this needs only `packages: read`, not a `read:packages` scope on the
+          # PAT used for the push below. The package does not exist until the
+          # first publish, so a 404 is treated as "no image tags yet".
           image_tags="$(GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh api --paginate \
             "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" 2>/dev/null \
             || echo '[]')"
