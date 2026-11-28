@@ -89,7 +89,9 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
               onClick={() => {
                 footer.handleSave().catch(() => undefined);
               }}
-              disabled={footer.saving || footer.loading || footer.loadFailed}
+              disabled={
+                footer.saving || footer.loading || footer.loadFailed || footer.unresolvedMixed
+              }
             >
               <Translate>Save changes</Translate>
             </Button>

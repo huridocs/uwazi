@@ -162,6 +162,13 @@ const expectSegmentHeights = () => {
   );
 };
 
+const expectBatchHeading = async (ids: string[]) => {
+  expect(await screen.findByText('Case 123')).toBeInTheDocument();
+  expect(screen.getByText('+2')).toBeInTheDocument();
+  expect(screen.getByText('x more')).toBeInTheDocument();
+  expect(getPermissions).toHaveBeenCalledWith(ids);
+};
+
 const expectFixedAccessRow = () => {
   const fixedName = screen.getByText('Administrators and Editors');
   const fixedRow = fixedName.closest('div');
@@ -251,6 +258,7 @@ const publishAndMutate = async (user: User) => {
 
 export {
   expectAdded,
+  expectBatchHeading,
   expectFixedAccessRow,
   expectGeneralAccessChoices,
   expectHeaderRow,

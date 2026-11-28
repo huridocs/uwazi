@@ -7,7 +7,7 @@ import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import type { EntitiesService } from '#V2/services/contracts/EntitiesService.js';
 import { useServices } from '#V2/services/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
-import { permissionsToSave, type Visibility } from './shareUtils.js';
+import { permissionsToSave, singleEntityHasMixedMember, type Visibility } from './shareUtils.js';
 import { useShareAssignments } from './useShareAssignments.js';
 import { useShareLookup } from './useShareLookup.js';
 import { useSharePermissionsLoad } from './useSharePermissionsLoad.js';
@@ -100,13 +100,17 @@ const useSavePermissions = ({
   const applySavedPermissions = () => {
     const { current } = entityRef;
     if (visibility !== 'mixed') setEntity({ ...current, published: visibility === 'published' });
-    entityLoaderCache.invalidateEntity(current.sharedId);
+    new Set([current.sharedId, ...sharedIdsRef.current]).forEach(id =>
+      entityLoaderCache.invalidateEntity(id)
+    );
     notify(t('System', 'Permissions updated', null, false), 'success');
     onClose();
   };
 
   const handleSave = async () => {
-    if (loadFailed || loading) return;
+    if (loadFailed || loading || singleEntityHasMixedMember(sharedIdsRef.current, assignments)) {
+      return;
+    }
     setSaving(true);
     const [, error] = await entities.savePermissions({
       ids: sharedIdsRef.current,
@@ -172,6 +176,7 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
       saving: dialog.saving,
       loading: loaded.loading,
       loadFailed: loaded.loadFailed,
+      unresolvedMixed: singleEntityHasMixedMember(sharedIds, assignmentState.assignments),
       handleSave,
     },
   };

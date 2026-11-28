@@ -4,8 +4,10 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
+import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { ApiError } from '#shared/apiClient/index.js';
 import {
+  expectBatchHeading,
   expectGeneralAccessChoices,
   expectPermissionsLocked,
   expectPublicNotice,
@@ -21,6 +23,8 @@ import {
 jest.mock('#V2/utils/notifyBridge.js', () => ({
   notify: jest.fn(),
 }));
+
+const oneMixedMember = granted.map(member => ({ ...member, level: MixedAccess.MIXED }));
 
 const publicMixed = {
   refId: 'public',
@@ -95,16 +99,16 @@ describe('ShareEntityModal actions', () => {
     it('names the other entities and saves every shared id', async () => {
       const user = userEvent.setup();
       const ids = ['shared-1', 'shared-2', 'shared-3'];
+      const invalidate = jest.spyOn(entityLoaderCache, 'invalidateEntity');
       renderModal({ sharedIds: ids });
-      expect(await screen.findByText('Case 123')).toBeInTheDocument();
-      expect(screen.getByText('+2')).toBeInTheDocument();
-      expect(screen.getByText('x more')).toBeInTheDocument();
-      expect(getPermissions).toHaveBeenCalledWith(ids);
+      await expectBatchHeading(ids);
       await user.click(screen.getByRole('radio', { name: 'Published' }));
       await user.click(screen.getByRole('button', { name: 'Save changes' }));
       await waitFor(() => {
         expect(savePermissions).toHaveBeenCalledWith(expect.objectContaining({ ids }));
+        ids.forEach(id => expect(invalidate).toHaveBeenCalledWith(id));
       });
+      invalidate.mockRestore();
     });
 
     it('does not explain Can view when several entities are published', async () => {
@@ -213,10 +217,33 @@ describe('ShareEntityModal actions', () => {
       expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
     });
 
+    it('does not save one entity while a member is still mixed', async () => {
+      const user = userEvent.setup();
+      getPermissions.mockResolvedValue([oneMixedMember]);
+      renderModal();
+      await screen.findByText('Mixed access');
+      await user.click(screen.getByRole('radio', { name: 'Published' }));
+      expect(screen.getByRole('button', { name: 'Save changes' })).toBeDisabled();
+      expect(savePermissions).not.toHaveBeenCalled();
+    });
+
+    it('saves the level chosen for a mixed member on one entity', async () => {
+      const user = userEvent.setup();
+      getPermissions.mockResolvedValue([oneMixedMember]);
+      renderModal();
+      await screen.findByText('admin');
+      await user.click(screen.getByRole('radio', { name: 'Can view' }));
+      await user.click(screen.getByRole('button', { name: 'Save changes' }));
+      await waitFor(() => {
+        expect(savePermissions).toHaveBeenCalledWith({
+          ids: ['shared-1'],
+          permissions: [{ refId: 'user-1', type: PermissionType.USER, level: AccessLevels.READ }],
+        });
+      });
+    });
+
     it('leaves both levels unchecked when access is mixed', async () => {
-      getPermissions.mockResolvedValue([
-        granted.map(member => ({ ...member, level: MixedAccess.MIXED })),
-      ]);
+      getPermissions.mockResolvedValue([oneMixedMember]);
       renderModal();
       await screen.findByText('admin');
       expect(screen.getByText('Mixed access')).toBeInTheDocument();

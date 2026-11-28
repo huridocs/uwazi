@@ -12,6 +12,9 @@ const visibilityFromPermissions = (permissions: MemberWithPermission[]): Visibil
   return 'private';
 };
 
+const singleEntityHasMixedMember = (sharedIds: string[], assignments: MemberWithPermission[]) =>
+  sharedIds.length === 1 && assignments.some(member => member.level === MixedAccess.MIXED);
+
 const permissionsToSave = (
   assignments: MemberWithPermission[],
   visibility: Visibility
@@ -60,6 +63,7 @@ const filterCollaboratorCandidates = (
 export type { Visibility };
 export {
   visibilityFromPermissions,
+  singleEntityHasMixedMember,
   permissionsToSave,
   memberKey,
   isVisibility,
