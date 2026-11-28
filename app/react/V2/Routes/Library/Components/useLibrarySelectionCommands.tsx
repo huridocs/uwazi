@@ -118,7 +118,10 @@ const useSelectionDialogs = ({ selectedIds, rows, onDeleted, stopEdit }: Selecti
           if (!deleting) setDialog(null);
         }}
         onConfirmDelete={confirmDelete}
-        onClosePermissions={() => setDialog(null)}
+        onClosePermissions={() => {
+          setDialog(null);
+          void revalidator.revalidate();
+        }}
       />
     ),
   };

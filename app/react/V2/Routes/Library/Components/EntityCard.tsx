@@ -21,6 +21,7 @@ import {
 } from './libraryCardDisplay.js';
 import { EntityThumbnail } from './EntityThumbnail.js';
 import { LibraryLinks } from './LibraryLinks.js';
+import { RestrictedMark } from './RestrictedMark.js';
 import type { LibraryLink } from './libraryTableCellValue.js';
 
 type EntityCardField = {
@@ -48,6 +49,7 @@ type EntityCardProps = {
   viewHref: string;
   showThumbnail?: boolean;
   showMetadata?: boolean;
+  published?: boolean;
 };
 
 const renderFieldValue = (
@@ -96,6 +98,7 @@ const EntityCard = ({
   viewHref,
   showThumbnail = true,
   showMetadata = true,
+  published,
 }: EntityCardProps) => {
   const templates = useAtomValue(templatesAtom);
   const template = useMemo(
@@ -188,7 +191,10 @@ const EntityCard = ({
       )}
       <div className="flex items-center justify-between gap-2 pt-1">
         <TemplateLabel templateId={templateId} variant="tag" />
-        {viewButton}
+        <span className="flex items-center gap-2">
+          <RestrictedMark published={published} />
+          {viewButton}
+        </span>
       </div>
     </div>
   );

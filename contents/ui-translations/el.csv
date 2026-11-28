@@ -1254,6 +1254,7 @@ Resize panels,Αλλαγή μεγέθους πλαισίων
 Restore,Επαναφορά
 Restore previous version,Επαναφορά προηγούμενης έκδοσης
 Restricted,Περιορισμένα
+Restricted: only people it is shared with can see it,Περιορισμένα: μόνο τα άτομα με τα οποία έχει κοινοποιηθεί μπορούν να το δουν
 Results,Αποτελέσματα
 Results layout,Διάταξη αποτελεσμάτων
 Results show the passages behind each hit.,Τα αποτελέσματα δείχνουν τα αποσπάσματα πίσω από κάθε εύρημα.
@@ -1804,3 +1805,5 @@ Zoom in,Μεγέθυνση
 Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση
 Zoom out library view,Σμίκρυνση προβολής βιβλιοθήκης
+Always,Πάντα
+Anyone can view a published entity,Οποιοσδήποτε μπορεί να δει μια δημοσιευμένη οντότητα

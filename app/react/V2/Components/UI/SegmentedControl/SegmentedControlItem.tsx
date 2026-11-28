@@ -47,11 +47,11 @@ const SegmentedControlItem = ({
       aria-checked={active}
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
-      title={title ?? ariaLabel}
+      title={title}
       tabIndex={active ? 0 : -1}
       disabled={disabled}
       onClick={select}
-      className={segmentItemClass(active, disabled, className, size)}
+      className={segmentItemClass({ active, disabled, className, size })}
     >
       {children}
     </button>

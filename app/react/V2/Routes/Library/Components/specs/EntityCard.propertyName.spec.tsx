@@ -38,6 +38,7 @@ describe('EntityCard property names', () => {
             title="Case file"
             templateId="template1"
             viewHref="/entityv2/abc"
+            published
             fields={[{ id: 'country', label: 'Country', value: 'Spain' }]}
           />
         </TestAtomStoreProvider>

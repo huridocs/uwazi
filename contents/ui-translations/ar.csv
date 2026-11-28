@@ -1254,6 +1254,7 @@ Resize panels,تغيير حجم الألواح
 Restore,استعادة
 Restore previous version,استعادة الإصدار السابق
 Restricted,مُقَيَّد
+Restricted: only people it is shared with can see it,مُقَيَّد: يمكن فقط للأشخاص الذين تمت مشاركته معهم رؤيته
 Results,النتائج
 Results layout,تخطيط النتائج
 Results show the passages behind each hit.,تعرض النتائج المقاطع التي تقف خلف كل مطابقة.
@@ -1804,3 +1805,5 @@ Zoom in,تكبير
 Zoom in library view,تكبير في المعاينة المكتبية
 Zoom out,تصغير
 Zoom out library view,تصغير في المعاينة المكتبية
+Always,دائمًا
+Anyone can view a published entity,يمكن لأي شخص عرض الكيان المنشور

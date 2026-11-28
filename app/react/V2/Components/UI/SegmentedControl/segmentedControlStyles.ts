@@ -8,15 +8,23 @@ const segmentRootClass = (disabled: boolean, className = ''): string =>
     .filter(Boolean)
     .join(' ');
 
-const segmentItemClass = (
-  active: boolean,
-  disabled: boolean,
+type SegmentItemOptions = {
+  active: boolean;
+  disabled: boolean;
+  className?: string;
+  size?: 'sm' | 'md';
+};
+
+const segmentItemClass = ({
+  active,
+  disabled,
   className = '',
-  size: 'sm' | 'md' = 'sm'
-): string => {
+  size = 'sm',
+}: SegmentItemOptions): string => {
   const height = size === 'md' ? 'h-8' : 'h-6';
+  const type = size === 'md' ? 'text-xs' : 'text-micro';
   const parts = [
-    `flex ${height} shrink-0 items-center justify-center gap-1 px-2 text-micro font-medium transition-colors`,
+    `flex ${height} shrink-0 items-center justify-center gap-1 px-2 ${type} font-medium transition-colors`,
   ];
   if (disabled) parts.push('cursor-not-allowed text-ink-muted');
   else if (active) parts.push('cursor-pointer bg-vellum text-ink');

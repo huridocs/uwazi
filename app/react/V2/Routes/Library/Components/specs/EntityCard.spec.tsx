@@ -32,6 +32,7 @@ const renderCard = ({
   thumbFrame,
   thumbSize,
   showMetadata,
+  published = true,
 }: {
   selected?: boolean;
   showThumbnail?: boolean;
@@ -43,6 +44,7 @@ const renderCard = ({
   thumbFrame?: ThumbFrame;
   thumbSize?: ThumbSize;
   showMetadata?: boolean;
+  published?: boolean;
 } = {}) =>
   render(
     <MemoryRouter>
@@ -67,10 +69,23 @@ const renderCard = ({
           onSelect={onSelect}
           onFocusProperty={onFocusProperty}
           viewHref="/entityv2/abc"
+          published={published}
         />
       </TestAtomStoreProvider>
     </MemoryRouter>
   );
+
+const restricted = 'Restricted: only people it is shared with can see it';
+
+describe('EntityCard restricted mark', () => {
+  it('shows a restricted padlock before View', () => {
+    renderCard({ published: false });
+    expect(screen.getByRole('link', { name: 'View' }).previousElementSibling).toHaveAttribute(
+      'title',
+      restricted
+    );
+  });
+});
 
 describe('EntityCard', () => {
   it('renders title, metadata and view link', () => {
@@ -145,16 +160,11 @@ describe('EntityCard', () => {
       ],
     } as Template;
     const thumbnail = thumbnailFromEntity(hjk, tmpl);
-
-    renderCard({
-      thumbnailSrc: thumbnail.src,
-      thumbnailKind: thumbnail.kind,
-    });
+    renderCard({ thumbnailSrc: thumbnail.src, thumbnailKind: thumbnail.kind });
     expect(screen.getByTestId('entity-audio-thumb')).toHaveClass('bg-warm');
     expect(screen.getByTestId('entity-audio-equalizer')).toHaveClass('text-blue-600');
     expect(screen.queryByRole('button', { name: 'Play video' })).not.toBeInTheDocument();
-    expect(document.querySelector('audio')).not.toBeInTheDocument();
-    expect(document.querySelector('video')).not.toBeInTheDocument();
+    expect(document.querySelector('audio, video')).not.toBeInTheDocument();
   });
 
   it('draws the default landscape audio header at the small band with a cream equalizer', () => {
@@ -168,11 +178,9 @@ describe('EntityCard', () => {
       LANDSCAPE_THUMB_HEIGHT_CLASS.s,
       'bg-warm',
       'rounded',
-      'overflow-hidden',
-      'flex',
-      'items-center',
-      'justify-center'
+      'overflow-hidden'
     );
+    expect(thumb).toHaveClass('flex', 'items-center', 'justify-center');
     expect(screen.getByTestId('entity-audio-equalizer')).toHaveClass('text-blue-600');
     expect(screen.getByRole('button', { name: 'Play audio' })).toHaveClass('group');
     expect(screen.getByTestId('entity-audio-play')).toHaveClass(
@@ -188,10 +196,9 @@ describe('EntityCard', () => {
       thumbnailSrc: '/api/files/hearing.mp3',
       thumbnailKind: 'audio',
     });
-    expect(screen.getByTestId('entity-audio-thumb')).toHaveClass('aspect-[3/4]');
-    expect(screen.getByTestId('entity-audio-thumb')).not.toHaveClass(
-      LANDSCAPE_THUMB_HEIGHT_CLASS.s
-    );
+    const thumb = screen.getByTestId('entity-audio-thumb');
+    expect(thumb).toHaveClass('aspect-[3/4]');
+    expect(thumb).not.toHaveClass(LANDSCAPE_THUMB_HEIGHT_CLASS.s);
   });
 
   it('keeps video as a black play poster, not the audio equalizer', () => {
@@ -202,12 +209,8 @@ describe('EntityCard', () => {
     });
     const play = screen.getByRole('button', { name: 'Play video' });
     expect(play).toHaveClass('group', 'bg-black', LANDSCAPE_THUMB_HEIGHT_CLASS.s);
-    expect(screen.getByTestId('entity-video-play')).toHaveClass(
-      'rounded-full',
-      'bg-white',
-      'opacity-0',
-      'group-hover:opacity-100'
-    );
+    const poster = screen.getByTestId('entity-video-play');
+    expect(poster).toHaveClass('rounded-full', 'bg-white', 'opacity-0', 'group-hover:opacity-100');
     expect(screen.queryByTestId('entity-audio-thumb')).not.toBeInTheDocument();
     expect(screen.queryByTestId('entity-audio-equalizer')).not.toBeInTheDocument();
   });

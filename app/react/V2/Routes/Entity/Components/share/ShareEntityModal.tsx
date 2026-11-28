@@ -20,13 +20,21 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
   );
 
   return (
-    <Modal size="lg" ariaLabel={t('System', 'Share', null, false)}>
+    <Modal size="lg" ariaLabel={t('System', 'Permissions', null, false)}>
       <Modal.Header>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold text-ink">
-            <Translate>Share</Translate>
+        <div className="flex min-w-0 flex-1 items-baseline gap-2">
+          <h3 className="shrink-0 text-sm font-semibold text-ink">
+            <Translate>Permissions</Translate>
           </h3>
-          <p className="mt-0.5 truncate text-xs text-ink-muted">{entity.title}</p>
+          <p className="flex min-w-0 items-baseline gap-1 text-meta text-ink-tertiary">
+            <span className="min-w-0 truncate">{entity.title}</span>
+            {sharedIds.length > 1 ? (
+              <>
+                <span className="shrink-0 tabular-nums">+{sharedIds.length - 1}</span>
+                <Translate className="shrink-0">x more</Translate>
+              </>
+            ) : null}
+          </p>
         </div>
         <Modal.CloseButton onClick={onClose} disabled={footer.saving} className="ml-0!" />
       </Modal.Header>
@@ -63,7 +71,7 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
             loading={members.loading}
             loadFailed={members.loadFailed}
             assignments={members.assignments}
-            showCanSee={members.showCanSee}
+            published={generalAccess.visibility === 'published' && sharedIds.length === 1}
             onChange={members.updateMember}
             onRemove={members.removeMember}
           />
@@ -81,15 +89,21 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
               onClick={() => {
                 footer.handleSave().catch(() => undefined);
               }}
-              disabled={footer.saving || footer.loading || footer.loadFailed}
+              disabled={
+                footer.saving || footer.loading || footer.loadFailed || footer.unresolvedMixed
+              }
             >
               <Translate>Save changes</Translate>
             </Button>
           </>
         ) : (
-          <Button variant="secondary" onClick={onClose}>
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-7 cursor-pointer border-0 bg-transparent px-2 text-xs font-medium text-ink-secondary hover:text-ink focus:outline-hidden"
+          >
             <Translate>Close</Translate>
-          </Button>
+          </button>
         )}
       </Modal.Footer>
     </Modal>

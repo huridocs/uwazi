@@ -53,11 +53,13 @@ const confirmPanelDelete = async () => {
 };
 
 const expectShareDialog = (dialog: HTMLElement) => {
-  expect(within(dialog).getByRole('heading', { name: 'Share' })).toBeInTheDocument();
+  expect(within(dialog).getByRole('heading', { name: 'Permissions' })).toBeInTheDocument();
+  expect(within(dialog).getByText('Mexico')).toBeInTheDocument();
+  expect(within(dialog).getByText('+2')).toBeInTheDocument();
+  expect(within(dialog).getByText('x more')).toBeInTheDocument();
   expect(within(dialog).getByText('General access')).toBeInTheDocument();
-  expect(
-    within(dialog).getByText('Administrators and Editors always have edit access')
-  ).toBeInTheDocument();
+  expect(within(dialog).getByText('Administrators and Editors')).toBeInTheDocument();
+  expect(within(dialog).getByText('Always')).toBeInTheDocument();
   expect(within(dialog).getByPlaceholderText('Username, email or group')).toBeInTheDocument();
   expect(within(dialog).getByRole('button', { name: 'Close' })).toBeInTheDocument();
   expect(within(dialog).queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();

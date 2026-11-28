@@ -1165,7 +1165,7 @@ ProTip!,ProTip!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
               label and value per row. Optional key on points helps stable colors."
-Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
+Public entities description,Caution: the selected entities will be public. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
 Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
@@ -1255,6 +1255,7 @@ Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
 Restricted,Restricted
+Restricted: only people it is shared with can see it,Restricted: only people it is shared with can see it
 Results,Results
 Results layout,Results layout
 Results show the passages behind each hit.,Results show the passages behind each hit.
@@ -1805,3 +1806,5 @@ Zoom in,Zoom in
 Zoom in library view,Zoom in library view
 Zoom out,Zoom out
 Zoom out library view,Zoom out library view
+Always,Always
+Anyone can view a published entity,Anyone can view a published entity

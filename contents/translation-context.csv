@@ -1660,3 +1660,6 @@ Changes stay temporary until you save the theme.,UI text,Settings > Theme and br
 Turn off live translate,Button label,Header,Button at the end of the live-translate strip that turns the mode off.,false
 Live translate is on.,UI text,Header,First sentence of the strip under the header while live translate is on. Shown semibold.,false
 Click underlined text to translate it.,UI text,Header,"Second sentence of that strip, in regular weight, telling the user to click underlined text to edit that string.",false
+Restricted: only people it is shared with can see it,Tooltip,Library,Hover tooltip and screen-reader name on the padlock shown on Library cards and list rows when only shared people can see the entity.,false
+Always,UI text,Entity view,"Status beside Administrators and Editors in the Permissions dialog. Their edit access is fixed and cannot be changed.",false
+Anyone can view a published entity,Tooltip,Entity view,"Tooltip on Can view in the Permissions dialog when the entity is published. Everyone can already view it.",false

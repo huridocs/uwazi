@@ -1247,6 +1247,7 @@ Resize panels,패널 크기 조정
 Restore,복원
 Restore previous version,이전 버전 복원
 Restricted,비공개 게시물
+Restricted: only people it is shared with can see it,비공개: 공유된 사람만 볼 수 있습니다
 Results,결과
 Results layout,결과 레이아웃
 Results show the passages behind each hit.,결과에는 각 일치 항목의 해당 구절이 표시됩니다.
@@ -1797,3 +1798,5 @@ Zoom in,확대
 Zoom in library view,라이브러리 뷰 확대
 Zoom out,축소
 Zoom out library view,라이브러리 뷰 축소
+Always,항상
+Anyone can view a published entity,게시된 엔티티는 누구나 볼 수 있습니다

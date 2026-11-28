@@ -4,7 +4,7 @@ import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import type { EntitiesService } from '#V2/services/contracts/EntitiesService.js';
 import { notify } from '#V2/utils/notifyBridge.js';
-import { findPublic, type Visibility } from './shareUtils.js';
+import { visibilityFromPermissions, type Visibility } from './shareUtils.js';
 
 type LoadDeps = {
   entities: EntitiesService;
@@ -47,7 +47,7 @@ const useSharePermissionsLoad = ({
         failLoad();
         return;
       }
-      setVisibility(findPublic(permissions) ? 'published' : 'private');
+      setVisibility(visibilityFromPermissions(permissions));
       replaceAssignments(permissions.filter(p => p.type !== PermissionType.PUBLIC));
       setLoading(false);
     };

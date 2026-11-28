@@ -1255,6 +1255,7 @@ Resize panels,ปรับขนาดแผง
 Restore,กู้คืน
 Restore previous version,คืนสู่เวอร์ชันก่อนหน้า
 Restricted,ถูก จำกัด
+Restricted: only people it is shared with can see it,ถูกจำกัด: เฉพาะคนที่แชร์ให้เท่านั้นที่เห็นได้
 Results,ผลลัพธ์
 Results layout,รูปแบบผลลัพธ์
 Results show the passages behind each hit.,ผลลัพธ์แสดงข้อความที่อยู่เบื้องหลังแต่ละรายการที่ตรงกัน
@@ -1805,3 +1806,5 @@ Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
 Zoom out,ขยายออก
 Zoom out library view,ขยายออกไปยังมุมมองไลบรารี
+Always,เสมอ
+Anyone can view a published entity,ทุกคนสามารถดูเอนทิตีที่เผยแพร่ได้
